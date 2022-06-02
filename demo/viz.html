@@ -1,0 +1,183 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Analyze Deal</title>
+
+  <link rel="stylesheet" href="viz.css">
+  <script type="text/javascript" src="log.js"></script> 
+  <script type="text/javascript" src="viz.js"></script>  
+
+</head>
+
+<body>
+  
+  <div id="deal">
+
+  <div id="dealer-vuln"></div>
+
+  <div id="north">
+      <div class="suit">
+          <span>&spades;</span>
+          <span class="card">K</span>
+          <span class="card">T</span>
+          <span class="card">7</span>
+          <span class="card">2</span>
+      </div>
+      <div class="suit">
+          <span class="font-red">&hearts;</span>
+          <span class="card">A</span>
+          <span class="card">J</span>
+          <span class="card">T</span>
+          <span class="card">6</span>
+          <span class="card">4</span>
+      </div>
+      <div class="suit">
+          <span class="font-red">&diams;</span>
+          <span class="card">3</span>
+      </div>
+      <div class="suit">
+          <span>&clubs;</span>
+          <span class="card">Q</span>
+          <span class="card">T</span>
+          <span class="card">2</span>
+      </div>
+  </div>
+  <div id="west">
+      <div class="suit">
+          <span>&spades;</span>
+          <span class="card">A</span>
+          <span class="card">9</span>
+          <span class="card">8</span>
+          <span class="card">6</span>
+          <span class="card">5</span>
+      </div>
+      <div class="suit">
+          <span class="font-red">&hearts;</span>
+          <span class="card">Q</span>
+          <span class="card">9</span>
+      </div>
+      <div class="suit">
+          <span class="font-red">&diams;</span>
+          <span class="card">8</span>
+          <span class="card">7</span>
+          <span class="card">5</span>
+          <span class="card">4</span>
+      </div>
+      <div class="suit">
+          <span>&clubs;</span>
+          <span class="card">K</span>
+          <span class="card">3</span>
+      </div>
+  </div>
+  <div id="east">
+      <div class="suit">
+          <span>&spades;</span>
+          <span class="card">Q</span>
+          <span class="card">J</span>
+          <span class="card">4</span>
+      </div>
+      <div class="suit">
+          <span class="font-red">&hearts;</span>
+          <span class="card">8</span>
+          <span class="card">3</span>
+          <span class="card">2</span>
+      </div>
+      <div class="suit">
+          <span class="font-red">&diams;</span>
+          <span class="card">A</span>
+          <span class="card">K</span>
+          <span class="card">T</span>
+          <span class="card">9</span>
+          <span class="card">2</span>
+      </div>
+      <div class="suit">
+          <span>&clubs;</span>
+          <span class="card">7</span>
+          <span class="card">4</span>
+      </div>
+  </div>
+  <div id="south">
+      <div class="suit">
+          <span>&spades;</span>
+          <span class="card">3</span>
+      </div>
+      <div class="suit">
+          <span class="font-red">&hearts;</span>
+          <span class="card">K</span>
+          <span class="card">7</span>
+          <span class="card">5</span>
+      </div>
+      <div class="suit">
+          <span class="font-red">&diams;</span>
+          <span class="card">Q</span>
+          <span class="card">J</span>
+          <span class="card">6</span>
+      </div>
+      <div class="suit">
+          <span>&clubs;</span>
+          <span class="card">A</span>
+          <span class="card">J</span>
+          <span class="card">9</span>
+          <span class="card">8</span>
+          <span class="card">6</span>
+          <span class="card">5</span>
+      </div>
+  </div>
+
+  <div id="auction"></div>
+
+  <div id="current-trick">
+  <div id="trick-card-north" class="trick-card"><span>&spades;</span><span>A</span></div>
+  <div id="trick-card-east" class="trick-card"><span>&spades;</span><span>7</span></div>
+  <div id="trick-card-south" class="trick-card"><span>&spades;</span><span>T</span></div>
+  <div id="trick-card-west" class="trick-card highlight"><span class="font-red">&diams;</span><span>Q</span></div>
+  </div>
+
+
+  <div id="tricks-ns-ew">
+  <div id="tricks-ns" class="trick-count"><span>0</span></div>
+  <div id="tricks-ew" class="trick-count"><span>0</span></div>
+  </div>
+
+  <div id="btn-prev" class="button"><</div>
+  <div id="btn-next" class="button">></div>
+
+  </div>
+
+  <div>Click < and > to advance the play</div>
+
+  <div id="info"></div>
+
+  <script type="text/javascript">
+          const urlParams = new URLSearchParams(location.search)
+          const dealId = parseInt(urlParams.get("deal"))
+          
+          const log = data[dealId - 1]
+
+          let deal = new Deal(log)
+          deal.start()
+
+          document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code><pre>'
+
+          document.getElementById("btn-next").addEventListener("click", function() {
+              deal.next()
+          })
+
+          document.getElementById("btn-prev").addEventListener("click", function() {
+              deal.prev()
+          })
+
+          let dealerVuln = new DealerVuln(log['dealer'], log['vuln_ns'], log['vuln_ew'])
+          dealerVuln.render(document.getElementById("dealer-vuln"))
+
+          let auction = new Auction(log['dealer'], log['bids'])
+          auction.render(document.getElementById("auction"))
+
+  </script>
+
+
+</body>
+</html>
