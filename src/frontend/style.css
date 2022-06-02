@@ -1,0 +1,243 @@
+
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    cursor: pointer;
+    justify-content: center;
+    background-color: lightsteelblue;
+    user-select: none;
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+#container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 2fr 1fr;
+    height: 80vh;
+    max-width: 60rem;
+    min-height: 40rem;
+}
+
+#north, #south {
+    grid-column: span 3;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center
+}
+
+#west, #east {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.4rem;
+    font-family: sans-serif;
+}
+
+#north {
+    align-items: flex-end;
+}
+
+#south {
+    align-items: flex-start;
+}
+
+#table {
+    background-color: green;
+    border-radius: .5rem;
+    filter: drop-shadow(2px 2px 2px black);
+}
+
+#table .seat-label {
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+#table .dealer {
+    text-decoration: underline;
+}
+
+#table .turn {
+    color: yellow;
+    font-weight: bolder;
+}
+
+.grid-item {
+    /*border: 1px solid black;*/
+
+}
+
+.card {
+    height: 6rem;
+    width: 8%;
+    max-width: 4.4rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-left: 2px;
+    font-size: 2rem;
+    justify-content: center;
+    display: flex;
+    align-items: flex-end;
+    background-color: white;
+    /*filter: drop-shadow(1px 1px 1px black);*/
+
+}
+
+.card::before {
+    content: attr(data-value);
+    position: relative;
+    top: -3rem;
+    font-size: 2.5rem;
+    font-family: sans-serif;
+    font-weight: bold;
+}
+
+.red {
+    color: red;
+}
+
+#table-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 2fr 1fr;
+    grid-template-rows: 1fr 3fr 3fr 1fr;
+    height: 100%;
+}
+
+.table-grid-item {
+    /*border: 1px solid black;*/
+    display: flex;
+    justify-content: center;
+}
+
+.label-north, .label-south {
+    grid-column: span 5;
+}
+
+.label-west, .label-east {
+    grid-row: span 2;
+}
+
+.trick-west, .trick-east {
+    grid-row: span 2;
+    align-items: center;
+}
+
+.trick-north {
+    align-items: flex-end;
+    padding-bottom: 5px;
+}
+
+.trick-south {
+    align-items: flex-start;
+    padding-top: 5px;
+}
+
+#table .card {
+    width: 100%;
+}
+
+#auction {
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: #efcdf5e0;
+    font-size: 1.5rem;
+    font-family: sans-serif;
+}
+
+#auction table {
+    width: 100%;
+}
+
+#auction td {
+    text-align: center;
+}
+
+.tricks {
+    font-size: 1.3rem;
+    margin-top: .5rem;
+    text-align: center;
+    font-weight: bold;
+    color: navy;
+}
+
+#bidding-levels {
+    display: flex;
+}
+
+#bidding-levels div {
+    margin: .5rem;
+    padding: .5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: sans-serif;
+    font-size: 2rem;
+    background-color: white;
+    width: 4rem;
+    height: 4rem;
+    text-align: center;
+}
+
+#bidding-suits {
+    display: flex;
+}
+
+#bidding-suits div {
+    margin: .5rem;
+    padding: .5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: sans-serif;
+    font-size: 2rem;
+    background-color: white;
+    width: 4rem;
+    height: 4rem;
+    text-align: center;
+}
+
+#bidding-calls {
+    display: flex;
+}
+
+#bidding-calls div {
+    margin: .5rem;
+    padding: .5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: sans-serif;
+    font-size: 2rem;
+    background-color: white;
+    width: 8rem;
+    height: 4rem;
+    text-align: center;
+}
+
+#bidding-box .pass {
+    background-color: green;
+}
+
+#bidding-box .double {
+    background-color: red;
+}
+
+#bidding-box .redouble {
+    background-color: blue;
+}
+
+#bidding-box .invalid {
+    background-color: grey;
+}
+
+#bidding-box .selected {
+    background-color: yellow;
+}
+
+#bidding-box .hidden {
+    display: none;
+}

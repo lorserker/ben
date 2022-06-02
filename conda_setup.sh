@@ -14,6 +14,7 @@ pip install tqdm
 pip install websockets
 
 pip install tensorflow==1.15
+pip install grpcio-tools
 
 pip install bottle
 pip install gevent

@@ -5,7 +5,7 @@ It can be used as a robot player, to do analysis, or to develop AI for bridge.
 
 The engine is built using machine learning (neural networks) and [double dummy solvers](https://github.com/dds-bridge/dds) through the python wrapper [python-dds](https://github.com/Afwas/python-dds).
 
-To get a first impression of how the engine plays, please take a look at the [demo](demo/demo.html).
+To get a first impression of how the engine plays, please take a look at the [demo](https://lorserker.github.io/ben/demo/demo.html).
 
 For a few examples of how you can use the engine for analysis or development, see the [tutorials](#tutorials).
 
@@ -67,10 +67,10 @@ The tutorials serve as illustration of the engine's API and functionality, and s
 
 The examples run in jupyter notebooks, but it's also possible to just read them without installing anything.
 
-- __[Bidding](examples/Bidding.ipynb)__ shows how you can use the engine to bid hands and to sample hands which are consistent with a given auction
-- __[Opening Leads](examples/OpeningLead.ipynb)__ illustrates how the engine "decides" which card to lead
-- __[Card-by-card Analysis](examples/CardByCardAnalysis.ipynb)__ this example shows how the engine can go through an already layed hand, analyse every bid made and every card played, and find possible mistakes. You can also give it a hand you played on BBO to see what the engine "thinks" about your play
-- __[Single Dummy Estimates](examples/SingleDummyEstimates.ipynb)__ this exemplifies the use of a neural network to predict how many tricks declarer will take in a given contract on a given opening lead. As opposed to double dummy solvers, the results are approximate, but much faster.
+- __[Bidding](src/examples/Bidding.ipynb)__ shows how you can use the engine to bid hands and to sample hands which are consistent with a given auction
+- __[Opening Leads](src/examples/OpeningLead.ipynb)__ illustrates how the engine "decides" which card to lead
+- __[Card-by-card Analysis](src/examples/CardByCardAnalysis.ipynb)__ this example shows how the engine can go through an already layed hand, analyse every bid made and every card played, and find possible mistakes. You can also give it a hand you played on BBO to see what the engine "thinks" about your play
+- __[Single Dummy Estimates](src/examples/SingleDummyEstimates.ipynb)__ this exemplifies the use of a neural network to predict how many tricks declarer will take in a given contract on a given opening lead. As opposed to double dummy solvers, the results are approximate, but much faster.
 
 ## Play against itself and against other bots
 
