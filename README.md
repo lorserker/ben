@@ -11,7 +11,7 @@ For a few examples of how you can use the engine for analysis or development, se
 
 If you like the software, please consider making a donation to support the developers.
 
-[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=59LH5AHNQ8XZWhttps://www.p)
+[![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=59LH5AHNQ8XZW)
 
 ## Getting Started
 
