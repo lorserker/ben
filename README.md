@@ -40,7 +40,7 @@ cd src
 Activate the conda environment
 
 ```bash
-source activate ben
+conda activate ben
 ```
 
 Start the game server
