@@ -19,7 +19,11 @@ If you like the software, please consider making a donation to support the devel
 
 The engine runs on Python 3.7, with the neural networks using tensorflow 1.15
 
-The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html). After installing conda, execute the commands in the [conda_setup.sh](conda_setup.sh) script to create an environment and install the dependencies.
+The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html). 
+
+For __Windows__ users: After installing anaconda, you  will have a new application called "Anaconda Prompt". Henceforth you will have to run all commands in "Anaconda Prompt" not in "cmd". The title bar of your command prompt window should read *"Administrator: Anaconda Prompt (Miniconda3)"*
+
+After installing conda, execute the commands in the [conda_setup.sh](conda_setup.sh) script to create an environment and install the dependencies.
 
 The bridge engine was developed on linux. It will likely work on any other platform which runs Python and conda, but was only tested on Windows 10 and Windows 11.
 
@@ -39,11 +43,15 @@ cd src
 
 Activate the conda environment
 
+(If you are on __Windows__, makesure that you are in the *"Anaconda Prompt"*, not in the default Windows command prompt)
+
 ```bash
 conda activate ben
 ```
 
 Start the game server
+
+(If you are on __Windows__ you  can omit `sudo` from the following commands)
 
 ```bash
 sudo python gameserver.py
