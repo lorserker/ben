@@ -364,7 +364,7 @@ class Driver:
         await asyncio.sleep(0.01)
 
         if self.human[(decl_i + 1) % 4]:
-            card_resp = await self.factory.create_human_leader().lead()
+            card_resp = await self.factory.create_human_leader().async_lead()
         else:
             bot_lead = AsyncBotLead(
                 [self.vuln_ns, self.vuln_ew], 
