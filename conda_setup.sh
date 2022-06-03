@@ -1,6 +1,6 @@
 conda create -n ben python=3.7
 
-source activate ben
+conda activate ben
 
 conda install numpy
 conda install scipy
