@@ -61,7 +61,7 @@ class Driver:
 
         self.dealer_i = self.deal_data.dealer
         self.vuln_ns = self.deal_data.vuln_ns
-        self.vuln_ew = self.deal_data.vuln_ns
+        self.vuln_ew = self.deal_data.vuln_ew
 
         self.trick_winners = []
         
