@@ -1,0 +1,500 @@
+S E-W J3.AKQJT9.42.AK3 85.875.K53.QT965 Q9642.6.JT98.J84 AKT7.432.AQ76.72
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 6
+meaning: opening
+max-length: 6,13,4,4
+min-length: 0,3,0,0
+BID = 1
+meaning: takeout double
+max-length: 13,4,13,13
+min-length: 2,0,3,3
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 8
+meaning: bidable suit
+max-length: 13,13,6,13
+min-length: 0,0,0,4
+BID = 0
+meaning: 
+max-length: 6,13,4,4
+min-length: 0,3,0,0
+BID = 12
+meaning: bidable suit
+max-length: 13,13,13,6
+min-length: 0,0,5,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 13
+meaning: bidable suit
+max-length: 13,13,6,13
+min-length: 0,0,0,5
+BID = 0
+meaning: 
+max-length: 6,13,4,4
+min-length: 0,3,0,0
+BID = 17
+meaning: bidable suit
+max-length: 13,13,13,6
+min-length: 0,0,6,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,6,13
+min-length: 0,0,0,5
+BID = 0
+meaning: 
+max-length: 6,13,4,4
+min-length: 0,3,0,0
+S N-S 8.AT732.JT8.AJ63 AKT92.J4.752.T84 7653.Q986.AQ9.Q9 QJ4.K5.K643.K752
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 5
+meaning: opening
+max-length: 13,6,4,4
+min-length: 3,0,0,0
+BID = 7
+meaning: bidable suit
+max-length: 13,13,13,6
+min-length: 0,0,5,0
+BID = 8
+meaning: bidable suit
+max-length: 13,13,6,13
+min-length: 0,0,0,5
+BID = 10
+meaning: limit raise or better in hearts
+max-length: 13,13,13,13
+min-length: 0,0,3,0
+BID = 12
+meaning: limit raise or better in spades
+max-length: 13,6,4,4
+min-length: 3,0,0,3
+BID = 17
+meaning: calculated bid
+max-length: 13,13,13,6
+min-length: 0,0,5,0
+BID = 18
+meaning: calculated bid
+max-length: 13,13,6,13
+min-length: 0,0,0,5
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,3,0
+BID = 0
+meaning: 
+max-length: 13,6,4,4
+min-length: 3,0,0,3
+BID = 0
+meaning: 
+max-length: 13,13,13,6
+min-length: 0,0,5,0
+E None AT.K4.QJ9542.Q53 96542.765.8.T972 K3.AQ98.AKT73.AK QJ87.JT32.6.J864
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 10
+meaning: 22+ HCP or 9+ tricks
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 16
+meaning: bidable suit
+max-length: 6,13,4,4
+min-length: 0,5,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 22
+meaning: RKC Kickback, for diamonds
+max-length: 13,13,13,13
+min-length: 0,3,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 23
+meaning: A=1/5 or 4/5
+max-length: 6,13,4,4
+min-length: 0,5,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 25
+meaning: ask for kings
+max-length: 13,13,13,13
+min-length: 0,3,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 27
+meaning: K=1
+max-length: 6,13,4,4
+min-length: 0,5,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 36
+meaning: calculated bid
+max-length: 13,13,4,4
+min-length: 0,3,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 6,13,4,4
+min-length: 0,5,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+N E-W QJ.K84.AQ82.8765 83.AQ9732.K4.AQT T976.JT6.T53.J92 AK542.5.J976.K43
+BID = 6
+meaning: opening
+max-length: 6,13,4,4
+min-length: 0,3,0,0
+BID = 7
+meaning: bidable suit
+max-length: 13,13,13,6
+min-length: 0,0,5,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 8
+meaning: bidable suit
+max-length: 13,13,6,13
+min-length: 0,0,0,4
+BID = 0
+meaning: 
+max-length: 6,13,4,4
+min-length: 0,3,0,0
+BID = 12
+meaning: bidable suit
+max-length: 13,13,13,6
+min-length: 0,0,6,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,6,13
+min-length: 0,0,0,4
+BID = 0
+meaning: 
+max-length: 6,13,4,4
+min-length: 0,3,0,0
+E E-W K.KQJ64.K84.AQ75 JT75.753.73.KT42 AQ86.AT8.QT652.9 9432.92.AJ9.J863
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 6
+meaning: opening
+max-length: 6,13,4,4
+min-length: 0,3,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 12
+meaning: bidable suit
+max-length: 13,13,13,3
+min-length: 0,0,5,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 20
+meaning: Splinter
+max-length: 1,13,4,4
+min-length: 0,3,3,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 24
+meaning: RKC Blackwood, for hearts
+max-length: 13,13,13,3
+min-length: 0,0,5,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 27
+meaning: A=2/5 or 5/5, Q(H)=0
+max-length: 1,13,4,4
+min-length: 0,3,3,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 32
+meaning: calculated bid
+max-length: 13,13,13,3
+min-length: 0,0,5,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 1,13,4,4
+min-length: 0,3,3,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+S None AJ873.6.QJT3.T53 QT.QJ532.865.K98 K942.984.A742.J4 65.AKT7.K9.AQ762
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 5
+meaning: opening
+max-length: 13,6,4,4
+min-length: 3,0,0,0
+BID = 8
+meaning: bidable suit
+max-length: 13,13,6,13
+min-length: 0,0,0,5
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 10
+meaning: limit raise or better in spades
+max-length: 13,13,13,13
+min-length: 0,0,0,3
+BID = 0
+meaning: 
+max-length: 13,6,4,4
+min-length: 3,0,0,0
+BID = 13
+meaning: calculated bid
+max-length: 13,13,6,13
+min-length: 0,0,0,5
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,3
+BID = 15
+meaning: bidable suit
+max-length: 13,6,4,4
+min-length: 5,0,0,0
+BID = 18
+meaning: calculated bid
+max-length: 13,13,6,13
+min-length: 0,0,0,5
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,3
+BID = 0
+meaning: 
+max-length: 13,6,4,4
+min-length: 5,0,0,0
+W Both 5.AK.QJ9863.J932 Q974.QJ975.T54.5 AJ86.T863.7.KQT4 KT32.42.AK2.A876
+BID = 5
+meaning: opening
+max-length: 13,6,4,4
+min-length: 3,0,0,0
+BID = 11
+meaning: Weak natural 2D
+max-length: 6,13,3,3
+min-length: 0,6,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,6,4,4
+min-length: 3,0,0,0
+E None Q9854.632.6.AJ43 762.754.QJ9.KT95 JT.K8.A8543.Q872 AK3.AQJT9.KT72.6
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 7
+meaning: opening
+max-length: 13,13,13,6
+min-length: 0,0,5,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 12
+meaning: support
+max-length: 13,13,13,13
+min-length: 0,0,3,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 22
+meaning: calculated bid
+max-length: 13,13,13,3
+min-length: 0,0,5,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,3,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+E None Q852.73.AQ87.A65 J74.AQ64.JT4.KJ2 A963.KT2.532.QT9 KT.J985.K96.8743
+BID = 5
+meaning: opening
+max-length: 13,6,4,4
+min-length: 3,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 7
+meaning: bidable suit
+max-length: 13,13,13,6
+min-length: 0,0,4,0
+BID = 1
+meaning: takeout double
+max-length: 4,13,4,13
+min-length: 0,3,0,3
+BID = 12
+meaning: calculated bid
+max-length: 9,6,4,3
+min-length: 3,0,4,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,6
+min-length: 0,0,4,0
+BID = 0
+meaning: 
+max-length: 4,13,4,4
+min-length: 0,3,0,3
+N None 6.98643.876542.T KT4.QJT5.K.AQ753 A87532.K.AQJ.K96 QJ9.A72.T93.J842
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 5
+meaning: opening
+max-length: 13,6,4,4
+min-length: 3,0,0,0
+BID = 8
+meaning: bidable suit
+max-length: 13,13,6,13
+min-length: 0,0,0,5
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 10
+meaning: bidable suit
+max-length: 13,6,4,4
+min-length: 5,0,0,0
+BID = 13
+meaning: bidable suit
+max-length: 13,13,6,13
+min-length: 0,0,0,6
+BID = 15
+meaning: calculated bid
+max-length: 13,13,13,13
+min-length: 3,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 0
+meaning: 
+max-length: 13,6,4,4
+min-length: 5,0,0,0
+BID = 0
+meaning: 
+max-length: 13,13,6,13
+min-length: 0,0,0,6
+S N-S JT8.KT96.AK9.J87 K5.854.8763.QT95 Q9632.32.Q54.643 A74.AQJ7.JT2.AK2
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 5
+meaning: opening
+max-length: 13,6,4,4
+min-length: 3,0,0,0
+BID = 1
+meaning: takeout double
+max-length: 4,13,13,13
+min-length: 0,2,3,3
+BID = 0
+meaning: 
+max-length: 13,13,13,13
+min-length: 0,0,0,0
+BID = 8
+meaning: bidable suit
+max-length: 13,13,6,13
+min-length: 0,0,0,4
+BID = 1
+meaning: negative double
+max-length: 9,6,4,4
+min-length: 3,0,4,0
+BID = 0
+meaning: 
+max-length: 4,4,8,8
+min-length: 0,2,3,3
+BID = 10
+meaning: bidable suit
+max-length: 13,6,3,13
+min-length: 4,0,0,0
+BID = 13
