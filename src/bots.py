@@ -13,7 +13,6 @@ import scoring
 from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 from bidding import bidding
 from bidding.binary import parse_hand_f
-from ddsolver import ddsolver
 
 from util import hand_to_str, expected_tricks, p_make_contract
 
@@ -338,6 +337,7 @@ class CardPlayer:
 
         self.score_by_tricks_taken = [scoring.score(self.contract, self.is_decl_vuln, n_tricks) for n_tricks in range(14)]
 
+        from ddsolver import ddsolver
         self.dd = ddsolver.DDSolver()
 
     def init_x_play(self, public_hand, level, strain_i):
@@ -378,6 +378,8 @@ class CardPlayer:
         return card_resp
 
     def next_card52(self, trick_i, leader_i, current_trick52, players_states):
+        from ddsolver import ddsolver
+        
         n_samples = players_states[0].shape[0]
 
         unavailable_cards = set(list(np.nonzero(self.hand52)[0]) + list(np.nonzero(self.public52)[0]) + current_trick52)
