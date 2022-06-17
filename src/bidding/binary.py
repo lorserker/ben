@@ -85,6 +85,66 @@ class DealData(object):
             assert n == n_steps
 
         return X, y
+    
+    def get_binary_hcp_shape(self, n_steps=8):
+        X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+        y = np.zeros((4, n_steps, 40), dtype=np.float16)
+        HCP = np.zeros((4, n_steps, 3), dtype=np.float16)
+        SHAPE = np.zeros((4, n_steps, 12), dtype=np.float16)
+        
+        padded_auction = self.auction + (['PAD_END'] * 4 * n_steps)
+
+        times_seen = [0, 0, 0, 0]
+
+        i = 0
+        while sum(times_seen) < 4 * n_steps:
+            if padded_auction[i] == 'PAD_START':
+                i += 1
+                continue
+
+            hand_ix = i % 4
+
+            t = times_seen[hand_ix]
+        
+            v_we = self.vuln_ns if hand_ix % 2 == 0 else self.vuln_ew
+            v_them = self.vuln_ew if hand_ix % 2 == 0 else self.vuln_ns
+            vuln = np.array([[v_we, v_them]], dtype=np.float32)
+            hcp = self.hcp[hand_ix]
+            shape = self.shapes[hand_ix]
+            
+            lho_bid = padded_auction[i - 3] if i - 3 >= 0 else 'PAD_START'
+            partner_bid = padded_auction[i - 2] if i - 2 >= 0 else 'PAD_START'
+            rho_bid = padded_auction[i - 1] if i - 1 >= 0 else 'PAD_START'
+            target_bid = padded_auction[i]
+
+            ftrs = np.concatenate((
+                vuln,
+                hcp,
+                shape,
+                self.hands[hand_ix],
+                bidding.encode_bid(lho_bid),
+                bidding.encode_bid(partner_bid),
+                bidding.encode_bid(rho_bid)
+            ), axis=1)
+
+            X[hand_ix, t, :] = ftrs
+            y[hand_ix, t, :] = bidding.encode_bid(target_bid)
+
+            HCP[hand_ix, t, 0] = self.hcp[(hand_ix - 3) % 4][0]
+            HCP[hand_ix, t, 1] = self.hcp[(hand_ix - 2) % 4][0]
+            HCP[hand_ix, t, 2] = self.hcp[(hand_ix - 1) % 4][0]
+
+            SHAPE[hand_ix, t, 0:4] = self.shapes[(hand_ix - 3) % 4][0]
+            SHAPE[hand_ix, t, 4:8] = self.shapes[(hand_ix - 2) % 4][0]
+            SHAPE[hand_ix, t, 8:12] = self.shapes[(hand_ix - 1) % 4][0]
+
+            times_seen[hand_ix] += 1
+            i += 1
+
+        for n in times_seen:
+            assert n == n_steps
+
+        return X, y, HCP, SHAPE
 
 def get_card_index(card, n_cards):
     assert(n_cards % 4 == 0)
