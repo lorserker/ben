@@ -51,6 +51,25 @@ python bidding_nn.py
 
 When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained.
 
+### Making a test run
+
+To test the neural network, it is possible to feed it some [test hands](test_input.txt) and see how it bids them. No search is performed at all for the bidding, so this tests strictly the neural network.
+
+```
+python testrun.py bidding/bidding-1000000 < test_input.txt
+```
+
+this will generate the auctions as they are bid by the model and writes them in this format:
+
+```
+S E-W J3.AKQJT9.42.AK3 85.875.K53.QT965 Q9642.6.JT98.J84 AKT7.432.AQ76.72 P-1D-X-P-1S-P-2H-P-2S-P-3H-P-3S-P-P-P
+S N-S 8.AT732.JT8.AJ63 AKT92.J4.752.T84 7653.Q986.AQ9.Q9 QJ4.K5.K643.K752 P-1C-1H-1S-2C-2H-3H-3S-P-P-P
+E None AT.K4.QJ9542.Q53 96542.765.8.T972 K3.AQ98.AKT73.AK QJ87.JT32.6.J864 P-2C-P-3D-P-4H-P-4S-P-4N-P-5H-P-7D-P-P-P
+```
+
+This can be used for debugging, to see if the NN bids test hands as expected
+
+
 ### More data
 
 More data is available for download. It was generated with [Edward Piwowar's Bidding Analyzer](https://sites.google.com/view/bbaenglish) for different systems (1 million deals each)
