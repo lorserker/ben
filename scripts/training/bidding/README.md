@@ -78,7 +78,7 @@ python binfo_nn.py
 To test the neural network, it is possible to feed it some [test hands](test_input.txt) and see how it bids them. No search is performed at all for the bidding, so this tests strictly the neural network.
 
 ```
-python testrun.py bidding/bidding-1000000 < test_input.txt
+python testrun.py model/bidding-1000000 < test_input.txt
 ```
 
 this will generate the auctions as they are bid by the model and writes them in this format:
