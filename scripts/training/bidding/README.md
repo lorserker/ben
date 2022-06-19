@@ -1,6 +1,6 @@
 # Training a Neural Network to Bid
 
-This is a tutorial describing how to train a neural network to bid.
+This is a tutorial describing how to train a neural network to bid. There is a [bridgewinners article](https://bridgewinners.com/article/view/bridge-ai-how-neural-networks-learn-to-bid/) to go with this tutorial.
 
 What you will need:
 - make sure that you have successfully [installed](https://github.com/lorserker/ben/blob/main/README.md#installation) the bridge engine
