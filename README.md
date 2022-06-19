@@ -115,6 +115,11 @@ Below is a list of features which aren't implemented in this engine yet, but you
 - it does reach good slams, but slam auctions are a bit weird
 - isn't deployed as a service which you could play with on the internet (you have to install it to use it)
 
+## Articles
+
+- [Free and Open Source Bridge AI Engine Released](https://bridgewinners.com/article/view/free-and-open-source-bridge-ai-engine-released/)
+- [Bridge AI: How Neural Networks Learn to Bid](https://bridgewinners.com/article/view/bridge-ai-how-neural-networks-learn-to-bid/)
+
 ## How to cite
 
 ```
