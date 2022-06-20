@@ -54,12 +54,12 @@ Start the game server
 (If you are on __Windows__ you  can omit `sudo` from the following commands)
 
 ```bash
-sudo python gameserver.py
+python gameserver.py
 ```
 And start the app server
 
 ```bash
-sudo python appserver.py
+python appserver.py
 ```
 
 Now you can use the browser to navigate to `http://127.0.0.1:8080/home`
