@@ -98,5 +98,5 @@ More data is available for download. It was generated with [Edward Piwowar's Bid
 
 - [SAYC](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/sayc_bidding_data.txt.gz)
 - [2/1](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/21gf_bidding_data.txt.gz)
-- [Polish CLub](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/wj_bidding_data.txt.gz)
+- [Polish Club](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/wj_bidding_data.txt.gz)
 - [Precision](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/pc_bidding_data.txt.gz)
