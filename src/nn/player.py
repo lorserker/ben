@@ -1,6 +1,8 @@
 import numpy as np
 import tensorflow as tf
 
+from scipy.special import softmax
+
 
 SUIT_MASK = np.array([
     [1] * 8 + [0] * 24,
@@ -18,6 +20,7 @@ class BatchPlayer:
         self.graph = tf.Graph()
         self.sess = tf.Session(graph=self.graph)
         self.load_model()
+        self.graph.finalize()
         self.model = self.init_model()
 
     def close(self):
@@ -47,7 +50,7 @@ class BatchPlayer:
         return pred_fun
 
     def reshape_card_logit(self, card_logit, x):
-        return self.sess.run(tf.nn.softmax(card_logit.reshape((x.shape[0], x.shape[1], 32))))#[:,-1,:]
+        return softmax(card_logit.reshape((x.shape[0], x.shape[1], 32)), axis=2)
 
     def next_cards_softmax(self, x):
         return self.model(x)[:,-1,:]
@@ -56,7 +59,7 @@ class BatchPlayer:
 class BatchPlayerLefty(BatchPlayer):
 
     def reshape_card_logit(self, card_logit, x):
-        return self.sess.run(tf.nn.softmax(card_logit.reshape((x.shape[0], x.shape[1] - 1, 32))))#[:,-1,:]
+        return softmax(card_logit.reshape((x.shape[0], x.shape[1] - 1, 32)), axis=2)
 
 
 def follow_suit(cards_softmax, own_cards, trick_suit):
