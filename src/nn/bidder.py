@@ -14,6 +14,8 @@ class Bidder:
         self.graph = tf.Graph()
         self.sess = tf.Session(graph=self.graph)
         self.load_model()
+        self.output_softmax = tf.nn.softmax(self.graph.get_tensor_by_name('out_bid_logit:0'))
+        self.graph.finalize()
         self.lstm_size = 128
         self.zero_state = (
             State(c=np.zeros((1, self.lstm_size)), h=np.zeros((1, self.lstm_size))),
@@ -93,7 +95,7 @@ class Bidder:
                     keep_prob: p_keep,
                     seq_in: x,
                 }
-                result = self.sess.run(tf.nn.softmax(out_bid_logit), feed_dict=feed_dict)
+                result = self.sess.run(self.output_softmax, feed_dict=feed_dict)
             return result
         
         return pred_fun_seq, pred_fun
