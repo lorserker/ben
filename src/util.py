@@ -88,7 +88,7 @@ def parse_lin(lin):
     elif lin_vuln == 'b':
         vuln = [True, True]
 
-    lin_deal = re.findall(r'md\|(.+?),\|', lin)[0]
+    lin_deal = re.findall(r'(?<=md\|)(.*?)(?=\|)', lin)[0]
     dealer = {'1': 'S', '2': 'W', '3': 'N', '4': 'W'}[lin_deal[0]]
     lin_hands = lin_deal[1:].split(',')
 
