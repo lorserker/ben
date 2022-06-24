@@ -89,7 +89,7 @@ def parse_lin(lin):
         vuln = [True, True]
 
     lin_deal = re.findall(r'(?<=md\|)(.*?)(?=\|)', lin)[0]
-    dealer = {'1': 'S', '2': 'W', '3': 'N', '4': 'W'}[lin_deal[0]]
+    dealer = {'1': 'S', '2': 'W', '3': 'N', '4': 'E'}[lin_deal[0]]
     lin_hands = lin_deal[1:].split(',')
 
     hd_south = re.search(rx_hand, lin_hands[0]).groupdict()
