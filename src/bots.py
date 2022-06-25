@@ -115,7 +115,7 @@ class BotBid:
     def sample_hands(self, auction_so_far):
         turn_to_bid = len(auction_so_far) % 4
         n_steps = BotBid.get_n_steps_auction(auction_so_far)
-        lho_pard_rho = sample.sample_cards_auction(4096, n_steps, auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model)
+        lho_pard_rho = sample.sample_cards_auction(2048, n_steps, auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model)[:64]
         n_samples = lho_pard_rho.shape[0]
         
         hands_np = np.zeros((n_samples, 4, 32), dtype=np.int32)
