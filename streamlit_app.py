@@ -21,7 +21,8 @@ from deck52 import decode_card
 from bidding.binary import DealData
 from objects import CardResp, Card
 
-from ddsolver import dds
+# test dds load, encounter libboost_thread.so.1.71.0 not found
+#from ddsolver import dds
 
 def print(r):
   st.write(r)
@@ -115,6 +116,8 @@ class Driver:
             'strain': strain_i
         }))
 
+        return
+        #TODO, continue when dds can load from streamlit cloud
         opening_lead52 = (self.opening_lead(auction)).card.code()
 
         self.channel.send(json.dumps({
