@@ -51,6 +51,16 @@ python bidding_nn.py
 
 When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained.
 
+#### How to continue training an already trained model
+
+This part describes how you can load an already trained model and continue training it (without the training starting from scratch)
+
+Let's say your already trained model is stored in the `model` folder and you want to continue training it and then store the results to the `model2` folder. You can do this by running the [bidding_nn_continue.py](bidding_nn_continue.py) script.
+
+```
+python bidding_nn_continue.py model/bidding-1000000 model2/bidding
+```
+
 ### Training a bidding-info model
 
 This model is used to estimate the strength and shape of hidden hands based on their bidding (i.e meaning of bids)
@@ -98,5 +108,5 @@ More data is available for download. It was generated with [Edward Piwowar's Bid
 
 - [SAYC](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/sayc_bidding_data.txt.gz)
 - [2/1](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/21gf_bidding_data.txt.gz)
-- [Polish CLub](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/wj_bidding_data.txt.gz)
+- [Polish Club](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/wj_bidding_data.txt.gz)
 - [Precision](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/pc_bidding_data.txt.gz)

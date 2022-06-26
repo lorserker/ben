@@ -64,7 +64,7 @@ class Board(NamedTuple):
 
 def parse_lin(lin):
     rx_bid = r'mb\|([0-9a-zA-Z]+?)!?\|'
-    rx_card = r'pc\|([C,D,H,S][2-9A,K,Q,J,T])\|'
+    rx_card = r'pc\|([C,D,H,S,c,d,h,s][2-9A,K,Q,J,T])\|'
     rx_hand = r'S(?P<S>[2-9A,K,Q,J,T]*?)H(?P<H>[2-9A,K,Q,J,T]*?)D(?P<D>[2-9A,K,Q,J,T]*?)C(?P<C>[2-9A,K,Q,J,T]*?)$'
 
     bid_trans = {
@@ -73,7 +73,7 @@ def parse_lin(lin):
         'R': 'XX'
     }
 
-    play = re.findall(rx_card, lin)
+    play = [card.upper() for card in re.findall(rx_card, lin)]
     auction = []
     for bid in re.findall(rx_bid, lin):
         bid = bid.upper()
@@ -88,8 +88,8 @@ def parse_lin(lin):
     elif lin_vuln == 'b':
         vuln = [True, True]
 
-    lin_deal = re.findall(r'md\|(.+?),\|', lin)[0]
-    dealer = {'1': 'S', '2': 'W', '3': 'N', '4': 'W'}[lin_deal[0]]
+    lin_deal = re.findall(r'(?<=md\|)(.*?)(?=\|)', lin)[0]
+    dealer = {'1': 'S', '2': 'W', '3': 'N', '4': 'E'}[lin_deal[0]]
     lin_hands = lin_deal[1:].split(',')
 
     hd_south = re.search(rx_hand, lin_hands[0]).groupdict()
