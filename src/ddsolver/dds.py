@@ -17,7 +17,9 @@ limitations under the License."""
 from ctypes import *
 from sys import platform
 
-dds = cdll.LoadLibrary("./ddsolver/dds.dll") if platform == "win32" else cdll.LoadLibrary("./ddsolver/libdds.so")
+import os
+path = os.path.dirname(__file__)
+dds = cdll.LoadLibrary(os.path.join(path, "dds.dll")) if platform == "win32" else cdll.LoadLibrary(os.path.join(path, "libdds.so"))
 print('Loaded lib {0}'.format(dds))
 
 DDS_VERSION = 20700    
