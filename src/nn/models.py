@@ -32,6 +32,7 @@ class Models:
             ],
         )
 
+    # TODO: remove this. use `from_conf` instead
     @classmethod
     def load(cls, models_dir):
         return cls(

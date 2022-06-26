@@ -424,8 +424,7 @@ def random_deal_source():
 
 
 async def main():
-    # models = Models.load('../models')
-    models = Models.from_conf(conf.Models.NS())
+    models = Models.from_conf(conf.load('../default.conf'))
 
     driver = Driver(models, human.ConsoleFactory())
 
