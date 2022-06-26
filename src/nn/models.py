@@ -1,3 +1,6 @@
+import os
+import os.path
+
 from configparser import ConfigParser
 import nn.player as player
 
@@ -19,16 +22,17 @@ class Models:
     
     @classmethod
     def from_conf(cls, conf: ConfigParser) -> "Models":
+        base_path = os.getenv('BEN_HOME') or '..'
         return cls(
-            bidder_model=Bidder('bidder', conf['bidding']['bidder']),
-            binfo=BidInfo(conf['bidding']['info']),
-            lead=Leader(conf['lead']['lead']),
-            sd_model=LeadSingleDummy(conf['eval']['lead_single_dummy']),
+            bidder_model=Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder'])),
+            binfo=BidInfo(os.path.join(base_path, conf['bidding']['info'])),
+            lead=Leader(os.path.join(base_path, conf['lead']['lead'])),
+            sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy'])),
             player_models=[
-                player.BatchPlayerLefty('lefty', conf['cardplay']['lefty']),
-                player.BatchPlayer('dummy', conf['cardplay']['dummy']),
-                player.BatchPlayer('righty', conf['cardplay']['righty']),
-                player.BatchPlayer('decl', conf['cardplay']['decl'])
+                player.BatchPlayerLefty('lefty', os.path.join(base_path, conf['cardplay']['lefty'])),
+                player.BatchPlayer('dummy', os.path.join(base_path, conf['cardplay']['dummy'])),
+                player.BatchPlayer('righty', os.path.join(base_path, conf['cardplay']['righty'])),
+                player.BatchPlayer('decl', os.path.join(base_path, conf['cardplay']['decl']))
             ],
         )
 
