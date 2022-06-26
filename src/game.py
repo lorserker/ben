@@ -11,6 +11,7 @@ import numpy as np
 import human
 import bots
 import sample
+import conf
 
 from bidding import bidding
 from nn.models import Models
@@ -423,7 +424,7 @@ def random_deal_source():
 
 
 async def main():
-    models = Models.load('../models')
+    models = Models.from_conf(conf.load('../default.conf'))
 
     driver = Driver(models, human.ConsoleFactory())
 

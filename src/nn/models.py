@@ -1,3 +1,4 @@
+from configparser import ConfigParser
 import nn.player as player
 
 from nn.bidder import Bidder
@@ -15,6 +16,23 @@ class Models:
         self.sd_model = sd_model
         self.player_models = player_models
 
+    
+    @classmethod
+    def from_conf(cls, conf: ConfigParser) -> "Models":
+        return cls(
+            bidder_model=Bidder('bidder', conf['bidding']['bidder']),
+            binfo=BidInfo(conf['bidding']['info']),
+            lead=Leader(conf['lead']['lead']),
+            sd_model=LeadSingleDummy(conf['eval']['lead_single_dummy']),
+            player_models=[
+                player.BatchPlayerLefty('lefty', conf['cardplay']['lefty']),
+                player.BatchPlayer('dummy', conf['cardplay']['dummy']),
+                player.BatchPlayer('righty', conf['cardplay']['righty']),
+                player.BatchPlayer('decl', conf['cardplay']['decl'])
+            ],
+        )
+
+    # TODO: remove this. use `from_conf` instead
     @classmethod
     def load(cls, models_dir):
         return cls(
