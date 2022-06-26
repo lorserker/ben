@@ -21,6 +21,7 @@ from deck52 import decode_card
 from bidding.binary import DealData
 from objects import CardResp, Card
 
+from ddsolver import dds
 
 def print(r):
   st.write(r)
