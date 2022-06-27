@@ -4,6 +4,8 @@ This describes how to run ben vs ben matches where each deal stops after the ope
 
 Different models are provided using different configuration files, for example [A.conf](A.conf) and [B.conf](B.conf)
 
+It's not recommended to run very different systems against each other, because the engine still assumes that NS and EW are playing the same or very similar systems.
+
 Matches can be run with or without search during the bidding. Without search is much faster because it just uses the output of the neural network and doesn't use any simulation at all.
 
 Following are the steps to run a match:
