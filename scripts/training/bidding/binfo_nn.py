@@ -1,20 +1,26 @@
 import sys
 sys.path.append('../../../src')
 
+import os.path
 import numpy as np
 import tensorflow as tf
 
+    ##np.save(os.path.join(out_dir, 'X.npy'), X)
+
 from batcher import Batcher
 
-model_path = './binfo_wj/binfo_wj'
+bin_dir = sys.argv[1]
+out_dir = sys.argv[2]
+
+model_path = os.path.join(out_dir, 'binfo')
 
 batch_size = 64
 n_iterations = 500000
 display_step = 10000
 
-X_train = np.load('./bin/wj/X.npy')
-HCP_train = np.load('./bin/wj/HCP.npy')
-SHAPE_train = np.load('./bin/wj/SHAPE.npy')
+X_train = np.load(os.path.join(bin_dir, 'X.npy'))
+HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'))
+SHAPE_train = np.load(os.path.join(bin_dir, 'SHAPE.npy'))
 
 n_examples = X_train.shape[0]
 n_ftrs = X_train.shape[2]

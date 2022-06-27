@@ -29,24 +29,20 @@ AJ8.KT875.98.KQ5 Q2.AQJ432.KT64.4 KT9643.9.AQ75.J7 75.6.J32.AT98632
 ...
 ```
 
-Run the script to transform the data into binary format. (the first argument is the number of deals in the dataset, the second argument is the file containing the deals. the dataset provided happens to contain 588735 deals)
+Run the script to transform the data into binary format. (the first argument is the number of deals in the dataset, the second argument is the file containing the deals and the third is the script output. the dataset provided happens to contain 588735 deals)
 
 ```
-python bidding_binary.py 588735 bidding_data.txt
+mkdir -p binary/bidding models/bidding
+
+python bidding_binary.py 588735 bidding_data.txt binary/bidding
 ```
 
-The above command will create two new files: `X.npy` and `y.npy`. `X.npy` contains the inputs to the neural network and `y.npy` contains the expected outputs. Both are stored in numpy array format.
+The above command will create two new files into the `binary/bidding` folder: `X.npy` and `y.npy`. `X.npy` contains the inputs to the neural network and `y.npy` contains the expected outputs. Both are stored in numpy array format.
 
-Next, create a new directory where the trained model will be stored in.
-
-```
-mkdir model
-```
-
-Finally run the trainig script. This will take several hours to complete, but it will save snapshots of the model as it progresses. If you have a GPU, the training will run faster, but not much faster, because GPUs are not so well suited for the type of NN used.
+Then, run the trainig script. This will take several hours to complete, but it will save snapshots of the model as it progresses. If you have a GPU, the training will run faster, but not much faster, because GPUs are not so well suited for the type of NN used.
 
 ```
-python bidding_nn.py
+python bidding_nn.py binary/bidding models/bidding
 ```
 
 When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained.
@@ -58,7 +54,9 @@ This part describes how you can load an already trained model and continue train
 Let's say your already trained model is stored in the `model` folder and you want to continue training it and then store the results to the `model2` folder. You can do this by running the [bidding_nn_continue.py](bidding_nn_continue.py) script.
 
 ```
-python bidding_nn_continue.py model/bidding-1000000 model2/bidding
+mkdir -p models/bidding-bis
+
+python bidding_nn_continue.py models/bidding/bidding-1000000 models/bidding-bis
 ```
 
 ### Training a bidding-info model
@@ -70,17 +68,17 @@ It is needed if you want to use a bidder neural network in the engine (so it can
 To train a bidding-info model, first transform the data into a binary format.
 
 ```
-mkdir bin
+mkdir -p binary/binfo models/binfo
 
-python binfo_binary.py 588735 bidding_data.txt bin
+python binfo_binary.py 588735 bidding_data.txt binary/binfo
 ```
 
-this will create the following files into the `bin` folder: `X.npy`, `y.npy`, `HCP.npy`, `SHAPE.npy`
+this will create the following files into the `binary/binfo` folder: `X.npy`, `y.npy`, `HCP.npy`, `SHAPE.npy`
 
 then you can start the script which trains the neural network (edit the paths in the scripts if necessary)
 
 ```
-python binfo_nn.py
+python binfo_nn.py binary/binfo models/binfo
 ```
 
 ### Making a test run
