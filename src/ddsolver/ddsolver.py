@@ -6,7 +6,8 @@ dds.SetMaxThreads(0)
 
 class DDSolver:
 
-    def __init__(self):
+    def __init__(self, dds_mode=0):
+        self.dds_mode = dds_mode
         self.bo = dds.boardsPBN()
         self.solved = dds.solvedBoards()
 
@@ -45,7 +46,7 @@ class DDSolver:
 
             self.bo.target[handno] = -1
             self.bo.solutions[handno] = 3
-            self.bo.mode[handno] = 0
+            self.bo.mode[handno] = self.dds_mode
 
         res = dds.SolveAllBoards(ctypes.pointer(self.bo), ctypes.pointer(self.solved))
 

@@ -1,19 +1,23 @@
 import sys
 sys.path.append('../../../src')
 
+import os.path
 import numpy as np
 import tensorflow as tf
 
 from batcher import Batcher
 
-model_path = './model/bidding'
+bin_dir = sys.argv[1]
+out_dir = sys.argv[2]
+
+model_path = os.path.join(out_dir, 'bidding')
 
 batch_size = 100
 n_iterations = 1000000
 display_step = 10000
 
-X_train = np.load('X.npy')
-y_train = np.load('y.npy')
+X_train = np.load(os.path.join(bin_dir, 'X.npy'))
+y_train = np.load(os.path.join(bin_dir, 'y.npy'))
 
 n_examples = y_train.shape[0]
 n_ftrs = X_train.shape[2]

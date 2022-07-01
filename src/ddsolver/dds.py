@@ -14,15 +14,20 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License."""
 
-from ctypes import *
-from sys import platform
-
+import sys
+import os
+import os.path
 from pathlib import Path
-p = Path(__file__).parent
-dds_file = p.joinpath("dds.dll") if platform == "win32" else p.joinpath("libdds.so")
-print(dds_file)
-dds = cdll.LoadLibrary(dds_file)
-print('Loaded lib {0}'.format(dds))
+
+from ctypes import *
+
+BEN_HOME = os.getenv('BEN_HOME') or Path(__file__).parents[2]
+BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+DDS_LIB = 'dds.dll' if sys.platform == 'win32' else 'libdds.so'
+DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)
+
+dds = cdll.LoadLibrary(DDS_PATH)
+sys.stderr.write('Loaded lib {0}\n'.format(dds))
 
 DDS_VERSION = 20700    
 

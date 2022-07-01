@@ -116,7 +116,7 @@ class Driver:
             'strain': strain_i
         }))
 
-        return
+        #return
         #TODO, continue when dds can load from streamlit cloud
         opening_lead52 = (self.opening_lead(auction)).card.code()
 

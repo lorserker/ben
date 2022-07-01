@@ -222,12 +222,7 @@ class BotLead:
         self.sd_model = models.sd_model
 
     def lead(self, auction):
-        x_ftrs, b_ftrs = binary.get_lead_binary(auction, self.hand, self.binfo_model, self.vuln)
-        lead_softmax = self.lead_model.model(x_ftrs, b_ftrs)
-
-        lead_card_indexes = self.get_lead_candidates(
-            player.follow_suit(lead_softmax, self.hand, np.array([[0, 0, 0, 0]])))
-
+        lead_card_indexes, lead_softmax = self.get_lead_candidates(auction)
         accepted_samples, tricks = self.simulate_outcomes(4096, auction, lead_card_indexes)
 
         candidate_cards = []
@@ -264,7 +259,11 @@ class BotLead:
             samples=samples
         )
 
-    def get_lead_candidates(self, lead_softmax):
+    def get_lead_candidates(self, auction):
+        x_ftrs, b_ftrs = binary.get_lead_binary(auction, self.hand, self.binfo_model, self.vuln)
+        lead_softmax = self.lead_model.model(x_ftrs, b_ftrs)
+        lead_softmax = player.follow_suit(lead_softmax, self.hand, np.array([[0, 0, 0, 0]]))
+
         candidates = []
 
         while True:
@@ -275,7 +274,7 @@ class BotLead:
             lead_softmax[0][c] = 0
             candidates.append(c)
 
-        return candidates
+        return candidates, lead_softmax
 
     def simulate_outcomes(self, n_samples, auction, lead_card_indexes):
         contract = bidding.get_contract(auction)
