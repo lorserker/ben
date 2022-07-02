@@ -1,5 +1,6 @@
 import os
 import os.path
+from pathlib import Path
 
 from configparser import ConfigParser
 import nn.player as player
@@ -22,7 +23,7 @@ class Models:
     
     @classmethod
     def from_conf(cls, conf: ConfigParser) -> "Models":
-        base_path = os.getenv('BEN_HOME') or '..'
+        base_path = os.getenv('BEN_HOME') or Path(__file__).parents[2]
         return cls(
             bidder_model=Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder'])),
             binfo=BidInfo(os.path.join(base_path, conf['bidding']['info'])),
