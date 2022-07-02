@@ -3,6 +3,4 @@ streamlit
 tensorflow == 1.15
 scipy
 sklearn
-
-
-
+opencv-python-headless
