@@ -53,7 +53,7 @@ python auction.py \
     > auctions2.json
 ```
 
-After the bidding, add the opening leads:
+After the bidding, add the opening leads (optional):
 
 ```
 cat auctions1.json | python lead.py > leads1.json
@@ -61,6 +61,13 @@ cat auctions2.json | python lead.py > leads2.json
 ```
 
 Score the outcome (double dummy)
+
+```
+cat auctions1.json | python score.py > results1.json
+cat auctions2.json | python score.py > results2.json
+```
+
+Score the outcome (double dummy) with leads
 
 ```
 cat leads1.json | python score.py > results1.json
