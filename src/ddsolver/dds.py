@@ -17,10 +17,11 @@ limitations under the License."""
 import sys
 import os
 import os.path
+from pathlib import Path
 
 from ctypes import *
 
-BEN_HOME = os.getenv('BEN_HOME') or '..'
+BEN_HOME = os.getenv('BEN_HOME') or Path(__file__).parents[2]
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 DDS_LIB = 'dds.dll' if sys.platform == 'win32' else 'libdds.so'
 DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)

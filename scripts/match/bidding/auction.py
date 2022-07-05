@@ -6,7 +6,6 @@ import json
 
 import conf
 
-from nn.bidder import Bidder
 from nn.models import Models
 from bots import BotBid
 from bidding import bidding

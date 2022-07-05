@@ -85,7 +85,7 @@ The examples run in jupyter notebooks, but it's also possible to just read them 
 To make the engine play against itself, execute this command:
 
 ```bash
-sudo python game.py
+python game.py
 ```
 
 After each board, it's possible to go through the play using the web UI.
