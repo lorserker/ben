@@ -1,13 +1,15 @@
 import sys
 sys.path.append('../../../src')
+import os
 
 import numpy as np
 import tensorflow as tf
 
 from batcher import Batcher
 
-checkpoint_model = sys.argv[1]  # pretrained model e.g './model/bidding-1000000'
-output_model = sys.argv[2]  # where to save new checkpoints e.g './model2/bidding'  
+bin_dir = sys.argv[1]
+checkpoint_model = sys.argv[2]  # pretrained model e.g './model/bidding-1000000'
+output_model = sys.argv[3]  # where to save new checkpoints e.g './model2/bidding'  
 
 model_path = output_model
 
@@ -16,8 +18,8 @@ start_iteration = int(checkpoint_model.split('-')[-1])
 n_iterations = 1000000
 display_step = 10000
 
-X_train = np.load('X.npy')
-y_train = np.load('y.npy')
+X_train = np.load(os.path.join(bin_dir, 'X.npy'))
+y_train = np.load(os.path.join(bin_dir, 'y.npy'))
 
 n_examples = y_train.shape[0]
 n_ftrs = X_train.shape[2]

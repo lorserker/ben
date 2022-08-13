@@ -6,9 +6,12 @@ from collections import deque
 import deck52
 
 
-def generate(n_boards):
+def generate(n_boards, fixed_north_none=False):
     dealer = list('NESW')
     vuln = deque(['None', 'N-S', 'E-W', 'Both'])
+    if fixed_north_none:
+        dealer = list('NNNN')
+        vuln = deque(['None']*4)
     
     for i in range(n_boards):
         deal_str = deck52.random_deal()
@@ -21,7 +24,9 @@ def generate(n_boards):
 
 if __name__ == '__main__':
     n_boards = int(sys.argv[1])
-
-    for dealer, vuln, hands_str in generate(n_boards):
+    fixed_north_none = False
+    if len(sys.argv) > 2:
+        fixed_north_none = True
+    for dealer, vuln, hands_str in generate(n_boards, fixed_north_none):
         print(f'{dealer} {vuln} {hands_str}')
         

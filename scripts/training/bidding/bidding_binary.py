@@ -6,6 +6,17 @@ import numpy as np
 
 from bidding.binary import DealData
 
+## HCP target format
+# 0 = hcp lho
+# 1 = hcp part
+# 2 = hcp rho
+
+## SHAPE target format
+# 0:4 shape S,H,D,C lho
+# 4:8 partner
+# 8:12 rho
+
+
 def load_deals(fin):
     deal_str = ''
     deal_data = ''
@@ -17,14 +28,14 @@ def load_deals(fin):
         else:
             yield DealData.from_deal_auction_string(deal_str, line, 32)
 
-def create_binary(data_it, n, out_dir):
-    X = np.zeros((4 * n, 8, 159), dtype=np.float16)
-    y = np.zeros((4 * n, 8, 40), dtype=np.uint8)
+def create_binary(data_it, n, out_dir, n_steps=8):
+    X = np.zeros((4 * n, n_steps, 2 + 1 + 4 + 32 + 3 * 40), dtype=np.float16)
+    y = np.zeros((4 * n, n_steps, 40), dtype=np.float16)
 
     k = 0
 
     for i, deal_data in enumerate(data_it):
-        if i % 10000 == 0:
+        if i % 100000 == 0:
             print(i)
 
             X_part, y_part = deal_data.get_binary(n_steps=8)

@@ -42,7 +42,7 @@ def create_binary(data_it, n, out_dir, n_steps=8):
     SHAPE = np.zeros((4 * n, n_steps, 12), dtype=np.float16)
 
     for i, (deal_str, auction_str, _) in enumerate(data_it):
-        if i % 10000 == 0:
+        if i % 100000 == 0:
             print(i)
         deal_data = DealData.from_deal_auction_string(deal_str, auction_str, 32)
         x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(n_steps)
@@ -60,8 +60,8 @@ def create_binary(data_it, n, out_dir, n_steps=8):
 
 
 if __name__ == '__main__':
-    n = int(sys.argv[1])
-    infnm = sys.argv[2]
+    n = int(sys.argv[1]) # the number of hands to train on
+    infnm = sys.argv[2] # file where the data is
     outdir = sys.argv[3]
 
     create_binary(load_deals_no_contracts(open(infnm)), n, outdir, n_steps=8)

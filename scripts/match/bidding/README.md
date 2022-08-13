@@ -162,3 +162,10 @@ To add up the total IMPs
 ```
 cat compare.json | jq .imp | awk '{s+=$1} END {print s}'
 ```
+
+To add up the total score
+
+```
+cat results1.json | jq .dd_score | awk '{s+=$1} END {print s}'
+cat compare.json | jq .imp | awk '{s+=$1} END {print s}'
+```
