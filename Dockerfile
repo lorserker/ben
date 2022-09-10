@@ -14,6 +14,8 @@ COPY models ./models
 
 WORKDIR /app/src
 
-EXPOSE 8080
+EXPOSE 8081
+
+ENV PYTHONUNBUFFERED True
 
 CMD ["python", "apiserver.py"]
