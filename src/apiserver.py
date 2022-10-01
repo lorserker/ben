@@ -113,7 +113,6 @@ def play():
                 print("play response", card_resp.card)
                 return json.dumps({"card": card_resp.card.symbol()})
 
-            print("play", play[card_i])
             cardObj = Card.from_symbol(play[card_i])
 
             card_i += 1

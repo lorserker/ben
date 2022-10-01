@@ -1,4 +1,4 @@
-FROM python:3.7-buster
+FROM python:3.7-bullseye
 
 RUN pip install numpy
 RUN pip install scipy
@@ -7,6 +7,8 @@ RUN pip install grpcio-tools
 RUN pip install bottle
 RUN pip install gevent
 
+RUN apt-get update && apt-get install -y libdds-dev
+
 WORKDIR /app
 
 COPY src ./src
@@ -14,8 +16,9 @@ COPY models ./models
 
 WORKDIR /app/src
 
-EXPOSE 8081
+EXPOSE 8080
 
 ENV PYTHONUNBUFFERED True
+ENV DDS_PATH libdds.so
 
 CMD ["python", "apiserver.py"]
