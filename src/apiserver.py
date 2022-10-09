@@ -1,4 +1,5 @@
 import json
+import os
 
 import numpy as np
 from bottle import Bottle, request, run
@@ -11,6 +12,10 @@ from bidding import bidding
 from bots import BotBid, BotLead
 from nn.models import Models
 from objects import BidResp, Card, CardResp
+
+#import os
+
+
 
 MODELS = Models.load('../models')
 
@@ -213,4 +218,4 @@ def play():
     return json.dumps(resp)
 
 
-run(app, host='0.0.0.0', port=8081, server='gevent')
+run(app, host='0.0.0.0', port=int(os.environ.get('PORT', 8080)), server='gevent')
