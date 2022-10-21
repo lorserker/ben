@@ -39,7 +39,7 @@
 - transfers
 - texas
 - smolen
-- cappeletti
+- cappelletti
 
 ## Leads and carding
 
