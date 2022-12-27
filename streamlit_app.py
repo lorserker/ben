@@ -1,5 +1,5 @@
 from cv2 import bitwise_and
-from sklearn.metrics import auc
+# from sklearn.metrics import auc
 import streamlit as st
 
 import sys
