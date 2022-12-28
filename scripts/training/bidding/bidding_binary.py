@@ -35,6 +35,8 @@ def create_binary(data_it, n, out_dir, n_steps=8):
     k = 0
 
     for i, deal_data in enumerate(data_it):
+        if i >= n:
+            break
         if i % 100000 == 0:
             print(i)
 

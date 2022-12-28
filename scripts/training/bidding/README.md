@@ -56,7 +56,7 @@ Let's say your already trained model is stored in the `model` folder and you wan
 ```
 mkdir -p models/bidding-bis
 
-python bidding_nn_continue.py models/bidding/bidding-1000000 models/bidding-bis
+python bidding_nn_continue.py binary/bidding models/bidding/bidding-1000000 models/bidding-bis
 ```
 
 ### Training a bidding-info model
