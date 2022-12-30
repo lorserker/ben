@@ -77,20 +77,23 @@ dd = ddsolver.DDSolver()
 #             W:95.QT75.A82.J43 AJ87632.J96.753. K.K8432.QT6.AT75 QT4.A.KJ94.KQ986
 hands_pbn = ['N:QJ6.K652.J85.T98 873.J97.AT764.Q4 5.T83.KQ93.76532 AKT942.AQ4.2.AKJ']
 current_trick52 = []
-
+tricks = [[0, '', ''], [0, '', ''], [0, '', ''], [0, '', '']]
 for leader_i in range(4):
   for strain_i in range(5):
-    #print(Strain(strain), 'SHCDN'[strain], 'NESW'[leader], Seat(leader))
-    # strain is CDHSN, dds is SHCDN
+    # strain order is important to find the highest winning bid
     dd_solved = dd.solve(strain_i, leader_i, current_trick52, hands_pbn)
-    # card_tricks = ddsolver.expected_tricks(dd_solved)
-    #print ('result:', 'NESW'[leader_i], 'NSHDC'[strain_i], 'SHDC'[r.suit[0]], Rank(r.rank[0]), r.score[0])
-    res = {}
-    for k in dd_solved:
-        res[deck52.decode_card(k)] = dd_solved[k]
+    initial_card = next(iter(dd_solved))
+    initial_card = deck52.decode_card(initial_card)
     res = next(iter(dd_solved.items()))[1][0]
-    print('WNES'[leader_i], 'NSHDC'[strain_i], res)
+    res = 13 - res
+    if res > tricks[leader_i][0]:
+        tricks[leader_i] = [res, 'NSHDC'[strain_i], initial_card]
+    # declarer, win tricks, in suit, initial card
+    # print('SWNE'[leader_i], res, 'NSHDC'[strain_i], initial_card)
 
+for i in range(4):
+    res, suit, initial_card = tuple(tricks[i])
+    print('SWNE'[i], res, suit, initial_card)
 
 #print('hands_pbn', hands_pbn[0])
 #print(strain_i, leader_i, current_trick52)
