@@ -119,6 +119,8 @@ Below is a list of features which aren't implemented in this engine yet, but you
 
 - [Free and Open Source Bridge AI Engine Released](https://bridgewinners.com/article/view/free-and-open-source-bridge-ai-engine-released/)
 - [Bridge AI: How Neural Networks Learn to Bid](https://bridgewinners.com/article/view/bridge-ai-how-neural-networks-learn-to-bid/)
+- [Play with Ben on IntoBridge](https://intobridge.com/news/play-with-robots-on-intobridge/)
+- [Meet Ben, a Bridge AI with a Difference](https://greatbridgelinks.com/meet-ben-a-bridge-ai-with-a-difference/)
 
 ## How to cite
 
