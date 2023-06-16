@@ -5,7 +5,7 @@ It can be used as a robot player, to do analysis, or to develop AI for bridge.
 
 The engine is built using machine learning (neural networks) and [double dummy solvers](https://github.com/dds-bridge/dds) through the python wrapper [python-dds](https://github.com/Afwas/python-dds).
 
-To get a first impression of how the engine plays, please take a look at the [demo](https://lorserker.github.io/ben/demo/demo.html).
+To get a first impression of how the engine plays, please take a look at the [demo](https://lorserker.github.io/ben/demo/demo.html), or watch the bridge streamer Peter Hollands [demo the robot](https://www.youtube.com/watch?v=onG_V7vwxUk&t=150s) on IntoBridge.
 
 For a few examples of how you can use the engine for analysis or development, see the [tutorials](#tutorials).
 
