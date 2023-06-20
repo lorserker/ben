@@ -18,6 +18,7 @@ from nn.models import Models
 from deck52 import decode_card
 from bidding.binary import DealData
 from objects import CardResp, Card
+from claim import Claimer
 
 
 def random_deal():
@@ -177,6 +178,8 @@ class Driver:
             elif decl_i == 3:
                 card_players[2] = self.factory.create_human_cardplayer(self.models.player_models, 2, righty_hand, dummy_hand, contract, is_decl_vuln)
 
+        claimer = Claimer()
+
         player_cards_played = [[] for _ in range(4)]
         shown_out_suits = [set() for _ in range(4)]
 
@@ -205,6 +208,14 @@ class Driver:
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
 
                     continue
+
+                if trick_i > 0 and len(current_trick) == 0 and player_i in (1, 3):
+                    claimer.claim(
+                        strain_i=strain_i,
+                        player_i=player_i,
+                        hands52=[card_player.hand52 for card_player in card_players],
+                        n_samples=20
+                    )
 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
