@@ -23,7 +23,7 @@ class BotBid:
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
-        self.min_candidate_score = 0.15
+        self.min_candidate_score = 0.1
 
         self.model = models.bidder_model
         self.state = models.bidder_model.zero_state
@@ -60,7 +60,7 @@ class BotBid:
                 hand_to_str(hands_np[i,2,:]),
                 hand_to_str(hands_np[i,3,:]),
             ))
-
+ 
         if BotBid.do_rollout(auction, candidates):
             ev_candidates = []
             for candidate in candidates:
@@ -122,7 +122,7 @@ class BotBid:
         hands_np[:,turn_to_bid,:] = self.hand
         for i in range(1, 4):
             hands_np[:, (turn_to_bid + i) % 4, :] = lho_pard_rho[:,i-1,:]
-            
+ 
         return hands_np
 
     def bidding_rollout(self, auction_so_far, candidate_bid, hands_np):

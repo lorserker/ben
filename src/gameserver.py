@@ -24,7 +24,7 @@ async def handler(websocket, path):
     print(f'got websocket connection {websocket}')
 
     rdeal = game.random_deal()
-    
+
     driver = game.Driver(MODELS, human.WebsocketFactory(websocket))
     driver.set_deal(*rdeal)
     driver.human = [False, False, True, False]

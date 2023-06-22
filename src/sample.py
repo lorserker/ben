@@ -196,7 +196,7 @@ def sample_cards_auction(n_samples, n_steps, auction, nesw_i, hand, vuln, bidder
     accepted_samples = lho_pard_rho[min_scores > accept_threshold]
 
     while accepted_samples.shape[0] < 20:
-        accept_threshold -= 0.01
+        accept_threshold *= 0.9
         accepted_samples = lho_pard_rho[min_scores > accept_threshold]
 
     return accepted_samples
@@ -219,8 +219,6 @@ def shuffle_cards_bidding_info(n_samples, binfo, auction, hand, vuln, known_nesw
 
     p_hcp = f_trans_hcp(p_hcp[0, [(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1]])
     p_shp = f_trans_shp(p_shp[0].reshape((3, 4))[[(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1], :])
-
-    # print(p_hcp)
 
     h1_h2 = np.zeros((n_samples, 2, 32), dtype=int)
     cards_received = np.zeros((n_samples, 2), dtype=int)
@@ -499,7 +497,7 @@ def init_rollout_states(trick_i, player_i, card_players, player_cards_played, sh
 
         lead_accept_threshold = 0.1
         while np.sum(lead_scores > lead_accept_threshold) < n_samples:
-            lead_accept_threshold -= 0.01
+            lead_accept_threshold *= 0.9
 
         states = [state[lead_scores > lead_accept_threshold] for state in states]
 
@@ -517,7 +515,7 @@ def init_rollout_states(trick_i, player_i, card_players, player_cards_played, sh
 
         bid_accept_threshold = 0.5
         while np.sum(min_bid_scores > bid_accept_threshold) < 50:
-            bid_accept_threshold -= 0.01
+            bid_accept_threshold *= 0.9
         states = [state[min_bid_scores > bid_accept_threshold] for state in states]
     
     states = [state[:2*n_samples] for state in states]
