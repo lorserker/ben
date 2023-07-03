@@ -140,12 +140,9 @@
                                 })
 
 
-                                // Code to execute if parsing is successful
                             } catch (error) {
-                                //document.querySelector('#info').innerHTML = '<pre><code>' + xhr.responseText + '</code><pre>'
                                 console.log(xhr.responseText)
                                 console.log('An error occurred while parsing the JSON:', error);
-                                // Additional error handling logic if needed
                             }
                         } else {
                             console.error('Request failed with status:', xhr.status);
