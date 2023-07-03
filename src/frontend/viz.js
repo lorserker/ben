@@ -13,6 +13,9 @@ class Deal {
     }
 
     declarer() {
+        if (this.data['contract'] == null) {
+            return "Pass"
+        }
         return 'NESW'.indexOf(this.data['contract'][this.data['contract'].length - 1])
     }
 
@@ -37,8 +40,7 @@ class Deal {
                 this.top().bidding,
                 new Trick(trickWinner, []),
                 this.top().info,
-                new TricksTaken(this.top().tricksTaken.ns + trickWinner % 2, this.top().tricksTaken.ew + (trickWinner + 1) % 2) 
-            ))
+                new TricksTaken(this.top().tricksTaken.ns + (trickWinner+1) % 2, this.top().tricksTaken.ew + trickWinner % 2)             ))
             return
         }
 
@@ -325,6 +327,9 @@ class PlayInfo {
                 }
                 if ("insta_score" in candidate) {
                     html += '<td>iscore=' + Math.round(candidate['insta_score'] * 1000) / 1000 + '</td>'
+                }
+                if ("p_make_contract" in candidate) {
+                    html += '<td>e(make)=' + Math.round(candidate['p_make_contract'] * 1000) / 1000 + '</td>'
                 }
                 html += '</tr>'
             }

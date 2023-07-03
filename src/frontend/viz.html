@@ -7,7 +7,6 @@
   <title>Analyze Deal</title>
 
   <link rel="stylesheet" href="viz.css">
-  <script type="text/javascript" src="log.js"></script> 
   <script type="text/javascript" src="viz.js"></script>  
 
 </head>
@@ -21,82 +20,43 @@
   <div id="north">
       <div class="suit">
           <span>&spades;</span>
-          <span class="card">K</span>
-          <span class="card">T</span>
-          <span class="card">7</span>
-          <span class="card">2</span>
       </div>
       <div class="suit">
           <span class="font-red">&hearts;</span>
-          <span class="card">A</span>
-          <span class="card">J</span>
-          <span class="card">T</span>
-          <span class="card">6</span>
-          <span class="card">4</span>
       </div>
       <div class="suit">
           <span class="font-red">&diams;</span>
-          <span class="card">3</span>
       </div>
       <div class="suit">
           <span>&clubs;</span>
-          <span class="card">Q</span>
-          <span class="card">T</span>
-          <span class="card">2</span>
       </div>
   </div>
   <div id="west">
       <div class="suit">
           <span>&spades;</span>
-          <span class="card">A</span>
-          <span class="card">9</span>
-          <span class="card">8</span>
-          <span class="card">6</span>
-          <span class="card">5</span>
       </div>
       <div class="suit">
           <span class="font-red">&hearts;</span>
-          <span class="card">Q</span>
-          <span class="card">9</span>
       </div>
       <div class="suit">
           <span class="font-red">&diams;</span>
-          <span class="card">8</span>
-          <span class="card">7</span>
-          <span class="card">5</span>
-          <span class="card">4</span>
       </div>
       <div class="suit">
           <span>&clubs;</span>
-          <span class="card">K</span>
-          <span class="card">3</span>
       </div>
   </div>
   <div id="east">
       <div class="suit">
           <span>&spades;</span>
-          <span class="card">Q</span>
-          <span class="card">J</span>
-          <span class="card">4</span>
       </div>
       <div class="suit">
           <span class="font-red">&hearts;</span>
-          <span class="card">8</span>
-          <span class="card">3</span>
-          <span class="card">2</span>
       </div>
       <div class="suit">
           <span class="font-red">&diams;</span>
-          <span class="card">A</span>
-          <span class="card">K</span>
-          <span class="card">T</span>
-          <span class="card">9</span>
-          <span class="card">2</span>
       </div>
       <div class="suit">
           <span>&clubs;</span>
-          <span class="card">7</span>
-          <span class="card">4</span>
       </div>
   </div>
   <div id="south">
@@ -106,24 +66,12 @@
       </div>
       <div class="suit">
           <span class="font-red">&hearts;</span>
-          <span class="card">K</span>
-          <span class="card">7</span>
-          <span class="card">5</span>
       </div>
       <div class="suit">
           <span class="font-red">&diams;</span>
-          <span class="card">Q</span>
-          <span class="card">J</span>
-          <span class="card">6</span>
       </div>
       <div class="suit">
           <span>&clubs;</span>
-          <span class="card">A</span>
-          <span class="card">J</span>
-          <span class="card">9</span>
-          <span class="card">8</span>
-          <span class="card">6</span>
-          <span class="card">5</span>
       </div>
   </div>
 
@@ -155,35 +103,55 @@
 
   <script type="text/javascript">
 
-        const urlParams = new URLSearchParams(location.search)
-        const dealId = urlParams.get("deal")
+            const urlParams = new URLSearchParams(location.search)
+                const dealId = urlParams.get("deal")
 
-        const xhr = new XMLHttpRequest()
-        xhr.open("GET", "/api/deals/" + dealId)
-        xhr.send()
+                const xhr = new XMLHttpRequest()
+                xhr.open("GET", "/api/deals/" + dealId)
+                xhr.send()
+                xhr.onreadystatechange = function (event) {
+                    if (xhr.readyState === 4) {
+                        if (xhr.status === 200) {
+                            try {
+                                const log = JSON.parse(xhr.responseText);
+                                let deal = new Deal(log)
+                                deal.start()
+                                let auction = new Auction(log['dealer'], log['bids'])
+                                auction.render(document.getElementById("auction"))
+                                let dealerVuln = new DealerVuln(log['dealer'], log['vuln_ns'], log['vuln_ew'])
+                                dealerVuln.render(document.getElementById("dealer-vuln"))
 
-        xhr.onreadystatechange = function(event) {
-          const log = JSON.parse(xhr.responseText)
-          
-          let deal = new Deal(log)
-          deal.start()
+                                document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code><pre>'
 
-          document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code><pre>'
+                                document.getElementById("btn-next").addEventListener("click", function () {
+                                    deal.next()
+                                })
 
-          document.getElementById("btn-next").addEventListener("click", function() {
-              deal.next()
-          })
+                                document.getElementById("btn-prev").addEventListener("click", function () {
+                                    deal.prev()
+                                })
 
-          document.getElementById("btn-prev").addEventListener("click", function() {
-              deal.prev()
-          })
+                                document.getElementById("btn-start").addEventListener("click", function () {
+                                    deal.start()
+                                })
 
-          let dealerVuln = new DealerVuln(log['dealer'], log['vuln_ns'], log['vuln_ew'])
-          dealerVuln.render(document.getElementById("dealer-vuln"))
+                                document.getElementById("btn-start-play").addEventListener("click", function () {
+                                    deal.start()
+                                })
 
-          let auction = new Auction(log['dealer'], log['bids'])
-          auction.render(document.getElementById("auction"))
-        }
+
+                                // Code to execute if parsing is successful
+                            } catch (error) {
+                                //document.querySelector('#info').innerHTML = '<pre><code>' + xhr.responseText + '</code><pre>'
+                                console.log(xhr.responseText)
+                                console.log('An error occurred while parsing the JSON:', error);
+                                // Additional error handling logic if needed
+                            }
+                        } else {
+                            console.error('Request failed with status:', xhr.status);
+                        }
+                    }
+                }
 
   </script>
 
