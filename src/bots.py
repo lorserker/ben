@@ -328,7 +328,7 @@ class CardPlayer:
         self.contract = contract
         self.is_decl_vuln = is_decl_vuln
         self.n_tricks_taken = 0
-        self.verbose = True
+        self.verbose = False
         self.level = int(contract[0])
         self.strain_i = bidding.get_strain_i(contract)
 
