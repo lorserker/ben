@@ -84,7 +84,7 @@ class Driver:
         self.contract = bidding.get_contract(auction)
 
         for bid_resp in self.bid_responses:
-            pprint.pprint(bid_resp.to_dict())
+            pprint.pprint(bid_resp.to_dict(), width=120)
 
         if self.contract is None:
             return

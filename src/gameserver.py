@@ -24,6 +24,8 @@ async def handler(websocket, path):
     print(f'got websocket connection {websocket}')
 
     rdeal = game.random_deal()
+    # example of to use a fixed deal
+    #rdeal = ('KJ876.5.97542.J4 2.AQT4.AT8.K8652 AQ9543.KJ76.Q.Q9 T.9832.KJ63.AT73', 'S None')
 
     driver = game.Driver(MODELS, human.WebsocketFactory(websocket))
     driver.set_deal(*rdeal)
