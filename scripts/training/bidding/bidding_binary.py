@@ -6,6 +6,26 @@ import numpy as np
 
 from bidding.binary import DealData
 
+LEVELS = [1, 2, 3, 4, 5, 6, 7]
+
+SUITS = ['C', 'D', 'H', 'S', 'N']
+SUIT_RANK = {suit: i for i, suit in enumerate(SUITS)}
+
+BID2ID = {
+    'PAD_START': 0,
+    'PAD_END': 1,
+    'PASS': 2,
+    'X': 3,
+    'XX': 4,
+}
+
+SUITBID2ID = {bid: (i+5) for (i, bid) in enumerate(
+    ['{}{}'.format(level, suit) for level in LEVELS for suit in SUITS])}
+
+BID2ID.update(SUITBID2ID)
+
+ID2BID = {bid: i for i, bid in BID2ID.items()}
+
 def load_deals(fin):
     deal_str = ''
     deal_data = ''
@@ -24,15 +44,21 @@ def create_binary(data_it, n, out_dir):
     k = 0
 
     for i, deal_data in enumerate(data_it):
-        if i % 10000 == 0:
-            print(i)
+        #if i % 10000 == 0:
+        #    print(i)
 
-            X_part, y_part = deal_data.get_binary(n_steps=8)
+        #print(deal_data)
+        X_part, y_part = deal_data.get_binary(n_steps=8)
+        X[k:k+4] = X_part
+        y[k:k+4] = y_part
+        for j in range(y_part.shape[1]):  # Iterate over the second dimension
+            for i in range(y_part.shape[0]):  # Iterate over the first dimension
+            #print(f"Element ({i}, {j}):")
+                one_hot_array = y_part[i, j, :]
+                index = np.argmax(one_hot_array)
+                print(f" {ID2BID[index]}")
 
-            X[k:k+4] = X_part
-            y[k:k+4] = y_part
-
-            k += 4
+        k += 4
 
     np.save(os.path.join(out_dir, 'X.npy'), X)
     np.save(os.path.join(out_dir, 'y.npy'), y)
