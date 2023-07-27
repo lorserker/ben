@@ -28,13 +28,13 @@ class Leader:
 
         keep_prob = graph.get_tensor_by_name('keep_prob:0')
 
-        def pred_fun(X, B):
+        def pred_fun(x, b):
             result = None
             with self.graph.as_default():
                 feed_dict = {
                     keep_prob: 1.0,
-                    x_in: X,
-                    b_in: B
+                    x_in: x,
+                    b_in: b
                 }
                 result = self.sess.run(lead_softmax, feed_dict=feed_dict)
             return result

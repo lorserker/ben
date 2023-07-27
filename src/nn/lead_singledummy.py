@@ -27,12 +27,12 @@ class LeadSingleDummy:
 
         keep_prob = graph.get_tensor_by_name('keep_prob:0')
 
-        def pred_fun(X):
+        def pred_fun(x):
             result = None
             with self.graph.as_default():
                 feed_dict = {
                     keep_prob: 1.0,
-                    x_in: X
+                    x_in: x
                 }
                 result = self.sess.run(tricks_softmax, feed_dict=feed_dict)
 
