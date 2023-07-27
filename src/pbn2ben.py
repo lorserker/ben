@@ -1,6 +1,4 @@
 import sys
-import datetime
-import deck52
 from collections import deque
 from typing import NamedTuple
 

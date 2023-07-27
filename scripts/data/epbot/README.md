@@ -18,3 +18,5 @@ After that the epbot output is further transformed into the format which is need
 ```
 python epbot_to_bidding_data.py < epbot_output_sample.txt > bidding_data_sample.txt
 ```
+
+In the lastest version of  [Edward Piwowar's Bridge Bidding Analyzer](https://sites.google.com/view/bbaenglish) it is possible just to load a PBN-files with all the baords, that should be bid, and then generate directyl from the program the input files needed for training
