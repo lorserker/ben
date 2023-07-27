@@ -315,7 +315,9 @@ class Driver:
                 card_players[3].n_tricks_taken += 1
 
             print('trick52 {} cards={}. won by {}'.format(trick_i, list(map(decode_card, current_trick52)), trick_winner))
-            if np.any(self.human == 1):
+            print(f"self.human2 {self.human}")
+            print(np.any(np.array(self.human) == 1))
+            if np.any(np.array(self.human) == 1):
                 key = await self.confirmer.confirm()
                 if key == 'q':
                     print(self.deal_str)
@@ -351,7 +353,8 @@ class Driver:
             current_trick.append(card)
             current_trick52.append(card52)
 
-        if np.any(self.human == 1):
+        print(f"self.human1 {self.human}")
+        if np.any(np.array(self.human) == 1):
             await self.confirmer.confirm()
 
         tricks.append(current_trick)
