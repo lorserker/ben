@@ -1,3 +1,3 @@
 bidding model for 2/1 gf
 
-trained on data generated from: https://sites.google.com/view/bbaenglish/bridge-bidding-analyser/description-of-systems/21gf-21-game-force
+trained on data generated from: https://sites.google.com/view/bbaenglish/description-of-systems/21gf-21-game-force

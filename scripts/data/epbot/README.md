@@ -1,7 +1,7 @@
 
-## Bidding data generation with [Edward Piwowar's Bridge Bidding Analyzer](https://sites.google.com/view/bbaenglish/bridge-bidding-analyser)
+## Bidding data generation with [Edward Piwowar's Bridge Bidding Analyzer](https://sites.google.com/view/bbaenglish)
 
-This describes how to use an adaptation of [this example](https://sites.google.com/view/bbaenglish/bridge-bidding-analyser/for-programmers/sample-code-multiple-bots) to generate a lot of bidding data.
+This describes how to use an adaptation of [this example](https://sites.google.com/view/bbaenglish/for-programmers/sample-code-multiple-bots) to generate a lot of bidding data.
 
 The source code is written in Visual Basic, and is contained in the file [Module1.vb](Module1.vb)
 
