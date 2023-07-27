@@ -6,7 +6,7 @@ class BidInfo:
     def __init__(self, model_path):
         self.model_path = model_path
         self.graph = tf.Graph()
-        self.sess = tf.Session(graph=self.graph)
+        self.sess = tf.compat.v1.Session(graph=self.graph)
         self.load_model()
         self.model = self.init_model()
 
@@ -15,7 +15,7 @@ class BidInfo:
         
     def load_model(self):
         with self.graph.as_default():
-            saver = tf.train.import_meta_graph(self.model_path + '.meta')
+            saver = tf.compat.v1.train.import_meta_graph(self.model_path + '.meta')
             saver.restore(self.sess, self.model_path)
         
     def init_model(self):
