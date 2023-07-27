@@ -1,8 +1,8 @@
 import time
-import random
 import pprint
 
 import numpy as np
+import _thread
 
 import binary
 import nn.player as player
@@ -19,12 +19,11 @@ from util import hand_to_str, expected_tricks, p_make_contract
 
 class BotBid:
 
-    def __init__(self, vuln, hand_str, models):
+    def __init__(self, vuln, hand_str, models, score = 0.05):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
-        self.min_candidate_score = 0.1
-
+        self.min_candidate_score = score
         self.model = models.bidder_model
         self.state = models.bidder_model.zero_state
         self.lead_model = models.lead
@@ -50,6 +49,7 @@ class BotBid:
 
     def bid(self, auction):
         candidates = self.get_bid_candidates(auction)
+
         hands_np = self.sample_hands(auction)
 
         samples = []
@@ -60,7 +60,7 @@ class BotBid:
                 hand_to_str(hands_np[i,2,:]),
                 hand_to_str(hands_np[i,3,:]),
             ))
- 
+
         if BotBid.do_rollout(auction, candidates):
             ev_candidates = []
             for candidate in candidates:
@@ -93,15 +93,21 @@ class BotBid:
 
     def get_bid_candidates(self, auction):
         bid_softmax = self.next_bid_np(auction)[0]
+        np.set_printoptions(precision=2, suppress=True)
 
         candidates = []
-        while True:
+        if (self.min_candidate_score == -1):
             bid_i = np.argmax(bid_softmax)
-            if bid_softmax[bid_i] < self.min_candidate_score and len(candidates) > 0:
-                break
             if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                 candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
-            bid_softmax[bid_i] = 0
+        else:    
+            while True:
+                bid_i = np.argmax(bid_softmax)
+                if bid_softmax[bid_i] < self.min_candidate_score and len(candidates) > 0:
+                    break
+                if bidding.can_bid(bidding.ID2BID[bid_i], auction):
+                    candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
+                bid_softmax[bid_i] = 0
 
         return candidates
 
@@ -115,14 +121,15 @@ class BotBid:
     def sample_hands(self, auction_so_far):
         turn_to_bid = len(auction_so_far) % 4
         n_steps = BotBid.get_n_steps_auction(auction_so_far)
-        lho_pard_rho = sample.sample_cards_auction(2048, n_steps, auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model)[:64]
+        lho_pard_rho = sample.sample_cards_auction(
+            2048, n_steps, auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model)[:64]
         n_samples = lho_pard_rho.shape[0]
         
         hands_np = np.zeros((n_samples, 4, 32), dtype=np.int32)
         hands_np[:,turn_to_bid,:] = self.hand
         for i in range(1, 4):
             hands_np[:, (turn_to_bid + i) % 4, :] = lho_pard_rho[:,i-1,:]
- 
+
         return hands_np
 
     def bidding_rollout(self, auction_so_far, candidate_bid, hands_np):
@@ -241,7 +248,7 @@ class BotLead:
             # it's a pip ~> choose a random one
             pips_mask = np.array([0,0,0,0,0,0,0,1,1,1,1,1,1])
             lefty_led_pips = self.hand52.reshape((4, 13))[opening_lead // 8] * pips_mask
-            opening_lead52 = (opening_lead // 8) * 13 + random.choice(np.nonzero(lefty_led_pips)[0])
+            opening_lead52 = (opening_lead // 8) * 13 + np.random.choice(np.nonzero(lefty_led_pips)[0])
         else:
             opening_lead52 = deck52.card32to52(opening_lead)
 
@@ -395,7 +402,7 @@ class CardPlayer:
         for i in range(n_samples):
             hands = [None, None, None, None]
             for j in range(4):
-                random.shuffle(pips[j])
+                np.random.shuffle(pips[j])
             pip_i = [0, 0, 0, 0]
 
             hands[self.player_i] = deck52.hand_to_str(self.hand52)
@@ -504,7 +511,7 @@ class CardPlayer:
                 expected_score=e_score
             ))
 
-        candidate_cards = sorted(candidate_cards, key=lambda c: (c.expected_score, c.insta_score + random.random() / 10000), reverse=True)
+        candidate_cards = sorted(candidate_cards, key=lambda c: (c.expected_score, c.insta_score + np.random.random() / 10000), reverse=True)
 
         samples = []
         for i in range(min(20, players_states[0].shape[0])):
@@ -522,6 +529,6 @@ class CardPlayer:
         )
 
         if self.verbose:
-            pprint.pprint(card_resp.to_dict())
+            pprint.pprint(card_resp.to_dict(), width=120)
 
         return card_resp

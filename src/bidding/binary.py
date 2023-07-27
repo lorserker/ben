@@ -21,6 +21,10 @@ class DealData(object):
         self.hcp = list(map(lambda point_count: (np.array([[point_count[0]]]) - 10) / 4, map(get_hcp, hands)))
         self.auction = auction
 
+    def __str__(self):
+        return f"DealData: n_cards={self.n_cards}, dealer={self.dealer}, vuln_ns={self.vuln_ns}, vuln_ew={self.vuln_ew}, hands={self.hands}, shapes={self.shapes}, hcp={self.hcp}, auction={self.auction}"
+
+
     @classmethod
     def from_deal_auction_string(cls, deal_str, auction_str, n_cards=52):
         dealer = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
@@ -166,7 +170,8 @@ def parse_hand_f(n_cards):
     return f
 
 def get_shape(hand):
-    return np.sum(hand.reshape((hand.shape[0], 4, -1)), axis=2)
+    x = np.sum(hand.reshape((hand.shape[0], 4, -1)), axis=2)
+    return x
 
 def get_hcp(hand):
     x = hand.reshape((hand.shape[0], 4, -1))
@@ -181,7 +186,9 @@ def get_hcp(hand):
 
     points = 4 * A * x + 3 * K * x + 2 * Q * x + J * x
 
-    return np.sum(points, axis=(1,2))
+    _sum = np.sum(points, axis=(1, 2))
+
+    return _sum
 
 def get_bid_ids(auction, player_i, n_steps):
     i = player_i

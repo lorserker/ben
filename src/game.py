@@ -50,9 +50,12 @@ class Driver:
         self.confirmer = factory.create_confirmer()
         self.channel = factory.create_channel()
 
+        print("Setting seed")
+        np.random.seed(42)
+
         print('confirmer', self.confirmer)
 
-        self.human = [False, False, True, False]
+        self.human = [0.1, 0.1, 1, 0.1]
 
     def set_deal(self, deal_str, auction_str):
         self.deal_str = deal_str
@@ -124,7 +127,7 @@ class Driver:
         print('opening lead:', decode_card(opening_lead52))
 
         for card_resp in self.card_responses:
-            pprint.pprint(card_resp.to_dict())
+            pprint.pprint(card_resp.to_dict(), width=120)
         
         await self.play(auction, opening_lead52)
 
@@ -166,7 +169,7 @@ class Driver:
             AsyncCardPlayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
         ]
 
-        if self.human[2]:
+        if self.human[2] == 1:
             if decl_i == 2:
                 card_players[3] = self.factory.create_human_cardplayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
                 card_players[1] = self.factory.create_human_cardplayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
@@ -312,7 +315,7 @@ class Driver:
                 card_players[3].n_tricks_taken += 1
 
             print('trick52 {} cards={}. won by {}'.format(trick_i, list(map(decode_card, current_trick52)), trick_winner))
-            if any(self.human):
+            if np.any(self.human == 1):
                 key = await self.confirmer.confirm()
                 if key == 'q':
                     print(self.deal_str)
@@ -348,7 +351,7 @@ class Driver:
             current_trick.append(card)
             current_trick52.append(card52)
 
-        if any(self.human):
+        if np.any(self.human == 1):
             await self.confirmer.confirm()
 
         tricks.append(current_trick)
@@ -377,7 +380,7 @@ class Driver:
 
         await asyncio.sleep(0.01)
 
-        if self.human[(decl_i + 1) % 4]:
+        if self.human[(decl_i + 1) % 4] == 1:
             card_resp = await self.factory.create_human_leader().async_lead()
         else:
             bot_lead = AsyncBotLead(
@@ -403,11 +406,11 @@ class Driver:
         vuln = [self.vuln_ns, self.vuln_ew]
 
         players = []
-        for i, is_human in enumerate(self.human):
-            bot = AsyncBotBid(vuln, hands_str[i], self.models)
-            if is_human:
+        for i, level in enumerate(self.human):
+            if level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
+                bot = AsyncBotBid(vuln, hands_str[i], self.models, level)
                 players.append(bot)
 
         auction = ['PAD_START'] * self.dealer_i
@@ -445,7 +448,7 @@ async def main():
         deal_str, auction_str = next(deal_source)
         driver.set_deal(deal_str, auction_str)
 
-        driver.human = [False, False, False, False]
+        driver.human = [0.1, 0.1, 0.1, 0.1]
         await driver.run()
 
         with shelve.open('gamedb') as db:
