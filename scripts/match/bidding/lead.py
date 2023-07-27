@@ -4,6 +4,7 @@ sys.path.append('../../../src')
 import json
 
 import conf
+import argparse
 
 from nn.models import Models
 from bots import BotLead
@@ -12,10 +13,6 @@ from auction import VULN
 
 
 SEATS = ['north', 'east', 'south', 'west']
-
-def get_models():
-    models = Models.from_conf(conf.load('../../../default.conf'))
-    return models
 
 def lead(obj, models):
     if obj['contract'] is None:
@@ -39,7 +36,14 @@ def lead(obj, models):
 
 if __name__ == '__main__':
 
-    models = get_models()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--bidder', type=str)
+
+    args = parser.parse_args()
+    
+    sys.stderr.write(f'NS = {args.bidder}\n')
+    
+    models = Models.from_conf(conf.load(args.bidder))
 
     for line in sys.stdin:
         obj = json.loads(line)
