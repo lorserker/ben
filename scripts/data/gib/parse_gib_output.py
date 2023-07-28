@@ -75,7 +75,7 @@ def combine_data(sets_glob_pattern, gib_folder):
 	for fnm in sorted(glob.glob(sets_glob_pattern)):
 		sys.stderr.write(fnm + '\n')
 		
-		gib_fnm = os.path.join(gib_folder, 'output.txt')
+		gib_fnm = os.path.join(gib_folder, 'output.gib')
 		board_it = board_iterator(open(fnm))
 		gib_it = gib_iterator(open(gib_fnm))
 		
@@ -91,4 +91,4 @@ def combine_data(sets_glob_pattern, gib_folder):
 			print(json.dumps(gib['explanations']))
 
 if __name__ == '__main__':
-	combine_data('input.txt', './')
+	combine_data('input.gib', './')

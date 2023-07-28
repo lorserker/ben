@@ -99,7 +99,7 @@ random.seed(0)
 
 matched_hands = {}
 
-for _ in range(10000000):
+for i in range(10000000):
     deck = create_deck()
     shuffle(deck)
 
@@ -118,8 +118,13 @@ for _ in range(10000000):
     card_count_string = format_card_count(count_cards_in_hand(north))
 
     key = f"{sorted_hcp:02}-{card_count_string}"
-    matched_hands[key] = {"north": north,
-                          "east": east, "south": south, "west": west}
+    matched_hands[key] = {"north": north, "east": east, "south": south, "west": west}
+    
+    if i % 1000 == 0:
+        print(f"Boards generated {i}. Boards selected: {len(matched_hands)}")
+    if len(matched_hands) == 10000:
+        print(f"Boards generated {i}. Boards selected: {len(matched_hands)}")
+        break
 
 matched_hands_array = list(matched_hands.items())
 matched_hands_array.sort(key=lambda x: x[0], reverse=True)

@@ -28,7 +28,7 @@ def to_training(gib_iter):
     for i, deal in enumerate(gib_iter):
         if i % 10000 == 0:
             sys.stderr.write('%d\n' % i)
-        auction =  deal['dealer_vuln'].replace("-","None").replace("NS","N-S").replace("EW","E-W").replace("ALL","Both") + " " + deal['auction']
+        auction =  deal['dealer_vuln'].replace("-","None").replace("NS","N-S").replace("EW","E-W").replace("ALL","Both") + " " + deal['auction'].replace("."," ")
 
         print('%s %s %s %s' % (deal['N'], deal['E'], deal['S'], deal['W']))
         print(auction)
