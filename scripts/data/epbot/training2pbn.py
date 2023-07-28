@@ -28,17 +28,17 @@ def pbn_generator(boards):
         print('[Declarer "?"]')
         print('[Result "?"]\n')
 
-    for i in range(len(boards)):
-        parts = boards[i].split()
+    for i in range(len(boards) // 2):
+        deal_str = boards[i*2]
+        parts = boards[i*2+1].split()
         dealer_str = parts[0]
         vulnerable_str = parts[1].replace("-","")
-        deal_str = " ".join(parts[2:])
         print_deal(i + 1, dealer_str, vulnerable_str, f'N:{deal_str}')
         
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: python ben2pbn.py input.ben")
+        print("Usage: python training2pbn.py training.txt")
         sys.exit(1)
     
     input_file = sys.argv[1]
