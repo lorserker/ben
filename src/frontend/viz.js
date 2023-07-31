@@ -338,7 +338,7 @@ class PlayInfo {
         }
 
         if ("samples" in this.data) {
-            html += '<h3>Samples</h3>'
+            html += '<h3>Samples (' + this.data['samples'].length + ')</h3>'
             for (var i = 0; i < this.data['samples'].length; i++) {
                 html += '<div>' + this.data['samples'][i] + '</div>'
             }
