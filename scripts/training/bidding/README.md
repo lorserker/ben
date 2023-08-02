@@ -37,12 +37,17 @@ mkdir -p binary/bidding models/bidding
 python bidding_binary.py 588735 bidding_data.txt binary/bidding
 ```
 
-The above command will create two new files into the `binary/bidding` folder: `X.npy` and `y.npy`. `X.npy` contains the inputs to the neural network and `y.npy` contains the expected outputs. Both are stored in numpy array format.
+The above command will create two new files into the `binary/bidding` folder: `x.npy` and `y.npy`. `x.npy` contains the inputs to the neural network and `y.npy` contains the expected outputs. Both are stored in numpy array format.
 
 Then, run the trainig script. This will take several hours to complete, but it will save snapshots of the model as it progresses. If you have a GPU, the training will run faster, but not much faster, because GPUs are not so well suited for the type of NN used.
 
 ```
 python bidding_nn.py binary/bidding models/bidding
+```
+if this is failing you might have to install 
+
+```
+conda install tensorflow-estimator=1.15
 ```
 
 When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained.
