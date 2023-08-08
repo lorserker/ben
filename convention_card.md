@@ -7,21 +7,17 @@
 ### NT openings
 
 1NT = 15-17
-
 2NT = 20-21
-
 3NT = 24+
 
 ### Minor openings
 
 1C is 3+
-
 1D is 4+ (except if 4=4=3=2)
 
 ### Two-level opening
 
 2C forcing
-
 2D/2H/2S = weak two
 
 ## Conventions
@@ -40,6 +36,10 @@
 - texas
 - smolen
 - cappelletti
+- Soloway jump shift
+- reverse drury
+
+https://www.bridgebase.com/doc/gib_system_notes.php
 
 ## Leads and carding
 
