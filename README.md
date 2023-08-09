@@ -17,7 +17,7 @@ If you like the software, please consider making a donation to support the devel
 
 ### Installation
 
-The engine runs on Python 3.7, with the neural networks using tensorflow 1.15
+The engine runs on Python 3.9, with the neural networks using tensorflow 2.0
 
 The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html). 
 
