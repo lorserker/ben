@@ -26,7 +26,7 @@ DDS_LIB = 'dds.dll' if sys.platform == 'win32' else 'libdds.so'
 DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)
 
 dds = cdll.LoadLibrary(DDS_PATH)
-sys.stderr.write('Loaded lib {0}\n'.format(dds))
+print(f"Loaded lib { os.path.basename(DDS_PATH)}")
 
 DDS_VERSION = 20700    
 
