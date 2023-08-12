@@ -11,7 +11,7 @@ CARD_INDEX_LOOKUP = dict(
 
 class DealData(object):
 
-    def __init__(self, dealer, vuln_ns, vuln_ew, hands, auction, n_cards=52):
+    def __init__(self, dealer, vuln_ns, vuln_ew, hands, auction, ns, ew, n_cards=52):
         self.n_cards = n_cards
         self.dealer = dealer
         self.vuln_ns = vuln_ns
@@ -20,13 +20,15 @@ class DealData(object):
         self.shapes = list(map(lambda shape: (shape - 3.25)/1.75, map(get_shape, hands)))
         self.hcp = list(map(lambda point_count: (np.array([[point_count[0]]]) - 10) / 4, map(get_hcp, hands)))
         self.auction = auction
+        self.ns = ns
+        self.ew = ew
 
     def __str__(self):
-        return f"DealData: n_cards={self.n_cards}, dealer={self.dealer}, vuln_ns={self.vuln_ns}, vuln_ew={self.vuln_ew}, hands={self.hands}, shapes={self.shapes}, hcp={self.hcp}, auction={self.auction}"
+        return f"DealData: n_cards={self.n_cards}, NS={self.ns}, EW={self.ew}, dealer={self.dealer}, vuln_ns={self.vuln_ns}, vuln_ew={self.vuln_ew}, hands={self.hands}, shapes={self.shapes}, hcp={self.hcp}, auction={self.auction}"
 
 
     @classmethod
-    def from_deal_auction_string(cls, deal_str, auction_str, n_cards=52):
+    def from_deal_auction_string(cls, deal_str, auction_str, ns, ew, n_cards=52):
         dealer = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
         vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
         hands = list(map(parse_hand_f(n_cards), deal_str.strip().split()))
@@ -35,13 +37,14 @@ class DealData(object):
         vuln_ns, vuln_ew = vuln[auction_parts[1]]
         auction = (['PAD_START'] * dealer_ix) + auction_parts[2:]
 
-        return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, n_cards)
+        return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, ns, ew, n_cards)
 
     def reset_auction(self):
         self.auction = [bid for bid in self.auction if bid == 'PAD_START']
 
-    def get_binary(self, n_steps=8):
-        X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+    def get_binary(self, ns, ew, n_steps=8):
+
+        X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
         y = np.zeros((4, n_steps, 40), dtype=np.float16)
 
         padded_auction = self.auction + (['PAD_END'] * 4 * n_steps)
@@ -69,7 +72,11 @@ class DealData(object):
             rho_bid = padded_auction[i - 1] if i - 1 >= 0 else 'PAD_START'
             target_bid = padded_auction[i]
 
+            # Create an array with [ns, ew] only if neither ns nor ew is -1
+            ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
+
             ftrs = np.concatenate((
+                ns_ew_array,
                 vuln,
                 hcp,
                 shape,
@@ -90,8 +97,8 @@ class DealData(object):
 
         return X, y
     
-    def get_binary_hcp_shape(self, n_steps=8):
-        X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+    def get_binary_hcp_shape(self, ns, ew,  n_steps=8):
+        X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
         y = np.zeros((4, n_steps, 40), dtype=np.float16)
         HCP = np.zeros((4, n_steps, 3), dtype=np.float16)
         SHAPE = np.zeros((4, n_steps, 12), dtype=np.float16)
@@ -121,7 +128,11 @@ class DealData(object):
             rho_bid = padded_auction[i - 1] if i - 1 >= 0 else 'PAD_START'
             target_bid = padded_auction[i]
 
+            # Create an array with [ns, ew] only if neither ns nor ew is -1
+            ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
+
             ftrs = np.concatenate((
+                ns_ew_array,
                 vuln,
                 hcp,
                 shape,

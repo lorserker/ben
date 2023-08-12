@@ -12,6 +12,7 @@ conda install pandas
 pip install tqdm
 
 pip install websockets
+# Had to install : conda install -c conda-forge websockets
 
 pip install tensorflow==1.15
 pip install grpcio-tools

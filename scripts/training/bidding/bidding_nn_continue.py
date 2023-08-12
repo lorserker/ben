@@ -16,7 +16,7 @@ start_iteration = int(checkpoint_model.split('-')[-1])
 n_iterations = 1000000
 display_step = 10000
 
-X_train = np.load('X.npy')
+X_train = np.load('x.npy')
 y_train = np.load('y.npy')
 
 n_examples = y_train.shape[0]

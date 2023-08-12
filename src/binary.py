@@ -151,12 +151,13 @@ def get_hcp(hand):
     return np.sum(points, axis=(1,2))
 
 
-def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln):
+def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
     assert(len(hand.shape) == 2)
     assert(hand.shape[1] == 32)
 
     n_samples = hand.shape[0]
 
+    # Do not add 2 cells for biddingsystem
     X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + 3*40), dtype=np.float16)
 
     vuln_us_them = np.array(
@@ -196,10 +197,15 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln):
         step_i += 1
         bid_i += 4
 
-    return X
+    #Insert bidding system, -1 means no system
+    if (ns == -1):
+        return X
+    padding_width = ((0, 0),(0, 0), (2, 0))
+    X_padded = np.pad(X, padding_width, mode='constant', constant_values=(ns, ew))
+    return X_padded
 
 
-def get_lead_binary(auction, hand, binfo, vuln):
+def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
     contract = bidding.get_contract(auction)
 
     level = int(contract[0])
@@ -225,7 +231,7 @@ def get_lead_binary(auction, hand, binfo, vuln):
 
     b = np.zeros(15)
     n_steps = 1 + len(auction) // 4
-    A = get_auction_binary(n_steps, auction, lead_index, hand, vuln)
+    A = get_auction_binary(n_steps, auction, lead_index, hand, vuln, ns, ew)
 
     p_hcp, p_shp = binfo.model(A)
 

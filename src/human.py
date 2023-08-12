@@ -34,7 +34,7 @@ class ConfirmSocket:
         self.socket = socket
 
     async def confirm(self):
-        print('socket confirm')
+        # print('socket confirm')
         
         await self.socket.send(json.dumps({'message': 'trick_confirm'}))
 

@@ -22,13 +22,13 @@ VULN = {
 }
 
 
-def bid_hand(hands, dealer, vuln, models_ns_ew, do_search, nntrust):
+def bid_hand(hands, dealer, vuln, models_ns_ew, ns, ew, do_search, nntrust):
 
     if (nntrust==None) :
         nntrust = 0.1
     dealer_i = 'NESW'.index(dealer)
     
-    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], nntrust) for i, hand in enumerate(hands)]
+    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], ns, ew, nntrust) for i, hand in enumerate(hands)]
 
     auction = ['PAD_START'] * dealer_i
 
@@ -87,8 +87,10 @@ if __name__ == '__main__':
         vuln = parts[1]
         hands = parts[2:]
 
+        ns = 0
+        ew = 0
         #sys.stderr.write(f'Bidding board {index + 1}\n')
-        auction = bid_hand(hands, dealer, vuln, [models_ns, models_ew], args.search, args.nntrust)
+        auction = bid_hand(hands, dealer, vuln, [models_ns, models_ew], ns, ew, args.search, args.nntrust)
 
         record = {
             'board' : index + 1,

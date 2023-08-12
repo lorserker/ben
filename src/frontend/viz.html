@@ -118,7 +118,6 @@
                             try {
                                 const log = JSON.parse(xhr.responseText);
                                 let deal = new Deal(log)
-                                console.log(deal)
                                 deal.start()
                                 let auction = new Auction(log['dealer'], log['bids'])
                                 auction.render(document.getElementById("auction"))
@@ -144,7 +143,6 @@
                                     '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + '\')' +
                                     '&P=5"> Play it again </a><br>';
 
-                                console.log(replayContent)
                                 document.querySelector('#replay').innerHTML = replayContent;
 
                                 document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code><pre>'
