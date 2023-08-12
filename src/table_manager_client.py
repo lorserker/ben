@@ -543,6 +543,7 @@ async def main():
 
     while client.is_connected:
         await client.run()
+        # The deal just played should be saved for later review
 
 
 if __name__ == '__main__':
