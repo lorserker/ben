@@ -81,13 +81,28 @@
         const urlParams = new URLSearchParams(location.search)
         const dealId = urlParams.get("deal")
         const playerId = urlParams.get("P")
+        var queryString = ""
         var ws
-
         if (dealId) {
-            ws = new WebSocket("ws://" + location.hostname + ":4443/?deal="+dealId+"&P="+playerId )
+            queryString = "?deal=" + dealId + "&P=" + playerId
+        }
+        try {
 
-        } else {
-            ws = new WebSocket("ws://" + location.hostname + ":4443/")
+            ws = new WebSocket("ws://" + location.hostname + ":4443/" + queryString)
+
+            ws.addEventListener("error", function (event) {
+                console.log("WebSocket error:", event);
+                document.querySelector('#auctionstr').innerHTML += 'No connection to server <br>'
+            });
+
+            ws.addEventListener("close", function (event) {
+                console.log("WebSocket closed:", event);
+                document.querySelector('#auctionstr').innerHTML += 'Connection to server closed <br>'
+            });
+
+        } catch(error) {
+            console.log("WebSocket error:", error);
+            alert("Please start server", error); // Notify the user about the connection failure            
         }
 
         var deal = undefined
@@ -176,20 +191,13 @@
 
         document.querySelector('body').addEventListener('click', function() {
             console.log('click')
-            if (deal.expectTrickConfirm) {
+            if (deal?.expectTrickConfirm) {
                 getTrickCardSlots().forEach(el => el.textContent = "")
                 ws.send('y')
                 deal.expectTrickConfirm = false
             }
         })
 
-        ws.onerror = function(event) {
-            document.querySelector('#auctionstr').textContent = '[ERROR] ' + JSON.stringify(event)
-        }
-
-        ws.onclose = function(event) {
-            document.querySelector('#auctionstr').textContent = '[CLOSED] ' + JSON.stringify(event)
-        }
 
         ws.onmessage = function (event) {
             console.log('received message')
@@ -213,7 +221,7 @@
                 }
 
                 setTurn(deal.dealer)
-
+                console.log(deal)
                 deal.hand.render(document.querySelector('#south'))
                 deal.renderAuction(document.querySelector('#east'))
                 deal.renderBiddingBox(document.querySelector('#north'))

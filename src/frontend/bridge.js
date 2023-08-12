@@ -32,8 +32,8 @@ class Hand {
 
         this.suits = [[], [], [], []]
 
-        for (var i = 0; i < cards.length; i++) {
-            this.suits[cards[i].suit].push(cards[i])
+        for (const element of cards) {
+            this.suits[element.suit].push(element)
         }
     }
 
@@ -55,9 +55,9 @@ class Hand {
     }
 
     hasCard(card) {
-        var found = false;
-        for (var i = 0; i < this.cards.length; i++) {
-            if (this.cards[i].symbol == card.symbol) {
+        let found = false;
+        for (const element of this.cards) {
+            if (element.symbol == card.symbol) {
                 found = true
                 break
             }
@@ -67,10 +67,10 @@ class Hand {
 
     // returns a new hand with the played card removed
     play(card) {
-        var remainingCards = []
-        for (var i = 0; i < this.cards.length; i++) {
-            if (card.symbol != this.cards[i].symbol) {
-                remainingCards.push(this.cards[i])
+        let remainingCards = []
+        for (const element of this.cards) {
+            if (card.symbol != element.symbol) {
+                remainingCards.push(element)
             }
         }
         return new Hand(remainingCards)
@@ -88,7 +88,7 @@ class Hand {
     renderEW(element) {
         element.innerHTML = ""
 
-        var html = '<div>'
+        let html = '<div>'
         html += this.suitHtml("&spades;", this.suits[0].map(c => c.rank), false)
         html += this.suitHtml("&hearts;", this.suits[1].map(c => c.rank), true)
         html += this.suitHtml("&diams;", this.suits[2].map(c => c.rank), true)
@@ -99,7 +99,7 @@ class Hand {
     }
 
     suitHtml(symbol, cards, red) {
-        var html = '<div class="suit">'
+        let html = '<div class="suit">'
         if (red) {
             html += '<span class="red">'
         } else {
@@ -108,8 +108,8 @@ class Hand {
         html += symbol
         html += '</span>\n' // end of symbol
 
-        for (var i = 0; i < cards.length; i++) {
-            html = html + '<span class="card-ew">' + cards[i] + '</span>\n'
+        for (const element of cards) {
+            html = html + '<span class="card-ew">' + element + '</span>\n'
         }
 
         html += '</div>'
@@ -124,9 +124,9 @@ function parseHand(pbnString) {
     let cards = []
     let suitSymbols = 'SHDC'
 
-    for (var i = 0; i < suits.length; i++) {
-        for (var j = 0; j < suits[i].length; j++) {
-            cards.push(new Card(suitSymbols[i] + suits[i][j]))
+    for (let i = 0; i < suits.length; i++) {
+        for (const element of suits[i]) {
+            cards.push(new Card(suitSymbols[i] + element))
         }
     }
 
@@ -177,21 +177,21 @@ class Trick {
         if (this.isComplete()) {
             let trump = strain - 1
 
-            var trumpPlayed = false
+            let trumpPlayed = false
             if (trump >= 0) {
-                for (var i = 0; i < this.cards.length; i++) {
-                    if (this.cards[i].suit == trump) {
+                for (const element of this.cards) {
+                    if (element.suit == trump) {
                         trumpPlayed = true
                         break
                     }
                 }
             }
 
-            var bestValue = 100
-            var bestIndex = -1
+            let bestValue = 100
+            let bestIndex = -1
 
             if (trumpPlayed) {
-                for (var i = 0; i < this.cards.length; i++) {
+                for (let i = 0; i < this.cards.length; i++) {
                     if (this.cards[i].suit != trump) {
                         continue
                     }
@@ -202,7 +202,7 @@ class Trick {
                 }
             } else {
                 let ledSuit = this.cards[0].suit
-                for (var i = 0; i < this.cards.length; i++) {
+                for (let i = 0; i < this.cards.length; i++) {
                     if (this.cards[i].suit != ledSuit) {
                         continue
                     }
@@ -220,7 +220,7 @@ class Trick {
     render(slotElements) {
         slotElements.forEach(el => el.textContent = '')
 
-        for (var i = this.leadPlayer, j = 0; j < this.cards.length; i = (i + 1) % 4, j++) {
+        for (let i = this.leadPlayer, j = 0; j < this.cards.length; i = (i + 1) % 4, j++) {
             this.cards[j].render(slotElements[i])
         }
     }
@@ -259,7 +259,7 @@ class Deal {
     renderAuction(element) {
         element.textContent = ''
 
-        var html = ''
+        let html = ''
         html += '<div>'
         html += '<div id="auction-container"></div>'
         html += '<div class="tricks"></div>'
@@ -279,11 +279,11 @@ class Deal {
 
         let auct = new Auction(this.dealer, this.vuln, this.auction)
 
-        var html = ''
+        let html = ''
         html += '<div id="bidding-box">'
         html += '<div id="bidding-levels">'
         let minBiddableLevel = auct.getMinimumBiddableLevel()
-        for (var i = 1; i <= 7; i++) {
+        for (let i = 1; i <= 7; i++) {
             if (i < minBiddableLevel) {
                 html += '<div class="invalid">' + i + '</div>'
             } else {
@@ -318,10 +318,6 @@ class Deal {
 
         element.innerHTML = html
     }
-
-    selectBiddingLevel(level) {
-
-    }
 }
 
 
@@ -332,25 +328,25 @@ class Auction {
         this.vuln = vuln
         this.bids = []
 
-        for (var i = 0; i < bids.length; i++) {
-            if (bids[i] != 'PAD_START') {
-                this.bids.push(bids[i])
+        for (const element of bids) {
+            if (element != 'PAD_START') {
+                this.bids.push(element)
             }
         }
 
         let nPad = [1, 2, 3, 0]
         this.paddedBids = []
-        for (var i = 0; i < nPad[dealer]; i++) {
+        for (let i = 0; i < nPad[dealer]; i++) {
             this.paddedBids.push("")
         }
 
-        for (var i = 0; i < this.bids.length; i++) {
-            this.paddedBids.push(this.bids[i])
+        for (const element of this.bids) {
+            this.paddedBids.push(element)
         }
     }
 
     getMinimumBiddableLevel() {
-        for (var i = this.bids.length - 1; i >= 0; i--) {
+        for (let i = this.bids.length - 1; i >= 0; i--) {
             let level = parseInt(this.bids[i][0])
             if (isNaN(level)) {
                 continue
@@ -364,7 +360,7 @@ class Auction {
     }
 
     getMinBiddableSuitForLevel(level) {
-        for (var i = this.bids.length - 1; i >= 0; i--) {
+        for (let i = this.bids.length - 1; i >= 0; i--) {
             let lastBidLevel = parseInt(this.bids[i][0])
             if (isNaN(lastBidLevel)) {
                 continue
@@ -390,7 +386,7 @@ class Auction {
     render(element) {
         element.innerHTML = ""
 
-        var html = '<div id="auction">'
+        let html = '<div id="auction">'
         html += '<table>'
         html += '<thead>'
         if (this.vuln[1]) {
@@ -416,7 +412,7 @@ class Auction {
         html += '</thead>'
         html += '<tbody>'
 
-        for (var i = 0; i < this.paddedBids.length; i++) {
+        for (let i = 0; i < this.paddedBids.length; i++) {
             if (i % 4 == 0) {
                 html += '<tr>'
             }

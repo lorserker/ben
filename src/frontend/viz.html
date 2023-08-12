@@ -97,6 +97,9 @@
 
   </div>
 
+  <div id="replay">
+  </div>
+
   <div><a href="/home">Home</a></div>
 
   <div id="info"></div>
@@ -115,11 +118,34 @@
                             try {
                                 const log = JSON.parse(xhr.responseText);
                                 let deal = new Deal(log)
+                                console.log(deal)
                                 deal.start()
                                 let auction = new Auction(log['dealer'], log['bids'])
                                 auction.render(document.getElementById("auction"))
                                 let dealerVuln = new DealerVuln(log['dealer'], log['vuln_ns'], log['vuln_ew'])
                                 dealerVuln.render(document.getElementById("dealer-vuln"))
+                                let vul = 'None'
+                                if (deal.data.vuln_ns) {
+                                    if (deal.data.vuln_ew) {
+                                        vul = "Both";
+                                    } else {
+                                        vul = 'N-S';
+                                    }
+                                } else {
+                                    if (deal.data.vuln_ew) {
+                                        vul = "E-W";
+                                    } else {
+                                        vul = 'None';
+                                    }
+                                }
+
+                                let dealer = 'NESW'.charAt(deal.data.dealer)
+                                const replayContent = '<a href="http://127.0.0.1:8080/app/bridge.html?deal=' +
+                                    '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + '\')' +
+                                    '&P=5"> Play it again </a><br>';
+
+                                console.log(replayContent)
+                                document.querySelector('#replay').innerHTML = replayContent;
 
                                 document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code><pre>'
 
