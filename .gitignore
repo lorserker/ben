@@ -2,3 +2,12 @@
 __pycache__
 src/gamedb.*
 
+scripts/match/bidding/0.1
+scripts/match/bidding/0.2
+scripts/match/bidding/0.05
+scripts/match/bidding/0.1vs0.2
+scripts/match/bidding/0.1vs0.05
+scripts/match/bidding/0.2vs0.05
+scripts/match/bidding/training/html
+scripts/training/bidding/binary
+.vscode/settings.json

@@ -1,14 +1,14 @@
 import numpy as np
-import sample
 import bots
 import deck52
 
 from bidding import bidding
+from sample import Sample
 from objects import BidResp, Card, CardResp
 
 class CardByCard:
 
-    def __init__(self, dealer, vuln, hands, auction, play, models):
+    def __init__(self, dealer, vuln, hands, auction, play, models, sampler):
         self.dealer_i = {'N': 0, 'E': 1, 'S': 2, 'W': 3}[dealer]
         self.vuln = vuln
         self.hands = hands
@@ -19,6 +19,7 @@ class CardByCard:
         self.card_responses = []
         self.cards = {}
         self.models = models
+        self.sampler = sampler
 
     def analyze(self):
         print('analyzing the bidding')
@@ -65,7 +66,7 @@ class CardByCard:
 
         print(self.play[0])
 
-        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models)
+        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, -1, -1, self.sampler)
 
         card_resp = bot_lead.lead(self.padded_auction)
         card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples)
@@ -119,7 +120,7 @@ class CardByCard:
                 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states = sample.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 200, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models)
+                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 200, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models, self.ns, self.ew)
 
                 card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
 

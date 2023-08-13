@@ -13,3 +13,16 @@ bridge.exe a < input.txt > output.txt
 The file [input.txt](input.txt) contains the hands we want the bot to play (it's convenient to put several deals into the file so it can play for a while)
 
 The file [output.txt](output.txt) will be created by the program and contains data about the bidding and about the play.
+
+When the play has finished execute `parse_gib_output.py` to merge [input.txt] and [output.txt] into [gib.txt]
+
+```
+python parse_gib_output.py > gib.txt
+```
+
+And finally use `gib_to_training.py` to create the file [training.txt] used for training
+
+
+```
+python gib_to_training.py <gib.txt >training.txt
+```

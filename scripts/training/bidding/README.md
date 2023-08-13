@@ -34,18 +34,29 @@ Run the script to transform the data into binary format. (the first argument is 
 ```
 mkdir -p binary/bidding models/bidding
 
-python bidding_binary.py 588735 bidding_data.txt binary/bidding
+python bidding_binary.py bidding_data.txt binary/bidding
 ```
+Here there are 2 optional parameters as you can specify system used for both NS and EW.
+Specifying -1 for both will create a neural network without any information about bidding system.
 
-The above command will create two new files into the `binary/bidding` folder: `X.npy` and `y.npy`. `X.npy` contains the inputs to the neural network and `y.npy` contains the expected outputs. Both are stored in numpy array format.
+0 = 2/1 (GIB)
+1 = Sayc
+2 =
+
+The above command will create two new files into the `binary/bidding` folder: `x.npy` and `y.npy`. `x.npy` contains the inputs to the neural network and `y.npy` contains the expected outputs. Both are stored in numpy array format.
 
 Then, run the trainig script. This will take several hours to complete, but it will save snapshots of the model as it progresses. If you have a GPU, the training will run faster, but not much faster, because GPUs are not so well suited for the type of NN used.
 
 ```
 python bidding_nn.py binary/bidding models/bidding
 ```
+if this is failing you might have to install 
 
-When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained.
+```
+conda install tensorflow-estimator=1.15
+```
+
+When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained. (Much better is to use the default.conf file, or create a new configuration file, that can be used)
 
 #### How to continue training an already trained model
 

@@ -1,4 +1,5 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <title>Bridge Engine Demo</title>
@@ -25,7 +26,7 @@
         for (var set_i = 0; set_i < 3; set_i++) {
             html += '<p>';
             for (var board_i = 0; board_i < 8; board_i++) {
-                deal_i = set_i * 8 + board_i
+                let deal_i = set_i * 8 + board_i
                 html += '<span><a class="example" target="_blank" href="viz.html?deal=' + (deal_i + 1) + '">' + data[deal_i]['contract'] + '</a></span>'
             }
             html += '</p>';

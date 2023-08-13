@@ -30,7 +30,7 @@ class Claimer:
         hands[seen_hand_indexes[1]] = deck52.hand_to_str(hands52[seen_hand_indexes[1]])
 
         for i in range(n_samples):
-            random.shuffle(hidden_cards)
+            np.random.shuffle(hidden_cards)
             
             n_cards = len(hidden_cards) // 2
             hands[hidden_hand_indexes[0]] = deck52.hand_to_str(_hand_from_cards(52, hidden_cards[:n_cards]))

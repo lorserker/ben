@@ -12,7 +12,7 @@ class Bidder:
         self.name = name
         self.model_path = model_path
         self.graph = tf.Graph()
-        self.sess = tf.Session(graph=self.graph)
+        self.sess = tf.compat.v1.Session(graph=self.graph)
         self.load_model()
         self.output_softmax = tf.nn.softmax(self.graph.get_tensor_by_name('out_bid_logit:0'))
         self.graph.finalize()
@@ -30,7 +30,7 @@ class Bidder:
 
     def load_model(self):
         with self.graph.as_default():
-            saver = tf.train.import_meta_graph(self.model_path + '.meta')
+            saver = tf.compat.v1.train.import_meta_graph(self.model_path + '.meta')
             saver.restore(self.sess, self.model_path)
 
     def init_model(self):
