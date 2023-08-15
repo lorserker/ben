@@ -501,8 +501,9 @@ def validate_ip(ip_str):
     except ValueError:
         raise argparse.ArgumentTypeError(f"'{ip_str}' is not a valid IP address")
 
-# python table_manager_client.py --host 172.22.208.1 --port 2000 --name SAYC --seat North --ns 1 --ew 1 --config sayc.conf
-# python table_manager_client.py --host 172.22.208.1 --port 2000 --name SAYC --seat South --ns 1 --ew 1 --config sayc.conf
+#  Examples of how to start the table manager
+# python table_manager_client.py --host 127.0.0.1 --port 2000 --name SAYC --seat North --ns 1 --ew 1 --config config/sayc.conf
+# python table_manager_client.py --host 127.0.0.1 --port 2000 --name SAYC --seat South --ns 1 --ew 1 --config config/sayc.conf
 
 async def main():
     
