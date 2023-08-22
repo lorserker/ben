@@ -18,12 +18,13 @@ from util import hand_to_str, expected_tricks, p_make_contract
 
 class BotBid:
 
-    def __init__(self, vuln, hand_str, models, ns, ew, score, sampler):
+    def __init__(self, vuln, hand_str, models, ns, ew, score, sampler, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
         self.min_candidate_score = score
-        #print(f"self.min_candidate_score {self.min_candidate_score}")
+        if verbose:
+            print(f"self.min_candidate_score {self.min_candidate_score}")
         self.model = models.bidder_model
         self.state = models.bidder_model.zero_state
         self.lead_model = models.lead
@@ -32,6 +33,7 @@ class BotBid:
         self.ns = ns
         self.ew = ew
         self.sample = sampler
+        self.verbose = verbose
 
     @staticmethod
     def get_n_steps_auction(auction):
@@ -74,8 +76,8 @@ class BotBid:
                 ev_candidates.append(ev_c)
             candidates = sorted(ev_candidates, key=lambda c: c.expected_score, reverse=True)
             # Print candidates with their relevant information
-            for idx, candidate in enumerate(candidates, start=1):
-                print(f"{idx}: {candidate.bid.ljust(4)} {candidate.insta_score:.4f} Expected Score: {str(int(candidate.expected_score)).ljust(5)}")
+            #for idx, candidate in enumerate(candidates, start=1):
+            #    print(f"{idx}: {candidate.bid.ljust(4)} {candidate.insta_score:.4f} Expected Score: {str(int(candidate.expected_score)).ljust(5)}")
 
             return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples)
         
@@ -272,7 +274,7 @@ class BotLead:
             opening_lead52 = deck52.card32to52(opening_lead)
 
         samples = []
-        print(f"Accepted samples for lead: {accepted_samples.shape[0]}")
+        #print(f"Accepted samples for lead: {accepted_samples.shape[0]}")
         for i in range(min(100, accepted_samples.shape[0])):
             samples.append('%s %s %s' % (
                 hand_to_str(accepted_samples[i,0,:]),
@@ -313,7 +315,7 @@ class BotLead:
 
         accepted_samples = self.sample.sample_cards_auction(n_samples, n_steps, auction, lead_index, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew)
 
-        print(f"accepted_samples for outcome: {accepted_samples.shape[0]}")
+        #print(f"accepted_samples for outcome: {accepted_samples.shape[0]}")
 
         n_accepted = accepted_samples.shape[0]
 
@@ -347,7 +349,7 @@ class BotLead:
 
 class CardPlayer:
 
-    def __init__(self, player_models, player_i, hand_str, public_hand_str, contract, is_decl_vuln):
+    def __init__(self, player_models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, verbose = False):
         self.player_models = player_models
         self.model = player_models[player_i]
         self.player_i = player_i
@@ -357,7 +359,7 @@ class CardPlayer:
         self.contract = contract
         self.is_decl_vuln = is_decl_vuln
         self.n_tricks_taken = 0
-        self.verbose = False
+        self.verbose = verbose
         self.level = int(contract[0])
         self.strain_i = bidding.get_strain_i(contract)
 

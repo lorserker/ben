@@ -8,7 +8,7 @@ from objects import BidResp, Card, CardResp
 
 class CardByCard:
 
-    def __init__(self, dealer, vuln, hands, auction, play, models, sampler):
+    def __init__(self, dealer, vuln, hands, auction, play, models, ns, ew, sampler, verbose):
         self.dealer_i = {'N': 0, 'E': 1, 'S': 2, 'W': 3}[dealer]
         self.vuln = vuln
         self.hands = hands
@@ -20,6 +20,9 @@ class CardByCard:
         self.cards = {}
         self.models = models
         self.sampler = sampler
+        self.ns = ns
+        self.ew = ew
+        self.vebose = verbose
 
     def analyze(self):
         print('analyzing the bidding')
@@ -29,7 +32,7 @@ class CardByCard:
         self.analyze_play()
 
     def analyze_bidding(self):
-        bidder_bots = [bots.BotBid(self.vuln, hand, self.models) for hand in self.hands]
+        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.ns, self.ew, 0.1, self.sampler, self.verbose) for hand in self.hands]
 
         player_i = self.dealer_i
         bid_i = self.dealer_i

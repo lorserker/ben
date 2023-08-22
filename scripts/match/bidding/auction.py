@@ -28,7 +28,7 @@ def bid_hand(hands, dealer, vuln, models_ns_ew, ns, ew, do_search, nntrust):
         nntrust = 0.1
     dealer_i = 'NESW'.index(dealer)
     
-    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], ns, ew, nntrust) for i, hand in enumerate(hands)]
+    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], ns, ew, nntrust, False) for i, hand in enumerate(hands)]
 
     auction = ['PAD_START'] * dealer_i
 
