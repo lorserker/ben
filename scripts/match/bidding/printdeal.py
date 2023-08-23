@@ -65,14 +65,15 @@ def generate_html_deal(line, board_number):
                 {generate_html_card('&clubs;', cards[2].split('.')[3])}
             </div>
         </div>
-        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=0"> Se it played </a><br>
-        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=1"> Se it played </a>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=0"> Se it played (no search for NS) </a><br>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=1"> Se it played (no search for EW) </a><br>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=4"> Se it played (Search for both) </a><br>
         <div id="auction"></div>
 
     </body>
     </html>"""
 
-    filename = f"./{folder}/html/Board{board_number}.html"
+    filename = f"./{folder}/Board{board_number}.html"
     with open(filename, 'w', encoding='utf-8') as file:
         file.write(html)
 

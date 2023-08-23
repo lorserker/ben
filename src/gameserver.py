@@ -1,3 +1,11 @@
+import sys
+
+try:
+    import tensorflow
+except ImportError:
+    print("This script requires TensorFlow, which is not available outside an Anaconda environment.")
+    sys.exit(1)
+
 import uuid
 import shelve
 import asyncio
@@ -20,7 +28,6 @@ random = True
 #For some strange reason parameters parsed to the handler must be an array
 board_no = []
 board_no.append(0) 
-
 
 parser = argparse.ArgumentParser(description="Game server")
 parser.add_argument("--boards", default="", help="Filename for configuration")

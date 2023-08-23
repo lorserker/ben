@@ -1,17 +1,27 @@
+import sys
+
+try:
+    import tensorflow as tf
+except ImportError:
+    print("This script requires TensorFlow, which is not available outside an Anaconda environment.")
+    sys.exit(1)
+
+# Just disables the warnings
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 import ipaddress
 import sys
 import argparse
 import re
-import pprint
 import asyncio
 import numpy as np
 from sample import Sample
 import bots
 import deck52
 import conf
-import shelve
-import uuid
-
+import datetime
+import pprint
 
 from nn.models import Models
 from deck52 import decode_card
@@ -22,7 +32,7 @@ SEATS = ['North', 'East', 'South', 'West']
 
 class TMClient:
 
-    def __init__(self, name, seat, models, ns, ew, sampler):
+    def __init__(self, name, seat, models, ns, ew, sampler, verbose):
         self.name = name
         self.seat = seat
         self.player_i = SEATS.index(self.seat)
@@ -33,6 +43,7 @@ class TMClient:
         self.models = models
         self.sampler = sampler
         self._is_connected = False
+        self.verbose = verbose
 
     @property
     def is_connected(self):
@@ -43,6 +54,8 @@ class TMClient:
 
         auction = await self.bidding()
 
+        await asyncio.sleep(0.01)
+
         self.contract = bidding.get_contract(auction)
         if self.contract is None:
             return
@@ -51,9 +64,9 @@ class TMClient:
         strain_i = bidding.get_strain_i(self.contract)
         self.decl_i = bidding.get_decl_i(self.contract)
 
-        print(auction)
-        #print(self.contract)
-        #print(self.decl_i)
+        print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Bidding ended: {auction}')
+        if (self.verbose):
+            print(f"Contract {self.contract} declared by {self.decl_i}")
 
         opening_lead_card = await self.opening_lead(auction)
         opening_lead52 = Card.from_symbol(opening_lead_card).code()
@@ -75,17 +88,17 @@ class TMClient:
 
         print('connected')
 
-        await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18.')
+        await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18')
 
         await self.receive_line()
         
-        await self.send_message(f'{self.seat} ready for teams.')
+        await self.send_message(f'{self.seat} ready for teams')
 
         await self.receive_line()
 
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
-        bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, 0.1, self.sampler)
+        bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, 0.1, self.sampler, self.verbose)
         
         auction = ['PAD_START'] * self.dealer_i
 
@@ -95,7 +108,8 @@ class TMClient:
             if player_i == self.player_i:
                 # now it's this player's turn to bid
                 bid_resp = bot.bid(auction)
-                pprint.pprint(bid_resp.samples, width=80)
+                if (self.verbose):
+                    pprint.pprint(bid_resp.samples, width=80)
                 auction.append(bid_resp.bid)
                 await self.send_own_bid(bid_resp.bid)
             else:
@@ -126,8 +140,13 @@ class TMClient:
             )
             card_resp = bot_lead.lead(auction)
             card_symbol = card_resp.card.symbol()
-            # card_symbol = 'D5'
+
+            await asyncio.sleep(0.01)
+
             await self.send_card_played(card_symbol)
+
+            await asyncio.sleep(0.01)
+
             return card_symbol
         else:
             # just send that we are ready for the opening lead
@@ -141,7 +160,7 @@ class TMClient:
         decl_i = bidding.get_decl_i(contract)
         is_decl_vuln = [self.vuln_ns, self.vuln_ew, self.vuln_ns, self.vuln_ew][decl_i]
         cardplayer_i = (self.player_i + 3 - decl_i) % 4  # lefty=0, dummy=1, righty=2, decl=3
-        print(f'play starts. decl_i={decl_i}, player_i={self.player_i}, cardplayer_i={cardplayer_i}')
+        print(f'{datetime.datetime.now().strftime("%H:%M:%S")} play starts. decl_i={decl_i}, player_i={self.player_i}, cardplayer_i={cardplayer_i}')
 
         own_hand_str = self.hand_str
         dummy_hand_str = '...'
@@ -162,10 +181,10 @@ class TMClient:
             decl_hand_str = own_hand_str
 
         card_players = [
-            bots.CardPlayer(self.models.player_models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln),
-            bots.CardPlayer(self.models.player_models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln),
-            bots.CardPlayer(self.models.player_models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln),
-            bots.CardPlayer(self.models.player_models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln)
+            bots.CardPlayer(self.models.player_models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose),
+            bots.CardPlayer(self.models.player_models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose),
+            bots.CardPlayer(self.models.player_models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose),
+            bots.CardPlayer(self.models.player_models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose)
         ]
 
         player_cards_played = [[] for _ in range(4)]
@@ -185,10 +204,11 @@ class TMClient:
         card_players[0].hand52[opening_lead52] -= 1
 
         for trick_i in range(12):
-            print("Playing trick {}".format(trick_i+1))
+            print("{} Playing trick {}".format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1))
 
             for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
-                #print('player {}'.format(player_i))
+                if (self.verbose):
+                    print('player {}'.format(player_i))
 
                 nesw_i = (decl_i + player_i + 1) % 4 # N=0, E=1, S=2, W=3
                 
@@ -202,40 +222,51 @@ class TMClient:
                 card52 = None
                 if player_i == 1 and cardplayer_i == 3:
                     # it's dummy's turn and this is the declarer
-                    print('declarers turn for dummy')
+                    print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
                     rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
 
-                    for idx, candidate in enumerate(card_resp.candidates, start=1):
-                        print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks {candidate.expected_tricks:.2f} Insta_score {candidate.insta_score:.4f}")
-                    for idx, sample in enumerate(card_resp.samples, start=1):                  
-                        print(f"{sample}")
-                        if idx == 20:
-                            break
+                    if (self.verbose):
+                        for idx, candidate in enumerate(card_resp.candidates, start=1):
+                            print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks {candidate.expected_tricks:.2f} #Insta_score {candidate.insta_score:.4f}")
+                        for idx, sample in enumerate(card_resp.samples, start=1):                  
+                            print(f"{sample}")
+                            if idx == 20:
+                                break
 
                     card52 = card_resp.card.code()
                     
-                    await self.send_card_played(card_resp.card.symbol()) 
+                    await self.send_card_played_for_dummy(card_resp.card.symbol()) 
+
+                    await asyncio.sleep(0.01)
+
                 elif player_i == cardplayer_i and player_i != 1:
+                    if (self.verbose):
                     # we are on play
-                    #print(f'{player_i} turn')
+                        print(f'{player_i} turn')
 
                     rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
 
-                    for idx, candidate in enumerate(card_resp.candidates, start=1):
-                        print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks {candidate.expected_tricks:.2f} Insta_score {candidate.insta_score:.4f}")
-                    for idx, candidate in enumerate(card_resp.samples, start=1):                  
-                        print(f"{candidate}")
-                        if idx == 20:
-                            break
+                    if (self.verbose):
+                        for idx, candidate in enumerate(card_resp.candidates, start=1):
+                            print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks {candidate.expected_tricks:.2f} #Insta_score {candidate.insta_score:.4f}")
+                        for idx, candidate in enumerate(card_resp.samples, start=1):                  
+                            print(f"{candidate}")
+                            if idx == 20:
+                                break
 
                     card52 = card_resp.card.code()
+
+                    await asyncio.sleep(0.01)
                     
                     await self.send_card_played(card_resp.card.symbol()) 
+
+                    await asyncio.sleep(0.01)
+
                 else:
                     # another player is on play, we just have to wait for their card
                     card52_symbol = await self.receive_card_play_for(nesw_i, trick_i)
@@ -319,10 +350,7 @@ class TMClient:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
 
-            # Wonder why this is repeated
-            #print('trick52 {} cards={}. won by {}'.format(trick_i, list(map(decode_card, #current_trick52)), trick_winner))
-
-            print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
+            print('{} trick52 {} cards={}. won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
 
             # update cards shown
             for i, card in enumerate(current_trick):
@@ -335,19 +363,34 @@ class TMClient:
             # player on lead will receive message (or decl if dummy on lead)
             if leader_i == 1:
                 if cardplayer_i == 3:
+                    #print("waiting for message for lead")
                     await self.receive_line()
             elif leader_i == cardplayer_i:
+                #print("waiting for message for lead")
                 await self.receive_line()
+            # Give player to lead to receive message
+            await asyncio.sleep(0.1)
 
         # play last trick
+        trick_i += 1
         for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
             nesw_i = (decl_i + player_i + 1) % 4 # N=0, E=1, S=2, W=3
             card52 = None
+            #If we are declarer and it is dummy to lead we must send "direction for dummy"
             if player_i == 1 and cardplayer_i == 3 or player_i == cardplayer_i and player_i != 1:
                 # we are on play
                 card52 = np.nonzero(card_players[player_i].hand52)[0][0]
                 card52_symbol = Card.from_code(card52).symbol()
-                await self.send_card_played(card52_symbol)
+
+                await asyncio.sleep(0.01)
+                
+                if player_i == 1 and cardplayer_i == 3:
+                    await self.send_card_played_for_dummy(card52_symbol)
+                else:    
+                    await self.send_card_played(card52_symbol)
+
+                await asyncio.sleep(0.01)
+
             else:
                 # someone else is on play. we just have to wait for their card
                 card52_symbol = await self.receive_card_play_for(nesw_i, trick_i)
@@ -364,17 +407,23 @@ class TMClient:
         trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         trick_won_by.append(trick_winner)
 
-        #print('last trick')
-        #print(current_trick)
-        #print(current_trick52)
-        #print(trick_won_by)
-
-        #pprint.pprint(list(zip(tricks, trick_won_by)))
+        if (self.verbose):
+            print('last trick')
+            print(current_trick)
+            print(current_trick52)
+            print(trick_won_by)
+            pprint.pprint(list(zip(tricks, trick_won_by)))
 
         self.trick_winners = trick_won_by
 
     async def send_card_played(self, card_symbol):
         msg_card = f'{self.seat} plays {card_symbol[::-1]}'
+        await self.send_message(msg_card)
+
+    async def send_card_played_for_dummy(self, card_symbol):
+        dummy_i = (self.decl_i + 2) % 4
+        seat = SEATS[dummy_i]
+        msg_card = f'{seat} plays {card_symbol[::-1]}'
         await self.send_message(msg_card)
 
     async def send_own_bid(self, bid):
@@ -390,7 +439,12 @@ class TMClient:
         await self.send_message(msg_bid)
 
     async def receive_card_play_for(self, player_i, trick_i):
-        msg_ready = f"{self.seat} ready for {SEATS[player_i]}'s card to trick {trick_i + 1}."
+        # We need to find out if it is dummy we are waiting for
+        if ((self.decl_i + 2) % 4 == player_i):
+            waitingFor = "dummy"
+        else:
+            waitingFor = SEATS[player_i]
+        msg_ready = f"{self.seat} ready for {waitingFor}'s card to trick {trick_i + 1}"
         await self.send_message(msg_ready)
 
         card_resp = await self.receive_line()
@@ -441,15 +495,18 @@ class TMClient:
 
         await self.send_message(f'{self.seat} ready for deal.')
         np.random.seed(42)
+
+
         #If we are restarting a match we will receive 
         # 'Board number 1. Dealer North. Neither vulnerable. \r\n'
         deal_line_1 = await self.receive_line()
         if deal_line_1 == "Start of Board":
             deal_line_1 = await self.receive_line()
+
+        await self.send_message(f'{self.seat} ready for cards.')
         # "South's cards : S K J 9 3. H K 7 6. D A J. C A Q 8 7. \r\n"
         # "North's cards : S 9 3. H -. D J 7 5. C A T 9 8 6 4 3 2."
         deal_line_2 = await self.receive_line()
-        print(f"deal_line_2 {deal_line_2}")
 
         rx_dealer_vuln = r'(?P<dealer>[a-zA-z]+?)\.\s(?P<vuln>.+?)\svulnerable'
         match = re.search(rx_dealer_vuln, deal_line_1)
@@ -473,14 +530,15 @@ class TMClient:
             .replace(' ', '').replace('-', '').replace('S', '').replace('H', '').replace('D', '').replace('C', '')
 
     async def send_message(self, message: str):
-        print(f'sending:   {message.ljust(60)}', end='')
-        self.writer.write((message+"\n").encode())
+        print(f'{datetime.datetime.now().strftime("%H:%M:%S")} sending:   {message.ljust(60)}', end='')
+
+        self.writer.write((message+"\r\n").encode())
         await self.writer.drain()
         print(' ...sent successfully.')
 
     async def receive_line(self) -> str:
         try:
-            print('receiving: ', end='')
+            print('{} receiving: '.format(datetime.datetime.now().strftime("%H:%M:%S")), end='')
             message = await self.reader.readline()
             msg = message.decode().replace('\r', '').replace('\n', '')
             print(f'{msg.ljust(60)} ...received.')
@@ -508,14 +566,15 @@ def validate_ip(ip_str):
 async def main():
     
     parser = argparse.ArgumentParser(description="Table manager interface")
-    parser.add_argument("--host", type=validate_ip, required=True, help="IP for Table Manager")
-    parser.add_argument("--port", type=int, required=True, help="Port for Table Manager")
+    parser.add_argument("--host", type=validate_ip, default="127.0.0.1", help="IP for Table Manager")
+    parser.add_argument("--port", type=int, default=2000, help="Port for Table Manager")
     parser.add_argument("--name", required=True, help="Name in Table Manager")
     parser.add_argument("--seat", required=True, help="Where to sit (North, East, South or West)")
     parser.add_argument("--config", default="./config/default.conf", help="Filename for configuration")
     parser.add_argument("--ns", type=int, default=-1, help="System for NS")
     parser.add_argument("--ew", type=int, default=-1, help="System for EW")
     parser.add_argument("--is_continue", type=bool, default=False, help="Continuing a match")
+    parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
     args = parser.parse_args()
 
     host = args.host
@@ -530,10 +589,13 @@ async def main():
 
     is_continue = args.is_continue
 
-    models = Models.from_conf(conf.load(configfile))
+    verbose = args.verbose
 
-    client = TMClient(name, seat, models, ns, ew, Sample.from_conf(conf.load(configfile))
-)
+    configuration = conf.load(configfile)
+
+    models = Models.from_conf(configuration)
+
+    client = TMClient(name, seat, models, ns, ew, Sample.from_conf(configuration), verbose)
     print(f"Connecting to {host}:{port}")
     await client.connect(host, port)
     

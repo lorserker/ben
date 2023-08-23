@@ -42,7 +42,7 @@ def main():
             
             #Set vulnerable based on input in file
             #Read NS and EW system from conf-file
-            bidder_bots = [BotBid([False, False], hand, models, ns, ew,-1, sampler) for hand in hands]
+            bidder_bots = [BotBid([False, False], hand, models, ns, ew,-1, sampler, False) for hand in hands]
 
             auction = ['PAD_START'] * dealer_i
 

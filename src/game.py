@@ -419,7 +419,7 @@ class Driver:
             if level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
-                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, level, self.sampler)
+                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, level, self.sampler, False)
                 players.append(bot)
 
         auction = ['PAD_START'] * self.dealer_i

@@ -556,9 +556,9 @@ class Sample:
                 samples.append(sample)
         # Use the unique_indices to filter player_states
         states = [state[unique_indices] for state in states]
-        print(f"Unique states {states[0].shape[0]}")
+        #print(f"Unique states {states[0].shape[0]}")
         if (states[0].shape[0] < n_samples // 2):
-            print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+            #print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
             return states
 
         # re-apply constraints
@@ -582,8 +582,8 @@ class Sample:
         c_hcp = p_hcp.copy()
         c_shp = p_shp.copy()
 
-        print(f"c_hcp:{c_hcp}")
-        print(f"c_shp:{c_shp}")
+        #print(f"c_hcp:{c_hcp}")
+        #print(f"c_shp:{c_shp}")
         accept_hcp = np.ones(states[0].shape[0]).astype(bool)
 
         for i in range(2):
@@ -606,9 +606,9 @@ class Sample:
         # end of re-applyconstraints
 
         states = [state[accept] for state in states]
-        print(f"States {states[0].shape[0]} before opening lead (after shape and hcp)")
+        #print(f"States {states[0].shape[0]} before opening lead (after shape and hcp)")
         if (states[0].shape[0] < n_samples // 2):
-            print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+            #print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
             return states
 
         # reject samples inconsistent with the opening lead
@@ -625,9 +625,9 @@ class Sample:
 
             states = [state[lead_scores > lead_accept_threshold]
                       for state in states]
-            print(f"States {states[0].shape[0]} after cheking lead")
+            #print(f"States {states[0].shape[0]} after cheking lead")
             if (states[0].shape[0] < n_samples // 2):
-                print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+                #print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
                 return states
 
         # reject samples inconsistent with the bidding
@@ -654,9 +654,9 @@ class Sample:
                 bid_accept_threshold *= 0.9
             states = [state[min_bid_scores > bid_accept_threshold]
                       for state in states]
-            print(f"States {states[0].shape[0]} after checking the bidding")
+            #print(f"States {states[0].shape[0]} after checking the bidding")
             if (states[0].shape[0] < n_samples // 2):
-                print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+                #print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
                 return states
 
         # To save time we reduce no of samples to 2 times what is required
@@ -701,10 +701,10 @@ class Sample:
 
         while np.sum(min_scores > play_accept_threshold) < 20 and play_accept_threshold > 0:
             play_accept_threshold -= 0.01
-            print(f"play_accept_threshold {play_accept_threshold} reduced")
+            #print(f"play_accept_threshold {play_accept_threshold} reduced")
 
         s_accepted = min_scores > play_accept_threshold
 
         states = [state[s_accepted] for state in states]
-        print(f"States {states[0].shape[0]} after checking the play")
+        #print(f"States {states[0].shape[0]} after checking the play")
         return [state[:n_samples] for state in states]
