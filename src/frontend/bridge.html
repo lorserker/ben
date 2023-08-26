@@ -15,26 +15,12 @@
 
     <div id="container">
         <div id="north" class="grid-item">
-            <!-- <div class="card" data-value="A">&spades;</div>
-            <div class="card" data-value="T">&spades;</div>
-            <div class="card" data-value="7">&spades;</div>
-            <div class="card red" data-value="K">&hearts;</div>
-            <div class="card red" data-value="Q">&hearts;</div>
-            <div class="card red" data-value="J">&hearts;</div>
-            <div class="card red" data-value="3">&hearts;</div>
-            <div class="card red" data-value="2">&hearts;</div>
-            <div class="card" data-value="9">&clubs;</div>
-            <div class="card red" data-value="Q">&diams;</div>
-            <div class="card red" data-value="T">&diams;</div>
-            <div class="card red" data-value="9">&diams;</div>
-            <div class="card red" data-value="4">&diams;</div> -->
-            
             <div id="bidding-box">
                 <div id="bidding-levels">
-                    <div class="invalid">1</div>
+                    <div>1</div>
                     <div>2</div>
                     <div>3</div>
-                    <div class="selected">4</div>
+                    <div>4</div>
                     <div>5</div>
                     <div>6</div>
                     <div>7</div>
@@ -63,20 +49,16 @@
                     <div class="seat-label">W</div>
                 </div>
                 <div class="table-grid-item trick-west">
-                    <!-- <div class="card" data-value="A">&spades;</div> -->
                 </div>
                 <div class="table-grid-item trick-north">
-                    <!-- <div class="card red" data-value="K">&hearts;</div> -->
                 </div>
                 <div class="table-grid-item trick-east">
-                    <!-- <div class="card" data-value="9">&clubs;</div> -->
                 </div>
                 <div class="table-grid-item label-east">
                     <div class="seat-label">E</div>
                 </div>
                 <div class="table-grid-item trick-south">
-                    <!-- <div class="card red" data-value="T">&diams;</div> -->
-                </div>
+               </div>
                 <div class="table-grid-item label-south">
                     <div class="seat-label">S</div>
                 </div>
@@ -84,19 +66,6 @@
         </div>
         <div id="east" class="grid-item"></div>
         <div id="south" class="grid-item">
-            <!-- <div class="card" data-value="A">&spades;</div>
-            <div class="card" data-value="T">&spades;</div>
-            <div class="card" data-value="7">&spades;</div>
-            <div class="card red" data-value="K">&hearts;</div>
-            <div class="card red" data-value="Q">&hearts;</div>
-            <div class="card red" data-value="J">&hearts;</div>
-            <div class="card red" data-value="3">&hearts;</div>
-            <div class="card red" data-value="2">&hearts;</div>
-            <div class="card" data-value="9">&clubs;</div>
-            <div class="card red" data-value="Q">&diams;</div>
-            <div class="card red" data-value="T">&diams;</div>
-            <div class="card red" data-value="9">&diams;</div>
-            <div class="card red" data-value="4">&diams;</div> -->
         </div>
         
     </div>
@@ -109,8 +78,32 @@
     <script type="text/javascript">
         console.log('starting')
 
+        const urlParams = new URLSearchParams(location.search)
+        const dealId = urlParams.get("deal")
+        const playerId = urlParams.get("P")
+        var queryString = ""
+        var ws
+        if (dealId) {
+            queryString = "?deal=" + dealId + "&P=" + playerId
+        }
+        try {
 
-        var ws = new WebSocket("ws://" + location.hostname + ":4443/")
+            ws = new WebSocket("ws://" + location.hostname + ":4443/" + queryString)
+
+            ws.addEventListener("error", function (event) {
+                console.log("WebSocket error:", event);
+                document.querySelector('#auctionstr').innerHTML += 'No connection to server <br>'
+            });
+
+            ws.addEventListener("close", function (event) {
+                console.log("WebSocket closed:", event);
+                document.querySelector('#auctionstr').innerHTML += 'Connection to server closed <br>'
+            });
+
+        } catch(error) {
+            console.log("WebSocket error:", error);
+            alert("Please start server", error); // Notify the user about the connection failure            
+        }
 
         var deal = undefined
 
@@ -198,20 +191,13 @@
 
         document.querySelector('body').addEventListener('click', function() {
             console.log('click')
-            if (deal.expectTrickConfirm) {
+            if (deal?.expectTrickConfirm) {
                 getTrickCardSlots().forEach(el => el.textContent = "")
                 ws.send('y')
                 deal.expectTrickConfirm = false
             }
         })
 
-        ws.onerror = function(event) {
-            document.querySelector('#auctionstr').textContent = '[ERROR] ' + JSON.stringify(event)
-        }
-
-        ws.onclose = function(event) {
-            document.querySelector('#auctionstr').textContent = '[CLOSED] ' + JSON.stringify(event)
-        }
 
         ws.onmessage = function (event) {
             console.log('received message')
@@ -235,7 +221,7 @@
                 }
 
                 setTurn(deal.dealer)
-
+                console.log(deal)
                 deal.hand.render(document.querySelector('#south'))
                 deal.renderAuction(document.querySelector('#east'))
                 deal.renderBiddingBox(document.querySelector('#north'))
@@ -276,7 +262,6 @@
                 document.querySelectorAll('.card')
                     .forEach(c => c.addEventListener('click', cardClick))
             } else if (data.message == "opening_lead") {
-                let card = new Card(data.card)
 
                 let publicHand = parseHand(data.dummy)
                 deal.public = publicHand
@@ -332,7 +317,6 @@
                 deal.tricksCount[trickWinner % 2] += 1
 
                 deal.renderTricks(document.querySelector('.tricks'))
-
                 deal.expectTrickConfirm = true
             } else if (data.message == "deal_end") {
                 let handsPBN = data.pbn.split(' ')
@@ -350,10 +334,6 @@
             }
         };
 
-        /*let hand = parseHand('AT8..QJ9875432.K')
-        hand.render(document.querySelector('#south'))
-        hand.renderEW(document.querySelector('#west'))
-        hand.renderEW(document.querySelector('#east'))*/
     </script>  
 
     

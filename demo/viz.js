@@ -48,7 +48,7 @@ class Deal {
 
         let playData = this.data['play'][this.playIndex]
 
-        var player = (this.top().trick.onLead + this.top().trick.cards.length) % 4
+        let player = (this.top().trick.onLead + this.top().trick.cards.length) % 4
 
         if (this.top().trick.cards.length == 4) {
             this.trickIndex += 1
@@ -91,7 +91,7 @@ class Deal {
     renderPosition() {
         let seats = ["north", "east", "south", "west"]
 
-        for (var i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
             this.top().hands[i].render(document.getElementById(seats[i]))
             this.top().trick.render(document.getElementById("current-trick"))
             this.top().info.render(document.getElementById("info"))
@@ -111,10 +111,10 @@ class DealSnapshot {
     }
 
     play(player, playData) {
-        var hands = []
+        let hands = []
         let card = playData['card']
 
-        for (var i = 0; i < this.hands.length; i++) {
+        for (let i = 0; i < this.hands.length; i++) {
             if (i == player) {
                 hands.push(this.hands[i].playCard(card))
             } else {
@@ -122,8 +122,8 @@ class DealSnapshot {
             }
         }
 
-        var trick = this.trick.addCard(card)
-        var tt = new TricksTaken(this.tricksTaken.ns, this.tricksTaken.ew)
+        let trick = this.trick.addCard(card)
+        let tt = new TricksTaken(this.tricksTaken.ns, this.tricksTaken.ew)
         if (trick.cards.length > 4) {
             trick = new Trick(player, [card])
             tt.ns += (player + 1) % 2
@@ -152,7 +152,7 @@ class Hand {
     render(element) {
         element.innerHTML = ""
 
-        var html = this.suitHtml("&spades;", this.spades, false)
+        let html = this.suitHtml("&spades;", this.spades, false)
         html += this.suitHtml("&hearts;", this.hearts, true)
         html += this.suitHtml("&diams;", this.diamonds, true)
         html += this.suitHtml("&clubs;", this.clubs, false)
@@ -161,7 +161,7 @@ class Hand {
     }
 
     suitHtml(symbol, cards, red) {
-        var html = '<div class="suit">'
+        let html = '<div class="suit">'
         if (red) {
             html += '<span class="font-red">'
         } else {
@@ -170,8 +170,8 @@ class Hand {
         html += symbol
         html += '</span>\n' // end of symbol
 
-        for (var i = 0; i < cards.length; i++) {
-            html = html + '<span class="card">' + cards[i] + '</span>\n'
+        for (const element of cards) {
+            html = html + '<span class="card">' + element + '</span>\n'
         }
 
         html += '<div>'
@@ -179,19 +179,19 @@ class Hand {
     }
 
     playCard(card) {
-        var spades = this.spades
+        let spades = this.spades
         if (card[0] == "S") {
             spades = spades.replace(card[1], "")
         }
-        var hearts = this.hearts
+        let hearts = this.hearts
         if (card[0] == "H") {
             hearts = hearts.replace(card[1], "")
         }
-        var diamonds = this.diamonds
+        let diamonds = this.diamonds
         if (card[0] == "D") {
             diamonds = diamonds.replace(card[1], "")
         }
-        var clubs = this.clubs
+        let clubs = this.clubs
         if (card[0] == "C") {
             clubs = clubs.replace(card[1], "")
         }
@@ -225,7 +225,7 @@ class Trick {
     render(element) {
         element.innerHTML = ""
 
-        var html = ""
+        let html = ""
 
         let symbols = {
             'S': ['&spades;', false],
@@ -234,9 +234,9 @@ class Trick {
             'C': ['&clubs;', false]
         }
 
-        for (var i = 0; i < this.cards.length; i++) {
+        for (let i = 0; i < this.cards.length; i++) {
             let cardId = this.cardIds[(this.onLead + i) % 4]
-            var cssClass = "trick-card"
+            let cssClass = "trick-card"
             if (i == this.cards.length - 1) {
                 cssClass += " highlight"
             }
@@ -273,13 +273,13 @@ class DealerVuln {
     render(element) {
         element.innerHTML = ""
 
-        var html = ""
+        let html = ""
 
         let ids = ["vul-north", "vul-east", "vul-south", "vul-west"]
 
-        for (var i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
             let vId = ids[i]
-            var color = "white"
+            let color = "white"
             if (i % 2 == 0 && this.vulnNS || i % 2 == 1 && this.vulnEW) {
                 color = "red"
             }
@@ -306,14 +306,14 @@ class PlayInfo {
     render(element) {
         element.innerHTML = ""
 
-        var html = ""
+        let html = ""
 
         if ("candidates" in this.data) {
             html += '<h3>Candidates</h3>'
             html += '<table>'
 
-            for (var i = 0; i < this.data.candidates.length; i++) {
-                let candidate = this.data.candidates[i]
+            for (const element of this.data.candidates) {
+                let candidate = element
 
                 html += '<tr>'
                 html += '<td class="candidate-card">' + candidate['card'] + '</td>'
@@ -336,9 +336,9 @@ class PlayInfo {
         }
 
         if ("samples" in this.data) {
-            html += '<h3>Samples</h3>'
-            for (var i = 0; i < this.data['samples'].length; i++) {
-                html += '<div>' + this.data['samples'][i] + '</div>'
+            html += '<h3>Samples (' + this.data['samples'].length + ')</h3>'
+            for (const element of this.data['samples']) {
+                html += '<div>' + element + '</div>'
             }
         }
 
@@ -355,24 +355,24 @@ class Auction {
 
         let nPad = [1, 2, 3, 0]
         this.paddedBids = []
-        for (var i = 0; i < nPad[dealer]; i++) {
+        for (let i = 0; i < nPad[dealer]; i++) {
             this.paddedBids.push("")
         }
 
-        for (var i = 0; i < bids.length; i++) {
-            this.paddedBids.push(bids[i]['bid'])
+        for (const element of bids) {
+            this.paddedBids.push(element['bid'])
         }
     }
 
     render(element) {
         element.innerHTML = ""
 
-        var html = ""
+        let html = ""
         html += '<table>'
         html += '<thead><th>West</th><th>North</th><th>East</th><th>South</th></thead>'
         html += '<tbody>'
 
-        for (var i = 0; i < this.paddedBids.length; i++) {
+        for (let i = 0; i < this.paddedBids.length; i++) {
             if (i % 4 == 0) {
                 html += '<tr>'
             }
@@ -429,7 +429,7 @@ class TricksTaken {
     render(element) {
         element.innerHTML = ""
 
-        var html = ''
+        let html = ''
 
         html += '<div id="tricks-ns" class="trick-count"><span>' + this.ns + '</span></div>'
         html += '<div id="tricks-ew" class="trick-count"><span>' + this.ew + '</span></div>'

@@ -1,0 +1,927 @@
+GIB version 21, 03/01/12
+
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call --  
+I bid 2D
+That bid shows: 2D bid waiting -- forcing to 2N
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 2S
+That bid shows: Opener's suit -- 5+ S; 19+ HCP; 23+ total points; forcing to 3S
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 3C
+That bid shows: !Cheaper minor -- 4- total points; forcing to 3S
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 6N
+That bid shows: 5+ S; 31-34 HCP
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid P
+That bid shows: No suitable call -- 4- total points
+I bid P
+That bid shows: No suitable call -- 20- total points
+2C.P.2D.P.2S.P.3C.P.6N.P.P.P
+I play C5
+I play CJ
+I play C6
+I play C3
+
+I play H7
+I play H8
+I play HJ
+I play HQ
+
+I play C2
+I play C4
+I play CT
+I play CA
+
+I play DA
+I play D8
+I play D5
+I play D4
+
+I play DK
+I play D2
+I play D6
+I play D7
+
+I play SA
+I play S3
+I play S4
+I play S6
+
+I play SK
+I play S7
+I play S5
+I play ST
+
+I play HA
+I play H2
+I play H9
+I play H4
+
+I play SQ
+I play SJ
+I play S2
+I play D3
+
+I play S8
+I play C7
+I play D9
+I play C8
+
+I play S9
+I play H3
+I play DT
+I play H5
+
+I play HK
+I play CQ
+I play H6
+I play HT
+
+I play CK
+I play C9
+I play DQ
+I play DJ
+
+Result: N/S +990
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2D
+That bid shows: 2D bid waiting -- 11- HCP; 12- total points; forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 3D
+That bid shows: Opener's suit -- 5+ D; 19+ HCP; 23+ total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 3S
+That bid shows: 4+ S; 11- HCP; 5-12 total points; forcing
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 6N
+That bid shows: 5+ D; 28-32 HCP
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 4+ S; 3+ HCP; 4 total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+P.P.P.2C.P.2D.P.3D.P.3S.P.6N.P.P.P
+I play C3
+I play C4
+I play C7
+I play CA
+
+I play CK
+I play C9
+I play CT
+I play C5
+
+I play HA
+I play H8
+I play H4
+I play H2
+
+I play HK
+I play HJ
+I play H6
+I play HT
+
+I play DA
+I play D8
+I play D2
+I play D7
+
+I play DK
+I play D4
+I play D6
+I play D3
+
+I play SQ
+I play SK
+I play S2
+I play S6
+
+I play S3
+I play S5
+I play S8
+I play SA
+
+I play S4
+I play S9
+I play SJ
+I play H9
+
+I play ST
+I play H7
+I play H3
+I play S7
+
+I play CQ
+I play CJ
+I play D9
+I play C6
+
+I play DT
+I play H5
+I play DQ
+I play DJ
+
+I play HQ
+I play D5
+I play C2
+I play C8
+
+Result: N/S +1440
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call --  
+I bid 2D
+That bid shows: 2D bid waiting -- 11- HCP; 12- total points; forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 4N
+That bid shows: 2-5 C; 2-5 D; 2-5 H; 2-5 S; 28-30 HCP
+I bid P
+That bid shows: No suitable call --  
+I bid P
+That bid shows: No suitable call -- 2- HCP
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+P.P.2C.P.2D.P.4N.P.P.P
+I play C5
+I play C9
+I play CJ
+I play CA
+
+I play CK
+I play CT
+I play C4
+I play C6
+
+I play HA
+I play H6
+I play H2
+I play H3
+
+I play HK
+I play H8
+I play H9
+I play S3
+
+I play HQ
+I play HJ
+I play HT
+I play S5
+
+I play DA
+I play D7
+I play DT
+I play D3
+
+I play S2
+I play S7
+I play SQ
+I play S9
+
+I play H7
+I play D4
+I play C3
+I play D6
+
+I play H5
+I play D8
+I play DJ
+I play D5
+
+I play H4
+I play C7
+I play C2
+I play S6
+
+I play SJ
+I play DQ
+I play SA
+I play S4
+
+I play SK
+I play D2
+I play ST
+I play D9
+
+I play DK
+I play C8
+I play S8
+I play CQ
+
+Result: N/S +520
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call --  
+I bid 2D
+That bid shows: 2D bid waiting -- forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 3C
+That bid shows: Opener's suit -- 5+ C; 19+ HCP; 23+ total points
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 3S
+That bid shows: 4+ S; 5+ total points; forcing
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 6N
+That bid shows: 5+ C; 28-32 HCP
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid P
+That bid shows: No suitable call -- 4+ S; 3+ HCP; 4 total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+P.2C.P.2D.P.3C.P.3S.P.6N.P.P.P
+I play DT
+I play D5
+I play D6
+I play DJ
+
+I play C4
+I play C2
+I play CJ
+I play C8
+
+I play S2
+I play S5
+I play SQ
+I play S3
+
+I play HA
+I play H2
+I play H3
+I play H5
+
+I play DA
+I play DQ
+I play D2
+I play D3
+
+I play CA
+I play C3
+I play S6
+I play C5
+
+I play CQ
+I play C9
+I play S4
+I play H4
+
+I play CK
+I play CT
+I play D7
+I play H7
+
+I play HK
+I play H9
+I play H6
+I play HQ
+
+I play DK
+I play D9
+I play D8
+I play D4
+
+I play SA
+I play S9
+I play S8
+I play S7
+
+I play SJ
+I play H8
+I play SK
+I play HJ
+
+I play ST
+I play HT
+I play C6
+I play C7
+
+Result: N/S +1470
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call --  
+I bid 2D
+That bid shows: 2D bid waiting -- forcing to 2N
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 4N
+That bid shows: 2-5 C; 2-5 D; 2-5 H; 2-5 S; 28-30 HCP
+I bid P
+That bid shows: No suitable call --  
+I bid 5C
+That bid shows: 6+ C; 2- total points
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 6C
+That bid shows: 2-5 C; 2-5 D; 2-5 H; 2-5 S; 30- HCP; 33+ total points
+I bid P
+That bid shows: No suitable call --  
+I bid P
+That bid shows: No suitable call -- 6+ C; 2- total points
+I bid P
+That bid shows: No suitable call -- 20- total points
+2C.P.2D.P.4N.P.5C.P.6C.P.P.P
+I play CJ
+I play C2
+I play C5
+I play CA
+
+I play CK
+I play CT
+I play C7
+I play C8
+
+I play DA
+I play D6
+I play D7
+I play D2
+
+I play DJ
+I play D9
+I play CQ
+I play D4
+
+I play C9
+I play C6
+I play S2
+I play D8
+
+I play H3
+I play H9
+I play HA
+I play H6
+
+I play HK
+I play H8
+I play H2
+I play H4
+
+I play SA
+I play S4
+I play S6
+I play S5
+
+I play DK
+I play D5
+I play S9
+I play DT
+
+I play S7
+I play ST
+I play C4
+I play SJ
+
+I play H7
+I play HJ
+I play HQ
+I play DQ
+
+I play SQ
+I play SK
+I play C3
+I play S8
+
+I play H5
+I play S3
+I play HT
+I play D3
+
+Result: N/S +1390
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2D
+That bid shows: 2D bid waiting -- 11- HCP; 12- total points; forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 4N
+That bid shows: 2-5 C; 2-5 D; 2-5 H; 2-5 S; 28-30 HCP
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 2- HCP
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+P.P.P.2C.P.2D.P.4N.P.P.P
+I play S3
+I play S7
+I play ST
+I play SA
+
+I play HA
+I play H5
+I play H7
+I play H9
+
+I play HQ
+I play HT
+I play H3
+I play H2
+
+I play H6
+I play H8
+I play HJ
+I play C5
+
+I play D7
+I play D2
+I play DK
+I play DA
+
+I play S6
+I play SJ
+I play S2
+I play SQ
+
+I play HK
+I play D9
+I play H4
+I play C4
+
+I play CA
+I play C2
+I play C3
+I play C9
+
+I play DQ
+I play DJ
+I play D3
+I play DT
+
+I play D4
+I play S4
+I play D6
+I play D8
+
+I play CT
+I play C7
+I play CQ
+I play CJ
+
+I play C6
+I play C8
+I play S8
+I play CK
+
+I play SK
+I play S9
+I play D5
+I play S5
+
+Result: N/S +430
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call --  
+I bid 2D
+That bid shows: 2D bid waiting -- 11- HCP; 12- total points; forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2H
+That bid shows: Opener's suit -- 5+ H; 19+ HCP; 23+ total points; forcing to 3H
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 3C
+That bid shows: !Cheaper minor -- 4- total points; forcing to 3H
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 6N
+That bid shows: 5+ H; 31-34 HCP
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid P
+That bid shows: No suitable call -- 4- total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+P.P.2C.P.2D.P.2H.P.3C.P.6N.P.P.P
+I play CT
+I play C5
+I play CJ
+I play CA
+
+I play CK
+I play C9
+I play C6
+I play S8
+
+I play HA
+I play H2
+I play H6
+I play H9
+
+I play HQ
+I play H7
+I play S3
+I play HJ
+
+I play HK
+I play H5
+I play D2
+I play D4
+
+I play SA
+I play S2
+I play S4
+I play S7
+
+I play SQ
+I play S5
+I play S9
+I play SK
+
+I play D3
+I play DQ
+I play DK
+I play D5
+
+I play C8
+I play C7
+I play S6
+I play CQ
+
+I play C4
+I play C3
+I play D6
+I play DJ
+
+I play DA
+I play H4
+I play D7
+I play DT
+
+I play H8
+I play HT
+I play ST
+I play D9
+
+I play C2
+I play SJ
+I play D8
+I play H3
+
+Result: N/S -300
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call --  
+I bid 2D
+That bid shows: 2D bid waiting -- forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 4N
+That bid shows: 2-5 C; 2-5 D; 2-5 H; 2-5 S; 28-30 HCP
+I bid P
+That bid shows: No suitable call --  
+I bid P
+That bid shows: No suitable call -- 2- HCP
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+P.2C.P.2D.P.4N.P.P.P
+I play D6
+I play D2
+I play D4
+I play DT
+
+I play CA
+I play C5
+I play C7
+I play C9
+
+I play CK
+I play CJ
+I play C2
+I play C4
+
+I play CQ
+I play S4
+I play C3
+I play C8
+
+I play CT
+I play H3
+I play S5
+I play C6
+
+I play HA
+I play H6
+I play H5
+I play H2
+
+I play HK
+I play H4
+I play H8
+I play H9
+
+I play DA
+I play D7
+I play D5
+I play D8
+
+I play HQ
+I play D3
+I play HT
+I play HJ
+
+I play DK
+I play DQ
+I play S6
+I play D9
+
+I play SA
+I play S7
+I play S3
+I play ST
+
+I play H7
+I play DJ
+I play S9
+I play S8
+
+I play SJ
+I play SK
+I play SQ
+I play S2
+
+Result: N/S +490
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call --  
+I bid 2D
+That bid shows: 2D bid waiting -- forcing to 2N
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 3C
+That bid shows: Opener's suit -- 5+ C; 19+ HCP; 23+ total points
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 4H
+That bid shows: 4+ C; 5+ total points
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 5D
+That bid shows: Cue bid -- 5+ C; 1+ S; 8+ 8421 HCP in D; 7- 8421 HCP in S; 30+ total points; forcing
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 5S
+That bid shows: Cue bid -- 4+ C; 1+ H; 7- 8421 HCP in H; 8+ 8421 HCP in S; 5+ total points; forcing
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid 6C
+That bid shows: 5+ C; 1+ S; 8+ 8421 HCP in D; 7- 8421 HCP in S; 30+ total points
+I bid P
+That bid shows: No suitable call -- 20- total points
+I bid P
+That bid shows: No suitable call -- 4+ C; 1+ H; 7- 8421 HCP in H; 8+ 8421 HCP in S; 5+ total points
+I bid P
+That bid shows: No suitable call -- 20- total points
+2C.P.2D.P.3C.P.4H.P.5D.P.5S.P.6C.P.P.P
+I play H2
+I play H7
+I play HT
+I play HA
+
+I play C4
+I play C5
+I play CT
+I play C9
+
+I play C6
+I play C7
+I play CJ
+I play S3
+
+I play SA
+I play S7
+I play H6
+I play S6
+
+I play S9
+I play S8
+I play C8
+I play S2
+
+I play C3
+I play H5
+I play CA
+I play D3
+
+I play D2
+I play DT
+I play DQ
+I play D4
+
+I play C2
+I play D5
+I play CK
+I play H3
+
+I play DK
+I play D8
+I play DJ
+I play SK
+
+I play HK
+I play H8
+I play H9
+I play HJ
+
+I play DA
+I play S4
+I play D9
+I play SQ
+
+I play CQ
+I play H4
+I play D6
+I play SJ
+
+I play HQ
+I play S5
+I play D7
+I play ST
+
+Result: N/S +1390
+Enter argument line: Enter S hand: Enter W hand: Enter N hand: Enter E hand: Enter dealer: Enter vul (none, N/S, E/W, both): I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2C
+That bid shows: Strong two club -- 19+ HCP; 23+ total points; forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2D
+That bid shows: 2D bid waiting -- 11- HCP; 12- total points; forcing to 2N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 2S
+That bid shows: Opener's suit -- 5+ S; 19+ HCP; 23+ total points; forcing to 3S
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 3D
+That bid shows: 4+ D; 11- HCP; 5-12 total points; forcing to 3N
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid 6N
+That bid shows: 5+ S; 28-32 HCP
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+I bid P
+That bid shows: No suitable call -- 4+ D; 3+ HCP; 4 total points
+I bid P
+That bid shows: No suitable call -- 11- HCP; 12- total points
+P.P.P.2C.P.2D.P.2S.P.3D.P.6N.P.P.P
+I play C2
+I play CJ
+I play C9
+I play CA
+
+I play HA
+I play H3
+I play HT
+I play H6
+
+I play SA
+I play S4
+I play S2
+I play S5
+
+I play SK
+I play S3
+I play D2
+I play S7
+
+I play SQ
+I play S8
+I play H4
+I play S9
+
+I play D9
+I play DT
+I play DK
+I play D3
+
+I play D5
+I play D6
+I play DJ
+I play DQ
+
+I play H9
+I play H5
+I play HQ
+I play HK
+
+I play CQ
+I play C3
+I play CT
+I play C7
+
+I play DA
+I play H8
+I play D4
+I play D7
+
+I play SJ
+I play ST
+I play H2
+I play C4
+
+I play S6
+I play C5
+I play D8
+I play H7
+
+I play HJ
+I play C8
+I play CK
+I play C6
+
+Result: N/S +990
+Enter argument line: Enter argument line: 

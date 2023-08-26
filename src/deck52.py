@@ -42,8 +42,8 @@ def random_deal():
 
 
 def random_dealer_vuln():
-    dealer = random.choice(['N', 'E', 'S', 'W'])
-    vuln = random.choice(['None', 'N-S', 'E-W', 'Both'])
+    dealer = np.random.choice(['N', 'E', 'S', 'W'])
+    vuln = np.random.choice(['None', 'N-S', 'E-W', 'Both'])
 
     return '%s %s' % (dealer, vuln)
 

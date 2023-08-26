@@ -5,7 +5,8 @@ import json
 import asyncio
 import uuid
 import shelve
-
+import os 
+import argparse
 import numpy as np
 
 import human
@@ -14,11 +15,14 @@ import sample
 import conf
 
 from bidding import bidding
+from sample import Sample
 from nn.models import Models
 from deck52 import decode_card
 from bidding.binary import DealData
 from objects import CardResp, Card
 from claim import Claimer
+from pbn2ben import load
+
 
 
 def random_deal():
@@ -39,34 +43,42 @@ class AsyncBotLead(bots.BotLead):
 class AsyncCardPlayer(bots.CardPlayer):
     async def async_play_card(self, trick_i, leader_i, current_trick52, players_states):
         return self.play_card(trick_i, leader_i, current_trick52, players_states)
-
-
+    
+    
 class Driver:
 
-    def __init__(self, models, factory):
+    def __init__(self, models, factory, sampler):
         self.models = models
-
+        self.sampler = sampler
         self.factory = factory
         self.confirmer = factory.create_confirmer()
         self.channel = factory.create_channel()
 
-        print('confirmer', self.confirmer)
+        print("Setting seed=42")
+        np.random.seed(42)
 
-        self.human = [False, False, True, False]
+        #print('confirmer', self.confirmer)
 
-    def set_deal(self, deal_str, auction_str):
+        #Default is a Human South
+        self.human = [0.1, 0.1, 1, 0.1]
+        #Default is no system
+        self.ns = -1
+        self.ew = -1
+        self.sampler = sampler
+
+    def set_deal(self, deal_str, auction_str, ns, ew):
         self.deal_str = deal_str
         self.hands = deal_str.split()
 
-        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, 32)
-        self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, 52)
+        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, ns, ew, 32)
+        self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, ns, ew, 52)
 
         self.dealer_i = self.deal_data.dealer
         self.vuln_ns = self.deal_data.vuln_ns
         self.vuln_ew = self.deal_data.vuln_ew
-
+        self.ns = ns
+        self.ew = ew
         self.trick_winners = []
-        
 
     async def run(self):
         await self.channel.send(json.dumps({
@@ -78,7 +90,7 @@ class Driver:
 
         self.bid_responses = []
         self.card_responses = []
-        print(self.deal_str)
+        print(f"Deal={self.deal_str}")
 
         auction = await self.bidding()
         self.contract = bidding.get_contract(auction)
@@ -89,13 +101,13 @@ class Driver:
         if self.contract is None:
             return
 
-        print(auction)
-        print(self.contract)
+        #print(auction)
+        #print(self.contract)
 
-        print([self.dealer_i, self.vuln_ns, self.vuln_ew])
-        print(self.deal_str)
+        #print([self.dealer_i, self.vuln_ns, self.vuln_ew])
+        #print(self.deal_str)
 
-        level = int(self.contract[0])
+        #level = int(self.contract[0])
         strain_i = bidding.get_strain_i(self.contract)
         decl_i = bidding.get_decl_i(self.contract)
 
@@ -124,7 +136,7 @@ class Driver:
         print('opening lead:', decode_card(opening_lead52))
 
         for card_resp in self.card_responses:
-            pprint.pprint(card_resp.to_dict())
+            pprint.pprint(card_resp.to_dict(), width=200)
         
         await self.play(auction, opening_lead52)
 
@@ -166,13 +178,14 @@ class Driver:
             AsyncCardPlayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
         ]
 
-        if self.human[2]:
+        # check if user is playing and is declarer
+        if self.human[2] == 1:
             if decl_i == 2:
                 card_players[3] = self.factory.create_human_cardplayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
                 card_players[1] = self.factory.create_human_cardplayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
             elif decl_i == 0:
-                card_players[3] = self.factory.create_human_cardplayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
                 card_players[1] = self.factory.create_human_cardplayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
+                card_players[3] = self.factory.create_human_cardplayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
             elif decl_i == 1:
                 card_players[0] = self.factory.create_human_cardplayer(self.models.player_models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln)
             elif decl_i == 3:
@@ -197,13 +210,13 @@ class Driver:
         card_players[0].hand52[opening_lead52] -= 1
 
         for trick_i in range(12):
-            print("trick {}".format(trick_i))
+            print("trick {}".format(trick_i+1))
 
             for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
                 print('player {}'.format(player_i))
                 
                 if trick_i == 0 and player_i == 0:
-                    print('skipping')
+                    #print('skipping')
                     for i, card_player in enumerate(card_players):
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
 
@@ -219,12 +232,12 @@ class Driver:
 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states = sample.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
+                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                 await asyncio.sleep(0.01)
 
                 card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states)
-
+                
                 await asyncio.sleep(0.01)
 
                 self.card_responses.append(card_resp)
@@ -311,8 +324,8 @@ class Driver:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
 
-            print('trick52 {} cards={}. won by {}'.format(trick_i, list(map(decode_card, current_trick52)), trick_winner))
-            if any(self.human):
+            #print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
+            if np.any(np.array(self.human) == 1):
                 key = await self.confirmer.confirm()
                 if key == 'q':
                     print(self.deal_str)
@@ -348,7 +361,7 @@ class Driver:
             current_trick.append(card)
             current_trick52.append(card52)
 
-        if any(self.human):
+        if np.any(np.array(self.human) == 1):
             await self.confirmer.confirm()
 
         tricks.append(current_trick)
@@ -357,12 +370,12 @@ class Driver:
         trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         trick_won_by.append(trick_winner)
 
-        print('last trick')
-        print(current_trick)
-        print(current_trick52)
-        print(trick_won_by)
+        #print('last trick')
+        #print(current_trick)
+        #print(current_trick52)
+        #print(trick_won_by)
 
-        pprint.pprint(list(zip(tricks, trick_won_by)))
+        #pprint.pprint(list(zip(tricks, trick_won_by)))
 
         self.trick_winners = trick_won_by
 
@@ -377,13 +390,16 @@ class Driver:
 
         await asyncio.sleep(0.01)
 
-        if self.human[(decl_i + 1) % 4]:
+        if self.human[(decl_i + 1) % 4] == 1:
             card_resp = await self.factory.create_human_leader().async_lead()
         else:
             bot_lead = AsyncBotLead(
                 [self.vuln_ns, self.vuln_ew], 
                 hands_str[(decl_i + 1) % 4], 
-                self.models
+                self.models,
+                self.ns,
+                self.ew,
+                self.sampler
             )
             card_resp = await bot_lead.async_lead(auction)
 
@@ -395,19 +411,15 @@ class Driver:
 
     async def bidding(self):
         hands_str = self.deal_str.split()
-
-        print(self.dealer_i)
-        print(self.vuln_ns, self.vuln_ew)
-        print(hands_str[2])
-
+        
         vuln = [self.vuln_ns, self.vuln_ew]
 
         players = []
-        for i, is_human in enumerate(self.human):
-            bot = AsyncBotBid(vuln, hands_str[i], self.models)
-            if is_human:
+        for i, level in enumerate(self.human):
+            if level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
+                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, level, self.sampler, False)
                 players.append(bot)
 
         auction = ['PAD_START'] * self.dealer_i
@@ -433,26 +445,74 @@ def random_deal_source():
     while True:
         yield random_deal()
 
-
 async def main():
-    models = Models.from_conf(conf.load('../default.conf'))
+    random = True
+    #For some strange reason parameters parsed to the handler must be an array
+    board_no = []
+    board_no.append(0) 
 
-    driver = Driver(models, human.ConsoleFactory())
+    parser = argparse.ArgumentParser(description="Game server")
+    parser.add_argument("--boards", default="", help="Filename for configuration")
+    parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
+    parser.add_argument("--config", default="./config/default.conf", help="Filename for configuration")
+    parser.add_argument("--ns", type=int, default=-1, help="System for NS")
+    parser.add_argument("--ew", type=int, default=-1, help="System for EW")
+
+    args = parser.parse_args()
+
+    configfile = args.config
+
+    if args.boards:
+        filename = args.boards
+        file_extension = os.path.splitext(filename)[1].lower()  
+        if file_extension == '.ben':
+            with open(filename, "r") as file:
+                board_no.append(0) 
+                boards = file.readlines()
+                print(f"{len(boards)} boards loaded from file")
+            random = False
+        if file_extension == '.pbn':
+            with open(filename, "r") as file:
+                lines = file.readlines()
+                boards = load(lines)
+                print(f"{len(boards)} boards loaded from file")
+            random = False
+
+    if args.boardno:
+        print(f"Starting from {args.boardno}")
+        board_no[0] = args.boardno
+
+    if random:
+        print("Playing random deals or deals from the client")
+ 
+    ns = args.ns
+    ew = args.ew
+
+
+    models = Models.from_conf(conf.load(configfile))
+
+    driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(conf.load(configfile)))
 
     deal_source = random_deal_source()
 
     while True:
-        deal_str, auction_str = next(deal_source)
-        driver.set_deal(deal_str, auction_str)
+        if random: 
+            deal_str, auction_str = next(deal_source)
+            driver.set_deal(deal_str, auction_str, ns, ew)
+        else:
+            rdeal = tuple(boards[board_no[0]].replace("'","").rstrip('\n').split(','))
+            print(f"Board: {board_no[0]+1}" )
+            print(rdeal)
+            driver.set_deal(*rdeal, ns, ew)
 
-        driver.human = [False, False, False, False]
+        driver.human = [0.1, 0.1, 0.1, 0.1]
         await driver.run()
 
         with shelve.open('gamedb') as db:
             deal = driver.to_dict()
             db[uuid.uuid4().hex] = deal
 
-        input('\npress any key for next deal...')
+        input('\nPress Enter for next deal...')
 
 
 if __name__ == '__main__':

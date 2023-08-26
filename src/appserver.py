@@ -18,10 +18,10 @@ def home():
 
     with shelve.open(DB_NAME) as db:
         deal_items = sorted(list(db.items()), key=lambda x: x[1]['timestamp'], reverse=True)
-
+        
         for deal_id, deal in deal_items:
             html += '<li><span><a href="/app/viz.html?deal={}">{} {}</a></span>&nbsp;&nbsp;&nbsp;'.format(deal_id, deal['contract'], len(list(filter(lambda x: x % 2 == 1, deal['trick_winners']))))
-            html += '<span><a href="/api/delete/deal/{}">delete</a></span></li>\n'.format(deal_id)
+            html += f'<span><a href="/api/delete/deal/{deal_id}">delete</a></span></li>\n'
 
     html += '</ul>'
     return html

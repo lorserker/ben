@@ -1,6 +1,7 @@
 import sys
 sys.path.append('../../../src')
 
+import datetime
 import os.path
 import numpy as np
 import tensorflow.compat.v1 as tf
@@ -10,10 +11,14 @@ tf.disable_v2_behavior()
 
 from batcher import Batcher
 
-bin_dir = sys.argv[1]
-out_dir = sys.argv[2]
+if len(sys.argv) < 2:
+    print("Usage: python binfo_nn inputdirectory outputdirectory")
+    sys.exit(1)
 
-model_path = os.path.join(out_dir, 'binfo')
+bin_dir = sys.argv[1]
+modelpath = sys.argv[2]
+
+model_path = os.path.join(modelpath, 'binfo')
 
 batch_size = 64
 n_iterations = 500000
@@ -98,7 +103,7 @@ with tf.Session() as sess:
                 sess.run([cost, cost_hcp, cost_shape], 
                     feed_dict={seq_in: x_cost, seq_out_hcp: hcp_cost, seq_out_shape: shape_cost, keep_prob: 1.0})
 
-            print(c_train)
+            print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train))
 
             p_hcp_seq, p_shape_seq = sess.run([out_hcp_seq, out_shape_seq], feed_dict={seq_in: x_cost, seq_out_hcp: hcp_cost, seq_out_shape: shape_cost, keep_prob: 1.0})
 

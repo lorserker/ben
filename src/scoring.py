@@ -6,6 +6,8 @@ from bidding import bidding
 TRICK_VAL = {'C': 20, 'D': 20, 'H': 30, 'S': 30, 'N': 30}
 
 def score(contract, is_vulnerable, n_tricks):
+    if contract == "Pass":
+        return 0
     level = int(contract[0])
     strain = contract[1]
     doubled = 'X' in contract

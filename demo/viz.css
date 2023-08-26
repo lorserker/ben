@@ -3,6 +3,7 @@
     border: 1px solid black;
     width: 540px;
     height: 540px;
+    background-color: #beecef;
 }
 
 #north {
@@ -11,7 +12,6 @@
     left: 200px;
     width: 180px;
     height: 150px;
-    /*border: 1px solid black;*/
 }
 
 #west {
@@ -20,7 +20,6 @@
     left: 32px;
     width: 180px;
     height: 150px;
-    /*border: 1px solid black;*/
 }
 
 #east {
@@ -29,7 +28,6 @@
     left: 370px;
     width: 180px;
     height: 150px;
-    /*border: 1px solid black;*/
 }
 
 #south {
@@ -38,11 +36,9 @@
     left: 200px;
     width: 180px;
     height: 150px;
-    /*border: 1px solid black;*/
 }
 
 .suit {
-    /*border: 1px solid black;*/
     position: relative;
     margin-top: 3px;
     width: 99%;
@@ -53,7 +49,6 @@
 }
 
 #vul-north {
-    /*border: 1px solid black;*/
     position: absolute;
     top: 32px;
     left: 52px;
@@ -62,7 +57,6 @@
 }
 
 #vul-west {
-    /*border: 1px solid black;*/
     position: absolute;
     top: 52px;
     left: 32px;
@@ -71,7 +65,6 @@
 }
 
 #vul-south {
-    /*border: 1px solid black;*/
     position: absolute;
     top: 92px;
     left: 52px;
@@ -80,7 +73,6 @@
 }
 
 #vul-east {
-    /*border: 1px solid black;*/
     position: absolute;
     top: 52px;
     left: 92px;
@@ -94,10 +86,6 @@
 
 .white {
     background-color: white;
-}
-
-#deal {
-    background-color: #beecef;
 }
 
 #vul-north .dealer, #vul-south .dealer {
@@ -257,7 +245,7 @@ th {
     color: white;
     font-size: 24px;
     font-weight: bold;
-    font-family: arial;
+    font-family: Arial, sans-serif;
 }
 
 #info td.candidate-card {

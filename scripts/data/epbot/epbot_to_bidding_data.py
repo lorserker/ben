@@ -20,7 +20,7 @@ def main():
                 bid = f'{bid_i // 5}{"CDHSN"[bid_i % 5]}'
                 auction.append(bid)
             else:
-                raise Exception(f'Unexpected bid {bid_i}')
+                raise AttributeError(f'Unexpected bid {bid_i}')
             continue
 
         # we are getting a new deal

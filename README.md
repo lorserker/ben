@@ -56,6 +56,14 @@ Start the game server
 ```bash
 python gameserver.py
 ```
+By default you will just get random boards, but you cal start the server with a paramter
+
+```bash
+python gameserver.py --boards file.pbn
+```
+And the server will read the boards from the file. Only pbn and bens own internal format is supported (See input.ben)
+adding --boardno will start from that number in the file.
+
 And start the app server
 
 ```bash
