@@ -14,7 +14,7 @@ pip install tqdm
 pip install websockets
 # Had to install : conda install -c conda-forge websockets
 
-pip install tensorflow==2.0
+pip install "tensorflow>=2.0"
 pip install grpcio-tools
 
 pip install bottle
