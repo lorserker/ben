@@ -1,5 +1,6 @@
 import numpy as np
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 from scipy.special import softmax
 
@@ -72,7 +73,7 @@ def follow_suit(cards_softmax, own_cards, trick_suit):
     suit_defined = np.max(trick_suit, axis=1) > 0
     trick_suit_i = np.argmax(trick_suit, axis=1)
 
-    mask = (own_cards > 0).astype(np.int)
+    mask = (own_cards > 0).astype(np.int32)
 
     has_cards_of_suit = np.sum(mask * SUIT_MASK[trick_suit_i], axis=1) > 1e-9
 

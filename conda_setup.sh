@@ -1,4 +1,4 @@
-conda create -n ben python=3.7
+conda create -n ben python=3.9
 
 conda activate ben
 
@@ -14,7 +14,7 @@ pip install tqdm
 pip install websockets
 # Had to install : conda install -c conda-forge websockets
 
-pip install tensorflow==1.15
+pip install "tensorflow>=2.0"
 pip install grpcio-tools
 
 pip install bottle
