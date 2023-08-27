@@ -334,12 +334,10 @@ class Sample:
 
         ak_out_i = np.zeros((n_samples, len(ak_cards)), dtype=int)
         ak_out_i[:, :] = np.array(ak_cards)
-        ak_out_i = np.vectorize(np.random.permutation,
-                                signature='(n)->(n)')(ak_out_i)
+        ak_out_i = np.vectorize(lambda x: np.random.permutation(np.copy(x)), signature='(n)->(n)')(ak_out_i)
         small_out_i = np.zeros((n_samples, len(small_cards)), dtype=int)
         small_out_i[:, :] = np.array(small_cards)
-        small_out_i = np.vectorize(
-            np.random.permutation, signature='(n)->(n)')(small_out_i)
+        small_out_i = np.vectorize(lambda x: np.random.permutation(np.copy(x)), signature='(n)->(n)')(small_out_i)
 
         r_hcp = np.zeros((n_samples, 2)) + p_hcp
         r_shp = np.zeros((n_samples, 2, 4)) + p_shp
@@ -479,7 +477,7 @@ class Sample:
             [binary.get_cards_from_binary_hand(card_players[player_i].x_play[0, trick_i, :32]),
              binary.get_cards_from_binary_hand(public_hand)] +
             [np.array(vis_cur_trick_nonpub)] +
-            [np.array(x, dtype=np.int) for x in player_cards_played]
+            [np.array(x, dtype=np.int32) for x in player_cards_played]
         )
         hidden_cards = get_all_hidden_cards(visible_cards)
 
