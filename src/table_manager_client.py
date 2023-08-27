@@ -14,6 +14,7 @@ import ipaddress
 import sys
 import argparse
 import re
+import time
 import asyncio
 import numpy as np
 from sample import Sample
@@ -450,7 +451,7 @@ class TMClient:
         card_resp = await self.receive_line()
         card_resp_parts = card_resp.strip().split()
 
-        assert card_resp_parts[0] == SEATS[player_i]
+        assert card_resp_parts[0] == SEATS[player_i], f"{card_resp_parts[0]} != {SEATS[player_i]}"
 
         return card_resp_parts[-1][::-1].upper()
 
@@ -530,6 +531,7 @@ class TMClient:
             .replace(' ', '').replace('-', '').replace('S', '').replace('H', '').replace('D', '').replace('C', '')
 
     async def send_message(self, message: str):
+        time.sleep(0.1)
         print(f'{datetime.datetime.now().strftime("%H:%M:%S")} sending:   {message.ljust(60)}', end='')
 
         self.writer.write((message+"\r\n").encode())
