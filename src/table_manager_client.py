@@ -1,15 +1,14 @@
 import sys
-
-try:
-    import tensorflow as tf
-except ImportError:
-    print("This script requires TensorFlow, which is not available outside an Anaconda environment.")
-    sys.exit(1)
-
-# Just disables the warnings
 import os
+import logging
+
+# Set logging level to suppress warnings
+logging.getLogger().setLevel(logging.ERROR)
+# Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+# This import is only to help PyInstaller when generating the executables
+import tensorflow as tf
 import ipaddress
 import sys
 import argparse
@@ -50,7 +49,7 @@ class TMClient:
     def is_connected(self):
         return self._is_connected
     
-    async def run(self):
+    async def run(self, biddingonly):
         self.dealer_i, self.vuln_ns, self.vuln_ew, self.hand_str = await self.receive_deal()
 
         auction = await self.bidding()
@@ -58,16 +57,20 @@ class TMClient:
         await asyncio.sleep(0.01)
 
         self.contract = bidding.get_contract(auction)
-        if self.contract is None:
+        if  self.contract is None:
             return
 
-        level = int(self.contract[0])
-        strain_i = bidding.get_strain_i(self.contract)
+        # level = int(self.contract[0])
+        # strain_i = bidding.get_strain_i(self.contract)
         self.decl_i = bidding.get_decl_i(self.contract)
 
         print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Bidding ended: {auction}')
         if (self.verbose):
-            print(f"Contract {self.contract} declared by {self.decl_i}")
+            print(f"Contract {self.contract}")
+
+        if  biddingonly:
+            print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Ready to start new board')
+            return
 
         opening_lead_card = await self.opening_lead(auction)
         opening_lead52 = Card.from_symbol(opening_lead_card).code()
@@ -442,10 +445,10 @@ class TMClient:
     async def receive_card_play_for(self, player_i, trick_i):
         # We need to find out if it is dummy we are waiting for
         if ((self.decl_i + 2) % 4 == player_i):
-            waitingFor = "dummy"
+            waiting_for = "dummy"
         else:
-            waitingFor = SEATS[player_i]
-        msg_ready = f"{self.seat} ready for {waitingFor}'s card to trick {trick_i + 1}"
+            waiting_for = SEATS[player_i]
+        msg_ready = f"{self.seat} ready for {waiting_for}'s card to trick {trick_i + 1}"
         await self.send_message(msg_ready)
 
         card_resp = await self.receive_line()
@@ -485,6 +488,8 @@ class TMClient:
             msg_ready = f'{self.seat} ready for dummy.'
             await self.send_message(msg_ready)
             line = await self.receive_line()
+            if (line == "Start of board"):
+                return None
             # Dummy's cards : S A Q T 8 2. H K 7. D K 5 2. C A 7 6.
             return TMClient.parse_hand(line)
 
@@ -502,6 +507,7 @@ class TMClient:
         # 'Board number 1. Dealer North. Neither vulnerable. \r\n'
         deal_line_1 = await self.receive_line()
         if deal_line_1 == "Start of Board":
+            await self.send_message(f'{self.seat} ready for deal.')
             deal_line_1 = await self.receive_line()
 
         await self.send_message(f'{self.seat} ready for cards.')
@@ -509,7 +515,7 @@ class TMClient:
         # "North's cards : S 9 3. H -. D J 7 5. C A T 9 8 6 4 3 2."
         deal_line_2 = await self.receive_line()
 
-        rx_dealer_vuln = r'(?P<dealer>[a-zA-z]+?)\.\s(?P<vuln>.+?)\svulnerable'
+        rx_dealer_vuln = r'(?P<dealer>[a-zA-Z]+?)\.\s(?P<vuln>.+?)\svulnerable'
         match = re.search(rx_dealer_vuln, deal_line_1)
 
         if deal_line_2 is None or deal_line_2 == "":
@@ -560,6 +566,11 @@ def validate_ip(ip_str):
         return str(ip)
     except ValueError:
         raise argparse.ArgumentTypeError(f"'{ip_str}' is not a valid IP address")
+    
+def get_execution_path():
+    # Get the directory where the program is started from either PyInstaller executable or the script
+    return os.getcwd()
+
 
 #  Examples of how to start the table manager
 # python table_manager_client.py --host 127.0.0.1 --port 2000 --name SAYC --seat North --ns 1 --ew 1 --config config/sayc.conf
@@ -567,16 +578,22 @@ def validate_ip(ip_str):
 
 async def main():
     
+    # Get the path to the config file
+    config_path = get_execution_path()
+    
+    base_path = os.getenv('BEN_HOME') or config_path
+
     parser = argparse.ArgumentParser(description="Table manager interface")
     parser.add_argument("--host", type=validate_ip, default="127.0.0.1", help="IP for Table Manager")
     parser.add_argument("--port", type=int, default=2000, help="Port for Table Manager")
     parser.add_argument("--name", required=True, help="Name in Table Manager")
     parser.add_argument("--seat", required=True, help="Where to sit (North, East, South or West)")
-    parser.add_argument("--config", default="./config/default.conf", help="Filename for configuration")
+    parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--ns", type=int, default=-1, help="System for NS")
     parser.add_argument("--ew", type=int, default=-1, help="System for EW")
-    parser.add_argument("--is_continue", type=bool, default=False, help="Continuing a match")
+    parser.add_argument("--biddingonly", type=bool, default=False, help="Only bid, no play")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
+
     args = parser.parse_args()
 
     host = args.host
@@ -589,27 +606,33 @@ async def main():
     ns = args.ns
     ew = args.ew
 
-    is_continue = args.is_continue
-
     verbose = args.verbose
+    biddingonly = args.biddingonly
 
     configuration = conf.load(configfile)
 
-    models = Models.from_conf(configuration)
+    models = Models.from_conf(configuration, base_path.replace("\src",""))
 
     client = TMClient(name, seat, models, ns, ew, Sample.from_conf(configuration), verbose)
     print(f"Connecting to {host}:{port}")
     await client.connect(host, port)
     
     if client.is_connected:
-        if is_continue:    
-            await client.receive_line()
         await client.send_ready()
 
     while client.is_connected:
-        await client.run()
+        await client.run(biddingonly)
         # The deal just played should be saved for later review
 
 
-if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(main())
+    except KeyboardInterrupt:
+        pass
+    finally:
+        loop.close()
+
+
