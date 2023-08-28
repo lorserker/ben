@@ -105,7 +105,7 @@ First run the [bridge monitor](http://www.wbridge5.com/bm.htm) table manager ser
 Then, run the command below to connect to the table manager using the [blue chip bridge protocol](https://web.archive.org/web/20210514012054/http://www.bluechipbridge.co.uk/protocol.htm)
 
 ```
-python table_manager_client.py <table-manager-IP> <port> ben West
+python table_manager_client.py --host 127.0.0.1 --port 2000 --name ben --seat North --ns 1 --ew 1 --config config/sayc.conf
 ```
 
 that will connect to the table as West; the other seats can be taken similarly.
