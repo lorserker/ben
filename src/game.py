@@ -1,7 +1,15 @@
-# Just disables the warnings
 import os
 import asyncio
-#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+import logging
+
+# Set logging level to suppress warnings
+logging.getLogger().setLevel(logging.ERROR)
+# Just disables the warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+# This import is only to help PyInstaller when generating the executables
+import tensorflow as tf
 
 import deck52
 import pprint

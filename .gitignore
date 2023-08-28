@@ -11,3 +11,12 @@ scripts/match/bidding/0.2vs0.05
 scripts/match/bidding/training/html
 scripts/training/bidding/binary
 .vscode/settings.json
+install/build
+install/dist/config
+install/dist/models
+install/dist/appserver.exe
+install/dist/gamedb.*
+install/dist/gameserver.exe
+install/dist/game.exe
+install/dist/table_manager_client.exe
+install/venv

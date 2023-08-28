@@ -3,7 +3,7 @@
 This is a game engine for [bridge](https://en.wikipedia.org/wiki/Contract_bridge).
 It can be used as a robot player, to do analysis, or to develop AI for bridge.
 
-The engine is built using machine learning (neural networks) and [double dummy solvers](https://github.com/dds-bridge/dds) through the python wrapper [python-dds](https://github.com/Afwas/python-dds).
+The engine is built using machine learning (neural networks) and [double dummy solver](https://github.com/dds-bridge/dds) through the python wrapper [python-dds](https://github.com/Afwas/python-dds).
 
 To get a first impression of how the engine plays, please take a look at the [demo](https://lorserker.github.io/ben/demo/demo.html), or watch the bridge streamer Peter Hollands [demo the robot](https://www.youtube.com/watch?v=onG_V7vwxUk&t=150s) on IntoBridge.
 
@@ -19,13 +19,13 @@ If you like the software, please consider making a donation to support the devel
 
 The engine runs on Python 3.9, with the neural networks using tensorflow 2.0+
 
-The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html). 
+The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html), but the current version can be run using Python 3.11 and Tensorflow 2.13 without any virtual environment.
 
 For __Windows__ users: After installing anaconda, you  will have a new application called "Anaconda Prompt". Henceforth, you will have to run all commands in "Anaconda Prompt" not in "cmd". The title bar of your command prompt window should read *"Administrator: Anaconda Prompt (Miniconda3)"*
 
 After installing conda, execute the commands in the [conda_setup.sh](conda_setup.sh) script to create an environment and install the dependencies.
 
-The bridge engine was developed on Linux. It will likely work on any other platform which runs Python and conda, but was only tested on Windows 10 and Windows 11 and Mac M1/M2.
+The bridge engine was developed on Linux. It will likely work on any other platform which runs Python, but was only tested on Windows 10 and Windows 11 and Mac M1/M2.
 
 For __Mac M1/M2__ users: you need to install [Homebrew](https://brew.sh/) if you don't have it already. Then, you need to `brew install boost`. You might need to open `./bin/darwin/libdds.so` in XCode before launching `ben` for the first time.
 
@@ -100,6 +100,8 @@ sudo python game.py
 ```
 
 After each board, it's possible to go through the play using the web UI.
+
+You can send a PBN-file as parameter, when starting the game.
 
 To make the engine play against other bots:
 

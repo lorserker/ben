@@ -1,2 +1,2 @@
-start appserver
-start gameserver
+start "BEN Appserver" appserver
+start "BEN Gameserver" gameserver

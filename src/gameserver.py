@@ -1,6 +1,13 @@
-# Just disables the warnings
 import os
+import logging
+
+# Set logging level to suppress warnings
+logging.getLogger().setLevel(logging.ERROR)
+# Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
+# This import is only to help PyInstaller when generating the executables
+import tensorflow as tf
 
 import uuid
 import shelve
@@ -40,11 +47,13 @@ parser.add_argument("--config", default=f"{base_path}/config/default.conf", help
 parser.add_argument("--ns", type=int, default=-1, help="System for NS")
 parser.add_argument("--ew", type=int, default=-1, help="System for EW")
 parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
+parser.add_argument("--port", type=int, default=4443, help="Port for appserver")
 
 args = parser.parse_args()
 
 configfile = args.config
 verbose = args.verbose
+port = args.port
 
 if args.boards:
     filename = args.boards
@@ -147,9 +156,17 @@ async def handler(websocket, path, board_no):
         print('Error:', ex)
         raise ex
 
+async def main():
+    websockets.serve(functools.partial(handler, board_no=board_no), "0.0.0.0", port)
 
-start_server = websockets.serve(functools.partial(handler, board_no=board_no), "0.0.0.0", 4443)
+if __name__ == "__main__":
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(main())
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        loop.close()
 
-
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()

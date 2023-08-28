@@ -50,11 +50,6 @@ Then, run the trainig script. This will take several hours to complete, but it w
 ```
 python bidding_nn.py binary/bidding models/bidding
 ```
-if this is failing you might have to install 
-
-```
-conda install tensorflow-estimator=1.15
-```
 
 When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained. (Much better is to use the default.conf file, or create a new configuration file, that can be used)
 

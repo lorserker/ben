@@ -631,7 +631,7 @@ class Sample:
             lead_scores = self.get_opening_lead_scores(
                 auction, vuln, models.binfo, models.lead, states[0][:, 0, :32], opening_lead, ns, ew)
 
-            # How much trust that opponents woiuld have lead the actual card from the hand sampled
+            # How much trust that opponents would have lead the actual card from the hand sampled
             lead_accept_threshold = self.lead_accept_threshold
             while np.sum(lead_scores > lead_accept_threshold) < 20:
                 lead_accept_threshold *= 0.9
