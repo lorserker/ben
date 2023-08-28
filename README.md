@@ -17,15 +17,18 @@ If you like the software, please consider making a donation to support the devel
 
 ### Installation
 
-The engine runs on Python 3.9, with the neural networks using tensorflow 2.0
+The engine runs on Python 3.9, with the neural networks using tensorflow 2.0+
 
 The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html). 
 
-For __Windows__ users: After installing anaconda, you  will have a new application called "Anaconda Prompt". Henceforth you will have to run all commands in "Anaconda Prompt" not in "cmd". The title bar of your command prompt window should read *"Administrator: Anaconda Prompt (Miniconda3)"*
+For __Windows__ users: After installing anaconda, you  will have a new application called "Anaconda Prompt". Henceforth, you will have to run all commands in "Anaconda Prompt" not in "cmd". The title bar of your command prompt window should read *"Administrator: Anaconda Prompt (Miniconda3)"*
 
 After installing conda, execute the commands in the [conda_setup.sh](conda_setup.sh) script to create an environment and install the dependencies.
 
-The bridge engine was developed on linux. It will likely work on any other platform which runs Python and conda, but was only tested on Windows 10 and Windows 11.
+The bridge engine was developed on Linux. It will likely work on any other platform which runs Python and conda, but was only tested on Windows 10 and Windows 11 and Mac M1/M2.
+
+For __Mac M1/M2__ users: you need to install [Homebrew](https://brew.sh/) if you don't have it already. Then, you need to `brew install boost`. You might need to open `./bin/darwin/libdds.so` in XCode before launching `ben` for the first time.
+
 
 ### Running the Web App
 
