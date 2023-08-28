@@ -54,7 +54,7 @@ class BotBid:
 
     def bid(self, auction):
         candidates = self.get_bid_candidates(auction)
-
+        #print(f"Sampling for aution: {auction}")
         hands_np = self.sample_hands(auction)
         samples = []
         #print(f"hands_np {hands_np.shape[0]}")
@@ -107,6 +107,7 @@ class BotBid:
 
         candidates = []
         #print(f"self.min_candidate_score {self.min_candidate_score}")
+        # If self.min_candidate_score == -1 we will just take what the neural network suggest 
         if (self.min_candidate_score == -1):
             bid_i = np.argmax(bid_softmax)
             if bidding.can_bid(bidding.ID2BID[bid_i], auction):
@@ -125,6 +126,7 @@ class BotBid:
                 else:
                     print(f"Bid not valid {bidding.ID2BID[bid_i]}")
 
+                # set the score for the bid just processed to zero so it is out of the loop
                 bid_softmax[bid_i] = 0
 
         return candidates

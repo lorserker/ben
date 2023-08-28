@@ -22,7 +22,13 @@ from ctypes import *
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
-DDS_LIB = 'dds.dll' if sys.platform == 'win32' else 'libdds.so'
+if sys.platform == 'win32':
+    DDS_LIB = 'dds.dll'
+elif sys.platform == 'darwin':
+    DDS_LIB = 'darwin/libdds.so'
+else:
+    DDS_LIB = 'libdds.so'
+
 DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)
 
 dds = cdll.LoadLibrary(DDS_PATH)

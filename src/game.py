@@ -1,3 +1,8 @@
+# Just disables the warnings
+import os
+import asyncio
+#os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+
 import deck52
 import pprint
 import time
@@ -23,6 +28,11 @@ from objects import CardResp, Card
 from claim import Claimer
 from pbn2ben import load
 
+import os
+
+def get_execution_path():
+    # Get the directory where the program is started from either PyInstaller executable or the script
+    return os.getcwd()
 
 
 def random_deal():
@@ -47,7 +57,7 @@ class AsyncCardPlayer(bots.CardPlayer):
     
 class Driver:
 
-    def __init__(self, models, factory, sampler):
+    def __init__(self, models, factory, sampler, verbose):
         self.models = models
         self.sampler = sampler
         self.factory = factory
@@ -65,6 +75,7 @@ class Driver:
         self.ns = -1
         self.ew = -1
         self.sampler = sampler
+        self.verbose = verbose
 
     def set_deal(self, deal_str, auction_str, ns, ew):
         self.deal_str = deal_str
@@ -419,7 +430,7 @@ class Driver:
             if level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
-                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, level, self.sampler, False)
+                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, level, self.sampler, self.verbose)
                 players.append(bot)
 
         auction = ['PAD_START'] * self.dealer_i
@@ -451,16 +462,23 @@ async def main():
     board_no = []
     board_no.append(0) 
 
+    # Get the path to the config file
+    config_path = get_execution_path()
+    
+    base_path = os.getenv('BEN_HOME') or config_path
+
     parser = argparse.ArgumentParser(description="Game server")
     parser.add_argument("--boards", default="", help="Filename for configuration")
     parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
-    parser.add_argument("--config", default="./config/default.conf", help="Filename for configuration")
+    parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--ns", type=int, default=-1, help="System for NS")
     parser.add_argument("--ew", type=int, default=-1, help="System for EW")
+    parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()
 
     configfile = args.config
+    verbose = args.verbose
 
     if args.boards:
         filename = args.boards
@@ -488,17 +506,22 @@ async def main():
     ns = args.ns
     ew = args.ew
 
+    configuration = conf.load(configfile)
 
-    models = Models.from_conf(conf.load(configfile))
+    models = Models.from_conf(configuration, base_path.replace("\src",""))
 
-    driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(conf.load(configfile)))
-
-    deal_source = random_deal_source()
+    driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration), verbose)
 
     while True:
         if random: 
-            deal_str, auction_str = next(deal_source)
-            driver.set_deal(deal_str, auction_str, ns, ew)
+            #Just take a random"
+            rdeal = random_deal()
+
+            # example of to use a fixed deal
+
+            #rdeal = ('962.73.AKQ83.T83 AJ7.AK982.T6.Q75 Q85.QJ54.J9754.K KT43.T6.2.AJ9642', 'S None')
+
+            driver.set_deal(*rdeal, ns, ew)
         else:
             rdeal = tuple(boards[board_no[0]].replace("'","").rstrip('\n').split(','))
             print(f"Board: {board_no[0]+1}" )
@@ -508,12 +531,18 @@ async def main():
         driver.human = [0.1, 0.1, 0.1, 0.1]
         await driver.run()
 
-        with shelve.open('gamedb') as db:
+        with shelve.open(f"{base_path}/gamedb") as db:
             deal = driver.to_dict()
             db[uuid.uuid4().hex] = deal
 
-        input('\nPress Enter for next deal...')
-
+        user_input = input("\n Q to quit or any other key for next deal ")
+        if user_input.lower() == "q":
+            break
 
 if __name__ == '__main__':
-    asyncio.get_event_loop().run_until_complete(main())
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(main())
+    except KeyboardInterrupt:
+        pass

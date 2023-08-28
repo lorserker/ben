@@ -20,8 +20,7 @@ class Models:
         self.player_models = player_models
 
     @classmethod
-    def from_conf(cls, conf: ConfigParser) -> "Models":
-        base_path = os.getenv('BEN_HOME') or '..'
+    def from_conf(cls, conf: ConfigParser, base_path) -> "Models":
         return cls(
             bidder_model=Bidder('bidder', os.path.join(
                 base_path, conf['bidding']['bidder'])),

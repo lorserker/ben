@@ -1,10 +1,6 @@
-import sys
-
-try:
-    import tensorflow
-except ImportError:
-    print("This script requires TensorFlow, which is not available outside an Anaconda environment.")
-    sys.exit(1)
+# Just disables the warnings
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import uuid
 import shelve
@@ -23,21 +19,32 @@ from sample import Sample
 from urllib.parse import parse_qs, urlparse
 from pbn2ben import load
 
+def get_execution_path():
+    # Get the directory where the program is started from either PyInstaller executable or the script
+    return os.getcwd()
 
 random = True
 #For some strange reason parameters parsed to the handler must be an array
 board_no = []
 board_no.append(0) 
 
+# Get the path to the config file
+config_path = get_execution_path()
+    
+base_path = os.getenv('BEN_HOME') or config_path
+
 parser = argparse.ArgumentParser(description="Game server")
 parser.add_argument("--boards", default="", help="Filename for configuration")
 parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
-parser.add_argument("--config", default="./config/default.conf", help="Filename for configuration")
+parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
 parser.add_argument("--ns", type=int, default=-1, help="System for NS")
 parser.add_argument("--ew", type=int, default=-1, help="System for EW")
+parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
+
 args = parser.parse_args()
 
 configfile = args.config
+verbose = args.verbose
 
 if args.boards:
     filename = args.boards
@@ -65,8 +72,9 @@ if random:
 ns = args.ns
 ew = args.ew
 
+configuration = conf.load(configfile)
 
-models = Models.from_conf(conf.load(configfile))
+models = Models.from_conf(configuration, base_path.replace("\src",""))
 
 print('models loaded')
 
@@ -77,9 +85,9 @@ def worker(driver):
 
 
 async def handler(websocket, path, board_no):
-    print(f'Got websocket connection {websocket}')
+    print(f'Got websocket connection')
 
-    driver = game.Driver(models, human.WebsocketFactory(websocket), Sample.from_conf(conf.load(configfile)))
+    driver = game.Driver(models, human.WebsocketFactory(websocket), Sample.from_conf(configuration), verbose)
 
     parsed_url = urlparse(path)
     query_params = parse_qs(parsed_url.query)
@@ -109,7 +117,7 @@ async def handler(websocket, path, board_no):
             #Just take a random"
             rdeal = game.random_deal()
             # example of to use a fixed deal
-            # rdeal = ('T7654.A.JT54.AK8 Q2.JT9.AK32.Q754 KJ983.6.Q9.JT932 A.KQ875432.876.6', 'E E-W', -1, -1)
+            rdeal = ('5.983.AKT7.K986 986.QT4.865.AQT7 JT7.J7652.3.J653 AKQ432.AK.QJ942.', 'N None')
             driver.human = [0.1, 0.1, 1, 0.1]
             driver.set_deal(*rdeal, ns, ew)
         else:
@@ -122,7 +130,7 @@ async def handler(websocket, path, board_no):
     try:
         await driver.run()
 
-        with shelve.open('gamedb') as db:
+        with shelve.open(f"{base_path}/gamedb") as db:
             deal_bots = driver.to_dict()
             db[uuid.uuid4().hex] = deal_bots
             print('saved')

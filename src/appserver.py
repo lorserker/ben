@@ -5,10 +5,22 @@ from bottle import Bottle, run, static_file, redirect
 
 import shelve
 import json
+import os
+import argparse
 
 app = Bottle()
+os.getcwd()
+DB_NAME = os.getcwd() + '/gamedb'
 
-DB_NAME = 'gamedb'
+parser = argparse.ArgumentParser(description="Appserver")
+parser.add_argument("--port", type=int, default=8080, help="Port for appserver")
+
+args = parser.parse_args()
+
+port = args.port
+
+
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 @app.route('/home')
 def home():
@@ -30,7 +42,9 @@ def home():
 def frontend(filename):
     if '?' in filename:
         filename = filename[:filename.index('?')]
-    return static_file(filename, root='./frontend')
+
+    file_path = os.path.join(script_dir, 'frontend')    
+    return static_file(filename, root=file_path)
 
 @app.route('/api/deals/<deal_id>')
 def deal_data(deal_id):
@@ -48,4 +62,4 @@ def delete_deal(deal_id):
     redirect('/home')
 
 
-run(app, host='0.0.0.0', port=8080, server='gevent')
+run(app, host='0.0.0.0', port=port, server='gevent')

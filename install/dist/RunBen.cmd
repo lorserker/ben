@@ -1,0 +1,2 @@
+start appserver
+start gameserver
