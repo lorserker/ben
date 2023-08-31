@@ -94,6 +94,7 @@ class TMClient:
 
         await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18')
 
+        # Validate response Blue Chip can send: Error Team name mismatch
         await self.receive_line()
         
         await self.send_message(f'{self.seat} ready for teams')
