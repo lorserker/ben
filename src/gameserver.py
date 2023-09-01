@@ -41,7 +41,7 @@ config_path = get_execution_path()
 base_path = os.getenv('BEN_HOME') or config_path
 
 parser = argparse.ArgumentParser(description="Game server")
-parser.add_argument("--boards", default="", help="Filename for configuration")
+parser.add_argument("--boards", default="", help="Filename for boards")
 parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
 parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
 parser.add_argument("--ns", type=int, default=-1, help="System for NS")
@@ -157,7 +157,9 @@ async def handler(websocket, path, board_no):
         raise ex
 
 async def main():
-    websockets.serve(functools.partial(handler, board_no=board_no), "0.0.0.0", port)
+    print("Listening on port: ",port)
+    start_server = websockets.serve(functools.partial(handler, board_no=board_no), "0.0.0.0", 4443)
+    await start_server
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()
