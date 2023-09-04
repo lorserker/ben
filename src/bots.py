@@ -34,6 +34,7 @@ class BotBid:
         self.ew = ew
         self.sample = sampler
         self.verbose = verbose
+        self.sample_boards_for_action = 2048
 
     @staticmethod
     def get_n_steps_auction(auction):
@@ -69,8 +70,13 @@ class BotBid:
         if BotBid.do_rollout(auction, candidates):
             ev_candidates = []
             for candidate in candidates:
+                #print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.4f}")
                 auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np)
+                #for idx, auction2 in enumerate(auctions_np):
+                #    print(samples[idx], bidding.get_action_as_string(auction2))
                 contracts, decl_tricks_softmax = self.expected_tricks(hands_np, auctions_np)
+                #for contract, trick in zip(contracts, decl_tricks_softmax):
+                #    print(f"Contract: {contract}, Declarer Trick: {trick}")
                 ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
                 ev_c = candidate.with_expected_score(np.mean(ev))
                 ev_candidates.append(ev_c)
@@ -85,16 +91,24 @@ class BotBid:
     
     @staticmethod
     def do_rollout(auction, candidates):
+        # Just one candidate, so no need for rolling out the bidding
         if len(candidates) == 1:
+            #print("Just one candidate, so no need for rolling out the bidding")
             return False
         
+        # If we are past 1st round then we will roll out
         if BotBid.get_n_steps_auction(auction) > 1:
+            #print("If we are past 1st round then we will roll out")
             return True
         
+        # If someone has bid before us
         if any(bid not in ('PASS', 'PAD_START') for bid in auction):
+            #print("If someone has bid before us")
             return True
         
+        # If all bids are real bids - this could result in a missing roll out
         if all(candidate.bid != 'PASS' for candidate in candidates):
+            #print("If all bids are real bids - this could result in a missing roll out")
             return True
 
         return False
@@ -123,8 +137,9 @@ class BotBid:
                         print("No bids available")
                 if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                     candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
-                else:
-                    print(f"Bid not valid {bidding.ID2BID[bid_i]}")
+                #else:
+                    # Seems to be an error in the training that needs to be solved
+                    #print(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}")
 
                 # set the score for the bid just processed to zero so it is out of the loop
                 bid_softmax[bid_i] = 0
@@ -142,7 +157,7 @@ class BotBid:
         turn_to_bid = len(auction_so_far) % 4
         n_steps = BotBid.get_n_steps_auction(auction_so_far)
         lho_pard_rho = self.sample.sample_cards_auction(
-            2048, n_steps, auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew)[:self.sample.sample_hands_auction]
+            self.sample_boards_for_action, n_steps, auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew)[:self.sample.sample_hands_auction]
         n_samples = lho_pard_rho.shape[0]
         
         hands_np = np.zeros((n_samples, 4, 32), dtype=np.int32)

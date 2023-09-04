@@ -1,5 +1,13 @@
 import sys
+import os
 sys.path.append('../../../src')
+
+import logging
+
+# Set logging level to suppress warnings
+logging.getLogger().setLevel(logging.ERROR)
+# Just disables the warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import json
 
@@ -49,7 +57,7 @@ if __name__ == '__main__':
 
     sys.stderr.write(f'NS = {args.bidder}\n')
     
-    models = Models.from_conf(conf.load(args.bidder))
+    models = Models.from_conf(conf.load(args.bidder),"..\..\..")
     sampler = Sample.from_conf(conf.load(args.bidder))
     for line in sys.stdin:
         obj = json.loads(line)

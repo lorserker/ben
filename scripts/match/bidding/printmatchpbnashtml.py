@@ -63,7 +63,7 @@ def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
 if len(sys.argv) < 2:
-    print("Usage: python printmatchashtml.py input.pbn")
+    print("Usage: python printmatchpbnashtml.py input.pbn")
     sys.exit(1)
 
 input_file = sys.argv[1]

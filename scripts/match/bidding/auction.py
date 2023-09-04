@@ -1,5 +1,13 @@
 import sys
+import os
 sys.path.append('../../../src')
+
+import logging
+
+# Set logging level to suppress warnings
+logging.getLogger().setLevel(logging.ERROR)
+# Just disables the warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import argparse
 import json
@@ -13,6 +21,7 @@ from nn.bidder import Bidder
 from nn.models import Models
 from bots import BotBid
 from bidding import bidding
+from sample import Sample
 
 VULN = {
     'None': [False, False],
@@ -22,27 +31,27 @@ VULN = {
 }
 
 
-def bid_hand(hands, dealer, vuln, models_ns_ew, ns, ew, do_search, nntrust):
+def bid_hand(hands, dealer, vuln, models_ns_ew, ns, ew, do_search, nntrust, samplers, verbose):
 
     if (nntrust==None) :
         nntrust = 0.1
     dealer_i = 'NESW'.index(dealer)
     
-    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], ns, ew, nntrust, False) for i, hand in enumerate(hands)]
+    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], ns, ew, nntrust, samplers[i % 2], verbose) for i, hand in enumerate(hands)]
 
     auction = ['PAD_START'] * dealer_i
 
-    do_search_NS = do_search == "NS" or do_search == "Both"
-    do_search_EW = do_search == "EW"or do_search == "Both"
+    do_search_ns = do_search == "NS" or do_search == "Both"
+    do_search_ew = do_search == "EW"or do_search == "Both"
 
     turn_i = dealer_i
 
     while not bidding.auction_over(auction):
-        if do_search_NS and ((turn_i ) % 2 == 0) :
+        if do_search_ns and ((turn_i ) % 2 == 0) :
             bid = bidder_bots[turn_i].bid(auction).bid
             auction.append(bid)
         else:
-            if do_search_EW and ((turn_i ) % 2 == 1) :
+            if do_search_ew and ((turn_i ) % 2 == 1) :
                 bid = bidder_bots[turn_i].bid(auction).bid
                 auction.append(bid)
             else:
@@ -73,10 +82,14 @@ if __name__ == '__main__':
     sys.stderr.write(f'EW = {args.bidderEW}\n')
     sys.stderr.write(f'search = {args.search}\n')
     sys.stderr.write(f'nn trust = {args.nntrust}\n')
-    
-    models_ns = Models.from_conf(conf.load(args.bidderNS))
-    models_ew = Models.from_conf(conf.load(args.bidderEW))
 
+
+    configuration_ns = conf.load(args.bidderNS)
+    configuration_ew = conf.load(args.bidderEW)
+
+    
+    models_ns = Models.from_conf(configuration_ns,"..\..\..")
+    models_ew = Models.from_conf(configuration_ns,"..\..\..")
 
     for index, line in enumerate(open(args.set)):        
         # To make the boards reproducable random is seeded at the beginning of each board
@@ -87,10 +100,10 @@ if __name__ == '__main__':
         vuln = parts[1]
         hands = parts[2:]
 
-        ns = 0
-        ew = 0
-        #sys.stderr.write(f'Bidding board {index + 1}\n')
-        auction = bid_hand(hands, dealer, vuln, [models_ns, models_ew], ns, ew, args.search, args.nntrust)
+        ns = -1
+        ew = -1
+        sys.stderr.write(f'Bidding board {index + 1}\n')
+        auction = bid_hand(hands, dealer, vuln, [models_ns, models_ew], ns, ew, args.search, args.nntrust,[Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)],False)
 
         record = {
             'board' : index + 1,
