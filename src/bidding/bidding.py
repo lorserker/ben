@@ -20,6 +20,14 @@ BID2ID.update(SUITBID2ID)
 
 ID2BID = {bid:i for i, bid in BID2ID.items()}
 
+def get_action_as_string(auction):
+    bid_strings = []
+    for bid in auction:
+        # Ignore PAD_START and PAD_END
+        if (bid > 2):
+            bid_strings.append(ID2BID[bid])
+    return "-".join(bid_strings)
+
 
 def encode_bid(bid):
     bid_one_hot = np.zeros((1, len(BID2ID)), dtype=np.float32)

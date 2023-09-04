@@ -94,7 +94,7 @@ def worker(driver):
 
 
 async def handler(websocket, path, board_no):
-    print(f'Got websocket connection')
+    print("Got websocket connection")
 
     driver = game.Driver(models, human.WebsocketFactory(websocket), Sample.from_conf(configuration), verbose)
 

@@ -31,9 +31,9 @@ def main():
     ns = args.ns
     ew = args.ew
 
-    models = Models.from_conf(conf.load(config_path))
+    models = Models.from_conf(conf.load(config_path),"..\..")
 
-    sampler = Sample.from_conf(conf.load(config_path))
+    sampler = Sample.from_conf(conf.load(config_path),"..\..")
     with open(filename, 'r') as input_file:
         for line in input_file:
             parts = line.strip().split()
