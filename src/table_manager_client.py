@@ -103,7 +103,7 @@ class TMClient:
 
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
-        bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, 0.1, self.sampler, self.verbose)
+        bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, self.models.search_threshold, self.sampler, self.verbose)
         
         auction = ['PAD_START'] * self.dealer_i
 
@@ -636,4 +636,13 @@ if __name__ == "__main__":
     finally:
         loop.close()
 
+    loop = asyncio.new_event_loop()
+    asyncio.set_event_loop(loop)
+    try:
+        loop.run_until_complete(main())
+        loop.run_forever()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        loop.close()
 
