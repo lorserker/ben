@@ -31,7 +31,7 @@ else:
 DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)
 
 dds = cdll.LoadLibrary(DDS_PATH)
-print(f"Loaded lib { os.path.basename(DDS_PATH)}")
+sys.stderr.write(f"Loaded lib { os.path.basename(DDS_PATH)}")
 
 DDS_VERSION = 20700    
 
