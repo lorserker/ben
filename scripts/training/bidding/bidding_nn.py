@@ -36,7 +36,7 @@ keep_prob = tf.compat.v1.placeholder(tf.float32, name='keep_prob')
 
 cells = []
 for _ in range(n_layers):
-    cell = tf.contrib.rnn.DropoutWrapper(
+    cell = tf.compat.v1.nn.rnn_cell.DropoutWrapper(
         tf.nn.rnn_cell.BasicLSTMCell(lstm_size),
         output_keep_prob=keep_prob
     )
@@ -46,17 +46,17 @@ state = []
 for i, cell_i in enumerate(cells):
     s_c = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
     s_h = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_h_{}'.format(i))
-    state.append(tf.contrib.rnn.LSTMStateTuple(c=s_c, h=s_h))
+    state.append(tf.compat.v1.nn.rnn_cell.LSTMStateTuple(c=s_c, h=s_h))
 state = tuple(state)
 
 x_in = tf.compat.v1.placeholder(tf.float32, [1, n_ftrs], name='x_in')
     
-lstm_cell = tf.contrib.rnn.MultiRNNCell(cells)
+lstm_cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell(cells)
 
 seq_in = tf.compat.v1.placeholder(tf.float32, [None, None, n_ftrs], 'seq_in')
 seq_out = tf.compat.v1.placeholder(tf.float32, [None, None, n_bids], 'seq_out')
 
-softmax_w = tf.compat.v1.get_variable('softmax_w', shape=[lstm_cell.output_size, n_bids], dtype=tf.float32, initializer=tf.contrib.layers.xavier_initializer(seed=1337))
+softmax_w = tf.compat.v1.get_variable('softmax_w', shape=[lstm_cell.output_size, n_bids], dtype=tf.float32, initializer=tf.compat.v1.initializers.glorot_uniform(seed=1337))
 
 out_rnn, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 
