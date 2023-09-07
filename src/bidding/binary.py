@@ -43,8 +43,10 @@ class DealData(object):
         self.auction = [bid for bid in self.auction if bid == 'PAD_START']
 
     def get_binary(self, ns, ew, n_steps=8):
-
-        X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+        if ns == -1:
+            X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+        else: 
+            X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
         y = np.zeros((4, n_steps, 40), dtype=np.float16)
 
         padded_auction = self.auction + (['PAD_END'] * 4 * n_steps)
@@ -72,19 +74,30 @@ class DealData(object):
             rho_bid = padded_auction[i - 1] if i - 1 >= 0 else 'PAD_START'
             target_bid = padded_auction[i]
 
-            # Create an array with [ns, ew] only if neither ns nor ew is -1
-            ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
+            if (ns == -1):
+                ftrs = np.concatenate((
+                    vuln,
+                    hcp,
+                    shape,
+                    self.hands[hand_ix],
+                    bidding.encode_bid(lho_bid),
+                    bidding.encode_bid(partner_bid),
+                    bidding.encode_bid(rho_bid)
+                ), axis=1)
+            else:
+                # Create an array with [ns, ew] only if neither ns nor ew is -1
+                ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
 
-            ftrs = np.concatenate((
-                ns_ew_array,
-                vuln,
-                hcp,
-                shape,
-                self.hands[hand_ix],
-                bidding.encode_bid(lho_bid),
-                bidding.encode_bid(partner_bid),
-                bidding.encode_bid(rho_bid)
-            ), axis=1)
+                ftrs = np.concatenate((
+                    ns_ew_array,
+                    vuln,
+                    hcp,
+                    shape,
+                    self.hands[hand_ix],
+                    bidding.encode_bid(lho_bid),
+                    bidding.encode_bid(partner_bid),
+                    bidding.encode_bid(rho_bid)
+                ), axis=1)
 
             X[hand_ix, t, :] = ftrs
             y[hand_ix, t, :] = bidding.encode_bid(target_bid)

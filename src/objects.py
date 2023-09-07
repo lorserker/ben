@@ -1,5 +1,3 @@
-
-
 class Card:
 
     SUITS = 'SHDC'
@@ -60,13 +58,13 @@ class CandidateCard:
             'card': self.card.symbol(),
         }
         if self.insta_score is not None:
-            result['insta_score'] = self.insta_score
+            result['insta_score'] = round(self.insta_score,4)
         if self.expected_tricks is not None:
-            result['expected_tricks'] = self.expected_tricks
+            result['expected_tricks'] = round(self.expected_tricks,2)
         if self.p_make_contract is not None:
-            result['p_make_contract'] = self.p_make_contract
+            result['p_make_contract'] = round(self.p_make_contract,2)
         if self.expected_score is not None:
-            result['expected_score'] = self.expected_score
+            result['expected_score'] = round(self.expected_score)
 
         return result
 
@@ -88,22 +86,26 @@ class CardResp:
 
 class CandidateBid:
 
-    def __init__(self, bid, insta_score, expected_score=None):
+    def __init__(self, bid, insta_score, expected_score=None, adjust=None):
         self.bid = bid
         self.insta_score = None if insta_score is None else float(insta_score)
         self.expected_score = None if expected_score is None else float(expected_score)
+        self.adjust = None if adjust is None else float(adjust)
 
-    def with_expected_score(self, expected_score):
-        return CandidateBid(self.bid, self.insta_score, expected_score)
+    def with_expected_score(self, expected_score, adjust):
+        return CandidateBid(self.bid, self.insta_score, expected_score, adjust)
 
     def to_dict(self):
         result = {
             'call': self.bid,
-            'insta_score': self.insta_score
+            'insta_score': round(self.insta_score,4)
         }
         
         if self.expected_score is not None:
-            result['expected_score'] = self.expected_score
+            result['expected_score'] = round(self.expected_score)
+        
+        if self.adjust is not None:
+            result['adjustment'] = round(self.adjust)
         
         return result
 

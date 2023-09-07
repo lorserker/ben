@@ -1,6 +1,6 @@
 import os
 import asyncio
-
+import hashlib
 import logging
 
 # Set logging level to suppress warnings
@@ -24,9 +24,9 @@ import numpy as np
 
 import human
 import bots
-import sample
 import conf
 
+from sample import Sample
 from bidding import bidding
 from sample import Sample
 from nn.models import Models
@@ -75,8 +75,6 @@ class Driver:
         print("Setting seed=42")
         np.random.seed(42)
 
-        #print('confirmer', self.confirmer)
-
         #Default is a Human South
         self.human = [0.1, 0.1, 1, 0.1]
         #Default is no system
@@ -99,6 +97,18 @@ class Driver:
         self.ew = ew
         self.trick_winners = []
 
+        # Calculate the SHA-256 hash
+        hash_object = hashlib.sha256(deal_str.encode())
+        hash_bytes = hash_object.digest()
+
+        # Convert the first 4 bytes of the hash to an integer and take modulus
+        hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
+
+        # Now you can use hash_integer as a seed
+        print("Setting seed=",hash_integer)
+        np.random.seed(hash_integer)
+
+
     async def run(self):
         await self.channel.send(json.dumps({
             'message': 'deal_start',
@@ -114,19 +124,14 @@ class Driver:
         auction = await self.bidding()
         self.contract = bidding.get_contract(auction)
 
-        for bid_resp in self.bid_responses:
-            pprint.pprint(bid_resp.to_dict(), width=120)
+        if self.verbose:
+            print("****** Bid responses ******")
+            for bid_resp in self.bid_responses:
+                pprint.pprint(bid_resp.to_dict(), width=120)
 
         if self.contract is None:
             return
 
-        #print(auction)
-        #print(self.contract)
-
-        #print([self.dealer_i, self.vuln_ns, self.vuln_ew])
-        #print(self.deal_str)
-
-        #level = int(self.contract[0])
         strain_i = bidding.get_strain_i(self.contract)
         decl_i = bidding.get_decl_i(self.contract)
 
@@ -137,6 +142,8 @@ class Driver:
             'strain': strain_i
         }))
 
+        print("trick 1")
+
         opening_lead52 = (await self.opening_lead(auction)).card.code()
 
         await self.channel.send(json.dumps({
@@ -146,16 +153,14 @@ class Driver:
         }))
 
         await self.channel.send(json.dumps({
-            'message': 'opening_lead',
+            'message': 'show_dummy',
             'player': (decl_i + 1) % 4,
-            'card': decode_card(opening_lead52),
             'dummy': self.deal_str.split()[0] if decl_i == 0 else self.deal_str.split()[(decl_i + 2) % 4]
         }))
 
-        print('opening lead:', decode_card(opening_lead52))
-
-        for card_resp in self.card_responses:
-            pprint.pprint(card_resp.to_dict(), width=200)
+        if self.verbose: 
+            for card_resp in self.card_responses:
+                pprint.pprint(card_resp.to_dict(), width=200)
         
         await self.play(auction, opening_lead52)
 
@@ -210,7 +215,7 @@ class Driver:
             elif decl_i == 3:
                 card_players[2] = self.factory.create_human_cardplayer(self.models.player_models, 2, righty_hand, dummy_hand, contract, is_decl_vuln)
 
-        claimer = Claimer()
+        claimer = Claimer(self.verbose)
 
         player_cards_played = [[] for _ in range(4)]
         shown_out_suits = [set() for _ in range(4)]
@@ -229,13 +234,16 @@ class Driver:
         card_players[0].hand52[opening_lead52] -= 1
 
         for trick_i in range(12):
-            print("trick {}".format(trick_i+1))
+            if trick_i != 0:
+                print("trick {}".format(trick_i+1))
 
             for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
-                print('player {}'.format(player_i))
+                if self.verbose:
+                    print('player {}'.format(player_i))
                 
                 if trick_i == 0 and player_i == 0:
-                    #print('skipping')
+                    if self.verbose:
+                        print('skipping opening lead for ',player_i)
                     for i, card_player in enumerate(card_players):
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
 
@@ -248,7 +256,6 @@ class Driver:
                         hands52=[card_player.hand52 for card_player in card_players],
                         n_samples=20
                     )
-
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
                     rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
@@ -256,6 +263,8 @@ class Driver:
                 await asyncio.sleep(0.01)
 
                 card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states)
+                if self.verbose:
+                    pprint.pprint(card_resp.to_dict(), width=200)
                 
                 await asyncio.sleep(0.01)
 
@@ -359,6 +368,7 @@ class Driver:
             current_trick52 = []
 
         # play last trick
+        print("trick 13")
         for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
             
             if not isinstance(card_players[player_i], bots.CardPlayer):
@@ -389,16 +399,11 @@ class Driver:
         trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         trick_won_by.append(trick_winner)
 
-        #print('last trick')
-        #print(current_trick)
-        #print(current_trick52)
-        #print(trick_won_by)
-
-        #pprint.pprint(list(zip(tricks, trick_won_by)))
+        # Decode each element of tricks52
+        decoded_tricks52 = [[deck52.decode_card(item) for item in inner] for inner in tricks52]
+        pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
 
         self.trick_winners = trick_won_by
-
-        print('\n%s\n' % self.deal_str)
 
     
     async def opening_lead(self, auction):
@@ -418,7 +423,9 @@ class Driver:
                 self.models,
                 self.ns,
                 self.ew,
-                self.sampler
+                self.models.lead_threshold,
+                self.sampler,
+                self.verbose
             )
             card_resp = await bot_lead.async_lead(auction)
 
@@ -518,7 +525,7 @@ async def main():
 
     models = Models.from_conf(configuration, base_path.replace("\src",""))
 
-    driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration), verbose)
+    driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), verbose)
 
     while True:
         if random: 
@@ -526,8 +533,7 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-
-            #rdeal = ('962.73.AKQ83.T83 AJ7.AK982.T6.Q75 Q85.QJ54.J9754.K KT43.T6.2.AJ9642', 'S None')
+            #rdeal = ('K4.T9876532.54.6 Q.KQ.AKQT7.AJ853 972.A4.J83.KQT74 AJT8653.J.962.92', 'E N-S')
 
             driver.set_deal(*rdeal, ns, ew)
         else:

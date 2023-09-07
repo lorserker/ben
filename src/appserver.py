@@ -11,6 +11,7 @@ import argparse
 app = Bottle()
 os.getcwd()
 DB_NAME = os.getcwd() + '/gamedb'
+print("Reading deals from: "+DB_NAME)
 
 parser = argparse.ArgumentParser(description="Appserver")
 parser.add_argument("--port", type=int, default=8080, help="Port for appserver")

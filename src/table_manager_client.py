@@ -141,7 +141,9 @@ class TMClient:
                 self.models,
                 self.ns,
                 self.ew,
-                self.sampler
+                self.models.lead_threshold,
+                self.sampler,
+                self.verbose
             )
             card_resp = bot_lead.lead(auction)
             card_symbol = card_resp.card.symbol()
@@ -574,8 +576,8 @@ def get_execution_path():
 
 
 #  Examples of how to start the table manager
-# python table_manager_client.py --host 127.0.0.1 --port 2000 --name SAYC --seat North --ns 1 --ew 1 --config config/sayc.conf
-# python table_manager_client.py --host 127.0.0.1 --port 2000 --name SAYC --seat South --ns 1 --ew 1 --config config/sayc.conf
+# python table_manager_client.py --name BEN --seat North
+# python table_manager_client.py --name BEN --seat South
 
 async def main():
     
@@ -614,7 +616,7 @@ async def main():
 
     models = Models.from_conf(configuration, base_path.replace("\src",""))
 
-    client = TMClient(name, seat, models, ns, ew, Sample.from_conf(configuration), verbose)
+    client = TMClient(name, seat, models, ns, ew, Sample.from_conf(configuration, verbose), verbose)
     print(f"Connecting to {host}:{port}")
     await client.connect(host, port)
     

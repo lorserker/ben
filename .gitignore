@@ -22,3 +22,9 @@ install/dist/table_manager_client.exe
 install/venv
 install/dist/Championships- BEN v WBridge5.pbn
 models/eamon
+scripts/match/bidding/eamon
+scripts/training/playing/*_bin
+scripts/training/playing/playing_data/Jack
+scripts/training/playing/*_model
+scripts/training/bidding/bidding_bin
+scripts/training/bidding/model

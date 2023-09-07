@@ -1,6 +1,6 @@
 import time
 import pprint
-
+import sys
 import numpy as np
 
 import binary
@@ -55,11 +55,11 @@ class BotBid:
 
     def bid(self, auction):
         candidates = self.get_bid_candidates(auction)
-        #print(f"Sampling for aution: {auction}")
+        if self.verbose:
+            print(f"Sampling for aution: {auction}")
         hands_np = self.sample_hands(auction)
         samples = []
-        #print(f"hands_np {hands_np.shape[0]}")
-        for i in range(min(10, hands_np.shape[0])):
+        for i in range(hands_np.shape[0]):
             samples.append('%s %s %s %s' % (
                 hand_to_str(hands_np[i,0,:]),
                 hand_to_str(hands_np[i,1,:]),
@@ -70,21 +70,32 @@ class BotBid:
         if BotBid.do_rollout(auction, candidates):
             ev_candidates = []
             for candidate in candidates:
-                #print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.4f}")
+                if self.verbose:
+                    print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.4f}")
                 auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np)
-                #for idx, auction2 in enumerate(auctions_np):
-                #    print(samples[idx], bidding.get_action_as_string(auction2))
                 contracts, decl_tricks_softmax = self.expected_tricks(hands_np, auctions_np)
-                #for contract, trick in zip(contracts, decl_tricks_softmax):
-                #    print(f"Contract: {contract}, Declarer Trick: {trick}")
-                ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
-                ev_c = candidate.with_expected_score(np.mean(ev))
-                ev_candidates.append(ev_c)
-            candidates = sorted(ev_candidates, key=lambda c: c.expected_score, reverse=True)
-            # Print candidates with their relevant information
-            #for idx, candidate in enumerate(candidates, start=1):
-            #    print(f"{idx}: {candidate.bid.ljust(4)} {candidate.insta_score:.4f} Expected Score: {str(int(candidate.expected_score)).ljust(5)}")
 
+                if self.verbose:
+                    for idx, (auction2, (contract, trick)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax))):
+                        print(samples[idx], bidding.get_action_as_string(auction2))
+                        print(f"Contract: {contract}, Declarer Trick: {trick}")
+
+                ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
+                # If we are doubling as penalty in the pass out-situation
+                # These adjustments should probably be configurable
+                if candidate.bid == "X" and candidate.insta_score < self.min_candidate_score:
+                    adjust = -100
+                else:
+                    adjust = 50*candidate.insta_score
+                # The result is sorted based on the simulation. Adding some bonus to the bid selected by the neural network
+                ev_c = candidate.with_expected_score(np.mean(ev), adjust)
+                ev_candidates.append(ev_c)
+
+            candidates = sorted(ev_candidates, key=lambda c: c.expected_score + c.adjust, reverse=True)
+            # Print candidates with their relevant information
+            if self.verbose:
+                for idx, candidate in enumerate(candidates, start=1):
+                    print(f"{idx}: {candidate.bid.ljust(4)} {candidate.insta_score:.4f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
             return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples)
         
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples)
@@ -98,7 +109,7 @@ class BotBid:
         
         # If we are past 1st round then we will roll out
         if BotBid.get_n_steps_auction(auction) > 1:
-            #print("If we are past 1st round then we will roll out")
+            #print("Past 1st round then we will roll out")
             return True
         
         # If someone has bid before us
@@ -116,33 +127,55 @@ class BotBid:
     def get_bid_candidates(self, auction):
         bid_softmax = self.next_bid_np(auction)[0]
         np.set_printoptions(precision=2, suppress=True)
-        #index_highest = np.argmax(bid_softmax)
-        #print(f"bid {bidding.ID2BID[index_highest]} value {bid_softmax[index_highest]:.4f} is recommended")
+        if self.verbose:
+            index_highest = np.argmax(bid_softmax)
+            print(f"bid {bidding.ID2BID[index_highest]} value {bid_softmax[index_highest]:.4f} is recommended by NN")
+            print(f"self.min_candidate_score {self.min_candidate_score}")
 
         candidates = []
-        #print(f"self.min_candidate_score {self.min_candidate_score}")
+
         # If self.min_candidate_score == -1 we will just take what the neural network suggest 
         if (self.min_candidate_score == -1):
-            bid_i = np.argmax(bid_softmax)
-            if bidding.can_bid(bidding.ID2BID[bid_i], auction):
-                candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
-        else:    
             while True:
+                # We have to loop to avoid returning an invalid bid
                 bid_i = np.argmax(bid_softmax)
-                #print(bid_i, bid_softmax[bid_i])
-                if bid_softmax[bid_i] < self.min_candidate_score:
-                    if len(candidates) > 0:
-                        break
-                    else:
-                        print("No bids available")
                 if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                     candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
-                #else:
+                    break
+                else:
                     # Seems to be an error in the training that needs to be solved
-                    #print(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}")
-
+                    sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
                 # set the score for the bid just processed to zero so it is out of the loop
                 bid_softmax[bid_i] = 0
+            return candidates
+        # Find the last index of 'PAD_START'
+        pad_start_index = len(auction) - 1 - auction[::-1].index('PAD_START') if 'PAD_START' in auction else -1
+
+        # Calculate the count of elements after the last 'PAD_START'
+        no_bids  = len(auction) - pad_start_index - 1
+        if no_bids > 3 and auction[-2:] == ['PASS', 'PASS']:
+            # this is the final pass
+            min_candidates = 2
+        else:    
+            if no_bids > 12 and auction[-2] != "PASS":
+                min_candidates = 2
+            else:
+                min_candidates = 1
+
+        while True:
+            bid_i = np.argmax(bid_softmax)
+            #print(bid_i, bid_softmax[bid_i])
+            if bid_softmax[bid_i] < self.min_candidate_score:
+                if len(candidates) >= min_candidates:
+                    break
+            if bidding.can_bid(bidding.ID2BID[bid_i], auction):
+                candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
+            else:
+                # Seems to be an error in the training that needs to be solved
+                sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
+
+            # set the score for the bid just processed to zero so it is out of the loop
+            bid_softmax[bid_i] = 0
 
         return candidates
 
@@ -155,9 +188,7 @@ class BotBid:
     
     def sample_hands(self, auction_so_far):
         turn_to_bid = len(auction_so_far) % 4
-        n_steps = BotBid.get_n_steps_auction(auction_so_far)
-        lho_pard_rho = self.sample.sample_cards_auction(
-            self.sample_boards_for_action, n_steps, auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew)[:self.sample.sample_hands_auction]
+        lho_pard_rho = self.sample.sample_cards_auction(auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew)[:self.sample.sample_hands_auction]
         n_samples = lho_pard_rho.shape[0]
         
         hands_np = np.zeros((n_samples, 4, 32), dtype=np.int32)
@@ -252,7 +283,7 @@ class BotBid:
 
 class BotLead:
 
-    def __init__(self, vuln, hand_str, models, ns, ew, sample):
+    def __init__(self, vuln, hand_str, models, ns, ew, lead_threshold, sample, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
@@ -265,10 +296,12 @@ class BotLead:
         self.ns = ns
         self.ew = ew
         self.sample = sample
+        self.verbose = verbose
+        self.lead_threshold = lead_threshold
 
     def lead(self, auction):
         lead_card_indexes, lead_softmax = self.get_lead_candidates(auction)
-        accepted_samples, tricks = self.simulate_outcomes(4096, auction, lead_card_indexes)
+        accepted_samples, tricks = self.simulate_outcomes(auction, lead_card_indexes)
 
         candidate_cards = []
         for i, card_i in enumerate(lead_card_indexes):
@@ -291,8 +324,9 @@ class BotLead:
             opening_lead52 = deck52.card32to52(opening_lead)
 
         samples = []
-        #print(f"Accepted samples for lead: {accepted_samples.shape[0]}")
-        for i in range(min(100, accepted_samples.shape[0])):
+        if self.verbose:
+            print(f"Accepted samples for lead: {accepted_samples.shape[0]}")
+        for i in range(min(20, accepted_samples.shape[0])):
             samples.append('%s %s %s' % (
                 hand_to_str(accepted_samples[i,0,:]),
                 hand_to_str(accepted_samples[i,1,:]),
@@ -311,28 +345,29 @@ class BotLead:
         lead_softmax = player.follow_suit(lead_softmax, self.hand, np.array([[0, 0, 0, 0]]))
 
         candidates = []
+        # Make a copy of the lead_softmax array
+        lead_softmax_copy = np.copy(lead_softmax)
 
         while True:
-            c = np.argmax(lead_softmax[0])
-            score = lead_softmax[0][c]
-            if score < 0.05:
+            c = np.argmax(lead_softmax_copy[0])
+            score = lead_softmax_copy[0][c]
+            if score < self.lead_threshold:
                 break
-            lead_softmax[0][c] = 0
+            lead_softmax_copy[0][c] = 0
             candidates.append(c)
 
         return candidates, lead_softmax
 
-    def simulate_outcomes(self, n_samples, auction, lead_card_indexes):
+    def simulate_outcomes(self, auction, lead_card_indexes):
         contract = bidding.get_contract(auction)
 
         decl_i = bidding.get_decl_i(contract)
         lead_index = (decl_i + 1) % 4
 
-        n_steps = 1 + len(auction) // 4
+        accepted_samples = self.sample.sample_cards_auction(auction, lead_index, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew)
 
-        accepted_samples = self.sample.sample_cards_auction(n_samples, n_steps, auction, lead_index, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew)
-
-        #print(f"accepted_samples for outcome: {accepted_samples.shape[0]}")
+        if self.verbose:
+            print(f"accepted_samples for outcome: {accepted_samples.shape[0]}")
 
         n_accepted = accepted_samples.shape[0]
 
@@ -385,7 +420,7 @@ class CardPlayer:
         self.score_by_tricks_taken = [scoring.score(self.contract, self.is_decl_vuln, n_tricks) for n_tricks in range(14)]
 
         from ddsolver import ddsolver
-        self.dd = ddsolver.DDSolver()
+        self.dd = ddsolver.DDSolver(dds_mode=2)
 
     def init_x_play(self, public_hand, level, strain_i):
         self.x_play = np.zeros((1, 13, 298))
@@ -420,7 +455,6 @@ class CardPlayer:
     def play_card(self, trick_i, leader_i, current_trick52, players_states):
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         card52_dd = self.next_card52(trick_i, leader_i, current_trick52, players_states)
-        #pprint.pprint(card52_dd,width=200)
         card_resp = self.next_card(trick_i, leader_i, current_trick, players_states, card52_dd)
 
         return card_resp
@@ -481,16 +515,23 @@ class CardPlayer:
                                     
                         suits.append(''.join([symbols[card] for card in sorted(suit)]))
                     hands[j] = '.'.join(suits)
-
+            # We always use West as start, but hands are in BEN from LHO
             hands_pbn.append('W:' + ' '.join(hands))
             if i < 5 and self.verbose:
                 print(hands_pbn[-1])
 
         t_start = time.time()
-        
+
+        if self.verbose:
+            print(hands_pbn)
+
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn)
         card_tricks = ddsolver.expected_tricks(dd_solved)
         card_ev = self.get_card_ev(dd_solved)
+
+        if self.verbose:
+            for key, value in card_ev.items():
+                print(f"{deck52.decode_card(key)}: {value}")
 
         card_result = {}
         for key in dd_solved.keys():
@@ -498,12 +539,11 @@ class CardPlayer:
 
         if self.verbose:
             print('dds took', time.time() - t_start)
-
             print('dd card res', card_result)
 
         return card_result
-
     def get_card_ev(self, dd_solved):
+
         card_ev = {}
         for card, future_tricks in dd_solved.items():
             ev_sum = 0
@@ -532,6 +572,7 @@ class CardPlayer:
             print('ncs', time.time() - t_start)
 
         all_cards = np.arange(32)
+        ## This might be a parameter
         s_opt = card_softmax > 0.01
 
         card_options, card_scores = all_cards[s_opt], card_softmax[s_opt]
@@ -556,7 +597,8 @@ class CardPlayer:
         candidate_cards = sorted(candidate_cards, key=lambda c: (c.expected_score, c.insta_score + np.random.random() / 10000), reverse=True)
 
         samples = []
-        #print(f"players_states {players_states[0].shape[0]}")
+        if self.verbose:
+            print(f"players_states {players_states[0].shape[0]}")
         for i in range(players_states[0].shape[0]):
             samples.append('%s %s %s %s' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),
@@ -566,7 +608,7 @@ class CardPlayer:
             ))
 
         #Remove duplicates
-        samples = list(set(samples))  #[:20]
+        samples = list(set(samples)) 
         
         card_resp = CardResp(
             card=candidate_cards[0].card,

@@ -96,7 +96,7 @@ def worker(driver):
 async def handler(websocket, path, board_no):
     print("Got websocket connection")
 
-    driver = game.Driver(models, human.WebsocketFactory(websocket), Sample.from_conf(configuration), verbose)
+    driver = game.Driver(models, human.WebsocketFactory(websocket), Sample.from_conf(configuration, verbose), verbose)
 
     parsed_url = urlparse(path)
     query_params = parse_qs(parsed_url.query)
@@ -126,7 +126,7 @@ async def handler(websocket, path, board_no):
             #Just take a random"
             rdeal = game.random_deal()
             # example of to use a fixed deal
-            rdeal = ('5.983.AKT7.K986 986.QT4.865.AQT7 JT7.J7652.3.J653 AKQ432.AK.QJ942.', 'N None')
+            # rdeal = ('5.983.AKT7.K9862 986.QT4.865.AQT7 JT7.J7652.3.J653 AKQ432.AK.QJ942.', 'N None')
             driver.human = [0.1, 0.1, 1, 0.1]
             driver.set_deal(*rdeal, ns, ew)
         else:
@@ -139,10 +139,10 @@ async def handler(websocket, path, board_no):
     try:
         await driver.run()
 
-        with shelve.open(f"{base_path}/gamedb") as db:
+        with shelve.open(f"{get_execution_path()}/gamedb") as db:
             deal_bots = driver.to_dict()
             db[uuid.uuid4().hex] = deal_bots
-            print('saved')
+            print('Deal saved')
             if not random:
                 board_no[0] = board_no[0] + 1
                 if (board_no[0] > len(boards)):

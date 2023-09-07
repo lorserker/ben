@@ -6,7 +6,8 @@ import numpy as np
 
 class Claimer:
 
-    def __init__(self) -> None:
+    def __init__(self, verbose) -> None:
+        self.verbose = verbose
         from ddsolver import ddsolver
         self.dd = ddsolver.DDSolver()
 
@@ -43,8 +44,9 @@ class Claimer:
             self._get_max_min_tricks(strain_i, player_i, sampled_hands_pbn)
         )
         
-        print(f'player {player_i} could claim {max_min_tricks} tricks.')
-        print(f'claim check took {time.time() - t_start}')
+        if self.verbose:
+            print(f'player {player_i} could claim {max_min_tricks} tricks.')
+            print(f'claim check took {time.time() - t_start}')
 
         return max_min_tricks
     

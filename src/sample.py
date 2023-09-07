@@ -6,7 +6,7 @@ import binary
 import conf
 
 from bidding import bidding
-from util import get_all_hidden_cards, view_samples
+from util import get_all_hidden_cards
 from configparser import ConfigParser
 
 
@@ -58,22 +58,24 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, verbose):
+    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, sample_boards_for_action, verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
         self.play_accept_threshold = play_accept_threshold
         self.bid_accept_play_threshold = bid_accept_play_threshold
         self._sample_hands_auction = sample_hands_auction
+        self.sample_boards_for_action = sample_boards_for_action
         self.verbose = verbose
 
     @classmethod
-    def from_conf(cls, conf: ConfigParser) -> "Sample":
+    def from_conf(cls, conf: ConfigParser, verbose= False) -> "Sample":
         lead_accept_threshold = float(conf['sampling']['lead_accept_threshold'])
         bidding_threshold_sampling = float(conf['sampling']['bidding_threshold_sampling'])
         play_accept_threshold = float(conf['sampling']['play_accept_threshold'])
         bid_accept_play_threshold = float(conf['sampling']['bid_accept_play_threshold'])
         sample_hands_auction = int(conf['sampling']['sample_hands_auction'])
-        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, False)
+        sample_boards_for_action = int(conf['sampling']['sample_boards_for_action'])
+        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, sample_boards_for_action, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -199,16 +201,22 @@ class Sample:
         else:
             return lho_pard_rho
 
-    def sample_cards_auction(self, n_samples, n_steps, auction, nesw_i, hand, vuln, bidder_model, binfo, ns, ew):
-        #print("sample_cards_auction")
+    def sample_cards_auction(self, auction, nesw_i, hand, vuln, bidder_model, binfo, ns, ew):
+        if self.verbose:
+            print("sample_cards_auction")
         n_steps = 1 + len(auction) // 4
-
+        n_samples = self.sample_boards_for_action
         A = binary.get_auction_binary(n_steps, auction, nesw_i, hand, vuln, ns, ew)
         A_lho = binary.get_auction_binary(n_steps, auction, (nesw_i + 1) % 4, hand, vuln, ns, ew)
         A_pard = binary.get_auction_binary(n_steps, auction, (nesw_i + 2) % 4, hand, vuln, ns, ew)
         A_rho = binary.get_auction_binary(n_steps, auction, (nesw_i + 3) % 4, hand, vuln, ns, ew)
 
         p_hcp, p_shp = binfo.model(A)
+        if self.verbose:
+            c_hcp = (lambda x: 4 * x + 10)(p_hcp.copy())
+            c_shp = (lambda x: 1.75 * x + 3.25)(p_shp.copy())
+            print(c_hcp)
+            print(c_shp)
 
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
         p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
