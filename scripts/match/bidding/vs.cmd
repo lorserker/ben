@@ -11,4 +11,4 @@ type ".\%a%vs%b%\compare.json" | python printmatch.py >.\%a%vs%b%\match.txt
 
 type ".\%a%vs%b%\compare.json" | python printmatchashtml.py >.\%a%vs%b%\html\match.html
 
-python printdeal.py %boards% %a%vs%b%
+python printdeal.py %boards% %a%vs%b%\html

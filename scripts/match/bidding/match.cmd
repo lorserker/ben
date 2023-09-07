@@ -2,7 +2,7 @@ set trust=%1
 set boards=set0010.txt
 
 python auction.py --bidderNS=A.conf --bidderEW=B.conf --set=%boards% --search=EW --nntrust=%trust%  > .\%trust%\auctionsEW.json
-python auction.py --bidderNS=A.conf --bidderEW=B.conf --set=%boards% --search=NS --nntrust=%trust%  > .\%trust%\auctionsNS.json
+python auction.py --bidderNS=B.conf --bidderEW=A.conf --set=%boards% --search=NS --nntrust=%trust%  > .\%trust%\auctionsNS.json
 
 type ".\%trust%\auctionsNS.json" | python lead.py --bidder=A.conf > .\%trust%\leads1.json
 type ".\%trust%\auctionsEW.json" | python lead.py --bidder=B.conf > .\%trust%\leads2.json
