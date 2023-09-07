@@ -60,12 +60,12 @@ Start the game server
 ```bash
 python gameserver.py
 ```
-By default you will just get random boards, but you cal start the server with a paramter
+By default you will just get random boards, but you can start the server with a parameter, and read boards from a file:
 
 ```bash
 python gameserver.py --boards file.pbn
 ```
-And the server will read the boards from the file. Only pbn and bens own internal format is supported (See input.ben)
+Only pbn and BEN's own internal format is supported (See input.ben)
 adding --boardno will start from that number in the file.
 
 And start the app server
@@ -108,13 +108,13 @@ To make the engine play against other bots:
 
 First run the [bridge monitor](http://www.wbridge5.com/bm.htm) table manager server.
 
-Then, run the command below to connect to the table manager using the [blue chip bridge protocol](https://web.archive.org/web/20210514012054/http://www.bluechipbridge.co.uk/protocol.htm)
+Then, run the command below to connect to the table manager using the [blue chip bridge protocol version 18](https://web.archive.org/web/20210514012054/http://www.bluechipbridge.co.uk/protocol.htm)
 
 ```
-python table_manager_client.py --host 127.0.0.1 --port 2000 --name ben --seat North --ns 1 --ew 1 --config config/sayc.conf
+python table_manager_client.py --host 127.0.0.1 --port 2000 --name BEN --seat North
 ```
 
-that will connect to the table as West; the other seats can be taken similarly.
+that will connect to the table as North - the other seats can be taken similarly.
 
 ## What the engine cannot do (yet)
 

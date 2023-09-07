@@ -1,3 +1,5 @@
+BEN can be trained to play any system, so this is the Convention Card from GIB, that has provided the hands for training in the default system:
+
 # Convention Card
 
 ## General approach
