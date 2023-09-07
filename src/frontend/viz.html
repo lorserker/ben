@@ -145,7 +145,7 @@
 
                                 document.querySelector('#replay').innerHTML = replayContent;
 
-                                document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code><pre>'
+                                document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code></pre>'
 
                                 document.getElementById("btn-next").addEventListener("click", function () {
                                     deal.next()
