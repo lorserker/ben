@@ -45,12 +45,16 @@ class DDSolver:
             self.bo.deals[handno].remainCards = hands_pbn[handno].encode('utf-8')
 
             self.bo.target[handno] = -1
+            # Return all cards that can be legally played, with their scores in descending order.
             self.bo.solutions[handno] = 3
             self.bo.mode[handno] = self.dds_mode
 
         res = dds.SolveAllBoards(ctypes.pointer(self.bo), ctypes.pointer(self.solved))
-
-        assert res == 1
+        
+        if res != 1:
+            error_message = dds.get_error_message(res)
+            print(f"Error Code: {res}, Error Message: {error_message}")
+            return None
 
         card_results = {}
 
