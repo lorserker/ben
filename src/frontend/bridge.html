@@ -105,7 +105,7 @@
             alert("Please start server", error); // Notify the user about the connection failure            
         }
 
-        var deal = undefined
+        var deal
 
         function getTrickCardSlots() {
             return [
@@ -261,7 +261,7 @@
 
                 document.querySelectorAll('.card')
                     .forEach(c => c.addEventListener('click', cardClick))
-            } else if (data.message == "opening_lead") {
+            } else if (data.message == "show_dummy") {
 
                 let publicHand = parseHand(data.dummy)
                 deal.public = publicHand

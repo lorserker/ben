@@ -31,6 +31,8 @@ For __Mac M1/M2__ users: you need to install [Homebrew](https://brew.sh/) if you
 
 On __Amazon__, there is an image Public_Ben_Bot_V1.2 for starting an instance of BEN. After starting the instance just log in and execute [start_ben_bot_screens.sh].
 
+For __Ubuntu__ users: You might have to compile libdds.so and might have to install libboost using `sudo apt install libboost-thread-dev` 
+
 ### Running the Web App
 
 The engine has a (very basic) UI which enables you to play as a human agains three bots and then review the games you played.
