@@ -10,16 +10,16 @@ import argparse
 
 app = Bottle()
 os.getcwd()
-DB_NAME = os.getcwd() + '/gamedb'
-print("Reading deals from: "+DB_NAME)
 
 parser = argparse.ArgumentParser(description="Appserver")
 parser.add_argument("--port", type=int, default=8080, help="Port for appserver")
+parser.add_argument("--db", default="gamedb", help="Port for appserver")
 
 args = parser.parse_args()
 
 port = args.port
-
+DB_NAME = os.getcwd() + "/" + args.db
+print("Reading deals from: "+DB_NAME)
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -31,7 +31,6 @@ def home():
 
     with shelve.open(DB_NAME) as db:
         deal_items = sorted(list(db.items()), key=lambda x: x[1]['timestamp'], reverse=True)
-        
         for deal_id, deal in deal_items:
             html += '<li><span><a href="/app/viz.html?deal={}">{} {}</a></span>&nbsp;&nbsp;&nbsp;'.format(deal_id, deal['contract'], len(list(filter(lambda x: x % 2 == 1, deal['trick_winners']))))
             html += f'<span><a href="/api/delete/deal/{deal_id}">delete</a></span></li>\n'
