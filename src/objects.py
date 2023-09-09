@@ -98,9 +98,11 @@ class CandidateBid:
     def to_dict(self):
         result = {
             'call': self.bid,
-            'insta_score': round(self.insta_score,4)
         }
-        
+
+        if self.insta_score is not None:
+            result['insta_score']: round(self.insta_score,4)
+
         if self.expected_score is not None:
             result['expected_score'] = round(self.expected_score)
         
