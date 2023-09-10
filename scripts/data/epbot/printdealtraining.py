@@ -36,7 +36,7 @@ def generate_html_deal(line, board_number, bidding):
                 <div id='vul-west' class='{"red" if vulnerable in ('E-W', 'Both') else 'white'}'>
                     {"<span class='dealer'>W</span>" if dealer == 'W' else ''}
                 </div>
-                <div id='board'>
+                <div id='boardno'>
                     {board_number}
                 </div>
             </div>
@@ -65,8 +65,8 @@ def generate_html_deal(line, board_number, bidding):
                 {generate_html_card('&clubs;', cards[2].split('.')[3])}
             </div>
         </div>
-        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=0"> Se it played </a><br>
-        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=1"> Se it played </a>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=0&board_no={board_number}"> Se it played </a><br>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=1&board_no={board_number}"> Se it played </a>
         <div id="auction">{bidding}</div>
 
         <script type="text/javascript">

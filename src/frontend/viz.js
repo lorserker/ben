@@ -10,8 +10,16 @@ class Deal {
 
         this.playIndex = -1
         this.trickIndex = -1
+
     }
 
+    board_number() {
+        if (this.data['board_number'] == null) {
+            return ""
+        }
+        return this.data['board_number']
+    }
+    
     declarer() {
         if (this.data['contract'] == null) {
             return "Pass"

@@ -62,7 +62,6 @@
   <div id="south">
       <div class="suit">
           <span>&spades;</span>
-          <span class="card">3</span>
       </div>
       <div class="suit">
           <span class="font-red">&hearts;</span>
@@ -76,12 +75,13 @@
   </div>
 
   <div id="auction"></div>
+  <div id="boardno"></div>
 
   <div id="current-trick">
-  <div id="trick-card-north" class="trick-card"><span>&spades;</span><span>A</span></div>
-  <div id="trick-card-east" class="trick-card"><span>&spades;</span><span>7</span></div>
-  <div id="trick-card-south" class="trick-card"><span>&spades;</span><span>T</span></div>
-  <div id="trick-card-west" class="trick-card highlight"><span class="font-red">&diams;</span><span>Q</span></div>
+  <div id="trick-card-north" class="trick-card"></div>
+  <div id="trick-card-east" class="trick-card"></div>
+  <div id="trick-card-south" class="trick-card"></div>
+  <div id="trick-card-west" class="trick-card"></div>
   </div>
 
 
@@ -119,6 +119,7 @@
                                 const log = JSON.parse(xhr.responseText);
                                 let deal = new Deal(log)
                                 deal.start()
+                                document.getElementById("boardno").innerHTML=deal.board_number()
                                 let auction = new Auction(log['dealer'], log['bids'])
                                 auction.render(document.getElementById("auction"))
                                 let dealerVuln = new DealerVuln(log['dealer'], log['vuln_ns'], log['vuln_ew'])
@@ -141,7 +142,7 @@
                                 let dealer = 'NESW'.charAt(deal.data.dealer)
                                 const replayContent = '<a href="http://127.0.0.1:8080/app/bridge.html?deal=' +
                                     '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + '\')' +
-                                    '&P=5"> Play it again </a><br>';
+                                    '&P=5&board_no='+deal.board_number()+'"> Play it again </a><br>';
 
                                 document.querySelector('#replay').innerHTML = replayContent;
 

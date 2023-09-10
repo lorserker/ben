@@ -204,6 +204,17 @@
     background-color: #efcdf5e0;
 }
 
+#boardno {
+    position: absolute;
+    border: 1px solid black;
+    border-radius: 3px;
+    left: 58px;
+    top: 62px;
+    width: 26px;
+    text-align: center;
+    background-color: #efcdf5e0;
+}
+
 td {
     text-align: center;
 }
