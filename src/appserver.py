@@ -32,7 +32,12 @@ def home():
     with shelve.open(DB_NAME) as db:
         deal_items = sorted(list(db.items()), key=lambda x: x[1]['timestamp'], reverse=True)
         for deal_id, deal in deal_items:
-            html += '<li><span><a href="/app/viz.html?deal={}">{} {}</a></span>&nbsp;&nbsp;&nbsp;'.format(deal_id, deal['contract'], len(list(filter(lambda x: x % 2 == 1, deal['trick_winners']))))
+            board_no_ref = ""
+            board_no_index = ""
+            if 'board_number' in deal and deal['board_number'] is not None:
+                board_no_ref = f"&board_number={deal['board_number']}"
+                board_no_index = f"Board:{deal['board_number']}&nbsp;&nbsp;"
+            html += '<li><span>{}<a href="/app/viz.html?deal={}{}">{} {}</a></span>&nbsp;&nbsp;&nbsp;'.format(board_no_index,deal_id, board_no_ref, deal['contract'], len(list(filter(lambda x: x % 2 == 1, deal['trick_winners']))))
             html += f'<span><a href="/api/delete/deal/{deal_id}">delete</a></span></li>\n'
 
     html += '</ul>'

@@ -12,6 +12,13 @@ class Deal {
         this.trickIndex = -1
     }
 
+    board_number() {
+        if (this.data['board_number'] == null) {
+            return ""
+        }
+        return this.data['board_number']
+    }
+    
     declarer() {
         return 'NESW'.indexOf(this.data['contract'][this.data['contract'].length - 1])
     }
