@@ -22,7 +22,7 @@ class CardByCard:
         self.sampler = sampler
         self.ns = ns
         self.ew = ew
-        self.vebose = verbose
+        self.verbose = verbose
 
     def analyze(self):
         print('analyzing the bidding')
@@ -71,7 +71,7 @@ class CardByCard:
 
         bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, -1, -1, 0.05, self.sampler, False)
 
-        card_resp = bot_lead.lead(self.padded_auction)
+        card_resp = bot_lead.find_opening_lead(self.padded_auction)
         card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples)
         self.card_responses.append(card_resp)
         self.cards[card_resp.card.symbol()] = card_resp

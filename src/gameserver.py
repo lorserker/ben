@@ -20,7 +20,7 @@ import conf
 import functools
 import os
 
-from websockets.exceptions import ConnectionClosedError
+from websockets.exceptions import ConnectionClosedOK
 from nn.models import Models
 from sample import Sample
 from urllib.parse import parse_qs, urlparse
@@ -48,12 +48,14 @@ parser.add_argument("--ns", type=int, default=-1, help="System for NS")
 parser.add_argument("--ew", type=int, default=-1, help="System for EW")
 parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=4443, help="Port for appserver")
+parser.add_argument("--auto", type=bool, default=False, help="BEN bids and plays all 4 hands")
 
 args = parser.parse_args()
 
 configfile = args.config
 verbose = args.verbose
 port = args.port
+auto = args.auto
 
 if args.boards:
     filename = args.boards
@@ -104,10 +106,11 @@ async def handler(websocket, path, board_no):
     if query_params:
         P = query_params.get('P', [None])[0]
         deal = query_params.get('deal', [None])[0]
+        board_no = query_params.get('board_no', [None])[0]
         if deal:
             split_values = deal[1:-1].replace("'","").split(',')
             rdeal = tuple(value.strip() for value in split_values)
-            driver.set_deal(*rdeal, ns, ew)
+            driver.set_deal(board_no,*rdeal, ns, ew)
         if P == "0":
             driver.human = [0.1, -1, 0.1, -1]
         if P == "1":
@@ -128,13 +131,16 @@ async def handler(websocket, path, board_no):
             # example of to use a fixed deal
             # rdeal = ('5.983.AKT7.K9862 986.QT4.865.AQT7 JT7.J7652.3.J653 AKQ432.AK.QJ942.', 'N None')
             driver.human = [0.1, 0.1, 1, 0.1]
-            driver.set_deal(*rdeal, ns, ew)
+            driver.set_deal(None, *rdeal, ns, ew)
         else:
             rdeal = tuple(boards[board_no[0]].replace("'","").rstrip('\n').split(','))
             print(f"Board: {board_no[0]+1}" )
             print(rdeal)
-            driver.set_deal(*rdeal, ns, ew)
-            driver.human = [0.1, 0.1, 1, 0.1]
+            driver.set_deal(board_no[0] + 1,*rdeal, ns, ew)
+            if (auto):
+                driver.human = [0.1, 0.1, 0.1, 0.1]
+            else:
+                driver.human = [0.1, 0.1, 1, 0.1]
 
     try:
         await driver.run()
@@ -149,7 +155,7 @@ async def handler(websocket, path, board_no):
                     board_no[0] = 0
 
     
-    except ConnectionClosedError  as ex:
+    except ConnectionClosedOK  as ex:
         print('User left')
         
     except Exception as ex:

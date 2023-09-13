@@ -1,8 +1,8 @@
 import random
 import numpy as np
 
-def hand_to_str(hand):
-    x = hand.reshape((4, 13))
+def deal_to_str(deal):
+    x = deal.reshape((4, 13))
     symbols = 'AKQJT98765432'
     suits = []
     for i in range(4):
@@ -11,6 +11,16 @@ def hand_to_str(hand):
             if x[i,j] > 0:
                 s += symbols[j]
         suits.append(s)
+    return '.'.join(suits)
+
+def hand_to_str(hand):
+    symbols = 'AKQJT98765432'
+    suits = ["","","",""]
+    hand.sort()
+    for card in hand:
+        suit_i = card // 13
+        card_i = card % 13
+        suits[suit_i] += symbols[card_i]
     return '.'.join(suits)
 
 
@@ -38,7 +48,7 @@ def random_deal():
             hand[c] += 1
         hands.append(hand)
 
-    return ' '.join(map(hand_to_str, hands))
+    return ' '.join(map(deal_to_str, hands))
 
 
 def random_dealer_vuln():

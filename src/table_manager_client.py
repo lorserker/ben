@@ -7,6 +7,8 @@ logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+import uuid
+import shelve
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
 import ipaddress
@@ -22,6 +24,7 @@ import deck52
 import conf
 import datetime
 import pprint
+from objects import Card, CardResp, BidResp
 
 from nn.models import Models
 from deck52 import decode_card
@@ -48,8 +51,26 @@ class TMClient:
     @property
     def is_connected(self):
         return self._is_connected
-    
+
+    def to_dict(self):
+        return {
+            'timestamp': time.time(),
+            'dealer': self.dealer_i,
+            'vuln_ns': self.vuln_ns,
+            'vuln_ew': self.vuln_ew,
+            'hands': self.deal_str,
+            'bids': [b.to_dict() for b in self.bid_responses],
+            'contract': self.contract,
+            'play': [c.to_dict() for c in self.card_responses],
+            'trick_winners': self.trick_winners,
+            'board_number': self.board_number
+        }
+
     async def run(self, biddingonly):
+
+        self.bid_responses = []
+        self.card_responses = []
+
         self.dealer_i, self.vuln_ns, self.vuln_ew, self.hand_str = await self.receive_deal()
 
         auction = await self.bidding()
@@ -66,7 +87,7 @@ class TMClient:
 
         print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Bidding ended: {auction}')
         if (self.verbose):
-            print(f"Contract {self.contract}")
+            print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Contract {self.contract}')
 
         if  biddingonly:
             print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Ready to start new board')
@@ -103,6 +124,7 @@ class TMClient:
 
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
+
         bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, self.models.search_threshold, self.sampler, self.verbose)
         
         auction = ['PAD_START'] * self.dealer_i
@@ -116,10 +138,13 @@ class TMClient:
                 if (self.verbose):
                     pprint.pprint(bid_resp.samples, width=80)
                 auction.append(bid_resp.bid)
+                self.bid_responses.append(bid_resp)
                 await self.send_own_bid(bid_resp.bid)
             else:
                 # just wait for the other player's bid
                 bid = await self.receive_bid_for(player_i)
+                bid_resp = BidResp(bid=bid, candidates=[], samples=[])
+                self.bid_responses.append(bid_resp)
                 auction.append(bid)
 
             player_i = (player_i + 1) % 4
@@ -145,7 +170,8 @@ class TMClient:
                 self.sampler,
                 self.verbose
             )
-            card_resp = bot_lead.lead(auction)
+            card_resp = bot_lead.find_opening_lead(auction)
+            self.card_responses.append(card_resp)
             card_symbol = card_resp.card.symbol()
 
             await asyncio.sleep(0.01)
@@ -195,6 +221,7 @@ class TMClient:
         ]
 
         player_cards_played = [[] for _ in range(4)]
+        player_cards_played52 = [[] for _ in range(4)]
         shown_out_suits = [set() for _ in range(4)]
 
         leader_i = 0
@@ -234,6 +261,7 @@ class TMClient:
                     rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
+                    self.card_responses.append(card_resp)
 
                     if (self.verbose):
                         for idx, candidate in enumerate(card_resp.candidates, start=1):
@@ -257,6 +285,7 @@ class TMClient:
                     rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
+                    self.card_responses.append(card_resp)
 
                     if (self.verbose):
                         for idx, candidate in enumerate(card_resp.candidates, start=1):
@@ -362,6 +391,8 @@ class TMClient:
             # update cards shown
             for i, card in enumerate(current_trick):
                 player_cards_played[(leader_i + i) % 4].append(card)
+            for i, card in enumerate(current_trick52):
+                player_cards_played52[(leader_i + i) % 4].append(card)
             
             leader_i = trick_winner
             current_trick = []
@@ -408,6 +439,12 @@ class TMClient:
             current_trick.append(card)
             current_trick52.append(card52)
 
+        # update cards shown
+        for i, card in enumerate(current_trick):
+            player_cards_played[(leader_i + i) % 4].append(card)
+        for i, card in enumerate(current_trick52):
+            player_cards_played52[(leader_i + i) % 4].append(card)
+
         tricks.append(current_trick)
         tricks52.append(current_trick52)
 
@@ -415,13 +452,23 @@ class TMClient:
         trick_won_by.append(trick_winner)
 
         if (self.verbose):
-            print('last trick')
-            print(current_trick)
-            print(current_trick52)
-            print(trick_won_by)
             pprint.pprint(list(zip(tricks, trick_won_by)))
 
         self.trick_winners = trick_won_by
+        
+        # Decode each element of tricks52
+        decoded_tricks52 = [[deck52.decode_card(item) for item in inner] for inner in tricks52]
+        pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
+
+        concatenated_str = ""
+
+        for i in range(len(player_cards_played52)):
+            index = (i + (3-decl_i)) % len(player_cards_played52)
+            concatenated_str += deck52.hand_to_str(player_cards_played52[index]) + " "
+
+        # Remove the trailing space
+        self.deal_str = concatenated_str.strip()
+
 
     async def send_card_played(self, card_symbol):
         msg_card = f'{self.seat} plays {card_symbol[::-1]}'
@@ -455,9 +502,17 @@ class TMClient:
         await self.send_message(msg_ready)
 
         card_resp = await self.receive_line()
+
         card_resp_parts = card_resp.strip().split()
 
         assert card_resp_parts[0] == SEATS[player_i], f"{card_resp_parts[0]} != {SEATS[player_i]}"
+
+        cr = CardResp(
+            card=Card.from_symbol(card_resp_parts[-1][::-1].upper()),
+            candidates=[],
+            samples=[]
+        )
+        self.card_responses.append(cr)
 
         return card_resp_parts[-1][::-1].upper()
 
@@ -512,6 +567,13 @@ class TMClient:
         if deal_line_1 == "Start of Board":
             await self.send_message(f'{self.seat} ready for deal.')
             deal_line_1 = await self.receive_line()
+
+        pattern = r'Board number (\d+)\.'
+
+        match = re.search(pattern, deal_line_1)
+
+        if match:
+            self.board_number = match.group(1)
 
         await self.send_message(f'{self.seat} ready for cards.')
         # "South's cards : S K J 9 3. H K 7 6. D A J. C A Q 8 7. \r\n"
@@ -626,6 +688,9 @@ async def main():
     while client.is_connected:
         await client.run(biddingonly)
         # The deal just played should be saved for later review
+        with shelve.open(f"{base_path}/{seat}db") as db:
+            deal = client.to_dict()
+            db[uuid.uuid4().hex] = deal
 
 
 if __name__ == "__main__":

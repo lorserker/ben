@@ -92,6 +92,9 @@ class CandidateBid:
         self.expected_score = None if expected_score is None else float(expected_score)
         self.adjust = None if adjust is None else float(adjust)
 
+    def __str__(self):
+        return f"CandidateBid(bid={self.bid}, insta_score={self.insta_score}, expected_score={self.expected_score}, adjust={self.adjust})"        
+
     def with_expected_score(self, expected_score, adjust):
         return CandidateBid(self.bid, self.insta_score, expected_score, adjust)
 
@@ -101,7 +104,7 @@ class CandidateBid:
         }
 
         if self.insta_score is not None:
-            result['insta_score']: round(self.insta_score,4)
+            result['insta_score'] = round(self.insta_score,4)
 
         if self.expected_score is not None:
             result['expected_score'] = round(self.expected_score)

@@ -56,7 +56,7 @@ class AsyncBotBid(bots.BotBid):
 
 class AsyncBotLead(bots.BotLead):
     async def async_lead(self, auction):
-        return self.lead(auction)
+        return self.find_opening_lead(auction)
 
 class AsyncCardPlayer(bots.CardPlayer):
     async def async_play_card(self, trick_i, leader_i, current_trick52, players_states):
@@ -83,7 +83,8 @@ class Driver:
         self.sampler = sampler
         self.verbose = verbose
 
-    def set_deal(self, deal_str, auction_str, ns, ew):
+    def set_deal(self, board_number, deal_str, auction_str, ns, ew):
+        self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
 
@@ -179,7 +180,8 @@ class Driver:
             'bids': [b.to_dict() for b in self.bid_responses],
             'contract': self.contract,
             'play': [c.to_dict() for c in self.card_responses],
-            'trick_winners': self.trick_winners
+            'trick_winners': self.trick_winners,
+            'board_number' : self.board_number
         }
 
     async def play(self, auction, opening_lead52):
@@ -246,7 +248,6 @@ class Driver:
                         print('skipping opening lead for ',player_i)
                     for i, card_player in enumerate(card_players):
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
-
                     continue
 
                 if trick_i > 0 and len(current_trick) == 0 and player_i in (1, 3):
@@ -535,12 +536,12 @@ async def main():
             # example of to use a fixed deal
             #rdeal = ('K4.T9876532.54.6 Q.KQ.AKQT7.AJ853 972.A4.J83.KQT74 AJT8653.J.962.92', 'E N-S')
 
-            driver.set_deal(*rdeal, ns, ew)
+            driver.set_deal(None, *rdeal, ns, ew)
         else:
             rdeal = tuple(boards[board_no[0]].replace("'","").rstrip('\n').split(','))
             print(f"Board: {board_no[0]+1}" )
             print(rdeal)
-            driver.set_deal(*rdeal, ns, ew)
+            driver.set_deal(board_no[0]+1,*rdeal, ns, ew)
 
         driver.human = [0.1, 0.1, 0.1, 0.1]
         await driver.run()

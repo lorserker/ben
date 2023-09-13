@@ -24,8 +24,15 @@ def get_action_as_string(auction):
     bid_strings = []
     for bid in auction:
         # Ignore PAD_START and PAD_END
-        if (bid > 2):
+        if (bid > 4):
             bid_strings.append(ID2BID[bid])
+        else:
+            if (bid == 2):
+                bid_strings.append("P")
+            if (bid == 3):
+                bid_strings.append("X")
+            if (bid == 4):
+                bid_strings.append("XX")
     return "-".join(bid_strings)
 
 

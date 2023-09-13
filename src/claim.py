@@ -15,7 +15,7 @@ class Claimer:
         t_start = time.time()
 
         hands_pbn = ['W:' + ' '.join([
-            deck52.hand_to_str(hand) for hand in hands52
+            deck52.deal_to_str(hand) for hand in hands52
         ])]
 
         sampled_hands_pbn = []
@@ -27,15 +27,15 @@ class Claimer:
         )
 
         hands = [None, None, None, None]
-        hands[seen_hand_indexes[0]] = deck52.hand_to_str(hands52[seen_hand_indexes[0]])
-        hands[seen_hand_indexes[1]] = deck52.hand_to_str(hands52[seen_hand_indexes[1]])
+        hands[seen_hand_indexes[0]] = deck52.deal_to_str(hands52[seen_hand_indexes[0]])
+        hands[seen_hand_indexes[1]] = deck52.deal_to_str(hands52[seen_hand_indexes[1]])
 
         for i in range(n_samples):
             np.random.shuffle(hidden_cards)
             
             n_cards = len(hidden_cards) // 2
-            hands[hidden_hand_indexes[0]] = deck52.hand_to_str(_hand_from_cards(52, hidden_cards[:n_cards]))
-            hands[hidden_hand_indexes[1]] = deck52.hand_to_str(_hand_from_cards(52, hidden_cards[n_cards:]))
+            hands[hidden_hand_indexes[0]] = deck52.deal_to_str(_hand_from_cards(52, hidden_cards[:n_cards]))
+            hands[hidden_hand_indexes[1]] = deck52.deal_to_str(_hand_from_cards(52, hidden_cards[n_cards:]))
 
             sampled_hands_pbn.append('W:' + ' '.join(hands))
 
