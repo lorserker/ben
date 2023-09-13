@@ -4,7 +4,7 @@ import os
 import os.path
 import numpy as np
 
-from lead_binary import DealMeta, seats, seat_index, suit_index_lookup
+from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup
 
 from binary_righty import binary_hand, get_card_index, encode_card, get_play_labels, play_data_iterator
 

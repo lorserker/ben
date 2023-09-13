@@ -28,3 +28,7 @@ scripts/training/playing/playing_data/Jack
 scripts/training/playing/*_model
 scripts/training/bidding/bidding_bin
 scripts/training/bidding/model
+src/Northdb.*
+src/Southdb.*
+scripts/training/playing/lead_model_b
+scripts/training/playing/models

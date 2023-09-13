@@ -5,7 +5,7 @@ import os.path
 import numpy as np
 
 from data_access import card_index_lookup
-from lead_binary import DealMeta, seats, seat_index, suit_index_lookup
+from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup
 
 
 card_index_lookup_x = dict(

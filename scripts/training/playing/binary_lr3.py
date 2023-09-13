@@ -4,7 +4,7 @@ import os
 import os.path
 
 from binary_righty import binary_hand, get_card_index
-from lead_binary import DealMeta
+from lead_binary_util import DealMeta
 from binary_lead import jack_data_iterator
 
 
