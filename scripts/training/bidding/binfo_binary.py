@@ -37,24 +37,27 @@ def load_deals_no_contracts(fin):
 
 
 def create_binary(data_it, n, out_dir, ns, ew):
-    X = np.zeros((4 * n, 8, 161), dtype=np.float16)
+    if (ns==-1):
+        x = np.zeros((4 * n, 8, 159), dtype=np.float16)
+    else:
+        x = np.zeros((4 * n, 8, 161), dtype=np.float16)
     y = np.zeros((4 * n, 8, 40), dtype=np.float16)
     HCP = np.zeros((4 * n, 8, 3), dtype=np.float16)
     SHAPE = np.zeros((4 * n, 8, 12), dtype=np.float16)
 
     for i, (deal_str, auction_str, _) in enumerate(data_it):
-        if (i+1) % 1000 == 0:
-            print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i+1)
+        print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i)
         deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ns, ew, 32)
         x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
         start_ix = i * 4
         end_ix = (i + 1) * 4
-        X[start_ix:end_ix,:,:] = x_part
+        x[start_ix:end_ix,:,:] = x_part
         y[start_ix:end_ix,:,:] = y_part
         HCP[start_ix:end_ix,:,:] = hcp_part
         SHAPE[start_ix:end_ix,:,:] = shape_part
 
-    np.save(os.path.join(out_dir, 'X.npy'), X)
+    print(HCP[0])
+    np.save(os.path.join(out_dir, 'x.npy'), x)
     np.save(os.path.join(out_dir, 'y.npy'), y)
     np.save(os.path.join(out_dir, 'HCP.npy'), HCP)
     np.save(os.path.join(out_dir, 'SHAPE.npy'), SHAPE)
@@ -76,14 +79,16 @@ if __name__ == '__main__':
     
     if len(sys.argv) < 3:
         print("Usage: python binfo_binary.py inputfile outputdirectory NS=<x> EW=<y>")
-        print("NS and EW are optional. If set to -1 the hands for that side will not be used")
+        print("NS and EW are optional. If set to -1 no information about system is included in the model.")
+        print("If set to 0 the hands from that side will not be used for training.")
+        print("The input file is the BEN-format (1 line with hands, and next line with the bidding).")
         sys.exit(1)
 
     infnm = sys.argv[1] # file where the data is
     outdir = sys.argv[2]
     # Extract NS and EW values from command-line arguments if provided
-    ns = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), 0)
-    ew = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), 0)
+    ns = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), -1)
+    ew = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), -1)
 
     ns = to_numeric(ns)
     ew = to_numeric(ew)

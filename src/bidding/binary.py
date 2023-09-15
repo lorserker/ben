@@ -111,7 +111,10 @@ class DealData(object):
         return X, y
     
     def get_binary_hcp_shape(self, ns, ew,  n_steps=8):
-        X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+        if ns == -1:
+            X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+        else: 
+            X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
         y = np.zeros((4, n_steps, 40), dtype=np.float16)
         HCP = np.zeros((4, n_steps, 3), dtype=np.float16)
         SHAPE = np.zeros((4, n_steps, 12), dtype=np.float16)
@@ -144,16 +147,28 @@ class DealData(object):
             # Create an array with [ns, ew] only if neither ns nor ew is -1
             ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
 
-            ftrs = np.concatenate((
-                ns_ew_array,
-                vuln,
-                hcp,
-                shape,
-                self.hands[hand_ix],
-                bidding.encode_bid(lho_bid),
-                bidding.encode_bid(partner_bid),
-                bidding.encode_bid(rho_bid)
-            ), axis=1)
+            if (ns == -1):
+                ftrs = np.concatenate((
+                    vuln,
+                    hcp,
+                    shape,
+                    self.hands[hand_ix],
+                    bidding.encode_bid(lho_bid),
+                    bidding.encode_bid(partner_bid),
+                    bidding.encode_bid(rho_bid)
+                ), axis=1)
+            else:
+                ftrs = np.concatenate((
+                    ns_ew_array,
+                    vuln,
+                    hcp,
+                    shape,
+                    self.hands[hand_ix],
+                    bidding.encode_bid(lho_bid),
+                    bidding.encode_bid(partner_bid),
+                    bidding.encode_bid(rho_bid)
+                ), axis=1)
+
 
             X[hand_ix, t, :] = ftrs
             y[hand_ix, t, :] = bidding.encode_bid(target_bid)
