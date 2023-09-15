@@ -106,11 +106,16 @@ async def handler(websocket, path, board_no):
     if query_params:
         P = query_params.get('P', [None])[0]
         deal = query_params.get('deal', [None])[0]
-        board_no = query_params.get('board_no', [None])[0]
+        board_no_query = query_params.get('board_no', [None])[0]
         if deal:
             split_values = deal[1:-1].replace("'","").split(',')
             rdeal = tuple(value.strip() for value in split_values)
-            driver.set_deal(board_no,*rdeal, ns, ew)
+            driver.set_deal(board_no_query,*rdeal, ns, ew)
+            print(f"Board: {board_no_query} {rdeal}")
+
+        # Trust factor is now moved to the configuration
+        # But here we would like to override the configuration
+        # Think of a better way to do that            
         if P == "0":
             driver.human = [0.1, -1, 0.1, -1]
         if P == "1":
@@ -132,10 +137,10 @@ async def handler(websocket, path, board_no):
             # rdeal = ('5.983.AKT7.K9862 986.QT4.865.AQT7 JT7.J7652.3.J653 AKQ432.AK.QJ942.', 'N None')
             driver.human = [0.1, 0.1, 1, 0.1]
             driver.set_deal(None, *rdeal, ns, ew)
+            print(f"Deal: {rdeal}")
         else:
             rdeal = tuple(boards[board_no[0]].replace("'","").rstrip('\n').split(','))
-            print(f"Board: {board_no[0]+1}" )
-            print(rdeal)
+            print(f"Board: {board_no[0]+1} {rdeal}")
             driver.set_deal(board_no[0] + 1,*rdeal, ns, ew)
             if (auto):
                 driver.human = [0.1, 0.1, 0.1, 0.1]

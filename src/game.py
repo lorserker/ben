@@ -120,7 +120,6 @@ class Driver:
 
         self.bid_responses = []
         self.card_responses = []
-        print(f"Deal={self.deal_str}")
 
         auction = await self.bidding()
         self.contract = bidding.get_contract(auction)
@@ -485,6 +484,7 @@ async def main():
 
     parser = argparse.ArgumentParser(description="Game server")
     parser.add_argument("--boards", default="", help="Filename for configuration")
+    parser.add_argument("--auto", type=bool, default=False, help="Continue without user confirmation. If a file is provided it will stop at end of file")
     parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
     parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--ns", type=int, default=-1, help="System for NS")
@@ -495,6 +495,7 @@ async def main():
 
     configfile = args.config
     verbose = args.verbose
+    auto = args.auto
 
     if args.boards:
         filename = args.boards
@@ -539,10 +540,11 @@ async def main():
             driver.set_deal(None, *rdeal, ns, ew)
         else:
             rdeal = tuple(boards[board_no[0]].replace("'","").rstrip('\n').split(','))
-            print(f"Board: {board_no[0]+1}" )
-            print(rdeal)
+            print(f"Board: {board_no[0]+1} {rdeal}" )
             driver.set_deal(board_no[0]+1,*rdeal, ns, ew)
+            board_no[0] = board_no[0] + 1
 
+        # BEN is handling all 4 hands
         driver.human = [0.1, 0.1, 0.1, 0.1]
         await driver.run()
 
@@ -550,9 +552,13 @@ async def main():
             deal = driver.to_dict()
             db[uuid.uuid4().hex] = deal
 
-        user_input = input("\n Q to quit or any other key for next deal ")
-        if user_input.lower() == "q":
-            break
+        if not auto:
+            user_input = input("\n Q to quit or any other key for next deal ")
+            if user_input.lower() == "q":
+                break
+        else:
+            if args.boards and board_no[0] >= len(boards):
+                break
 
 if __name__ == '__main__':
     loop = asyncio.new_event_loop()

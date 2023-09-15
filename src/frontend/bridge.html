@@ -81,10 +81,11 @@
         const urlParams = new URLSearchParams(location.search)
         const dealId = urlParams.get("deal")
         const playerId = urlParams.get("P")
+        const board_no = urlParams.get("board_no")
         var queryString = ""
         var ws
         if (dealId) {
-            queryString = "?deal=" + dealId + "&P=" + playerId
+            queryString = "?deal=" + dealId + "&P=" + playerId + "&board_no=" + board_no
         }
         try {
 

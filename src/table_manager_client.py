@@ -603,11 +603,19 @@ class TMClient:
 
     async def send_message(self, message: str):
         time.sleep(0.1)
-        print(f'{datetime.datetime.now().strftime("%H:%M:%S")} sending:   {message.ljust(60)}', end='')
+        try:
+            print(f'{datetime.datetime.now().strftime("%H:%M:%S")} sending:   {message.ljust(60)}', end='')
 
-        self.writer.write((message+"\r\n").encode())
-        await self.writer.drain()
-        print(' ...sent successfully.')
+            self.writer.write((message + "\r\n").encode())
+            await self.writer.drain()
+            print(' ...sent successfully.')
+        except ConnectionAbortedError as ex:
+            print(f'Error: {str(ex)}')
+            # Handle the error gracefully, such as logging it or notifying the user
+            # Close the connection (in case it's not already closed)
+            self._is_connected = False
+            # Stop the event loop to terminate the application
+            asyncio.get_event_loop().stop()
 
     async def receive_line(self) -> str:
         try:

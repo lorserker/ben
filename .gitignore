@@ -32,3 +32,10 @@ src/Northdb.*
 src/Southdb.*
 scripts/training/playing/lead_model_b
 scripts/training/playing/models
+scripts/training/bidding/bidding_info_bin
+scripts/training/bidding/models
+scripts/training/bidding/binfo2
+scripts/training/playing/bw5c_info.zip
+scripts/training/bidding/bw5c.zip
+scripts/training/bidding/test4.py
+install/dist/2nt.pbn
