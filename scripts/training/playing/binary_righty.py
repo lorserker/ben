@@ -7,15 +7,6 @@ import numpy as np
 from data_access import card_index_lookup
 from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup
 
-
-card_index_lookup_x = dict(
-    zip(
-        ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'],
-        [0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7],
-    )
-)
-
-
 def binary_hand(suits):
     x = np.zeros(32, np.float16)
     assert(len(suits) == 4)
@@ -57,14 +48,6 @@ def wins_trick_index(trick, trump, lead_index):
 def get_card_index(card):
     suit, value = card[0], card[1]
     return suit_index_lookup[suit] * 8 + card_index_lookup_x[value]
-
-def encode_card(card):
-    x = np.zeros(32, np.float16)
-    if card == '>>':
-        return x
-    x[get_card_index(card)] = 1
-    return x
-
 
 def get_play_labels(play_str, trump, player_turn_i):
     tricks = get_tricks(get_cards(play_str))

@@ -7,12 +7,10 @@ import numpy as np
 
 from bidding import bidding
 
-from lead_binary_util import DealMeta, convert_auction
-from binary_righty import encode_card
+from lead_binary_util import DealMeta, convert_auction, encode_card
 from data_access import card_index_lookup
 
-import conf
-from nn.models import Models
+from nn.bid_info import BidInfo
 
 
 class DealData(object):
@@ -148,15 +146,18 @@ def get_hcp(hand):
     return sum([hcp.get(c, 0) for c in hand])
 
 
-def create_binary(data_it, n, out_dir, n_steps=8):
+def create_binary(data_it, out_dir, model, n_steps=8):
+    data_it, copy = itertools.tee(data_it)  # Create a copy of the iterator
+    n = sum(1 for _ in copy)  # Count items in the copy
+
     A = np.zeros((n, n_steps, 2 + 1 + 4 + 32 + 3 * 40), dtype=np.float16)
     B = np.zeros((n, 15), dtype=np.float16)
     X = np.zeros((n, 42), dtype=np.float16)
     y = np.zeros((n, 32), dtype=np.float16)
-
+    
     for i, (deal_str, meta_str, auction_str, play_str) in enumerate(data_it):
-        if i % 1000 == 0:
-            print(i)
+        if (i+1) % 1000 == 0:
+            print(i+1)
         deal_data = DealData.from_deal_meta_auction_play_string(deal_str, meta_str, auction_str, play_str)
         a_part, x_part, y_part = deal_data.get_binary(n_steps)
         
@@ -164,7 +165,7 @@ def create_binary(data_it, n, out_dir, n_steps=8):
         X[i:i+1, :] = x_part
         y[i:i+1, :] = y_part
 
-        p_hcp, p_shp = models.binfo.model(a_part)
+        p_hcp, p_shp = model.model(a_part)
 
         b = np.zeros(15)
         b[:3] = p_hcp.reshape((-1, n_steps, 3))[:,-1,:].reshape(3)
@@ -211,30 +212,14 @@ def jack_data_iterator(fin):
             yield tuple(lines)
             lines = []
 
-def get_execution_path():
-    # Get the directory where the program is started from either PyInstaller executable or the script
-    return os.getcwd()
-
-
 if __name__ == '__main__':
 
     out_dir = './lead_bin'
 
-    # Get the path to the config file
-    config_path = get_execution_path()
-    
-    base_path = os.getenv('BEN_HOME') or config_path
-
-    
-    configuration = conf.load("..\..\..\src\config\default.conf")
-
-    models = Models.from_conf(configuration, base_path.replace("\src",""))
-
-    
     data_it = jack_data_iterator(itertools.chain(
-        open('playing_data/jack/BW5C_N.txt'), 
-        open('playing_data/jack/BW5C_S.txt')))
+        open('data/NT_lead.txt'), 
+        open('data/SuitLead.txt'))) 
 
-    n = 272776
+    model = BidInfo("./models/bw5c_info/bw5c_info-500000")
 
-    create_binary(data_it, n, out_dir, 8)
+    create_binary(data_it, out_dir, model, 8)

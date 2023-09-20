@@ -1,6 +1,8 @@
 import sys
 import datetime
 import numpy as np
+import sys
+sys.path.append('../../../src')
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 import os
@@ -13,7 +15,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from batcher import Batcher
 
-model_path = './lead_model_b/lead'
+model_path = './models/lead_model/lead'
 
 seed = 1337
 
@@ -31,7 +33,6 @@ n_cards = 32
 n_bi = B_train.shape[1]
 
 n_hidden_units = 512
-
 
 keep_prob = tf.placeholder(tf.float32, name='keep_prob')
 
@@ -57,10 +58,7 @@ w_out = tf.get_variable('w_out', shape=[n_hidden_units, 32], dtype=tf.float32, i
 lead_logit = tf.matmul(a3, w_out, name='lead_logit')
 lead_softmax = tf.nn.softmax(lead_logit, name='lead_softmax')
 
-#import pdb; pdb.set_trace()
-
 cost = tf.losses.softmax_cross_entropy(y, lead_logit)
-
 
 weights = [w1, w2]
 
@@ -68,14 +66,13 @@ learning_rate = tf.placeholder(tf.float32, name='learning_rate')
 
 train_step = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
-
 batch = Batcher(n_examples, batch_size)
 cost_batch = Batcher(n_examples, 10000)
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
-    saver = tf.train.Saver(max_to_keep=50)
+    saver = tf.train.Saver(max_to_keep=5)
 
     for i in range(n_iterations):
         x_batch, b_batch, y_batch = batch.next_batch([X_train, B_train, y_train])
