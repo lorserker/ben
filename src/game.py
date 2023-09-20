@@ -515,7 +515,7 @@ async def main():
 
     if args.boardno:
         print(f"Starting from {args.boardno}")
-        board_no[0] = args.boardno
+        board_no[0] = args.boardno - 1
 
     if random:
         print("Playing random deals or deals from the client")

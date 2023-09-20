@@ -161,6 +161,7 @@ class BotBid:
                 else:
                     # Seems to be an error in the training that needs to be solved
                     sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
+                    assert(bid_i > 1)
                 # set the score for the bid just processed to zero so it is out of the loop
                 bid_softmax[bid_i] = 0
             return candidates
@@ -173,7 +174,6 @@ class BotBid:
         if no_bids > 3 and auction[-2:] == ['PASS', 'PASS']:
             # this is the final pass, so we wil have a second opinion
             min_candidates = 2
-            print(auction[-3:])
             # If we are doubled trust the bidding model
             if auction[-3:] == ['X','PASS', 'PASS']:
                 min_candidates = 1
@@ -193,7 +193,11 @@ class BotBid:
                 candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
             else:
                 # Seems to be an error in the training that needs to be solved
+                # could be at bid 20 - need to investigate
                 sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
+                if len(candidates) > 0:
+                    break
+                #assert(bid_i > 1)
 
             # set the score for the bid just processed to zero so it is out of the loop
             bid_softmax[bid_i] = 0
@@ -328,6 +332,7 @@ class BotLead:
 
         candidate_cards = []
         for i, card_i in enumerate(lead_card_indexes):
+            assert(tricks[:,i,0].all() >= 0)
             candidate_cards.append(CandidateCard(
                 card=Card.from_code(card_i, xcards=True),
                 insta_score=lead_softmax[0,card_i],

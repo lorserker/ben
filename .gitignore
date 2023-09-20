@@ -39,3 +39,10 @@ scripts/training/playing/bw5c_info.zip
 scripts/training/bidding/bw5c.zip
 scripts/training/bidding/test4.py
 install/dist/2nt.pbn
+scripts/training/opening lead/data
+scripts/training/opening lead/models
+scripts/training/opening lead/lead_bin
+scripts/training/opening lead/lead_model_b
+src/db
+models/lead_model_c
+models/lead_model
