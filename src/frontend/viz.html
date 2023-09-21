@@ -97,8 +97,8 @@
 
   </div>
 
-  <div id="replay">
-  </div>
+  <div id="replay"></div>
+  <div id="solver"></div>
 
   <div><a href="/home">Home</a></div>
 
@@ -128,14 +128,18 @@
                                 if (deal.data.vuln_ns) {
                                     if (deal.data.vuln_ew) {
                                         vul = "Both";
+                                        vulSolver = "All";
                                     } else {
                                         vul = 'N-S';
+                                        vulSolver = "NS";
                                     }
                                 } else {
                                     if (deal.data.vuln_ew) {
                                         vul = "E-W";
+                                        vulSolver = "EW";
                                     } else {
                                         vul = 'None';
+                                        vulSolver = "None";
                                     }
                                 }
 
@@ -145,6 +149,20 @@
                                     '&P=5&board_no='+deal.board_number()+'"> Play it again </a><br>';
 
                                 document.querySelector('#replay').innerHTML = replayContent;
+
+                                var hands = deal.data.hands.split(' ')
+                                const solverContent = '<a href="https://dds.bridgewebs.com/bsol2/ddummy.htm?board=' + deal.board_number()  +
+                                    '&dealer=' + dealer + 
+                                    '&vul=' + vulSolver + '&club=BEN' +
+                                    '&North=' + hands[0] +
+                                    '&East=' + hands[1] +
+                                    '&South=' + hands[2] +
+                                    '&West=' + hands[3] +
+                                    '"> Bridge Solver </a><br>';
+
+                                console.log(solverContent)
+
+                                document.querySelector('#solver').innerHTML = solverContent;
 
                                 document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code></pre>'
 
