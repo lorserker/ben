@@ -1,5 +1,6 @@
 import os
 import sys
+import re
 from collections import deque
 from typing import NamedTuple
 
@@ -42,7 +43,13 @@ def load(fin):
                 if line.startswith('['):  # Check if it's the start of the next tag
                     inside_auction_section = False
                 else:
-                    auction_lines.append(line.strip().replace('.','').replace("Pass","P").replace("Double","X").replace("Redouble","XX"))  
+                    # Convert bids
+                    line = line.strip().replace('.','').replace("Pass","P").replace("Double","X").replace("Redouble","XX")
+                    # Remove extra spaces
+                    line = re.sub(r'\s+', ' ', line)
+                    # Remove alerts
+                    line = re.sub(r'=\d{1,2}=', '', line)
+                    auction_lines.append(line)  
                       
 
 def extract_value(s: str) -> str:
@@ -64,6 +71,7 @@ if __name__ == '__main__':
         with open(input_file, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
             lines = file.readlines()
         load(lines)
+        print("File input.ben created")
     except Exception as ex:
         print('Error:', ex)
         raise ex
