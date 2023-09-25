@@ -91,9 +91,16 @@ By the way if we just pick a random card for opening lead (The monkey test) we w
 DCWER and DFWER for the 1.000 boards was:
 
 
-DCWER  (suit)  691 = 1.06%
-DCWER  (NT)    298 = 2.46%
-DFWER  (suit)  691 = 0.87%
-DFWER  (NT)    298 = 2.03%
+- DCWER  (suit)  691 = 1.06%
+- DCWER  (NT)    298 = 2.46%
+- DFWER  (suit)  691 = 0.87%
+- DFWER  (NT)    298 = 2.03%
 
 Again very fine for suit-play and not good in NT
+
+Using a higher trust for NT-contracts
+
+- DDOLAR  (suit)  698 = 81.81%
+- DDOLAR  (NT)    303 = 76.57%
+- ADDOLAR (suit)  524 = 75.76%
+- ADDOLAR (NT)    244 = 70.90%

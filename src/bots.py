@@ -54,7 +54,7 @@ class BotBid:
         return x
 
     def bid(self, auction):
-        candidates = self.get_bid_candidates(auction)
+        candidates, passout = self.get_bid_candidates(auction)
         if self.verbose:
             print(f"Sampling for aution: {auction}")
         hands_np = self.sample_hands(auction)
@@ -86,17 +86,26 @@ class BotBid:
                 expected_score = np.mean(ev)
                 if self.verbose:
                     print(ev)
+
+                # The result is sorted based on the simulation. Adding some bonus to the bid selected by the neural network
+                # Should probably be configurable
+                adjust = 50*candidate.insta_score
+
                 # If we are doubling as penalty in the pass out-situation
                 # These adjustments should probably be configurable
-                if candidate.bid == "X" and candidate.insta_score < self.min_candidate_score:
+                if passout and candidate.insta_score < self.min_candidate_score:
+                    # If we are bidding in the passout situation, and is going down, assume we are doubled
+                    if bidding.BID2ID[candidate.bid] > 4:
+                        if expected_score < 0:
+                            adjust = expected_score * 3
+
+                if passout and candidate.bid == "X" and candidate.insta_score < self.min_candidate_score:
                     # Don't double unless the expected score is positive with a margin
                     if expected_score < 100:
                         adjust = -200
                     else:
                         adjust = -100
-                else:
-                    # The result is sorted based on the simulation. Adding some bonus to the bid selected by the neural network
-                    adjust = 50*candidate.insta_score
+                        
                 ev_c = candidate.with_expected_score(np.mean(ev), adjust)
                 if self.verbose:
                     print(ev_c)
@@ -171,9 +180,11 @@ class BotBid:
 
         # Calculate the count of elements after the last 'PAD_START'
         no_bids  = len(auction) - pad_start_index - 1
+        passout = False
         if no_bids > 3 and auction[-2:] == ['PASS', 'PASS']:
             # this is the final pass, so we wil have a second opinion
             min_candidates = 2
+            passout = True
             # If we are doubled trust the bidding model
             if auction[-3:] == ['X','PASS', 'PASS']:
                 min_candidates = 1
@@ -202,7 +213,16 @@ class BotBid:
             # set the score for the bid just processed to zero so it is out of the loop
             bid_softmax[bid_i] = 0
 
-        return candidates
+        # After preempts the model is lacking some bidding, so we will try to get a second bid
+        if no_bids < 4 and no_bids > 0:
+            if bidding.BID2ID[auction[0]] > 14:
+                # Extra candidate after opponents preempt
+                print("Extra candidate after opponents preempt might be needed")
+            if no_bids > 1 and bidding.BID2ID[auction[1]] > 14:
+                print("Extra candidate after partners preempt might be needed")
+                
+
+        return candidates, passout
 
     def next_bid_np(self, auction):
         x = self.get_binary(auction)

@@ -25,6 +25,7 @@ import numpy as np
 import human
 import bots
 import conf
+from bba.BBA import BBABotBid
 
 from sample import Sample
 from bidding import bidding
@@ -82,8 +83,9 @@ class Driver:
         self.ew = -1
         self.sampler = sampler
         self.verbose = verbose
+        self.play_only = False
 
-    def set_deal(self, board_number, deal_str, auction_str, ns, ew):
+    def set_deal(self, board_number, deal_str, auction_str, ns, ew, play_only):
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
@@ -91,6 +93,9 @@ class Driver:
         self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, ns, ew, 32)
         self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, ns, ew, 52)
 
+        if play_only:
+            self.auction = self.deal_data.auction
+            self.play_only = play_only
         self.dealer_i = self.deal_data.dealer
         self.vuln_ns = self.deal_data.vuln_ns
         self.vuln_ew = self.deal_data.vuln_ew
@@ -121,7 +126,11 @@ class Driver:
         self.bid_responses = []
         self.card_responses = []
 
-        auction = await self.bidding()
+        if self.play_only:
+            auction = self.auction
+        else:
+            auction = await self.bidding()
+
         self.contract = bidding.get_contract(auction)
 
         if self.verbose:
@@ -442,7 +451,9 @@ class Driver:
 
         players = []
         for i, level in enumerate(self.human):
-            if level == 1:
+            if level == 99:
+                players.append(BBABotBid(1,1,i,hands_str[i],vuln, self.dealer_i))
+            elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
                 bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, level, self.sampler, self.verbose)
@@ -454,6 +465,7 @@ class Driver:
 
         while not bidding.auction_over(auction):
             bid_resp = await players[player_i].async_bid(auction)
+
             self.bid_responses.append(bid_resp)
 
             auction.append(bid_resp.bid)
@@ -489,6 +501,7 @@ async def main():
     parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--ns", type=int, default=-1, help="System for NS")
     parser.add_argument("--ew", type=int, default=-1, help="System for EW")
+    parser.add_argument("--playonly", type=bool, default=False, help="Just play, no bidding")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()
@@ -496,6 +509,8 @@ async def main():
     configfile = args.config
     verbose = args.verbose
     auto = args.auto
+    play_only = args.playonly
+    boards = []
 
     if args.boards:
         filename = args.boards
@@ -503,8 +518,16 @@ async def main():
         if file_extension == '.ben':
             with open(filename, "r") as file:
                 board_no.append(0) 
-                boards = file.readlines()
-                print(f"{len(boards)} boards loaded from file")
+                lines = file.readlines()  # 
+                print(len(lines))
+                # Loop through the lines, grouping them into objects
+                for i in range(0, len(lines), 2):
+                    board = {
+                        'deal': lines[i].strip(),      
+                        'auction': lines[i+1].strip().replace('NT','N')  
+                    }
+                    boards.append(board)            
+            print(f"{len(boards)} boards loaded from file")
             random = False
         if file_extension == '.pbn':
             with open(filename, "r") as file:
@@ -535,17 +558,20 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            #rdeal = ('K4.T9876532.54.6 Q.KQ.AKQT7.AJ853 972.A4.J83.KQT74 AJT8653.J.962.92', 'E N-S')
+            rdeal = ('K4.T9876532.54.6 Q.KQ.AKQT7.AJ853 972.A4.J83.KQT74 AJT8653.J.962.92', 'E N-S')
 
-            driver.set_deal(None, *rdeal, ns, ew)
+            driver.set_deal(None, *rdeal, ns, ew, False)
         else:
-            rdeal = tuple(boards[board_no[0]].replace("'","").rstrip('\n').split(','))
-            print(f"Board: {board_no[0]+1} {rdeal}" )
-            driver.set_deal(board_no[0]+1,*rdeal, ns, ew)
+            rdeal = boards[board_no[0]]['deal']
+            auction = boards[board_no[0]]['auction']
+            print(f"Board: {board_no[0]+1} {rdeal}")
+            driver.set_deal(board_no[0] + 1, rdeal, auction, ns, ew, play_only)
             board_no[0] = board_no[0] + 1
 
         # BEN is handling all 4 hands
         driver.human = [0.1, 0.1, 0.1, 0.1]
+        # BBA is handling all 4 hands
+        driver.human = [99, 99, 99, 99]
         await driver.run()
 
         with shelve.open(f"{base_path}/gamedb") as db:

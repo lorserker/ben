@@ -9,7 +9,7 @@ class Deal(NamedTuple):
 
 def load(fin):
     dealer, vulnerable = None, None
-    with open('input.ben', 'w', encoding='utf-8') as file:  # Open the output file with UTF-8 encoding
+    with open('input.set', 'w', encoding='utf-8') as file:  # Open the output file with UTF-8 encoding
         for line in fin:
             if line.startswith('[Dealer'):
                 dealer = extract_value(line)

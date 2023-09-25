@@ -1,0 +1,8988 @@
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "1"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:876.KQ543.7.AQ74 A94.AT7.KQ.K9863 KQT532.96.JT54.J J.J82.A98632.T52"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4D"]
+[Result "9"]
+[Auction "N"]
+1H        1NT       2S        3D        
+Pass      Pass      3S        4D        
+Pass      Pass      Pass      
+[Play "N"]
+S7 SA S5 SJ 
+D7 DQ D5 D6 
+H3 DK D4 D2 
+CQ C3 CJ C2 
+CA C6 S2 C5 
+C7 C8 DT CT 
+HQ HA H9 H2 
+C4 C9 DJ DA 
+H4 S4 S3 D3 
+HK H7 H6 H8 
+H5 HT ST HJ 
+S8 S9 SQ D9 
+S6 CK SK D8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "2"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:876.KQ543.7.AQ74 A94.AT7.KQ.K9863 KQT532.96.JT54.J J.J82.A98632.T52"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3D"]
+[Result "9"]
+[Auction "E"]
+1H        1NT       2S        3D        
+Pass      Pass      Pass      
+[Play "E"]
+S7 SA S5 SJ 
+D7 DQ D5 D6 
+H5 DK D4 D2 
+S6 S4 ST D8 
+S8 C3 DT DA 
+C7 C8 CJ C2 
+HQ HA H9 H2 
+HK H7 H6 H8 
+H4 HT S2 HJ 
+CA C6 S3 C5 
+CQ CK DJ CT 
+H3 S9 SK D3 
+C4 C9 SQ D9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "3"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:Q6542.QJ7.AKT6.7 T987.K9.2.QJT986 AKJ3.AT2.9543.53 .86543.QJ87.AK42"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "11"]
+[Auction "E"]
+1S        Pass      2D        Pass      
+2S        Pass      4S        Pass      
+Pass      Pass      
+[Play "S"]
+CQ C3 C4 C7 
+D2 D3 DJ DA 
+S8 SJ H8 S2 
+S7 SA H3 S6 
+S9 S3 H5 SQ 
+H9 HT H6 H7 
+ST SK C2 S4 
+C6 D4 D7 DK 
+C8 D9 DQ D6 
+HK HA H4 HQ 
+C9 H2 CK HJ 
+CT C5 D8 S5 
+CJ D5 CA DT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "4"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:Q6542.QJ7.AKT6.7 T987.K9.2.QJT986 AKJ3.AT2.9543.53 .86543.QJ87.AK42"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "9"]
+[Auction "S"]
+1S        Pass      2NT       Pass      
+3C        Pass      3S        Pass      
+4S        Pass      Pass      Pass      
+[Play "W"]
+CQ C3 C4 C7 
+CJ C5 C2 S2 
+S8 SJ H3 S4 
+S7 S3 CK SQ 
+S9 SK H4 S5 
+D2 D3 D8 DA 
+ST D4 D7 DK 
+HK HA H5 H7 
+H9 HT H6 HQ 
+C6 H2 H8 HJ 
+C8 D5 DJ D6 
+C9 D9 DQ DT 
+CT SA CA S6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "5"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:63.Q876.Q8.KJ843 QJT52.JT3.KJ93.2 AK.A54.T754.A965 9874.K92.A62.QT7"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2NT"]
+[Result "7"]
+[Auction "S"]
+Pass      Pass      1NT       Pass      
+2C        Pass      2D        Pass      
+2NT       Pass      Pass      Pass      
+[Play "E"]
+S4 S3 ST SA 
+C7 CK C2 C5 
+CT C3 H3 CA 
+CQ C4 D3 C9 
+S7 S6 SJ SK 
+D6 C8 S5 C6 
+H2 CJ HT D4 
+H9 H6 HJ HA 
+HK H7 D9 H4 
+DA D8 DJ D5 
+D2 DQ DK D7 
+S8 H8 SQ H5 
+S9 HQ S2 DT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "6"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:63.Q876.Q8.KJ843 QJT52.JT3.KJ93.2 AK.A54.T754.A965 9874.K92.A62.QT7"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2NT"]
+[Result "7"]
+[Auction "W"]
+Pass      Pass      1NT       Pass      
+2C        Pass      2D        Pass      
+2NT       Pass      Pass      Pass      
+[Play "S"]
+S4 S3 ST SA 
+C7 CK C2 C5 
+CT C3 H3 CA 
+CQ C4 D3 C9 
+S7 S6 SJ SK 
+S8 C8 S5 C6 
+H2 CJ D9 H4 
+D2 D8 DJ D4 
+S9 H6 SQ D5 
+D6 H7 S2 D7 
+HK H8 HJ H5 
+DA DQ DK DT 
+H9 HQ HT HA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "7"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:A.J542.AKQ8.QJ65 KQJ5.K96.J753.73 97432.A83.42.T82 T86.QT7.T96.AK94"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "1D"]
+[Result "7"]
+[Auction "W"]
+1D        Pass      Pass      Pass      
+[Play "N"]
+SK S2 S6 SA 
+C7 CT CK C5 
+D7 D2 D6 DK 
+D5 D4 D9 DQ 
+D3 H3 DT DA 
+C3 C2 CA CJ 
+DJ C8 C9 CQ 
+SQ S3 S8 D8 
+SJ S4 C4 C6 
+H6 HA H7 H2 
+S5 S7 ST H4 
+H9 H8 HQ H5 
+HK S9 HT HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "8"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:A.J542.AKQ8.QJ65 KQJ5.K96.J753.73 97432.A83.42.T82 T86.QT7.T96.AK94"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "1C"]
+[Result "8"]
+[Auction "N"]
+1C        Pass      Pass      Pass      
+[Play "E"]
+SK S2 S6 SA 
+H6 HA H7 H2 
+S5 S3 S8 C5 
+D7 D2 D6 DQ 
+D5 D4 D9 DK 
+D3 C2 DT DA 
+SJ S4 ST C6 
+DJ CT CK D8 
+H9 H3 HQ H4 
+C3 C8 CA CJ 
+HK H8 HT H5 
+SQ S7 C9 CQ 
+C7 S9 C4 HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "9"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:Q74.AKQ73.J54.J7 KJ92.852.T73.862 T83..AQ986.KT943 A65.JT964.K2.AQ5"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "5D"]
+[Result "7"]
+[Auction "N"]
+1H        Pass      1NT       Pass      
+2D        Pass      5D        Pass      
+Pass      Pass      
+[Play "E"]
+S2 S3 SA S4 
+SJ S8 S6 S7 
+SK ST S5 SQ 
+C6 CK CA C7 
+C8 C3 CQ CJ 
+C2 C4 C5 D4 
+H2 C9 H4 HQ 
+H5 CT H6 HK 
+D3 D6 DK DJ 
+H8 D8 HJ H3 
+D7 DQ D2 D5 
+DT DA H9 H7 
+S9 D9 HT HA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "10"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:Q74.AKQ73.J54.J7 KJ92.852.T73.862 T83..AQ986.KT943 A65.JT964.K2.AQ5"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "1NT"]
+[Result "6"]
+[Auction "E"]
+1H        Pass      1NT       Pass      
+Pass      Pass      
+[Play "N"]
+HJ HQ H2 S8 
+DK D4 D3 DQ 
+SA S4 S9 ST 
+S6 S7 SJ S3 
+CQ C7 C6 C3 
+CA CJ C8 C4 
+S5 SQ SK D6 
+H4 H3 S2 D8 
+C5 D5 C2 CT 
+H6 H7 H5 CK 
+D2 HK D7 C9 
+H9 DJ DT D9 
+HT HA H8 DA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "11"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:975.K.A742.KT763 QJT8.Q975.J6.Q82 AK6.AJT3.K853.95 432.8642.QT9.AJ4"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "9"]
+[Auction "E"]
+Pass      Pass      1NT       Pass      
+3NT       Pass      Pass      Pass      
+[Play "N"]
+S3 S5 S8 SA 
+C4 CT CQ C5 
+S4 S7 SQ S6 
+S2 S9 SJ SK 
+CA C3 C8 C9 
+H6 HK H9 H3 
+CJ CK C2 D3 
+H2 C7 H5 D5 
+H4 C6 D6 HT 
+D9 D2 DJ DK 
+H8 D4 H7 HA 
+DT DA ST D8 
+DQ D7 HQ HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "12"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:975.K.A742.KT763 QJT8.Q975.J6.Q82 AK6.AJT3.K853.95 432.8642.QT9.AJ4"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "11"]
+[Auction "S"]
+Pass      Pass      1NT       Pass      
+3NT       Pass      Pass      Pass      
+[Play "E"]
+H6 HK H9 H3 
+CJ C3 C2 C9 
+H2 S5 HQ HA 
+D9 D2 D6 DK 
+C4 CK C8 C5 
+CA C6 CQ S6 
+H8 D4 H5 HJ 
+H4 D7 H7 HT 
+S2 S7 S8 SK 
+S3 S9 ST SA 
+DT DA DJ D8 
+S4 CT SJ D3 
+DQ C7 SQ D5 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "13"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:.76543.6532.A952 965.QJ.KQ9874.K7 KJ7432.9.A.QJT86 AQT8.AKT82.JT.43"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5DX"]
+[Result "10"]
+[Auction "S"]
+Pass      1D        2S        3H        
+Pass      4D        Pass      4NT       
+Pass      5C        Pass      5D        
+X         Pass      Pass      Pass      
+[Play "N"]
+CQ C3 C9 CK 
+H9 H2 H7 HQ 
+DA H8 H5 HJ 
+CJ C4 C5 C7 
+S2 S8 D2 S5 
+S4 DT D3 D7 
+C6 HT H3 D4 
+S3 DJ D5 D8 
+C8 HK H4 S6 
+S7 HA H6 D9 
+CT ST D6 DQ 
+SJ SQ C2 DK 
+SK SA CA S9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "14"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:.76543.6532.A952 965.QJ.KQ9874.K7 KJ7432.9.A.QJT86 AQT8.AKT82.JT.43"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "5D"]
+[Result "11"]
+[Auction "W"]
+Pass      1D        2S        3H        
+Pass      4D        Pass      5D        
+Pass      Pass      Pass      
+[Play "E"]
+CQ C3 CA C7 
+C6 C4 C2 CK 
+DA DT D3 DQ 
+CJ H2 C5 D4 
+S7 DJ D5 DK 
+S2 H8 D2 D7 
+C8 S8 D6 D8 
+H9 HT H3 HQ 
+S3 ST H4 S5 
+S4 SA H5 S6 
+SJ HK H6 HJ 
+CT HA H7 S9 
+SK SQ C9 D9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "15"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:T64.K64.KQ.A9843 AK.T.AT9632.QJT5 J8752.973.J854.K Q93.AQJ852.7.762"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "2H"]
+[Result "10"]
+[Auction "W"]
+1C        1D        1S        2H        
+Pass      Pass      Pass      
+[Play "W"]
+S6 SK S2 S3 
+HK HT H3 H5 
+ST SA S5 S9 
+DK DA D8 D7 
+DQ D6 D4 H2 
+H4 D2 H9 HJ 
+H6 D3 H7 H8 
+S4 C5 S7 SQ 
+C3 CT CK C2 
+C4 D9 SJ HQ 
+C8 CJ D5 C6 
+C9 DT DJ HA 
+CA CQ S8 C7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "16"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:T64.K64.KQ.A9843 AK.T.AT9632.QJT5 J8752.973.J854.K Q93.AQJ852.7.762"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2H"]
+[Result "10"]
+[Auction "N"]
+1C        1D        1S        2H        
+Pass      Pass      Pass      
+[Play "N"]
+S6 SK S2 S3 
+H4 HT H3 HA 
+H6 D2 H7 HJ 
+HK D3 H9 H2 
+ST SA S5 S9 
+C4 CT CK C2 
+S4 C5 SJ SQ 
+C3 D6 S7 H5 
+CA CJ D4 C6 
+C9 CQ D5 C7 
+DQ DA D8 D7 
+DK DT DJ H8 
+C8 D9 S8 HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "17"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:J43.QJ96.T752.A7 T8.A85.KJ984.JT8 Q9.74.Q63.KQ9432 AK7652.KT32.A.65"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2S"]
+[Result "9"]
+[Auction "N"]
+Pass      Pass      Pass      1S        
+Pass      1NT       Pass      2H        
+Pass      2S        Pass      Pass      
+Pass      
+[Play "N"]
+S3 ST SQ SA 
+S4 S8 S9 SK 
+D2 D4 D6 DA 
+H6 HA H4 H2 
+D7 DK D3 C6 
+D5 DJ DQ S2 
+H9 H5 H7 HK 
+HJ H8 C2 H3 
+HQ C8 C3 HT 
+CA CT C4 C5 
+C7 CJ CQ S5 
+SJ D8 C9 S7 
+DT D9 CK S6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "18"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:J43.QJ96.T752.A7 T8.A85.KJ984.JT8 Q9.74.Q63.KQ9432 AK7652.KT32.A.65"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result "9"]
+[Auction "E"]
+Pass      Pass      Pass      1S        
+Pass      1NT       Pass      2H        
+Pass      2S        Pass      Pass      
+Pass      
+[Play "E"]
+D2 D4 D6 DA 
+S4 S8 S9 SK 
+S3 ST SQ SA 
+H6 H5 H7 HK 
+H9 HA H4 H2 
+D7 DK D3 C6 
+C7 C8 C9 C5 
+CA CT CK S2 
+HJ H8 C2 H3 
+DT DJ DQ S5 
+HQ D8 C3 HT 
+D5 D9 C4 S6 
+SJ CJ CQ S7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "19"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:J2.J76.KJ743.Q62 KQ843.43.T52.A54 976.AT982.Q6.KT7 AT5.KQ5.A98.J983"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "2S"]
+[Result "9"]
+[Auction "E"]
+Pass      Pass      Pass      1C        
+Pass      1S        Pass      1NT       
+Pass      2S        Pass      Pass      
+Pass      
+[Play "W"]
+DQ DA D7 D5 
+S6 S5 S2 SK 
+HA H5 H6 H3 
+D6 D8 DJ D2 
+C7 D9 DK DT 
+CK C3 C2 C5 
+CT C8 C6 CA 
+S7 SA SJ S3 
+S9 ST D3 S4 
+H2 HQ H7 H4 
+H8 HK HJ C4 
+H9 CJ CQ S8 
+HT C9 D4 SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "20"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:J2.J76.KJ743.Q62 KQ843.43.T52.A54 976.AT982.Q6.KT7 AT5.KQ5.A98.J983"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2S"]
+[Result "9"]
+[Auction "S"]
+Pass      Pass      Pass      1C        
+Pass      1S        Pass      1NT       
+Pass      2S        Pass      Pass      
+Pass      
+[Play "N"]
+DQ DA D7 D5 
+S6 ST S2 SK 
+HA H5 H7 H3 
+D6 D8 DJ D2 
+C7 D9 DK DT 
+CK C3 C2 C5 
+CT C8 C6 CA 
+S7 SA SJ S3 
+S9 S5 D3 SQ 
+H2 HQ H6 H4 
+H8 HK HJ C4 
+H9 CJ CQ S4 
+HT C9 D4 S8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "21"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:AQ.Q764.A3.AJ943 KJ983.KJ983..862 T64.52.KQ9765.Q5 752.AT.JT842.KT7"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3S"]
+[Result "8"]
+[Auction "S"]
+1C        2C        Pass      3S        
+Pass      Pass      Pass      
+[Play "S"]
+DA S3 D9 D8 
+H4 H3 H5 HA 
+SA S8 S6 S2 
+SQ SK S4 S5 
+H7 HK H2 HT 
+H6 H8 ST D4 
+C9 C2 C5 C7 
+HQ H9 D5 S7 
+D3 S9 D6 D2 
+C3 HJ D7 DT 
+CA C6 CQ CK 
+CJ C8 DQ CT 
+C4 SJ DK DJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "22"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:AQ.Q764.A3.AJ943 KJ983.KJ983..862 T64.52.KQ9765.Q5 752.AT.JT842.KT7"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "9"]
+[Auction "W"]
+1C        2C        Pass      4S        
+Pass      Pass      Pass      
+[Play "W"]
+CA C2 C5 CT 
+CJ C6 CQ CK 
+D3 S3 D9 D2 
+H7 H3 H5 HA 
+H4 HJ H2 HT 
+H6 HK D7 C7 
+HQ H8 D5 S2 
+DA S8 D6 D8 
+C3 C8 ST D4 
+C4 S9 DK DT 
+SQ H9 S4 S5 
+SA SJ S6 S7 
+C9 SK DQ DJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "23"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:KQJ.KJ5.854.QT86 A2.AQT84.KQJT6.5 T765.62.A73.AK32 9843.973.92.J974"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3H"]
+[Result "9"]
+[Auction "W"]
+Pass      2C        Pass      2D        
+Pass      2H        Pass      2NT       
+Pass      3D        Pass      3H        
+Pass      Pass      Pass      
+[Play "E"]
+CA C4 C8 C5 
+H2 H7 HK HA 
+H6 H3 H5 HQ 
+D3 D2 D4 DT 
+DA D9 D5 DJ 
+S7 S3 SJ SA 
+D7 S4 D8 DQ 
+S5 S8 SQ S2 
+C2 C7 C6 H4 
+S6 C9 HJ D6 
+ST S9 SK H8 
+C3 H9 CT DK 
+CK CJ CQ HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "24"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KQJ.KJ5.854.QT86 A2.AQT84.KQJT6.5 T765.62.A73.AK32 9843.973.92.J974"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3H"]
+[Result "8"]
+[Auction "N"]
+Pass      2C        Pass      2D        
+Pass      2H        Pass      3C        
+Pass      3D        Pass      3H        
+Pass      Pass      Pass      
+[Play "S"]
+CA C4 C8 C5 
+CK C7 C6 H8 
+H6 H3 H5 HA 
+D3 D2 D4 DT 
+DA D9 D8 D6 
+C3 CJ CQ H4 
+D7 S3 D5 DJ 
+H2 H7 HJ HT 
+S5 S4 SK SA 
+S6 S8 HK DQ 
+S7 S9 SQ S2 
+C2 C9 CT HQ 
+ST H9 SJ DK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "25"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:Q43.AJT7.J9.AK75 AKT.6.K86532.832 J9862.K9842.AQ4. 75.Q53.T7.QJT964"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "11"]
+[Auction "N"]
+1NT       Pass      2H        Pass      
+2S        Pass      3H        Pass      
+4S        Pass      Pass      Pass      
+[Play "E"]
+H6 H2 HQ HA 
+C2 D4 C9 CK 
+C3 DQ C4 CA 
+SK S2 S5 S3 
+D2 DA D7 D9 
+SA S8 S7 SQ 
+ST SJ H3 S4 
+D8 H4 H5 H7 
+D3 H8 C6 HJ 
+D5 H9 CT HT 
+C8 S6 CJ C5 
+D6 S9 DT C7 
+DK HK CQ DJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "26"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:Q43.AJT7.J9.AK75 AKT.6.K86532.832 J9862.K9842.AQ4. 75.Q53.T7.QJT964"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "11"]
+[Auction "E"]
+1NT       Pass      2H        Pass      
+2S        Pass      3H        Pass      
+4S        Pass      Pass      Pass      
+[Play "S"]
+H6 H2 HQ HA 
+C2 D4 C4 CK 
+C3 DQ C6 CA 
+SK S2 S5 S3 
+D2 DA D7 D9 
+SA S8 S7 SQ 
+C8 S6 C9 C5 
+ST SJ CT S4 
+D3 H4 H3 H7 
+D5 H8 H5 HT 
+D6 H9 CJ HJ 
+D8 S9 CQ C7 
+DK HK DT DJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "27"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:KT982.A3.Q4.Q864 Q4.KQ754.KJT5.A9 A73.T9.A9732.KJ5 J65.J862.86.T732"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "9"]
+[Auction "E"]
+Pass      1H        Pass      Pass      
+1S        Pass      2S        3H        
+3S        Pass      4S        Pass      
+Pass      Pass      
+[Play "S"]
+HK H9 H8 HA 
+S4 S3 SJ S8 
+CA C5 C7 C8 
+HQ HT H6 H3 
+C9 CJ C2 C4 
+SQ SA S5 S2 
+H4 S7 S6 ST 
+DT DA D6 D4 
+H5 CK C3 C6 
+DK D2 D8 DQ 
+DJ D3 H2 S9 
+D5 D7 CT SK 
+H7 D9 HJ CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "28"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:KT982.A3.Q4.Q864 Q4.KQ754.KJT5.A9 A73.T9.A9732.KJ5 J65.J862.86.T732"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "9"]
+[Auction "S"]
+Pass      1H        Pass      Pass      
+1S        2D        2S        3H        
+3S        Pass      4S        Pass      
+Pass      Pass      
+[Play "W"]
+HK H9 H8 HA 
+CA C5 C7 C4 
+C9 CJ C2 C6 
+S4 SA S5 S8 
+SQ S3 S6 ST 
+H5 HT HJ H3 
+DT DA D8 D4 
+H4 S7 SJ SK 
+H7 CK C3 C8 
+DK D2 D6 DQ 
+DJ D3 H2 S2 
+D5 D7 H6 S9 
+HQ D9 CT CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "29"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:K64.J97.AJ72.K82 T.Q8542.963.AQ94 AJ98732.K.QT.T73 Q5.AT63.K854.J65"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "10"]
+[Auction "S"]
+Pass      Pass      3S        Pass      
+4S        Pass      Pass      Pass      
+[Play "E"]
+D4 D2 D9 DQ 
+S5 SK ST S2 
+SQ S4 C9 SA 
+D5 DA D3 DT 
+HA H7 H2 HK 
+DK D7 D6 S7 
+C5 C8 CQ C3 
+C6 C2 CA C7 
+H3 H9 HQ S3 
+CJ CK C4 CT 
+D8 DJ H4 S8 
+H6 S6 H5 SJ 
+HT HJ H8 S9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "30"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:K64.J97.AJ72.K82 T.Q8542.963.AQ94 AJ98732.K.QT.T73 Q5.AT63.K854.J65"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "10"]
+[Auction "W"]
+Pass      Pass      3S        Pass      
+4S        Pass      Pass      Pass      
+[Play "S"]
+D4 D2 D9 DQ 
+S5 S4 ST SA 
+SQ SK H5 S2 
+HA H7 H4 HK 
+CJ CK CA C3 
+C5 C2 CQ C7 
+H3 H9 HQ S7 
+C6 C8 C4 CT 
+D5 DA D3 DT 
+H6 HJ H2 S3 
+HT S6 D6 SJ 
+D8 D7 H8 S9 
+DK DJ C9 S8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "31"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:KQ54.2.KJT6.T953 63.QT85.A852.AQ4 J7.J943.Q7.KJ762 AT982.AK76.943.8"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2NT"]
+[Result "8"]
+[Auction "W"]
+Pass      1D        Pass      1S        
+Pass      1NT       Pass      2NT       
+Pass      Pass      Pass      
+[Play "E"]
+C6 C8 C9 CQ 
+S7 S8 SK S3 
+C7 S2 C3 C4 
+CK D3 C5 CA 
+H4 HK H2 H5 
+H3 H6 S4 HQ 
+SJ SA S5 S6 
+H9 S9 SQ D2 
+CJ D4 CT D5 
+C2 H7 D6 D8 
+DQ D9 DT DA 
+HJ HA DJ HT 
+D7 ST DK H8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "32"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQ54.2.KJT6.T953 63.QT85.A852.AQ4 J7.J943.Q7.KJ762 AT982.AK76.943.8"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "6"]
+[Auction "N"]
+Pass      1D        Pass      1S        
+Pass      1NT       Pass      4S        
+Pass      Pass      Pass      
+[Play "N"]
+CT CQ CK C8 
+D6 DA DQ D9 
+C3 CA C2 D3 
+SQ S3 S7 S8 
+DK D2 D7 D4 
+DJ D5 SJ SA 
+H2 H5 H3 HK 
+SK S6 C6 S2 
+C9 C4 C7 S9 
+S4 H8 H4 HA 
+C5 D8 CJ ST 
+S5 HT H9 H7 
+DT HQ HJ H6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "33"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:87.84.T7.AKJ9764 JT53.QT.AJ6542.8 KQ96.K9.Q83.QT32 A42.AJ76532.K9.5"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4H"]
+[Result "11"]
+[Auction "N"]
+3C        Pass      4C        4H        
+Pass      Pass      Pass      
+[Play "N"]
+CA C8 C3 C5 
+S8 ST SQ S2 
+S7 SJ S6 S4 
+H4 HT H9 H2 
+H8 HQ HK HA 
+C6 D2 C2 H3 
+C4 S3 S9 H5 
+C7 D4 CT H6 
+D7 D5 D3 DK 
+C9 S5 SK SA 
+DT DA D8 D9 
+CJ DJ DQ H7 
+CK D6 CQ HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "34"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:87.84.T7.AKJ9764 JT53.QT.AJ6542.8 KQ96.K9.Q83.QT32 A42.AJ76532.K9.5"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5CX"]
+[Result "8"]
+[Auction "E"]
+3C        Pass      Pass      4H        
+Pass      Pass      5C        Pass      
+Pass      X         Pass      Pass      
+Pass      
+[Play "S"]
+SJ SQ SA S7 
+D6 D3 DK D7 
+DA D8 D9 DT 
+HT HK HA H4 
+HQ H9 H3 H8 
+S3 SK S4 S8 
+C8 C2 C5 CJ 
+D2 C3 H2 C4 
+D4 CT H5 C6 
+D5 DQ H6 C7 
+DJ CQ H7 C9 
+S5 S9 S2 CK 
+ST S6 HJ CA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "35"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:A754.92.K765.A32 T6.T875.AJT84.T9 J9832.AK.Q32.J64 KQ.QJ643.9.KQ875"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "9"]
+[Auction "E"]
+Pass      Pass      Pass      1H        
+X         2H        2S        3C        
+3S        4H        Pass      Pass      
+Pass      
+[Play "E"]
+SA S6 S2 SQ 
+S4 ST SJ SK 
+H2 HT HK H3 
+CA C9 C4 CK 
+C3 CT CJ CQ 
+H9 H5 HA HJ 
+C2 H7 C6 C5 
+D7 DA D2 D9 
+D5 D8 D3 H4 
+S5 D4 S3 C8 
+S7 H8 S8 C7 
+D6 DJ DQ H6 
+DK DT S9 HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "36"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:A754.92.K765.A32 T6.T875.AJT84.T9 J9832.AK.Q32.J64 KQ.QJ643.9.KQ875"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "9"]
+[Auction "S"]
+Pass      Pass      Pass      1H        
+X         3H        3S        Pass      
+Pass      4H        Pass      Pass      
+Pass      
+[Play "S"]
+CA C9 C4 C8 
+SA S6 S2 SQ 
+S4 ST SJ SK 
+H2 HT HK H3 
+C2 CT CJ CK 
+H9 H5 HA HJ 
+C3 H7 C6 C5 
+D5 DA D2 D9 
+D6 D8 D3 H4 
+S5 D4 S3 CQ 
+S7 H8 S8 C7 
+D7 DJ DQ H6 
+DK DT S9 HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "37"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:985.9872.AKJ8.96 QJ2.QT.T654.T543 KT76.KJ653.9.AK8 A43.A4.Q732.QJ72"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "9"]
+[Auction "S"]
+Pass      Pass      1H        X         
+2H        Pass      3H        Pass      
+4H        Pass      Pass      Pass      
+[Play "E"]
+D2 DJ D4 D9 
+D3 DK D6 S6 
+D7 DA D5 S7 
+C7 C6 C5 CA 
+C2 C9 C4 CK 
+CJ H2 C3 C8 
+HA H7 HT HK 
+DQ D8 DT H3 
+H4 H8 HQ H5 
+SA S5 SQ SK 
+S4 S8 SJ ST 
+S3 S9 S2 H6 
+CQ H9 CT HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "38"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:985.9872.AKJ8.96 QJ2.QT.T654.T543 KT76.KJ653.9.AK8 A43.A4.Q732.QJ72"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "10"]
+[Auction "W"]
+Pass      Pass      1H        X         
+3H        Pass      4H        Pass      
+Pass      Pass      
+[Play "S"]
+CQ C6 C5 CA 
+D3 DJ D4 D9 
+D2 DK D6 S6 
+D7 DA D5 S7 
+HA H2 HT HJ 
+C2 C9 CT CK 
+CJ H7 C3 C8 
+H4 H8 HQ HK 
+S3 S5 SJ ST 
+DQ D8 DT H3 
+SA S8 S2 SK 
+S4 S9 SQ H5 
+C7 H9 C4 H6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "39"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:AQT5.AKJ7.KJ42.6 63.T85.Q973.JT42 J82.Q962.T8.K985 K974.43.A65.AQ73"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "11"]
+[Auction "W"]
+1D        Pass      1H        X         
+4H        Pass      Pass      Pass      
+[Play "S"]
+CA C6 C2 C5 
+C3 S5 CT CK 
+D6 DK D3 D8 
+H4 HJ H8 H6 
+H3 HK H5 H2 
+DA D2 D7 DT 
+D5 D4 D9 H9 
+S4 ST S3 SJ 
+S7 SQ S6 S2 
+S9 DJ DQ HQ 
+C7 H7 C4 C8 
+CQ HA HT S8 
+SK SA CJ C9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "40"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AQT5.AKJ7.KJ42.6 63.T85.Q973.JT42 J82.Q962.T8.K985 K974.43.A65.AQ73"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4H"]
+[Result "10"]
+[Auction "N"]
+1D        Pass      1H        X         
+4H        Pass      Pass      Pass      
+[Play "W"]
+S4 S5 S3 S8 
+D5 DK D9 D8 
+H4 HJ H8 H6 
+H3 H7 H5 HQ 
+S9 ST S6 SJ 
+S7 SQ HT S2 
+DA D2 D3 DT 
+CA C6 C2 C5 
+D6 D4 D7 H2 
+C3 DJ C4 CK 
+C7 HK CT C8 
+SK SA CJ C9 
+CQ HA DQ H9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "41"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:64.K962.KQT6.QJ9 AK9852.JT3.98.84 QJ73.AQ8.42.K653 T.754.AJ753.AT72"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2S"]
+[Result "6"]
+[Auction "N"]
+Pass      2S        Pass      Pass      
+Pass      
+[Play "S"]
+D4 D3 DT D8 
+HQ H4 H2 HJ 
+D2 DA D6 D9 
+SJ D5 DQ S8 
+H8 H5 HK H3 
+C6 CA CQ C4 
+SQ ST S4 S2 
+CK C2 C9 C8 
+C5 C7 CJ S5 
+S3 D7 S6 S9 
+S7 H7 H6 SK 
+C3 CT H9 SA 
+HA DJ DK HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "42"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:64.K962.KQT6.QJ9 AK9852.JT3.98.84 QJ73.AQ8.42.K653 T.754.AJ753.AT72"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "2S"]
+[Result "6"]
+[Auction "E"]
+Pass      2S        Pass      Pass      
+Pass      
+[Play "W"]
+C3 CT CJ C4 
+H8 H4 H2 H3 
+HA H5 H9 HT 
+HQ H7 HK HJ 
+SJ ST S4 S2 
+C5 CA C9 C8 
+C6 C2 CQ S5 
+S3 D3 S6 SK 
+S7 D5 D6 SA 
+D2 DA DT D8 
+CK C7 H6 S8 
+D4 D7 DQ D9 
+SQ DJ DK S9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "43"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:J865.A2.J765.AJ7 KQ97.3.AK832.Q62 A42.QT875.QT.K53 T3.KJ964.94.T984"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "1NT"]
+[Result "7"]
+[Auction "E"]
+Pass      1D        1H        Pass      
+1NT       Pass      Pass      Pass      
+[Play "S"]
+D3 DT D4 D6 
+H3 H5 H6 HA 
+D8 H7 H9 H2 
+DK DQ D9 D5 
+DA H8 H4 D7 
+SK S2 S3 S5 
+D2 C3 C4 DJ 
+C2 CK C8 C7 
+S7 SA ST S6 
+S9 S4 C9 S8 
+SQ C5 CT SJ 
+CQ HT HJ CA 
+C6 HQ HK CJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "44"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:J865.A2.J765.AJ7 KQ97.3.AK832.Q62 A42.QT875.QT.K53 T3.KJ964.94.T984"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "1NT"]
+[Result "7"]
+[Auction "S"]
+Pass      1D        1H        Pass      
+1NT       Pass      Pass      Pass      
+[Play "W"]
+D3 DT D4 D6 
+H3 H5 H6 HA 
+D8 H7 H9 H2 
+C6 CK CT C7 
+DK DQ D9 D5 
+S7 S2 ST SJ 
+DA C3 H4 D7 
+SK SA S3 S5 
+S9 S4 C4 S6 
+SQ C5 C8 S8 
+D2 H8 C9 DJ 
+C2 HT HJ CA 
+CQ HQ HK CJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "45"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:Q974.KJ8.J732.K8 JT83.AQ5.A.AJ972 AK2.T62.KQT96.Q6 65.9743.854.T543"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3D"]
+[Result "9"]
+[Auction "S"]
+Pass      1C        1D        Pass      
+2C        Pass      2D        Pass      
+Pass      2S        3D        Pass      
+Pass      Pass      
+[Play "E"]
+C3 C8 CJ CQ 
+D4 DJ DA D6 
+C4 CK CA C6 
+S5 S4 SJ SA 
+D5 D2 C2 D9 
+D8 D3 H5 DT 
+S6 S7 S3 SK 
+H9 HJ HQ H2 
+H3 H8 HA H6 
+C5 SQ ST S2 
+H4 S9 S8 HT 
+H7 HK C7 DQ 
+CT D7 C9 DK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "46"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:Q974.KJ8.J732.K8 JT83.AQ5.A.AJ972 AK2.T62.KQT96.Q6 65.9743.854.T543"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3D"]
+[Result "9"]
+[Auction "W"]
+Pass      1C        1D        Pass      
+2C        2S        3D        Pass      
+Pass      Pass      
+[Play "S"]
+C3 C8 CJ CQ 
+D4 DJ DA D6 
+C4 CK CA C6 
+S5 SQ SJ S2 
+D5 D2 C2 DT 
+D8 D3 H5 D9 
+S6 S4 S3 SK 
+C5 S7 S8 SA 
+H3 HJ HQ H2 
+H4 S9 ST DQ 
+H7 HK HA H6 
+CT D7 C9 HT 
+H9 H8 C7 DK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "47"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:AK.JT4.AQT.KQJ76 QJT75.86.63.AT52 962.AKQ7.K7.9843 843.9532.J98542."]
+[Scoring ""]
+[Declarer "W"]
+[Contract "6NT"]
+[Result "11"]
+[Auction "W"]
+2NT       Pass      3C        Pass      
+3D        Pass      4NT       Pass      
+5H        Pass      6NT       Pass      
+Pass      Pass      
+[Play "N"]
+SQ S2 S3 SA 
+H6 HQ H3 H4 
+C2 C3 D2 CQ 
+C5 C4 S4 CJ 
+CT C8 D4 C6 
+CA C9 D5 C7 
+SJ S6 S8 SK 
+D3 D7 H2 CK 
+H8 H7 H5 HJ 
+S5 HK H9 HT 
+S7 HA D8 DT 
+D6 DK D9 DA 
+ST S9 DJ DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "48"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AK.JT4.AQT.KQJ76 QJT75.86.63.AT52 962.AKQ7.K7.9843 843.9532.J98542."]
+[Scoring ""]
+[Declarer "N"]
+[Contract "6NT"]
+[Result "11"]
+[Auction "N"]
+2NT       Pass      3C        Pass      
+3D        Pass      4NT       Pass      
+5H        Pass      6NT       Pass      
+Pass      Pass      
+[Play "E"]
+SQ S2 S3 SA 
+H8 HQ H9 H4 
+C5 C3 D2 CQ 
+C2 C4 H3 CJ 
+CT C8 D4 C6 
+CA C9 S4 C7 
+SJ S6 S8 SK 
+D3 D7 H2 CK 
+H6 H7 H5 HJ 
+S5 HK D5 HT 
+S7 HA D8 DT 
+D6 DK D9 DA 
+ST S9 DJ DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "49"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:QJ42.Q973.93.864 K9.T54.KQ762.A53 AT75.62.A4.KJ972 863.AKJ8.JT85.QT"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3D"]
+[Result "9"]
+[Auction "N"]
+Pass      1D        Pass      1H        
+Pass      1NT       X         3D        
+Pass      Pass      Pass      
+[Play "S"]
+C7 CQ C4 C3 
+DA D5 D3 DK 
+H6 H8 HQ H4 
+SA S3 SQ SK 
+S5 S6 SJ S9 
+S7 S8 S4 D2 
+D4 DT D9 D6 
+C2 CT C6 CA 
+H2 HJ H3 HT 
+C9 HK H7 H5 
+CJ HA H9 C5 
+ST DJ S2 D7 
+CK D8 C8 DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "50"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:QJ42.Q973.93.864 K9.T54.KQ762.A53 AT75.62.A4.KJ972 863.AKJ8.JT85.QT"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3D"]
+[Result "10"]
+[Auction "E"]
+Pass      1D        Pass      1H        
+Pass      1NT       X         3D        
+Pass      Pass      Pass      
+[Play "W"]
+C7 CQ C4 C3 
+DA D5 D3 DK 
+CK CT C8 CA 
+D4 DT D9 D2 
+H6 HK H7 H4 
+H2 HA H3 H5 
+S7 H8 HQ HT 
+C2 HJ H9 S9 
+SA S3 S2 SK 
+ST S6 S4 D6 
+C9 D8 C6 C5 
+S5 S8 SJ D7 
+CJ DJ SQ DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "51"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:KJ853.52.KQ75.Q9 A92.AT7.J.AT8763 T74.83.AT9632.K2 Q6.KQJ964.84.J54"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5DX"]
+[Result "9"]
+[Auction "E"]
+Pass      1C        2D        2H        
+4D        4H        Pass      Pass      
+5D        X         Pass      Pass      
+Pass      
+[Play "N"]
+HK H2 H7 H3 
+HQ H5 HT H8 
+S6 S3 SA S4 
+C4 C9 CA C2 
+C5 CQ C3 CK 
+D8 DQ DJ D2 
+D4 D5 C6 D3 
+H4 DK C7 D6 
+H6 D7 C8 DT 
+SQ SK S2 S7 
+H9 S5 S9 ST 
+CJ S8 CT DA 
+HJ SJ HA D9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "52"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:KJ853.52.KQ75.Q9 A92.AT7.J.AT8763 T74.83.AT9632.K2 Q6.KQJ964.84.J54"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "5DX"]
+[Result "9"]
+[Auction "S"]
+Pass      1C        2D        2H        
+4D        4H        Pass      Pass      
+5D        X         Pass      Pass      
+Pass      
+[Play "E"]
+HK H2 H7 H3 
+C4 C9 CA C2 
+S6 S3 SA S7 
+H9 H5 HA H8 
+C5 CQ C3 CK 
+D8 DQ DJ D2 
+D4 D5 S2 D3 
+H6 DK C6 D6 
+H4 D7 C7 DT 
+SQ SK S9 S4 
+HJ S5 C8 ST 
+CJ S8 CT DA 
+HQ SJ HT D9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "53"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:K9754.J62.Q97.94 AQ8.KQ94.JT.KJ52 JT63.A8.K8532.T3 2.T753.A64.AQ876"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4H"]
+[Result "12"]
+[Auction "S"]
+Pass      1NT       Pass      2C        
+Pass      2H        Pass      4H        
+Pass      Pass      Pass      
+[Play "N"]
+SJ S2 SK SA 
+HA H3 H2 HQ 
+D2 DA D9 DT 
+H8 H5 H6 H9 
+D3 H7 HJ HK 
+C3 CQ C4 C2 
+CT C6 C9 CK 
+D5 C7 S4 CJ 
+S3 C8 S5 C5 
+S6 CA D7 DJ 
+D8 D4 DQ H4 
+ST D6 S7 SQ 
+DK HT S9 S8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "54"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:K9754.J62.Q97.94 AQ8.KQ94.JT.KJ52 JT63.A8.K8532.T3 2.T753.A64.AQ876"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "12"]
+[Auction "W"]
+Pass      1NT       Pass      2C        
+Pass      2H        Pass      4H        
+Pass      Pass      Pass      
+[Play "E"]
+SJ S2 SK SA 
+HA H3 H2 HQ 
+S3 D4 S9 SQ 
+ST H5 S5 S8 
+H8 HT H6 H4 
+D8 H7 HJ HK 
+C3 C6 C9 CJ 
+CT C7 C4 CK 
+D2 C8 S4 C2 
+D3 DA D7 DT 
+D5 CQ D9 C5 
+S6 CA S7 DJ 
+DK D6 DQ H9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "55"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:A93.984.Q876.KQ2 QT8.KJ73.A32.T86 7652.AQ.KJT94.94 KJ4.T652.5.AJ753"]
+[Scoring ""]
+[Declarer ""]
+[Contract "Pass"]
+[Result ""]
+[Auction "W"]
+Pass      Pass      Pass      Pass      
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "56"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:A93.984.Q876.KQ2 QT8.KJ73.A32.T86 7652.AQ.KJT94.94 KJ4.T652.5.AJ753"]
+[Scoring ""]
+[Declarer ""]
+[Contract "Pass"]
+[Result ""]
+[Auction "N"]
+Pass      Pass      Pass      Pass      
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "57"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:K2.AT984.JT.A653 AQ874.6.654.KT87 J5.Q53.AQ83.QJ92 T963.KJ72.K972.4"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3S"]
+[Result "10"]
+[Auction "N"]
+1H        1S        2S        X         
+3C        3S        Pass      Pass      
+Pass      
+[Play "S"]
+H3 HJ HA H6 
+DA D2 DJ D5 
+D3 DK DT D6 
+H5 HK H4 D4 
+C2 C4 C5 CK 
+C9 S3 C6 C7 
+HQ H2 H8 S4 
+CJ S6 C3 C8 
+S5 S9 S2 SA 
+CQ ST CA CT 
+D8 H7 H9 SQ 
+SJ D7 SK S8 
+DQ D9 HT S7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "58"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:K2.AT984.JT.A653 AQ874.6.654.KT87 J5.Q53.AQ83.QJ92 T963.KJ72.K972.4"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "7"]
+[Auction "E"]
+1H        1S        2S        X         
+4H        Pass      Pass      Pass      
+[Play "S"]
+D5 D3 DK DT 
+SQ S5 ST S2 
+SA SJ S6 SK 
+D6 D8 D9 DJ 
+H6 H3 HJ H8 
+CK C2 C4 C5 
+C7 CJ H2 C3 
+D4 DQ D7 CA 
+S4 H5 H7 HT 
+S7 HQ HK HA 
+C8 CQ S3 C6 
+S8 DA D2 H4 
+CT C9 S9 H9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "59"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:Q98752.K54.T3.J2 KT6.A9732.Q52.96 AJ.QT8.AKJ74.KT7 43.J6.986.AQ8543"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "9"]
+[Auction "E"]
+Pass      Pass      1D        Pass      
+1S        Pass      2NT       Pass      
+4S        Pass      Pass      Pass      
+[Play "S"]
+C9 C7 CQ C2 
+C6 CT CA CJ 
+S6 CK C8 D3 
+HA H8 H6 H5 
+H3 HT HJ HK 
+ST SJ S3 S2 
+D2 DK D6 DT 
+SK SA S4 S5 
+H2 HQ C3 H4 
+D5 DA D8 S7 
+H7 D4 C4 SQ 
+H9 D7 C5 S9 
+DQ DJ D9 S8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "60"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:Q98752.K54.T3.J2 KT6.A9732.Q52.96 AJ.QT8.AKJ74.KT7 43.J6.986.AQ8543"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "9"]
+[Auction "S"]
+Pass      Pass      1D        Pass      
+1S        Pass      2NT       Pass      
+4S        Pass      Pass      Pass      
+[Play "W"]
+C9 CK CA C2 
+C6 C7 CQ CJ 
+S6 CT C8 D3 
+HA H8 H6 H5 
+H3 HT HJ HK 
+ST SJ S3 S2 
+D2 DK D6 DT 
+SK SA S4 S5 
+H2 HQ C3 H4 
+D5 DA D8 S7 
+H7 D4 C4 SQ 
+H9 D7 C5 S9 
+DQ DJ D9 S8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "61"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:64.AKT852.K97.A4 AQT5.QJ73.Q832.5 J832.9.T64.KQ732 K97.64.AJ5.JT986"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3H"]
+[Result "7"]
+[Auction "S"]
+1H        Pass      1S        Pass      
+3H        Pass      Pass      Pass      
+[Play "W"]
+D2 D4 DA D7 
+C5 C2 CJ CA 
+H3 H9 H4 HK 
+H7 S2 H6 HA 
+HJ C3 C6 H2 
+D3 D6 DJ DK 
+HQ C7 C8 C4 
+DQ DT D5 D9 
+D8 S3 S7 H5 
+SQ S8 S9 S4 
+SA SJ SK S6 
+ST CQ C9 H8 
+S5 CK CT HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "62"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:64.AKT852.K97.A4 AQT5.QJ73.Q832.5 J832.9.T64.KQ732 K97.64.AJ5.JT986"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3H"]
+[Result "7"]
+[Auction "W"]
+1H        Pass      1S        Pass      
+3H        Pass      Pass      Pass      
+[Play "N"]
+C5 C2 C6 CA 
+H3 H9 H4 HK 
+H7 S2 H6 HA 
+HJ C3 C8 H2 
+D2 D4 DA D7 
+SQ S3 S7 S4 
+D3 D6 DJ DK 
+HQ C7 C9 C4 
+DQ DT D5 D9 
+D8 S8 S9 H5 
+S5 SJ SK S6 
+ST CQ CJ H8 
+SA CK CT HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "63"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:A6532.K.AK95.864 KJT8.T95.83.KQT9 Q.AJ762.Q7.A7532 974.Q843.JT642.J"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "8"]
+[Auction "W"]
+1S        Pass      2H        Pass      
+2NT       Pass      3C        Pass      
+3NT       Pass      Pass      Pass      
+[Play "N"]
+D8 D7 DT DA 
+H9 H2 H4 HK 
+D3 DQ D2 D5 
+HT HA H3 S2 
+H5 H6 H8 S6 
+S8 H7 HQ S3 
+ST SQ S7 SA 
+C9 C2 D4 DK 
+CT CA CJ C4 
+SJ HJ D6 S5 
+CQ C3 S4 C6 
+CK C5 S9 C8 
+SK C7 DJ D9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "64"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A6532.K.AK95.864 KJT8.T95.83.KQT9 Q.AJ762.Q7.A7532 974.Q843.JT642.J"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "8"]
+[Auction "N"]
+1S        Pass      2H        Pass      
+3D        Pass      3NT       Pass      
+Pass      Pass      
+[Play "W"]
+CJ C4 C9 C3 
+S7 S2 SK SQ 
+D2 C6 CK C2 
+D4 C8 CQ CA 
+H4 HK H5 H2 
+S4 SA S8 H7 
+D6 D5 D8 DQ 
+H3 S3 H9 HA 
+DT DK D3 D7 
+DJ DA CT C5 
+H8 D9 HT H6 
+S9 S6 ST C7 
+HQ S5 SJ HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "65"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:2.Q942.87.K98643 J54.AKJT6.AQT.A5 QT9863.87.K963.J AK7.53.J542.QT72"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "10"]
+[Auction "N"]
+Pass      1H        1S        X         
+Pass      2S        Pass      3NT       
+Pass      4H        Pass      Pass      
+Pass      
+[Play "S"]
+ST SK S2 S4 
+H7 H3 H2 HK 
+CJ C2 C9 CA 
+H8 H5 H4 HA 
+S9 C7 HQ HT 
+D9 D2 D8 DA 
+S3 D4 H9 HJ 
+D3 CT CK C5 
+DK D5 D7 DQ 
+D6 DJ C3 DT 
+S6 CQ C4 S5 
+S8 SA C6 SJ 
+SQ S7 C8 H6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "66"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:2.Q942.87.K98643 J54.AKJT6.AQT.A5 QT9863.87.K963.J AK7.53.J542.QT72"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "12"]
+[Auction "E"]
+Pass      1H        1S        2NT       
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "E"]
+C6 C5 CJ CQ 
+D8 DT DK D2 
+S2 SJ ST S7 
+D7 DA D6 D5 
+C9 DQ D3 D4 
+C4 S4 S3 SA 
+C3 H6 D9 DJ 
+H9 HK H8 H3 
+C8 CA S6 C2 
+H2 S5 S8 SK 
+H4 HT H7 H5 
+HQ HA S9 C7 
+CK HJ SQ CT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "67"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:QT765.Q95.T7.T93 AK982.4.J83.AQ76 J43.J83.A9542.82 .AKT762.KQ6.KJ54"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "6C"]
+[Result "12"]
+[Auction "E"]
+Pass      1S        Pass      2H        
+Pass      3C        Pass      4C        
+Pass      5C        Pass      6C        
+Pass      Pass      Pass      
+[Play "W"]
+DA D6 DT D3 
+D4 DQ D7 D8 
+H3 HK H5 H4 
+C2 CJ C9 C6 
+H8 H2 HQ C7 
+S3 H6 S5 SK 
+S4 H7 S6 SA 
+C8 C4 C3 CQ 
+SJ C5 S7 S2 
+HJ HA H9 S8 
+D2 CK CT CA 
+D5 DK ST DJ 
+D9 HT SQ S9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "68"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:QT765.Q95.T7.T93 AK982.4.J83.AQ76 J43.J83.A9542.82 .AKT762.KQ6.KJ54"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5C"]
+[Result "11"]
+[Auction "S"]
+Pass      1S        Pass      2H        
+Pass      2NT       Pass      3C        
+Pass      3D        Pass      3NT       
+Pass      4C        Pass      5C        
+Pass      Pass      Pass      
+[Play "S"]
+DT D3 DA DQ 
+D7 D8 D4 D6 
+C9 CQ C2 C4 
+C3 C6 C8 CK 
+H5 H4 H3 HK 
+H9 C7 H8 H2 
+S5 SK S3 H6 
+S6 SA S4 H7 
+S7 S2 SJ C5 
+HQ CA HJ HT 
+CT DJ D2 DK 
+SQ S8 D5 CJ 
+ST S9 D9 HA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "69"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:K4.QJ854.JT9.732 AQ76.AKT.3.AKQT5 T982.732.K87.J98 J53.96.AQ6542.64"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "S"]
+Pass      2C        Pass      2D        
+Pass      3C        Pass      3NT       
+Pass      Pass      Pass      
+[Play "S"]
+H5 HK H2 H6 
+C3 CQ C9 C4 
+D9 D3 D7 DA 
+C7 CK C8 C6 
+S4 SA S8 S3 
+SK S6 S2 SJ 
+DJ HT DK D2 
+H4 HA H7 H9 
+H8 SQ S9 S5 
+C2 CA CJ D4 
+HJ CT H3 D5 
+DT C5 D8 D6 
+HQ S7 ST DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "70"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:K4.QJ854.JT9.732 AQ76.AKT.3.AKQT5 T982.732.K87.J98 J53.96.AQ6542.64"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "6C"]
+[Result "11"]
+[Auction "W"]
+Pass      2C        Pass      2D        
+Pass      3C        Pass      5C        
+Pass      6C        Pass      Pass      
+Pass      
+[Play "E"]
+ST SJ SK SA 
+C9 C4 C3 CQ 
+D7 DA D9 D3 
+H2 H6 H4 HA 
+H7 H9 H5 HK 
+H3 C6 H8 HT 
+S2 S3 S4 SQ 
+C8 D2 C2 CK 
+CJ D4 C7 CA 
+S8 S5 HJ S6 
+S9 D5 HQ S7 
+DK D6 DT C5 
+D8 DQ DJ CT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "71"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:AK5.83.T97.K8754 8.AQJ764.KJ.AQJ6 QJT93.952.AQ542. 7642.KT.863.T932"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "5H"]
+[Result "9"]
+[Auction "W"]
+Pass      1H        2H        Pass      
+4S        5H        Pass      Pass      
+Pass      
+[Play "E"]
+SQ S2 SK S8 
+H2 C2 C4 CQ 
+SJ S4 S5 H4 
+H5 HT H3 H6 
+DQ D3 D7 DJ 
+DA D6 D9 DK 
+H9 HK H8 H7 
+D2 C9 C5 C6 
+S3 C3 C7 CJ 
+D4 S6 C8 HJ 
+S9 CT CK CA 
+D5 S7 DT HA 
+ST D8 SA HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "72"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AK5.83.T97.K8754 8.AQJ764.KJ.AQJ6 QJT93.952.AQ542. 7642.KT.863.T932"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "10"]
+[Auction "N"]
+Pass      1H        2H        Pass      
+4S        Pass      Pass      Pass      
+[Play "E"]
+S8 S3 S7 SA 
+DJ DQ D3 D9 
+H7 S9 S4 S5 
+H4 ST S2 SK 
+DK DA D6 D7 
+H6 SJ S6 H3 
+C6 D2 D8 DT 
+CJ SQ C9 C4 
+HJ D5 C2 C5 
+CQ D4 C3 C7 
+HQ H2 HT H8 
+CA H5 CT C8 
+HA H9 HK CK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "73"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:J97653.Q.K872.T4 K2.AJ93.QJ63.KJ3 AQ4.KT7.A95.Q876 T8.86542.T4.A952"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3H"]
+[Result "8"]
+[Auction "N"]
+Pass      1NT       Pass      2D        
+Pass      3H        Pass      Pass      
+Pass      
+[Play "S"]
+C6 C2 CT CJ 
+H7 H2 HQ HA 
+C7 C5 C4 CK 
+C8 C9 S6 C3 
+CQ CA S7 S2 
+HT H4 S3 H3 
+HK H5 D2 H9 
+D5 D4 DK D3 
+SA S8 S5 SK 
+SQ ST S9 HJ 
+DA DT D7 D6 
+S4 H6 SJ DJ 
+D9 H8 D8 DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "74"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:J97653.Q.K872.T4 K2.AJ93.QJ63.KJ3 AQ4.KT7.A95.Q876 T8.86542.T4.A952"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3H"]
+[Result "7"]
+[Auction "E"]
+Pass      1NT       Pass      2D        
+Pass      3H        Pass      Pass      
+Pass      
+[Play "W"]
+C6 C9 CT CJ 
+H7 H2 HQ HA 
+C7 C2 C4 CK 
+C8 CA D8 C3 
+HT H4 S6 H3 
+HK H5 S7 H9 
+CQ C5 S3 HJ 
+D5 DT DK D3 
+SA S8 S5 SK 
+SQ ST S9 S2 
+DA D4 D2 D6 
+S4 H6 SJ DJ 
+D9 H8 D7 DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "75"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:AJT8.93.KJ843.QT Q42.KQ652.AQ5.J5 653.AJ7.9762.A62 K97.T84.T.K98743"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3HX"]
+[Result "8"]
+[Auction "E"]
+1D        1H        1NT       2H        
+Pass      Pass      3D        Pass      
+Pass      3H        X         Pass      
+Pass      Pass      
+[Play "W"]
+D2 DT DK DA 
+D7 S7 D3 DQ 
+CA C3 CT C5 
+C2 CK CQ CJ 
+S3 S9 ST SQ 
+D6 SK D4 D5 
+C6 C4 H9 HQ 
+S5 H4 S8 S2 
+H7 C7 D8 H5 
+HA H8 H3 H2 
+S6 HT SJ S4 
+HJ C9 DJ H6 
+D9 C8 SA HK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "76"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:AJT8.93.KJ843.QT Q42.KQ652.AQ5.J5 653.AJ7.9762.A62 K97.T84.T.K98743"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3H"]
+[Result "8"]
+[Auction "S"]
+1D        1H        2D        2H        
+Pass      3H        Pass      Pass      
+Pass      
+[Play "N"]
+D2 DT DK DA 
+D7 S7 D3 DQ 
+CA C3 CT C5 
+S5 S9 ST SQ 
+D6 H4 D4 D5 
+S6 SK SA S2 
+HA H8 H3 HK 
+C2 CK CQ CJ 
+C6 C7 H9 S4 
+S3 C4 SJ H2 
+H7 HT D8 HQ 
+HJ C8 S8 H6 
+D9 C9 DJ H5 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "77"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:A83.874.KT5.T432 .AQ9652.A2.AQ876 Q542.J3.Q843.K95 KJT976.KT.J976.J"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4H"]
+[Result "11"]
+[Auction "S"]
+Pass      1H        Pass      1S        
+Pass      3C        Pass      3S        
+Pass      4C        Pass      4H        
+Pass      Pass      Pass      
+[Play "N"]
+D3 D9 DT DA 
+D4 DJ DK D2 
+S5 S6 SA H6 
+C9 CJ C2 CA 
+C5 HK C4 C6 
+D8 D6 D5 H5 
+CK HT C3 CQ 
+DQ D7 S3 H2 
+H3 S7 CT C7 
+HJ S9 H4 HA 
+S2 ST H7 H9 
+S4 SJ H8 HQ 
+SQ SK S8 C8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "78"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:A83.874.KT5.T432 .AQ9652.A2.AQ876 Q542.J3.Q843.K95 KJT976.KT.J976.J"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "10"]
+[Auction "W"]
+Pass      1H        Pass      1S        
+Pass      3C        Pass      3S        
+Pass      4C        Pass      4H        
+Pass      Pass      Pass      
+[Play "E"]
+D3 D9 DT DA 
+H3 HK H7 H2 
+CK CJ C4 C7 
+HJ HT H8 HA 
+S2 D6 H4 H5 
+D8 S6 S8 H6 
+C5 D7 C2 CQ 
+C9 S7 C3 C6 
+S4 SK SA H9 
+D4 S9 CT CA 
+DQ ST D5 C8 
+S5 DJ S3 HQ 
+SQ SJ DK D2 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "79"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:62.KQJ3.K985.KJ2 KQJT98543.A7..76 .864.QJT4.AQT943 A7.T952.A7632.85"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5DX"]
+[Result "9"]
+[Auction "W"]
+1D        4S        5D        X         
+Pass      Pass      Pass      
+[Play "N"]
+SK D4 S7 S2 
+S4 DT DA D5 
+S3 DJ D2 D8 
+C6 C3 C8 CK 
+S8 DQ SA S6 
+HA H6 H2 HQ 
+H7 H4 H5 HK 
+C7 C4 C5 CJ 
+S5 C9 D3 C2 
+S9 H8 HT HJ 
+ST CT D6 D9 
+SJ CQ D7 DK 
+SQ CA H9 H3 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "80"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:62.KQJ3.K985.KJ2 KQJT98543.A7..76 .864.QJT4.AQT943 A7.T952.A7632.85"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "5DX"]
+[Result "9"]
+[Auction "N"]
+1D        4S        5D        X         
+Pass      Pass      Pass      
+[Play "E"]
+SK D4 S7 S2 
+S3 DT DA D5 
+S4 DJ D2 D8 
+C7 C3 C8 CK 
+C6 C4 C5 CJ 
+S8 DQ SA S6 
+HA H4 H9 HQ 
+SQ H6 H2 D9 
+S5 C9 D3 C2 
+S9 H8 D6 DK 
+H7 CT H5 HJ 
+ST CQ HT HK 
+SJ CA D7 H3 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "81"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:J972.T.AK84.K864 Q863.AKQ.Q9.Q975 AK5.843.7532.AT3 T4.J97652.JT6.J2"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "9"]
+[Auction "N"]
+Pass      1NT       Pass      2D        
+Pass      2H        Pass      Pass      
+X         Pass      2S        3H        
+Pass      4H        Pass      Pass      
+4S        Pass      Pass      Pass      
+[Play "W"]
+CJ CK C9 C3 
+S4 S2 S3 SA 
+D6 DK D9 D2 
+C2 C4 C5 CT 
+H9 HT HQ H3 
+ST C6 C7 CA 
+DJ DA DQ D3 
+H2 S7 S8 SK 
+H5 S9 HK H4 
+H6 C8 CQ S5 
+H7 SJ HA H8 
+DT D4 S6 D5 
+HJ D8 SQ D7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "82"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:J972.T.AK84.K864 Q863.AKQ.Q9.Q975 AK5.843.7532.AT3 T4.J97652.JT6.J2"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3H"]
+[Result "7"]
+[Auction "E"]
+Pass      1NT       Pass      2D        
+Pass      2H        Pass      Pass      
+X         Pass      2S        3H        
+Pass      Pass      Pass      
+[Play "W"]
+SA S4 S2 S3 
+D5 D6 DK D9 
+D3 DT DA DQ 
+SK ST S7 SQ 
+CA C2 C8 C5 
+D7 DJ D4 C7 
+H3 H2 HT HK 
+H4 H5 C6 HA 
+H8 H6 D8 HQ 
+S5 CJ S9 S6 
+D2 H7 SJ S8 
+C3 HJ C4 C9 
+CT H9 CK CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "83"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:Q7543.QJ3.AJ6.T9 86.AT987.T93.KQ4 AT.642.K542.J862 KJ92.K5.Q87.A753"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "1NT"]
+[Result "7"]
+[Auction "E"]
+Pass      Pass      Pass      1C        
+Pass      1H        Pass      1S        
+Pass      1NT       Pass      Pass      
+Pass      
+[Play "W"]
+D2 D7 DJ D3 
+C2 CA CT C4 
+C6 C3 C9 CK 
+H2 HK H3 H7 
+H4 H5 HJ HA 
+H6 S2 HQ H8 
+SA S9 S3 S6 
+D4 D8 DA D9 
+DK DQ D6 DT 
+D5 C5 S4 S8 
+ST SK S5 H9 
+C8 C7 S7 CQ 
+CJ SJ SQ HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "84"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:Q7543.QJ3.AJ6.T9 86.AT987.T93.KQ4 AT.642.K542.J862 KJ92.K5.Q87.A753"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "1NT"]
+[Result "7"]
+[Auction "S"]
+Pass      Pass      Pass      1C        
+Pass      1H        Pass      1S        
+Pass      1NT       Pass      Pass      
+Pass      
+[Play "N"]
+D2 D7 DJ D3 
+DK D8 D6 DT 
+D5 DQ DA D9 
+C2 C3 CT CK 
+C6 CA C9 C4 
+H4 HK H3 H7 
+H2 H5 HJ HA 
+H6 S2 HQ H8 
+SA S9 S3 S6 
+D4 C5 S4 S8 
+ST SK S5 H9 
+C8 C7 S7 CQ 
+CJ SJ SQ HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "85"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:QT7653.743.82.A5 .AKT62.9654.9864 J84.QJ98.K3.KT72 AK92.5.AQJT7.QJ3"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "9"]
+[Auction "S"]
+Pass      Pass      Pass      1D        
+Pass      1H        Pass      1S        
+Pass      3D        Pass      3NT       
+Pass      Pass      Pass      
+[Play "S"]
+S6 H2 SJ SA 
+H3 HK H8 H5 
+H7 HA H9 C3 
+D2 D9 DK DA 
+D8 D4 D3 DT 
+S3 D5 S4 D7 
+S5 C4 S8 SK 
+S7 D6 C2 DJ 
+C5 C6 C7 DQ 
+ST H6 CT S2 
+H4 HT HJ S9 
+SQ C8 HQ CJ 
+CA C9 CK CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "86"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:QT7653.743.82.A5 .AKT62.9654.9864 J84.QJ98.K3.KT72 AK92.5.AQJT7.QJ3"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "W"]
+Pass      Pass      Pass      1D        
+Pass      1H        Pass      1S        
+Pass      3D        Pass      3NT       
+Pass      Pass      Pass      
+[Play "W"]
+CA C4 C7 C3 
+C5 C6 CK CJ 
+S7 H2 S4 SA 
+D2 C8 C2 CQ 
+H3 HK H9 H5 
+D8 D4 D3 DJ 
+S3 H6 S8 SK 
+H4 D5 DK DA 
+H7 D9 H8 D7 
+S5 HA HJ S2 
+S6 D6 CT DQ 
+ST C9 SJ DT 
+SQ HT HQ S9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "87"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:KQ5.854.A72.QJ64 T762.A7.J6.KT972 AJ83.QT96.K54.A5 94.KJ32.QT983.83"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2NT"]
+[Result "8"]
+[Auction "W"]
+Pass      Pass      1D        Pass      
+2C        Pass      2NT       Pass      
+Pass      Pass      
+[Play "S"]
+H2 H4 HA H6 
+D9 D2 DJ DK 
+S4 SQ S2 S3 
+S9 SK S7 S8 
+HJ H5 H7 HT 
+DQ DA D6 D4 
+C3 S5 S6 SA 
+D3 C4 ST SJ 
+HK H8 C2 H9 
+DT D7 C7 D5 
+D8 C6 C9 C5 
+C8 CJ CK CA 
+H3 CQ CT HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "88"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KQ5.854.A72.QJ64 T762.A7.J6.KT972 AJ83.QT96.K54.A5 94.KJ32.QT983.83"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "N"]
+Pass      Pass      1D        Pass      
+2NT       Pass      3NT       Pass      
+Pass      Pass      
+[Play "E"]
+CT C5 C3 CQ 
+H7 H9 HJ H4 
+C2 CA C8 C6 
+S7 S3 S4 SK 
+HA H6 H2 H5 
+CK D4 D3 C4 
+S2 S8 S9 SQ 
+C7 HT H3 CJ 
+D6 DK D8 D2 
+S6 SJ D9 S5 
+ST SA DT H8 
+DJ D5 DQ DA 
+C9 HQ HK D7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "89"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:QJ4.KQ963.Q3.KQ9 K8762.JT.K654.A6 53.A7542.A87.JT5 AT9.8.JT92.87432"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "10"]
+[Auction "N"]
+1NT       Pass      2D        Pass      
+3H        Pass      4H        Pass      
+Pass      Pass      
+[Play "E"]
+D4 D7 D9 DQ 
+HT HA H8 H3 
+HJ H2 C2 HK 
+D6 DA D2 D3 
+SK S3 S9 SQ 
+DK D8 DT H6 
+S2 S5 ST S4 
+CA C5 C7 CQ 
+C6 CT C3 C9 
+S6 CJ C4 CK 
+S7 H4 SA SJ 
+D5 H7 C8 HQ 
+S8 H5 DJ H9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "90"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:QJ4.KQ963.Q3.KQ9 K8762.JT.K654.A6 53.A7542.A87.JT5 AT9.8.JT92.87432"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "9"]
+[Auction "E"]
+1NT       Pass      2D        Pass      
+3H        Pass      4H        Pass      
+Pass      Pass      
+[Play "S"]
+CA C5 C2 C9 
+C6 CT C3 CK 
+HT HA H8 H3 
+HJ H2 C7 HK 
+D6 D7 D9 D3 
+S8 CJ C8 CQ 
+S2 S3 S9 S4 
+S6 S5 SA SJ 
+DK DA DJ DQ 
+D4 D8 DT H6 
+S7 H4 ST SQ 
+D5 H7 D2 HQ 
+SK H5 C4 H9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "91"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:AK7.QT72.J.Q9854 T62.K64.AT863.T2 Q843.AJ95.Q94.KJ J95.83.K752.A763"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4H"]
+[Result "11"]
+[Auction "E"]
+1C        Pass      1H        Pass      
+2H        Pass      2S        Pass      
+3H        Pass      4H        Pass      
+Pass      Pass      
+[Play "N"]
+S5 SK ST S3 
+H8 HT H4 H5 
+H3 H2 H6 HJ 
+C7 H7 HK HA 
+S9 S7 S6 SQ 
+C3 C4 C2 CJ 
+CA C5 CT CK 
+D2 DJ DA D4 
+SJ SA S2 S4 
+C6 CQ D3 S8 
+D5 C9 D6 D9 
+D7 C8 D8 H9 
+DK HQ DT DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "92"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:AK7.QT72.J.Q9854 T62.K64.AT863.T2 Q843.AJ95.Q94.KJ J95.83.K752.A763"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "11"]
+[Auction "S"]
+1C        Pass      1H        Pass      
+2H        Pass      2S        Pass      
+3H        Pass      3NT       Pass      
+4D        Pass      4H        Pass      
+Pass      Pass      
+[Play "E"]
+S5 SK S2 S3 
+H3 H2 H4 HJ 
+D7 DJ DA D4 
+S9 SA ST S4 
+H8 HT H6 H5 
+CA C4 C2 CK 
+C3 C5 CT CJ 
+D5 H7 HK HA 
+SJ S7 S6 SQ 
+C6 C8 D3 S8 
+D2 HQ D6 D9 
+C7 CQ D8 DQ 
+DK C9 DT H9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "93"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:Q942.KJ98.2.AT54 T5.5.KJT63.K9632 AKJ6.76432.74.QJ 873.AQT.AQ985.87"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5DX"]
+[Result "11"]
+[Auction "S"]
+Pass      Pass      1H        2D        
+3D        4D        Pass      Pass      
+4H        5D        Pass      Pass      
+X         Pass      Pass      Pass      
+[Play "S"]
+H8 H5 H2 HT 
+D2 DT D4 D5 
+H9 D3 D7 D8 
+HJ S5 H3 HA 
+CA C2 CQ C7 
+S2 ST SK S3 
+HK D6 H7 HQ 
+C4 CK CJ C8 
+C5 C6 H4 D9 
+S4 DJ S6 S7 
+CT C3 SJ DQ 
+S9 DK SA S8 
+SQ C9 H6 DA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "94"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:Q942.KJ98.2.AT54 T5.5.KJT63.K9632 AKJ6.76432.74.QJ 873.AQT.AQ985.87"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5HX"]
+[Result "10"]
+[Auction "W"]
+Pass      Pass      1H        2D        
+3D        4D        Pass      Pass      
+4H        5D        Pass      Pass      
+5H        Pass      Pass      X         
+Pass      Pass      Pass      
+[Play "S"]
+C8 CA C9 CJ 
+D5 D2 DK D4 
+C7 C4 CK CQ 
+S3 S2 ST SK 
+HT HJ H5 H2 
+S7 S4 S5 SA 
+HA H8 D3 H3 
+S8 S9 D6 S6 
+HQ HK C2 H4 
+D8 CT C3 H6 
+D9 SQ DT SJ 
+DQ C5 C6 H7 
+DA H9 DJ D7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "95"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:AK8.KJ43.T64.T54 QJ6.AT5.Q98.AKQ2 T93.72.J532.9863 7542.Q986.AK7.J7"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "W"]
+Pass      1C        Pass      1H        
+Pass      2NT       Pass      3NT       
+Pass      Pass      Pass      
+[Play "E"]
+D2 D7 DT DQ 
+C9 CJ C4 C2 
+H7 H6 H4 HT 
+H2 H8 H3 HA 
+D3 DK D6 D8 
+S3 S2 SK S6 
+C3 H9 HK H5 
+S9 S4 SA SJ 
+ST S5 S8 SQ 
+C6 C7 C5 CQ 
+C8 S7 CT CA 
+D5 HQ D4 CK 
+DJ DA HJ D9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "96"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AK8.KJ43.T64.T54 QJ6.AT5.Q98.AKQ2 T93.72.J532.9863 7542.Q986.AK7.J7"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "N"]
+Pass      1C        Pass      1H        
+Pass      2NT       Pass      3NT       
+Pass      Pass      Pass      
+[Play "S"]
+D2 D7 DT DQ 
+H7 H8 HJ H5 
+S3 S2 SA S6 
+S9 S4 SK SJ 
+ST S5 S8 SQ 
+C6 CJ C5 C2 
+C3 S7 H3 D8 
+D3 DK D4 D9 
+D5 DA D6 HT 
+H2 H6 H4 HA 
+C8 C7 C4 CA 
+C9 H9 CT CK 
+DJ HQ HK CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "97"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:4.AQ87653.KT7.A6 T3.KJ92.Q86.J842 AKJ865.T.J5.QT73 Q972.4.A9432.K95"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "7"]
+[Auction "N"]
+1H        Pass      1S        Pass      
+3H        Pass      3S        Pass      
+4H        Pass      4S        Pass      
+Pass      Pass      
+[Play "W"]
+DA D7 D8 D5 
+D3 DK D6 DJ 
+SQ S4 S3 SJ 
+D9 DT DQ S5 
+S2 H3 ST SK 
+S7 H5 H9 SA 
+H4 HA H2 HT 
+S9 H6 HJ S6 
+D4 H7 C2 S8 
+C5 CA C4 C3 
+CK C6 C8 CQ 
+D2 H8 HK C7 
+C9 HQ CJ CT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "98"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:4.AQ87653.KT7.A6 T3.KJ92.Q86.J842 AKJ865.T.J5.QT73 Q972.4.A9432.K95"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5H"]
+[Result "9"]
+[Auction "E"]
+1H        Pass      1S        Pass      
+3H        Pass      3S        Pass      
+4H        Pass      4S        Pass      
+5H        Pass      Pass      Pass      
+[Play "S"]
+D6 D5 DA D7 
+HK HT H4 HQ 
+DQ DJ D9 DK 
+H2 C3 D4 HA 
+H9 S5 D2 H3 
+HJ S6 D3 H5 
+C2 C7 C9 CA 
+C4 S8 S2 H6 
+D8 CT S7 DT 
+S3 SK S9 S4 
+ST SA SQ C6 
+C8 SJ C5 H7 
+CJ CQ CK H8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "99"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:865.T4.KQJ983.82 KJT42.A.5.KQJ973 A.K8653.AT762.54 Q973.QJ972.4.AT6"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "5S"]
+[Result "11"]
+[Auction "E"]
+2D        2S        4D        4S        
+Pass      Pass      5D        Pass      
+Pass      5S        Pass      Pass      
+Pass      
+[Play "W"]
+H5 H2 HT HA 
+SA S3 S6 S2 
+DA D4 D9 D5 
+HK H7 H4 S4 
+D2 S7 S5 ST 
+D7 S9 S8 SJ 
+C5 CT C8 C3 
+H3 HQ D8 C7 
+H6 HJ D3 C9 
+H8 H9 DJ CJ 
+C4 C6 C2 CK 
+D6 CA DQ CQ 
+DT SQ DK SK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "100"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:865.T4.KQJ983.82 KJT42.A.5.KQJ973 A.K8653.AT762.54 Q973.QJ972.4.AT6"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5S"]
+[Result "11"]
+[Auction "S"]
+2D        2S        4D        4S        
+Pass      Pass      5D        Pass      
+Pass      5S        Pass      Pass      
+Pass      
+[Play "N"]
+DA D4 D9 D5 
+H3 H2 HT HA 
+SA S3 S6 S2 
+HK H7 H4 S4 
+D7 S7 S5 ST 
+D2 S9 S8 SJ 
+C4 CT C2 C3 
+H5 HQ D3 C7 
+H6 HJ D8 C9 
+H8 H9 DJ CJ 
+C5 CA C8 CQ 
+D6 C6 DQ CK 
+DT SQ DK SK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "101"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:JT74.AJ83.642.98 A3.T9642.J85.T73 K852.K7.AT7.KQ62 Q96.Q5.KQ93.AJ54"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "1NT"]
+[Result "6"]
+[Auction "S"]
+Pass      Pass      1NT       Pass      
+Pass      Pass      
+[Play "E"]
+D3 D2 DJ DA 
+S6 S4 SA SK 
+CA C8 CT CK 
+DK D4 D8 D7 
+DQ D6 D5 DT 
+D9 H3 H2 S2 
+CJ C9 C3 CQ 
+H5 H8 H9 HK 
+SQ S7 S3 S5 
+C5 HJ C7 C2 
+HQ HA H4 H7 
+S9 SJ H6 S8 
+C4 ST HT C6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "102"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:JT74.AJ83.642.98 A3.T9642.J85.T73 K852.K7.AT7.KQ62 Q96.Q5.KQ93.AJ54"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "1NT"]
+[Result "6"]
+[Auction "W"]
+Pass      Pass      1NT       Pass      
+Pass      Pass      
+[Play "S"]
+C4 C8 CT CK 
+H5 H3 H6 HK 
+HQ HA H2 H7 
+SQ ST S3 S2 
+D3 D2 DJ DA 
+S6 SJ SA S8 
+CJ C9 C7 C2 
+DK D4 D5 D7 
+CA D6 C3 C6 
+DQ S4 D8 DT 
+D9 H8 H4 S5 
+S9 S7 H9 SK 
+C5 HJ HT CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "103"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:A6.J86.KQ72.J642 QT752.Q2.A4.KQ75 K9.9543.JT63.AT9 J843.AKT7.985.83"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result "10"]
+[Auction "W"]
+Pass      1S        Pass      2S        
+Pass      Pass      Pass      
+[Play "E"]
+DJ D5 D7 DA 
+H9 H7 H6 HQ 
+H5 HK H8 H2 
+H3 HA HJ D4 
+SK S3 S6 SQ 
+D3 D8 DQ S2 
+S9 SJ SA S5 
+CA C3 C2 CK 
+H4 HT D2 C5 
+C9 C8 C4 CQ 
+CT S4 C6 C7 
+D6 D9 DK S7 
+DT S8 CJ ST 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "104"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:A6.J86.KQ72.J642 QT752.Q2.A4.KQ75 K9.9543.JT63.AT9 J843.AKT7.985.83"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2S"]
+[Result "10"]
+[Auction "N"]
+Pass      1S        Pass      2S        
+Pass      Pass      Pass      
+[Play "S"]
+DJ D5 D7 DA 
+H5 H7 H6 HQ 
+H4 HK H8 H2 
+H3 HA HJ D4 
+SK S3 S6 SQ 
+D3 D8 DQ S2 
+S9 SJ SA S5 
+CA C3 C2 CK 
+H9 HT D2 C5 
+C9 C8 C4 CQ 
+CT S4 C6 C7 
+D6 D9 DK S7 
+DT S8 CJ ST 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "105"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AK83.KJ62.AQ5.Q3 QJ97.AQ53.73.K92 6542.T9.J6.AT875 T.874.KT9842.J64"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "1S"]
+[Result "7"]
+[Auction "N"]
+1D        X         Pass      1H        
+1S        Pass      Pass      Pass      
+[Play "E"]
+SQ S2 ST SA 
+CK C5 C4 CQ 
+S9 S4 D9 SK 
+C2 CA C6 C3 
+C9 C7 CJ S3 
+SJ S5 H7 S8 
+S7 S6 D2 H2 
+D7 DJ DK DA 
+D3 D6 D8 D5 
+HQ H9 H8 H6 
+HA HT H4 HJ 
+H5 C8 D4 HK 
+H3 CT DT DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "106"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:AK83.KJ62.AQ5.Q3 QJ97.AQ53.73.K92 6542.T9.J6.AT875 T.874.KT9842.J64"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "8"]
+[Auction "E"]
+1D        X         Pass      1H        
+1S        Pass      2S        Pass      
+4S        Pass      Pass      Pass      
+[Play "S"]
+SQ S2 ST SA 
+S7 S4 D2 SK 
+S9 S5 D8 S3 
+SJ S6 H4 S8 
+HA H9 H7 H2 
+D7 DJ DK DA 
+D3 D6 D4 DQ 
+H3 HT H8 HK 
+H5 C5 D9 H6 
+HQ C7 C4 HJ 
+C2 C8 C6 C3 
+C9 CA CJ CQ 
+CK CT DT D5 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "107"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:KT652.98.A962.T6 Q3.T753.J54.KQ94 AJ9.A6.KQT87.853 874.KQJ42.3.AJ72"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "11"]
+[Auction "E"]
+Pass      Pass      1D        1H        
+1S        2H        3S        Pass      
+4S        Pass      Pass      Pass      
+[Play "S"]
+H3 HA H4 H8 
+S3 S9 S4 SK 
+SQ SA S7 S2 
+H7 SJ S8 S5 
+D4 D7 D3 DA 
+D5 DQ H2 D2 
+DJ DK HJ D6 
+C4 DT C2 D9 
+H5 D8 C7 C6 
+C9 C3 CA CT 
+CQ C5 CJ S6 
+HT H6 HQ ST 
+CK C8 HK H9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "108"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:KT652.98.A962.T6 Q3.T753.J54.KQ94 AJ9.A6.KQT87.853 874.KQJ42.3.AJ72"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "9"]
+[Auction "S"]
+Pass      Pass      1D        1H        
+1S        2H        3S        Pass      
+4S        Pass      Pass      Pass      
+[Play "W"]
+CK C3 C7 C6 
+C4 C5 CA CT 
+H3 HA HK H8 
+SQ S9 S4 S6 
+H5 H6 HJ H9 
+C9 C8 CJ S5 
+S3 SJ S7 S2 
+D4 SA S8 ST 
+D5 D7 D3 DA 
+DJ DQ H2 D2 
+H7 D8 H4 D6 
+HT DK C2 D9 
+CQ DT HQ SK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "109"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:J4.A974.AQ532.T7 A2.Q3.KJT87.AJ52 T9753.52.64.KQ83 KQ86.KJT86.9.964"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result "7"]
+[Auction "S"]
+1D        Pass      1S        Pass      
+1NT       Pass      2S        Pass      
+Pass      Pass      
+[Play "E"]
+C6 C7 CA C3 
+SQ S4 S2 S5 
+S6 SJ SA S3 
+C9 CT C2 CK 
+SK D2 D8 S9 
+D9 DQ DK D4 
+C4 H4 C5 CQ 
+S8 H7 D7 ST 
+H6 DA DT D6 
+H8 D3 DJ S7 
+HT HA H3 H2 
+HJ D5 CJ H5 
+HK H9 HQ C8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "110"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:J4.A974.AQ532.T7 A2.Q3.KJT87.AJ52 T9753.52.64.KQ83 KQ86.KJT86.9.964"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2S"]
+[Result "6"]
+[Auction "W"]
+1D        Pass      1S        Pass      
+1NT       Pass      2S        Pass      
+Pass      Pass      
+[Play "S"]
+HJ HA H3 H5 
+C4 C7 C2 CK 
+D9 DA D7 D4 
+C6 CT CA C3 
+S6 S4 SA S5 
+SQ SJ S2 S3 
+HK H4 HQ H2 
+HT H7 D8 S7 
+SK D2 DT S9 
+H8 H9 C5 D6 
+C9 D3 DJ ST 
+S8 D5 CJ CQ 
+H6 DQ DK C8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "111"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:7.876.AKT72.AQ86 QT83.AJT53..KJT5 AKJ6.Q4.QJ53.942 9542.K92.9864.73"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5D"]
+[Result "8"]
+[Auction "W"]
+1D        1H        X         Pass      
+2C        Pass      2H        Pass      
+3D        Pass      5D        Pass      
+Pass      Pass      
+[Play "N"]
+S3 SJ S2 S7 
+S8 SK S5 H6 
+ST SA S4 H8 
+H5 D3 D8 DK 
+H3 DJ D4 D2 
+CT C2 C7 C8 
+SQ S6 S9 D7 
+HT D5 D6 DA 
+C5 DQ D9 DT 
+CK C9 C3 CQ 
+HA H4 H2 H7 
+HJ HQ HK C6 
+CJ C4 H9 CA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "112"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:7.876.AKT72.AQ86 QT83.AJT53..KJT5 AKJ6.Q4.QJ53.942 9542.K92.9864.73"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4D"]
+[Result "9"]
+[Auction "N"]
+1D        1H        X         Pass      
+2C        Pass      3D        Pass      
+4D        Pass      Pass      Pass      
+[Play "E"]
+S3 SK S2 S7 
+H5 DJ D9 D2 
+S8 SA S5 C8 
+HT H4 H2 H6 
+HA HQ H9 H8 
+HJ D3 HK H7 
+C5 C2 C7 CA 
+CT DQ D4 D7 
+H3 D5 D6 DK 
+ST C4 D8 DT 
+CK C9 C3 CQ 
+CJ S6 S4 C6 
+SQ SJ S9 DA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "113"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AJ8.J873.T976.J4 QT752.KQ5.4.AQT6 K64.AT64.J82.987 93.92.AKQ53.K532"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "8"]
+[Auction "N"]
+Pass      1S        Pass      2D        
+Pass      2S        Pass      3C        
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "S"]
+H4 H2 HJ HK 
+D2 DQ D6 D4 
+D8 DK D7 S7 
+DJ DA D9 S2 
+C7 C2 C4 CA 
+C8 CK CJ C6 
+C9 C3 H3 CQ 
+H6 C5 H7 CT 
+HT H9 H8 H5 
+HA D3 S8 HQ 
+S4 S3 SA S5 
+S6 D5 DT ST 
+SK S9 SJ SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "114"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:AJ8.J873.T976.J4 QT752.KQ5.4.AQT6 K64.AT64.J82.987 93.92.AKQ53.K532"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "9"]
+[Auction "E"]
+Pass      1S        Pass      2D        
+Pass      2S        Pass      3C        
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "W"]
+H4 H2 H7 HK 
+D2 DQ D9 D4 
+SK S3 S8 ST 
+HA H9 H3 H5 
+HT C2 H8 HQ 
+C7 C3 C4 CQ 
+C8 CK CJ C6 
+D8 DK D6 S2 
+DJ DA D7 S5 
+C9 C5 SJ CA 
+S4 D3 DT CT 
+S6 S9 SA S7 
+H6 D5 HJ SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "115"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:984.J.AT864.KJ53 AKQ.AKQ4.J32.Q94 J762.T763.K7.A87 T53.9852.Q95.T62"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "2NT"]
+[Result "7"]
+[Auction "E"]
+Pass      2NT       Pass      Pass      
+Pass      
+[Play "W"]
+H3 H8 HJ HK 
+S7 S3 S4 SQ 
+H6 H2 S8 HQ 
+S2 S5 S9 SK 
+S6 ST D8 SA 
+DK D5 D6 D2 
+SJ C2 C3 D3 
+D7 D9 DT DJ 
+H7 H5 C5 HA 
+HT H9 D4 H4 
+C7 C6 CK C4 
+C8 DQ DA C9 
+CA CT CJ CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "116"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:984.J.AT864.KJ53 AKQ.AKQ4.J32.Q94 J762.T763.K7.A87 T53.9852.Q95.T62"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2NT"]
+[Result "6"]
+[Auction "S"]
+Pass      2NT       Pass      Pass      
+Pass      
+[Play "N"]
+S2 S3 S8 SK 
+H3 H2 HJ HQ 
+H7 H5 D8 HK 
+D7 DQ DA D2 
+S6 S5 S9 SA 
+S7 ST S4 SQ 
+H6 H8 C3 HA 
+HT H9 C5 H4 
+SJ C2 D4 D3 
+DK D5 D6 DJ 
+C7 C6 CK C4 
+C8 D9 DT C9 
+CA CT CJ CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "117"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:T95.KJ.Q654.AQ54 842.Q9632.82.KT3 KJ7.A85.KJT73.J6 AQ63.T74.A9.9872"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "S"]
+1C        Pass      1D        Pass      
+2D        Pass      3NT       Pass      
+Pass      Pass      
+[Play "E"]
+S3 S5 S8 SJ 
+DA D4 D8 D3 
+C8 CA C3 C6 
+D9 D5 D2 DJ 
+S6 D6 H2 D7 
+H4 DQ H6 DT 
+SQ S9 S2 S7 
+SA ST S4 SK 
+C2 C4 CT CJ 
+H7 C5 H3 DK 
+HT HK H9 H5 
+C7 HJ HQ HA 
+C9 CQ CK H8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "118"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:T95.KJ.Q654.AQ54 842.Q9632.82.KT3 KJ7.A85.KJT73.J6 AQ63.T74.A9.9872"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "8"]
+[Auction "W"]
+1D        Pass      2NT       Pass      
+3NT       Pass      Pass      Pass      
+[Play "S"]
+S3 S5 S8 SJ 
+D9 DQ D8 D3 
+DA D4 D2 D7 
+H7 HJ HQ HA 
+C9 D5 H2 DT 
+C2 CA C3 C6 
+C7 D6 S2 DK 
+C8 S9 H3 DJ 
+H4 C4 CK CJ 
+SA ST S4 SK 
+SQ C5 H6 S7 
+S6 CQ H9 H5 
+HT HK CT H8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "119"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:KT.974.KJ73.AJ65 J532.JT52.T5.873 AQ976.63.Q84.K92 84.AKQ8.A962.QT4"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2NT"]
+[Result "8"]
+[Auction "W"]
+1D        Pass      1S        Pass      
+1NT       Pass      2NT       Pass      
+Pass      Pass      
+[Play "N"]
+H2 H3 HQ H4 
+H5 H6 HA H7 
+HT C2 HK H9 
+HJ S6 H8 D3 
+DT D4 DA D7 
+D5 D8 D2 DK 
+C3 DQ D6 DJ 
+S2 S7 S4 SK 
+C7 CK C4 C5 
+S3 SQ S8 ST 
+S5 SA CT C6 
+C8 C9 CQ CA 
+SJ S9 D9 CJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "120"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KT.974.KJ73.AJ65 J532.JT52.T5.873 AQ976.63.Q84.K92 84.AKQ8.A962.QT4"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2NT"]
+[Result "8"]
+[Auction "N"]
+1C        Pass      1S        X         
+1NT       Pass      2NT       Pass      
+Pass      Pass      
+[Play "E"]
+H2 H3 HQ H4 
+H5 H6 HA H7 
+HT C2 HK H9 
+HJ S6 H8 D3 
+DT D4 DA D7 
+D5 D8 D2 DK 
+C3 DQ D6 DJ 
+S5 S7 S8 SK 
+C7 CK C4 C5 
+S2 SQ S4 ST 
+S3 SA CT C6 
+C8 C9 CQ CA 
+SJ S9 D9 CJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "121"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:QJ9753.4.T76.T83 A.AJ83.A9843.Q74 K82.KQ7652.KJ2.9 T64.T9.Q5.AKJ652"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "11"]
+[Auction "N"]
+Pass      1D        2H        3H        
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "S"]
+HK H9 H4 HA 
+C9 CJ C3 C4 
+S8 C2 C8 CQ 
+D2 CK CT C7 
+H2 CA S5 D3 
+H6 C6 S3 D4 
+H5 C5 D6 D8 
+HQ HT D7 H3 
+SK S4 S7 SA 
+H7 S6 S9 HJ 
+S2 ST SJ H8 
+DJ D5 DT DA 
+DK DQ SQ D9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "122"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:QJ9753.4.T76.T83 A.AJ83.A9843.Q74 K82.KQ7652.KJ2.9 T64.T9.Q5.AKJ652"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "11"]
+[Auction "E"]
+Pass      1D        2H        3H        
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "W"]
+HK H9 H4 HA 
+C9 CJ C3 C4 
+S8 C2 C8 CQ 
+D2 CK CT C7 
+H2 CA S9 D3 
+H6 C6 D7 D4 
+H5 C5 S3 D8 
+H7 HT D6 H3 
+DJ D5 DT DA 
+HQ S4 S5 H8 
+DK DQ S7 D9 
+SK S6 SJ SA 
+S2 ST SQ HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "123"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:AJ632.K3.A82.Q63 T75.AJT2.KJ.JT82 KQ84.Q76.6.AK974 9.9854.QT97543.5"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5S"]
+[Result "13"]
+[Auction "E"]
+1S        Pass      3NT       Pass      
+4S        Pass      4NT       Pass      
+5H        Pass      5S        Pass      
+Pass      Pass      
+[Play "S"]
+CJ CK C5 C3 
+S7 SQ S9 S6 
+DJ D6 D5 DA 
+DK S4 D3 D2 
+S5 S8 D4 SA 
+H2 SK D7 D8 
+C2 C4 D9 CQ 
+ST H6 DT SJ 
+C8 C9 H4 C6 
+CT CA H5 H3 
+HT C7 H8 HK 
+HJ H7 H9 S2 
+HA HQ DQ S3 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "124"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:AJ632.K3.A82.Q63 T75.AJT2.KJ.JT82 KQ84.Q76.6.AK974 9.9854.QT97543.5"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "13"]
+[Auction "S"]
+1S        Pass      2NT       Pass      
+4S        Pass      Pass      Pass      
+[Play "W"]
+CJ CK C5 C3 
+S7 SQ S9 S6 
+DJ D6 D3 DA 
+DK S4 D4 D2 
+S5 S8 H4 SA 
+H2 SK D5 D8 
+C2 C4 D7 CQ 
+ST H6 D9 SJ 
+C8 C9 DT C6 
+CT CA H5 H3 
+HT C7 H8 HK 
+HJ H7 H9 S2 
+HA HQ DQ S3 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "125"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:A3.AJ97652.96.KJ Q952.3.AJT542.QT JT86..Q3.A987532 K74.KQT84.K87.64"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3HX"]
+[Result "7"]
+[Auction "S"]
+1H        2D        X         2H        
+Pass      3D        Pass      Pass      
+3H        Pass      Pass      X         
+Pass      Pass      Pass      
+[Play "W"]
+H3 D3 HQ HA 
+D5 C2 HK HJ 
+D4 DQ DK D6 
+DT C3 D8 D9 
+CT C5 C4 CJ 
+D2 S6 H8 H5 
+DJ C7 D7 H2 
+S2 C8 HT H6 
+CQ C9 C6 CK 
+S5 S8 H4 H7 
+S9 ST S4 SA 
+SQ SJ S7 H9 
+DA CA SK S3 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "126"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:A3.AJ97652.96.KJ Q952.3.AJT542.QT JT86..Q3.A987532 K74.KQT84.K87.64"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3HX"]
+[Result "7"]
+[Auction "W"]
+1H        2D        X         2H        
+3H        Pass      Pass      X         
+Pass      Pass      Pass      
+[Play "N"]
+H3 D3 HQ HA 
+D2 C2 HK HJ 
+D5 DQ DK D6 
+DT C3 D8 D9 
+CQ C5 C4 CK 
+D4 S6 H8 H5 
+DJ C7 D7 H2 
+S2 C8 HT H6 
+CT C9 C6 CJ 
+S5 S8 H4 H7 
+S9 ST S4 SA 
+SQ SJ S7 H9 
+DA CA SK S3 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "127"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:765.AQ7.AT94.AK2 AT9832.T96.KQ63. .J85432.7.876543 KQJ4.K.J852.QJT9"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5SX"]
+[Result "11"]
+[Auction "N"]
+1NT       2S        4H        4S        
+5H        5S        Pass      Pass      
+X         Pass      Pass      Pass      
+[Play "S"]
+C5 C9 CK S2 
+H8 SJ S5 S3 
+C3 SK S6 S9 
+H3 SQ S7 S8 
+C6 CT CA ST 
+D7 DJ DA D3 
+H2 D2 DT DK 
+H4 HK HA H6 
+C4 CJ C2 D6 
+C7 CQ D4 H9 
+H5 D5 D9 DQ 
+HJ S4 H7 HT 
+C8 D8 HQ SA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "128"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:765.AQ7.AT94.AK2 AT9832.T96.KQ63. .J85432.7.876543 KQJ4.K.J852.QJT9"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "5SX"]
+[Result "11"]
+[Auction "E"]
+1NT       2S        4H        4S        
+5H        5S        Pass      Pass      
+X         Pass      Pass      Pass      
+[Play "W"]
+H4 HK HA H9 
+D7 DJ DT D3 
+H2 S4 S6 S8 
+C6 SJ S5 S2 
+C3 C9 CK S3 
+H5 SQ S7 S9 
+C4 CT C2 D6 
+C5 CJ CA SA 
+H3 SK H7 H6 
+C7 CQ D4 HT 
+H8 D8 DA DQ 
+C8 D2 D9 DK 
+HJ D5 HQ ST 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "129"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:T97.763.87652.K6 AKQJ6.KJ5.Q94.53 5.A942.KJ.AQT872 8432.QT8.AT3.J94"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3S"]
+[Result "9"]
+[Auction "E"]
+Pass      1NT       3C        Pass      
+Pass      3S        Pass      Pass      
+Pass      
+[Play "W"]
+S5 S2 S7 SQ 
+C8 S3 S9 SJ 
+H4 S4 ST SK 
+CQ C4 C6 C3 
+CA C9 CK C5 
+CT CJ D2 D4 
+HA H8 H3 HK 
+H9 HT H6 H5 
+H2 HQ H7 HJ 
+DJ DA D5 D9 
+DK D3 D6 DQ 
+C7 S8 D7 S6 
+C2 DT D8 SA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "130"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:T97.763.87652.K6 AKQJ6.KJ5.Q94.53 5.A942.KJ.AQT872 8432.QT8.AT3.J94"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3S"]
+[Result "9"]
+[Auction "S"]
+Pass      1NT       3C        Pass      
+Pass      3S        Pass      Pass      
+Pass      
+[Play "N"]
+HA H8 H3 H5 
+CA C4 C6 C5 
+C2 C9 CK C3 
+H2 HT H7 HK 
+S5 S2 S9 SJ 
+C7 S3 S7 SQ 
+H4 HQ H6 HJ 
+C8 S4 ST SA 
+DJ DA D2 D4 
+DK D3 D5 DQ 
+CQ CJ D6 S6 
+H9 DT D7 D9 
+CT S8 D8 SK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "131"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:K64.872.JT32.A83 T3.AJ.KQ985.JT95 J952.965.A6.KQ42 AQ87.KQT43.74.76"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "9"]
+[Auction "S"]
+Pass      1D        Pass      1H        
+Pass      2C        Pass      2S        
+Pass      3D        Pass      3NT       
+Pass      Pass      Pass      
+[Play "S"]
+S4 S3 SJ SQ 
+D2 D8 DA D4 
+S6 ST S2 SA 
+H2 HA H5 H3 
+H7 HJ H6 HK 
+H8 C5 H9 HQ 
+C3 C9 C2 HT 
+C8 CT C4 H4 
+D3 DQ D6 D7 
+DT DK S5 C6 
+DJ D5 CQ C7 
+SK D9 S9 S7 
+CA CJ CK S8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "132"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:K64.872.JT32.A83 T3.AJ.KQ985.JT95 J952.965.A6.KQ42 AQ87.KQT43.74.76"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "9"]
+[Auction "W"]
+Pass      1D        Pass      1H        
+Pass      2C        Pass      2S        
+Pass      3D        Pass      3NT       
+Pass      Pass      Pass      
+[Play "W"]
+S4 S3 SJ SQ 
+D3 D8 DA D4 
+S6 ST S2 SA 
+H2 HA H5 H3 
+H7 HJ H6 HK 
+H8 C5 H9 HQ 
+C8 C9 C4 HT 
+C3 CT C2 H4 
+D2 DQ D6 D7 
+DT DK S5 C6 
+DJ D5 CQ C7 
+SK D9 S9 S7 
+CA CJ CK S8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "133"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:T.AQ875.AJT64.72 854.643.75.QT865 972.KJT92.983.94 AKQJ63..KQ2.AKJ3"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "12"]
+[Auction "W"]
+1H        Pass      2H        X         
+3H        Pass      Pass      4S        
+Pass      Pass      Pass      
+[Play "W"]
+DA D5 D3 D2 
+DJ D7 D9 DK 
+ST S4 S2 SJ 
+H8 S5 S7 SQ 
+D4 S8 S9 SK 
+H5 H3 H9 S3 
+C7 C5 C9 CJ 
+C2 C6 C4 CA 
+D6 H4 D8 DQ 
+H7 C8 H2 C3 
+HQ H6 HT S6 
+DT CT HJ SA 
+HA CQ HK CK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "134"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:T.AQ875.AJT64.72 854.643.75.QT865 972.KJT92.983.94 AKQJ63..KQ2.AKJ3"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "12"]
+[Auction "N"]
+1H        Pass      Pass      X         
+Pass      2C        2H        4S        
+Pass      Pass      Pass      
+[Play "N"]
+HA H3 HK S6 
+ST S4 S2 SJ 
+H5 S5 S7 SQ 
+D4 S8 S9 SK 
+C7 CT C4 C3 
+H7 H4 H2 S3 
+C2 C5 C9 CA 
+HQ C6 H9 CK 
+D6 CQ HT CJ 
+DT C8 D3 D2 
+DA D5 D8 DK 
+H8 H6 HJ SA 
+DJ D7 D9 DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "135"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KJ84.QT52.J.T865 Q9532.4.Q64.AKQ7 A76.AK983.AK98.9 T.J76.T7532.J432"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "11"]
+[Auction "N"]
+Pass      1S        X         Pass      
+2H        Pass      4H        Pass      
+Pass      Pass      
+[Play "E"]
+CA C9 C2 C6 
+CK H3 C4 C5 
+H4 H8 H6 HQ 
+D4 DK D2 DJ 
+S2 HK H7 H2 
+C7 HA HJ H5 
+D6 DA D3 S4 
+DQ D8 D5 HT 
+S3 S6 ST SK 
+CQ D9 C3 C8 
+S5 S7 D7 S8 
+S9 H9 CJ CT 
+SQ SA DT SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "136"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:KJ84.QT52.J.T865 Q9532.4.Q64.AKQ7 A76.AK983.AK98.9 T.J76.T7532.J432"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "11"]
+[Auction "E"]
+Pass      1S        X         Pass      
+2H        Pass      4H        Pass      
+Pass      Pass      
+[Play "S"]
+CA C9 C2 C6 
+CK H3 C4 C5 
+H4 H8 H7 HQ 
+D4 DK D2 DJ 
+S3 HK H6 H2 
+C7 HA HJ H5 
+D6 DA D3 C8 
+S2 SA ST S4 
+DQ D8 D5 HT 
+CQ H9 C3 CT 
+S9 S6 D7 S8 
+SQ S7 DT SK 
+S5 D9 CJ SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "137"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:QT7.Q3.74.AKQT75 96.AT652.K652.J9 KJ842.KJ.AJT.843 A53.9874.Q983.62"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "10"]
+[Auction "E"]
+1C        1H        1S        2H        
+2S        Pass      3NT       Pass      
+4S        Pass      Pass      Pass      
+[Play "N"]
+D3 D4 DK DA 
+SA S7 S6 S2 
+H8 H3 HA HJ 
+DQ D7 D2 DJ 
+H4 HQ H5 HK 
+S5 ST S9 S4 
+S3 SQ H2 S8 
+C2 CQ C9 C3 
+C6 CK CJ C4 
+H7 C5 H6 C8 
+D8 C7 D5 DT 
+D9 CT D6 SK 
+H9 CA HT SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "138"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:QT7.Q3.74.AKQT75 96.AT652.K652.J9 KJ842.KJ.AJT.843 A53.9874.Q983.62"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "10"]
+[Auction "S"]
+1C        1H        1S        2H        
+2S        Pass      4S        Pass      
+Pass      Pass      
+[Play "E"]
+H4 H3 HA HJ 
+DQ D4 D2 DJ 
+D3 D7 DK DA 
+S3 ST S6 S2 
+H7 HQ H5 HK 
+D8 C5 D5 DT 
+S5 SQ S9 S4 
+C6 CQ C9 C3 
+C2 CK CJ C4 
+H8 C7 H2 C8 
+SA S7 H6 SK 
+D9 CT D6 S8 
+H9 CA HT SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "139"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:9642.T4.T942.Q96 T.Q5.AJ8653.J873 QJ83.J98732.7.AK AK75.AK6.KQ.T542"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5D"]
+[Result "11"]
+[Auction "S"]
+Pass      2D        2H        5D        
+Pass      Pass      Pass      
+[Play "N"]
+CA C2 C9 C3 
+CK C4 C6 C8 
+H2 H6 HT HQ 
+D7 DQ D4 D3 
+H3 DK D2 D6 
+S3 SK S6 ST 
+S8 SA S2 C7 
+SJ S5 S4 D5 
+H7 C5 D9 DJ 
+H8 S7 DT DA 
+H9 HK H4 H5 
+HJ HA S9 CJ 
+SQ CT CQ D8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "140"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:9642.T4.T942.Q96 T.Q5.AJ8653.J873 QJ83.J98732.7.AK AK75.AK6.KQ.T542"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2HX"]
+[Result "6"]
+[Auction "W"]
+Pass      2D        2H        X         
+Pass      Pass      Pass      
+[Play "S"]
+DK D2 D8 D7 
+DQ D4 D5 H3 
+C5 C6 C7 CA 
+C4 C9 C8 CK 
+SK S2 ST SJ 
+SA S4 D6 S3 
+S7 S6 H5 S8 
+HK D9 DA H7 
+S5 S9 HQ SQ 
+HA DT DJ H8 
+CT CQ C3 H2 
+H6 H4 D3 H9 
+C2 HT CJ HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "141"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:AKQ4.QT3.AT87.J8 T75.J97.64.K7653 J832.K.952.AT942 96.A86542.KQJ3.Q"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3S"]
+[Result "9"]
+[Auction "W"]
+1NT       Pass      2C        Pass      
+2S        Pass      3S        Pass      
+Pass      Pass      
+[Play "N"]
+D6 D2 DJ DA 
+S7 S2 S9 SQ 
+S5 SJ S6 S4 
+ST S3 H4 SA 
+C6 C2 CQ C8 
+D4 D5 DK D8 
+H7 HK HA H3 
+C3 D9 DQ D7 
+HJ S8 H5 HT 
+C5 CA H2 CJ 
+C7 C9 H6 SK 
+H9 C4 D3 DT 
+CK CT H8 HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "142"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AKQ4.QT3.AT87.J8 T75.J97.64.K7653 J832.K.952.AT942 96.A86542.KQJ3.Q"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3S"]
+[Result "9"]
+[Auction "N"]
+1NT       Pass      2C        Pass      
+2S        Pass      3S        Pass      
+Pass      Pass      
+[Play "E"]
+D6 D2 DJ DA 
+S7 S2 S9 SQ 
+S5 SJ S6 S4 
+ST S3 H8 SA 
+C3 C2 CQ C8 
+D4 D5 DK D8 
+C7 D9 DQ D7 
+H7 HK HA H3 
+HJ S8 H4 HT 
+C5 CA H2 CJ 
+C6 C9 H5 SK 
+H9 C4 D3 DT 
+CK CT H6 HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "143"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KT8.AK73.84.K732 QJ97.Q96.AKQ2.T9 A432.T4.JT96.J85 65.J852.753.AQ64"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "1S"]
+[Result "6"]
+[Auction "N"]
+1C        X         1D        1H        
+Pass      Pass      1S        Pass      
+Pass      Pass      
+[Play "W"]
+S6 S8 S9 SA 
+H8 HK H6 H4 
+S5 SK S7 S3 
+H5 HA H9 HT 
+H2 H3 HQ S2 
+D3 D8 DQ D6 
+C6 ST SJ S4 
+D5 D4 DA D9 
+D7 C2 D2 DJ 
+CA C3 C9 C5 
+HJ H7 CT C8 
+CQ CK SQ CJ 
+C4 C7 DK DT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "144"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:KT8.AK73.84.K732 QJ97.Q96.AKQ2.T9 A432.T4.JT96.J85 65.J852.753.AQ64"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "1H"]
+[Result "7"]
+[Auction "E"]
+1C        X         1D        1H        
+Pass      Pass      Pass      
+[Play "E"]
+D8 DQ D6 D7 
+HK H6 H4 HJ 
+H3 HQ HT H2 
+HA H9 S4 H5 
+C2 C9 CJ CQ 
+H7 D2 S2 H8 
+S8 SJ SA S5 
+CK CT C8 C4 
+D4 DK D9 D3 
+C3 DA DT D5 
+SK SQ S3 S6 
+ST S7 C5 C6 
+C7 S9 DJ CA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "145"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:Q964.T.Q75.AKJ52 2.KQ852.AJ9632.7 A3.AJ643.T84.Q43 KJT875.97.K.T986"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3C"]
+[Result "9"]
+[Auction "E"]
+1C        1D        1H        Pass      
+1S        Pass      1NT       Pass      
+Pass      2D        3C        Pass      
+Pass      Pass      
+[Play "S"]
+S2 SA S8 S4 
+H2 HA H7 HT 
+D6 S3 SK S6 
+D9 D4 DK D7 
+C7 CQ SJ S9 
+D3 C3 C8 CK 
+D2 D8 S5 SQ 
+DA DT S7 D5 
+DJ H3 H9 DQ 
+H5 C4 C6 C2 
+H8 H4 ST C5 
+HQ H6 C9 CA 
+HK HJ CT CJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "146"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:Q964.T.Q75.AKJ52 2.KQ852.AJ9632.7 A3.AJ643.T84.Q43 KJT875.97.K.T986"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3HX"]
+[Result "6"]
+[Auction "S"]
+1C        2NT       X         Pass      
+Pass      3D        X         3H        
+Pass      Pass      X         Pass      
+Pass      Pass      
+[Play "S"]
+HT HQ HA H7 
+C2 H5 H3 H9 
+CJ C7 C3 C6 
+S4 S2 SA S5 
+C5 H2 CQ C8 
+D7 D2 D8 DK 
+S6 D3 S3 SK 
+SQ H8 HJ ST 
+CK HK C4 CT 
+D5 DA D4 S7 
+DQ D6 DT S8 
+S9 D9 H4 SJ 
+CA DJ H6 C9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "147"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:T86.AT876.8.AT52 AK9532.2.KJ97.43 QJ.543.Q43.QJ987 74.KQJ9.AT652.K6"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "9"]
+[Auction "S"]
+Pass      1S        Pass      2D        
+Pass      2S        Pass      3NT       
+Pass      4S        Pass      Pass      
+Pass      
+[Play "N"]
+CQ C6 C5 C4 
+C8 CK CA C3 
+DQ DA D8 D7 
+SQ S4 S6 SA 
+SJ S7 S8 SK 
+D3 D2 H6 DK 
+D4 D5 ST DJ 
+H3 H9 HA H2 
+C7 D6 CT S2 
+C9 DT C2 S3 
+H4 HJ H7 D9 
+H5 HQ H8 S9 
+CJ HK HT S5 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "148"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:T86.AT876.8.AT52 AK9532.2.KJ97.43 QJ.543.Q43.QJ987 74.KQJ9.AT652.K6"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "9"]
+[Auction "W"]
+Pass      1S        Pass      2D        
+Pass      2S        Pass      3H        
+Pass      4D        Pass      4S        
+Pass      Pass      Pass      
+[Play "E"]
+CQ C6 C5 C4 
+C8 CK CA C3 
+C7 S4 C2 H2 
+SQ S7 S6 S5 
+H4 H9 HT S2 
+SJ D2 S8 SK 
+H3 D5 ST SA 
+D3 DA D8 D7 
+D4 D6 H6 DK 
+DQ DT H7 D9 
+H5 HJ HA S3 
+C9 HQ H8 S9 
+CJ HK CT DJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "149"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:AQ9762.K65.8.Q93 83.A74.A763.8762 JT4.JT98.Q9.JT54 K5.Q32.KJT542.AK"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3S"]
+[Result "7"]
+[Auction "W"]
+1S        Pass      2S        3D        
+3S        Pass      Pass      Pass      
+[Play "N"]
+DA D9 D5 D8 
+D3 DQ DK S6 
+S3 S4 S5 SA 
+S8 ST SK S2 
+D6 SJ DJ H6 
+HA H8 H3 HK 
+D7 C4 D2 S7 
+C2 CT CK C3 
+H4 H9 HQ H5 
+C6 C5 DT S9 
+C7 CJ CA C9 
+H7 HT D4 SQ 
+C8 HJ H2 CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "150"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AQ9762.K65.8.Q93 83.A74.A763.8762 JT4.JT98.Q9.JT54 K5.Q32.KJT542.AK"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4D"]
+[Result "10"]
+[Auction "N"]
+1S        Pass      1NT       2D        
+2S        3D        Pass      Pass      
+3S        Pass      Pass      4D        
+Pass      Pass      Pass      
+[Play "N"]
+C3 C2 CT CA 
+D8 DA D9 D2 
+C9 C6 C4 CK 
+S7 D3 DQ DK 
+S6 S8 ST S5 
+H6 HA HJ H3 
+CQ C7 C5 D4 
+SA S3 S4 SK 
+HK H4 H8 H2 
+H5 H7 H9 HQ 
+S2 D6 HT D5 
+S9 C8 CJ DT 
+SQ D7 SJ DJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "151"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:7.AJ83.T64.T6532 T6542.965.KQ.A84 AQJ3.T4.A972.KJ7 K98.KQ72.J853.Q9"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "1NT"]
+[Result "8"]
+[Auction "N"]
+Pass      Pass      1NT       Pass      
+Pass      Pass      
+[Play "W"]
+H2 H3 H5 HT 
+DJ D4 DQ D2 
+SK S7 S6 SQ 
+HK HA H6 H4 
+CQ C2 C4 CJ 
+HQ H8 H9 S3 
+S9 C3 S2 SA 
+C9 C5 CA CK 
+S8 D6 S4 SJ 
+D3 DT DK DA 
+D5 C6 S5 D9 
+H7 CT C8 C7 
+D8 HJ ST D7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "152"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:7.AJ83.T64.T6532 T6542.965.KQ.A84 AQJ3.T4.A972.KJ7 K98.KQ72.J853.Q9"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "1NT"]
+[Result "8"]
+[Auction "E"]
+Pass      Pass      1NT       Pass      
+Pass      Pass      
+[Play "N"]
+H2 H3 H5 HT 
+HQ HA H6 H4 
+D8 D4 DK DA 
+DJ D6 DQ D2 
+SK S7 S6 SQ 
+D5 DT S4 D7 
+CQ C2 C4 CJ 
+HK H8 H9 S3 
+C9 C3 CA C7 
+D3 C5 C8 CK 
+H7 C6 S2 D9 
+S8 CT S5 SA 
+S9 HJ ST SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "153"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:Q97.JT6.K52.AJ93 K6.A87432.AQ96.2 J43.Q5.T843.T754 AT852.K9.J7.KQ86"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "E"]
+Pass      1H        Pass      1S        
+Pass      2D        Pass      3NT       
+Pass      Pass      Pass      
+[Play "E"]
+C3 C2 CT CK 
+HT HA H5 H9 
+H6 H2 HQ HK 
+S7 S6 S3 SA 
+D2 DA D8 D7 
+HJ H3 C4 S8 
+CA D6 C5 C6 
+CJ D9 C7 CQ 
+S9 SK S4 S2 
+D5 H8 D3 S5 
+C9 H7 D4 C8 
+SQ H4 DT ST 
+DK DQ SJ DJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "154"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:Q97.JT6.K52.AJ93 K6.A87432.AQ96.2 J43.Q5.T843.T754 AT852.K9.J7.KQ86"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4H"]
+[Result "12"]
+[Auction "S"]
+Pass      1H        Pass      1S        
+Pass      2D        Pass      3NT       
+Pass      4H        Pass      Pass      
+Pass      
+[Play "N"]
+D3 D7 DK DA 
+H5 H9 H6 HA 
+S4 S2 S7 SK 
+S3 SA S9 S6 
+SJ S5 SQ H7 
+HQ HK HT H2 
+C4 S8 HJ C2 
+C5 C6 CA H3 
+D4 DJ D2 D6 
+D8 ST C3 D9 
+C7 CQ C9 H4 
+CT C8 D5 H8 
+DT CK CJ DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "155"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:Q63.8.AK9.QJ8542 AK84.QJ.QJ875.A3 T.A732.T6432.T97 J9752.KT9654..K6"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "11"]
+[Auction "S"]
+1C        1D        Pass      Pass      
+2C        2S        4C        4S        
+Pass      Pass      Pass      
+[Play "N"]
+CT C6 C8 CA 
+ST S2 S6 SK 
+C7 S5 S3 SA 
+C9 CK C2 C3 
+HA H4 H8 HQ 
+H2 H5 C4 HJ 
+D2 S7 D9 D5 
+H3 H9 C5 S4 
+D3 S9 DK D7 
+H7 HT CJ D8 
+D4 H6 CQ S8 
+D6 SJ DA DQ 
+DT HK SQ DJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "156"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:Q63.8.AK9.QJ8542 AK84.QJ.QJ875.A3 T.A732.T6432.T97 J9752.KT9654..K6"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4H"]
+[Result "12"]
+[Auction "W"]
+1C        X         Pass      3H        
+Pass      4H        Pass      Pass      
+Pass      
+[Play "W"]
+DA D5 D2 H5 
+H8 HJ HA H4 
+S6 SK ST S2 
+C8 HQ H2 H6 
+C2 C3 C7 CK 
+C4 S4 H3 H9 
+C5 D7 H7 HT 
+S3 S8 D3 S5 
+CJ CA C9 C6 
+SQ SA D4 S7 
+D9 DJ D6 HK 
+CQ D8 CT SJ 
+DK DQ DT S9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "157"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:A5.QJ643.KQ.AT73 J9843..A9863.K95 QT2.KT752.742.82 K76.A98.JT5.QJ64"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "9"]
+[Auction "W"]
+1H        1S        2H        2NT       
+3H        3S        4H        Pass      
+Pass      4S        Pass      Pass      
+Pass      
+[Play "E"]
+C8 CJ CA C5 
+C2 CQ C3 C9 
+H2 H8 H3 S3 
+S2 S6 SA SJ 
+ST C4 CT CK 
+D4 DT DQ DA 
+SQ SK S5 S4 
+H5 HA H4 D3 
+D7 D5 DK D6 
+H7 C6 C7 S8 
+D2 DJ H6 D8 
+HT H9 HJ S9 
+HK S7 HQ D9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "158"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A5.QJ643.KQ.AT73 J9843..A9863.K95 QT2.KT752.742.82 K76.A98.JT5.QJ64"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "8"]
+[Auction "N"]
+1H        1S        2H        2NT       
+3C        3D        3H        Pass      
+Pass      3S        4H        Pass      
+Pass      4S        Pass      Pass      
+Pass      
+[Play "S"]
+C8 CJ CA C5 
+C2 CQ C3 C9 
+SQ S6 S5 SJ 
+D4 D5 DQ DA 
+S2 SK SA S3 
+H5 C4 CT CK 
+D7 DT DK D3 
+ST C6 C7 S4 
+D2 DJ H3 D6 
+H2 HA H4 D8 
+H7 H8 H6 S8 
+HT S7 HJ D9 
+HK H9 HQ S9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "159"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KT4.AJ.AQT3.KT95 AJ63.95432.K9.A8 75.KT6.854.J7642 Q982.Q87.J762.Q3"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "1NT"]
+[Result "9"]
+[Auction "N"]
+1NT       Pass      Pass      Pass      
+[Play "E"]
+H3 H6 HQ HA 
+H4 HK H8 HJ 
+CA C2 C3 CT 
+H2 HT H7 D3 
+C8 C4 CQ CK 
+S6 CJ D2 C9 
+S3 C6 S2 C5 
+H5 C7 D6 S4 
+D9 D4 D7 DA 
+DK D5 DJ DT 
+H9 S5 S8 DQ 
+SA S7 S9 ST 
+SJ D8 SQ SK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "160"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:KT4.AJ.AQT3.KT95 AJ63.95432.K9.A8 75.KT6.854.J7642 Q982.Q87.J762.Q3"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "1NT"]
+[Result "8"]
+[Auction "E"]
+1NT       Pass      Pass      Pass      
+[Play "S"]
+H3 H6 HQ HA 
+H4 HK H8 HJ 
+CA CJ C3 C9 
+H2 HT H7 S4 
+C8 C2 CQ CK 
+S3 C4 D7 CT 
+S6 C6 D2 C5 
+H5 C7 S2 DT 
+DK D4 D6 DQ 
+H9 D5 S8 D3 
+D9 D8 DJ DA 
+SJ S5 S9 ST 
+SA S7 SQ SK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "161"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:53.KQ9865.J87.K2 AJ864.A.A5.QT754 QT7.7432.T432.A3 K92.JT.KQ96.J986"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "11"]
+[Auction "E"]
+2H        2S        Pass      3S        
+Pass      4S        Pass      Pass      
+Pass      
+[Play "W"]
+H2 HT HQ HA 
+S7 SK S3 S4 
+D4 D6 D7 DA 
+D2 DQ D8 D5 
+D3 DK DJ C7 
+H3 HJ HK S8 
+CA C6 C2 C4 
+DT D9 S5 S6 
+ST S2 CK SA 
+C3 C8 H5 C5 
+H4 C9 H6 CQ 
+H7 CJ H8 CT 
+SQ S9 H9 SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "162"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:53.KQ9865.J87.K2 AJ864.A.A5.QT754 QT7.7432.T432.A3 K92.JT.KQ96.J986"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "5HX"]
+[Result "7"]
+[Auction "S"]
+2H        2S        Pass      3S        
+Pass      4S        5H        X         
+Pass      Pass      Pass      
+[Play "W"]
+DA D2 D9 D7 
+SA S7 S9 S5 
+HA H2 HT H5 
+D5 D3 DQ D8 
+C7 CA C6 C2 
+C5 C3 C8 CK 
+S4 H3 HJ HQ 
+S6 ST SK S3 
+C4 D4 DK DJ 
+S8 SQ S2 H6 
+CT H4 C9 HK 
+SJ H7 D6 H9 
+CQ DT CJ H8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "163"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:862.AQ6.982.AT94 JT4.T875.AK.KQ75 AKQ7.K32.QT653.8 953.J94.J74.J632"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "9"]
+[Auction "S"]
+Pass      1C        X         Pass      
+2NT       Pass      3NT       Pass      
+Pass      Pass      
+[Play "W"]
+C5 C8 CJ CA 
+S4 SQ S3 S2 
+H8 H2 H4 HA 
+DK D3 D4 D2 
+CK D5 C2 C4 
+H5 HK H9 H6 
+ST SK S5 S6 
+SJ SA S9 S8 
+DA D6 DJ D8 
+CQ H3 C3 C9 
+C7 S7 C6 CT 
+H7 DT D7 D9 
+HT DQ HJ HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "164"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:862.AQ6.982.AT94 JT4.T875.AK.KQ75 AKQ7.K32.QT653.8 953.J94.J74.J632"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "1NT"]
+[Result "9"]
+[Auction "W"]
+Pass      1C        X         Pass      
+1NT       Pass      Pass      Pass      
+[Play "N"]
+C5 C8 CJ C4 
+CQ H2 C2 CT 
+H8 HK H4 H6 
+S4 SQ S9 S8 
+ST SK S3 S6 
+SJ SA S5 S2 
+H5 S7 C3 D2 
+H7 H3 H9 HA 
+HT D3 HJ HQ 
+DK D5 D4 D8 
+DA D6 D7 D9 
+CK DT C6 CA 
+C7 DQ DJ C9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "165"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:AQ2.J.T874.KQ532 J54.T9.AKQ52.A94 T63.KQ85.96.J876 K987.A76432.J3.T"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3S"]
+[Result "9"]
+[Auction "W"]
+1C        1D        1H        Pass      
+2C        Pass      Pass      2S        
+Pass      Pass      3C        Pass      
+Pass      3S        Pass      Pass      
+Pass      
+[Play "W"]
+HJ H9 H8 HA 
+C5 HT HQ H2 
+SQ S4 S3 S8 
+SA S5 S6 S7 
+CK CA C8 CT 
+S2 SJ ST S9 
+D8 D2 D9 DJ 
+D4 DQ D6 D3 
+D7 DA C6 H3 
+DT DK H5 H4 
+C2 D5 C7 H6 
+C3 C9 CJ SK 
+CQ C4 HK H7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "166"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AQ2.J.T874.KQ532 J54.T9.AKQ52.A94 T63.KQ85.96.J876 K987.A76432.J3.T"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3S"]
+[Result "9"]
+[Auction "N"]
+1C        1D        1H        Pass      
+2C        Pass      Pass      2S        
+Pass      Pass      3C        Pass      
+Pass      3S        Pass      Pass      
+Pass      
+[Play "N"]
+HJ H9 H8 HA 
+C5 HT HQ H2 
+SQ S4 S3 S8 
+CK CA C8 CT 
+SA S5 S6 SK 
+S2 SJ ST S7 
+D4 D2 D6 DJ 
+D7 DQ D9 D3 
+D8 DA C6 H3 
+DT DK H5 H4 
+C2 D5 C7 H6 
+C3 C9 CJ S9 
+CQ C4 HK H7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "167"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A.T64.QJT763.J92 9872.AKQ5.A2.T53 Q.J9732.54.AK764 KJT6543.8.K98.Q8"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "12"]
+[Auction "N"]
+2D        X         Pass      4S        
+Pass      Pass      Pass      
+[Play "N"]
+DQ D2 D4 DK 
+H4 HQ H3 H8 
+H6 HK H2 C8 
+HT HA H7 CQ 
+SA S2 SQ SK 
+C2 C3 CK S4 
+D3 DA D5 D8 
+C9 C5 C4 S3 
+D6 H5 C6 D9 
+D7 S7 H9 S5 
+CJ CT C7 S6 
+DT S8 HJ SJ 
+DJ S9 CA ST 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "168"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:A.T64.QJT763.J92 9872.AKQ5.A2.T53 Q.J9732.54.AK764 KJT6543.8.K98.Q8"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "12"]
+[Auction "E"]
+2D        X         3D        4S        
+Pass      Pass      Pass      
+[Play "E"]
+DQ D2 D4 DK 
+H4 HQ H2 H8 
+H6 HK H3 C8 
+HT HA H7 CQ 
+SA S2 SQ SK 
+C2 C3 CK S4 
+D3 DA D5 D8 
+C9 C5 C4 S3 
+D6 H5 C6 D9 
+D7 S7 H9 S5 
+CJ CT C7 S6 
+DT S8 HJ SJ 
+DJ S9 CA ST 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "169"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:T64.K3.QJ8652.QJ 732.86.KT743.T72 AKQJ95.754..K953 8.AQJT92.A9.A864"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "5HX"]
+[Result "9"]
+[Auction "E"]
+Pass      Pass      1S        X         
+2NT       Pass      4D        4H        
+4S        5D        X         Pass      
+Pass      5H        X         Pass      
+Pass      Pass      
+[Play "E"]
+CQ C2 C9 CA 
+H3 H6 H7 HA 
+HK H8 H4 H9 
+D2 D3 H5 D9 
+CJ C7 CK C6 
+D8 CT C5 C4 
+S4 S2 SJ S8 
+D5 S3 C3 C8 
+S6 D4 S5 H2 
+D6 D7 S9 HT 
+DJ DT SQ DA 
+ST S7 SK HQ 
+DQ DK SA HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "170"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:T64.K3.QJ8652.QJ 732.86.KT743.T72 AKQJ95.754..K953 8.AQJT92.A9.A864"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "11"]
+[Auction "S"]
+Pass      Pass      1S        2H        
+3H        Pass      4C        4H        
+Pass      Pass      4S        Pass      
+Pass      Pass      
+[Play "E"]
+DA D2 D7 S5 
+S8 ST S2 S9 
+D9 DJ DK SJ 
+C8 S4 S3 SQ 
+H2 S6 S7 SK 
+C4 CJ C2 C3 
+H9 DQ D3 H4 
+HT D5 DT SA 
+CA CQ C7 C5 
+C6 D6 CT CK 
+HJ D8 D4 C9 
+HQ HK H6 H5 
+HA H3 H8 H7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "171"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:Q8653.KQ9.J.KJ62 AK4.A7642.94.853 J7.J83.KT875.T94 T92.T5.AQ632.AQ7"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "7"]
+[Auction "S"]
+Pass      1H        Pass      2D        
+Pass      2NT       Pass      3NT       
+Pass      Pass      Pass      
+[Play "N"]
+SJ S2 S8 SA 
+D7 DA DJ D4 
+H3 H5 HQ HA 
+DK D2 C6 D9 
+S7 S9 SQ SK 
+C4 CQ CK C3 
+D5 ST S6 S4 
+D8 DQ H9 H2 
+C9 CA C2 C5 
+DT D3 S3 H4 
+HJ HT HK H6 
+H8 D6 S5 H7 
+CT C7 CJ C8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "172"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:Q8653.KQ9.J.KJ62 AK4.A7642.94.853 J7.J83.KT875.T94 T92.T5.AQ632.AQ7"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "7"]
+[Auction "W"]
+Pass      1H        Pass      2D        
+Pass      2H        Pass      3D        
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "E"]
+SJ S2 S8 SA 
+D5 DA DJ D4 
+S7 S9 S6 S4 
+H3 H5 HQ HA 
+DK D2 C6 D9 
+CT C7 CJ C3 
+C4 ST S3 SK 
+C9 CA C2 C5 
+D7 DQ H9 H2 
+D8 D3 S5 H4 
+DT D6 SQ H6 
+HJ HT HK H7 
+H8 CQ CK C8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "173"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:K8.6.AKJT964.952 AJ2.AKT8542.Q.K7 Q76543..732.J864 T9.QJ973.85.AQT3"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5DX"]
+[Result "9"]
+[Auction "W"]
+1D        X         Pass      2H        
+3D        4H        5D        X         
+Pass      Pass      Pass      
+[Play "N"]
+CK C4 CA C5 
+DQ D2 D5 DK 
+H5 D3 D8 D9 
+C7 CJ CQ C2 
+H8 D7 HQ H6 
+SA S3 S9 SK 
+HA S4 H3 D4 
+H2 S5 H7 D6 
+H4 C6 H9 DT 
+HT S6 C3 DJ 
+HK C8 ST DA 
+S2 SQ CT S8 
+SJ S7 HJ C9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "174"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:K8.6.AKJT964.952 AJ2.AKT8542.Q.K7 Q76543..732.J864 T9.QJ973.85.AQT3"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "5DX"]
+[Result "9"]
+[Auction "N"]
+1D        X         Pass      2H        
+3D        4H        5D        X         
+Pass      Pass      Pass      
+[Play "E"]
+CK C4 C3 C2 
+C7 CJ CQ C5 
+DQ D2 D5 DK 
+H8 D3 D8 D9 
+H5 D7 H3 H6 
+SA S3 S9 SK 
+HA S4 H7 D4 
+H2 S5 H9 D6 
+H4 C6 HJ DT 
+HT S6 CT DJ 
+HK C8 ST DA 
+S2 SQ HQ S8 
+SJ S7 CA C9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "175"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KT3.A3.A75.QJ832 AJ754.T95.K83.54 86.8742.64.KT976 Q92.KQJ6.QJT92.A"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "10"]
+[Auction "N"]
+1C        1S        2C        4S        
+Pass      Pass      Pass      
+[Play "S"]
+D6 D2 DA D3 
+D4 D9 D7 D8 
+C6 CA C2 C4 
+S6 S9 S3 SA 
+C7 S2 C3 C5 
+S8 SQ SK S4 
+C9 DT D5 DK 
+CT H6 ST SJ 
+H2 HJ HA H5 
+H4 HQ H3 HT 
+H7 DQ C8 S5 
+H8 DJ CJ S7 
+CK HK CQ H9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "176"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:KT3.A3.A75.QJ832 AJ754.T95.K83.54 86.8742.64.KT976 Q92.KQJ6.QJT92.A"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "10"]
+[Auction "E"]
+1C        1S        2C        4S        
+Pass      Pass      Pass      
+[Play "W"]
+D6 D2 DA D3 
+D4 D9 D7 D8 
+C6 CA C2 C4 
+S6 S2 S3 SJ 
+S8 S9 ST SA 
+C9 DT D5 DK 
+C7 SQ C3 C5 
+CT DJ C8 S4 
+H2 HJ HA H5 
+H4 H6 H3 HT 
+H7 HQ SK H9 
+CK DQ CQ S5 
+H8 HK CJ S7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "177"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:T82.J7.J832.T952 AKJ5.K8.Q7.AQ863 Q97.QT532.964.J4 643.A964.AKT5.K7"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "6NT"]
+[Result "11"]
+[Auction "E"]
+Pass      1C        Pass      1D        
+Pass      2S        Pass      3H        
+Pass      3NT       Pass      4NT       
+Pass      5H        Pass      5NT       
+Pass      6H        Pass      6NT       
+Pass      Pass      Pass      
+[Play "W"]
+H3 H4 HJ HK 
+C4 CK C9 C3 
+S7 S3 S2 SA 
+CJ C7 C5 CQ 
+H2 H6 C2 CA 
+D4 D5 D8 DQ 
+H5 S4 CT C6 
+S9 S6 ST SK 
+D6 H9 H7 C8 
+D9 DK D2 D7 
+HT DA D3 S5 
+HQ HA S8 H8 
+SQ DT DJ SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "178"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:T82.J7.J832.T952 AKJ5.K8.Q7.AQ863 Q97.QT532.964.J4 643.A964.AKT5.K7"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "6C"]
+[Result "12"]
+[Auction "S"]
+Pass      1C        Pass      1D        
+Pass      2S        Pass      3H        
+Pass      3NT       Pass      4NT       
+Pass      5H        Pass      6C        
+Pass      Pass      Pass      
+[Play "N"]
+H3 H4 HJ HK 
+C4 CK C2 C3 
+CJ C7 C5 C6 
+HQ HA H7 H8 
+H5 H6 S2 C8 
+H2 S3 C9 CQ 
+D4 S4 CT CA 
+D6 D5 D2 DQ 
+D9 DK D3 D7 
+S7 DA D8 S5 
+S9 S6 S8 SA 
+SQ H9 ST SK 
+HT DT DJ SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "179"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:A862.Q973.QJ652. 95.T8542.874.983 KQT743.J.9.AKJT5 J.AK6.AKT3.Q7642"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "11"]
+[Auction "S"]
+Pass      Pass      1S        X         
+XX        2H        Pass      Pass      
+4S        Pass      Pass      Pass      
+[Play "E"]
+HA H3 H2 HJ 
+DA D2 D4 D9 
+SJ S2 S5 SK 
+C2 SA S9 S3 
+H6 H7 H4 S4 
+C7 S6 C3 C5 
+HK H9 H5 ST 
+C4 D5 C8 CK 
+C6 D6 C9 CA 
+CQ S8 H8 CT 
+D3 HQ HT S7 
+DT DJ D7 SQ 
+DK DQ D8 CJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "180"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:A862.Q973.QJ652. 95.T8542.874.983 KQT743.J.9.AKJT5 J.AK6.AKT3.Q7642"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "11"]
+[Auction "W"]
+Pass      Pass      1S        X         
+2NT       Pass      4C        Pass      
+4S        Pass      Pass      Pass      
+[Play "S"]
+DA D2 D4 D9 
+HA H3 H2 HJ 
+H6 HQ H4 S4 
+SJ S2 S5 SQ 
+C4 S6 C3 C5 
+HK H7 H5 S3 
+C2 D5 C8 CK 
+C6 D6 C9 CA 
+D3 SA S9 S7 
+C7 H9 HT ST 
+CQ S8 D7 CT 
+DT DQ D8 SK 
+DK DJ H8 CJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "181"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:J8.98754.T.KQ843 AQ6543.KT.J43.A6 K72.AJ62.Q976.95 T9.Q3.AK852.JT72"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result "9"]
+[Auction "W"]
+Pass      1S        Pass      1NT       
+Pass      2S        Pass      Pass      
+Pass      
+[Play "E"]
+C9 CT CQ CA 
+S2 S9 S8 SA 
+H6 H3 H4 HK 
+C5 CJ CK C6 
+DQ DK DT DJ 
+SK ST SJ SQ 
+HA HQ H5 HT 
+D6 D8 C3 D3 
+D7 DA H7 D4 
+S7 C2 C4 S3 
+D9 D2 H8 S4 
+H2 D5 C8 S6 
+HJ C7 H9 S5 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "182"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:J8.98754.T.KQ843 AQ6543.KT.J43.A6 K72.AJ62.Q976.95 T9.Q3.AK852.JT72"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2S"]
+[Result "10"]
+[Auction "N"]
+Pass      1S        Pass      1NT       
+Pass      2S        Pass      Pass      
+Pass      
+[Play "S"]
+C9 CT CQ CA 
+S2 S9 S8 SA 
+SK ST SJ S3 
+HA H3 H4 HT 
+C5 C2 C8 C6 
+H2 HQ H7 HK 
+S7 D2 H5 SQ 
+H6 D5 C3 S4 
+D6 DK DT D3 
+D7 C7 C4 D4 
+D9 DA H8 DJ 
+DQ D8 H9 S5 
+HJ CJ CK S6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "183"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:3.KQ52.A96542.95 AJ852.T843.KT.74 QT9.AJ97.Q8.KQT6 K764.6.J73.AJ832"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3S"]
+[Result "10"]
+[Auction "N"]
+Pass      Pass      1C        Pass      
+1D        1S        1NT       3D        
+Pass      3S        Pass      Pass      
+Pass      
+[Play "S"]
+DQ D3 DA DT 
+D8 D7 D2 DK 
+CQ CA C5 C4 
+S9 DJ D4 C7 
+HA H6 H5 H8 
+H7 S4 H2 H4 
+C6 C2 C9 S2 
+ST SK S3 S5 
+CT C3 D5 S8 
+H9 S6 HQ H3 
+CK C8 D6 SJ 
+HJ S7 HK HT 
+SQ CJ D9 SA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "184"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:3.KQ52.A96542.95 AJ852.T843.KT.74 QT9.AJ97.Q8.KQT6 K764.6.J73.AJ832"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4D"]
+[Result "9"]
+[Auction "E"]
+Pass      Pass      1C        Pass      
+1D        1S        1NT       3D        
+4D        Pass      Pass      Pass      
+[Play "S"]
+H3 H7 H6 H2 
+DT D8 D3 DA 
+DK DQ D7 D2 
+C7 CQ CA C5 
+SA S9 S4 S3 
+C4 CK C8 C9 
+H4 HJ C2 H5 
+H8 HA S6 HQ 
+S2 C6 CJ D4 
+HT H9 DJ HK 
+S5 CT C3 D5 
+S8 ST S7 D9 
+SJ SQ SK D6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "185"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:65.Q852.A94.8752 AK2.AJ4.8765.964 J94.K73.QJ2.KQJT QT873.T96.KT3.A3"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result "9"]
+[Auction "E"]
+Pass      1D        Pass      1S        
+Pass      1NT       Pass      2S        
+Pass      Pass      Pass      
+[Play "E"]
+C2 C9 CT CA 
+S6 SK S4 S3 
+S5 SA S9 S8 
+D9 S2 SJ SQ 
+H8 HJ HK H6 
+C8 C4 CK C3 
+C5 C6 CQ S7 
+DA D5 D2 D3 
+D4 D6 DJ DK 
+H2 D7 DQ DT 
+HQ HA H7 HT 
+H5 D8 H3 H9 
+C7 H4 CJ ST 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "186"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:65.Q852.A94.8752 AK2.AJ4.8765.964 J94.K73.QJ2.KQJT QT873.T96.KT3.A3"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2S"]
+[Result "9"]
+[Auction "S"]
+Pass      1D        Pass      1S        
+Pass      1NT       Pass      2S        
+Pass      Pass      Pass      
+[Play "S"]
+C2 C4 CT C3 
+C5 C6 CK CA 
+S5 SK S4 S7 
+S6 SA S9 S3 
+C8 S2 SJ SQ 
+H2 HJ HK H6 
+DA D5 DQ DK 
+C7 C9 CJ S8 
+H5 H4 H3 H9 
+H8 HA H7 HT 
+D4 D8 D2 DT 
+D9 D6 CQ ST 
+HQ D7 DJ D3 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "187"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:J94.AJ.Q986.AQT8 KQT.KQ843.2.6543 A652.752.J75.K72 873.T96.AKT43.J9"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2H"]
+[Result "8"]
+[Auction "S"]
+1C        1H        X         2H        
+Pass      Pass      Pass      
+[Play "N"]
+C2 C9 CA C3 
+H5 H6 HA H4 
+H7 H9 HJ HK 
+D7 DK D6 D2 
+D5 DA D9 C4 
+DJ D3 D8 H8 
+CK CJ C8 C5 
+H2 HT CT H3 
+SA S3 S4 ST 
+C7 D4 CQ C6 
+S2 S7 SJ SK 
+S5 S8 S9 HQ 
+S6 DT DQ SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "188"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:J94.AJ.Q986.AQT8 KQT.KQ843.2.6543 A652.752.J75.K72 873.T96.AKT43.J9"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3H"]
+[Result "9"]
+[Auction "W"]
+1D        1H        X         2H        
+2S        3H        Pass      Pass      
+Pass      
+[Play "E"]
+D5 DK D9 D2 
+D7 DA D8 C5 
+SA S3 S4 SK 
+S2 S7 SJ SQ 
+C2 CJ CQ C3 
+S5 S8 S9 ST 
+CK C9 C8 C4 
+DJ D3 D6 H3 
+C7 H6 CT C6 
+H2 H9 HA H4 
+S6 D4 DQ H8 
+H5 HT HJ HK 
+H7 DT CA HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "189"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:9754.76.765.8753 AQ832.AKT.T4.A92 KJT.J9832.A9.QT4 6.Q54.KQJ832.KJ6"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "12"]
+[Auction "W"]
+Pass      1S        Pass      2D        
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "E"]
+H3 H4 H6 HA 
+DA D2 D5 D4 
+H8 H5 H7 HT 
+D9 DJ D7 DT 
+H2 DK D6 S8 
+H9 DQ C3 C2 
+C4 D8 C5 S2 
+ST D3 S4 S3 
+HJ HQ S5 HK 
+CT C6 C7 CA 
+SJ S6 S7 SA 
+CQ CK C8 C9 
+SK CJ S9 SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "190"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:9754.76.765.8753 AQ832.AKT.T4.A92 KJT.J9832.A9.QT4 6.Q54.KQJ832.KJ6"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "12"]
+[Auction "N"]
+Pass      1S        Pass      2D        
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "S"]
+H3 H4 H6 HA 
+D9 DJ D7 D4 
+DA D2 D5 DT 
+SJ S6 S4 SQ 
+ST H5 S7 SA 
+C4 CK C3 C2 
+H2 DK D6 S2 
+H8 DQ C5 S3 
+H9 D8 S5 S8 
+HJ D3 C7 C9 
+CT HQ H7 HT 
+CQ C6 C8 CA 
+SK CJ S9 HK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "191"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:T85.A73.K864.K73 J96.K942.975.985 AKQ743.J8.JT3.QJ 2.QT65.AQ2.AT642"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "10"]
+[Auction "N"]
+Pass      Pass      1S        X         
+3S        Pass      4S        Pass      
+Pass      Pass      
+[Play "W"]
+CA C3 C5 CJ 
+C4 C7 C8 CQ 
+S2 S5 S6 SQ 
+C2 S8 S9 SK 
+C6 ST SJ SA 
+H6 H3 H9 S3 
+H5 HA H2 H8 
+CT CK C9 HJ 
+HT H7 HK S4 
+D2 DK D5 D3 
+DQ D4 D7 DJ 
+HQ D6 H4 S7 
+DA D8 D9 DT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "192"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:T85.A73.K864.K73 J96.K942.975.985 AKQ743.J8.JT3.QJ 2.QT65.AQ2.AT642"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "10"]
+[Auction "E"]
+Pass      Pass      1S        X         
+2NT       Pass      4S        Pass      
+Pass      Pass      
+[Play "N"]
+S2 S5 S9 SK 
+C2 S8 S6 SQ 
+C4 ST SJ SA 
+H6 H3 H2 S3 
+C6 C3 C5 CJ 
+CA C7 C8 CQ 
+CT CK C9 H8 
+H5 HA H4 HJ 
+HT H7 HK S4 
+D2 D8 D9 D3 
+HQ D4 H9 S7 
+DQ DK D5 DJ 
+DA D6 D7 DT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "193"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:A8764.K62.843.J3 52.98753.QT.KQ86 Q.AT4.AK62.AT754 KJT93.QJ.J975.92"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "7"]
+[Auction "E"]
+Pass      Pass      1C        1S        
+1NT       Pass      2D        Pass      
+3NT       Pass      Pass      Pass      
+[Play "S"]
+H5 HT HJ HK 
+DT DK D5 D3 
+CQ C4 C9 CJ 
+H9 HA HQ H6 
+DQ DA D7 D4 
+C6 CA C2 C3 
+S2 SQ SK S4 
+S5 D2 DJ D8 
+H3 D6 D9 H2 
+H7 H4 SJ S6 
+C8 C5 ST S7 
+H8 C7 S9 SA 
+CK CT S3 S8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "194"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:A8764.K62.843.J3 52.98753.QT.KQ86 Q.AT4.AK62.AT754 KJT93.QJ.J975.92"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "7"]
+[Auction "S"]
+Pass      Pass      1C        1S        
+1NT       Pass      2D        Pass      
+3NT       Pass      Pass      Pass      
+[Play "W"]
+H5 H4 HJ HK 
+H8 HT HQ H2 
+S2 SQ SK SA 
+C8 CT C9 C3 
+DT DK D9 D4 
+C6 CA C2 CJ 
+CQ C4 S3 D3 
+CK C5 D5 S4 
+S5 D2 S9 S6 
+H3 D6 SJ S7 
+H7 C7 ST S8 
+DQ DA DJ D8 
+H9 HA D7 H6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "195"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:KQJ93.K97.J83.A9 T42.A86.A96.QT64 65.542.QT542.K52 A87.QJT3.K7.J873"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "1NT"]
+[Result "7"]
+[Auction "S"]
+1S        Pass      Pass      1NT       
+Pass      Pass      Pass      
+[Play "S"]
+SK S2 S5 SA 
+H7 H6 H4 HT 
+CA C4 C5 C3 
+SQ S4 S6 S7 
+SJ ST D4 S8 
+S9 C6 H2 H3 
+S3 D6 D2 C7 
+C9 CT CK C8 
+H9 CQ C2 CJ 
+D3 DA D5 D7 
+D8 D9 DT DK 
+HK HA H5 HQ 
+DJ H8 DQ HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "196"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:KQJ93.K97.J83.A9 T42.A86.A96.QT64 65.542.QT542.K52 A87.QJT3.K7.J873"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "1NT"]
+[Result "7"]
+[Auction "W"]
+1S        Pass      Pass      1NT       
+Pass      Pass      Pass      
+[Play "W"]
+SK S2 S5 SA 
+H7 H6 H2 HT 
+CA C4 C2 C3 
+SQ S4 S6 S7 
+SJ ST D2 S8 
+S9 C6 H4 H3 
+S3 D6 D4 D7 
+C9 CQ CK C7 
+D3 CT C5 C8 
+D8 D9 D5 DK 
+H9 H8 DT CJ 
+HK HA H5 HQ 
+DJ DA DQ HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "197"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:Q863.KQ.KT76.842 A7.AJ976.Q42.AJ5 KJ42.T4.A95.KQ73 T95.8532.J83.T96"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "1NT"]
+[Result "8"]
+[Auction "W"]
+Pass      1NT       Pass      Pass      
+Pass      
+[Play "E"]
+C3 C9 C2 C5 
+H4 H2 HK HA 
+HT H3 HQ H6 
+DA D3 D6 D2 
+D9 D8 DK D4 
+CQ C6 C8 CJ 
+S2 S9 SQ S7 
+S4 S5 S3 SA 
+D5 DJ D7 DQ 
+C7 CT C4 CA 
+SJ H5 S6 H7 
+CK H8 S8 HJ 
+SK ST DT H9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "198"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:Q863.KQ.KT76.842 A7.AJ976.Q42.AJ5 KJ42.T4.A95.KQ73 T95.8532.J83.T96"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "1NT"]
+[Result "7"]
+[Auction "N"]
+Pass      1NT       Pass      Pass      
+Pass      
+[Play "S"]
+C3 C9 C2 C5 
+H4 H2 HK HA 
+HT H3 HQ H6 
+CQ C6 C8 CJ 
+CK CT C4 CA 
+D5 H5 D6 H7 
+S2 S5 S3 SA 
+S4 H8 S6 H9 
+D9 D3 D7 HJ 
+DA D8 DT D2 
+C7 S9 S8 D4 
+SK ST SQ S7 
+SJ DJ DK DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "199"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:J4.84.QT983.KJT8 AQ9.AKJ.74.AQ965 8752.Q7652.AJ.43 KT63.T93.K652.72"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "11"]
+[Auction "N"]
+Pass      2NT       Pass      3C        
+Pass      3D        Pass      3NT       
+Pass      Pass      Pass      
+[Play "S"]
+H5 H3 H8 HJ 
+C3 C2 C8 CA 
+S5 S3 S4 SQ 
+S7 S6 SJ SA 
+S8 ST D3 S9 
+S2 SK CT D7 
+C4 C7 CK C5 
+H2 H9 H4 HA 
+H6 D2 CJ CQ 
+H7 D5 D8 C9 
+DJ D6 D9 C6 
+HQ HT DT HK 
+DA DK DQ D4 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "200"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:J4.84.QT983.KJT8 AQ9.AKJ.74.AQ965 8752.Q7652.AJ.43 KT63.T93.K652.72"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "E"]
+Pass      2NT       Pass      3C        
+Pass      3D        Pass      3NT       
+Pass      Pass      Pass      
+[Play "W"]
+H5 H3 H8 HJ 
+S8 S3 S4 SQ 
+S2 S6 SJ SA 
+S7 ST D3 S9 
+S5 SK H4 C6 
+H7 H9 C8 HA 
+C4 C2 CT CA 
+C3 C7 CK CQ 
+H2 D2 CJ C5 
+DA D5 DT D4 
+DJ DK D8 D7 
+H6 HT D9 HK 
+HQ D6 DQ C9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "201"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:K954.Q532.6543.8 T86.T64.KJ87.A64 Q732..AQT2.KQJ95 AJ.AKJ987.9.T732"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2S"]
+[Result "9"]
+[Auction "E"]
+Pass      Pass      1C        2H        
+Pass      Pass      X         Pass      
+2S        Pass      Pass      Pass      
+[Play "S"]
+H6 S2 H9 H5 
+C4 CJ C3 C8 
+CA CQ C2 H2 
+S6 S3 SJ SK 
+D7 DQ D9 D3 
+C6 CK C7 H3 
+D8 DA SA D4 
+S8 C5 CT D5 
+DK D2 H7 D6 
+HT S7 H8 HQ 
+ST SQ HJ S4 
+H4 C9 HK S5 
+DJ DT HA S9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "202"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:K954.Q532.6543.8 T86.T64.KJ87.A64 Q732..AQT2.KQJ95 AJ.AKJ987.9.T732"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "2S"]
+[Result "8"]
+[Auction "S"]
+Pass      Pass      1C        2H        
+Pass      Pass      X         Pass      
+2S        Pass      Pass      Pass      
+[Play "W"]
+H6 S2 H9 H5 
+CA CJ C7 C8 
+HT S3 H7 H2 
+C4 CQ C2 H3 
+C6 CK C3 HQ 
+S6 SQ SA S4 
+H4 S7 HA D3 
+S8 C5 CT S5 
+DJ DQ D9 D4 
+D7 C9 H8 SK 
+D8 DT SJ D5 
+ST D2 HK S9 
+DK DA HJ D6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "203"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:A8.T842.JT82.963 KQ764.93.Q643.AT 52.KQ7.K75.KJ872 JT93.AJ65.A9.Q54"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "10"]
+[Auction "S"]
+Pass      1S        Pass      2C        
+Pass      2D        Pass      4S        
+Pass      Pass      Pass      
+[Play "N"]
+HK H5 H2 H3 
+C2 CQ C3 CT 
+S2 S3 S8 SK 
+C7 C4 C6 CA 
+S5 S9 SA S4 
+C8 C5 C9 S7 
+D5 DA D2 D3 
+H7 HA H4 H9 
+HQ H6 H8 S6 
+D7 D9 DT D4 
+CJ HJ HT D6 
+CK SJ D8 SQ 
+DK ST DJ DQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "204"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:A8.T842.JT82.963 KQ764.93.Q643.AT 52.KQ7.K75.KJ872 JT93.AJ65.A9.Q54"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4S"]
+[Result "10"]
+[Auction "W"]
+Pass      1S        Pass      2NT       
+Pass      4S        Pass      Pass      
+Pass      
+[Play "E"]
+HK H5 H2 H3 
+C2 CQ C3 CT 
+C7 C4 C6 CA 
+S5 S9 SA S4 
+DK DA DJ DQ 
+S2 S3 S8 SK 
+D5 D9 DT D3 
+C8 C5 C9 S6 
+D7 ST D2 D4 
+H7 HA H4 H9 
+HQ H6 H8 S7 
+CJ SJ D8 D6 
+CK HJ HT SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "205"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:A.754.AQJ543.QT8 KJ97542.963.K.74 6.AKJT82.762.K63 QT83.Q.T98.AJ952"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5H"]
+[Result "11"]
+[Auction "W"]
+1D        1S        2H        3D        
+4H        4S        5H        Pass      
+Pass      Pass      
+[Play "S"]
+S3 SA S9 S6 
+HQ H4 H3 HK 
+C2 H5 H9 HT 
+D8 DJ DK D2 
+CA C8 C7 C3 
+C5 CT C4 C6 
+S8 H7 H6 H2 
+C9 CQ S2 CK 
+CJ D3 S4 H8 
+D9 DQ S5 D6 
+DT DA S7 D7 
+ST D5 SJ HJ 
+SQ D4 SK HA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "206"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:A.754.AQJ543.QT8 KJ97542.963.K.74 6.AKJT82.762.K63 QT83.Q.T98.AJ952"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "5H"]
+[Result "13"]
+[Auction "N"]
+1D        1S        2H        3D        
+4H        4S        5H        Pass      
+Pass      Pass      
+[Play "W"]
+S3 SA S9 S6 
+HQ H4 H3 HK 
+C9 H5 H9 HT 
+D8 DA DK D2 
+S8 H7 H6 H2 
+D9 DJ S7 D6 
+DT DQ S2 D7 
+C2 D5 S4 C3 
+ST D4 S5 C6 
+C5 D3 SJ CK 
+CJ C8 C4 H8 
+SQ CT C7 HA 
+CA CQ SK HJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "207"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AQ9.T82.Q85.AQT4 T84.AKJ9765..KJ5 J6532.4.9432.973 K7.Q3.AKJT76.862"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "10"]
+[Auction "N"]
+1C        1H        Pass      3D        
+Pass      4H        Pass      Pass      
+Pass      
+[Play "S"]
+C7 C2 CA C5 
+C9 C6 C4 CK 
+H4 HQ H2 H5 
+D9 DK D8 S4 
+D4 DA D5 S8 
+S3 H3 H8 HK 
+S2 D6 HT HJ 
+S5 D7 S9 H6 
+C3 S7 CT H7 
+S6 SK SA ST 
+SJ C8 CQ CJ 
+D2 DT DQ H9 
+D3 DJ SQ HA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "208"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:AQ9.T82.Q85.AQT4 T84.AKJ9765..KJ5 J6532.4.9432.973 K7.Q3.AKJT76.862"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "11"]
+[Auction "E"]
+1C        1H        Pass      3D        
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "W"]
+C7 C2 CA C5 
+H4 HQ H8 H6 
+D9 DK D5 S4 
+D4 DA D8 S8 
+D2 H3 HT HK 
+S3 C6 H2 HA 
+C9 D6 C4 HJ 
+S2 D7 S9 H9 
+S5 C8 DQ H7 
+C3 DT CT H5 
+D3 S7 CQ CK 
+S6 DJ SQ CJ 
+SJ SK SA ST 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "209"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:Q4.97.762.AQT984 T6532.6.JT53.K63 AJ87.AJT5.AKQ9.J K9.KQ8432.84.752"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2H"]
+[Result "4"]
+[Auction "E"]
+Pass      Pass      1D        2H        
+Pass      Pass      Pass      
+[Play "E"]
+D6 D3 D9 D4 
+D7 D5 DA D8 
+CA C3 CJ C5 
+CQ CK H5 C2 
+D2 DT DK H4 
+H7 H6 HA HQ 
+S4 DJ DQ C7 
+SQ S2 SA S9 
+H9 S3 S7 SK 
+CT C6 HT HK 
+C4 S5 HJ H8 
+C8 S6 SJ H2 
+C9 ST S8 H3 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "210"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:Q4.97.762.AQT984 T6532.6.JT53.K63 AJ87.AJT5.AKQ9.J K9.KQ8432.84.752"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "S"]
+Pass      Pass      1D        2H        
+Pass      Pass      3NT       Pass      
+Pass      Pass      
+[Play "E"]
+HK H7 H6 HA 
+D8 D2 D5 DQ 
+D4 D6 D3 DK 
+C2 CQ CK CJ 
+SK S4 S6 S7 
+HQ H9 C3 H5 
+S9 SQ S2 S8 
+C5 CA C6 D9 
+C7 CT S3 HT 
+H2 C9 DT HJ 
+H3 C8 S5 SJ 
+H4 C4 ST SA 
+H8 D7 DJ DA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "211"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:743.K954.T76.Q83 AQT.862.843.AJ72 J865.AQT7.KJ5.K5 K92.J3.AQ92.T964"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "1NT"]
+[Result "7"]
+[Auction "S"]
+Pass      Pass      1D        Pass      
+Pass      1NT       Pass      Pass      
+Pass      
+[Play "N"]
+S5 S2 S3 ST 
+D5 D9 DT D3 
+HQ H3 H4 H8 
+S6 S9 S7 SA 
+C5 C9 CQ C2 
+HA HJ H5 H6 
+HT C4 HK H2 
+H7 SK H9 D4 
+S8 D2 S4 SQ 
+CK C6 C3 CA 
+DJ DA D6 D8 
+SJ CT C8 CJ 
+DK DQ D7 C7 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "212"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:743.K954.T76.Q83 AQT.862.843.AJ72 J865.AQT7.KJ5.K5 K92.J3.AQ92.T964"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "1NT"]
+[Result "8"]
+[Auction "W"]
+Pass      Pass      1D        Pass      
+Pass      1NT       Pass      Pass      
+Pass      
+[Play "E"]
+S5 S2 S3 ST 
+D5 D9 DT D3 
+HQ H3 H4 H8 
+S6 S9 S7 SA 
+C5 C9 CQ C2 
+HA HJ H5 H6 
+HT C4 HK H2 
+S8 SK S4 SQ 
+CK C6 C3 CA 
+DJ DQ D6 D4 
+H7 CT C8 CJ 
+SJ D2 D7 C7 
+DK DA H9 D8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "213"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:QJ2.K7.T954.QT97 KT9863.JT54.J.A8 A754.AQ9.AK7.K52 .8632.Q8632.J643"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "W"]
+Pass      Pass      2NT       Pass      
+3NT       Pass      Pass      Pass      
+[Play "S"]
+D3 D9 DJ DA 
+C3 C9 CA C2 
+H2 H7 H4 HA 
+C4 C7 C8 CK 
+C6 CT S6 C5 
+CJ CQ S3 D7 
+H3 HK H5 H9 
+D2 SJ SK SA 
+H6 D4 HT HQ 
+D6 D5 S8 DK 
+D8 SQ S9 S7 
+H8 S2 ST S4 
+DQ DT HJ S5 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "214"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:QJ2.K7.T954.QT97 KT9863.JT54.J.A8 A754.AQ9.AK7.K52 .8632.Q8632.J643"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "11"]
+[Auction "N"]
+Pass      Pass      2NT       Pass      
+3NT       Pass      Pass      Pass      
+[Play "W"]
+D3 D9 DJ DA 
+C6 C9 CA C2 
+D2 SJ ST S5 
+H2 S2 S8 SA 
+C3 C7 C8 CK 
+D6 D4 S9 DK 
+H3 SQ SK S4 
+H6 H7 H4 H9 
+D8 D5 S3 S7 
+C4 CT H5 C5 
+CJ CQ HT D7 
+H8 HK HJ HA 
+DQ DT S6 HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "215"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:97.AT63.K7652.Q4 3.854.QT84.J9872 AKQJ8.QJ.93.AT53 T6542.K972.AJ.K6"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "9"]
+[Auction "N"]
+Pass      Pass      1S        Pass      
+1NT       Pass      3C        Pass      
+3D        Pass      3NT       Pass      
+Pass      Pass      
+[Play "E"]
+D4 D9 DA D5 
+H4 HJ HK HA 
+S3 SJ S2 S7 
+C2 SQ S4 S9 
+D8 SK S6 D7 
+H5 HQ H2 H6 
+C7 SA S5 H3 
+DT D3 DJ DK 
+H8 C3 H7 HT 
+DQ C5 H9 D2 
+C8 CT CK C4 
+C9 CA C6 CQ 
+CJ S8 ST D6 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "216"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:97.AT63.K7652.Q4 3.854.QT84.J9872 AKQJ8.QJ.93.AT53 T6542.K972.AJ.K6"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "11"]
+[Auction "E"]
+Pass      Pass      1S        Pass      
+1NT       Pass      3C        Pass      
+3D        Pass      3H        Pass      
+3NT       Pass      Pass      Pass      
+[Play "S"]
+H5 HJ HK HA 
+S3 SJ S2 S7 
+C9 SQ S4 S9 
+D8 SK S6 D2 
+H8 HQ H2 H6 
+DQ D3 DJ D6 
+D4 D9 DA D5 
+C8 CA CK C4 
+C2 SA S5 H3 
+C7 C3 C6 CQ 
+DT C5 H7 DK 
+H4 S8 H9 D7 
+CJ CT ST HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "217"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:5.AQ85.AKJ3.K854 KJ9864.743.87.A2 QT73.T96.QT6.763 A2.KJ2.9542.QJT9"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3D"]
+[Result "8"]
+[Auction "E"]
+1D        2S        Pass      Pass      
+X         Pass      3D        Pass      
+Pass      Pass      
+[Play "S"]
+S8 ST SA S5 
+SK S3 S2 C5 
+SJ S7 C9 DK 
+D7 D6 D5 DJ 
+H4 H9 HJ H5 
+C2 C3 CQ C4 
+D8 DT D2 D3 
+H3 H6 H2 HQ 
+H7 HT HK HA 
+CA C6 CT C8 
+S9 SQ D4 DA 
+S4 C7 CJ CK 
+S6 DQ D9 H8 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "218"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:5.AQ85.AKJ3.K854 KJ9864.743.87.A2 QT73.T96.QT6.763 A2.KJ2.9542.QJT9"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2SX"]
+[Result "7"]
+[Auction "S"]
+1C        2S        Pass      Pass      
+X         Pass      Pass      Pass      
+[Play "N"]
+C6 C9 C8 C2 
+C7 CT C4 CA 
+SQ SA S5 SJ 
+C3 CJ CK S4 
+H6 HK HA H3 
+D6 D2 DA D7 
+DT D4 DK D8 
+DQ D5 D3 S6 
+S3 S2 H5 S8 
+ST D9 C5 S9 
+HT HJ HQ H4 
+S7 H2 DJ H7 
+H9 CQ H8 SK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "219"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:J.AKJ6.Q85.AK764 T963.Q.K72.QT532 A72.T9732.A43.J9 KQ854.854.JT96.8"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4SX"]
+[Result "7"]
+[Auction "S"]
+1C        Pass      1H        1S        
+4C        4S        X         Pass      
+Pass      Pass      
+[Play "S"]
+CA C2 CJ C8 
+HA HQ H2 H5 
+SJ S3 SA S5 
+HJ S6 S2 S4 
+C4 ST S7 S8 
+CK CT C9 H4 
+HK S9 H3 H8 
+C6 CQ H7 D6 
+C7 C3 H9 SQ 
+D5 DK DA D9 
+DQ D2 D4 DJ 
+H6 C5 HT SK 
+D8 D7 D3 DT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "220"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:J.AKJ6.Q85.AK764 T963.Q.K72.QT532 A72.T9732.A43.J9 KQ854.854.JT96.8"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5H"]
+[Result "12"]
+[Auction "W"]
+1C        Pass      1H        1S        
+4C        4S        4NT       Pass      
+5H        Pass      Pass      Pass      
+[Play "S"]
+SK SJ S3 SA 
+H5 HK HQ H2 
+H8 HA S6 H7 
+C8 C4 CQ C9 
+D6 D8 D2 D3 
+H4 HJ D7 H3 
+D9 D5 DK DA 
+S4 C6 C2 CJ 
+S5 H6 S9 S2 
+DT DQ C3 D4 
+S8 CA C5 S7 
+DJ CK CT H9 
+SQ C7 ST HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "221"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:AK4.A7.Q752.AJ32 5.KJT62.AKJ984.4 T976.853.T6.Q765 QJ832.Q94.3.KT98"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "10"]
+[Auction "W"]
+1D        1H        Pass      2H        
+Pass      4H        Pass      Pass      
+Pass      
+[Play "E"]
+DT D3 D7 DJ 
+D6 H4 D5 D4 
+CQ C8 C3 C4 
+H3 H9 HA H6 
+H5 HQ H7 H2 
+C5 C9 CJ HT 
+H8 S2 S4 HJ 
+C6 S3 D2 DA 
+S6 S8 DQ DK 
+S7 CT C2 D9 
+C7 SJ SK D8 
+S9 SQ CA HK 
+ST CK SA S5 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "222"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AK4.A7.Q752.AJ32 5.KJT62.AKJ984.4 T976.853.T6.Q765 QJ832.Q94.3.KT98"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4H"]
+[Result "10"]
+[Auction "N"]
+1C        2NT       Pass      3H        
+Pass      4H        Pass      Pass      
+Pass      
+[Play "N"]
+SA S5 S6 S2 
+CA C4 C7 C8 
+D2 DK D6 D3 
+D5 DA DT S3 
+D7 D8 S7 H4 
+C2 D4 C5 CK 
+CJ H2 C6 C9 
+DQ D9 H8 H9 
+H7 HK H3 HQ 
+HA H6 H5 S8 
+C3 HT CQ CT 
+S4 HJ S9 SJ 
+SK DJ ST SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "223"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:J853.952.4.AQ642 AT4.AT64.JT63.T8 762.KQ.AQ952.J93 KQ9.J873.K87.K75"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result "8"]
+[Auction "N"]
+Pass      Pass      1D        Pass      
+1S        Pass      Pass      X         
+Pass      2H        2S        Pass      
+Pass      Pass      
+[Play "E"]
+CT CJ CK CA 
+S4 S6 S9 S3 
+C8 C9 C7 C4 
+ST S2 SQ S5 
+SA C3 C5 C6 
+HA HQ H3 H2 
+H4 HK H7 H5 
+D6 DA D7 D4 
+D3 D2 DK S8 
+H6 D5 SK C2 
+DT DQ D8 H9 
+DJ D9 H8 SJ 
+HT S7 HJ CQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "224"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:J853.952.4.AQ642 AT4.AT64.JT63.T8 762.KQ.AQ952.J93 KQ9.J873.K87.K75"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "2H"]
+[Result "8"]
+[Auction "E"]
+Pass      Pass      1D        Pass      
+1S        Pass      Pass      X         
+Pass      2H        Pass      Pass      
+Pass      
+[Play "W"]
+S6 S9 SJ SA 
+HQ H3 H2 H4 
+C3 CK CA C8 
+DA D7 D4 DJ 
+D5 D8 H5 D3 
+C9 C5 CQ CT 
+CJ C7 C6 H6 
+S7 SQ S3 ST 
+HK H7 H9 HA 
+S2 SK S5 S4 
+D2 DK C2 D6 
+D9 H8 C4 HT 
+DQ HJ S8 DT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "225"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:T96.T95.853.KJ43 K7.AKJ73.QT.Q986 A532.Q642.K942.7 QJ84.8.AJ76.AT52"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "11"]
+[Auction "E"]
+Pass      1H        Pass      1S        
+Pass      2C        Pass      2D        
+Pass      2H        Pass      3NT       
+Pass      Pass      Pass      
+[Play "E"]
+D5 DQ DK DA 
+CK C6 C7 C2 
+D8 DT D2 D6 
+C3 C8 S5 CA 
+H5 HK H6 H8 
+S6 SK SA S4 
+D3 H3 D4 DJ 
+S9 S7 S2 SJ 
+ST H7 S3 SQ 
+C4 HJ H2 S8 
+CJ CQ H4 C5 
+H9 HA HQ D7 
+HT C9 D9 CT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "226"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:T96.T95.853.KJ43 K7.AKJ73.QT.Q986 A532.Q642.K942.7 QJ84.8.AJ76.AT52"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "9"]
+[Auction "S"]
+Pass      1H        Pass      1S        
+Pass      2C        Pass      2D        
+Pass      2H        Pass      3NT       
+Pass      Pass      Pass      
+[Play "S"]
+D5 DT DK DA 
+C4 C8 C7 C2 
+H5 HK H2 H8 
+H9 H3 H6 S4 
+D8 DQ D2 D6 
+HT HA H4 D7 
+C3 C6 S2 CA 
+D3 H7 D4 DJ 
+S6 SK SA S8 
+S9 S7 D9 C5 
+CJ HJ HQ CT 
+ST C9 S5 SQ 
+CK CQ S3 SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "227"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:K952.K85..QJ9843 Q8.A32.AKJ9762.A AT64.T74.843.T75 J73.QJ96.QT5.K62"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5D"]
+[Result "11"]
+[Auction "S"]
+Pass      1D        Pass      1H        
+2C        5D        Pass      Pass      
+Pass      
+[Play "N"]
+C7 C2 CJ CA 
+D3 DT C4 D6 
+D4 DQ C8 D7 
+C5 CK C3 S8 
+H7 HJ H5 H3 
+D8 D5 S5 DJ 
+S4 S3 C9 D2 
+S6 C6 S2 D9 
+H4 H6 H8 HA 
+HT HQ HK H2 
+CT S7 CQ SQ 
+ST SJ SK DK 
+SA H9 S9 DA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "228"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:K952.K85..QJ9843 Q8.A32.AKJ9762.A AT64.T74.843.T75 J73.QJ96.QT5.K62"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "11"]
+[Auction "W"]
+Pass      1D        Pass      1H        
+2C        3NT       Pass      Pass      
+Pass      
+[Play "E"]
+C7 C2 CJ CA 
+D3 DT S2 D2 
+H4 HJ H5 H3 
+D4 DQ C4 D6 
+C5 CK C9 S8 
+H7 HQ HK HA 
+D8 D5 C3 D9 
+S6 S3 S5 DA 
+S4 C6 C8 DK 
+CT H6 S9 DJ 
+ST S7 H8 D7 
+HT H9 CQ H2 
+SA SJ SK SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "229"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:QT2.QJT73.A74.K4 J98.98.Q62.AQ632 AK743.5.KJ93.987 65.AK642.T85.JT5"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2NT"]
+[Result "8"]
+[Auction "W"]
+1H        Pass      1S        Pass      
+1NT       Pass      2NT       Pass      
+Pass      Pass      
+[Play "N"]
+C3 C7 CT CK 
+D2 DK D5 D4 
+S8 S3 S6 SQ 
+S9 SK S5 ST 
+SJ SA H4 S2 
+H9 S7 H6 H3 
+H8 S4 H2 C4 
+D6 DJ D8 DA 
+DQ D3 DT D7 
+CA C8 C5 H7 
+CQ C9 CJ HT 
+C6 H5 HK HJ 
+C2 D9 HA HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "230"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:QT2.QJT73.A74.K4 J98.98.Q62.AQ632 AK743.5.KJ93.987 65.AK642.T85.JT5"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2NT"]
+[Result "10"]
+[Auction "N"]
+1H        Pass      1S        Pass      
+1NT       Pass      2NT       Pass      
+Pass      Pass      
+[Play "E"]
+C3 C7 CT CK 
+S8 SK S6 S2 
+S9 S3 S5 SQ 
+SJ SA H6 ST 
+C6 S7 H4 H3 
+H9 S4 D5 C4 
+D2 D3 D8 DA 
+D6 DJ DT D4 
+DQ DK H2 D7 
+C2 D9 C5 H7 
+H8 H5 HK HT 
+CQ C8 CJ HJ 
+CA C9 HA HQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "231"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KJ843.AT2.AQ86.8 A9.K84.743.QJ973 Q2.Q653.KJ5.KT65 T765.J97.T92.A42"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "7"]
+[Auction "N"]
+1S        Pass      1NT       Pass      
+2D        Pass      2NT       Pass      
+3NT       Pass      Pass      Pass      
+[Play "W"]
+H7 HT HK H6 
+CA C8 CQ CK 
+C4 S3 CJ C5 
+C2 S4 C9 CT 
+H9 HA H4 H3 
+D2 D6 D3 DK 
+D9 D8 D4 DJ 
+S7 S8 SA SQ 
+S5 H2 C7 C6 
+S6 SJ C3 S2 
+HJ DQ H8 HQ 
+DT SK D7 H5 
+ST DA S9 D5 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "232"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:KJ843.AT2.AQ86.8 A9.K84.743.QJ973 Q2.Q653.KJ5.KT65 T765.J97.T92.A42"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "7"]
+[Auction "E"]
+1S        Pass      2NT       Pass      
+3NT       Pass      Pass      Pass      
+[Play "N"]
+H7 HT HK H6 
+CA C8 C9 CT 
+C4 S3 C7 C5 
+C2 S4 CQ CK 
+H9 HA H4 H3 
+D2 D6 D4 DK 
+D9 D8 D3 DJ 
+S5 S8 SA SQ 
+S6 H2 CJ C6 
+S7 SJ C3 S2 
+HJ DQ H8 HQ 
+DT SK D7 H5 
+ST DA S9 D5 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "233"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:Q72.9875.J87.954 AT953.T.A9643.76 J4.K43.KQT2.KQT2 K86.AQJ62.5.AJ83"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "11"]
+[Auction "E"]
+Pass      Pass      1D        X         
+Pass      3S        Pass      4S        
+Pass      Pass      Pass      
+[Play "W"]
+CK CA C4 C6 
+S4 S6 S2 SA 
+D2 D5 D7 DA 
+H3 H2 H9 HT 
+CQ C3 C5 C7 
+CT CJ C9 D4 
+H4 HA H5 D3 
+SJ SK S7 S3 
+C2 C8 SQ D6 
+DT S8 DJ D9 
+HK HJ H7 S5 
+DQ H6 D8 ST 
+DK HQ H8 S9 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "234"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:Q72.9875.J87.954 AT953.T.A9643.76 J4.K43.KQT2.KQT2 K86.AQJ62.5.AJ83"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "11"]
+[Auction "S"]
+Pass      Pass      1C        1H        
+Pass      1S        Pass      4S        
+Pass      Pass      Pass      
+[Play "N"]
+DK D5 D8 DA 
+D2 S6 D7 D3 
+H3 HA H5 HT 
+HK HJ H9 C7 
+CK CA C4 C6 
+C2 C3 C5 S3 
+DT S8 DJ D4 
+H4 HQ H7 D6 
+CT C8 C9 S5 
+DQ SK H8 D9 
+SJ H2 S2 S9 
+CQ CJ SQ SA 
+S4 H6 S7 ST 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "235"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:KT2.87642.J2.A98 J8.J3.T9854.Q652 Q5.AKQT9.KQ6.K43 A97643.5.A73.JT7"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "11"]
+[Auction "S"]
+Pass      Pass      1H        2S        
+3H        Pass      4H        Pass      
+Pass      Pass      
+[Play "E"]
+SA S2 S8 S5 
+S3 ST SJ SQ 
+H5 H2 H3 HQ 
+D7 H4 HJ HK 
+C7 CA C6 C3 
+DA D2 D4 DK 
+CJ C8 C2 CK 
+D3 DJ D5 D6 
+S4 SK D8 C4 
+CT C9 CQ H9 
+S6 H6 D9 DQ 
+S7 H8 C5 HA 
+S9 H7 DT HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "236"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:KT2.87642.J2.A98 J8.J3.T9854.Q652 Q5.AKQT9.KQ6.K43 A97643.5.A73.JT7"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "11"]
+[Auction "W"]
+Pass      Pass      1H        2S        
+3H        Pass      4H        Pass      
+Pass      Pass      
+[Play "S"]
+SA S2 S8 S5 
+S3 ST SJ SQ 
+H5 H2 H3 HQ 
+S4 H4 HJ HK 
+C7 CA C5 C3 
+DA D2 D4 DK 
+CJ C8 C2 CK 
+D3 DJ D5 D6 
+S6 SK D8 C4 
+CT C9 CQ H9 
+D7 H6 D9 DQ 
+S7 H8 C6 HA 
+S9 H7 DT HT 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "237"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:K876.J852.J.AK74 T2.T.T976543.932 AQJ943.KQ.AK.T85 5.A97643.Q82.QJ6"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "6S"]
+[Result "11"]
+[Auction "W"]
+Pass      Pass      1S        Pass      
+4C        Pass      4D        Pass      
+4S        Pass      4NT       Pass      
+5D        Pass      6S        Pass      
+Pass      Pass      
+[Play "S"]
+HA H2 HT HQ 
+H3 H5 S2 HK 
+D8 DJ DT DA 
+S5 SK ST S3 
+H4 H8 D6 S4 
+C6 CK C3 C5 
+H6 HJ D3 C8 
+CJ CA C2 CT 
+CQ C4 C9 S9 
+D2 S6 D4 DK 
+H7 C7 D5 SJ 
+H9 S7 D7 SA 
+DQ S8 D9 SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "238"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:K876.J852.J.AK74 T2.T.T976543.932 AQJ943.KQ.AK.T85 5.A97643.Q82.QJ6"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "6S"]
+[Result "12"]
+[Auction "N"]
+Pass      Pass      1S        2H        
+3H        Pass      4D        Pass      
+4H        Pass      4S        Pass      
+4NT       Pass      5H        Pass      
+6S        Pass      Pass      Pass      
+[Play "W"]
+CQ CK C9 C5 
+S5 S6 S2 SQ 
+D2 SK ST S3 
+HA H2 HT HK 
+H3 H5 C2 HQ 
+C6 CA C3 C8 
+H4 HJ D3 CT 
+CJ C4 D4 S9 
+D8 DJ D5 DK 
+DQ C7 D6 DA 
+H6 S7 D7 S4 
+H7 H8 D9 SJ 
+H9 S8 DT SA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "239"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:9543.AJT4.A32.Q3 AKJ.Q2.KQT975.J2 T82.K876.4.T9874 Q76.953.J86.AK65"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5DX"]
+[Result "10"]
+[Auction "N"]
+Pass      1D        Pass      1NT       
+Pass      3D        Pass      5D        
+X         Pass      Pass      Pass      
+[Play "S"]
+S8 S6 S3 SK 
+D4 D6 DA D5 
+H8 H3 HA H2 
+HK H5 HJ HQ 
+H7 H9 HT D7 
+C7 D8 D2 D9 
+C4 DJ D3 DT 
+S2 SQ S4 SJ 
+C8 CK C3 C2 
+C9 CA CQ CJ 
+CT C5 S5 DQ 
+H6 C6 H4 DK 
+ST S7 S9 SA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "240"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:9543.AJT4.A32.Q3 AKJ.Q2.KQT975.J2 T82.K876.4.T9874 Q76.953.J86.AK65"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "8"]
+[Auction "E"]
+Pass      1D        Pass      1NT       
+Pass      3D        Pass      3NT       
+Pass      Pass      Pass      
+[Play "E"]
+HJ HQ HK H3 
+HT H2 H6 H5 
+HA C2 H7 H9 
+H4 D5 H8 C6 
+C3 CJ CT CA 
+D2 D7 D4 D6 
+S9 SJ S2 S6 
+S3 SK S8 S7 
+DA D9 C4 D8 
+CQ DT C7 CK 
+D3 DQ C8 DJ 
+S4 DK C9 C5 
+S5 SA ST SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "241"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:.QT65.J9763.Q842 QJ8654.7.AK52.J5 AT9.AK4.QT8.A976 K732.J9832.4.KT3"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5DX"]
+[Result "9"]
+[Auction "E"]
+Pass      1S        1NT       3S        
+Pass      4S        Pass      Pass      
+5D        Pass      Pass      X         
+Pass      Pass      Pass      
+[Play "S"]
+SQ S9 SK D6 
+D2 D8 D4 D3 
+DK DT S2 D7 
+H7 HK H2 H6 
+DA DQ H3 D9 
+CJ CA C3 C8 
+D5 H4 H8 HQ 
+C5 C6 CK C2 
+SJ SA S7 C4 
+S4 ST S3 H5 
+S5 HA H9 HT 
+S6 C9 CT CQ 
+S8 C7 HJ DJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "242"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:.QT65.J9763.Q842 QJ8654.7.AK52.J5 AT9.AK4.QT8.A976 K732.J9832.4.KT3"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "9"]
+[Auction "S"]
+Pass      1S        1NT       3S        
+Pass      4S        Pass      Pass      
+Pass      
+[Play "N"]
+SA S2 D6 S4 
+S9 S3 H5 SQ 
+HK H2 H6 H7 
+ST SK C2 S5 
+H4 H3 HT S6 
+D8 D4 D3 DK 
+DT H8 D7 DA 
+C6 C3 CQ CJ 
+CA CT C8 C5 
+C9 CK C4 D2 
+HA H9 HQ S8 
+DQ S7 D9 D5 
+C7 HJ DJ SJ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "243"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:AKQ95.96.AJT.A42 643.87.KQ73.KJ85 JT872.A2.64.T763 .KQJT543.9852.Q9"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "10"]
+[Auction "S"]
+1S        Pass      2S        Pass      
+3NT       Pass      4S        Pass      
+Pass      Pass      
+[Play "W"]
+DK D4 D2 DA 
+S4 S7 H5 S5 
+S3 S2 H3 SQ 
+S6 S8 H4 S9 
+DQ D6 D5 DT 
+H8 HA HT H6 
+C8 C3 C9 CA 
+D3 H2 D8 DJ 
+H7 ST HJ H9 
+CK C6 CQ C2 
+CJ C7 HQ C4 
+C5 CT D9 SK 
+D7 SJ HK SA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "244"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:AKQ95.96.AJT.A42 643.87.KQ73.KJ85 JT872.A2.64.T763 .KQJT543.9852.Q9"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "10"]
+[Auction "W"]
+1S        Pass      2S        Pass      
+4S        Pass      Pass      Pass      
+[Play "N"]
+DK D4 D2 DA 
+S4 S7 H3 S5 
+S3 S2 H4 SQ 
+S6 S8 H5 S9 
+DQ D6 D5 DT 
+H8 HA HT H6 
+C5 C3 C9 CA 
+D3 H2 D8 DJ 
+H7 ST HJ H9 
+CK C6 CQ C2 
+CJ C7 HQ C4 
+C8 CT D9 SK 
+D7 SJ HK SA 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "245"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:AQT9652..J43.986 KJ8.J98.AQ865.K4 73.AT65.KT72.Q75 4.KQ7432.9.AJT32"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4H"]
+[Result "11"]
+[Auction "W"]
+3S        Pass      Pass      4H        
+Pass      Pass      Pass      
+[Play "W"]
+C8 C4 CQ CA 
+D3 DA D7 D9 
+S9 H8 H6 HK 
+S2 HJ HA H2 
+SA S8 S7 S4 
+S6 SJ S3 C3 
+C9 CK C5 C2 
+S5 H9 H5 H3 
+ST SK HT HQ 
+C6 D5 C7 CJ 
+SQ D6 D2 CT 
+D4 D8 DT H7 
+DJ DQ DK H4 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "246"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AQT9652..J43.986 KJ8.J98.AQ865.K4 73.AT65.KT72.Q75 4.KQ7432.9.AJT32"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5H"]
+[Result "11"]
+[Auction "N"]
+3S        Pass      Pass      4H        
+Pass      4NT       X         5D        
+Pass      5H        Pass      Pass      
+Pass      
+[Play "N"]
+SA S8 S7 S4 
+C8 C4 CQ CA 
+S2 HJ HA H2 
+SQ SK S3 C3 
+C9 CK C7 C2 
+S5 H8 H5 H7 
+S6 H9 H6 HK 
+S9 D5 HT HQ 
+C6 D6 C5 CJ 
+D3 D8 D2 CT 
+D4 DA D7 D9 
+ST SJ DT H3 
+DJ DQ DK H4 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "247"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:JT83.8753.J762.8 962.KQ92.KQ94.KQ K74.JT.AT83.J965 AQ5.A64.5.AT7432"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "6C"]
+[Result "10"]
+[Auction "N"]
+Pass      1NT       Pass      6C        
+Pass      Pass      Pass      
+[Play "N"]
+H3 H2 HT HA 
+D2 DQ DA D5 
+S3 S2 S4 SA 
+C8 CQ C5 C2 
+S8 CK C6 C3 
+D7 DK D3 H4 
+D6 D4 D8 C4 
+H5 S6 C9 CA 
+H7 HQ HJ H6 
+H8 H9 CJ S5 
+DJ D9 DT C7 
+ST S9 S7 CT 
+SJ HK SK SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "248"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:JT83.8753.J762.8 962.KQ92.KQ94.KQ K74.JT.AT83.J965 AQ5.A64.5.AT7432"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "9"]
+[Auction "E"]
+Pass      1NT       Pass      3NT       
+Pass      Pass      Pass      
+[Play "W"]
+C5 C2 C8 CK 
+C6 C3 H3 CQ 
+HJ HA H5 H2 
+C9 CA S3 D9 
+CJ C4 D2 S2 
+S4 SQ S8 S6 
+D8 CT D6 D4 
+D3 C7 D7 DQ 
+HT H4 H7 H9 
+DA D5 DJ DK 
+DT S5 ST S9 
+SK SA SJ HQ 
+S7 H6 H8 HK 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "249"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:5.KT43.AQJ3.Q965 KQ97643..K4.A432 8.Q75.T98762.KJT AJT2.AJ9862.5.87"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "12"]
+[Auction "E"]
+1D        1S        2D        3D        
+Pass      4C        4D        4H        
+Pass      4S        Pass      Pass      
+Pass      
+[Play "W"]
+DT D5 DA D4 
+D2 C7 DQ DK 
+S8 ST S5 S3 
+CT C8 C6 CA 
+CJ S2 C5 C2 
+H5 HA H4 C3 
+H7 H2 H3 S4 
+CK SA C9 C4 
+HQ H6 HT S6 
+D6 SJ D3 S7 
+D7 HJ HK S9 
+D8 H8 DJ SK 
+D9 H9 CQ SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]
+
+[Event "BEN vs WBRIDGE5"]
+[Site ""]
+[Date "2023.09.22"]
+[Board "250"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Jack"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:5.KT43.AQJ3.Q965 KQ97643..K4.A432 8.Q75.T98762.KJT AJT2.AJ9862.5.87"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "12"]
+[Auction "S"]
+1C        1S        Pass      3C        
+Pass      4C        Pass      4H        
+Pass      4S        Pass      Pass      
+Pass      
+[Play "N"]
+DT D5 DA D4 
+S8 ST S5 S4 
+CT C7 C6 CA 
+D2 C8 D3 DK 
+CJ S2 C5 C2 
+H5 HA H3 C3 
+H7 H2 H4 S3 
+CK SA C9 C4 
+HQ H6 HT S6 
+D6 SJ DJ S7 
+D7 HJ HK S9 
+D8 H8 CQ SK 
+D9 H9 DQ SQ 
+[BidSystemNS "GF"]
+[BidSystemEW "SAYC"]

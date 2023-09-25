@@ -1,4 +1,7 @@
 import itertools
+import sys
+sys.path.append('../../../src')
+
 from ddsolver import ddsolver
 
 import shelve
@@ -74,43 +77,6 @@ def validate_lead(deal_str, outcome_str, play_str):
         return 1
     else: 
         return -1
-
-def validate_lead_gamedb(deal_str, outcome_str, play_str):
-    decl_i = get_decl_i(outcome_str[-1])
-    leader_i = (decl_i + 1) % 4
-    
-    lead = play_str
-    #print(lead)
-    dd = ddsolver.DDSolver(dds_mode=2)
-    strain_i = get_strain_i(outcome_str)
-    #print(strain_i)
-    hands_pbn = ["N:" + deal_str]
-    dd_solved = dd.solve(strain_i, leader_i, [], hands_pbn)
-    #print(deal_str)
-    max_key = max(dd_solved, key=lambda k: dd_solved[k])
-    max_value = dd_solved[max_key]
-    # Get the first value in the dictionary
-    first_value = next(iter(dd_solved.values()))
-
-    # Check if all values are the same
-    if all(value == first_value for value in dd_solved.values()):
-        return 0
-    #for key, value in dd_solved.items():
-    #    print(f"{decode_card(key)}: {value}")
-
-    random_key = random.choice(list(dd_solved.keys()))
-    random_value = dd_solved[random_key]
-    if lead == "??":
-        if (random_value == max_value):
-            return 1
-        else: 
-            return -1
-    else:
-        if (dd_solved[encode_card(lead)] == max_value):
-            return 1
-        else: 
-            return -1
-
 
 def calculate_random_lead():
     ddsplus = 0
@@ -262,73 +228,13 @@ def calculate_lead_JOS():
     print(f"DDOLAR  (suit) {ddsplus + ddsminus + dds:>4} = {((ddsplus + dds)*100/ (ddsplus + ddsminus + dds)):.2f}%")
     print(f"ADDOLAR (suit) {ddsplus + ddsminus:>4} = {((ddsplus * 100)/ (ddsplus + ddsminus)):.2f}%")
 
-def calculate_lead_BEN():
-    ddsplus = 0
-    ddsminus = 0
-    ddnplus = 0
-    ddnminus = 0
-    ddn = 0
-    dds = 0
-    i = 0
-    with shelve.open(DB_NAME) as db:
-        deal_items = sorted(list(db.items()), key=lambda x: x[1]['timestamp'], reverse=True)
-        for deal_id, deal in deal_items:
-            #print(deal["hands"])
-            deal_str = deal["hands"]
-            outcome_str = deal['contract']
-            #print(outcome_str)
-            if outcome_str is None:
-                continue
-            decl_i = get_decl_i(outcome_str[-1])
-            if NS:
-                if decl_i == 1 or decl_i == 3:
-                    # We are declaring so skip the deal
-                    continue
-            else:
-                if decl_i == 0 or decl_i == 2:
-                    # We are declaring so skip the deal
-                    continue
-
-            play_str = deal["play"][0]['card']         
-
-            #print(play_str, deal["play"][0]['candidates'][0]['card'], deal["play"][0]['candidates'][0]['insta_score'])
-            dd = validate_lead_gamedb(deal_str, outcome_str, play_str)
-            #if dd == -1 and deal["play"][0]['candidates'][0]['insta_score'] < 0.2:
-            #    print("Wrong card", deal["play"][0]['candidates'][0]['insta_score'])
-            #if dd == 1 and deal["play"][0]['candidates'][0]['insta_score'] < 0.2:
-            #    print("Right card", deal["play"][0]['candidates'][0]['insta_score'])
-            if dd == 1:
-                if (get_strain_i(outcome_str) == 0):
-                    ddnplus += 1
-                else:                   
-                    ddsplus += 1
-            if dd == -1:
-                if (get_strain_i(outcome_str) == 0):
-                    ddnminus += 1
-                else:
-                    ddsminus += 1
-            if dd == 0:
-                if (get_strain_i(outcome_str) == 0):
-                    ddn += 1
-                else:
-                    dds += 1
-            i = i + 1
-            if i > 1000:
-                break
-        
-
-        print(f"DDOLAR  (suit) {ddsplus + ddsminus + dds:>4} = {((ddsplus + dds)*100/ (ddsplus + ddsminus + dds)):.2f}%")
-        print(f"DDOLAR  (NT)   {ddnplus + ddnminus + ddn:>4} = {((ddnplus + ddn)*100/ (ddnplus + ddnminus + ddn)):.2f}%")
-        print(f"ADDOLAR (suit) {ddsplus + ddsminus:>4} = {((ddsplus * 100)/ (ddsplus + ddsminus)):.2f}%")
-        print(f"ADDOLAR (NT)   {ddnplus + ddnminus:>4} = {((ddnplus * 100)/(ddnplus + ddnminus)):.2f}%")
 
 if __name__ == '__main__':
 
-    #calculate_random_lead()
+    calculate_random_lead()
 
-    #calculate_lead_BW5C()
+    calculate_lead_BW5C()
 
-    #calculate_lead_JOS()
+    calculate_lead_JOS()
 
-    calculate_lead_BEN()
 

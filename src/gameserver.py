@@ -49,6 +49,7 @@ parser.add_argument("--ew", type=int, default=-1, help="System for EW")
 parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=4443, help="Port for appserver")
 parser.add_argument("--auto", type=bool, default=False, help="BEN bids and plays all 4 hands")
+parser.add_argument("--playonly", type=bool, default=False, help="Only play, no bidding")
 
 args = parser.parse_args()
 
@@ -56,6 +57,7 @@ configfile = args.config
 verbose = args.verbose
 port = args.port
 auto = args.auto
+play_only = args.playonly
 
 if args.boards:
     filename = args.boards
@@ -63,7 +65,15 @@ if args.boards:
     if file_extension == '.ben':
         with open(filename, "r") as file:
             board_no.append(0) 
-            boards = file.readlines()
+            boards = []
+            lines = file.readlines()  # 
+            # Loop through the lines, grouping them into objects
+            for i in range(0, len(lines), 2):
+                board = {
+                    'deal': lines[i].strip(),      
+                    'auction': lines[i+1].strip().replace('NT','N')  
+                }
+                boards.append(board)            
             print(f"{len(boards)} boards loaded from file")
         random = False
     if file_extension == '.pbn':
@@ -136,12 +146,13 @@ async def handler(websocket, path, board_no):
             # example of to use a fixed deal
             # rdeal = ('5.983.AKT7.K9862 986.QT4.865.AQT7 JT7.J7652.3.J653 AKQ432.AK.QJ942.', 'N None')
             driver.human = [0.1, 0.1, 1, 0.1]
-            driver.set_deal(None, *rdeal, ns, ew)
+            driver.set_deal(None, *rdeal, ns, ew, False)
             print(f"Deal: {rdeal}")
         else:
-            rdeal = tuple(boards[board_no[0]].replace("'","").rstrip('\n').split(','))
+            rdeal = boards[board_no[0]]['deal']
+            auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
-            driver.set_deal(board_no[0] + 1,*rdeal, ns, ew)
+            driver.set_deal(board_no[0] + 1, rdeal, auction, ns, ew, play_only)
             if (auto):
                 driver.human = [0.1, 0.1, 0.1, 0.1]
             else:

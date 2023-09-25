@@ -30,6 +30,9 @@ from nn.models import Models
 from deck52 import decode_card
 from bidding import bidding
 from objects import Card
+from bba.BBA import BBABotBid
+
+bbabid = False
 
 SEATS = ['North', 'East', 'South', 'West']
 
@@ -125,8 +128,10 @@ class TMClient:
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
 
-        bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, self.models.search_threshold, self.sampler, self.verbose)
-        
+        if bbabid == 99:
+            bot = BBABotBid(1,1,self.player_i,self.hand_str,vuln, self.dealer_i)
+        else:
+            bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, self.models.search_threshold, self.sampler, self.verbose)
         auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
@@ -665,6 +670,7 @@ async def main():
     parser.add_argument("--ns", type=int, default=-1, help="System for NS")
     parser.add_argument("--ew", type=int, default=-1, help="System for EW")
     parser.add_argument("--biddingonly", type=bool, default=False, help="Only bid, no play")
+    parser.add_argument("--bbabid", type=bool, default=False, help="Use BBA for bidding")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()
@@ -673,7 +679,7 @@ async def main():
     port = args.port
     name = args.name
     seat = args.seat
-
+    bbabid = args.bbabid
     configfile = args.config
 
     ns = args.ns

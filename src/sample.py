@@ -200,8 +200,12 @@ class Sample:
 
         for i in range(3):
             for j in range(4):
+                if np.round(c_shp[i, j] < 2):
+                    accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) <= np.round(c_shp[i, j]) + 1
                 if np.round(c_shp[i, j] >= 4):
                     accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
+                if np.round(c_shp[i, j] >= 6):
+                    accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j])
 
         accept = accept_hcp & accept_shp
 
@@ -296,7 +300,11 @@ class Sample:
             accept_bidding_threshold *= 0.9
             accepted_samples = sorted_samples[min_scores > accept_bidding_threshold]
 
-        #print(len(accepted_samples))
+        if len(accepted_samples) ==  0:
+            # We found nothing that matches the bidding above the threshold of 0.02
+            # Perhaps a longer bidding generally lowers the score for matching the bidding
+            # For now we just return 3 best samples. That is better than none
+            accepted_samples = sorted_samples[:3]
 
         return accepted_samples
 
@@ -591,22 +599,21 @@ class Sample:
             return states
 
         # re-apply constraints
-        n_steps = 1 + len(auction) // 4
+        n_steps = 1 + (len(auction)-1) // 4
 
         A = binary.get_auction_binary(n_steps, auction, known_nesw, hand, vuln, ns, ew)
 
         p_hcp, p_shp = models.binfo.model(A)
 
+        # Only take the result from the latest bidding round
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
         p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
 
         def f_trans_hcp(x): return 4 * x + 10
         def f_trans_shp(x): return 1.75 * x + 3.25
 
-        p_hcp = f_trans_hcp(
-            p_hcp[0, [(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1]])
-        p_shp = f_trans_shp(p_shp[0].reshape(
-            (3, 4))[[(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1], :])
+        p_hcp = f_trans_hcp(p_hcp[0, [(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1]])
+        p_shp = f_trans_shp(p_shp[0].reshape((3, 4))[[(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1], :])
 
         c_hcp = p_hcp.copy()
         c_shp = p_shp.copy()
@@ -614,20 +621,27 @@ class Sample:
         if self.verbose:
             print(f"c_hcp:{c_hcp}")
             print(f"c_shp:{c_shp}")
+
         accept_hcp = np.ones(states[0].shape[0]).astype(bool)
 
         for i in range(2):
             if np.round(c_hcp[i]) >= 11:
-                accept_hcp &= binary.get_hcp(
-                    states[[hidden_1_i, hidden_2_i][i]][:, 0, :32]) >= np.round(c_hcp[i]) - 5
+                accept_hcp &= binary.get_hcp(states[[hidden_1_i, hidden_2_i][i]][:, 0, :32]) >= np.round(c_hcp[i]) - 2
+            if np.round(c_hcp[i]) >= 15:
+                accept_hcp &= binary.get_hcp(states[[hidden_1_i, hidden_2_i][i]][:, 0, :32]) >= np.round(c_hcp[i]) - 1
+            if np.round(c_hcp[i]) >= 18:
+                accept_hcp &= binary.get_hcp(states[[hidden_1_i, hidden_2_i][i]][:, 0, :32]) >= np.round(c_hcp[i])
 
         accept_shp = np.ones(states[0].shape[0]).astype(bool)
 
         for i in range(2):
             for j in range(4):
+                if np.round(c_shp[i, j] < 2):
+                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) <= np.round(c_shp[i, j]) + 1
                 if np.round(c_shp[i, j] >= 5):
-                    accept_shp &= np.sum(
-                        states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
+                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
+                if np.round(c_shp[i, j] >= 6):
+                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j])
 
         accept = accept_hcp & accept_shp
 
