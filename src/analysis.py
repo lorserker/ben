@@ -123,7 +123,7 @@ class CardByCard:
                 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 200, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models, self.ns, self.ew)
+                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models, self.ns, self.ew)
 
                 card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
 

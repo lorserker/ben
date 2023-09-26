@@ -33,7 +33,7 @@ class Models:
         try:
             lead_threshold = float(conf['lead']['lead_threshold'])
         except KeyError:
-            # Handle the case where 'search_threshold' key is missing
+            # Handle the case where 'lead_threshold' key is missing
             lead_threshold = 0.05 # default
         return cls(
             bidder_model=Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder'])),

@@ -33,7 +33,7 @@ from sample import Sample
 from nn.models import Models
 from deck52 import decode_card
 from bidding.binary import DealData
-from objects import CardResp, Card
+from objects import CardResp, Card, BidResp
 from claim import Claimer
 from pbn2ben import load
 
@@ -128,6 +128,9 @@ class Driver:
 
         if self.play_only:
             auction = self.auction
+            for bid in auction:
+                if bidding.BID2ID[bid] > 1:
+                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[]))
         else:
             auction = await self.bidding()
 
@@ -206,10 +209,10 @@ class Driver:
         decl_hand = self.hands[decl_i]
 
         card_players = [
-            AsyncCardPlayer(self.models.player_models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln),
-            AsyncCardPlayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln),
-            AsyncCardPlayer(self.models.player_models, 2, righty_hand, dummy_hand, contract, is_decl_vuln),
-            AsyncCardPlayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
+            AsyncCardPlayer(self.models.player_models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.verbose),
+            AsyncCardPlayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose),
+            AsyncCardPlayer(self.models.player_models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.verbose),
+            AsyncCardPlayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.verbose)
         ]
 
         # check if user is playing and is declarer
@@ -267,7 +270,7 @@ class Driver:
                     )
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
+                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                 await asyncio.sleep(0.01)
 

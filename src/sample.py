@@ -59,7 +59,7 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_lead, sample_hands_opening_lead, verbose):
+    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_lead, sample_hands_opening_lead, sample_hands_play, verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
         self.play_accept_threshold = play_accept_threshold
@@ -68,6 +68,7 @@ class Sample:
         self.sample_boards_for_auction = sample_boards_for_auction
         self.sample_boards_for_auction_lead = sample_boards_for_auction_lead
         self.sample_hands_opening_lead = sample_hands_opening_lead
+        self.sample_hands_play = sample_hands_play
         self.verbose = verbose
 
     @classmethod
@@ -81,8 +82,9 @@ class Sample:
     
         sample_boards_for_auction_lead = int(conf['sampling']['sample_boards_for_auction_lead'])
         sample_hands_opening_lead = int(conf['sampling']['sample_hands_opening_lead'])
+        sample_hands_play = int(conf['cardplay']['sample_hands_play'])
 
-        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_lead, sample_hands_opening_lead, verbose)
+        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_lead, sample_hands_opening_lead, sample_hands_play, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -490,87 +492,98 @@ class Sample:
 
         return min_scores
 
-    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, n_samples, auction, hand, vuln, models, ns, ew):
+    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand, vuln, models, ns, ew):
+        n_samples = self.sample_hands_play
         if self.verbose:
-            print("Called init_rollout_states")
-        leader_i = (player_i - len(current_trick)) % 4
+            print(f"Called init_rollout_states {n_samples}")
 
+        leader_i = (player_i - len(current_trick)) % 4
         hidden_1_i, hidden_2_i = [(3, 2), (0, 2), (0, 3), (2, 0)][player_i]
 
-        # sample the unknown cards
-        public_hand_i = 3 if player_i == 1 else 1
-        public_hand = card_players[public_hand_i].x_play[0, trick_i, :32]
-        vis_cur_trick_nonpub = [c for i, c in enumerate(
-            current_trick) if (leader_i + i) % 4 != public_hand_i]
-        visible_cards = np.concatenate(
-            [binary.get_cards_from_binary_hand(card_players[player_i].x_play[0, trick_i, :32]), binary.get_cards_from_binary_hand(public_hand)] +
-            [np.array(vis_cur_trick_nonpub)] +
-            [np.array(x, dtype=np.int32) for x in player_cards_played]
-        )
-        hidden_cards = get_all_hidden_cards(visible_cards)
+        # If no n_samples we are using cheat mode, where all cards are known
+        if n_samples > 0:
+            # sample the unknown cards
+            public_hand_i = 3 if player_i == 1 else 1
+            public_hand = card_players[public_hand_i].x_play[0, trick_i, :32]
+            vis_cur_trick_nonpub = [c for i, c in enumerate(current_trick) if (leader_i + i) % 4 != public_hand_i]
+            visible_cards = np.concatenate(
+                [binary.get_cards_from_binary_hand(card_players[player_i].x_play[0, trick_i, :32]), binary.get_cards_from_binary_hand(public_hand)] +
+                [np.array(vis_cur_trick_nonpub)] +
+                [np.array(x, dtype=np.int32) for x in player_cards_played]
+            )
+            hidden_cards = get_all_hidden_cards(visible_cards)
 
-        contract = bidding.get_contract(auction)
-        known_nesw = player_to_nesw_i(player_i, contract)
-        h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
-        h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
+            contract = bidding.get_contract(auction)
+            known_nesw = player_to_nesw_i(player_i, contract)
+            h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
+            h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
 
-        h1_h2 = self.shuffle_cards_bidding_info(
-            40*n_samples,
-            models.binfo,
-            auction,
-            hand,
-            vuln,
-            known_nesw,
-            h_1_nesw,
-            h_2_nesw,
-            visible_cards,
-            hidden_cards,
-            [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
-            [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
-            ns,
-            ew
-        )
+            h1_h2 = self.shuffle_cards_bidding_info(
+                n_samples,
+                models.binfo,
+                auction,
+                hand,
+                vuln,
+                known_nesw,
+                h_1_nesw,
+                h_2_nesw,
+                visible_cards,
+                hidden_cards,
+                [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
+                [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
+                ns,
+                ew
+            )
 
-        hidden_hand1, hidden_hand2 = h1_h2[:, 0], h1_h2[:, 1]
+            hidden_hand1, hidden_hand2 = h1_h2[:, 0], h1_h2[:, 1]
 
-        states = [np.zeros((hidden_hand1.shape[0], 13, 298)) for _ in range(4)]
+            states = [np.zeros((hidden_hand1.shape[0], 13, 298)) for _ in range(4)]
+            print(states[0])
+            print("------------------")
+            # we can reuse the x_play array from card_players except the player's hand
+            for k in range(4):
+                for i in range(trick_i + 1):
+                    states[k][:, i, 32:] = card_players[k].x_play[0, i, 32:]
 
-        # we can reuse the x_play array from card_players except the player's hand
-        for k in range(4):
+            # for player_i we can use the hand from card_players x_play (because the cards are known)
             for i in range(trick_i + 1):
-                states[k][:, i, 32:] = card_players[k].x_play[0, i, 32:]
+                states[player_i][:, i, :32] = card_players[player_i].x_play[0, i, :32]
 
-        # for player_i we can use the hand from card_players x_play (because the cards are known)
-        for i in range(trick_i + 1):
-            states[player_i][:, i, :32] = card_players[player_i].x_play[0, i, :32]
+            # all players know dummy's cards
+            if player_i in (0, 2, 3):
+                for i in range(trick_i + 1):
+                    states[player_i][:, i, 32:64] = card_players[1].x_play[0, i, :32]
+                    states[1][:, i, :32] = card_players[1].x_play[0, i, :32]
 
-        # all players know dummy's cards
-        if player_i in (0, 2, 3):
-            for i in range(trick_i + 1):
-                states[player_i][:, i, 32:64] = card_players[1].x_play[0, i, :32]
-                states[1][:, i, :32] = card_players[1].x_play[0, i, :32]
+            # dummy knows declarer's cards
+            if player_i == 1:
+                for i in range(trick_i + 1):
+                    states[player_i][:, i, 32:64] = card_players[3].x_play[0, i, :32]
+                    states[3][:, i, :32] = card_players[3].x_play[0, i, :32]
+            # add the current trick cards to the hidden hands
+            if len(current_trick) > 0:
+                for i, card in enumerate(current_trick):
+                    if (leader_i + i) % 4 == hidden_1_i:
+                        hidden_hand1[:, card] += 1
+                    if (leader_i + i) % 4 == hidden_2_i:
+                        hidden_hand2[:, card] += 1
 
-        # dummy knows declarer's cards
-        if player_i == 1:
-            for i in range(trick_i + 1):
-                states[player_i][:, i, 32:64] = card_players[3].x_play[0, i, :32]
-                states[3][:, i, :32] = card_players[3].x_play[0, i, :32]
-
-        # add the current trick cards to the hidden hands
-        if len(current_trick) > 0:
-            for i, card in enumerate(current_trick):
-                if (leader_i + i) % 4 == hidden_1_i:
-                    hidden_hand1[:, card] += 1
-                if (leader_i + i) % 4 == hidden_2_i:
-                    hidden_hand2[:, card] += 1
-
-        for k in range(trick_i + 1):
-            states[hidden_1_i][:, k, :32] = hidden_hand1
-            states[hidden_2_i][:, k, :32] = hidden_hand2
-            for card in player_cards_played[hidden_1_i][k:]:
-                states[hidden_1_i][:, k, card] += 1
-            for card in player_cards_played[hidden_2_i][k:]:
-                states[hidden_2_i][:, k, card] += 1
+            for k in range(trick_i + 1):
+                states[hidden_1_i][:, k, :32] = hidden_hand1
+                states[hidden_2_i][:, k, :32] = hidden_hand2
+                for card in player_cards_played[hidden_1_i][k:]:
+                    states[hidden_1_i][:, k, card] += 1
+                for card in player_cards_played[hidden_2_i][k:]:
+                    states[hidden_2_i][:, k, card] += 1
+            print(states[0])
+        else:
+            # In cheat mode all cards are known
+            contract = bidding.get_contract(auction)
+            known_nesw = player_to_nesw_i(player_i, contract)
+            states = [np.zeros((1, 13, 298)) for _ in range(4)]
+            for k in range(4):
+                for i in range(13):
+                    states[k][0, i, :32] = card_players[k].x_play[0, i, :32]
 
         if self.verbose:
             print(f"players_states {states[0].shape[0]} trick {trick_i}")
@@ -585,6 +598,7 @@ class Sample:
                 self.hand_to_str(states[2][i,0,:32].astype(int)),
                 self.hand_to_str(states[3][i,0,:32].astype(int)),
                 )
+            print(sample)
             if sample in samples:
                 unique_indices[i] = False
             else:
@@ -593,7 +607,7 @@ class Sample:
         states = [state[unique_indices] for state in states]
         if self.verbose:
             print(f"Unique states {states[0].shape[0]}")
-        if (states[0].shape[0] < n_samples // 2):
+        if (states[0].shape[0] < n_samples // 2) or n_samples < 0:
             if self.verbose:
                 print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
             return states
@@ -652,7 +666,7 @@ class Sample:
         states = [state[accept] for state in states]
         if self.verbose:   
             print(f"States {states[0].shape[0]} before opening lead (after shape and hcp)")
-        if (states[0].shape[0] < n_samples // 2):
+        if (states[0].shape[0] < n_samples // 2 or n_samples < 10):
             #print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
             return states
 
