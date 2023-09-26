@@ -570,7 +570,7 @@ class CardPlayer:
                     hands[j] = '.'.join(suits)
             # We always use West as start, but hands are in BEN from LHO
             hands_pbn.append('W:' + ' '.join(hands))
-            if i < 5 and self.verbose:
+            if self.verbose:
                 print(hands_pbn[-1])
 
         t_start = time.time()

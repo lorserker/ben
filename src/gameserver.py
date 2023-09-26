@@ -85,7 +85,7 @@ if args.boards:
 
 if args.boardno:
     print(f"Starting from {args.boardno}")
-    board_no[0] = args.boardno
+    board_no[0] = args.boardno -1
 
 if random:
     print("Playing random deals or deals from the client")
@@ -120,7 +120,7 @@ async def handler(websocket, path, board_no):
         if deal:
             split_values = deal[1:-1].replace("'","").split(',')
             rdeal = tuple(value.strip() for value in split_values)
-            driver.set_deal(board_no_query,*rdeal, ns, ew)
+            driver.set_deal(board_no_query,*rdeal,  ns, ew, False)
             print(f"Board: {board_no_query} {rdeal}")
 
         # Trust factor is now moved to the configuration

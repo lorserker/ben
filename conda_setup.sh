@@ -18,6 +18,7 @@ pip install grpcio-tools
 
 pip install bottle
 pip install gevent
+pip install pythonnet
 
 # When running ben on ubuntu 22.04, the following error happens during card play.
 

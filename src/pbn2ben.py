@@ -21,7 +21,6 @@ def load(fin):
                     'deal': ' '.join(hands_nesw),      
                     'auction': dealer + " " + vulnerable + " " + ' '.join(auction_lines)
                 }
-                print(board)
                 boards.append(board)            
                 auction_lines = []
                 dealer= None

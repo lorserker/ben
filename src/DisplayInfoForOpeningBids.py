@@ -3,9 +3,9 @@ from nn.bid_info import BidInfo
 import binary
 
 #model = BidInfo('../models/21gf_info/binfo_21gf-500000')
-model = BidInfo('../models/gib21_info_model/gib21_info-500000')
+#model = BidInfo('../models/gib21_info_model/gib21_info-500000')
 #model = BidInfo('../models/sayc_info/binfo_sayc-500000')
-#model = BidInfo('../models/eamon/21gfinfo/binfo_21gfc-500000')
+model = BidInfo('../models/eamon/21gfinfo/binfo-1500000')
 
 auction = []
 

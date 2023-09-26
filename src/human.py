@@ -40,6 +40,8 @@ class ConfirmSocket:
 
         key = await self.socket.recv()
 
+        # Check if this is a claim
+        print("Trick confirm:",key)
         return key
 
 
@@ -131,6 +133,9 @@ class HumanLeadSocket:
 
         card_str = await self.socket.recv()
 
+        # Check if we received a claim
+        print("Card received: ",card_str)
+        
         return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[])
 
 
@@ -209,6 +214,9 @@ class HumanCardPlayerSocket(HumanCardPlayer):
         }))
 
         card = await self.socket.recv()
+
+        # Check if this is a claim
+        print("Card from socket: ", card)
 
         return deck52.encode_card(card)
 

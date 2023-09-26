@@ -50,6 +50,8 @@ class TMClient:
         self.sampler = sampler
         self._is_connected = False
         self.verbose = verbose
+        self.deal_str = None
+        self.trick_winners = None
 
     @property
     def is_connected(self):
@@ -103,6 +105,7 @@ class TMClient:
             self.dummy_hand_str = await self.receive_dummy()
 
         await self.play(auction, opening_lead52)
+        print(self)
         
     async def connect(self, host, port):
         try:
@@ -263,7 +266,7 @@ class TMClient:
                     # it's dummy's turn and this is the declarer
                     print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
-                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
+                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
                     self.card_responses.append(card_resp)
@@ -287,7 +290,7 @@ class TMClient:
                     # we are on play
                         print(f'{player_i} turn')
 
-                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, 100, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
+                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
                     self.card_responses.append(card_resp)
@@ -702,9 +705,11 @@ async def main():
     while client.is_connected:
         await client.run(biddingonly)
         # The deal just played should be saved for later review
-        with shelve.open(f"{base_path}/{seat}db") as db:
-            deal = client.to_dict()
-            db[uuid.uuid4().hex] = deal
+        # if bidding only we do not save the deal
+        if not biddingonly:
+            with shelve.open(f"{base_path}/{seat}db") as db:
+                deal = client.to_dict()
+                db[uuid.uuid4().hex] = deal
 
 
 if __name__ == "__main__":
