@@ -252,3 +252,24 @@ body {
 #bidding-box .hidden {
     display: none;
 }
+
+#claim .hidden {
+    display: none;
+}
+
+#claim-tricks {
+    display: flex;
+}
+
+#claim-tricks div {
+    margin: .5rem;
+    padding: .5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: sans-serif;
+    font-size: 1rem;
+    background-color: white;
+    width: 4rem;
+    height: 2rem;
+    text-align: center;
+}

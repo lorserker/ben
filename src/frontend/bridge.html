@@ -67,7 +67,19 @@
         <div id="east" class="grid-item"></div>
         <div id="south" class="grid-item">
         </div>
-        
+    </div>
+
+    <div id="claim" style="display: none">
+        <div id="claim-tricks">
+            <div tricks="0">0</div>
+            <div tricks="1">1</div>
+            <div tricks="2">2</div>
+            <div tricks="3">3</div>
+            <div tricks="4">4</div>
+            <div tricks="5">5</div>
+            <div tricks="6">6</div>
+            <div tricks="7">7</div>
+        </div>
     </div>
 
     <div><a href="/home">Home</a></div>
@@ -148,6 +160,7 @@
             }
             document.querySelectorAll('#bidding-levels div').forEach(el => el.classList.remove("selected"))
             document.querySelectorAll('#bidding-suits div').forEach(el => el.classList.remove("invalid"))
+            document.querySelectorAll('#claim-tricks div').forEach(el => el.classList.remove("invalid"))
             event.target.classList.add("selected")
 
             let level = parseInt(event.target.textContent)
@@ -190,12 +203,25 @@
             deal.expectBidInput = false
         }
 
+        function claimClick(event) {
+
+            let claim = event.target.getAttribute("tricks")
+            console.log("Claimed "+claim+ "tricks")
+
+            ws.send(claim)
+        }
+
         document.querySelector('body').addEventListener('click', function() {
-            console.log('click')
+            // THis could also be a claim - need handling
             if (deal?.expectTrickConfirm) {
                 getTrickCardSlots().forEach(el => el.textContent = "")
                 ws.send('y')
                 deal.expectTrickConfirm = false
+                if (deal.renderClaim(document.querySelector("#claim"))) {
+                    document.querySelector('#claim').style.display = 'block'
+                    document.querySelectorAll('#claim-tricks div').forEach(el =>
+                        el.addEventListener("click", claimClick))
+                }
             }
         })
 

@@ -274,6 +274,27 @@ class Deal {
         auction.render(document.querySelector('#auction-container'))
     }
 
+    renderClaim(element) {
+        element.textContent = ''
+        let html = ''
+        if ((this.tricksCount[0] + this.tricksCount[1]) > 12) {
+            html += 'Claim: '
+            html += '<div id="claim-tricks">'
+            html += '<div tricks="0">0</div>'
+            html += '<div tricks="1">1</div>'
+            html += '<div tricks="2">2</div>'
+            html += '<div tricks="3">3</div>'
+            html += '<div tricks="4">4</div>'
+            html += '<div tricks="5">5</div>'
+            html += '<div tricks="6">6</div>'
+            html += '<div tricks="7">7</div>'
+            html += '</div>'
+            element.innerHTML = html
+            return true
+        }
+        return false
+    }
+
     renderBiddingBox(element) {
         element.textContent = ''
 
