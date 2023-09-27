@@ -574,7 +574,7 @@ async def main():
         # BEN is handling all 4 hands
         driver.human = [0.1, 0.1, 0.1, 0.1]
         # BBA is handling all 4 hands
-        driver.human = [99, 99, 99, 99]
+        # driver.human = [99, 99, 99, 99]
         await driver.run()
 
         with shelve.open(f"{base_path}/gamedb") as db:
