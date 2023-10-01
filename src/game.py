@@ -89,10 +89,11 @@ class Driver:
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
-
         self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, ns, ew, 32)
         self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, ns, ew, 52)
 
+        auction_part = auction_str.split(' ')
+        if len(auction_part) > 2: play_only = True
         if play_only:
             self.auction = self.deal_data.auction
             self.play_only = play_only
@@ -522,7 +523,6 @@ async def main():
             with open(filename, "r") as file:
                 board_no.append(0) 
                 lines = file.readlines()  # 
-                print(len(lines))
                 # Loop through the lines, grouping them into objects
                 for i in range(0, len(lines), 2):
                     board = {

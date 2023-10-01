@@ -120,7 +120,7 @@ async def handler(websocket, path, board_no):
         if deal:
             split_values = deal[1:-1].replace("'","").split(',')
             rdeal = tuple(value.strip() for value in split_values)
-            driver.set_deal(board_no_query,*rdeal,  ns, ew, False)
+            driver.set_deal(board_no_query, *rdeal,  ns, ew, False)
             print(f"Board: {board_no_query} {rdeal}")
 
         # Trust factor is now moved to the configuration

@@ -519,7 +519,7 @@ class Sample:
             h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
 
             h1_h2 = self.shuffle_cards_bidding_info(
-                n_samples,
+                40*n_samples,
                 models.binfo,
                 auction,
                 hand,
@@ -538,8 +538,6 @@ class Sample:
             hidden_hand1, hidden_hand2 = h1_h2[:, 0], h1_h2[:, 1]
 
             states = [np.zeros((hidden_hand1.shape[0], 13, 298)) for _ in range(4)]
-            print(states[0])
-            print("------------------")
             # we can reuse the x_play array from card_players except the player's hand
             for k in range(4):
                 for i in range(trick_i + 1):
@@ -575,7 +573,7 @@ class Sample:
                     states[hidden_1_i][:, k, card] += 1
                 for card in player_cards_played[hidden_2_i][k:]:
                     states[hidden_2_i][:, k, card] += 1
-            print(states[0])
+            #print(states[0])
         else:
             # In cheat mode all cards are known
             contract = bidding.get_contract(auction)
@@ -598,7 +596,7 @@ class Sample:
                 self.hand_to_str(states[2][i,0,:32].astype(int)),
                 self.hand_to_str(states[3][i,0,:32].astype(int)),
                 )
-            print(sample)
+            #print(sample)
             if sample in samples:
                 unique_indices[i] = False
             else:
