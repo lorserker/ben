@@ -372,6 +372,10 @@ class Auction {
         for (var i = 0; i < bids.length; i++) {
             this.paddedBids.push(bids[i]['bid'])
         }
+        this.auctionString = ''
+        for (var i = 0; i < bids.length; i++) {
+            this.auctionString += bids[i]['bid'].replace("PASS","P") + " "
+        }
     }
 
     render(element) {

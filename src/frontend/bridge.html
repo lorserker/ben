@@ -144,11 +144,15 @@
                     if (deal.hand.isPlayable(card, deal.currentTrick)) {
                         ws.send(card.symbol)
                         deal.expectCardInput = false
+                    } else {
+                        alert("Card not valid")
                     }
                 } else if (deal.turn == 0) {
                     if (deal.public.isPlayable(card, deal.currentTrick)) {
                         ws.send(card.symbol)
                         deal.expectCardInput = false
+                    } else {
+                        alert("Card not valid")
                     }
                 }
             }
@@ -206,9 +210,10 @@
         function claimClick(event) {
 
             let claim = event.target.getAttribute("tricks")
-            console.log("Claimed "+claim+ "tricks")
-
-            ws.send(claim)
+            console.log("Claimed "+claim+ " tricks")
+            alert("Claim not implemented")
+            //ws.send(claim)
+            deal.expectCardInput = true
         }
 
         document.querySelector('body').addEventListener('click', function() {

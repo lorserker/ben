@@ -97,6 +97,7 @@
 
   </div>
 
+  <div id="rebid"></div>
   <div id="replay"></div>
   <div id="solver"></div>
 
@@ -144,9 +145,16 @@
                                 }
 
                                 let dealer = 'NESW'.charAt(deal.data.dealer)
-                                const replayContent = '<a href="http://127.0.0.1:8080/app/bridge.html?deal=' +
+                                const rebidContent = '<a href="http://127.0.0.1:8080/app/bridge.html?deal=' +
                                     '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + '\')' +
-                                    '&P=5&board_no='+deal.board_number()+'"> Play it again </a><br>';
+                                    '&P=5&board_no=' + deal.board_number() + '"> Bid and play it again </a><br>';
+
+                                document.querySelector('#rebid').innerHTML = rebidContent;
+
+                                console.log(auction.auctionString)
+                                const replayContent = '<a href="http://127.0.0.1:8080/app/bridge.html?deal=' +
+                                    '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + ' ' + auction.auctionString +'\')' +
+                                    '&P=5&board_no=' + deal.board_number() + '"> Play it again </a><br>';
 
                                 document.querySelector('#replay').innerHTML = replayContent;
 

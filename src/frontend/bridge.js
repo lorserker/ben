@@ -277,7 +277,7 @@ class Deal {
     renderClaim(element) {
         element.textContent = ''
         let html = ''
-        if ((this.tricksCount[0] + this.tricksCount[1]) > 12) {
+        if ((this.tricksCount[0] + this.tricksCount[1]) > 13) {
             html += 'Claim: '
             html += '<div id="claim-tricks">'
             html += '<div tricks="0">0</div>'
