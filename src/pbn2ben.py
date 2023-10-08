@@ -44,7 +44,7 @@ def load(fin):
                 inside_auction_section = False
             else:
                 # Convert bids
-                line = line.strip().replace('.','').replace("Pass","P").replace("Double","X").replace("Redouble","XX").replace('AP','P P P')
+                line = line.strip().replace('.','').replace("NT","N").replace("Pass","P").replace("Double","X").replace("Redouble","XX").replace('AP','P P P')
                 # Remove extra spaces
                 line = re.sub(r'\s+', ' ', line)
                 # Remove alerts

@@ -85,7 +85,7 @@ class Driver:
         self.verbose = verbose
         self.play_only = False
 
-    def set_deal(self, board_number, deal_str, auction_str, ns, ew, play_only):
+    def set_deal(self, board_number, deal_str, auction_str, ns, ew, play_only = None):
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
@@ -93,7 +93,7 @@ class Driver:
         self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, ns, ew, 52)
 
         auction_part = auction_str.split(' ')
-        if len(auction_part) > 2: play_only = True
+        if play_only == None and len(auction_part) > 2: play_only = True
         if play_only:
             self.auction = self.deal_data.auction
             self.play_only = play_only
@@ -561,7 +561,7 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            rdeal = ('K4.T9876532.54.6 Q.KQ.AKQT7.AJ853 972.A4.J83.KQT74 AJT8653.J.962.92', 'E N-S')
+            # rdeal = ('AQ9.543.6.AKJ876 762.A96.KQJ42.Q2 KJ83.KJ2.T753.T5 T54.QT87.A98.943', 'S Both')
 
             driver.set_deal(None, *rdeal, ns, ew, False)
         else:

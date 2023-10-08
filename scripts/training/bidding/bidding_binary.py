@@ -91,6 +91,6 @@ if __name__ == '__main__':
 
     with open(infnm, 'r') as file:
         lines = file.readlines()
-        n = len(lines)
+        n = len(lines) // 2
         create_binary(load_deals(lines), n, outdir, ns, ew)
 

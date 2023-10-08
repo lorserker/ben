@@ -9,6 +9,9 @@ from bidding.bidding import can_double, can_redouble
 from objects import Card, CardResp, BidResp
 
 
+def is_numeric(value):
+    return isinstance(value, (int, float, complex))
+
 def clear_screen():
     print('\033[H\033[J')
 
@@ -197,6 +200,12 @@ class HumanCardPlayer:
         samples = []
 
         human_card = await self.get_card_input()
+
+        # If we just get a number it is a claim
+        # We need to validate the claim, so for now we just ignore the message
+
+        #if is_numeric(human_card):
+        #    human_card = await self.get_card_input()
 
         return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples)
 

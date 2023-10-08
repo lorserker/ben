@@ -19,12 +19,6 @@ else:
 
 EPBot_PATH = os.path.join(BIN_FOLDER, EPBot_LIB)
 
-# Load the .NET assembly
-clr.AddReference(EPBot_PATH)
-
-# Import the types and classes from the assembly
-from EPBot86 import EPBot
-
 #The error you're encountering suggests that the info_meaning property is not directly accessible as an attribute in the EPBot class. Instead, you should use the get_info_meaning and set_info_meaning methods that are automatically generated for properties with a getter and setter in .NET.
 
 
@@ -80,6 +74,15 @@ class BBABotBid:
     ]
 
     def __init__(self, ns_system, ew_system, position, hand, vuln, dealer):
+        try:
+           # Load the .NET assembly and import the types and classes from the assembly
+            clr.AddReference(EPBot_PATH)
+            from EPBot86 import EPBot
+        except Exception as ex:
+            # Provide a message to the user if the assembly is not found
+            print("Error: Unable to load EPBot86.dll. Make sure the DLL is in the ./bin directory")
+            print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
+            print('Error:', ex)
         self.ns_system = ns_system
         self.ew_system = ew_system
         self.vuln = vuln
