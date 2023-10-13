@@ -23,7 +23,8 @@ def load_deals_no_contracts(fin):
     auction_str = ''
 
     for line_number, line in enumerate(fin):
-        line = line.strip()
+        # For now we remove alerts until we have an useable implementation
+        line = line.strip().replace("*",'')
         if line_number % 2 == 0:
             if line_number > 0:
                 yield (deal_str, auction_str, None)
@@ -46,7 +47,7 @@ def create_binary(data_it, n, out_dir, ns, ew):
     SHAPE = np.zeros((4 * n, 8, 12), dtype=np.float16)
 
     for i, (deal_str, auction_str, _) in enumerate(data_it):
-        print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i)
+        if (i+1 % 1000) == 0: print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i)
         deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ns, ew, 32)
         x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
         start_ix = i * 4
@@ -56,7 +57,6 @@ def create_binary(data_it, n, out_dir, ns, ew):
         HCP[start_ix:end_ix,:,:] = hcp_part
         SHAPE[start_ix:end_ix,:,:] = shape_part
 
-    print(HCP[0])
     np.save(os.path.join(out_dir, 'x.npy'), x)
     np.save(os.path.join(out_dir, 'y.npy'), y)
     np.save(os.path.join(out_dir, 'HCP.npy'), HCP)
@@ -95,5 +95,8 @@ if __name__ == '__main__':
 
     with open(infnm, 'r') as file:
         lines = file.readlines()
-        n = len(lines)
+        # Remove comments at the beginning of the file
+        lines = [line for line in lines if not line.strip().startswith('#')]
+        n = len(lines) // 2
+        print(f"Loading {n} deals")
         create_binary(load_deals_no_contracts(lines), n, outdir, ns, ew)

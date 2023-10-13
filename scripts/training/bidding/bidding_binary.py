@@ -31,7 +31,8 @@ def load_deals(fin):
     deal_str = ''
 
     for line_number, line in enumerate(fin):
-        line = line.strip()
+        # For now we remove alerts until we have an useable implementation
+        line = line.strip().replace("*",'')
         if line_number % 2 == 0:
             deal_str = line
         else:
@@ -90,7 +91,11 @@ if __name__ == '__main__':
     ew = to_numeric(ew)
 
     with open(infnm, 'r') as file:
+
         lines = file.readlines()
+        # Remove comments at the beginning of the file
+        lines = [line for line in lines if not line.strip().startswith('#')]
         n = len(lines) // 2
+        print(f"Loading {n} deals")
         create_binary(load_deals(lines), n, outdir, ns, ew)
 
