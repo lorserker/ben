@@ -111,6 +111,7 @@ class BBABotBid:
         "Unusual 1NT": True,
         "Unusual 2NT": True,
         "Unusual 4NT": True,
+        "Weak Jump Shifts": False,
         "Western cue bid": False,
         "Weak natural 2D": True,
         "Weak natural 2M": True,
