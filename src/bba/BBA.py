@@ -33,45 +33,91 @@ class BBABotBid:
     SCORING_IMP = 1
 
     # Define your conventions in an array
-    conventions_list = [
-        (4, "1M-3M inviting"),
-        (6, "5NT pick a slam"),
-        (9, "Ask for aces with kings"),
-        (14, "Chekback"),
-        (15, "Cue bid"),
-        (16, "Drury"),
-        (18, "Fit showing jumps"),
-        (20, "Fourth suit"),
-        (25, "Inverted minors"),
-        (26, "Jacoby 2NT"),
-        (29, "Lebensohl after 1NT"),
-        (31, "Lebensohl after double"),
-        (32, "Maximal Doubles"),
-        (33, "Michaels Cuebid"),
-        (34, "Mini Splinter"),
-        (35, "Minor Suit Stayman after 1NT"),
-        (36, "Minor Suit Stayman after 2NT"),
-        (39, "Mixed raise"),
-        (41, "Multi-Landy"),
-        (44, "Quantitative 4NT"),
-        (46, "Responsive double"),
-        (48, "Reverse style"),
-        (50, "RKC Gerber"),
-        (51, "RKC Blackwood"),
-        (59, "SMOLEN"),
-        (61, "Splinter"),
-        (62, "Support 1NT"),
-        (63, "Support 2NT"),
-        (64, "Support double redouble"),
-        (65, "Two suit takeout double"),
-        (66, "Two way game tries"),
-        (67, "Two Way New Minor Forcing"),
-        (68, "Unusual 1NT"),
-        (69, "Unusual 2NT"),
-        (70, "Unusual 4NT"),
-        (72, "Weak natural 2D"),
-        (73, "Weak natural 2M")
-    ]
+    conventions_list = {
+        "1D opening with 4 cards": False,
+        "1D opening with 5 cards": False,
+        "1m opening allows 5M": True,
+        "1M-3M blocking": False,
+        "1M-3M inviting": True,
+        "5431 convention after 1NT": True,
+        "5NT pick a slam": True,
+        "Bergen": False,
+        "Blackwood 0123": False,
+        "Blackwood 0314": True,
+        "Blackwood 1430": False,
+        "BROMAD": False,
+        "Canape style": False,
+        "Cappelletti": False,
+        "Chekback": True,
+        "Crosswood 0123": False,
+        "Crosswood 0314": False,
+        "Crosswood 1430": False,
+        "Cue bid": True,
+        "Drury": True,
+        "Exclusion": False,
+        "Extended acceptance after NT": False,
+        "Fit showing jumps": True,
+        "Forcing 1NT": False,
+        "Fourth suit": True,
+        "French 2D": False,
+        "Gambling": False,
+        "Gazzilli": False,
+        "Gerber": True,
+        "Ghestem": False,
+        "Inverted minors": True,
+        "Jacoby 2NT": True,
+        "Jordan Truscott 2NT": True,
+        "Kickback 0123": False,
+        "Kickback 0314": False,
+        "Kickback 1430": False,
+        "Leaping Michaels": False,
+        "Lebensohl after 1NT": True,
+        "Lebensohl after 1m": False,
+        "Lebensohl after double": True,
+        "Maximal Doubles": True,
+        "Michaels Cuebid": True,
+        "Mini Splinter": False,
+        "Minor Suit Stayman after 1NT": True,
+        "Minor Suit Stayman after 2NT": True,
+        "Minor Suit Transfers after 1NT": False,
+        "Minor Suit Transfers after 2NT": False,
+        "Mixed raise": True,
+        "Multi": False,
+        "Multi-Landy": True,
+        "Namyats": False,
+        "Ogust": False,
+        "Polish two suiters": False,
+        "Quantitative 4NT": True,
+        "Raptor 1NT": False,
+        "Responsive double": True,
+        "Reverse Bergen": False,
+        "Reverse drury": False,
+        "Reverse style": False,
+        "ROPI DOPI": True,
+        "Rubensohl after 1NT": False,
+        "Rubensohl after 1m": False,
+        "Rubensohl after double": False,
+        "Semi forcing 1NT": False,
+        "SMOLEN": True,
+        "Snapdragon Double": False,
+        "Soloway Jump Shifts": False,
+        "Soloway Jump Shifts Extended": False,
+        "Splinter": True,
+        "Support 1NT": True,
+        "Support double redouble": True,
+        "Two suit takeout double": True,
+        "Two way game tries": True,
+        "Two Way New Minor Forcing": False,
+        "Unusual 1NT": True,
+        "Unusual 2NT": True,
+        "Unusual 4NT": True,
+        "Western cue bid": False,
+        "Weak natural 2D": True,
+        "Weak natural 2M": True,
+        "Wilkosz": False,
+        "Not defined": False,
+        "1D opening to 18 HCP": False
+    }   
 
     def __init__(self, ns_system, ew_system, position, hand, vuln, dealer):
         try:
@@ -100,10 +146,11 @@ class BBABotBid:
         print(self.player.system_name(0))
         print(self.player.system_name(1))
 
-        # Iterate through the conventions array and set conventions for a player at a specific position
-        #for conv_number, conv_desc in self.conventions_list:
-        #    self.player.set_conventions(self.C_NS, conv_desc, True)
-        #    self.player.set_conventions(self.C_WE, conv_desc, True)
+         # Iterate through the conventions array and set conventions for a player at a specific position
+        for convention, selected in self.conventions_list.items():
+            if selected:
+                self.player.set_conventions(self.C_NS, convention, True)
+                self.player.set_conventions(self.C_WE, convention, True)
 
         # Set scoring type
         self.player.scoring = self.SCORING_IMP
