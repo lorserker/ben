@@ -1,5 +1,16 @@
 import sys
-sys.path.append('../../../src')
+# Get the directory where the script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Construct the path to the 'src' directory relative to the script's location
+src_path = os.path.join(script_dir, '../../../src')
+# Add the path to sys.path
+sys.path.append(src_path)
+
+import datetime
+import os.path
+import numpy as np
+# This import is only to help PyInstaller when generating the executables
+import tensorflow as tfx
 
 import datetime
 import os.path
@@ -20,8 +31,8 @@ modelpath = sys.argv[2]
 
 model_path = os.path.join(modelpath, 'binfo')
 
-batch_size = 64
-n_iterations = 500000
+batch_size = 100
+n_iterations = 100000
 display_step = 10000
 
 X_train = np.load(os.path.join(bin_dir, 'X.npy'))

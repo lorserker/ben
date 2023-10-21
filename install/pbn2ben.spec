@@ -5,9 +5,9 @@ block_cipher = None
 
 
 a = Analysis(
-    ['..\\src\\calculate_DDOLAR.py'],
-    pathex=['..\\src'],
-    binaries=[('..\\bin\\dds.dll', '.')],
+    ['..\\src\\pbn2ben.py'],
+    pathex=[],
+    binaries=[],
     datas=[],
     hiddenimports=[],
     hookspath=[],
@@ -28,7 +28,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='calculate_DDOLAR',
+    name='pbn2ben',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

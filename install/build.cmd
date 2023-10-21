@@ -5,3 +5,8 @@ pyinstaller ..\src\gameserver.py --onefile --path=..\src --add-binary ..\bin\dds
 pyinstaller ..\src\table_manager_client.py --onefile --path=..\src --add-binary ..\bin\dds.dll;. 
 pyinstaller ..\src\calculate_DCWER.py --onefile --path=..\src --add-binary ..\bin\dds.dll;.
 pyinstaller ..\src\calculate_DDOLAR.py --onefile --path=..\src --add-binary ..\bin\dds.dll;.
+
+pyinstaller ..\\scripts\\training\\bidding\\bidding_binary.py --onefile --path=..\src 
+pyinstaller ..\\scripts\\training\\bidding\\bidding_nn.py --onefile --path=..\src 
+pyinstaller ..\\scripts\\training\\bidding\\binfo_binary.py --onefile --path=..\src 
+pyinstaller ..\\scripts\\training\\bidding\\binfo_nn.py --onefile --path=..\src 

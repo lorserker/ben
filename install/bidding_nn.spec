@@ -5,9 +5,9 @@ block_cipher = None
 
 
 a = Analysis(
-    ['..\\src\\calculate_DDOLAR.py'],
+    ['..\\scripts\\training\\bidding\\bidding_nn.py'],
     pathex=['..\\src'],
-    binaries=[('..\\bin\\dds.dll', '.')],
+    binaries=[],
     datas=[],
     hiddenimports=[],
     hookspath=[],
@@ -28,7 +28,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='calculate_DDOLAR',
+    name='bidding_nn',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

@@ -1,8 +1,19 @@
 import sys
-sys.path.append('../../../src')
+import os
+
+# Get the directory where the script is located
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Construct the path to the 'src' directory relative to the script's location
+src_path = os.path.join(script_dir, '../../../src')
+# Add the path to sys.path
+sys.path.append(src_path)
+
 import datetime
 import os.path
 import numpy as np
+# This import is only to help PyInstaller when generating the executables
+import tensorflow as tfx
+
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
@@ -19,7 +30,7 @@ model_path = sys.argv[2]
 model_path = os.path.join(model_path, 'bidding')
 
 batch_size = 100
-n_iterations = 1000000
+n_iterations = 100000
 display_step = 10000
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))

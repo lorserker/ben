@@ -7,7 +7,7 @@ block_cipher = None
 a = Analysis(
     ['..\\src\\gameserver.py'],
     pathex=['..\\src'],
-    binaries=[('C:\\\\Python311\\\\Lib\\\\site-packages\\\\endplay\\\\_dds\\\\dds.dll', '.')],
+    binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],
     hiddenimports=[],
     hookspath=[],

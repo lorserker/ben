@@ -43,3 +43,11 @@ scripts/training/opening lead/lead_model_b
 src/db
 models/lead_model_c
 models/lead_model
+UCBC 2024/Boards/*.sql
+UCBC 2024/Boards/*.exe
+UCBC 2024/2023 Practice
+models/UCBC
+UCBC 2024/Models
+UCBC 2024/Boards/data
+UCBC 2024/Boards/All.PBN
+scripts/training/bidding/binfo_bin
