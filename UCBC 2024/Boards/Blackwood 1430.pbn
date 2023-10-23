@@ -601,7 +601,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  4N =2= 
 Pass  5C    X     5S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "S"]
 *
@@ -7184,7 +7184,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5H    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "S"]
 *
@@ -8954,7 +8954,7 @@ Pass  Pass
 2H    Pass  4N =2=    Pass
 5C    Pass  6D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "N"]
 *
@@ -12774,7 +12774,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5C    Pass  6H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -13894,7 +13894,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5H    Pass  6H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "S"]
 *
@@ -14376,7 +14376,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5H    Pass  5S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -17673,7 +17673,7 @@ Pass
 2S    Pass  4N =2=    Pass
 5C    Pass  5H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "S"]
 *
@@ -21847,7 +21847,7 @@ Pass  Pass  Pass
 2D    Pass  4N =2=    Pass
 5H    Pass  6D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -25317,7 +25317,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5H    Pass  6S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for hearts"]
 [Play "N"]
 *
@@ -26056,7 +26056,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4N =2=    Pass
 5H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -30689,7 +30689,7 @@ Pass  Pass
 5C    Pass  5S    Pass
 6C    Pass  6H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -36214,7 +36214,7 @@ Pass  Pass
 5C    Pass  5H    Pass
 6D    X     7N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -39465,7 +39465,7 @@ Pass  Pass
 2S    Pass  4N =2=    Pass
 5S    Pass  6H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -39878,7 +39878,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4N =2=    Pass
 5H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "N"]
 *
@@ -42962,7 +42962,7 @@ Pass  Pass
 2H    Pass  4N =2=    Pass
 5C    Pass  5S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "W"]
 *
@@ -43218,7 +43218,7 @@ Pass  Pass
 2H    Pass  4N =2=    Pass
 5D    Pass  6S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for hearts"]
 [Play "S"]
 *
@@ -46144,7 +46144,7 @@ Pass  Pass  Pass
 2S    Pass  4N =2=    Pass
 5C    Pass  6D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -48655,7 +48655,7 @@ Pass  2S    Pass  4N =2=
 Pass  5D    Pass  5H
 Pass  6D    Pass  7N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -48942,7 +48942,7 @@ Pass  1N    Pass  2C =1=
 X     2H    Pass  4N =2= 
 Pass  5H    Pass  5S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -49878,7 +49878,7 @@ Pass  Pass  Pass
 2H    Pass  4N =2=    Pass
 5S    Pass  6S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -51224,7 +51224,7 @@ Pass
 2S    Pass  4N =2=    Pass
 5C    Pass  5S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for NT"]
 [Play "S"]
 *
@@ -53312,7 +53312,7 @@ Pass
 2S    Pass  4N =2=    Pass
 5C    Pass  5H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -53568,7 +53568,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5C    Pass  6S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -55409,7 +55409,7 @@ Pass  Pass  Pass
 3N    Pass  4S    Pass
 4N =2=    Pass  5C    Pass
 5S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for spades"]
 [Play "S"]
 *
@@ -55850,7 +55850,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5C    Pass  6S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for NT"]
 [Play "S"]
 *
@@ -56864,7 +56864,7 @@ Pass  Pass
 2S    Pass  4N =2=    Pass
 5S    Pass  6H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -58461,7 +58461,7 @@ Pass  Pass
 2H    Pass  4N =2=    Pass
 5C    Pass  5D    Pass
 5N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "N"]
 *
@@ -59618,7 +59618,7 @@ Pass  Pass  Pass
 5C    Pass  5N =3=    Pass
 6D    Pass  6N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Note "3:King ask by 5NT"]
 [Play "W"]
@@ -60507,7 +60507,7 @@ Pass  Pass
 5H    Pass  5N =3=    Pass
 6D    Pass  7C    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Note "3:King ask by 5NT"]
 [Play "S"]
@@ -61555,7 +61555,7 @@ Pass  Pass
 2H    Pass  4N =2=    Pass
 5S    Pass  6S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -63076,7 +63076,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5C    Pass  6D
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "S"]
 *
@@ -64064,7 +64064,7 @@ Pass  Pass  Pass
 2H    Pass  4N =2=    Pass
 5S    Pass  6D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -64598,7 +64598,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5C    Pass  5H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -68319,7 +68319,7 @@ Pass  Pass  Pass
 2H    Pass  4N =2=    Pass
 5H    Pass  6S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "E"]
 *
@@ -69113,7 +69113,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5H    Pass  6H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "N"]
 *
@@ -70360,7 +70360,7 @@ Pass  Pass
 2S    Pass  4N =2=    Pass
 5C    Pass  5H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -72181,7 +72181,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5H    Pass  6S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -72475,7 +72475,7 @@ Pass
 5S    Pass  5N =3=    Pass
 6C    Pass  6N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Note "3:King ask by 5NT"]
 [Play "N"]
@@ -73589,7 +73589,7 @@ Pass  2S    Pass  4N =2=
 Pass  5D    Pass  5H
 Pass  6C    Pass  6S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "W"]
 *
@@ -74487,7 +74487,7 @@ X     Pass =4=  Pass  Pass
 5H    Pass  5N =3=    Pass
 6C    Pass  6N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Note "3:King ask by 5NT"]
 [Play "N"]
@@ -74748,7 +74748,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -75879,7 +75879,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -76744,7 +76744,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5C    Pass  5S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "N"]
 *

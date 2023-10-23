@@ -682,7 +682,7 @@ class Sample:
 
             states = [state[lead_scores > lead_accept_threshold]
                       for state in states]
-            #print(f"States {states[0].shape[0]} after cheking lead")
+            #print(f"States {states[0].shape[0]} after checking lead")
             if (states[0].shape[0] < n_samples // 2):
                 #print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
                 return states

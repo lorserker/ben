@@ -432,7 +432,7 @@ Pass  2H    Pass  3D
 Pass  3N    Pass  4C =2= 
 Pass  4D    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "N"]
 *
@@ -1183,7 +1183,7 @@ Pass  Pass  2C    Pass
 2N    Pass  4C =2=    Pass
 4H    Pass  4N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "W"]
 *
@@ -3348,7 +3348,7 @@ Pass  Pass
 3N    Pass  4C =2=    Pass
 4H    Pass  6H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "S"]
 *
@@ -4346,7 +4346,7 @@ Pass
 4H    Pass  5C =3=    Pass
 5S    Pass  6N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Note "3:King ask"]
 [Play "W"]
@@ -7776,7 +7776,7 @@ Pass  Pass
 2H    Pass  3C    Pass
 3N    Pass  4C =2=    Pass
 4S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "N"]
 *

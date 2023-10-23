@@ -644,7 +644,7 @@ Pass  Pass  Pass
 2H    Pass  5C =2=    Pass
 5H    Pass  6H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Exclusion, for hearts"]
 [Play "S"]
 *
@@ -3805,7 +3805,7 @@ Pass  Pass  Pass
 2H    Pass  5H =2=    Pass
 5N    Pass  6S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Exclusion, for spades"]
 [Play "E"]
 *
@@ -4185,7 +4185,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  5D =2=    Pass
 5S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Exclusion, for spades"]
 [Play "E"]
 *

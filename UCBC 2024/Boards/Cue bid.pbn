@@ -24871,7 +24871,7 @@ Pass  Pass
 2H    X     3S    Pass
 3N =2=    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Cue bid, a hearts stopper"]
 [Play "S"]
 *
@@ -55027,7 +55027,7 @@ Pass  Pass
 3N    Pass  4H =2=    Pass
 4N =3=    Pass  5S    Pass
 6D    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Cue bid, a hearts stopper"]
 [Note "3:Blackwood 1430, for diamonds"]
 [Play "E"]

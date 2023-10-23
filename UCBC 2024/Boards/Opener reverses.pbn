@@ -3903,7 +3903,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5D    Pass  5S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "W"]
 *
@@ -4732,7 +4732,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7574,7 +7574,7 @@ Pass  2N    Pass  4C =2=
 Pass  4H    Pass  5C =3= 
 Pass  5H    Pass  6N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Note "3:King ask"]
 [Play "E"]
@@ -12558,7 +12558,7 @@ S H 8
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]

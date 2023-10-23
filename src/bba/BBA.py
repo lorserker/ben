@@ -48,7 +48,7 @@ class BBABotBid:
         "BROMAD": False,
         "Canape style": False,
         "Cappelletti": False,
-        "Chekback": True,
+        "Checkback": True,
         "Crosswood 0123": False,
         "Crosswood 0314": False,
         "Crosswood 1430": False,

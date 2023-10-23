@@ -23,12 +23,12 @@ We will try to set up BBA matching the opponent and how BEN will play against th
 
 Currently I have selected this configuration for BEN, but it might change
 
-        "1m opening allows 5M"
-        "1M-3M inviting"
-        "5431 convention after 1NT"
+        "1m opening allows 5M" (Current implementation needs rework)
+        "1M-3M inviting" (Under inspection as we want 4-card support)
+        "5431 convention after 1NT" (Might be dropped)
         "5NT pick a slam"
         "Blackwood 1430"
-        "Chekback"
+        "Checkback"
         "Cue bid"
         "Drury"
         "Exclusion"

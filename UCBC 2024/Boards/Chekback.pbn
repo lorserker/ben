@@ -28,7 +28,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -58,7 +58,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -88,7 +88,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3S    Pass
 4S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -118,7 +118,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -148,7 +148,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3C    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -178,7 +178,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -208,7 +208,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -239,7 +239,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  3C
 Pass  5C    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -269,7 +269,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -299,7 +299,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -329,7 +329,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -359,7 +359,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -389,7 +389,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -421,7 +421,7 @@ Pass  2N    Pass  3D
 Pass  3N    Pass  4C =2= 
 Pass  4H    Pass  4N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "S"]
 *
@@ -452,7 +452,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -482,7 +482,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    X
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -512,7 +512,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -542,7 +542,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -572,7 +572,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -602,7 +602,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3S    Pass
 4S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -633,7 +633,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  4N =2= 
 Pass  5C    Pass  6C
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "S"]
 *
@@ -664,7 +664,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -694,7 +694,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -725,7 +725,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5D    Pass  5H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -756,7 +756,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -786,7 +786,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -816,7 +816,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -846,7 +846,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3D    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -876,7 +876,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -906,7 +906,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -936,7 +936,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -966,7 +966,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -996,7 +996,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    X     2H    Pass
 3H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1026,7 +1026,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1057,7 +1057,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  2H
 Pass  2N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1089,7 +1089,7 @@ Pass  2N    Pass  3D
 Pass  3N    Pass  4C =2= 
 Pass  4H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "N"]
 *
@@ -1120,7 +1120,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1150,7 +1150,7 @@ Pass  Pass  1D    Pass
 1S    Pass  1N    Pass
 2C =1=    Pass  2N    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1180,7 +1180,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1210,7 +1210,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1240,7 +1240,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1270,7 +1270,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1300,7 +1300,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1330,7 +1330,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1361,7 +1361,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5H    Pass  6H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -1392,7 +1392,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1423,7 +1423,7 @@ Pass  1N    Pass  2C =1=
 X     2H    3C    4N =2= 
 Pass  5D    Pass  6S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -1454,7 +1454,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4N =2=    Pass
 5S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -1485,7 +1485,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1515,7 +1515,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1545,7 +1545,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1575,7 +1575,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1605,7 +1605,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1635,7 +1635,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  2N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1666,7 +1666,7 @@ Pass  Pass  Pass
 2H    Pass  4N =2=    Pass
 5H    Pass  6S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -1697,7 +1697,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1727,7 +1727,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3D    Pass
 3H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1757,7 +1757,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1788,7 +1788,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  3S
 Pass  4S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1818,7 +1818,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1848,7 +1848,7 @@ Pass  Pass
 1N    Pass  2C =1=    X
 2D    Pass  3D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1878,7 +1878,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1908,7 +1908,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1938,7 +1938,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1968,7 +1968,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -1998,7 +1998,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 X     2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2028,7 +2028,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2058,7 +2058,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2088,7 +2088,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2118,7 +2118,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2148,7 +2148,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3D    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2178,7 +2178,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2208,7 +2208,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2238,7 +2238,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2268,7 +2268,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2300,7 +2300,7 @@ Pass
 3N    Pass  4S    Pass
 4N =2=    Pass  5D    Pass
 5H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for spades"]
 [Play "S"]
 *
@@ -2331,7 +2331,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2361,7 +2361,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3S    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2391,7 +2391,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  5D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2421,7 +2421,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2451,7 +2451,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2481,7 +2481,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2511,7 +2511,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2541,7 +2541,7 @@ Pass  Pass  1C    Pass
 1S    Pass  1N    Pass
 2C =1=    Pass  2H    Pass
 4S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2571,7 +2571,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2601,7 +2601,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2631,7 +2631,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2661,7 +2661,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2691,7 +2691,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2721,7 +2721,7 @@ Pass
 1N    Pass  2C =1=    X
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2751,7 +2751,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2781,7 +2781,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2811,7 +2811,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2841,7 +2841,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2871,7 +2871,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2901,7 +2901,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2931,7 +2931,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -2962,7 +2962,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5D    Pass  6H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -2994,7 +2994,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5H    Pass  6S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "S"]
 *
@@ -3027,7 +3027,7 @@ Pass  Pass  Pass
 5D    Pass  5S    Pass
 6D    Pass  6H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -3060,7 +3060,7 @@ Pass  Pass
 5H    Pass  5N =3=    Pass
 6D    Pass  6N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Note "3:King ask by 5NT"]
 [Play "E"]
@@ -3092,7 +3092,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3122,7 +3122,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3152,7 +3152,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3H    Pass
 4H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3182,7 +3182,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3214,7 +3214,7 @@ Pass  Pass  Pass
 5D    Pass  5N =3=    Pass
 6C    Pass  7S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Note "3:King ask by 5NT"]
 [Play "N"]
@@ -3246,7 +3246,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3276,7 +3276,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3306,7 +3306,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3336,7 +3336,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3366,7 +3366,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3396,7 +3396,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3426,7 +3426,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3456,7 +3456,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2H    Pass
 2N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3486,7 +3486,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4N =2=    Pass
 5H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -3517,7 +3517,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3547,7 +3547,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3577,7 +3577,7 @@ Pass  Pass  1D    Pass
 1S    Pass  1N    Pass
 2C =1=    X     2H    Pass
 4S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3608,7 +3608,7 @@ Pass  Pass  1D    Pass
 2D    Pass  2S    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3638,7 +3638,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3668,7 +3668,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 X     2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3697,7 +3697,7 @@ Pass  Pass  Pass
 1C    Pass  1S    Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3727,7 +3727,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3757,7 +3757,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3D    Pass
 3S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3787,7 +3787,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3817,7 +3817,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3847,7 +3847,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3877,7 +3877,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3907,7 +3907,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3938,7 +3938,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  3S
 Pass  4S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -3970,7 +3970,7 @@ Pass  2N    Pass  3C
 Pass  3N    Pass  4C =2= 
 Pass  4S    Pass  4N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "S"]
 *
@@ -4001,7 +4001,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4033,7 +4033,7 @@ Pass  2H    Pass  3C
 Pass  3N    Pass  4C =2= 
 Pass  4D    Pass  4N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "E"]
 *
@@ -4064,7 +4064,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4094,7 +4094,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4124,7 +4124,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4155,7 +4155,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "E"]
 *
@@ -4187,7 +4187,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  3D
 Pass  3S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4217,7 +4217,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4247,7 +4247,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  2N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4278,7 +4278,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  2S
 Pass  3S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4308,7 +4308,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4338,7 +4338,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4368,7 +4368,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4398,7 +4398,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4428,7 +4428,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4458,7 +4458,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4488,7 +4488,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4518,7 +4518,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4548,7 +4548,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4578,7 +4578,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4608,7 +4608,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4639,7 +4639,7 @@ Pass  1N    Pass  2C =1=
 Pass  2N    Pass  3C
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4671,7 +4671,7 @@ Pass  2N    Pass  3C
 Pass  3N    Pass  4C =2= 
 Pass  4S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "E"]
 *
@@ -4702,7 +4702,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4732,7 +4732,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4762,7 +4762,7 @@ Pass  Pass  Pass  1C
 Pass  1H    Pass  1N
 Pass  2C =1=    Pass  2D
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4792,7 +4792,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4822,7 +4822,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4852,7 +4852,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4883,7 +4883,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  3S
 Pass  4S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4913,7 +4913,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3S    Pass
 4S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -4943,7 +4943,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  4N =2= 
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Quantitative 4NT"]
 [Play "W"]
 *
@@ -4975,7 +4975,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  4N =2= 
 Pass  5C    Pass  5D
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "N"]
 *
@@ -5006,7 +5006,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    X
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5036,7 +5036,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5066,7 +5066,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3S    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5096,7 +5096,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    X     4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5126,7 +5126,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5156,7 +5156,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5187,7 +5187,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  3C
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5217,7 +5217,7 @@ Pass
 1N    Pass  2C =1=    X
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5247,7 +5247,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5277,7 +5277,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3C    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5307,7 +5307,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5337,7 +5337,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5367,7 +5367,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5397,7 +5397,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5429,7 +5429,7 @@ Pass  Pass  Pass
 5H    Pass  5N =3=    Pass
 6C    Pass  6N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Note "3:King ask by 5NT"]
 [Play "S"]
@@ -5461,7 +5461,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  4N =2= 
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Quantitative 4NT"]
 [Play "S"]
 *
@@ -5492,7 +5492,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5522,7 +5522,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5552,7 +5552,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5582,7 +5582,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5612,7 +5612,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5642,7 +5642,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3C    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5672,7 +5672,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5702,7 +5702,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5732,7 +5732,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5762,7 +5762,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5792,7 +5792,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5822,7 +5822,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5852,7 +5852,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5883,7 +5883,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  3D
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5913,7 +5913,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5944,7 +5944,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  2H
 Pass  3H    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -5974,7 +5974,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6004,7 +6004,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6034,7 +6034,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6064,7 +6064,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6094,7 +6094,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6125,7 +6125,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  4N =2= 
 Pass  5S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "W"]
 *
@@ -6156,7 +6156,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3D    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6186,7 +6186,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6217,7 +6217,7 @@ Pass  1N    Pass  2C =1=
 Pass  2N    Pass  3S
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6247,7 +6247,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6277,7 +6277,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6307,7 +6307,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6337,7 +6337,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6367,7 +6367,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6397,7 +6397,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6427,7 +6427,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6457,7 +6457,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6487,7 +6487,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6517,7 +6517,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6547,7 +6547,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6577,7 +6577,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6607,7 +6607,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6637,7 +6637,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6667,7 +6667,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    X     4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6697,7 +6697,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6727,7 +6727,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6757,7 +6757,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6787,7 +6787,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3D
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6817,7 +6817,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6847,7 +6847,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6877,7 +6877,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6907,7 +6907,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6937,7 +6937,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6967,7 +6967,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -6997,7 +6997,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7027,7 +7027,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7058,7 +7058,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  3D
 Pass  4D    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7088,7 +7088,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7118,7 +7118,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 X     2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7148,7 +7148,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7178,7 +7178,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7208,7 +7208,7 @@ Pass  Pass
 1N    Pass  2C =1=    X
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7238,7 +7238,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7268,7 +7268,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7299,7 +7299,7 @@ Pass  1N    Pass  2C =1=
 Pass  2N    Pass  3S
 Pass  4S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7329,7 +7329,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7359,7 +7359,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7390,7 +7390,7 @@ Pass  1N    Pass  2C =1=
 Pass  2N    Pass  3S
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7420,7 +7420,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7450,7 +7450,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7480,7 +7480,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7510,7 +7510,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  2H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7540,7 +7540,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7570,7 +7570,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7600,7 +7600,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7630,7 +7630,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7662,7 +7662,7 @@ Pass  2D    Pass  3D
 Pass  3S    Pass  4D
 Pass  4S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7692,7 +7692,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7722,7 +7722,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7752,7 +7752,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3D    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7783,7 +7783,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  2N
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7813,7 +7813,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2H    Pass
 3H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7844,7 +7844,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  3H
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7874,7 +7874,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7904,7 +7904,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7935,7 +7935,7 @@ Pass  Pass  Pass
 2N    Pass  3D    Pass
 5D    Pass  6D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7965,7 +7965,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -7995,7 +7995,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8025,7 +8025,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8055,7 +8055,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3D    Pass
 4D    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8084,7 +8084,7 @@ Pass  Pass  Pass
 1D    Pass  1H    Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8114,7 +8114,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3D    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8144,7 +8144,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8174,7 +8174,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8204,7 +8204,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8234,7 +8234,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8264,7 +8264,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8294,7 +8294,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8324,7 +8324,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8354,7 +8354,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8384,7 +8384,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8414,7 +8414,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3D    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8444,7 +8444,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8474,7 +8474,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8504,7 +8504,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8535,7 +8535,7 @@ Pass  Pass  Pass
 2D    Pass  4N =2=    Pass
 5C    Pass  5D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -8566,7 +8566,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8597,7 +8597,7 @@ Pass  Pass
 2H    Pass  4N =2=    Pass
 5C    Pass  5S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "N"]
 *
@@ -8628,7 +8628,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8658,7 +8658,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8688,7 +8688,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8718,7 +8718,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3C    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8749,7 +8749,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5C    Pass  6D
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "W"]
 *
@@ -8780,7 +8780,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8810,7 +8810,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8840,7 +8840,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8870,7 +8870,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 X     2S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8900,7 +8900,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8930,7 +8930,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8960,7 +8960,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -8990,7 +8990,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9020,7 +9020,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9050,7 +9050,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9080,7 +9080,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    X
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9110,7 +9110,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  5N    Pass
 6N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9140,7 +9140,7 @@ Pass  Pass
 1N    Pass  2C =1=    X
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9171,7 +9171,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  4N =2= 
 Pass  5H    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "E"]
 *
@@ -9202,7 +9202,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9233,7 +9233,7 @@ Pass  Pass
 2S    Pass  4N =2=    Pass
 5H    Pass  6H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for diamonds"]
 [Play "E"]
 *
@@ -9264,7 +9264,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9294,7 +9294,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3D    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9324,7 +9324,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9354,7 +9354,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9384,7 +9384,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9414,7 +9414,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9444,7 +9444,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9474,7 +9474,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9504,7 +9504,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9534,7 +9534,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9564,7 +9564,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9594,7 +9594,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9625,7 +9625,7 @@ Pass  Pass
 2S    Pass  4N =2=    Pass
 5C    Pass  5S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "E"]
 *
@@ -9656,7 +9656,7 @@ Pass  Pass
 1N    Pass  2C =1=    X
 2S    3C    4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9686,7 +9686,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9716,7 +9716,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9746,7 +9746,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9776,7 +9776,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9806,7 +9806,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9836,7 +9836,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9866,7 +9866,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9897,7 +9897,7 @@ Pass  1S    Pass  1N
 Pass  2C =1=    Pass  2N
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9929,7 +9929,7 @@ Pass  2N    Pass  3D
 Pass  3N    Pass  5N
 Pass  6N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9959,7 +9959,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -9989,7 +9989,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10019,7 +10019,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10050,7 +10050,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  3D
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10080,7 +10080,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10110,7 +10110,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10140,7 +10140,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10170,7 +10170,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3C    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10200,7 +10200,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10230,7 +10230,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10260,7 +10260,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3D    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10292,7 +10292,7 @@ Pass  2H    Pass  3C
 Pass  3N    Pass  4C =2= 
 Pass  4N    Pass  6C
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "N"]
 *
@@ -10323,7 +10323,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10353,7 +10353,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10383,7 +10383,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10413,7 +10413,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10443,7 +10443,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10473,7 +10473,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10503,7 +10503,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10533,7 +10533,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10563,7 +10563,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10593,7 +10593,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10624,7 +10624,7 @@ Pass  Pass  Pass
 2S    Pass  3C    Pass
 3N    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10655,7 +10655,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  3C
 Pass  3N    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10686,7 +10686,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  3D
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10716,7 +10716,7 @@ Pass
 1N    Pass  2C =1=    X
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10747,7 +10747,7 @@ Pass  1N    Pass  2C =1=
 Pass  2S    Pass  3S
 Pass  4S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10778,7 +10778,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  2S
 Pass  3S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10808,7 +10808,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10838,7 +10838,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10868,7 +10868,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10898,7 +10898,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10928,7 +10928,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10958,7 +10958,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -10988,7 +10988,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11019,7 +11019,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  4N =2= 
 Pass  5H    Pass  5S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "E"]
 *
@@ -11050,7 +11050,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 X     2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11080,7 +11080,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11110,7 +11110,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11140,7 +11140,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  2N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11170,7 +11170,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11200,7 +11200,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11230,7 +11230,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11260,7 +11260,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11290,7 +11290,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11320,7 +11320,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3C    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11350,7 +11350,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  2N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11381,7 +11381,7 @@ Pass  Pass  Pass
 2H    Pass  4N =2=    Pass
 5D    Pass  6S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for hearts"]
 [Play "E"]
 *
@@ -11412,7 +11412,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11442,7 +11442,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11474,7 +11474,7 @@ Pass  2S    Pass  3D
 Pass  3N    Pass  4S
 Pass  5D    Pass  5S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11504,7 +11504,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11535,7 +11535,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  3S
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11565,7 +11565,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11595,7 +11595,7 @@ Pass  Pass  Pass  1C
 Pass  1S    Pass  1N
 Pass  2C =1=    Pass  2S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11625,7 +11625,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11654,7 +11654,7 @@ Pass  Pass
 1D    Pass  1S    Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11685,7 +11685,7 @@ Pass  Pass
 2H    Pass  3C    Pass
 4C    Pass  5C    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11715,7 +11715,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11746,7 +11746,7 @@ Pass  1S    Pass  1N
 Pass  2C =1=    Pass  2N
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11776,7 +11776,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11808,7 +11808,7 @@ Pass  2N    Pass  3D
 Pass  3N    Pass  4S
 Pass  4N =2=    Pass  5S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for spades"]
 [Play "N"]
 *
@@ -11839,7 +11839,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11869,7 +11869,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11899,7 +11899,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11930,7 +11930,7 @@ Pass  1N    Pass  2C =1=
 Pass  2N    Pass  3S
 Pass  4S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11960,7 +11960,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -11990,7 +11990,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3C    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12023,7 +12023,7 @@ Pass  3N    Pass  4C =2=
 Pass  4S    Pass  5C =3= 
 Pass  5H    Pass  6N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Note "3:King ask"]
 [Play "E"]
@@ -12055,7 +12055,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12087,7 +12087,7 @@ Pass  Pass  Pass
 3N    Pass  4C =2=    Pass
 4H    Pass  4N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "W"]
 *
@@ -12118,7 +12118,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    X     4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12149,7 +12149,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  3C
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12179,7 +12179,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12209,7 +12209,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3C    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12239,7 +12239,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12269,7 +12269,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12300,7 +12300,7 @@ Pass  1H    Pass  1N
 Pass  2C =1=    Pass  2N
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12330,7 +12330,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12360,7 +12360,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12390,7 +12390,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12420,7 +12420,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12450,7 +12450,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12480,7 +12480,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2S    Pass
 3S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12510,7 +12510,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12541,7 +12541,7 @@ Pass  1N    Pass  2C =1=
 X     2H    Pass  3C =2= 
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:limit raise or better in diamonds"]
 [Play "N"]
 *
@@ -12572,7 +12572,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12602,7 +12602,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12632,7 +12632,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12662,7 +12662,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12692,7 +12692,7 @@ Pass  Pass  1D    Pass
 1H    Pass  1N    Pass
 2C =1=    Pass  2D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12722,7 +12722,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12752,7 +12752,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12782,7 +12782,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12812,7 +12812,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12842,7 +12842,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    X     2H    Pass
 2N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12872,7 +12872,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12901,7 +12901,7 @@ Pass  Pass  Pass
 1C    Pass  1S    Pass
 1N    Pass  2C =1=    2D
 2S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12931,7 +12931,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12961,7 +12961,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -12992,7 +12992,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  3H
 Pass  4H    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13022,7 +13022,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13052,7 +13052,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3D    Pass
 5D    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13082,7 +13082,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13112,7 +13112,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13142,7 +13142,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13173,7 +13173,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  2S
 Pass  3S    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13203,7 +13203,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13233,7 +13233,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13263,7 +13263,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13293,7 +13293,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13323,7 +13323,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3H    Pass
 4H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13353,7 +13353,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13383,7 +13383,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  6H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13413,7 +13413,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13443,7 +13443,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13473,7 +13473,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13503,7 +13503,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13533,7 +13533,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13563,7 +13563,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13593,7 +13593,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13623,7 +13623,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13652,7 +13652,7 @@ Pass  Pass
 1D    Pass  1S    Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13682,7 +13682,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4N =2=    Pass
 5S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "W"]
 *
@@ -13713,7 +13713,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13743,7 +13743,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13773,7 +13773,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13803,7 +13803,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13833,7 +13833,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13864,7 +13864,7 @@ Pass  1N    Pass  2C =1=
 Pass  2N    Pass  4C =2= 
 Pass  4S    Pass  4N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "E"]
 *
@@ -13895,7 +13895,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13925,7 +13925,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13955,7 +13955,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -13985,7 +13985,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14015,7 +14015,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14045,7 +14045,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14075,7 +14075,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    X
 2N    3C    4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14105,7 +14105,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14135,7 +14135,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14165,7 +14165,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14195,7 +14195,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  4N =2=    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Quantitative 4NT"]
 [Play "E"]
 *
@@ -14226,7 +14226,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14256,7 +14256,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14286,7 +14286,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  2N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14316,7 +14316,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14346,7 +14346,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14376,7 +14376,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14406,7 +14406,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14436,7 +14436,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14466,7 +14466,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14496,7 +14496,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 X     2D    3C    X
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14526,7 +14526,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3C    Pass
 3N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14556,7 +14556,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14586,7 +14586,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14617,7 +14617,7 @@ Pass  Pass  Pass
 2D    Pass  2S    Pass
 2N    Pass  3S    Pass
 4S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14648,7 +14648,7 @@ Pass  1N    Pass  2C =1=
 Pass  2D    Pass  2H
 Pass  3H    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14678,7 +14678,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14708,7 +14708,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14738,7 +14738,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14768,7 +14768,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14798,7 +14798,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14828,7 +14828,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14859,7 +14859,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5H    Pass  6H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "S"]
 *
@@ -14890,7 +14890,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14920,7 +14920,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14950,7 +14950,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -14980,7 +14980,7 @@ Pass  Pass  1D    Pass
 1S    Pass  1N    Pass
 2C =1=    Pass  2D    Pass
 2S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15010,7 +15010,7 @@ Pass  Pass  1D    Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15040,7 +15040,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15070,7 +15070,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15100,7 +15100,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15130,7 +15130,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15160,7 +15160,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15190,7 +15190,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15220,7 +15220,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15250,7 +15250,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15280,7 +15280,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2S    Pass
 3S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15310,7 +15310,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15340,7 +15340,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3C    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15370,7 +15370,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15400,7 +15400,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15430,7 +15430,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15460,7 +15460,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15490,7 +15490,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  5D
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15520,7 +15520,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15550,7 +15550,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2D    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15580,7 +15580,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15610,7 +15610,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15640,7 +15640,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2H    Pass
 2N    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15670,7 +15670,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2N    Pass  3C    Pass
 5C    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15700,7 +15700,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15730,7 +15730,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15760,7 +15760,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15790,7 +15790,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15820,7 +15820,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4H    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15850,7 +15850,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 X     2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15881,7 +15881,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  3D
 Pass  3N    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15911,7 +15911,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15941,7 +15941,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -15971,7 +15971,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16002,7 +16002,7 @@ Pass  Pass
 2H    Pass  4N =2=    Pass
 5H    Pass  6S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "E"]
 *
@@ -16033,7 +16033,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16063,7 +16063,7 @@ Pass  1H    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2N    Pass  3N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16093,7 +16093,7 @@ Pass  1D    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16123,7 +16123,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2S    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16153,7 +16153,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  3N    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16184,7 +16184,7 @@ Pass  1N    Pass  2C =1=
 Pass  2N    Pass  3C
 Pass  5C    Pass  Pass
 Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16214,7 +16214,7 @@ Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16244,7 +16244,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2S    Pass
 3S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16274,7 +16274,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  3H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16304,7 +16304,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    X
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16335,7 +16335,7 @@ Pass  1N    Pass  2C =1=
 Pass  2H    Pass  4N =2= 
 Pass  5D    Pass  6N
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "N"]
 *
@@ -16366,7 +16366,7 @@ Pass  Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "E"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16396,7 +16396,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2H    Pass  4S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "S"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16426,7 +16426,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2S    Pass
 3S    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16457,7 +16457,7 @@ Pass  Pass
 2N    Pass  4C =2=    Pass
 4H    Pass  6D    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Gerber, for NT"]
 [Play "S"]
 *
@@ -16488,7 +16488,7 @@ Pass  Pass
 1N    Pass  2C =1=    Pass
 2D    Pass  2H    Pass
 3H    Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16518,7 +16518,7 @@ Pass  1C    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16549,7 +16549,7 @@ Pass  Pass  Pass
 2H    Pass  4N =2=    Pass
 5H    Pass  5S    Pass
 Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Note "2:Blackwood 1430, for clubs"]
 [Play "N"]
 *
@@ -16580,7 +16580,7 @@ Pass  1C    Pass  1S
 Pass  1N    Pass  2C =1= 
 Pass  2H    Pass  4S
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "W"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
@@ -16610,7 +16610,7 @@ Pass  1D    Pass  1H
 Pass  1N    Pass  2C =1= 
 Pass  2S    Pass  4H
 Pass  Pass  Pass
-[Note "1:Chekback"]
+[Note "1:checkback"]
 [Play "N"]
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
