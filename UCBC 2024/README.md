@@ -28,7 +28,7 @@ Currently I have selected this configuration for BEN, but it might change
         "5431 convention after 1NT" (Might be dropped)
         "5NT pick a slam"
         "Blackwood 1430"
-        "Checkback"
+        "Checkback" (Might be changed to 2 Way NMF aka XY-NT)
         "Cue bid"
         "Drury"
         "Exclusion"

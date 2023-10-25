@@ -233,9 +233,11 @@ def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
     n_steps = 1 + len(auction) // 4
     A = get_auction_binary(n_steps, auction, lead_index, hand, vuln, ns, ew)
 
-    p_hcp, p_shp = binfo.model(A)
+    if binfo:
+        p_hcp, p_shp = binfo.model(A)
 
-    b[:3] = p_hcp.reshape((-1, n_steps, 3))[:,-1,:].reshape(3)
-    b[3:] = p_shp.reshape((-1, n_steps, 12))[:,-1,:].reshape(12)
-
+        b[:3] = p_hcp.reshape((-1, n_steps, 3))[:,-1,:].reshape(3)
+        b[3:] = p_shp.reshape((-1, n_steps, 12))[:,-1,:].reshape(12)
+    print(x)
+    print(b)
     return x.reshape((1, -1)), b.reshape((1, -1))
