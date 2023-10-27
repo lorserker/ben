@@ -28,7 +28,7 @@ Currently I have selected this configuration for BEN, but it might change
         "5431 convention after 1NT" (Might be dropped)
         "5NT pick a slam"
         "Blackwood 1430"
-        "Checkback"
+        "Checkback" (Might be changed to 2 Way NMF aka XY-NT)
         "Cue bid"
         "Drury"
         "Exclusion"
@@ -42,15 +42,15 @@ Currently I have selected this configuration for BEN, but it might change
         "Lebensohl after double"
         "Maximal Doubles"
         "Michaels Cuebid"
-        "Minor Suit Stayman after 1NT"
-        "Minor Suit Stayman after 2NT"
+        "Minor Suit Stayman after 1NT" (Under evaluation)
+        "Minor Suit Stayman after 2NT" (Under evaluation)
         "Mixed raise"
-        "Multi-Landy"
+        "Multi-Landy" (Or Capalletti)
         "Ogust"
         "Quantitative 4NT"
         "Responsive double"
         "ROPI DOPI"
-        "SMOLEN"
+        "Smolen"
         "Soloway Jump Shifts"
         "Splinter"
         "Support double redouble"
@@ -63,6 +63,8 @@ Currently I have selected this configuration for BEN, but it might change
         "Weak natural 2M"
 
 The convention card to load into BBA is located in [BBA Convention Cards](BBA%20convention%20cards/BEN-UCBC.bbsa)
+
+As many conventions has different flavors we will use the definitions on Bridge Bum ['https://www.bridgebum.com/']
 
 The boards to be used for training is located in [Boards](Boards/)
 
