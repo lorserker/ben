@@ -561,7 +561,7 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            # rdeal = ('AQ9.543.6.AKJ876 762.A96.KQJ42.Q2 KJ83.KJ2.T753.T5 T54.QT87.A98.943', 'S Both')
+            rdeal = ('AQ9.543.6.AKJ876 762.A96.KQJ42.Q2 KJ83.KJ2.T753.T5 T54.QT87.A98.943', 'S Both')
 
             driver.set_deal(None, *rdeal, ns, ew, False)
         else:
