@@ -30,7 +30,6 @@ from bba.BBA import BBABotBid
 from sample import Sample
 from bidding import bidding
 from sample import Sample
-from nn.models import Models
 from deck52 import decode_card
 from bidding.binary import DealData
 from objects import CardResp, Card, BidResp
@@ -460,7 +459,9 @@ class Driver:
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
-                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, level, self.sampler, self.verbose)
+                # Overrule configuration for search threshold
+                self.models.search_threshold = level
+                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, self.sampler, self.verbose)
                 players.append(bot)
 
         auction = ['PAD_START'] * self.dealer_i
@@ -549,7 +550,21 @@ async def main():
     ns = args.ns
     ew = args.ew
 
+    np.set_printoptions(precision=1, suppress=True, linewidth=200)
+
     configuration = conf.load(configfile)
+
+    try:
+        if (configuration["models"]['tf_version'] == "2"):
+            print("Loading version 2")
+            from nn.models_tf2 import Models
+        else: 
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
+    except KeyError:
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
+
 
     models = Models.from_conf(configuration, base_path.replace("\src",""))
 
@@ -561,7 +576,7 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            rdeal = ('AQ9.543.6.AKJ876 762.A96.KQJ42.Q2 KJ83.KJ2.T753.T5 T54.QT87.A98.943', 'S Both')
+            rdeal = ('AJ64.9865.9.Q987 Q7.AT43.QT3.AT63 982.J2.A542.KJ42 KT53.KQ7.KJ876.5', 'E None')
 
             driver.set_deal(None, *rdeal, ns, ew, False)
         else:
@@ -572,7 +587,7 @@ async def main():
             board_no[0] = board_no[0] + 1
 
         # BEN is handling all 4 hands
-        driver.human = [0.1, 0.1, 0.1, 0.1]
+        driver.human = [-1, -1, -1, -1]
         # BBA is handling all 4 hands
         # driver.human = [99, 99, 99, 99]
         await driver.run()

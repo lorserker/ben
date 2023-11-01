@@ -165,7 +165,6 @@ class BBABotBid:
         if not vuln[0] and not vuln[1]:
             self.vuln = 0
 
-        #print("Vul: ", self.vuln)
         self.vuln = 0
 
 
@@ -205,9 +204,6 @@ class BBABotBid:
         info = self.player.get_info_feature(self.C_INTERPRETED)
         minhcp = info[102]
         maxhcp = info[103]
-        #print(meaning)
-        #print(minhcp)
-        #print(maxhcp)
         if minhcp > 0:
             if maxhcp < 37:
                 meaning += f" {minhcp}-{maxhcp} hcp"

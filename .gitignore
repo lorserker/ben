@@ -25,8 +25,6 @@ scripts/training/playing/playing_data/Jack
 scripts/training/playing/*_model
 scripts/training/bidding/bidding_bin
 scripts/training/bidding/model
-src/Northdb.*
-src/Southdb.*
 scripts/training/playing/lead_model_b
 scripts/training/playing/models
 scripts/training/bidding/bidding_info_bin
@@ -51,3 +49,11 @@ UCBC 2024/Models
 UCBC 2024/Boards/data
 UCBC 2024/Boards/All.PBN
 scripts/training/bidding/binfo_bin
+scripts/training/*/model
+scripts/training/**/*.npy
+scripts/match/bidding/0.*
+scripts/training/**/*.out
+src/Eastdb.*
+src/Westdb.*
+src/Northdb.*
+src/Southdb.*

@@ -7,7 +7,7 @@ import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 import os
 import logging
-
+import shutil
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
@@ -15,13 +15,13 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from batcher import Batcher
 
-model_path = './models/lead_model/lead'
+model_path = './model/lead'
 
 seed = 1337
 
 batch_size = 64
-n_iterations = 1000000
-display_step = 10000
+display_step = 1000
+epochs = 1
 
 X_train = np.load('./lead_bin/X.npy')
 B_train = np.load('./lead_bin/B.npy')
@@ -31,6 +31,14 @@ n_examples = X_train.shape[0]
 n_ftrs = X_train.shape[1]
 n_cards = 32
 n_bi = B_train.shape[1]
+
+
+print("Size input hand:         ", n_ftrs)
+print("Examples for training:   ", n_examples)
+print("Batch size:              ", batch_size)
+n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
+print("Iterations               ", n_iterations)
+print("Model path:              ",model_path)
 
 n_hidden_units = 512
 
@@ -67,20 +75,20 @@ learning_rate = tf.placeholder(tf.float32, name='learning_rate')
 train_step = tf.train.AdamOptimizer(learning_rate).minimize(cost)
 
 batch = Batcher(n_examples, batch_size)
-cost_batch = Batcher(n_examples, 10000)
+cost_batch = Batcher(n_examples, batch_size)
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
-    saver = tf.train.Saver(max_to_keep=5)
+    saver = tf.train.Saver(max_to_keep=1)
 
     for i in range(n_iterations):
         x_batch, b_batch, y_batch = batch.next_batch([X_train, B_train, y_train])
-        if i % display_step == 0:
+        if i != 0 and (i % display_step) == 0:
             x_cost, b_cost, y_cost = cost_batch.next_batch([X_train, B_train, y_train])
             c_train = sess.run(cost, feed_dict={X: x_cost, B: b_cost, y: y_cost, keep_prob: 1.0})
             l_train = sess.run(lead_softmax, feed_dict={X: x_cost, B: b_cost, y: y_cost, keep_prob: 1.0})
-            print('{}. c_train={}'.format(i, c_train))
+            print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train))
             print(np.mean(np.argmax(l_train, axis=1) == np.argmax(y_cost, axis=1)))
                 
             sys.stdout.flush()
@@ -90,3 +98,21 @@ with tf.Session() as sess:
         sess.run(train_step, feed_dict={X: x_batch, B: b_batch, y: y_batch, keep_prob: 0.6, learning_rate: 0.001 / (2**(i/5e5))})
 
     saver.save(sess, model_path, global_step=n_iterations)
+
+    # Define a dictionary of inputs and outputs for the SavedModel format
+    inputs = {'X': X, 'B': B, 'keep_prob': keep_prob}
+    outputs = {'lead_softmax': lead_softmax}
+
+    # Save the model in the SavedModel format
+    saved_model_dir = model_path + '_saved_model'
+
+    try:
+        shutil.rmtree(model_path + '_saved_model')
+        print("Directory removed successfully.")
+    except FileNotFoundError:
+        pass  # Ignore the "Directory not found" exception
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+    #tf.saved_model.simple_save(sess, saved_model_dir, inputs, outputs)

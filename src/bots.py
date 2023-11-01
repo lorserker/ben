@@ -4,7 +4,6 @@ import sys
 import numpy as np
 
 import binary
-import nn.player as player
 import deck52
 import scoring
 
@@ -13,18 +12,17 @@ from bidding import bidding
 from sample import Sample
 from binary import parse_hand_f
 
-from util import hand_to_str, expected_tricks, p_make_contract
+from util import hand_to_str, expected_tricks, p_make_contract, follow_suit
 
 
 class BotBid:
 
-    def __init__(self, vuln, hand_str, models, ns, ew, score, sampler, verbose):
+    def __init__(self, vuln, hand_str, models, ns, ew, sampler, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
-        self.min_candidate_score = score
-        if verbose:
-            print(f"self.min_candidate_score {self.min_candidate_score}")
+        self.min_candidate_score = models.search_threshold
+        #print("models.search_threshold: ",models.search_threshold)
         self.model = models.bidder_model
         self.state = models.bidder_model.zero_state
         self.lead_model = models.lead
@@ -47,7 +45,6 @@ class BotBid:
     def get_binary(self, auction):
         n_steps = BotBid.get_n_steps_auction(auction)
         hand_ix = len(auction) % 4
-        
         X = binary.get_auction_binary(n_steps, auction, hand_ix, self.hand, self.vuln, self.ns, self.ew)
 
         x = X[:,-1,:]
@@ -122,6 +119,7 @@ class BotBid:
     
     @staticmethod
     def do_rollout(auction, candidates, samples):
+        #print(candidates)
         # Just one candidate, so no need for rolling out the bidding
         if len(candidates) == 1:
             #print("Just one candidate, so no need for rolling out the bidding")
@@ -151,14 +149,13 @@ class BotBid:
 
     def get_bid_candidates(self, auction):
         bid_softmax = self.next_bid_np(auction)[0]
-        np.set_printoptions(precision=2, suppress=True)
         if self.verbose:
             index_highest = np.argmax(bid_softmax)
             print(f"bid {bidding.ID2BID[index_highest]} value {bid_softmax[index_highest]:.4f} is recommended by NN")
-            print(f"self.min_candidate_score {self.min_candidate_score}")
 
         candidates = []
 
+        #print("self.min_candidate_score: ",self.min_candidate_score)
         # If self.min_candidate_score == -1 we will just take what the neural network suggest 
         if (self.min_candidate_score == -1):
             while True:
@@ -168,12 +165,14 @@ class BotBid:
                     candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
                     break
                 else:
-                    # Seems to be an error in the training that needs to be solved
-                    sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
-                    assert(bid_i > 1)
+                    # Only report it if above threshold
+                    if bid_softmax[bid_i] >= self.min_candidate_score:
+                        # Seems to be an error in the training that needs to be solved
+                        sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
+                        #assert(bid_i > 1)
                 # set the score for the bid just processed to zero so it is out of the loop
                 bid_softmax[bid_i] = 0
-            return candidates
+            return candidates, False
         
         # Find the last index of 'PAD_START'
         pad_start_index = len(auction) - 1 - auction[::-1].index('PAD_START') if 'PAD_START' in auction else -1
@@ -204,8 +203,9 @@ class BotBid:
                 candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
             else:
                 # Seems to be an error in the training that needs to be solved
-                # could be at bid 20 - need to investigate
-                sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
+                # Only report it if above threshold
+                if bid_softmax[bid_i] >= self.min_candidate_score:
+                    sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
                 if len(candidates) > 0:
                     break
                 #assert(bid_i > 1)
@@ -216,12 +216,14 @@ class BotBid:
         # After preempts the model is lacking some bidding, so we will try to get a second bid
         if no_bids < 4 and no_bids > 0:
             if bidding.BID2ID[auction[0]] > 14:
-                # Extra candidate after opponents preempt
-                print("Extra candidate after opponents preempt might be needed")
+                if self.verbose:
+                    print("Extra candidate after opponents preempt might be needed")
             if no_bids > 1 and bidding.BID2ID[auction[1]] > 14:
-                print("Extra candidate after partners preempt might be needed")
-                
+                if self.verbose:
+                    print("Extra candidate after partners preempt might be needed")
 
+        if self.verbose:
+            print("\n".join(str(bid) for bid in candidates))
         return candidates, passout
 
     def next_bid_np(self, auction):
@@ -262,13 +264,18 @@ class BotBid:
         turn_i = len(auction) % 4
         while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
             X = binary.get_auction_binary(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.ns, self.ew)
-            bid_np = self.model.model_seq(X).reshape((n_samples, n_steps_vals[turn_i], -1))[:,-1,:]
+            y_bid_np = self.model.model_seq(X)
+            if (y_bid_np.ndim == 2): 
+                x_bid_np = y_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
+                bid_np = x_bid_np[:,-1,:]
+            else:
+                bid_np = y_bid_np[:,-1,:]
+            assert bid_np.shape[1] == 40
             bid_i += 1
             auction_np[:,bid_i] = np.argmax(bid_np, axis=1)
             
             n_steps_vals[turn_i] += 1
             turn_i = (turn_i + 1) % 4
-
         assert len(auction_np) > 0
         
         return auction_np
@@ -394,7 +401,7 @@ class BotLead:
     def get_lead_candidates(self, auction):
         x_ftrs, b_ftrs = binary.get_lead_binary(auction, self.hand, self.binfo_model, self.vuln, self.ns, self.ew)
         lead_softmax = self.lead_model.model(x_ftrs, b_ftrs)
-        lead_softmax = player.follow_suit(lead_softmax, self.hand, np.array([[0, 0, 0, 0]]))
+        lead_softmax = follow_suit(lead_softmax, self.hand, np.array([[0, 0, 0, 0]]))
 
         candidates = []
         # Make a copy of the lead_softmax array
@@ -456,7 +463,7 @@ class CardPlayer:
 
     def __init__(self, player_models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, verbose = False):
         self.player_models = player_models
-        self.model = player_models[player_i]
+        self.playermodel = player_models[player_i]
         self.player_i = player_i
         self.hand = parse_hand_f(32)(hand_str).reshape(32)
         self.hand52 = parse_hand_f(52)(hand_str).reshape(52)
@@ -613,12 +620,15 @@ class CardPlayer:
         return card_ev
 
     def next_card_softmax(self, trick_i):
-        return player.follow_suit(
-            self.model.next_cards_softmax(self.x_play[:,:(trick_i + 1),:]),
+        cards_softmax = self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i + 1),:])
+        assert cards_softmax.shape == (1, 32), f"Expected shape (1, 32), but got shape {cards_softmax.shape}"
+        x = follow_suit(
+            self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i + 1),:]),
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_player_hand(),
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_this_trick_lead_suit(),
-        ).reshape(-1)
-
+        )
+        return x.reshape(-1)
+    
     def next_card(self, trick_i, leader_i, current_trick, players_states, card_dd):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)

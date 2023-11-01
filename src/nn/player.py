@@ -1,16 +1,7 @@
 import numpy as np
 import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
 
 from scipy.special import softmax
-
-
-SUIT_MASK = np.array([
-    [1] * 8 + [0] * 24,
-    [0] * 8 + [1] * 8 + [0] * 16,
-    [0] * 16 + [1] * 8 + [0] * 8,
-    [0] * 24 + [1] * 8,
-])
 
 
 class BatchPlayer:
@@ -54,68 +45,15 @@ class BatchPlayer:
         return softmax(card_logit.reshape((x.shape[0], x.shape[1], 32)), axis=2)
 
     def next_cards_softmax(self, x):
-        return self.model(x)[:,-1,:]
+        result = self.model(x)[:,-1,:]
+        return result
 
 
 class BatchPlayerLefty(BatchPlayer):
 
     def reshape_card_logit(self, card_logit, x):
-        return softmax(card_logit.reshape((x.shape[0], x.shape[1] - 1, 32)), axis=2)
+        softmax_card_logit =  softmax(card_logit.reshape((x.shape[0], x.shape[1] - 1, 32)), axis=2)
+        return softmax_card_logit
 
 
-def follow_suit(cards_softmax, own_cards, trick_suit):
-    assert cards_softmax.shape[1] == 32
-    assert own_cards.shape[1] == 32
-    assert trick_suit.shape[1] == 4
-    assert trick_suit.shape[0] == cards_softmax.shape[0]
-    assert cards_softmax.shape[0] == own_cards.shape[0]
 
-    suit_defined = np.max(trick_suit, axis=1) > 0
-    trick_suit_i = np.argmax(trick_suit, axis=1)
-
-    mask = (own_cards > 0).astype(np.int32)
-
-    has_cards_of_suit = np.sum(mask * SUIT_MASK[trick_suit_i], axis=1) > 1e-9
-
-    mask[suit_defined & has_cards_of_suit] *= SUIT_MASK[trick_suit_i[suit_defined & has_cards_of_suit]]
-
-    legal_cards_softmax = cards_softmax * mask
-
-    s = np.sum(legal_cards_softmax, axis=1, keepdims=True)
-    s[s < 1e-9] = 1
-
-    return legal_cards_softmax / s
-
-def get_trick_winner_i(trick, strain):
-    assert trick.shape[1] == 4 * 32
-    assert strain.shape[1] == 5
-
-    n_samples = trick.shape[0]
-
-    trick_cards = np.hstack([
-        np.argmax(trick[:,:32], axis=1).reshape((-1, 1)),
-        np.argmax(trick[:,32:64], axis=1).reshape((-1, 1)),
-        np.argmax(trick[:,64:96], axis=1).reshape((-1, 1)),
-        np.argmax(trick[:,96:], axis=1).reshape((-1, 1))
-    ])
-    assert trick_cards.shape == (n_samples, 4)
-
-    trick_cards_suit = trick_cards // 8
-
-    trump_suit_i = np.argmax(strain, axis=1).reshape((-1, 1)) - 1
-
-    is_trumped = np.any(trick_cards_suit == trump_suit_i, axis=1).reshape((-1, 1))
-
-    trick_cards_trumps = trick_cards.astype(float)
-    trick_cards_trumps[trick_cards_suit != trump_suit_i] = 99
-    trick_cards_trumps += np.random.randn(n_samples, 4) / 1000  # adding random to break ties
-    highest_trump_i = np.argmin(trick_cards_trumps, axis=1).reshape((-1, 1))
-
-    lead_suit = trick_cards_suit[:,0].reshape((-1, 1))
-
-    trick_cards_lead_suit = trick_cards.astype(float)
-    trick_cards_lead_suit[trick_cards_suit != lead_suit] = 99
-    trick_cards_lead_suit += np.random.randn(n_samples, 4) / 1000  # adding random to break ties
-    highest_lead_suit_i = np.argmin(trick_cards_lead_suit, axis=1).reshape((-1, 1))
-
-    return np.where(is_trumped, highest_trump_i, highest_lead_suit_i)

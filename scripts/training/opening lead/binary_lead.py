@@ -217,9 +217,9 @@ if __name__ == '__main__':
     out_dir = './lead_bin'
 
     data_it = jack_data_iterator(itertools.chain(
-        open('data/NT_lead.txt'), 
-        open('data/SuitLead.txt'))) 
+        open('../data/Jack/BW5C_N.txt'), 
+        open('../data/Jack/BW5C_S.txt'))) 
 
-    model = BidInfo("./models/bw5c_info/bw5c_info-500000")
+    model = BidInfo("../bidding_info/model/binfo-51000")
 
     create_binary(data_it, out_dir, model, 8)

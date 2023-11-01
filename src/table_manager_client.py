@@ -26,7 +26,6 @@ import datetime
 import pprint
 from objects import Card, CardResp, BidResp
 
-from nn.models import Models
 from deck52 import decode_card
 from bidding import bidding
 from objects import Card
@@ -105,7 +104,7 @@ class TMClient:
             self.dummy_hand_str = await self.receive_dummy()
 
         await self.play(auction, opening_lead52)
-        print(self)
+
         
     async def connect(self, host, port):
         try:
@@ -134,7 +133,7 @@ class TMClient:
         if bbabid == 99:
             bot = BBABotBid(1,1,self.player_i,self.hand_str,vuln, self.dealer_i)
         else:
-            bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, self.models.search_threshold, self.sampler, self.verbose)
+            bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, self.sampler, self.verbose)
         auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
@@ -691,7 +690,20 @@ async def main():
     verbose = args.verbose
     biddingonly = args.biddingonly
 
+    np.set_printoptions(precision=2, suppress=True)
+
     configuration = conf.load(configfile)
+
+    try:
+        if (configuration["models"]['tf_version'] == "2"):
+            print("Loading version 2")
+            from nn.models_tf2 import Models
+        else: 
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
+    except KeyError:
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
 
     models = Models.from_conf(configuration, base_path.replace("\src",""))
 

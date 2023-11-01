@@ -55,6 +55,38 @@ def display_lin(lin):
     return HTML(f'<iframe width="800" height="600" src="http://bridgebase.com/tools/handviewer.html?lin={lin}" />')
 
 
+SUIT_MASK = np.array([
+    [1] * 8 + [0] * 24,
+    [0] * 8 + [1] * 8 + [0] * 16,
+    [0] * 16 + [1] * 8 + [0] * 8,
+    [0] * 24 + [1] * 8,
+])
+
+def follow_suit(cards_softmax, own_cards, trick_suit):
+    assert cards_softmax.shape[1] == 32
+    assert own_cards.shape[1] == 32
+    assert trick_suit.shape[1] == 4
+    assert trick_suit.shape[0] == cards_softmax.shape[0]
+    assert cards_softmax.shape[0] == own_cards.shape[0]
+
+    suit_defined = np.max(trick_suit, axis=1) > 0
+    trick_suit_i = np.argmax(trick_suit, axis=1)
+
+    mask = (own_cards > 0).astype(np.int32)
+
+    has_cards_of_suit = np.sum(mask * SUIT_MASK[trick_suit_i], axis=1) > 1e-9
+
+    mask[suit_defined & has_cards_of_suit] *= SUIT_MASK[trick_suit_i[suit_defined & has_cards_of_suit]]
+
+    legal_cards_softmax = cards_softmax * mask
+
+    #print(cards_softmax)
+    s = np.sum(legal_cards_softmax, axis=1, keepdims=True)
+    s[s < 1e-9] = 1
+    return legal_cards_softmax / s
+
+
+
 class Board(NamedTuple):
     dealer: str
     vuln: List[bool]

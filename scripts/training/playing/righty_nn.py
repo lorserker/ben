@@ -1,11 +1,13 @@
 import sys
 import numpy as np
+import datetime
 import sys
 sys.path.append('../../../src')
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 import os
 import logging
+import shutil
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -15,11 +17,10 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from batcher import Batcher
 
 model_path = './righty_model/righty'
-
+saved_model_dir = './righty_saved_model' 
 batch_size = 64
-n_iterations = 1000000
-display_step = 10000
-
+display_step = 1000
+epochs = 5
 
 X_train = np.load('./righty_bin/X.npy')
 Y_train = np.load('./righty_bin/Y.npy')
@@ -27,6 +28,13 @@ Y_train = np.load('./righty_bin/Y.npy')
 n_examples = Y_train.shape[0]
 n_ftrs = X_train.shape[2]
 n_cards = Y_train.shape[2]
+
+print("Size input hand:         ", n_ftrs)
+print("Examples for training:   ", n_examples)
+print("Batch size:              ", batch_size)
+n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
+print("Iterations               ", n_iterations)
+print("Model path:              ",model_path)
 
 lstm_size = 128
 n_layers = 3
@@ -75,22 +83,36 @@ cost = tf.losses.softmax_cross_entropy(out_card_target, out_card_logit)
 train_step = tf.train.AdamOptimizer(0.0003).minimize(cost)
 
 batch = Batcher(n_examples, batch_size)
-cost_batch = Batcher(n_examples, 10000)
+cost_batch = Batcher(n_examples, batch_size)
 
 with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
-    saver = tf.train.Saver(max_to_keep=50)
+    saver = tf.train.Saver(max_to_keep=1)
 
     for i in range(n_iterations):
         x_batch, y_batch = batch.next_batch([X_train, Y_train])
-        if i % display_step == 0:
-            print(i)
+        if i != 0 and (i % display_step) == 0:
             x_cost, y_cost = cost_batch.next_batch([X_train, Y_train])
             c_train = sess.run(cost, feed_dict={seq_in: x_cost, seq_out: y_cost, keep_prob: 1.0})
-            print('{}. c_train={}'.format(i, c_train))
+            print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train))
             sys.stdout.flush()
             saver.save(sess, model_path, global_step=i)
         sess.run(train_step, feed_dict={seq_in: x_batch, seq_out: y_batch, keep_prob: 0.8})
 
     saver.save(sess, model_path, global_step=n_iterations)
+
+    # Save the model in the SavedModel format
+    saved_model_dir = model_path + '_saved_model'
+
+    try:
+        shutil.rmtree(model_path + '_saved_model')
+        print("Directory removed successfully.")
+    except FileNotFoundError:
+        pass  # Ignore the "Directory not found" exception
+    except Exception as e:
+        print(f"An error occurred: {e}")
+
+
+    # Save the model in the SavedModel format
+    # tf.saved_model.simple_save(sess, saved_model_dir, inputs={'seq_in': seq_in, 'keep_prob': keep_prob}, outputs={'out_card': out_card})

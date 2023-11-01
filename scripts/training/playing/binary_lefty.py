@@ -4,9 +4,9 @@ import os
 import os.path
 import numpy as np
 
-from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup
+from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup, binary_hand, get_card_index, encode_card
 
-from binary_righty import binary_hand, get_card_index, encode_card, get_play_labels, play_data_iterator
+from binary_righty import get_play_labels, play_data_iterator
 
 def binary_data(deal_str, outcome_str, play_str):
     x = np.zeros((1, 11, 298), np.float16)
@@ -64,7 +64,7 @@ def binary_data(deal_str, outcome_str, play_str):
     return x, y
 
 if __name__ == '__main__':
-    n = 633873
+    n = 272776
 
     out_dir = './lefty_bin'
 
@@ -72,11 +72,9 @@ if __name__ == '__main__':
     Y = np.zeros((n, 11, 32), np.float16)
 
     for i, (deal_str, outcome_str, play_str) in enumerate(play_data_iterator(itertools.chain(
-        open('playing_data/jack/BW5C_N.txt'), 
-        open('playing_data/jack/BW5C_S.txt'),
-        open('playing_data/jack/JOS_N.txt'),
-        open('playing_data/jack/JOS_S.txt')))):
-        if i % 1000 == 0:
+        open('../data/jack/BW5C_N.txt'), 
+        open('../data/jack/BW5C_S.txt')))):
+        if (i != 0) and i % 1000 == 0:
             print(i)
 
         x_i, y_i = binary_data(deal_str, outcome_str, play_str)

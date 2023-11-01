@@ -218,6 +218,7 @@ class Sample:
         
     def sample_cards_auction(self, auction, nesw_i, hand, vuln, bidder_model, binfo, ns, ew, n_samples):
 
+        n_samples = 1
         if self.verbose:
             print("sample_cards_auction")
         n_steps = 1 + len(auction) // 4
@@ -235,8 +236,8 @@ class Sample:
         if self.verbose:
             c_hcp = (lambda x: 4 * x + 10)(p_hcp.copy())
             c_shp = (lambda x: 1.75 * x + 3.25)(p_shp.copy())
-            #print(c_hcp[0])
-            #print(c_shp[0])
+            print(c_hcp)
+            print(c_shp)
 
         lho_pard_rho = self.sample_cards_vec(n_samples, p_hcp[0], p_shp[0], hand.reshape(32))
 
@@ -254,7 +255,6 @@ class Sample:
         X_lho[:, :, 2] = (binary.get_hcp(lho_pard_rho[:, 0, :]).reshape((-1, 1)) - 10) / 4
         X_lho[:, :, 3:7] = (binary.get_shape(lho_pard_rho[:, 0, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         lho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 1) % 4, n_steps)
-        #print(lho_actual_bids)
         lho_sample_bids = bidder_model.model_seq(X_lho).reshape((n_samples, n_steps, -1))
 
         X_pard[:, :, :] = A_pard
@@ -262,7 +262,6 @@ class Sample:
         X_pard[:, :, 2] = (binary.get_hcp(lho_pard_rho[:, 1, :]).reshape((-1, 1)) - 10) / 4
         X_pard[:, :, 3:7] = (binary.get_shape(lho_pard_rho[:, 1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         pard_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 2) % 4, n_steps)
-        #print(pard_actual_bids)
         pard_sample_bids = bidder_model.model_seq(X_pard).reshape((n_samples, n_steps, -1))
 
         X_rho[:, :, :] = A_rho
@@ -270,15 +269,10 @@ class Sample:
         X_rho[:, :, 2] = (binary.get_hcp(lho_pard_rho[:, 2, :]).reshape((-1, 1)) - 10) / 4
         X_rho[:, :, 3:7] = (binary.get_shape(lho_pard_rho[:, 2, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         rho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 3) % 4, n_steps)
-        #print(rho_actual_bids)
         rho_sample_bids = bidder_model.model_seq(X_rho).reshape((n_samples, n_steps, -1))
-        #print(rho_sample_bids)
         min_scores = np.ones(n_samples)
 
         for i in range(n_steps):
-            #print(bidding.ID2BID[lho_actual_bids[i]])
-            #print(bidding.ID2BID[pard_actual_bids[i]])
-            #print(bidding.ID2BID[rho_actual_bids[i]])
             if lho_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, lho_sample_bids[:, i, lho_actual_bids[i]])
             if pard_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
@@ -468,8 +462,7 @@ class Sample:
     def get_bid_scores(self, nesw_i, auction, vuln, hand, bidder_model, ns, ew):
         n_steps = 1 + len(auction) // 4
 
-        A = binary.get_auction_binary(
-            n_steps, auction, nesw_i, hand, vuln, ns, ew)
+        A = binary.get_auction_binary(n_steps, auction, nesw_i, hand, vuln, ns, ew)
 
         X = np.zeros((hand.shape[0], n_steps, A.shape[-1]))
 
@@ -477,11 +470,13 @@ class Sample:
         X[:, :, 7:39] = hand.reshape((-1, 1, 32))
         X[:, :, 39:] = A[nesw_i, :, 39:]
         X[:, :, 2] = (binary.get_hcp(hand).reshape((-1, 1)) - 10) / 4
-        X[:, :, 3:7] = (binary.get_shape(
-            hand).reshape((-1, 1, 4)) - 3.25) / 1.75
+        X[:, :, 3:7] = (binary.get_shape(hand).reshape((-1, 1, 4)) - 3.25) / 1.75
+        
         actual_bids = bidding.get_bid_ids(auction, nesw_i, n_steps)
-        sample_bids = bidder_model.model_seq(
-            X).reshape((hand.shape[0], n_steps, -1))
+        sample_bids = bidder_model.model_seq(X)
+        #print(sample_bids.shape)
+        #print(hand.shape)
+        sample_bids = sample_bids.reshape((hand.shape[0], n_steps, -1))
 
         min_scores = np.ones(hand.shape[0])
 
@@ -743,17 +738,12 @@ class Sample:
 
                 if len(cards_played) == 0:
                     continue
+                ## Should this be 11 to avoid reshaping?
+                n_tricks_pred = max(11, trick_i + len(card_played_current_trick))
+                p_cards = models.player_models[p_i].model(states[p_i][:, :n_tricks_pred, :])
+                card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]
 
-                n_tricks_pred = max(
-                    10, trick_i + len(card_played_current_trick))
-                p_cards = models.player_models[p_i].model(
-                    states[p_i][:, :n_tricks_pred, :])
-
-                card_scores = p_cards[:, np.arange(
-                    len(cards_played)), cards_played]
-
-                min_scores = np.minimum(
-                    min_scores, np.min(card_scores, axis=1))
+                min_scores = np.minimum(min_scores, np.min(card_scores, axis=1))
 
         # Trust in the play until now
         play_accept_threshold = self.play_accept_threshold

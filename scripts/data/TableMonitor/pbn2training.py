@@ -15,7 +15,6 @@ def load(fin):
     dealer, vulnerable = None, None
     with open('input.ben', 'w', encoding='utf-8') as file:  # Open the output file with UTF-8 encoding
         for line in fin:
-            #print(line)
             if line.startswith("% PBN") or line == "\n":
                 if dealer != None:
                     print(hands_pbn, file=file)
@@ -27,7 +26,6 @@ def load(fin):
                 continue  
             if line.startswith('[Dealer'):
                 dealer = extract_value(line)
-                #print(dealer)
             if line.startswith('[Vulnerable'):
                 vuln_str = extract_value(line)
                 vulnerable = {'NS': 'N-S', 'EW': 'E-W', 'All': 'Both'}.get(vuln_str, vuln_str)

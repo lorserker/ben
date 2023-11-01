@@ -1,6 +1,7 @@
 import sys
 sys.path.append('../../../src')
 
+import datetime
 import numpy as np
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
@@ -12,10 +13,10 @@ output_model = sys.argv[2]  # where to save new checkpoints e.g './model2/biddin
 
 model_path = output_model
 
-batch_size = 100
+batch_size = 64
 start_iteration = int(checkpoint_model.split('-')[-1])
 n_iterations = 1000000
-display_step = 10000
+display_step = 1000
 
 X_train = np.load('x.npy')
 y_train = np.load('y.npy')
@@ -44,16 +45,16 @@ with graph.as_default():
     train_step = graph.get_operation_by_name('Adam')
 
     batch = Batcher(n_examples, batch_size)
-    cost_batch = Batcher(n_examples, 10000)
+    cost_batch = Batcher(n_examples, batch_size)
 
     saver = tf.train.Saver()
 
     for i in range(start_iteration, start_iteration + n_iterations):
         x_batch, y_batch = batch.next_batch([X_train, y_train])
-        if i % display_step == 0:
+        if (i != 0) and i % display_step == 0:
             x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
             c_train = sess.run(cost, feed_dict={seq_in: x_cost, seq_out: y_cost, keep_prob: 1.0})
-            print('{}. c_train={}'.format(i, c_train))
+            print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i, c_train))
             sys.stdout.flush()
             saver.save(sess, model_path, global_step=i)
         sess.run(train_step, feed_dict={seq_in: x_batch, seq_out: y_batch, keep_prob: 0.8})

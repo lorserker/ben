@@ -17,8 +17,6 @@ import copy
 
 import numpy as np
 
-from nn.bidder import Bidder
-from nn.models import Models
 from bots import BotBid
 from bidding import bidding
 from sample import Sample
@@ -31,13 +29,11 @@ VULN = {
 }
 
 
-def bid_hand(hands, dealer, vuln, models_ns_ew, ns, ew, do_search, nntrust, samplers, verbose):
+def bid_hand(hands, dealer, vuln, models_ns_ew, ns, ew, do_search, samplers, verbose):
 
-    if (nntrust==None) :
-        nntrust = 0.1
     dealer_i = 'NESW'.index(dealer)
     
-    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], ns, ew, nntrust, samplers[i % 2], verbose) for i, hand in enumerate(hands)]
+    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], ns, ew, samplers[i % 2], verbose) for i, hand in enumerate(hands)]
 
     auction = ['PAD_START'] * dealer_i
 
@@ -58,8 +54,7 @@ def bid_hand(hands, dealer, vuln, models_ns_ew, ns, ew, do_search, nntrust, samp
                 # to be able to recreate the board from the gameserver we let the bot bid, but ignores the result
                 bot = copy.copy(bidder_bots[turn_i])
                 bid = bot.bid(auction).bid
-                candidates = bidder_bots[turn_i].get_bid_candidates(auction)
-                #print(f"Candidate: {candidates[0].bid}")
+                candidates, passout = bidder_bots[turn_i].get_bid_candidates(auction)
                 bid = candidates[0].bid
                 auction.append(bid)
         
@@ -74,20 +69,29 @@ if __name__ == '__main__':
     parser.add_argument('--bidderEW', type=str)
     parser.add_argument('--set', type=str)
     parser.add_argument('--search', type=str)
-    parser.add_argument('--nntrust', type=float)
 
     args = parser.parse_args()
-    
+
     sys.stderr.write(f'NS = {args.bidderNS}\n')
     sys.stderr.write(f'EW = {args.bidderEW}\n')
     sys.stderr.write(f'search = {args.search}\n')
-    sys.stderr.write(f'nn trust = {args.nntrust}\n')
-
 
     configuration_ns = conf.load(args.bidderNS)
     configuration_ew = conf.load(args.bidderEW)
 
-    
+    np.set_printoptions(precision=2, suppress=True)
+
+    try:
+        if configuration_ns["models"]['tf_version'] == "2":
+            sys.stderr.write("Loading version 2\n")
+            from nn.models_tf2 import Models
+        else: 
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
+    except KeyError:
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
+
     models_ns = Models.from_conf(configuration_ns,"..\..\..")
     models_ew = Models.from_conf(configuration_ns,"..\..\..")
 
@@ -103,7 +107,7 @@ if __name__ == '__main__':
         ns = -1
         ew = -1
         sys.stderr.write(f'Bidding board {index + 1}\n')
-        auction = bid_hand(hands, dealer, vuln, [models_ns, models_ew], ns, ew, args.search, args.nntrust,[Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)],False)
+        auction = bid_hand(hands, dealer, vuln, [models_ns, models_ew], ns, ew, args.search, [Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)],False)
 
         record = {
             'board' : index + 1,

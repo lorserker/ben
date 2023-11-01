@@ -5,18 +5,7 @@ import os.path
 import numpy as np
 
 from data_access import card_index_lookup
-from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup
-
-def binary_hand(suits):
-    x = np.zeros(32, np.float16)
-    assert(len(suits) == 4)
-    for suit_index in [0, 1, 2, 3]:
-        for card in suits[suit_index]:
-            card_index = card_index_lookup_x[card]
-            x[suit_index * 8 + card_index] += 1
-    assert(np.sum(x) == 13)
-    return x
-
+from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup, card_index_lookup_x, encode_card, binary_hand
 
 def get_cards(play_str):
     cards = []
@@ -176,7 +165,7 @@ def play_data_iterator(fin):
 
 
 if __name__ == '__main__':
-    n = 633873
+    n = 272776
 
     out_dir = './righty_bin'
 
@@ -184,11 +173,9 @@ if __name__ == '__main__':
     Y = np.zeros((n, 11, 32), np.float16)
 
     for i, (deal_str, outcome_str, play_str) in enumerate(play_data_iterator(itertools.chain(
-        open('playing_data/jack/BW5C_N.txt'), 
-        open('playing_data/jack/BW5C_S.txt'),
-        open('playing_data/jack/JOS_N.txt'),
-        open('playing_data/jack/JOS_S.txt')))):
-        if i % 1000 == 0:
+        open('../data/Jack/BW5C_N.txt'), 
+        open('../data/Jack/BW5C_S.txt')))):
+        if (i != 0) and i % 1000 == 0:
             print(i)
 
         x_i, y_i = binary_data(deal_str, outcome_str, play_str)

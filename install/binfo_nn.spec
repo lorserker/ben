@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['..\\scripts\\training\\bidding\\binfo_nn.py'],
+    ['..\\scripts\\training\\bidding_info\\binfo_nn.py'],
     pathex=['..\\src'],
     binaries=[],
     datas=[],

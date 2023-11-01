@@ -2,8 +2,8 @@ import os
 import os.path
 
 from configparser import ConfigParser
-import nn.player as player
 
+from nn.player import BatchPlayer, BatchPlayerLefty
 from nn.bidder import Bidder
 from nn.bid_info import BidInfo
 from nn.leader import Leader
@@ -41,10 +41,10 @@ class Models:
             lead=Leader(os.path.join(base_path, conf['lead']['lead'])),
             sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy'])),
             player_models=[
-                player.BatchPlayerLefty('lefty', os.path.join(base_path, conf['cardplay']['lefty'])),
-                player.BatchPlayer('dummy', os.path.join(base_path, conf['cardplay']['dummy'])),
-                player.BatchPlayer('righty', os.path.join(base_path, conf['cardplay']['righty'])),
-                player.BatchPlayer('decl', os.path.join(base_path, conf['cardplay']['decl']))
+                BatchPlayerLefty('lefty', os.path.join(base_path, conf['cardplay']['lefty'])),
+                BatchPlayer('dummy', os.path.join(base_path, conf['cardplay']['dummy'])),
+                BatchPlayer('righty', os.path.join(base_path, conf['cardplay']['righty'])),
+                BatchPlayer('decl', os.path.join(base_path, conf['cardplay']['decl']))
             ],
             search_threshold=search_threshold,
             lead_threshold=lead_threshold
@@ -53,6 +53,11 @@ class Models:
     @property
     def search_threshold(self):
         return self._search_threshold
+
+
+    @search_threshold.setter
+    def search_threshold(self, value):
+        self._search_threshold = value
 
     @property
     def lead_threshold(self):

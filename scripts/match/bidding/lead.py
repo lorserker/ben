@@ -14,16 +14,16 @@ import json
 import conf
 import argparse
 
-from nn.models import Models
 from bots import BotLead
 from sample import Sample
 from objects import Card
 from auction import VULN
+import numpy as np
 
 
 SEATS = ['north', 'east', 'south', 'west']
 
-def lead(obj, models, ns, ew, sampler):
+def lead(obj, models, ns, ew, sampler, verbose):
     if obj['contract'] is None:
         return None
     
@@ -31,7 +31,7 @@ def lead(obj, models, ns, ew, sampler):
     lead_i = (decl_i + 1) % 4
 
     hand_lead = obj[SEATS[lead_i]]
-    bot = BotLead(VULN[obj['vuln']], hand_lead, models, ns, ew, sampler)
+    bot = BotLead(VULN[obj['vuln']], hand_lead, models, ns, ew, models.lead_threshold, sampler, verbose)
     lead_card_indexes, _ = bot.get_lead_candidates(obj['auction'])
     lead_card_i = lead_card_indexes[0]
     suit_i = lead_card_i // 8
@@ -57,11 +57,26 @@ if __name__ == '__main__':
 
     sys.stderr.write(f'NS = {args.bidder}\n')
     
-    models = Models.from_conf(conf.load(args.bidder),"..\..\..")
-    sampler = Sample.from_conf(conf.load(args.bidder))
+    np.set_printoptions(precision=2, suppress=True)
+
+    configuration = conf.load(args.bidder)
+
+    try:
+        if configuration["models"]['tf_version'] == "2":
+            sys.stderr.write("Loading version 2\n")
+            from nn.models_tf2 import Models
+        else: 
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
+    except KeyError:
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
+
+    models = Models.from_conf(configuration,"..\..\..")
+    sampler = Sample.from_conf(configuration)
     for line in sys.stdin:
         obj = json.loads(line)
-        obj['lead'] = lead(obj, models, ns, ew, sampler)
+        obj['lead'] = lead(obj, models, ns, ew, sampler, False)
 
         print(json.dumps(obj))
         sys.stdout.flush()

@@ -98,10 +98,8 @@ class DealData(object):
                     bidding.encode_bid(partner_bid),
                     bidding.encode_bid(rho_bid)
                 ), axis=1)
-
             X[hand_ix, t, :] = ftrs
             y[hand_ix, t, :] = bidding.encode_bid(target_bid)
-
             times_seen[hand_ix] += 1
             i += 1
 
@@ -224,7 +222,6 @@ def get_hcp(hand):
     J[:,:,3] = 1
 
     points = 4 * A * x + 3 * K * x + 2 * Q * x + J * x
-
     _sum = np.sum(points, axis=(1, 2))
 
     return _sum

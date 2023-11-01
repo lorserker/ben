@@ -6,6 +6,7 @@ import os.path
 import numpy as np
 
 from bidding.binary import DealData
+np.set_printoptions(precision=2, suppress=True, linewidth=220)
 
 LEVELS = [1, 2, 3, 4, 5, 6, 7]
 

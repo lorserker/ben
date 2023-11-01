@@ -185,11 +185,16 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
 
     step_i = 0
     s_all = np.arange(n_samples, dtype=np.int32)
+    #print("n_steps: ", n_steps)
+    #print("n_samples: ", n_samples)
     while step_i < n_steps:
         lho_bid = auction[:, bid_i - 3] if bid_i - 3 >= 0 else bidding.BID2ID['PAD_START']
         partner_bid = auction[:, bid_i - 2] if bid_i - 2 >= 0 else bidding.BID2ID['PAD_START']
         rho_bid = auction[:, bid_i - 1] if bid_i - 1 >= 0 else bidding.BID2ID['PAD_START']
-        
+        #print(lho_bid)
+        #print(partner_bid)
+        #print(rho_bid)
+        #print(auction)
         X[s_all,step_i,39+lho_bid] = 1
         X[s_all,step_i,(39+40)+partner_bid] = 1
         X[s_all,step_i,(39+2*40)+rho_bid] = 1
@@ -233,11 +238,8 @@ def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
     n_steps = 1 + len(auction) // 4
     A = get_auction_binary(n_steps, auction, lead_index, hand, vuln, ns, ew)
 
-    if binfo:
-        p_hcp, p_shp = binfo.model(A)
+    p_hcp, p_shp = binfo.model(A)
 
-        b[:3] = p_hcp.reshape((-1, n_steps, 3))[:,-1,:].reshape(3)
-        b[3:] = p_shp.reshape((-1, n_steps, 12))[:,-1,:].reshape(12)
-    print(x)
-    print(b)
+    b[:3] = p_hcp.reshape((-1, n_steps, 3))[:,-1,:].reshape(3)
+    b[3:] = p_shp.reshape((-1, n_steps, 12))[:,-1,:].reshape(12)
     return x.reshape((1, -1)), b.reshape((1, -1))

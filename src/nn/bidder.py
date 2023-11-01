@@ -87,6 +87,7 @@ class Bidder:
                     State(c=self.sess.run(next_c_1, feed_dict=feed_dict), h=self.sess.run(next_h_1, feed_dict=feed_dict)),
                     State(c=self.sess.run(next_c_2, feed_dict=feed_dict), h=self.sess.run(next_h_2, feed_dict=feed_dict)),
                 )
+            
             return bids, next_state
         
         def pred_fun_seq(x):

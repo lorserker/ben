@@ -19,9 +19,8 @@ import human
 import conf
 import functools
 import os
-
+import numpy as np
 from websockets.exceptions import ConnectionClosedOK
-from nn.models import Models
 from sample import Sample
 from urllib.parse import parse_qs, urlparse
 from pbn2ben import load
@@ -93,7 +92,21 @@ if random:
 ns = args.ns
 ew = args.ew
 
+np.set_printoptions(precision=2, suppress=True, linewidth=240)
+
 configuration = conf.load(configfile)
+
+
+try:
+    if (configuration["models"]['tf_version'] == "2"):
+        print("Loading version 2")
+        from nn.models_tf2 import Models
+    else: 
+        # Default to version 1. of Tensorflow
+        from nn.models import Models
+except KeyError:
+        # Default to version 1. of Tensorflow
+        from nn.models import Models
 
 models = Models.from_conf(configuration, base_path.replace("\src",""))
 

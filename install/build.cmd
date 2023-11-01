@@ -8,5 +8,5 @@ pyinstaller ..\src\calculate_DDOLAR.py --onefile --path=..\src --add-binary ..\b
 
 pyinstaller ..\\scripts\\training\\bidding\\bidding_binary.py --onefile --path=..\src 
 pyinstaller ..\\scripts\\training\\bidding\\bidding_nn.py --onefile --path=..\src 
-pyinstaller ..\\scripts\\training\\bidding\\binfo_binary.py --onefile --path=..\src 
-pyinstaller ..\\scripts\\training\\bidding\\binfo_nn.py --onefile --path=..\src 
+pyinstaller ..\\scripts\\training\\bidding_info\\binfo_binary.py --onefile --path=..\src 
+pyinstaller ..\\scripts\\training\\bidding_info\\binfo_nn.py --onefile --path=..\src 

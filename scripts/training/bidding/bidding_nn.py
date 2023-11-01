@@ -1,18 +1,9 @@
 import sys
-import os
-
-# Get the directory where the script is located
-script_dir = os.path.dirname(os.path.abspath(__file__))
-# Construct the path to the 'src' directory relative to the script's location
-src_path = os.path.join(script_dir, '../../../src')
-# Add the path to sys.path
-sys.path.append(src_path)
+sys.path.append('../../../src')
 
 import datetime
 import os.path
 import numpy as np
-# This import is only to help PyInstaller when generating the executables
-import tensorflow as tfx
 
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
@@ -20,18 +11,17 @@ tf.disable_v2_behavior()
 from batcher import Batcher
 
 if len(sys.argv) < 2:
-    print("Usage: python bidding_nn inputdirectory outputdirectory")
+    print("Usage: python bidding_nn inputdirectory")
     sys.exit(1)
 
 
 bin_dir = sys.argv[1]
-model_path = sys.argv[2]
 
-model_path = os.path.join(model_path, 'bidding')
+model_path = 'model/bidding'
 
-batch_size = 100
-n_iterations = 100000
-display_step = 10000
+batch_size = 64
+display_step = 1000
+epochs = 3
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))
@@ -39,6 +29,13 @@ y_train = np.load(os.path.join(bin_dir, 'y.npy'))
 n_examples = y_train.shape[0]
 n_ftrs = X_train.shape[2]
 n_bids = y_train.shape[2]
+
+print("Size input hand:         ", n_ftrs)
+print("Examples for training:   ", n_examples)
+print("Batch size:              ", batch_size)
+n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
+print("Iterations               ", n_iterations)
+print("Model path:              ",model_path)
 
 lstm_size = 128
 n_layers = 3
@@ -87,16 +84,16 @@ cost = tf.compat.v1.losses.softmax_cross_entropy(out_bid_target, out_bid_logit)
 train_step = tf.compat.v1.train.AdamOptimizer(0.001).minimize(cost)
 
 batch = Batcher(n_examples, batch_size)
-cost_batch = Batcher(n_examples, 10000)
+cost_batch = Batcher(n_examples, batch_size)
 
 with tf.compat.v1.Session() as sess:
     sess.run(tf.compat.v1.global_variables_initializer())
 
-    saver = tf.compat.v1.train.Saver(max_to_keep=100)
+    saver = tf.compat.v1.train.Saver(max_to_keep=1)
 
     for i in range(n_iterations):
         x_batch, y_batch = batch.next_batch([X_train, y_train])
-        if i % display_step == 0:
+        if (i != 0) and i % display_step == 0:
             x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
             c_train = sess.run(cost, feed_dict={seq_in: x_cost, seq_out: y_cost, keep_prob: 1.0})
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train))

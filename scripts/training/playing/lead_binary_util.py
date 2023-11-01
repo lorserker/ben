@@ -1,11 +1,41 @@
 
+import numpy as np
 suit_index_lookup = {'S': 0, 'H': 1, 'D': 2, 'C': 3}
 seats = ['W', 'N', 'E', 'S']
 seat_index = {'W': 0, 'N': 1, 'E': 2, 'S': 3}
 
 
+def encode_card(card):
+    x = np.zeros(32, np.float16)
+    if card == '>>':
+        return x
+    x[get_card_index(card)] = 1
+    return x
+
+
+card_index_lookup_x = dict(
+    zip(
+        ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'],
+        [0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7],
+    )
+)
+
+def get_card_index(card):
+    suit, value = card[0], card[1]
+    return suit_index_lookup[suit] * 8 + card_index_lookup_x[value]
+
 def convert_auction(auction_str):
     return auction_str.strip().replace('PP', 'PASS').replace('DD', 'X').replace('RR', 'XX').split()
+
+def binary_hand(suits):
+    x = np.zeros(32, np.float16)
+    assert(len(suits) == 4)
+    for suit_index in [0, 1, 2, 3]:
+        for card in suits[suit_index]:
+            card_index = card_index_lookup_x[card]
+            x[suit_index * 8 + card_index] += 1
+    assert(np.sum(x) == 13)
+    return x
 
 
 class DealMeta():

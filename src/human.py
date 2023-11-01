@@ -224,9 +224,6 @@ class HumanCardPlayerSocket(HumanCardPlayer):
 
         card = await self.socket.recv()
 
-        # Check if this is a claim
-        print("Card from socket: ", card)
-
         return deck52.encode_card(card)
 
 

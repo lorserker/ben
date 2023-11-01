@@ -1,116 +1,124 @@
 # Training a Neural Network to Bid
 
-This is a tutorial describing how to train a neural network to bid. There is a [bridgewinners article](https://bridgewinners.com/article/view/bridge-ai-how-neural-networks-learn-to-bid/) to go with this tutorial.
+Using a neural network to bid is implemented using a neural network, where input is the given context, and output is the actual bid.
 
-What you will need:
-- make sure that you have successfully [installed](https://github.com/lorserker/ben/blob/main/README.md#installation) the bridge engine
-- the data is contained in the file `bidding_data.zip`
-- the script to transform the data into the binary format expected by the neural network is `bidding_binary.py`
-- the script which trains the neural network is `bidding_nn.py`
+Let us start with the simplest first as output is a bid from 1C to 7N, Pass, Double or Redouble or 38 possible bids.
 
-### Instructions
+The context is more complex and consist of
+1: The hand
+2: Vulnerability
+3: Bidding until now
+4: Opponents system
 
-You need to be located in the `scripts/training/bidding` directory when you execute the following steps.
+The hand is always 13 out of 52 cards, and vulnerability has one of 4 different values
 
-First, activate the environment
+Bidding is a sequence of bids, and almost unlimited (2^35). Fortunately most of the bidding sequences can be ignored, so we can focus on the more common sequences. Looking thru the championships, there was a bidding sequence of 43 bids in the European championship in 2004, but it was a strong Club system, and that is not expected that this implementation will be able to handle that kind of system (The system is very specific, with many relays, not well suited for a neural network).
 
-```
-conda activate ben
-```
+Lorand made a decision, that BEN will only be able to handle bidding sequences up to a length of 32, and decided, that the bidding should be represented by a bidding round (one bid from each player), so in total 8 bidding rounds.
 
-Unzip the `bidding_data.zip`. You should have a `bidding_data.txt` file now which contains deals and their corresponding auctions like this:
+To signal, that the bidding was ended a new bid was added "PADDING_END", and there is a need for having a "bid" before the auction starts, "PADDING_START" (explained more later), so we ended up with 40 bids as possible output, where the 2 new bids never should occur.
 
-```
-K76.965.Q63.9854 AT83.AJ.J9754.73 Q42.84.T2.AKQT62 J95.KQT732.AK8.J
-N None P P 1C 1H P 1N P 2N P 3D P 3H P 4H P P P
-K83.KQJT.A5.T973 QJT9.A86.Q8.J642 5.973.KJT73.AKQ5 A7642.542.9642.8
-E N-S P 1D P 1H P 2C P 2S P 3H P 3N P P P
-AJ8.KT875.98.KQ5 Q2.AQJ432.KT64.4 KT9643.9.AQ75.J7 75.6.J32.AT98632
-...
-```
+The vulnerability was implemented as 2 booleans, one for each side
 
-Run the script to transform the data into binary format. (the first argument is the number of deals in the dataset, the second argument is the file containing the deals and the third is the script output. the dataset provided happens to contain 588735 deals)
+The hand was simple to represent, but to help the neural network, the shape and hcp for the hand was calculated and added to the input. As small cards doesn't have any value in the bidding the set of cards was reduced to 32.
 
-```
-mkdir -p binary/bidding models/bidding
+Until now the opponents system is not in use, but a system could be represented by a number, and it is possible to create a specific neurtal network, that should be used against a specific systrem (including conventions).
 
-python bidding_binary.py bidding_data.txt binary/bidding
-```
-Here there are 2 optional parameters as you can specify system used for both NS and EW.
-Specifying -1 for both will create a neural network without any information about bidding system.
+But let us see at the actual implementation looking at a deal like this:
 
-0 = 2/1 (GIB)
-1 = Sayc
-2 =
+- E None AJ64.9865.9.Q987 Q7.AT43.QT3.AT63 982.J2.A542.KJ42 KT53.KQ7.KJ876.5
 
-The above command will create two new files into the `binary/bidding` folder: `x.npy` and `y.npy`. `x.npy` contains the inputs to the neural network and `y.npy` contains the expected outputs. Both are stored in numpy array format.
+Dealer East, could probably be ignored.
 
-Then, run the trainig script. This will take several hours to complete, but it will save snapshots of the model as it progresses. If you have a GPU, the training will run faster, but not much faster, because GPUs are not so well suited for the type of NN used.
+Vulnerability None is represented as to booleans [False, False] telling both sides are non-vulnerable.
 
-```
-python bidding_nn.py binary/bidding models/bidding
-```
+Hand for each of the players is represented as an array with 32 elements, and Norths hand in this example is
 
-When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained. (Much better is to use the default.conf file, or create a new configuration file, that can be used)
+- KT53.KQ7.KJ876.5
 
-#### How to continue training an already trained model
+and is translated to:
 
-This part describes how you can load an already trained model and continue training it (without the training starting from scratch)
+- 0 1 0 0 1 0 0 2 0 1 1 0 0 0 0 1 0 1 0 1 0 0 1 2 0 0 0 0 0 0 0 1
 
-Let's say your already trained model is stored in the `model` folder and you want to continue training it and then store the results to the `model2` folder. You can do this by running the [bidding_nn_continue.py](bidding_nn_continue.py) script.
+So starting from Ace of spades, and each suit ends with a value for number of small cards from 2-7.
 
-```
-mkdir -p models/bidding-bis
+In a deck there is 40 high card points (hcp), and the hcp is calculated for each hand. The values are linear normalized.
 
-python bidding_nn_continue.py models/bidding/bidding-1000000 models/bidding-bis
-```
+The shape of a hand is the length in the 4 suits, and again it is normalized (also known as z-score or standardization)
 
-### Training a bidding-info model
+So we end up representing the hand as
 
-This model is used to estimate the strength and shape of hidden hands based on their bidding (i.e meaning of bids)
+- [ 0, 0, -1.25, -0.14, -0.14, -0.14, 0.43, 0, 1, 0, 0, 1, 0, 0, 2, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1]
 
-It is needed if you want to use a bidder neural network in the engine (so it can get information from the bidding)
+So we are calculating hcp and shape so the neural network will not have to build neurons for this, and we are condensing information about the hand like small cards, to remove the information as it is not being used in the bidding.
 
-To train a bidding-info model, first transform the data into a binary format.
+There are a lot of other metrics for a hand, that is used in bidding, and it might be a good idea to help the neural network with those also, but if the input is not providing deals where this information is relevant it will just create an overhead.
 
-```
-mkdir -p binary/binfo models/binfo
+It is also important to realize, that a lot of that type of information is used at the later bidding stages, and should not be used in the first bidding rounds.
 
-python binfo_binary.py 588735 bidding_data.txt binary/binfo
-```
+The following metrics should be condsidered
 
-this will create the following files into the `binary/binfo` folder: `X.npy`, `y.npy`, `HCP.npy`, `SHAPE.npy`
+- Losers
+- Controls
+- Keycards
+- Suit quality
+- Stoppers
 
-then you can start the script which trains the neural network (edit the paths in the scripts if necessary)
+But this will also reduce what the neural network is learning, as players are not using the same rules for defining suit quality, stoppers etc, and we would like the network to learn that stuff like suit quality is a factor.
 
-```
-python binfo_nn.py binary/binfo models/binfo
-```
+For the training i don't expect we will have enough data, where it will make a difference for the outcome if a suit is changed from
 
-### Making a test run
+- KJ986 to KJ432
 
-To test the neural network, it is possible to feed it some [test hands](test_input.txt) and see how it bids them. No search is performed at all for the bidding, so this tests strictly the neural network.
+especially not if we add suit qualiy as a metric, so reducing the card set to 24 or even 20 is probably a possible solution.
 
-```
-python testrun.py model/bidding-1000000 < test_input.txt
-```
+So now left is the bidding, and Lorand decided that each bidding round should be represented as input data, and it was then obvious to use a Recurrent neural network.
 
-this will generate the auctions as they are bid by the model and writes them in this format:
+Seen from a specific hand a bidding round consist of bid from LHO (Left Hand Opponent), Partner and RHO (Right Hand Opponent)
 
-```
-S E-W J3.AKQJT9.42.AK3 85.875.K53.QT965 Q9642.6.JT98.J84 AKT7.432.AQ76.72 P-1D-X-P-1S-P-2H-P-2S-P-3H-P-3S-P-P-P
-S N-S 8.AT732.JT8.AJ63 AKT92.J4.752.T84 7653.Q986.AQ9.Q9 QJ4.K5.K643.K752 P-1C-1H-1S-2C-2H-3H-3S-P-P-P
-E None AT.K4.QJ9542.Q53 96542.765.8.T972 K3.AQ98.AKT73.AK QJ87.JT32.6.J864 P-2C-P-3D-P-4H-P-4S-P-4N-P-5H-P-7D-P-P-P
-```
+When the player is the first to bid, we introduce the new bid "PADDING_START", for the 3 other player. I reality just telling, that there was no bid in the other positions.
 
-This can be used for debugging, to see if the NN bids test hands as expected
+A single bid is represented as an array with 40 elements, where only 1 item is 1, and the rest is zero (a One-Hot array), as this will help the neural network. The values of the Hot-array is
+
+0 = PAD_START
+1 = PAD_END
+2 = PASS
+3 = Double
+4 = Redouble
+5-40 = Bids, starting from 1C and ending at 7N,
+
+So we now have the input record for a bid as this
+
+[ 0, 0, 0.5, -0.71, 0.43, -0.14, 0.43,  
+   0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 2,  
+   1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  
+   1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  
+   1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+And the expected output as this:
+
+[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+as the hand would pass (Element 3 is hot).
+
+Now as we have a deal with 4 hands, there are 4 hands we can train at the same time, we end up with a 3-dimensional array.
+
+In the current implementation (using a Recurrent Neural Network) the bids are as mentioned divided in bidding rounds, so there is an implementation of state, that holds the information about the actual bidding round, so the neural network get that information, when predicting the next bid. So to describe the bidding input for one hand we have 8 times 3 bids or 240 elements in 3 one-hot arrays.
+
+To avoid using state it could be possible to define that bidding consist of up to 50 bids in a sequence. The number of records for the bidding would be limited to the actual number of bids on a hand - probably about 4, but still we would use 4*50*40 elements in one-hot arrays.
+
+But I am not sure about we then will be removing the neural networks ability to generalize, but it is worht testing.
 
 
-### More data
 
-More data is available for download. It was generated with [Edward Piwowar's Bidding Analyzer](https://sites.google.com/view/bbaenglish) for different systems (1 million deals each)
 
-- [SAYC](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/sayc_bidding_data.txt.gz)
-- [2/1](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/21gf_bidding_data.txt.gz)
-- [Polish Club](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/wj_bidding_data.txt.gz)
-- [Precision](https://bridgedatasets.s3.eu-west-1.amazonaws.com/epbot/pc_bidding_data.txt.gz)
+
+
+
+
+
+
+
+
+
+
