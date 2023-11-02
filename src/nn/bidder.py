@@ -90,6 +90,8 @@ class Bidder:
             
             return bids, next_state
         
+        # This should probably no longer be used as TF 2.x requires the entire sequence as input
+        # Or more correct this is the only one to use
         def pred_fun_seq(x):
             result = None
             with self.graph.as_default():

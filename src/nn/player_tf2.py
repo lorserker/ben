@@ -28,10 +28,12 @@ class BatchPlayer:
                 y[:, :x.shape[1], :] = x
             else:
                 y = x
-            card_logit = model.predict(y,verbose=0)
-            result = self.reshape_card_logit(card_logit, x)
 
-            # I need to figure out, why this sometimes is a tensor and other timnes just a numpy array
+            card_logit = model.predict(y,verbose=0)
+            
+            result = self.reshape_card_logit(card_logit[: ,:x.shape[1],:], x)
+
+            # I need to figure out, why this sometimes is a tensor and other times just a numpy array
             if not isinstance(result, np.ndarray):
                 result = result.numpy()
             return result
@@ -39,7 +41,8 @@ class BatchPlayer:
         return pred_fun
 
     def reshape_card_logit(self, card_logit, x):
-        return softmax(card_logit.reshape((x.shape[0], 11, 32)), axis=2)
+        # In Keras the result is returned as a softmax
+        return card_logit[: ,:x.shape[1],:]
 
     def next_cards_softmax(self, x):
         result = self.model(x)[:,-1,:]
@@ -48,6 +51,5 @@ class BatchPlayer:
 class BatchPlayerLefty(BatchPlayer):        
 
     def reshape_card_logit(self, card_logit, x):
-        reshaped_card_logit = tf.keras.layers.Reshape((-1, 32), input_shape=(1, -1, 298))(card_logit)
-        softmax_card_logit = Softmax(axis=-1)(reshaped_card_logit)
-        return softmax_card_logit
+        # In Keras the result is returned as a softmax
+        return card_logit[: ,:x.shape[1]-1,:]

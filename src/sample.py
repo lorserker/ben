@@ -738,9 +738,8 @@ class Sample:
 
                 if len(cards_played) == 0:
                     continue
-                ## Should this be 11 to avoid reshaping?
-                n_tricks_pred = max(11, trick_i + len(card_played_current_trick))
-                p_cards = models.player_models[p_i].model(states[p_i][:, :n_tricks_pred, :])
+
+                p_cards = models.player_models[p_i].model(states[p_i][:, :11, :])
                 card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]
 
                 min_scores = np.minimum(min_scores, np.min(card_scores, axis=1))
