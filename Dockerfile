@@ -9,7 +9,7 @@ RUN apt-get update && \
 
 # https://linuxhint.com/install-use-mono-ubuntu-22-04/
 
-RUN echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | tee /etc/apt/sources.list.d/mono-official-stable.list 
+#RUN echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | tee /etc/apt/sources.list.d/mono-official-stable.list 
 RUN apt-get update && \
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends mono-complete 
 ADD . /app
