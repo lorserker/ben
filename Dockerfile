@@ -7,8 +7,9 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
     apt-get clean
 
-ADD .
+ADD . /app
 
+WORKDIR /app
 RUN pip install -r requirements.txt
 
 # CMD
