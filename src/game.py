@@ -25,7 +25,6 @@ import numpy as np
 import human
 import bots
 import conf
-from bba.BBA import BBABotBid
 
 from sample import Sample
 from bidding import bidding
@@ -455,6 +454,7 @@ class Driver:
         players = []
         for i, level in enumerate(self.human):
             if level == 99:
+                from bba.BBA import BBABotBid
                 players.append(BBABotBid(1,1,i,hands_str[i],vuln, self.dealer_i))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
@@ -565,8 +565,8 @@ async def main():
             # Default to version 1. of Tensorflow
             from nn.models import Models
 
-
-    models = Models.from_conf(configuration, base_path.replace("\src",""))
+    print(base_path)
+    models = Models.from_conf(configuration, base_path.replace("/src",""))
 
     driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), verbose)
 

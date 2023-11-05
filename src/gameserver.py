@@ -108,7 +108,7 @@ except KeyError:
         # Default to version 1. of Tensorflow
         from nn.models import Models
 
-models = Models.from_conf(configuration, base_path.replace("\src",""))
+models = Models.from_conf(configuration, base_path.replace("/src",""))
 
 print('models loaded')
 

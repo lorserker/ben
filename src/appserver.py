@@ -23,6 +23,7 @@ print("Reading deals from: "+DB_NAME)
 
 script_dir = os.path.dirname(os.path.abspath(__file__))
 
+@app.route('/')
 @app.route('/home')
 def home():
     html = '<h1><a href="/app/bridge.html">Play Now</a></h1>\n'
@@ -66,5 +67,8 @@ def delete_deal(deal_id):
     db.close()
     redirect('/home')
 
+print(f'http://localhost:{port}/home')
 
-run(app, host='0.0.0.0', port=port, server='gevent')
+run(app, host='localhost', port=port, server='gevent', log=None)
+
+

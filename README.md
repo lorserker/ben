@@ -150,3 +150,5 @@ Below is a list of features which aren't implemented in this engine yet, but you
   howpublished = {\url{https://github.com/lorserker/ben}},
 }
 ```
+
+On Mac i use python3 and pip3
