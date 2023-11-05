@@ -1,0 +1,60 @@
+.DS_Store
+.ipynb_checkpoints
+__pycache__
+src/gamedb.*
+
+scripts/match/bidding/0.1
+scripts/match/bidding/0.2
+scripts/match/bidding/0.05
+scripts/match/bidding/0.1vs0.2
+scripts/match/bidding/0.1vs0.05
+scripts/match/bidding/0.2vs0.05
+scripts/match/bidding/training/html
+scripts/training/bidding/binary
+.vscode
+install/build
+install/dist/config
+install/dist/models
+install/dist/*.exe
+install/dist/gamedb.*
+install/venv
+install/dist/Championships- BEN v WBridge5.pbn
+models/eamon
+scripts/match/bidding/eamon
+scripts/training/playing/*_bin
+scripts/training/playing/playing_data/Jack
+scripts/training/playing/*_model
+scripts/training/bidding/bidding_bin
+scripts/training/bidding/model
+scripts/training/playing/lead_model_b
+scripts/training/playing/models
+scripts/training/bidding/bidding_info_bin
+scripts/training/bidding/models
+scripts/training/bidding/binfo2
+scripts/training/playing/bw5c_info.zip
+scripts/training/bidding/bw5c.zip
+scripts/training/bidding/test4.py
+install/dist/2nt.pbn
+scripts/training/opening lead/data
+scripts/training/opening lead/models
+scripts/training/opening lead/lead_bin
+scripts/training/opening lead/lead_model_b
+src/db
+models/lead_model_c
+models/lead_model
+UCBC 2024/Boards/*.sql
+UCBC 2024/Boards/*.exe
+UCBC 2024/2023 Practice
+models/UCBC
+UCBC 2024/Models
+UCBC 2024/Boards/data
+UCBC 2024/Boards/All.PBN
+scripts/training/bidding/binfo_bin
+scripts/training/*/model
+scripts/training/**/*.npy
+scripts/match/bidding/0.*
+scripts/training/**/*.out
+src/Eastdb.*
+src/Westdb.*
+src/Northdb.*
+src/Southdb.*
