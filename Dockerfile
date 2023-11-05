@@ -17,4 +17,5 @@ ADD . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
 
-# CMD
+EXPOSE 4443 8080
+CMD ./start_ben_all.sh
