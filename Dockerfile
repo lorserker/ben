@@ -1,6 +1,6 @@
 # start with standard ubuntu:22.04
 # TODO: use multiple stage build for libdds.so & python dependance
-FROM ubuntu:jammy
+FROM docker.io/ubuntu:jammy
 
 # libdds-dev contains libdds.so
 RUN apt-get update && \
@@ -14,7 +14,9 @@ RUN apt-get update && \
 #RUN echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | tee /etc/apt/sources.list.d/mono-official-stable.list 
 #RUN apt-get update && \
 #    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends mono-complete 
-ADD . /app
+ADD src /app/src
+ADD models /app/src/models
+ADD requirements.txt /app
 
 WORKDIR /app
 RUN pip install -r requirements.txt
