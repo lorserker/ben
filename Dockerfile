@@ -14,12 +14,15 @@ RUN apt-get update && \
 #RUN echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | tee /etc/apt/sources.list.d/mono-official-stable.list 
 #RUN apt-get update && \
 #    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends mono-complete 
-ADD src /app/src
-ADD models /app/src/models
-ADD requirements.txt /app
+
+ADD requirements.txt /app/
 
 WORKDIR /app
 RUN pip install -r requirements.txt
+
+ADD src /app/src
+ADD models /app/models
+ADD start_ben_all.sh /app/
 
 EXPOSE 4443 8080
 CMD ./start_ben_all.sh
