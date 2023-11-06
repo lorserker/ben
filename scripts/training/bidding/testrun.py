@@ -3,6 +3,7 @@ sys.path.append('../../../src')
 import argparse
 import logging
 import os
+import conf
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -60,9 +61,16 @@ def main():
     sampler = Sample.from_conf(config,"..\..\..")
 
     with open(filename, 'r') as input_file:
-        for line in input_file:
-            parts = line.strip().split()
-            hands = parts[2:]
+
+        lines = input_file.readlines()
+        n = len(lines) // 2
+        matching = 0
+        print(f"Loaded {n} deals")
+        for i in range(n):
+            print("Board: ",i+1)
+            parts = lines[i*2].strip().split()
+            hands = parts[:]
+            parts = lines[i*2+1].strip().replace("  "," ").split()
             dealer_i = 'NESW'.index(parts[0])
             vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
             vuln_ns, vuln_ew = vuln[parts[1]]
@@ -83,9 +91,16 @@ def main():
                     auction.append("??")
                     break
 
-            auction_str = "-".join(auction).replace("PASS", "P").replace('PAD_START-', '')
-            print(f'{line.strip()} {auction_str}')
-
+            auction_str = " ".join(auction).replace("PASS", "P").replace('PAD_START ', '')
+            trained_bidding = " ".join(parts[2:])
+            if (trained_bidding != auction_str):
+                print(" ".join(hands))
+                print(" ".join(parts[2:]))
+                print(auction_str)
+            else: 
+                matching += 1
+        print(matching," boards matched")
+                
 
 if __name__ == '__main__':
     main()
