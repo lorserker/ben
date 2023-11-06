@@ -16,21 +16,33 @@ limitations under the License."""
 
 import sys
 import os.path
+import platform
 
 from ctypes import cdll, Structure, c_int, c_uint, c_char, c_char_p, POINTER
 
+""" environment support
+                Platform / Processor()
+windows       : win32
+mac m1/m2/m3  : darwin / arm
+mac container : linux  / aarch64 (not ok yet)
+linux x8      : linux  / x86_64
+"""
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':
     DDS_LIB = 'dds.dll'
 elif sys.platform == 'darwin':
     DDS_LIB = 'darwin/libdds.so'
-else:
+else:  # linux
     DDS_LIB = 'libdds.so'
 
-DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)
+try:
+    DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)
+    dds = cdll.LoadLibrary(DDS_PATH)
+except:  # could be mac/linux on aarch64
+    DDS_PATH = 'libdds.so' # use system lib from libdds-dev
+    dds = cdll.LoadLibrary(DDS_PATH)
 
-dds = cdll.LoadLibrary(DDS_PATH)
 sys.stderr.write(f"Loaded lib { os.path.basename(DDS_PATH)}\n")
 
 DDS_VERSION = 20700    
