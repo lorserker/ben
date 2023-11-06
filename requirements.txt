@@ -1,0 +1,17 @@
+numpy
+scipy
+matplotlib
+jupyter
+scikit-learn
+pandas
+
+tqdm
+
+websockets
+
+tensorflow>=2.0
+grpcio-tools
+
+bottle
+gevent
+pythonnet
