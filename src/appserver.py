@@ -12,8 +12,9 @@ app = Bottle()
 os.getcwd()
 
 parser = argparse.ArgumentParser(description="Appserver")
+parser.add_argument("--host", default="localhost", help="Hostname for appserver")
 parser.add_argument("--port", type=int, default=8080, help="Port for appserver")
-parser.add_argument("--db", default="gamedb", help="Port for appserver")
+parser.add_argument("--db", default="gamedb", help="Db for appserver")
 
 args = parser.parse_args()
 
@@ -67,8 +68,7 @@ def delete_deal(deal_id):
     db.close()
     redirect('/home')
 
-print(f'http://localhost:{port}/home')
+host = args.host
+print(f'http://{host}:{port}/home')
 
-run(app, host='localhost', port=port, server='gevent', log=None)
-
-
+run(app, host=host, port=port, server='gevent', log=None)
