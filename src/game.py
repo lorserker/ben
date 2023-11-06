@@ -254,13 +254,15 @@ class Driver:
                     print('player {}'.format(player_i))
                 
                 if trick_i == 0 and player_i == 0:
+                    # To get the state right we ask for the play when using Tf.2X
                     if self.verbose:
                         print('skipping opening lead for ',player_i)
                     for i, card_player in enumerate(card_players):
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
                     continue
 
-                if trick_i > 0 and len(current_trick) == 0 and player_i in (1, 3):
+                # Don't calculate claim before trick 6    
+                if trick_i > 5 and len(current_trick) == 0 and player_i in (1, 3):
                     claimer.claim(
                         strain_i=strain_i,
                         player_i=player_i,
@@ -576,7 +578,7 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            rdeal = ('AJ64.9865.9.Q987 Q7.AT43.QT3.AT63 982.J2.A542.KJ42 KT53.KQ7.KJ876.5', 'E None')
+            rdeal = ('AQ9.543.6.AKJ876 762.A96.KQJ42.Q2 KJ83.KJ2.T753.T5 T54.QT87.A98.943', 'S Both')
 
             driver.set_deal(None, *rdeal, ns, ew, False)
         else:

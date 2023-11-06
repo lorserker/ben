@@ -1,5 +1,7 @@
 import sys
 import os
+sys.path.append('../../../src')
+
 import datetime
 import numpy as np
 import logging
