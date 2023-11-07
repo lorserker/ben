@@ -567,8 +567,7 @@ async def main():
             # Default to version 1. of Tensorflow
             from nn.models import Models
 
-    print(base_path)
-    models = Models.from_conf(configuration, base_path.replace("/src",""))
+    models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
 
     driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), verbose)
 
@@ -578,7 +577,7 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            rdeal = ('AQ9.543.6.AKJ876 762.A96.KQJ42.Q2 KJ83.KJ2.T753.T5 T54.QT87.A98.943', 'S Both')
+            # rdeal = ('AQ9.543.6.AKJ876 762.A96.KQJ42.Q2 KJ83.KJ2.T753.T5 T54.QT87.A98.943', 'S Both')
 
             driver.set_deal(None, *rdeal, ns, ew, False)
         else:

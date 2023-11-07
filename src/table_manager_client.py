@@ -705,7 +705,7 @@ async def main():
             # Default to version 1. of Tensorflow
             from nn.models import Models
 
-    models = Models.from_conf(configuration, base_path.replace("\src",""))
+    models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
 
     client = TMClient(name, seat, models, ns, ew, Sample.from_conf(configuration, verbose), verbose)
     print(f"Connecting to {host}:{port}")
