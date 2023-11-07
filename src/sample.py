@@ -217,8 +217,6 @@ class Sample:
             return lho_pard_rho
         
     def sample_cards_auction(self, auction, nesw_i, hand, vuln, bidder_model, binfo, ns, ew, n_samples):
-
-        n_samples = 1
         if self.verbose:
             print("sample_cards_auction")
         n_steps = 1 + len(auction) // 4
