@@ -168,6 +168,7 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
     hcp = (get_hcp(hand) - 10) / 4
     
     auction = auction_input
+    
     if isinstance(auction, list):
         auction_input = auction_input + ['PAD_END'] * 4 * n_steps
         auction = bidding.BID2ID['PAD_END'] * np.ones((n_samples, len(auction_input)), dtype=np.int32)
@@ -186,7 +187,6 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
     step_i = 0
     s_all = np.arange(n_samples, dtype=np.int32)
     #print("n_steps: ", n_steps)
-    #print("n_samples: ", n_samples)
     while step_i < n_steps:
         lho_bid = auction[:, bid_i - 3] if bid_i - 3 >= 0 else bidding.BID2ID['PAD_START']
         partner_bid = auction[:, bid_i - 2] if bid_i - 2 >= 0 else bidding.BID2ID['PAD_START']

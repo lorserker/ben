@@ -134,15 +134,13 @@
                                         vul = 'N-S';
                                         vulSolver = "NS";
                                     }
-                                } else {
-                                    if (deal.data.vuln_ew) {
+                                } else if (deal.data.vuln_ew) {
                                         vul = "E-W";
                                         vulSolver = "EW";
                                     } else {
                                         vul = 'None';
                                         vulSolver = "None";
                                     }
-                                }
 
                                 let dealer = 'NESW'.charAt(deal.data.dealer)
                                 const rebidContent = '<a href="/app/bridge.html?deal=' +
@@ -151,7 +149,6 @@
 
                                 document.querySelector('#rebid').innerHTML = rebidContent;
 
-                                console.log(auction.auctionString)
                                 const replayContent = '<a href="/app/bridge.html?deal=' +
                                     '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + ' ' + auction.auctionString +'\')' +
                                     '&P=5&board_no=' + deal.board_number() + '"> Play it again </a><br>';
@@ -172,7 +169,32 @@
 
                                 document.querySelector('#solver').innerHTML = solverContent;
 
-                                document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code></pre>'
+                                //document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code></pre>'
+                                log['bids'].forEach(data => {
+                                    document.querySelector('#info').innerHTML += `
+                                        <p><strong>Bid:</strong> ${data.bid}</p>
+                                        `;
+                                    if (data.candidates.length > 0)
+                                    document.querySelector('#info').innerHTML += `
+                                        <p><strong>Candidates:</strong></p>
+                                        <ul>
+                                            ${data.candidates.map(candidate => `
+                                                <li>Call: ${candidate.call}, Expected score: ${candidate.expected_score}, Insta Score: ${candidate.insta_score}, Adjusted: ${candidate.adjustment}</li>
+                                            `).join('')}
+                                        </ul>
+                                        `;
+                                    if (data.hcp != -1)
+                                    document.querySelector('#info').innerHTML += `
+                                        <p><strong>HCP:</strong> ${data.hcp.join(' - ')}</p>
+                                        <p><strong>Shape:</strong> ${data.shape.join('-')}</p>
+                                        `;
+                                    if (data.samples.length > 0)
+                                    document.querySelector('#info').innerHTML += `
+                                        <p><strong>Samples:</strong></p>
+                                        <ul>${data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
+                                        `;
+                                    }
+                                );
 
                                 document.getElementById("btn-next").addEventListener("click", function () {
                                     deal.next()

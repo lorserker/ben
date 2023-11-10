@@ -32,14 +32,14 @@ class CardByCard:
         self.analyze_play()
 
     def analyze_bidding(self):
-        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.ns, self.ew, 0.1, self.sampler, self.verbose) for hand in self.hands]
+        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.ns, self.ew, self.sampler, self.verbose) for hand in self.hands]
 
         player_i = self.dealer_i
         bid_i = self.dealer_i
 
         while bid_i < len(self.padded_auction):
             bid_resp = bidder_bots[player_i].bid(self.padded_auction[:bid_i])
-            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples))
+            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples, -1, -1))
             type(self).bid_eval(self.padded_auction[bid_i], bid_resp)
             bid_i += 1
             player_i = (player_i + 1) % 4
@@ -72,7 +72,7 @@ class CardByCard:
         bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, -1, -1, 0.05, self.sampler, False)
 
         card_resp = bot_lead.find_opening_lead(self.padded_auction)
-        card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples)
+        card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, -1, -1)
         self.card_responses.append(card_resp)
         self.cards[card_resp.card.symbol()] = card_resp
 
@@ -123,11 +123,11 @@ class CardByCard:
                 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models, self.ns, self.ew)
+                    rollout_states, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models, self.ns, self.ew)
 
                 card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
 
-                card_resp = CardResp(Card.from_symbol(self.play[card_i]), card_resp.candidates, card_resp.samples)
+                card_resp = CardResp(Card.from_symbol(self.play[card_i]), card_resp.candidates, card_resp.samples, c_hcp, c_shp)
                 self.card_responses.append(card_resp)
                 self.cards[self.play[card_i]] = card_resp
 

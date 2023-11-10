@@ -1,3 +1,6 @@
+import numpy as np
+import json
+
 class Card:
 
     SUITS = 'SHDC'
@@ -71,17 +74,41 @@ class CandidateCard:
 
 class CardResp:
 
-    def __init__(self, card, candidates, samples):
+    def __init__(self, card, candidates, samples, shape, hcp):
         self.card = card
         self.candidates = candidates
         self.samples = samples
+        self.shape = shape
+        self.hcp = hcp
 
     def to_dict(self):
-        return {
+        
+        if isinstance(self.shape, np.ndarray):
+            if self.shape.ndim == 1:
+                shape_values = [round(float(x), 1) if float(x) != int(x) else int(x) for x in self.shape]
+            elif self.shape.ndim == 2:
+                shape_values = []
+                for arr in self.shape:
+                    shape_row = [round(float(x), 1) if float(x) != int(x) else int(x) for x in arr]
+                    shape_values.append(shape_row)
+        elif self.shape is None:
+            shape_values = None
+        else:
+            shape_values = self.shape
+
+        if isinstance(self.hcp, np.ndarray):
+            hcp_values = [round(float(value), 1) if float(value) != int(value) else int(value) for value in self.hcp] if isinstance(self.hcp, np.ndarray) else self.hcp
+        else:
+            hcp_values = self.hcp
+
+        result = {
             'card': self.card.symbol(),
             'candidates': [cand.to_dict() for cand in self.candidates],
-            'samples': self.samples
+            'samples': self.samples,
+            'hcp': hcp_values,
+            'shape': shape_values
         }
+        return result
 
 
 class CandidateBid:
@@ -93,7 +120,11 @@ class CandidateBid:
         self.adjust = None if adjust is None else float(adjust)
 
     def __str__(self):
-        return f"CandidateBid(bid={self.bid}, insta_score={self.insta_score}, expected_score={self.expected_score}, adjust={self.adjust})"        
+        bid_str = self.bid.ljust(4) if self.bid is not None else "    "
+        insta_score_str = f"{self.insta_score:.4f}" if self.insta_score is not None else "---"
+        expected_score_str = f"{self.expected_score:5.2f}" if self.expected_score is not None else "---"
+        adjust_str = f"{self.adjust:4.0f}" if self.adjust is not None else "---"
+        return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, adjust={adjust_str})"
 
     def with_expected_score(self, expected_score, adjust):
         return CandidateBid(self.bid, self.insta_score, expected_score, adjust)
@@ -117,15 +148,33 @@ class CandidateBid:
 
 class BidResp:
 
-    def __init__(self, bid, candidates, samples):
+    def __init__(self, bid, candidates, samples, shape, hcp):
         self.bid = bid
         self.candidates = candidates
         self.samples = samples
+        self.shape = shape
+        self.hcp = hcp
 
     def to_dict(self):
-        return {
+        if isinstance(self.hcp, np.ndarray):
+            hcp_values = [round(float(value), 1) if float(value) != int(value) else int(value) for value in self.hcp] if isinstance(self.hcp, np.ndarray) else self.hcp
+        else:
+            hcp_values = self.hcp
+
+        if isinstance(self.shape, np.ndarray):
+            shape_values = [round(float(value), 1) if float(value) != int(value) else int(value)
+                            for value in self.shape] if isinstance(self.shape, np.ndarray) else self.shape
+        elif self.shape is None:
+            shape_values = None
+        else:
+            shape_values = self.shape
+
+        result = {
             'bid': self.bid,
             'candidates': [candidate.to_dict() for candidate in self.candidates],
-            'samples': self.samples
+            'samples': self.samples,
+            'hcp': hcp_values,
+            'shape': shape_values
         }
+        return result
 

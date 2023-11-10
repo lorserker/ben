@@ -20,6 +20,9 @@ class Deal {
     }
     
     declarer() {
+        if (this.data['contract'] == null) {
+            return "Pass"
+        }
         return 'NESW'.indexOf(this.data['contract'][this.data['contract'].length - 1])
     }
 
@@ -44,8 +47,7 @@ class Deal {
                 this.top().bidding,
                 new Trick(trickWinner, []),
                 this.top().info,
-                new TricksTaken(this.top().tricksTaken.ns + (trickWinner +1) % 2, this.top().tricksTaken.ew + trickWinner % 2) 
-            ))
+                new TricksTaken(this.top().tricksTaken.ns + (trickWinner+1) % 2, this.top().tricksTaken.ew + trickWinner % 2)             ))
             return
         }
 
@@ -342,7 +344,43 @@ class PlayInfo {
             html += '</table>'
         }
 
-        if ("samples" in this.data) {
+        if ("hcp" in this.data &&  "shape" in this.data) {
+            if (this.data['hcp'] != -1 && this.data['shape'] != -1) {
+                let shape = this.data['shape'].reduce((acc, val) => acc.concat(val), []);
+                html += '<h3>Bidding Info</h3>'
+                if (this.data['hcp'].length > 2) {
+                    html += '<div>Dummy: ' + this.data['hcp'][0] + ' hcp, shape: '
+                    for (var i = 0; i < 4; i++) {
+                        html += shape[i] + " "
+                    }
+                    html += '</div>'
+                    html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: ' 
+                    for (var i = 0; i < 4; i++) {
+                        html += shape[i + 4] + " "
+                    }
+                    html += '</div>'
+                    html += '<div>Declarer: ' + this.data['hcp'][2] + ' hcp, shape: '  
+                    for (var i = 0; i < 4; i++) {
+                        html += shape[i + 8] + " "
+                    }
+                    html += '</div>'
+                } else {
+                    html += '<div>LHO: ' + this.data['hcp'][0] + ' hcp, shape: '
+                    for (var i = 0; i < 4; i++) {
+                        html += shape[i] + " "
+                    }
+                    html += '</div>'
+                    html += '<div>RHO: ' + this.data['hcp'][1] + ' hcp, shape: '  
+                    for (var i = 0; i < 4; i++) {
+                        html += shape[i + 4] + " "
+                    }
+                    html += '</div>'
+                }
+            }
+        
+        }
+
+        if ("samples" in this.data && this.data['samples'].length > 0) {
             html += '<h3>Samples (' + this.data['samples'].length + ')</h3>'
             for (const element of this.data['samples']) {
                 html += '<div>' + element + '</div>'

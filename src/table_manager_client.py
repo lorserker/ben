@@ -150,7 +150,7 @@ class TMClient:
             else:
                 # just wait for the other player's bid
                 bid = await self.receive_bid_for(player_i)
-                bid_resp = BidResp(bid=bid, candidates=[], samples=[])
+                bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1)
                 self.bid_responses.append(bid_resp)
                 auction.append(bid)
 
@@ -265,9 +265,11 @@ class TMClient:
                     # it's dummy's turn and this is the declarer
                     print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
-                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
+                    rollout_states, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
+                    card_resp.hcp = c_hcp
+                    card_resp.shape = c_shp
                     self.card_responses.append(card_resp)
 
                     if (self.verbose):
@@ -275,8 +277,8 @@ class TMClient:
                             print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks {candidate.expected_tricks:.2f} #Insta_score {candidate.insta_score:.4f}")
                         for idx, sample in enumerate(card_resp.samples, start=1):                  
                             print(f"{sample}")
-                            if idx == 20:
-                                break
+                            #if idx == 20:
+                            #    break
 
                     card52 = card_resp.card.code()
                     
@@ -285,22 +287,24 @@ class TMClient:
                     await asyncio.sleep(0.01)
 
                 elif player_i == cardplayer_i and player_i != 1:
-                    if (self.verbose):
+                    #if (self.verbose):
                     # we are on play
-                        print(f'{player_i} turn')
+                    #    print(f'{player_i} turn')
 
-                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
+                    rollout_states, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
+                    card_resp.hcp = c_hcp
+                    card_resp.shape = c_shp
                     self.card_responses.append(card_resp)
 
                     if (self.verbose):
                         for idx, candidate in enumerate(card_resp.candidates, start=1):
                             print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks {candidate.expected_tricks:.2f} #Insta_score {candidate.insta_score:.4f}")
-                        for idx, candidate in enumerate(card_resp.samples, start=1):                  
-                            print(f"{candidate}")
-                            if idx == 20:
-                                break
+                        for idx, sample in enumerate(card_resp.samples, start=1):                  
+                            print(f"{sample}")
+                            #if idx == 20:
+                            #    break
 
                     card52 = card_resp.card.code()
 
@@ -517,7 +521,9 @@ class TMClient:
         cr = CardResp(
             card=Card.from_symbol(card_resp_parts[-1][::-1].upper()),
             candidates=[],
-            samples=[]
+            samples=[],
+            shape=-1,
+            hcp=-1
         )
         self.card_responses.append(cr)
 

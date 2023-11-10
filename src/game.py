@@ -129,16 +129,16 @@ class Driver:
             auction = self.auction
             for bid in auction:
                 if bidding.BID2ID[bid] > 1:
-                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[]))
+                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1))
         else:
             auction = await self.bidding()
 
         self.contract = bidding.get_contract(auction)
 
-        if self.verbose:
-            print("****** Bid responses ******")
-            for bid_resp in self.bid_responses:
-                pprint.pprint(bid_resp.to_dict(), width=120)
+        #if self.verbose:
+        #    print("****** Bid responses ******")
+        #    for bid_resp in self.bid_responses:
+        #        pprint.pprint(bid_resp.to_dict(), width=120)
 
         if self.contract is None:
             return
@@ -270,12 +270,17 @@ class Driver:
                         n_samples=20
                     )
                 rollout_states = None
+                c_hcp = -1
+                c_shp = -1
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
+                    rollout_states, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape(
+                        (-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
 
                 await asyncio.sleep(0.01)
 
                 card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states)
+                card_resp.hcp = c_hcp
+                card_resp.shape = c_shp
                 if self.verbose:
                     pprint.pprint(card_resp.to_dict(), width=200)
                 
@@ -390,7 +395,7 @@ class Driver:
             card52 = np.nonzero(card_players[player_i].hand52)[0][0]
             card =deck52.card52to32(card52)
 
-            card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[])
+            card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1)
 
             await self.channel.send(json.dumps({
                 'message': 'card_played',
@@ -462,7 +467,8 @@ class Driver:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
                 # Overrule configuration for search threshold
-                self.models.search_threshold = level
+                if level != -1:
+                    self.models.search_threshold = level
                 bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, self.sampler, self.verbose)
                 players.append(bot)
 
@@ -585,7 +591,7 @@ async def main():
             auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
             driver.set_deal(board_no[0] + 1, rdeal, auction, ns, ew, play_only)
-            board_no[0] = board_no[0] + 1
+            board_no[0] = (board_no[0] + 1) % len(boards)
 
         # BEN is handling all 4 hands
         driver.human = [-1, -1, -1, -1]

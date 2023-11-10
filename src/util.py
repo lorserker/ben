@@ -14,7 +14,7 @@ def hand_to_str(hand):
         s = ''
         for j in range(8):
             if x[i,j] > 0:
-                s += symbols[j] * x[i,j]
+                s += symbols[j] * int(x[i,j])
         suits.append(s)
     return '.'.join(suits)
 
@@ -80,7 +80,6 @@ def follow_suit(cards_softmax, own_cards, trick_suit):
 
     legal_cards_softmax = cards_softmax * mask
 
-    #print(cards_softmax)
     s = np.sum(legal_cards_softmax, axis=1, keepdims=True)
     s[s < 1e-9] = 1
     return legal_cards_softmax / s

@@ -54,7 +54,7 @@ class BotBid:
         candidates, passout = self.get_bid_candidates(auction)
         if self.verbose:
             print(f"Sampling for aution: {auction}")
-        hands_np = self.sample_hands(auction)
+        hands_np, p_hcp, p_shp = self.sample_hands(auction)
         samples = []
         for i in range(hands_np.shape[0]):
             samples.append('%s %s %s %s' % (
@@ -81,12 +81,16 @@ class BotBid:
 
                 ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
                 expected_score = np.mean(ev)
-                if self.verbose:
-                    print(ev)
-
+                #if self.verbose:
+                #    print(ev)
+                adjust = 0
                 # The result is sorted based on the simulation. Adding some bonus to the bid selected by the neural network
                 # Should probably be configurable
-                adjust = 50*candidate.insta_score
+                if candidate.insta_score < 0.002:
+                    adjust += -200
+                if candidate.insta_score < 0.0002:
+                    adjust += -200
+                adjust += 50*candidate.insta_score
 
                 # If we are doubling as penalty in the pass out-situation
                 # These adjustments should probably be configurable
@@ -94,14 +98,14 @@ class BotBid:
                     # If we are bidding in the passout situation, and is going down, assume we are doubled
                     if bidding.BID2ID[candidate.bid] > 4:
                         if expected_score < 0:
-                            adjust = expected_score * 3
+                            adjust += expected_score * 3
 
                 if passout and candidate.bid == "X" and candidate.insta_score < self.min_candidate_score:
                     # Don't double unless the expected score is positive with a margin
                     if expected_score < 100:
-                        adjust = -200
+                        adjust += -200
                     else:
-                        adjust = -100
+                        adjust += -100
                         
                 ev_c = candidate.with_expected_score(np.mean(ev), adjust)
                 if self.verbose:
@@ -113,9 +117,12 @@ class BotBid:
             if self.verbose:
                 for idx, candidate in enumerate(candidates, start=1):
                     print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.4f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
-            return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:20])
+
+        # Without detailed logging we only save 20 samples
+        if not self.verbose:
+            samples=samples[:20]
         
-        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:20])
+        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples, shape=p_shp, hcp=p_hcp)
     
     @staticmethod
     def do_rollout(auction, candidates, samples):
@@ -235,7 +242,8 @@ class BotBid:
     
     def sample_hands(self, auction_so_far):
         turn_to_bid = len(auction_so_far) % 4
-        lho_pard_rho = self.sample.sample_cards_auction(auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew,self.sample.sample_boards_for_auction)[:self.sample.sample_hands_auction]
+        lho_pard_rho, p_hcp, p_shp = self.sample.sample_cards_auction(
+            auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction)[:self.sample.sample_hands_auction]
         n_samples = lho_pard_rho.shape[0]
         
         hands_np = np.zeros((n_samples, 4, 32), dtype=np.int32)
@@ -243,7 +251,7 @@ class BotBid:
         for i in range(1, 4):
             hands_np[:, (turn_to_bid + i) % 4, :] = lho_pard_rho[:,i-1,:]
 
-        return hands_np
+        return hands_np, p_hcp, p_shp 
 
     def bidding_rollout(self, auction_so_far, candidate_bid, hands_np):
         auction = [*auction_so_far, candidate_bid]
@@ -352,10 +360,11 @@ class BotLead:
         self.sample = sample
         self.verbose = verbose
         self.lead_threshold = lead_threshold
+        self.lead_accept_nn = 0.75
 
     def find_opening_lead(self, auction):
         lead_card_indexes, lead_softmax = self.get_lead_candidates(auction)
-        accepted_samples, tricks = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
+        accepted_samples, tricks, p_hcp, p_shp = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
 
         candidate_cards = []
         for i, card_i in enumerate(lead_card_indexes):
@@ -368,10 +377,10 @@ class BotLead:
             ))
 
         candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score)
-        if (candidate_cards[0].insta_score > 0.75):
+        if (candidate_cards[0].insta_score > self.lead_accept_nn):
             opening_lead = candidate_cards[0].card.code() 
         else:
-            candidate_cards = sorted(candidate_cards, key=lambda c: c.p_make_contract)
+            candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.p_make_contract, 2), -round(c.expected_tricks, 2)))
             opening_lead = candidate_cards[0].card.code()
 
         if opening_lead % 8 == 7:
@@ -385,17 +394,19 @@ class BotLead:
         samples = []
         if self.verbose:
             print(f"Accepted samples for opening lead: {accepted_samples.shape[0]}")
-        for i in range(min(20, accepted_samples.shape[0])):
+        for i in range(accepted_samples.shape[0]):
             samples.append('%s %s %s' % (
                 hand_to_str(accepted_samples[i,0,:]),
                 hand_to_str(accepted_samples[i,1,:]),
-                hand_to_str(accepted_samples[i,2,:]),
+                hand_to_str(accepted_samples[i,2,:])
             ))
 
         return CardResp(
             card=Card.from_code(opening_lead52),
             candidates=candidate_cards,
-            samples=samples[:20]
+            samples=samples, 
+            shape=p_shp,
+            hcp=p_hcp
         )
 
     def get_lead_candidates(self, auction):
@@ -427,8 +438,10 @@ class BotLead:
         decl_i = bidding.get_decl_i(contract)
         lead_index = (decl_i + 1) % 4
 
-        accepted_samples = self.sample.sample_cards_auction(auction, lead_index, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction_lead)[:self.sample.sample_hands_opening_lead]
+        accepted_samples, p_hcp, p_shp = self.sample.sample_cards_auction(auction, lead_index, self.hand, self.vuln, self.bidder_model,
+                                                                   self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction_opening_lead)
 
+        accepted_samples = accepted_samples[:self.sample.sample_hands_opening_lead]
         n_accepted = accepted_samples.shape[0]
 
         X_sd = np.zeros((n_accepted, 32 + 5 + 4*32))
@@ -456,7 +469,7 @@ class BotLead:
             tricks[:, j, 0:1] = expected_tricks(tricks_softmax.copy())
             tricks[:, j, 1:2] = p_make_contract(contract, tricks_softmax.copy())
 
-        return accepted_samples, tricks
+        return accepted_samples, tricks, p_hcp, p_shp
 
 
 class CardPlayer:
@@ -577,29 +590,26 @@ class CardPlayer:
                     hands[j] = '.'.join(suits)
             # We always use West as start, but hands are in BEN from LHO
             hands_pbn.append('W:' + ' '.join(hands))
-            if self.verbose:
-                print(hands_pbn[-1])
+            #if self.verbose:
+            #    print(hands_pbn[-1])
 
         t_start = time.time()
 
-        if self.verbose:
-            print(hands_pbn)
+        #if self.verbose:
+        #    print(hands_pbn)
 
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn)
         card_tricks = ddsolver.expected_tricks(dd_solved)
         card_ev = self.get_card_ev(dd_solved)
-
-        if self.verbose:
-            for key, value in card_ev.items():
-                print(f"{deck52.decode_card(key)}: {value}")
 
         card_result = {}
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key])
 
         if self.verbose:
-            print('dds took', time.time() - t_start)
-            print('dd card res', card_result)
+            print(f'dds took {time.time() - t_start:0.4}')
+            for key, value in card_result.items():
+                print(f"{deck52.decode_card(key)}: {value}")
 
         return card_result
     
@@ -633,7 +643,7 @@ class CardPlayer:
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
         if self.verbose:
-            print('ncs', time.time() - t_start)
+            print(f'Next card response time: {time.time() - t_start:0.4f}')
 
         all_cards = np.arange(32)
         ## This might be a parameter
@@ -642,8 +652,8 @@ class CardPlayer:
         card_options, card_scores = all_cards[s_opt], card_softmax[s_opt]
 
         card_nn = {c:s for c, s in zip(card_options, card_scores)}
-        if self.verbose:
-            print(card_nn)
+        #if self.verbose:
+        #    print(card_nn)
 
         candidate_cards = []
         
@@ -679,10 +689,12 @@ class CardPlayer:
         card_resp = CardResp(
             card=candidate_cards[0].card,
             candidates=candidate_cards,
-            samples=samples[:20]
+            samples=samples, # [:20]
+            shape=-1,
+            hcp=-1
         )
 
-        if self.verbose:
-            pprint.pprint(card_resp.to_dict(), width=200)
+        #if self.verbose:
+        #    pprint.pprint(card_resp.to_dict(), width=200)
 
         return card_resp

@@ -75,7 +75,7 @@ class HumanBid:
         self.render_auction_hand(auction)
         print('\n')
         bid = input('enter bid: ').strip().upper()
-        return BidResp(bid=bid, candidates=[], samples=[])
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1)
 
     def render_auction_hand(self, auction):
         clear_screen()
@@ -115,7 +115,7 @@ class HumanBidSocket:
 
         bid = await self.socket.recv()
 
-        return BidResp(bid=bid, candidates=[], samples=[])
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1)
     
 
 class HumanLead:
@@ -123,7 +123,7 @@ class HumanLead:
     async def async_lead(self):
         card_str = input('opening lead: ').strip().upper()
 
-        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[])
+        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[], shape=-1, hcp=-1)
 
 
 class HumanLeadSocket:
@@ -139,7 +139,7 @@ class HumanLeadSocket:
         # Check if we received a claim
         print("Card received: ",card_str)
         
-        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[])
+        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[], shape=-1, hcp=-1)
 
 
 class HumanCardPlayer:
@@ -207,7 +207,7 @@ class HumanCardPlayer:
         #if is_numeric(human_card):
         #    human_card = await self.get_card_input()
 
-        return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples)
+        return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1)
 
 
 class HumanCardPlayerSocket(HumanCardPlayer):
