@@ -126,8 +126,7 @@ class CardByCard:
                     rollout_states, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models, self.ns, self.ew)
 
                 card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
-
-                card_resp = CardResp(Card.from_symbol(self.play[card_i]), card_resp.candidates, card_resp.samples, c_hcp, c_shp)
+                card_resp = CardResp(Card.from_symbol(self.play[card_i]), card_resp.candidates, card_resp.samples, c_shp, c_hcp)
                 self.card_responses.append(card_resp)
                 self.cards[self.play[card_i]] = card_resp
 
