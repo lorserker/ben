@@ -87,16 +87,14 @@
     background-color: white;
 }
 
-#vul-north .dealer,
-#vul-south .dealer {
+#vul-north .dealer, #vul-south .dealer {
     margin: auto;
     position: absolute;
     top: 2px;
     left: 14px;
 }
 
-#vul-west .dealer,
-#vul-east .dealer {
+#vul-west .dealer, #vul-east .dealer {
     margin: auto;
     position: absolute;
     top: 11px;
@@ -205,13 +203,19 @@
     background-color: #efcdf5e0;
 }
 
+.bid {
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: #efcdf5e0;
+}
+
 #boardno {
     position: absolute;
     border: 1px solid black;
     border-radius: 3px;
     left: 58px;
     top: 62px;
-    width:26px;
+    width: 26px;
     text-align: center;
     background-color: #efcdf5e0;
 }
@@ -273,4 +277,14 @@ th {
     position: absolute;
     top: 0px;
     left: 560px;
+}
+
+.samples {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
 }

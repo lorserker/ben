@@ -1,3 +1,7 @@
+function toggleSamples(containerId) {
+    const sampleLines = document.getElementById(containerId);
+    sampleLines.classList.toggle('hidden');
+}
 
 class Deal {
 
@@ -58,7 +62,7 @@ class Deal {
 
         let playData = this.data['play'][this.playIndex]
 
-        var player = (this.top().trick.onLead + this.top().trick.cards.length) % 4
+        let player = (this.top().trick.onLead + this.top().trick.cards.length) % 4
 
         if (this.top().trick.cards.length == 4) {
             this.trickIndex += 1
@@ -171,7 +175,7 @@ class Hand {
     }
 
     suitHtml(symbol, cards, red) {
-        var html = '<div class="suit">'
+        let html = '<div class="suit">'
         if (red) {
             html += '<span class="font-red">'
         } else {
@@ -180,8 +184,8 @@ class Hand {
         html += symbol
         html += '</span>\n' // end of symbol
 
-        for (var i = 0; i < cards.length; i++) {
-            html = html + '<span class="card">' + cards[i] + '</span>\n'
+        for (const element of cards) {
+            html = html + '<span class="card">' + element + '</span>\n'
         }
 
         html += '<div>'
@@ -235,7 +239,7 @@ class Trick {
     render(element) {
         element.innerHTML = ""
 
-        var html = ""
+        let html = ""
 
         let symbols = {
             'S': ['&spades;', false],
@@ -244,9 +248,9 @@ class Trick {
             'C': ['&clubs;', false]
         }
 
-        for (var i = 0; i < this.cards.length; i++) {
+        for (let i = 0; i < this.cards.length; i++) {
             let cardId = this.cardIds[(this.onLead + i) % 4]
-            var cssClass = "trick-card"
+            let cssClass = "trick-card"
             if (i == this.cards.length - 1) {
                 cssClass += " highlight"
             }
@@ -283,13 +287,13 @@ class DealerVuln {
     render(element) {
         element.innerHTML = ""
 
-        var html = ""
+        let html = ""
 
         let ids = ["vul-north", "vul-east", "vul-south", "vul-west"]
 
-        for (var i = 0; i < 4; i++) {
+        for (let i = 0; i < 4; i++) {
             let vId = ids[i]
-            var color = "white"
+            let color = "white"
             if (i % 2 == 0 && this.vulnNS || i % 2 == 1 && this.vulnEW) {
                 color = "red"
             }
@@ -316,14 +320,14 @@ class PlayInfo {
     render(element) {
         element.innerHTML = ""
 
-        var html = ""
+        let html = ""
 
         if ("candidates" in this.data && this.data.candidates.length> 0) {
             html += '<h3>Candidates</h3>'
             html += '<table>'
 
-            for (var i = 0; i < this.data.candidates.length; i++) {
-                let candidate = this.data.candidates[i]
+            for (const element of this.data.candidates) {
+                let candidate = element
 
                 html += '<tr>'
                 html += '<td class="candidate-card">' + candidate['card'] + '</td>'
@@ -351,28 +355,28 @@ class PlayInfo {
                 html += '<h3>Bidding Info</h3>'
                 if (this.data['hcp'].length > 2) {
                     html += '<div>Dummy: ' + this.data['hcp'][0] + ' hcp, shape: '
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i] + " "
                     }
                     html += '</div>'
                     html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: ' 
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i + 4] + " "
                     }
                     html += '</div>'
                     html += '<div>Declarer: ' + this.data['hcp'][2] + ' hcp, shape: '  
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i + 8] + " "
                     }
                     html += '</div>'
                 } else {
                     html += '<div>LHO: ' + this.data['hcp'][0] + ' hcp, shape: '
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i] + " "
                     }
                     html += '</div>'
                     html += '<div>RHO: ' + this.data['hcp'][1] + ' hcp, shape: '  
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i + 4] + " "
                     }
                     html += '</div>'
@@ -382,10 +386,12 @@ class PlayInfo {
         }
 
         if ("samples" in this.data && this.data['samples'].length > 0) {
-            html += '<h3>Samples (' + this.data['samples'].length + ')</h3>'
-            for (var i = 0; i < this.data['samples'].length; i++) {
-                html += '<div>' + this.data['samples'][i] + '</div>'
-            }
+            html += `
+                    <h3 class="samples"  onclick="toggleSamples('sampleLinesPlay')"><strong>Samples:</strong></h3>
+                    <div id="sampleLinesPlay">
+                    <ul>${this.data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
+                    </div>
+                    `
         }
 
         element.innerHTML = html
@@ -401,28 +407,28 @@ class Auction {
 
         let nPad = [1, 2, 3, 0]
         this.paddedBids = []
-        for (var i = 0; i < nPad[dealer]; i++) {
+        for (let i = 0; i < nPad[dealer]; i++) {
             this.paddedBids.push("")
         }
 
-        for (var i = 0; i < bids.length; i++) {
-            this.paddedBids.push(bids[i]['bid'])
+        for (const element of bids) {
+            this.paddedBids.push(element['bid'])
         }
         this.auctionString = ''
-        for (var i = 0; i < bids.length; i++) {
-            this.auctionString += bids[i]['bid'].replace("PASS","P") + " "
+        for (const element of bids) {
+            this.auctionString += element['bid'].replace("PASS","P") + " "
         }
     }
 
     render(element) {
         element.innerHTML = ""
 
-        var html = ""
+        let html = ""
         html += '<table>'
         html += '<thead><th>West</th><th>North</th><th>East</th><th>South</th></thead>'
         html += '<tbody>'
 
-        for (var i = 0; i < this.paddedBids.length; i++) {
+        for (let i = 0; i < this.paddedBids.length; i++) {
             if (i % 4 == 0) {
                 html += '<tr>'
             }
@@ -479,7 +485,7 @@ class TricksTaken {
     render(element) {
         element.innerHTML = ""
 
-        var html = ''
+        let html = ''
 
         html += '<div id="tricks-ns" class="trick-count"><span>' + this.ns + '</span></div>'
         html += '<div id="tricks-ew" class="trick-count"><span>' + this.ew + '</span></div>'

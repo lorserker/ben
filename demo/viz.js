@@ -1,3 +1,7 @@
+function toggleSamples(containerId) {
+    const sampleLines = document.getElementById(containerId);
+    sampleLines.classList.toggle('hidden');
+}
 
 class Deal {
 
@@ -10,6 +14,7 @@ class Deal {
 
         this.playIndex = -1
         this.trickIndex = -1
+
     }
 
     board_number() {
@@ -317,7 +322,7 @@ class PlayInfo {
 
         let html = ""
 
-        if ("candidates" in this.data) {
+        if ("candidates" in this.data && this.data.candidates.length> 0) {
             html += '<h3>Candidates</h3>'
             html += '<table>'
 
@@ -350,28 +355,28 @@ class PlayInfo {
                 html += '<h3>Bidding Info</h3>'
                 if (this.data['hcp'].length > 2) {
                     html += '<div>Dummy: ' + this.data['hcp'][0] + ' hcp, shape: '
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i] + " "
                     }
                     html += '</div>'
                     html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: ' 
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i + 4] + " "
                     }
                     html += '</div>'
                     html += '<div>Declarer: ' + this.data['hcp'][2] + ' hcp, shape: '  
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i + 8] + " "
                     }
                     html += '</div>'
                 } else {
                     html += '<div>LHO: ' + this.data['hcp'][0] + ' hcp, shape: '
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i] + " "
                     }
                     html += '</div>'
                     html += '<div>RHO: ' + this.data['hcp'][1] + ' hcp, shape: '  
-                    for (var i = 0; i < 4; i++) {
+                    for (let i = 0; i < 4; i++) {
                         html += shape[i + 4] + " "
                     }
                     html += '</div>'
@@ -381,10 +386,12 @@ class PlayInfo {
         }
 
         if ("samples" in this.data && this.data['samples'].length > 0) {
-            html += '<h3>Samples (' + this.data['samples'].length + ')</h3>'
-            for (const element of this.data['samples']) {
-                html += '<div>' + element + '</div>'
-            }
+            html += `
+                    <h3 class="samples"  onclick="toggleSamples('sampleLinesPlay')"><strong>Samples:</strong></h3>
+                    <div id="sampleLinesPlay">
+                    <ul>${this.data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
+                    </div>
+                    `
         }
 
         element.innerHTML = html
@@ -400,7 +407,7 @@ class Auction {
 
         let nPad = [1, 2, 3, 0]
         this.paddedBids = []
-        for (let i = 0; i < nPad[dealer]; i++) {
+        for (var i = 0; i < nPad[dealer]; i++) {
             this.paddedBids.push("")
         }
 
@@ -408,8 +415,8 @@ class Auction {
             this.paddedBids.push(element['bid'])
         }
         this.auctionString = ''
-        for (var i = 0; i < bids.length; i++) {
-            this.auctionString += bids[i]['bid'].replace("PASS", "P") + " "
+        for (const element of bids) {
+            this.auctionString += element['bid'].replace("PASS","P") + " "
         }
     }
 

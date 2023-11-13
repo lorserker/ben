@@ -90,10 +90,10 @@
   <div id="tricks-ew" class="trick-count"><span>0</span></div>
   </div>
 
-  <div id="btn-start" class="button"><<<</div>
-  <div id="btn-start-play" class="button"><<</div>
-  <div id="btn-prev" class="button"><</div>
-  <div id="btn-next" class="button">></div>
+  <div id="btn-start" class="button">&gt;&gt;&gt;</div>
+  <div id="btn-start-play" class="button">&lt;&lt;</div>
+  <div id="btn-prev" class="button">&lt;</div>
+  <div id="btn-next" class="button">&gt;</div>
 
   </div>
 
@@ -169,30 +169,38 @@
 
                                 document.querySelector('#solver').innerHTML = solverContent;
 
-                                //document.querySelector('#info').innerHTML = '<pre><code>' + JSON.stringify(log['bids'], null, 2) + '</code></pre>'
+                                let i = 0
                                 log['bids'].forEach(data => {
                                     document.querySelector('#info').innerHTML += `
-                                        <p><strong>Bid:</strong> ${data.bid}</p>
+                                        <p class="bid"><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' +data.who : ''}</p>
                                         `;
                                     if (data.candidates.length > 0)
-                                    document.querySelector('#info').innerHTML += `
-                                        <p><strong>Candidates:</strong></p>
-                                        <ul>
-                                            ${data.candidates.map(candidate => `
-                                                <li>Call: ${candidate.call}, Expected score: ${candidate.expected_score}, Insta Score: ${candidate.insta_score}, Adjusted: ${candidate.adjustment}</li>
-                                            `).join('')}
-                                        </ul>
-                                        `;
-                                    if (data.hcp != -1)
-                                    document.querySelector('#info').innerHTML += `
-                                        <p><strong>HCP:</strong> ${data.hcp.join(' - ')}</p>
-                                        <p><strong>Shape:</strong> ${data.shape.join('-')}</p>
-                                        `;
+                                        document.querySelector('#info').innerHTML += `
+                                            <p><strong>Candidates:</strong></p>
+                                            <ul>
+                                                ${data.candidates.map(candidate => `
+                                                    <li>
+                                                        Call: ${candidate.call},
+                                                        ${candidate.expected_score !== undefined ? `Expected score: ${candidate.expected_score},` : ''}
+                                                        ${candidate.insta_score !== undefined ? `NN Score: ${candidate.insta_score},` : ''}
+                                                        ${candidate.adjustment !== undefined ? `Adjusted: ${candidate.adjustment}` : ''}
+                                                    </li>                               
+                                                `).join('')}
+                                            </ul>
+                                            `;
+                                    if (data.hcp && (data.hcp != -1))
+                                        document.querySelector('#info').innerHTML += `
+                                            <p><strong>HCP:</strong> ${data.hcp.join(' - ')}</p>
+                                            <p><strong>Shape:</strong> ${data.shape.join('-')}</p>
+                                            `;
                                     if (data.samples.length > 0)
-                                    document.querySelector('#info').innerHTML += `
-                                        <p><strong>Samples:</strong></p>
-                                        <ul>${data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
-                                        `;
+                                        document.querySelector('#info').innerHTML += `
+                                            <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples:</strong></h3>
+                                            <div id="sampleLines${i}">
+                                            <ul>${data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
+                                            </div>
+                                            `;
+                                    i += 1;
                                     }
                                 );
 
