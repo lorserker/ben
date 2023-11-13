@@ -22,7 +22,7 @@ class BotBid:
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
         self.min_candidate_score = models.search_threshold
-        #print("models.search_threshold: ",models.search_threshold)
+        self.max_candidate_score = models.no_search_threshold
         self.model = models.bidder_model
         self.state = models.bidder_model.zero_state
         self.lead_model = models.lead
@@ -64,7 +64,7 @@ class BotBid:
                 hand_to_str(hands_np[i,3,:]),
             ))
 
-        if BotBid.do_rollout(auction, candidates, hands_np):
+        if BotBid.do_rollout(auction, candidates, hands_np, self.max_candidate_score):
             ev_candidates = []
             for candidate in candidates:
                 if self.verbose:
@@ -74,11 +74,12 @@ class BotBid:
 
                 for idx, (auction2, (contract, trick)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax))):
                     auc = bidding.get_action_as_string(auction2)
-                    samples[idx] += " " + auc
+                    weighted_sum = sum(i * trick[i] for i in range(len(trick)))
+                    average_tricks = round(weighted_sum, 1)
+                    samples[idx] += " " + auc + " ("+ str(average_tricks) + ") "
                     if self.verbose:
                         print(samples[idx])
-                        print(f"Contract: {contract}, Declarer Tricks: {trick}")
-
+    
                 ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
                 expected_score = np.mean(ev)
                 #if self.verbose:
@@ -90,6 +91,7 @@ class BotBid:
                     adjust += -200
                 if candidate.insta_score < 0.0002:
                     adjust += -200
+                
                 adjust += 50*candidate.insta_score
 
                 # If we are doubling as penalty in the pass out-situation
@@ -113,19 +115,23 @@ class BotBid:
                 ev_candidates.append(ev_c)
 
             candidates = sorted(ev_candidates, key=lambda c: c.expected_score + c.adjust, reverse=True)
+            who = "Simulation"
             # Print candidates with their relevant information
             if self.verbose:
                 for idx, candidate in enumerate(candidates, start=1):
                     print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.4f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
-
+        else:
+            who = "NN"
         # Without detailed logging we only save 20 samples
         if not self.verbose:
             samples=samples[:20]
         
-        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples, shape=p_shp, hcp=p_hcp)
+        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples, shape=p_shp, hcp=p_hcp, who = who)
     
     @staticmethod
-    def do_rollout(auction, candidates, samples):
+    def do_rollout(auction, candidates, samples, max_candidate_score):
+        #if candidates[0].insta_score > max_candidate_score:
+        #   return False
         #print(candidates)
         # Just one candidate, so no need for rolling out the bidding
         if len(candidates) == 1:
@@ -225,9 +231,9 @@ class BotBid:
             if bidding.BID2ID[auction[0]] > 14:
                 if self.verbose:
                     print("Extra candidate after opponents preempt might be needed")
-            if no_bids > 1 and bidding.BID2ID[auction[1]] > 14:
-                if self.verbose:
-                    print("Extra candidate after partners preempt might be needed")
+                elif no_bids > 1 and bidding.BID2ID[auction[1]] > 14:
+                    if self.verbose:
+                        print("Extra candidate after partners preempt might be needed")
 
         if self.verbose:
             print("\n".join(str(bid) for bid in candidates))
@@ -243,7 +249,12 @@ class BotBid:
     def sample_hands(self, auction_so_far):
         turn_to_bid = len(auction_so_far) % 4
         lho_pard_rho, p_hcp, p_shp = self.sample.sample_cards_auction(
-            auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction)[:self.sample.sample_hands_auction]
+            auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction)
+        # We have more samples, than we want to calculate on
+        # They are sorted according to the bidding trust, but above our threshold, so we pick random
+        if lho_pard_rho.shape[0] > self.sample.sample_hands_auction:
+            random_indices = np.random.permutation(lho_pard_rho.shape[0])
+            lho_pard_rho = lho_pard_rho[random_indices[:self.sample.sample_hands_auction], :, :]
         n_samples = lho_pard_rho.shape[0]
         
         hands_np = np.zeros((n_samples, 4, 32), dtype=np.int32)
@@ -327,7 +338,6 @@ class BotBid:
         X_sd[s_all, lead_cards] = 1
         
         decl_tricks_softmax = self.sd_model.model(X_sd)
-        
         return contracts, decl_tricks_softmax
     
     def expected_score(self, turn_to_bid, contracts, decl_tricks_softmax):
@@ -360,7 +370,7 @@ class BotLead:
         self.sample = sample
         self.verbose = verbose
         self.lead_threshold = lead_threshold
-        self.lead_accept_nn = 0.75
+        self.lead_accept_nn = models.lead_accept_nn
 
     def find_opening_lead(self, auction):
         lead_card_indexes, lead_softmax = self.get_lead_candidates(auction)
@@ -376,7 +386,10 @@ class BotLead:
                 p_make_contract=np.mean(tricks[:,i,1])
             ))
 
-        candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score)
+        print("Sorting by insta_score")
+        candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score, reverse=True)
+        print(candidate_cards[0].card)
+        print(candidate_cards[0].insta_score)
         if (candidate_cards[0].insta_score > self.lead_accept_nn):
             opening_lead = candidate_cards[0].card.code() 
         else:

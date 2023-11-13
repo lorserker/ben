@@ -39,7 +39,7 @@ class CardByCard:
 
         while bid_i < len(self.padded_auction):
             bid_resp = bidder_bots[player_i].bid(self.padded_auction[:bid_i])
-            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples, -1, -1))
+            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples, -1, -1, "Analysis"))
             type(self).bid_eval(self.padded_auction[bid_i], bid_resp)
             bid_i += 1
             player_i = (player_i + 1) % 4

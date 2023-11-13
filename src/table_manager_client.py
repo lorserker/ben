@@ -51,6 +51,7 @@ class TMClient:
         self.verbose = verbose
         self.deal_str = None
         self.trick_winners = None
+        self.opponents = None
 
     @property
     def is_connected(self):
@@ -125,7 +126,19 @@ class TMClient:
         
         await self.send_message(f'{self.seat} ready for teams')
 
-        await self.receive_line()
+
+        opponents = await self.receive_line()
+        
+        # Regular expression pattern to match text in quotes
+        pattern = r'"([^"]*?)"'
+        # Find all matches in the string
+        matches = re.findall(pattern, opponents)
+
+        # Extracted text from the second set of quotes
+        if self.seat == "North" or self.seat == "South":
+            self.opponents = matches[1]
+        else:
+            self.opponents = matches[0]
 
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
@@ -150,7 +163,10 @@ class TMClient:
             else:
                 # just wait for the other player's bid
                 bid = await self.receive_bid_for(player_i)
-                bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1)
+                if (player_i + 2) % 4 == self.player_i:
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = 'Partner' )
+                else:
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents)
                 self.bid_responses.append(bid_resp)
                 auction.append(bid)
 

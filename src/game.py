@@ -129,7 +129,7 @@ class Driver:
             auction = self.auction
             for bid in auction:
                 if bidding.BID2ID[bid] > 1:
-                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1))
+                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly"))
         else:
             auction = await self.bidding()
 

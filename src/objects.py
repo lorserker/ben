@@ -148,12 +148,13 @@ class CandidateBid:
 
 class BidResp:
 
-    def __init__(self, bid, candidates, samples, shape, hcp):
+    def __init__(self, bid, candidates, samples, shape, hcp, who):
         self.bid = bid
         self.candidates = candidates
         self.samples = samples
         self.shape = shape
         self.hcp = hcp
+        self.who = who
 
     def to_dict(self):
         if isinstance(self.hcp, np.ndarray):
@@ -174,7 +175,8 @@ class BidResp:
             'candidates': [candidate.to_dict() for candidate in self.candidates],
             'samples': self.samples,
             'hcp': hcp_values,
-            'shape': shape_values
+            'shape': shape_values,
+            'who' : self.who
         }
         return result
 
