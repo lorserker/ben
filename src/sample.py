@@ -88,6 +88,7 @@ class Sample:
     def sample_hands_auction(self):
         return self._sample_hands_auction
     
+    
     def sample_cards_vec(self, n_samples, p_hcp, p_shp, my_hand):
         #print("sample_cards_vec")
         deck = np.ones(32)
@@ -285,7 +286,7 @@ class Sample:
             # We found nothing that matches the bidding above the threshold of 0.02
             # Perhaps a longer bidding generally lowers the score for matching the bidding
             # For now we just return 3 best samples. That is better than none
-            accepted_samples = sorted_samples[:3]
+            accepted_samples = sorted_samples[:10]
 
         return accepted_samples, c_hcp[0], c_shp[0]
 

@@ -53,7 +53,7 @@ class BotBid:
     def bid(self, auction):
         candidates, passout = self.get_bid_candidates(auction)
         if self.verbose:
-            print(f"Sampling for aution: {auction}")
+            print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
         hands_np, p_hcp, p_shp = self.sample_hands(auction)
         samples = []
         for i in range(hands_np.shape[0]):
@@ -68,7 +68,7 @@ class BotBid:
             ev_candidates = []
             for candidate in candidates:
                 if self.verbose:
-                    print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.4f}")
+                    print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.4f} Samples: {len(hands_np)}")
                 auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np)
                 contracts, decl_tricks_softmax = self.expected_tricks(hands_np, auctions_np)
 

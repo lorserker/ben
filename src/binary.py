@@ -168,6 +168,7 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
     hcp = (get_hcp(hand) - 10) / 4
     
     auction = auction_input
+    print(auction_input)
     
     if isinstance(auction, list):
         auction_input = auction_input + ['PAD_END'] * 4 * n_steps
@@ -205,9 +206,12 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
     #Insert bidding system, -1 means no system
     if (ns == -1):
         return X
-    padding_width = ((0, 0),(0, 0), (2, 0))
-    X_padded = np.pad(X, padding_width, mode='constant', constant_values=(ns, ew))
+    # Better to add these at the beginning of this function
+    padding_width = ((0, 0),(0, 0), (1, 0))
+    X_padded = np.pad(X, padding_width, mode='constant', constant_values=(ew))
+    X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(ns))
     return X_padded
+
 
 
 def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
