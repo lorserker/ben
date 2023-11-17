@@ -39,7 +39,7 @@ def load_deals(fin):
         else:
             yield DealData.from_deal_auction_string(deal_str, line, ns, ew, 32)
 
-def create_binary(data_it, n, out_dir, ns, ew):
+def create_binary(data_it, n, out_dir, ns, ew, alternating):
     if (ns==-1):
         x = np.zeros((4 * n, 8, 159), dtype=np.float16)
     else:
@@ -51,7 +51,10 @@ def create_binary(data_it, n, out_dir, ns, ew):
     for i, deal_data in enumerate(data_it):
         if (i+1) % 1000 == 0:
             print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i+1)
-        x_part, y_part = deal_data.get_binary(ns, ew, n_steps=8)
+        if alternating and (i % 2) == 1:
+            x_part, y_part = deal_data.get_binary(ew, ns, n_steps=8)
+        else:
+            x_part, y_part = deal_data.get_binary(ns, ew, n_steps=8)
         x[k:k+4] = x_part
         y[k:k+4] = y_part
 
@@ -76,10 +79,11 @@ def to_numeric(value, default=0):
 if __name__ == '__main__':
 
     if len(sys.argv) < 3:
-        print("Usage: python bidding_binary.py inputfile outputdirectory NS=<x> EW=<y>")
+        print("Usage: python bidding_binary.py inputfile outputdirectory NS=<x> EW=<y> alternate=True")
         print("NS and EW are optional. If set to -1 no information about system is included in the model.")
         print("If set to 0 the hands from that side will not be used for training.")
         print("The input file is the BEN-format (1 line with hands, and next line with the bidding).")
+        print("alternate is signaling, that the input file has both open and closed room, so NS/EW will be altarnated")
         sys.exit(1)
 
     infnm = sys.argv[1] # file where the data is
@@ -87,7 +91,9 @@ if __name__ == '__main__':
     # Extract NS and EW values from command-line arguments if provided
     ns = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), -1)
     ew = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), -1)
+    alternating = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alternate")), False)
 
+    print(ns, ew, alternating)
     ns = to_numeric(ns)
     ew = to_numeric(ew)
 
@@ -98,5 +104,5 @@ if __name__ == '__main__':
         lines = [line for line in lines if not line.strip().startswith('#')]
         n = len(lines) // 2
         print(f"Loading {n} deals")
-        create_binary(load_deals(lines), n, outdir, ns, ew)
+        create_binary(load_deals(lines), n, outdir, ns, ew, alternating)
 
