@@ -38,7 +38,7 @@ def load_deals_no_contracts(fin):
     yield (deal_str, auction_str, None)
 
 
-def create_binary(data_it, n, out_dir, ns, ew):
+def create_binary(data_it, n, out_dir, ns, ew, alternating):
     if (ns==-1):
         x = np.zeros((4 * n, 8, 159), dtype=np.float16)
     else:
@@ -47,10 +47,13 @@ def create_binary(data_it, n, out_dir, ns, ew):
     HCP = np.zeros((4 * n, 8, 3), dtype=np.float16)
     SHAPE = np.zeros((4 * n, 8, 12), dtype=np.float16)
     print("Creating binary data")
-    for i, (deal_str, auction_str, _) in enumerate(data_it):
+    for i, (deal_str, auction_str, _) in enumerate(data_it):      
         if (i+1) % 1000 == 0: 
             print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i+1)
-        deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ns, ew, 32)
+        if alternating and (i % 2) == 1:
+            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ew, ns, 32)
+        else:
+            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ns, ew, 32)
         x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
         start_ix = i * 4
         end_ix = (i + 1) * 4
@@ -94,6 +97,9 @@ if __name__ == '__main__':
 
     ns = to_numeric(ns)
     ew = to_numeric(ew)
+    alternating = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alternate")), False)
+
+    print(ns, ew, alternating)
 
     with open(infnm, 'r') as file:
         lines = file.readlines()
@@ -101,4 +107,4 @@ if __name__ == '__main__':
         lines = [line for line in lines if not line.strip().startswith('#')]
         n = len(lines) // 2
         print(f"Loading {n} deals")
-        create_binary(load_deals_no_contracts(lines), n, outdir, ns, ew)
+        create_binary(load_deals_no_contracts(lines), n, outdir, ns, ew, alternating)
