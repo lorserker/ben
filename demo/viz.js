@@ -23,7 +23,7 @@ class Deal {
         }
         return this.data['board_number']
     }
-    
+
     declarer() {
         if (this.data['contract'] == null) {
             return "Pass"
@@ -44,7 +44,7 @@ class Deal {
     pushNext() {
 
         this.playIndex += 1
-        
+
         if (this.playIndex == this.data['play'].length) {
             let trickWinner = this.data['trick_winners'][12]
             this.stack.push(new DealSnapshot(
@@ -52,7 +52,7 @@ class Deal {
                 this.top().bidding,
                 new Trick(trickWinner, []),
                 this.top().info,
-                new TricksTaken(this.top().tricksTaken.ns + (trickWinner+1) % 2, this.top().tricksTaken.ew + trickWinner % 2)             ))
+                new TricksTaken(this.top().tricksTaken.ns + (trickWinner + 1) % 2, this.top().tricksTaken.ew + trickWinner % 2)))
             return
         }
 
@@ -70,7 +70,7 @@ class Deal {
             player = (this.declarer() + 1 + trickWinner) % 4
         }
 
-        this.stack.push(this.top().play(player, playData))
+        this.stack.push(this.top().play(player, playData, this.declarer()))
 
         this.position += 1
     }
@@ -87,11 +87,11 @@ class Deal {
         let hands = this.data['hands'].split(" ")
 
         this.stack.push(new DealSnapshot([
-                new Hand(hands[0]), // north
-                new Hand(hands[1]),
-                new Hand(hands[2]),
-                new Hand(hands[3])
-            ], null, new Trick((this.declarer() + 1) % 4, []), new PlayInfo({}), new TricksTaken(0, 0))
+            new Hand(hands[0]), // north
+            new Hand(hands[1]),
+            new Hand(hands[2]),
+            new Hand(hands[3])
+        ], null, new Trick((this.declarer() + 1) % 4, []), new PlayInfo({}), new TricksTaken(0, 0))
         )
         this.position = 0
 
@@ -108,7 +108,7 @@ class Deal {
         for (let i = 0; i < 4; i++) {
             this.top().hands[i].render(document.getElementById(seats[i]))
             this.top().trick.render(document.getElementById("current-trick"))
-            this.top().info.render(document.getElementById("info"))
+            this.top().info.render(document.getElementById("info"), i)
             this.top().tricksTaken.render(document.getElementById("tricks-ns-ew"))
         }
     }
@@ -124,7 +124,7 @@ class DealSnapshot {
         this.tricksTaken = tricksTaken
     }
 
-    play(player, playData) {
+    play(player, playData, declarer) {
         let hands = []
         let card = playData['card']
 
@@ -144,7 +144,7 @@ class DealSnapshot {
             tt.ew += player % 2
         }
 
-        return new DealSnapshot(hands, this.bidding, trick, new PlayInfo(playData), tt)
+        return new DealSnapshot(hands, this.bidding, trick, new PlayInfo(playData, player, declarer), tt)
     }
 
     bid(player, bid) {
@@ -170,7 +170,7 @@ class Hand {
         html += this.suitHtml("&hearts;", this.hearts, true)
         html += this.suitHtml("&diams;", this.diamonds, true)
         html += this.suitHtml("&clubs;", this.clubs, false)
-        
+
         element.innerHTML = html
     }
 
@@ -313,16 +313,20 @@ class DealerVuln {
 
 class PlayInfo {
 
-    constructor(data) {
+    constructor(data, player, declarer) {
         this.data = data
+        this.player = player
+        this.declarer = declarer
     }
 
-    render(element) {
+    render(element, index) {
+        if (this.player != index)
+            return
         element.innerHTML = ""
 
         let html = ""
 
-        if ("candidates" in this.data && this.data.candidates.length> 0) {
+        if ("candidates" in this.data && this.data.candidates.length > 0) {
             html += '<h3>Candidates</h3>'
             html += '<table>'
 
@@ -349,7 +353,7 @@ class PlayInfo {
             html += '</table>'
         }
 
-        if ("hcp" in this.data &&  "shape" in this.data) {
+        if ("hcp" in this.data && "shape" in this.data) {
             if (this.data['hcp'] != -1 && this.data['shape'] != -1) {
                 let shape = this.data['shape'].reduce((acc, val) => acc.concat(val), []);
                 html += '<h3>Bidding Info</h3>'
@@ -359,30 +363,58 @@ class PlayInfo {
                         html += shape[i] + " "
                     }
                     html += '</div>'
-                    html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: ' 
+                    html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: '
                     for (let i = 0; i < 4; i++) {
                         html += shape[i + 4] + " "
                     }
                     html += '</div>'
-                    html += '<div>Declarer: ' + this.data['hcp'][2] + ' hcp, shape: '  
+                    html += '<div>Declarer: ' + this.data['hcp'][2] + ' hcp, shape: '
                     for (let i = 0; i < 4; i++) {
                         html += shape[i + 8] + " "
                     }
                     html += '</div>'
                 } else {
-                    html += '<div>LHO: ' + this.data['hcp'][0] + ' hcp, shape: '
-                    for (let i = 0; i < 4; i++) {
-                        html += shape[i] + " "
-                    }
-                    html += '</div>'
-                    html += '<div>RHO: ' + this.data['hcp'][1] + ' hcp, shape: '  
-                    for (let i = 0; i < 4; i++) {
-                        html += shape[i + 4] + " "
-                    }
-                    html += '</div>'
+                    // we are seated after declarer
+                    if ((this.player - this.declarer + 4) % 4 == 1) {
+                        html += '<div>Declarer: ' + this.data['hcp'][0] + ' hcp, shape: '
+                        for (let i = 0; i < 4; i++) {
+                            html += shape[i] + " "
+                        }
+                        html += '</div>'
+                        html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: '
+                        for (let i = 0; i < 4; i++) {
+                            html += shape[i + 4] + " "
+                        }
+                        html += '</div>'
+                    } else
+                        // we are seated before declarer
+                        if ((this.player - this.declarer + 4) % 4 == 3) {
+                            html += '<div>Partner: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            for (let i = 0; i < 4; i++) {
+                                html += shape[i] + " "
+                            }
+                            html += '</div>'
+                            html += '<div>Declarer: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            for (let i = 0; i < 4; i++) {
+                                html += shape[i + 4] + " "
+                            }
+                            html += '</div>'
+                        }
+                        else {
+                            html += '<div>LHO: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            for (let i = 0; i < 4; i++) {
+                                html += shape[i] + " "
+                            }
+                            html += '</div>'
+                            html += '<div>RHO: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            for (let i = 0; i < 4; i++) {
+                                html += shape[i + 4] + " "
+                            }
+                            html += '</div>'
+                        }
                 }
             }
-        
+
         }
 
         if ("samples" in this.data && this.data['samples'].length > 0) {
@@ -407,7 +439,7 @@ class Auction {
 
         let nPad = [1, 2, 3, 0]
         this.paddedBids = []
-        for (var i = 0; i < nPad[dealer]; i++) {
+        for (let i = 0; i < nPad[dealer]; i++) {
             this.paddedBids.push("")
         }
 
@@ -416,7 +448,7 @@ class Auction {
         }
         this.auctionString = ''
         for (const element of bids) {
-            this.auctionString += element['bid'].replace("PASS","P") + " "
+            this.auctionString += element['bid'].replace("PASS", "P") + " "
         }
     }
 
@@ -433,7 +465,7 @@ class Auction {
                 html += '<tr>'
             }
 
-            html +='<td>' + this.formatBid(this.paddedBids[i]) + '</td>'
+            html += '<td>' + this.formatBid(this.paddedBids[i]) + '</td>'
 
             if (i % 4 == 3) {
                 html += '</tr>\n'

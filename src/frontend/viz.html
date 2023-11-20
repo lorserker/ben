@@ -119,7 +119,7 @@
                             try {
                                 const log = JSON.parse(xhr.responseText);
                                 let deal = new Deal(log)
-                                deal.start()
+                                deal.start(deal.bids)
                                 document.getElementById("boardno").innerHTML=deal.board_number()
                                 let auction = new Auction(log['dealer'], log['bids'])
                                 auction.render(document.getElementById("auction"))
@@ -165,7 +165,6 @@
                                     '&West=' + hands[3] +
                                     '"> Bridge Solver </a><br>';
 
-                                console.log(solverContent)
 
                                 document.querySelector('#solver').innerHTML = solverContent;
 
