@@ -43,8 +43,6 @@ parser = argparse.ArgumentParser(description="Game server")
 parser.add_argument("--boards", default="", help="Filename for boards")
 parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
 parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
-parser.add_argument("--ns", type=int, default=-1, help="System for NS")
-parser.add_argument("--ew", type=int, default=-1, help="System for EW")
 parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=4443, help="Port for appserver")
 parser.add_argument("--auto", type=bool, default=False, help="BEN bids and plays all 4 hands")
@@ -89,13 +87,16 @@ if args.boardno:
 if random:
     print("Playing random deals or deals from the client")
 
-ns = args.ns
-ew = args.ew
-
 np.set_printoptions(precision=2, suppress=True, linewidth=240)
 
 configuration = conf.load(configfile)
 
+if configuration["models"]["include_system"]:
+    ns = configuration["models"]["NS"]
+    ew = configuration["models"]["EW"]
+else:
+    ns = -1
+    ew = -1
 
 try:
     if (configuration["models"]['tf_version'] == "2"):

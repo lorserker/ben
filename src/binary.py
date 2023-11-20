@@ -168,7 +168,6 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
     hcp = (get_hcp(hand) - 10) / 4
     
     auction = auction_input
-    print(auction_input)
     
     if isinstance(auction, list):
         auction_input = auction_input + ['PAD_END'] * 4 * n_steps
@@ -192,10 +191,6 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
         lho_bid = auction[:, bid_i - 3] if bid_i - 3 >= 0 else bidding.BID2ID['PAD_START']
         partner_bid = auction[:, bid_i - 2] if bid_i - 2 >= 0 else bidding.BID2ID['PAD_START']
         rho_bid = auction[:, bid_i - 1] if bid_i - 1 >= 0 else bidding.BID2ID['PAD_START']
-        #print(lho_bid)
-        #print(partner_bid)
-        #print(rho_bid)
-        #print(auction)
         X[s_all,step_i,39+lho_bid] = 1
         X[s_all,step_i,(39+40)+partner_bid] = 1
         X[s_all,step_i,(39+2*40)+rho_bid] = 1

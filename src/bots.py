@@ -248,7 +248,7 @@ class BotBid:
     
     def sample_hands(self, auction_so_far):
         turn_to_bid = len(auction_so_far) % 4
-        lho_pard_rho, p_hcp, p_shp = self.sample.sample_cards_auction(
+        lho_pard_rho, sorted_scores, p_hcp, p_shp = self.sample.sample_cards_auction(
             auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction)
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
@@ -374,7 +374,7 @@ class BotLead:
 
     def find_opening_lead(self, auction):
         lead_card_indexes, lead_softmax = self.get_lead_candidates(auction)
-        accepted_samples, tricks, p_hcp, p_shp = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
+        accepted_samples, sorted_score, tricks, p_hcp, p_shp = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
 
         candidate_cards = []
         for i, card_i in enumerate(lead_card_indexes):
@@ -386,10 +386,7 @@ class BotLead:
                 p_make_contract=np.mean(tricks[:,i,1])
             ))
 
-        print("Sorting by insta_score")
         candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score, reverse=True)
-        print(candidate_cards[0].card)
-        print(candidate_cards[0].insta_score)
         if (candidate_cards[0].insta_score > self.lead_accept_nn):
             opening_lead = candidate_cards[0].card.code() 
         else:
@@ -408,10 +405,11 @@ class BotLead:
         if self.verbose:
             print(f"Accepted samples for opening lead: {accepted_samples.shape[0]}")
         for i in range(accepted_samples.shape[0]):
-            samples.append('%s %s %s' % (
+            samples.append('%s %s %s %.5f' % (
                 hand_to_str(accepted_samples[i,0,:]),
                 hand_to_str(accepted_samples[i,1,:]),
-                hand_to_str(accepted_samples[i,2,:])
+                hand_to_str(accepted_samples[i,2,:]),
+                sorted_score[i]
             ))
 
         return CardResp(
@@ -440,7 +438,7 @@ class BotLead:
                 break
             lead_softmax_copy[0][c] = 0
             if self.verbose:
-                print(Card.from_code(c, xcards=True))
+                print(Card.from_code(c, xcards=True), score)
             candidates.append(c)
 
         return candidates, lead_softmax
@@ -451,9 +449,19 @@ class BotLead:
         decl_i = bidding.get_decl_i(contract)
         lead_index = (decl_i + 1) % 4
 
-        accepted_samples, p_hcp, p_shp = self.sample.sample_cards_auction(auction, lead_index, self.hand, self.vuln, self.bidder_model,
-                                                                   self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction_opening_lead)
+        if self.verbose:
+            print("Now generating {self.sample.sample_boards_for_auction_opening_lead} deals to find opening lead")
+        accepted_samples, sorted_scores, p_hcp, p_shp = self.sample.sample_cards_auction(auction, lead_index, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction_opening_lead)
 
+        # We have more samples, than we want to calculate on
+        # They are sorted according to the bidding trust, but above our threshold, so we pick random
+        #if lho_pard_rho.shape[0] > self.sample.sample_hands_auction:
+        #    random_indices = np.random.permutation(lho_pard_rho.shape[0])
+        #    lho_pard_rho = lho_pard_rho[random_indices[:self.sample.sample_hands_auction], :, :]
+
+
+        if self.verbose:
+            print("Now simulate on {self.sample.sample_hands_opening_lead} deals to find opening lead")
         accepted_samples = accepted_samples[:self.sample.sample_hands_opening_lead]
         n_accepted = accepted_samples.shape[0]
 
@@ -482,7 +490,7 @@ class BotLead:
             tricks[:, j, 0:1] = expected_tricks(tricks_softmax.copy())
             tricks[:, j, 1:2] = p_make_contract(contract, tricks_softmax.copy())
 
-        return accepted_samples, tricks, p_hcp, p_shp
+        return accepted_samples, sorted_scores, tricks, p_hcp, p_shp
 
 
 class CardPlayer:

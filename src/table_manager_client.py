@@ -691,8 +691,6 @@ async def main():
     parser.add_argument("--name", required=True, help="Name in Table Manager")
     parser.add_argument("--seat", required=True, help="Where to sit (North, East, South or West)")
     parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
-    parser.add_argument("--ns", type=int, default=-1, help="System for NS")
-    parser.add_argument("--ew", type=int, default=-1, help="System for EW")
     parser.add_argument("--biddingonly", type=bool, default=False, help="Only bid, no play")
     parser.add_argument("--bbabid", type=bool, default=False, help="Use BBA for bidding")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
@@ -706,15 +704,20 @@ async def main():
     bbabid = args.bbabid
     configfile = args.config
 
-    ns = args.ns
-    ew = args.ew
-
     verbose = args.verbose
     biddingonly = args.biddingonly
 
     np.set_printoptions(precision=2, suppress=True)
 
     configuration = conf.load(configfile)
+
+    if configuration["models"]["include_system"]:
+        ns = configuration["models"]["NS"]
+        ew = configuration["models"]["EW"]
+    else:
+        ns = -1
+        ew = -1
+
 
     try:
         if (configuration["models"]['tf_version'] == "2"):

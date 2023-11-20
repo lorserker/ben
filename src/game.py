@@ -512,8 +512,6 @@ async def main():
     parser.add_argument("--auto", type=bool, default=False, help="Continue without user confirmation. If a file is provided it will stop at end of file")
     parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
     parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
-    parser.add_argument("--ns", type=int, default=-1, help="System for NS")
-    parser.add_argument("--ew", type=int, default=-1, help="System for EW")
     parser.add_argument("--playonly", type=bool, default=False, help="Just play, no bidding")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 
@@ -555,12 +553,16 @@ async def main():
     if random:
         print("Playing random deals or deals from the client")
  
-    ns = args.ns
-    ew = args.ew
-
     np.set_printoptions(precision=1, suppress=True, linewidth=200)
 
     configuration = conf.load(configfile)
+
+    if configuration["models"]["include_system"]:
+        ns = configuration["models"]["NS"]
+        ew = configuration["models"]["EW"]
+    else:
+        ns = -1
+        ew = -1
 
     try:
         if (configuration["models"]['tf_version'] == "2"):

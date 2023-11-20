@@ -90,7 +90,8 @@ class Sample:
     
     
     def sample_cards_vec(self, n_samples, p_hcp, p_shp, my_hand):
-        #print("sample_cards_vec")
+        if self.verbose:
+            print("sample_cards_vec generating", n_samples)
         deck = np.ones(32)
         deck[[7, 15, 23, 31]] = 6
 
@@ -273,6 +274,9 @@ class Sample:
         sorted_samples = lho_pard_rho[sorted_indices]
         # print(len(sorted_samples))
 
+        # Extract scores based on the sorted indices
+        sorted_scores = min_scores[sorted_indices]
+        
         # How much to trust the bidding for the samples
         accept_bidding_threshold = self.bidding_threshold_sampling
         accepted_samples = sorted_samples[min_scores > accept_bidding_threshold]
@@ -288,7 +292,7 @@ class Sample:
             # For now we just return 3 best samples. That is better than none
             accepted_samples = sorted_samples[:10]
 
-        return accepted_samples, c_hcp[0], c_shp[0]
+        return accepted_samples, sorted_scores, c_hcp[0], c_shp[0]
 
     def shuffle_cards_bidding_info(self, n_samples, binfo, auction, hand, vuln, known_nesw, h_1_nesw, h_2_nesw, visible_cards, hidden_cards, cards_played, shown_out_suits, ns, ew):
         n_cards_to_receive = np.array(
