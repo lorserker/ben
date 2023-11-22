@@ -69,12 +69,8 @@ def card52to32(c52):
     return suit * 8 + min(7, rank)
 
 
-def hand32to52str(hand32, known_pips_suits, free_pips_suits):
+def hand32to52str(hand32):
     x = hand32.reshape((4, 8))
-    for i in range(4):
-        random.shuffle(free_pips_suits[i])
-    suit_pip_i = [0, 0, 0, 0]
-    free_i = [0, 0, 0, 0]
     symbols = 'AKQJT98x'
     full_symbols = 'AKQJT98765432'
     suits = []
@@ -84,16 +80,40 @@ def hand32to52str(hand32, known_pips_suits, free_pips_suits):
             if x[i, j] > 0:
                 symbol = symbols[j]
                 if symbol == 'x':
-                    if suit_pip_i[i] <= len(known_pips_suits[i]):
-                        s += full_symbols[known_pips_suits[i][suit_pip_i[i]] % 13]
-                        suit_pip_i[i] += 1
-                    else:
-                        s += full_symbols[free_pips[i][free_i[i]] % 13]
-                        free_i[i] += 1
+                    s += 'x' * x[i, j]
                 else:
                     s += symbol
         suits.append(s)
-    return '.'.join(suits)
+    card_string = '.'.join(suits)
+    return card_string
+
+def convert_cards(card_string):
+    original_strings = ["765432", "765432", "765432", "765432"]
+    strings = original_strings.copy()
+
+    sequences = card_string.split(' ')
+
+    def replace_x(sequence):
+        nonlocal strings
+        new_sequence = ''
+        i = 0
+        for char in sequence:
+            if char == 'x':
+                new_sequence += strings[i][0]
+                strings[i] = strings[i][1:]
+            elif char == '.':
+                i += 1
+                new_sequence += '.'
+            else:
+                new_sequence += char
+                if char == ' ':
+                    i = 0
+        return new_sequence
+    
+    updated_sequences = [replace_x(seq) for seq in sequences]
+    updated_card_string = ' '.join(updated_sequences)
+    print(updated_card_string)
+    return updated_card_string
 
 
 def get_trick_winner_i(trick, strain_i):

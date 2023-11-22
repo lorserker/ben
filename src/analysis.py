@@ -8,7 +8,7 @@ from objects import BidResp, Card, CardResp
 
 class CardByCard:
 
-    def __init__(self, dealer, vuln, hands, auction, play, models, ns, ew, sampler, verbose):
+    def __init__(self, dealer, vuln, hands, auction, play, models, sampler, verbose):
         self.dealer_i = {'N': 0, 'E': 1, 'S': 2, 'W': 3}[dealer]
         self.vuln = vuln
         self.hands = hands
@@ -20,8 +20,8 @@ class CardByCard:
         self.cards = {}
         self.models = models
         self.sampler = sampler
-        self.ns = ns
-        self.ew = ew
+        self.ns = models.ns
+        self.ew = models.ew
         self.verbose = verbose
 
     def analyze(self):
@@ -32,7 +32,7 @@ class CardByCard:
         self.analyze_play()
 
     def analyze_bidding(self):
-        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.ns, self.ew, self.sampler, self.verbose) for hand in self.hands]
+        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, self.verbose) for hand in self.hands]
 
         player_i = self.dealer_i
         bid_i = self.dealer_i
@@ -69,7 +69,7 @@ class CardByCard:
 
         print(self.play[0])
 
-        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, -1, -1, 0.05, self.sampler, False)
+        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, 0.05, self.sampler, False)
 
         card_resp = bot_lead.find_opening_lead(self.padded_auction)
         card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, -1, -1)

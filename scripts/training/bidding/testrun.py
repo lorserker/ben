@@ -27,15 +27,11 @@ def main():
     parser = argparse.ArgumentParser(description="Process bidding data using a bidder model.")
     parser.add_argument("config_path", help="Path to the configuration file")
     parser.add_argument("filename", help="Path to the input filename containing hands and dealer information")
-    parser.add_argument("--ns", type=int, default=-1, help="System for NS")
-    parser.add_argument("--ew", type=int, default=-1, help="System for EW")
     parser.add_argument("--verbose", type=bool, default=False, help="Print extra information")
     args = parser.parse_args()
 
     config_path = args.config_path
     filename = args.filename
-    ns = args.ns
-    ew = args.ew
     verbose = args.verbose
 
     np.set_printoptions(precision=2, suppress=True, linewidth=220)
@@ -75,7 +71,13 @@ def main():
             vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
             vuln_ns, vuln_ew = vuln[parts[1]]
             #Read NS and EW system from conf-file
-            bidder_bots = [BotBid([vuln_ns, vuln_ew], hand, models, ns, ew, sampler, verbose) for hand in hands]
+            if i % 2 == 0:
+                models.ns = 1
+                models.ew = 2
+            else:
+                models.ns = 2
+                models.ew = 1
+            bidder_bots = [BotBid([vuln_ns, vuln_ew], hand, models, sampler, verbose) for hand in hands]
 
             auction = ['PAD_START'] * dealer_i
 
@@ -98,6 +100,8 @@ def main():
                 print(" ".join(parts[2:]))
                 print(auction_str)
             else: 
+                print(" ".join(hands))
+                print(auction_str)
                 matching += 1
         print(matching," boards matched")
                 

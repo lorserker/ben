@@ -439,8 +439,6 @@ class Driver:
                 [self.vuln_ns, self.vuln_ew], 
                 hands_str[(decl_i + 1) % 4], 
                 self.models,
-                self.ns,
-                self.ew,
                 self.models.lead_threshold,
                 self.sampler,
                 self.verbose
@@ -462,14 +460,14 @@ class Driver:
         for i, level in enumerate(self.human):
             if level == 99:
                 from bba.BBA import BBABotBid
-                players.append(BBABotBid(1,1,i,hands_str[i],vuln, self.dealer_i))
+                players.append(BBABotBid(self.models.ns, self.models.ew, i, hands_str[i], vuln, self.dealer_i))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
                 # Overrule configuration for search threshold
                 if level != -1:
                     self.models.search_threshold = level
-                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.ns, self.ew, self.sampler, self.verbose)
+                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, self.verbose)
                 players.append(bot)
 
         auction = ['PAD_START'] * self.dealer_i
@@ -556,14 +554,7 @@ async def main():
     np.set_printoptions(precision=1, suppress=True, linewidth=200)
 
     configuration = conf.load(configfile)
-
-    if configuration["models"]["include_system"]:
-        ns = configuration["models"]["NS"]
-        ew = configuration["models"]["EW"]
-    else:
-        ns = -1
-        ew = -1
-
+        
     try:
         if (configuration["models"]['tf_version'] == "2"):
             print("Loading version 2")
@@ -587,12 +578,12 @@ async def main():
             # example of to use a fixed deal
             # rdeal = ('AQ9.543.6.AKJ876 762.A96.KQJ42.Q2 KJ83.KJ2.T753.T5 T54.QT87.A98.943', 'S Both')
 
-            driver.set_deal(None, *rdeal, ns, ew, False)
+            driver.set_deal(None, *rdeal, models.ns, models.ew, False)
         else:
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
-            driver.set_deal(board_no[0] + 1, rdeal, auction, ns, ew, play_only)
+            driver.set_deal(board_no[0] + 1, rdeal, auction, models.ns, models.ew, play_only)
             board_no[0] = (board_no[0] + 1) % len(boards)
 
         # BEN is handling all 4 hands

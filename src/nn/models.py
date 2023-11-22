@@ -35,7 +35,7 @@ class Models:
         lead_threshold = float(conf['lead']['lead_threshold'])
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
         include_system = bool(conf['models']['include_system'])
-        if include_system:
+        if include_system == True:
             ns = float(conf['models']['ns'])
             ew = float(conf['models']['ew'])
         return cls(

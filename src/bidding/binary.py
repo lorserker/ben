@@ -39,9 +39,6 @@ class DealData(object):
 
         return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, ns, ew, n_cards)
 
-    def reset_auction(self):
-        self.auction = [bid for bid in self.auction if bid == 'PAD_START']
-
     def get_binary(self, ns, ew, n_steps=8):
         if ns == -1:
             X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
@@ -86,8 +83,10 @@ class DealData(object):
                 ), axis=1)
             else:
                 # Create an array with [ns, ew] only if neither ns nor ew is -1
-                ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
-
+                if hand_ix % 2 == 0:
+                    ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
+                else:
+                    ns_ew_array = np.array([ew, ns], ndmin=2) if ns != -1 and ew != -1 else np.array([])
                 ftrs = np.concatenate((
                     ns_ew_array,
                     vuln,
@@ -143,7 +142,10 @@ class DealData(object):
             target_bid = padded_auction[i]
 
             # Create an array with [ns, ew] only if neither ns nor ew is -1
-            ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
+            if hand_ix % 2 == 0:
+                ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
+            else:
+                ns_ew_array = np.array([ew, ns], ndmin=2) if ns != -1 and ew != -1 else np.array([])
 
             if (ns == -1):
                 ftrs = np.concatenate((

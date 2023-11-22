@@ -37,14 +37,14 @@ SEATS = ['North', 'East', 'South', 'West']
 
 class TMClient:
 
-    def __init__(self, name, seat, models, ns, ew, sampler, verbose):
+    def __init__(self, name, seat, models, sampler, verbose):
         self.name = name
         self.seat = seat
         self.player_i = SEATS.index(self.seat)
         self.reader = None
         self.writer = None
-        self.ns = ns
-        self.ew = ew
+        self.ns = models.ns
+        self.ew = models.ew
         self.models = models
         self.sampler = sampler
         self._is_connected = False
@@ -144,9 +144,9 @@ class TMClient:
         vuln = [self.vuln_ns, self.vuln_ew]
 
         if bbabid == 99:
-            bot = BBABotBid(1,1,self.player_i,self.hand_str,vuln, self.dealer_i)
+            bot = BBABotBid(self.models.ns, self.models.ew ,self.player_i,self.hand_str,vuln, self.dealer_i)
         else:
-            bot = bots.BotBid(vuln, self.hand_str, self.models, self.ns, self.ew, self.sampler, self.verbose)
+            bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.verbose)
         auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
@@ -187,8 +187,6 @@ class TMClient:
                 [self.vuln_ns, self.vuln_ew], 
                 self.hand_str,
                 self.models,
-                self.ns,
-                self.ew,
                 self.models.lead_threshold,
                 self.sampler,
                 self.verbose
@@ -711,14 +709,6 @@ async def main():
 
     configuration = conf.load(configfile)
 
-    if configuration["models"]["include_system"]:
-        ns = configuration["models"]["NS"]
-        ew = configuration["models"]["EW"]
-    else:
-        ns = -1
-        ew = -1
-
-
     try:
         if (configuration["models"]['tf_version'] == "2"):
             print("Loading version 2")
@@ -732,7 +722,7 @@ async def main():
 
     models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
 
-    client = TMClient(name, seat, models, ns, ew, Sample.from_conf(configuration, verbose), verbose)
+    client = TMClient(name, seat, models, Sample.from_conf(configuration, verbose), verbose)
     print(f"Connecting to {host}:{port}")
     await client.connect(host, port)
     

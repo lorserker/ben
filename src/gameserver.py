@@ -91,13 +91,6 @@ np.set_printoptions(precision=2, suppress=True, linewidth=240)
 
 configuration = conf.load(configfile)
 
-if configuration["models"]["include_system"]:
-    ns = configuration["models"]["NS"]
-    ew = configuration["models"]["EW"]
-else:
-    ns = -1
-    ew = -1
-
 try:
     if (configuration["models"]['tf_version'] == "2"):
         print("Loading version 2")
@@ -134,7 +127,7 @@ async def handler(websocket, path, board_no):
         if deal:
             split_values = deal[1:-1].replace("'","").split(',')
             rdeal = tuple(value.strip() for value in split_values)
-            driver.set_deal(board_no_query, *rdeal,  ns, ew, False)
+            driver.set_deal(board_no_query, *rdeal,  models.ns, models.ew, False)
             print(f"Board: {board_no_query} {rdeal}")
 
         # Trust factor is now moved to the configuration
@@ -166,7 +159,7 @@ async def handler(websocket, path, board_no):
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
-            driver.set_deal(board_no[0] + 1, rdeal, auction, ns, ew, play_only)
+            driver.set_deal(board_no[0] + 1, rdeal, auction, models.ns, models.ew, play_only)
             if (auto):
                 driver.human = [0.1, 0.1, 0.1, 0.1]
             else:
