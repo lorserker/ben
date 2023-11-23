@@ -208,7 +208,7 @@ class Sample:
         n_steps = 1 + len(auction) // 4
         if self.verbose:
             print("sample_cards_auction, nsteps=", n_steps)
-            print("Auction: ", auction)
+            print("NS: ", ns, "EW: ", ew, "Auction: ", auction)
 
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, ns, ew)
         A_lho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 1) % 4, hand, vuln, ns, ew)
@@ -277,19 +277,17 @@ class Sample:
 
         # Reorder the original lho_pard_rho array based on the sorted indices
         sorted_samples = lho_pard_rho[sorted_indices]
-        # print(len(sorted_samples))
 
         # Extract scores based on the sorted indices
         sorted_scores = min_scores[sorted_indices]
 
         # How much to trust the bidding for the samples
         accept_bidding_threshold = self.bidding_threshold_sampling
-        accepted_samples = sorted_samples[min_scores > accept_bidding_threshold]
-        # We sort the samples based on the score, so we get the hands matching the bidding best
+        accepted_samples = sorted_samples[sorted_scores > accept_bidding_threshold]
 
         while accepted_samples.shape[0] < 50 and accept_bidding_threshold > 0.02:
             accept_bidding_threshold *= 0.9
-            accepted_samples = sorted_samples[min_scores > accept_bidding_threshold]
+            accepted_samples = sorted_samples[sorted_scores > accept_bidding_threshold]
 
         if len(accepted_samples) == 0:
             # We found nothing that matches the bidding above the threshold of 0.02

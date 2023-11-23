@@ -40,11 +40,15 @@ def load_deals(fin):
             yield DealData.from_deal_auction_string(deal_str, line, ns, ew, 32)
 
 def create_binary(data_it, n, out_dir, ns, ew, alternating):
-    if (ns==-1):
-        x = np.zeros((4 * n, 8, 159), dtype=np.float16)
+    if ns == 0 or ew == 0:
+        rows_pr_hand = 2
     else:
-        x = np.zeros((4 * n, 8, 161), dtype=np.float16)
-    y = np.zeros((4 * n, 8, 40), dtype=np.uint8)
+        rows_pr_hand = 4
+    if (ns==-1):
+        x = np.zeros((rows_pr_hand * n, 8, 159), dtype=np.float16)
+    else:
+        x = np.zeros((rows_pr_hand * n, 8, 161), dtype=np.float16)
+    y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.uint8)
 
     k = 0
 
@@ -55,10 +59,24 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating):
             x_part, y_part = deal_data.get_binary(ew, ns, n_steps=8)
         else:
             x_part, y_part = deal_data.get_binary(ns, ew, n_steps=8)
-        x[k:k+4] = x_part
-        y[k:k+4] = y_part
-
-        k += 4
+        if ns == 0:
+            # with system = 0 we discard the hand
+            x[k:k+1] = x_part[1]
+            y[k:k+1] = y_part[1]
+            x[k+1:k+2] = x_part[3]
+            y[k+1:k+2] = y_part[3]
+            k += 2
+        elif ew == 0:
+            # with system = 0 we discard the hand
+            x[k:k+1] = x_part[0]
+            y[k:k+1] = y_part[0]
+            x[k+1:k+2] = x_part[2]
+            y[k+1:k+2] = y_part[2]
+            k += 2
+        else:
+            x[k:k+4] = x_part
+            y[k:k+4] = y_part
+            k += 4
 
     np.save(os.path.join(out_dir, 'x.npy'), x)
     np.save(os.path.join(out_dir, 'y.npy'), y)
@@ -104,5 +122,10 @@ if __name__ == '__main__':
         lines = [line for line in lines if not line.strip().startswith('#')]
         n = len(lines) // 2
         print(f"Loading {n} deals")
+        if lines[0] == lines[2] and not alternating:
+            user_input = input("\n First two boards are identical - did you forget to add alternate=True?")
+            if user_input.lower() == "y":
+                sys.exit()
+
         create_binary(load_deals(lines), n, outdir, ns, ew, alternating)
 

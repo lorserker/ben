@@ -56,14 +56,15 @@ class BotBid:
         candidates, passout = self.get_bid_candidates(auction)
         if self.verbose:
             print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
-        hands_np, p_hcp, p_shp = self.sample_hands(auction)
+        hands_np, sorted_score, p_hcp, p_shp = self.sample_hands(auction)
         samples = []
         for i in range(hands_np.shape[0]):
-            samples.append('%s %s %s %s' % (
+            samples.append('%s %s %s %s %.5f' % (
                 hand_to_str(hands_np[i,0,:]),
                 hand_to_str(hands_np[i,1,:]),
                 hand_to_str(hands_np[i,2,:]),
                 hand_to_str(hands_np[i,3,:]),
+                sorted_score[i]
             ))
 
         if BotBid.do_rollout(auction, candidates, hands_np, self.max_candidate_score):
@@ -209,7 +210,6 @@ class BotBid:
             else:
                 min_candidates = 1
 
-        print("min_candidates: ", min_candidates)
         while True:
             bid_i = np.argmax(bid_softmax)
             #print(bid_i, bid_softmax[bid_i])
@@ -266,7 +266,7 @@ class BotBid:
         for i in range(1, 4):
             hands_np[:, (turn_to_bid + i) % 4, :] = lho_pard_rho[:,i-1,:]
 
-        return hands_np, p_hcp, p_shp 
+        return hands_np, sorted_scores, p_hcp, p_shp 
 
     def bidding_rollout(self, auction_so_far, candidate_bid, hands_np):
         auction = [*auction_so_far, candidate_bid]
@@ -318,9 +318,6 @@ class BotBid:
             auctions.append(sample_auction)
             contract = bidding.get_contract(sample_auction)
             contracts.append(contract)
-            if (i == 0):
-                print(auctions)
-                print(contract)
             strains[i] = 'NSHDC'.index(contract[1])
             declarers[i] = 'NESW'.index(contract[-1])
             
@@ -406,7 +403,7 @@ class BotLead:
                 expected_tricks=np.mean(tricks[:,i,0]),
                 p_make_contract=np.mean(tricks[:,i,1])
             ))
-        print(len(candidate_cards))
+        
         candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score, reverse=True)
         if (candidate_cards[0].insta_score > self.lead_accept_nn):
             opening_lead = candidate_cards[0].card.code() 

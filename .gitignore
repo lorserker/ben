@@ -57,4 +57,5 @@ src/Eastdb.*
 src/Westdb.*
 src/Northdb.*
 src/Southdb.*
-scripts/training/data/input-17-11-2023-alternate.ben
+scripts/training/data/input-17-11*
+

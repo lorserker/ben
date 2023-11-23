@@ -39,28 +39,54 @@ def load_deals_no_contracts(fin):
 
 
 def create_binary(data_it, n, out_dir, ns, ew, alternating):
-    if (ns==-1):
-        x = np.zeros((4 * n, 8, 159), dtype=np.float16)
+    if ns == 0 or ew == 0:
+        rows_pr_hand = 2
     else:
-        x = np.zeros((4 * n, 8, 161), dtype=np.float16)
-    y = np.zeros((4 * n, 8, 40), dtype=np.float16)
-    HCP = np.zeros((4 * n, 8, 3), dtype=np.float16)
-    SHAPE = np.zeros((4 * n, 8, 12), dtype=np.float16)
+        rows_pr_hand = 4
+    if (ns==-1):
+        x = np.zeros((rows_pr_hand * n, 8, 159), dtype=np.float16)
+    else:
+        x = np.zeros((rows_pr_hand * n, 8, 161), dtype=np.float16)
+    y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.float16)
+    HCP = np.zeros((rows_pr_hand * n, 8, 3), dtype=np.float16)
+    SHAPE = np.zeros((rows_pr_hand * n, 8, 12), dtype=np.float16)
     print("Creating binary data")
     for i, (deal_str, auction_str, _) in enumerate(data_it):      
         if (i+1) % 1000 == 0: 
             print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i+1)
         if alternating and (i % 2) == 1:
             deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ew, ns, 32)
+            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, n_steps = 8)
         else:
             deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ns, ew, 32)
-        x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
-        start_ix = i * 4
-        end_ix = (i + 1) * 4
-        x[start_ix:end_ix,:,:] = x_part
-        y[start_ix:end_ix,:,:] = y_part
-        HCP[start_ix:end_ix,:,:] = hcp_part
-        SHAPE[start_ix:end_ix,:,:] = shape_part
+            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
+        if ns == 0:
+            start_ix = i * 2
+            x[start_ix:start_ix+1,:,:] = x_part[1]
+            y[start_ix:start_ix+1,:,:] = y_part[1]
+            HCP[start_ix:start_ix+1,:,:] = hcp_part[1]
+            SHAPE[start_ix:start_ix+1,:,:] = shape_part[1]
+            x[start_ix+1:start_ix+2,:,:] = x_part[3]
+            y[start_ix+1:start_ix+2,:,:] = y_part[3]
+            HCP[start_ix+1:start_ix+2,:,:] = hcp_part[3]
+            SHAPE[start_ix+1:start_ix+2,:,:] = shape_part[3]
+        elif ew == 0:
+            start_ix = i * 2
+            x[start_ix:start_ix+1,:,:] = x_part[0]
+            y[start_ix:start_ix+1,:,:] = y_part[0]
+            HCP[start_ix:start_ix+1,:,:] = hcp_part[0]
+            SHAPE[start_ix:start_ix+1,:,:] = shape_part[0]
+            x[start_ix+1:start_ix+2,:,:] = x_part[2]
+            y[start_ix+1:start_ix+2,:,:] = y_part[2]
+            HCP[start_ix+1:start_ix+2,:,:] = hcp_part[2]
+            SHAPE[start_ix+1:start_ix+2,:,:] = shape_part[2]
+        else:
+            start_ix = i * 4
+            end_ix = (i + 1) * 4
+            x[start_ix:end_ix,:,:] = x_part
+            y[start_ix:end_ix,:,:] = y_part
+            HCP[start_ix:end_ix,:,:] = hcp_part
+            SHAPE[start_ix:end_ix,:,:] = shape_part
 
     np.save(os.path.join(out_dir, 'x.npy'), x)
     np.save(os.path.join(out_dir, 'y.npy'), y)
@@ -83,10 +109,11 @@ def to_numeric(value, default=0):
 if __name__ == '__main__':
     
     if len(sys.argv) < 3:
-        print("Usage: python binfo_binary.py inputfile outputdirectory NS=<x> EW=<y>")
-        print("NS and EW are optional. If set to -1 no information about system is included in the model.")
+        print("Usage: python binfo_binary.py inputfile outputdirectory NS=<x> EW=<y> alternate=<>")
+        print("NS, EW and alternate are optional. If set to -1 no information about system is included in the model.")
         print("If set to 0 the hands from that side will not be used for training.")
         print("The input file is the BEN-format (1 line with hands, and next line with the bidding).")
+        print("Alternating is used when the same hand is bid a second time with switched systems")
         sys.exit(1)
 
     infnm = sys.argv[1] # file where the data is
@@ -107,4 +134,9 @@ if __name__ == '__main__':
         lines = [line for line in lines if not line.strip().startswith('#')]
         n = len(lines) // 2
         print(f"Loading {n} deals")
+        if lines[0] == lines[2] and not alternating:
+            user_input = input("\n First two boards are identical - did you forget to add alternate=True?")
+            if user_input.lower() == "y":
+                sys.exit()
+
         create_binary(load_deals_no_contracts(lines), n, outdir, ns, ew, alternating)
