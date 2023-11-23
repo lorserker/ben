@@ -58,12 +58,13 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, verbose):
+    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
         self.play_accept_threshold = play_accept_threshold
         self.bid_accept_play_threshold = bid_accept_play_threshold
         self._sample_hands_auction = sample_hands_auction
+        self._min_sample_hands_auction = min_sample_hands_auction
         self.sample_boards_for_auction = sample_boards_for_auction
         self.sample_boards_for_auction_opening_lead = sample_boards_for_auction_opening_lead
         self.sample_hands_opening_lead = sample_hands_opening_lead
@@ -77,13 +78,14 @@ class Sample:
         play_accept_threshold = float(conf['sampling']['play_accept_threshold'])
         bid_accept_play_threshold = float(conf['sampling']['bid_accept_play_threshold'])
         sample_hands_auction = int(conf['sampling']['sample_hands_auction'])
+        min_sample_hands_auction = int(conf['sampling']['min_sample_hands_auction'])
         sample_boards_for_auction = int(conf['sampling']['sample_boards_for_auction'])
 
         sample_boards_for_auction_opening_lead = int(conf['sampling']['sample_boards_for_auction_opening_lead'])
         sample_hands_opening_lead = int(conf['sampling']['sample_hands_opening_lead'])
         sample_hands_play = int(conf['cardplay']['sample_hands_play'])
 
-        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, verbose)
+        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -282,18 +284,13 @@ class Sample:
         sorted_scores = min_scores[sorted_indices]
 
         # How much to trust the bidding for the samples
-        accept_bidding_threshold = self.bidding_threshold_sampling
-        accepted_samples = sorted_samples[sorted_scores > accept_bidding_threshold]
+        accepted_samples = sorted_samples[sorted_scores >= self.bidding_threshold_sampling]
 
-        while accepted_samples.shape[0] < 50 and accept_bidding_threshold > 0.02:
-            accept_bidding_threshold *= 0.9
-            accepted_samples = sorted_samples[sorted_scores > accept_bidding_threshold]
-
-        if len(accepted_samples) == 0:
+        if len(accepted_samples) < self._min_sample_hands_auction:
             # We found nothing that matches the bidding above the threshold of 0.02
             # Perhaps a longer bidding generally lowers the score for matching the bidding
             # For now we just return 3 best samples. That is better than none
-            accepted_samples = sorted_samples[:10]
+            accepted_samples = sorted_samples[:self._min_sample_hands_auction]
 
         return accepted_samples, sorted_scores, c_hcp[0], c_shp[0]
 

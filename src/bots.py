@@ -76,7 +76,7 @@ class BotBid:
                 contracts, decl_tricks_softmax = self.expected_tricks(hands_np, auctions_np)
 
                 for idx, (auction2, (contract, trick)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax))):
-                    auc = bidding.get_action_as_string(auction2)
+                    auc = bidding.get_auction_as_string(auction2)
                     weighted_sum = sum(i * trick[i] for i in range(len(trick)))
                     average_tricks = round(weighted_sum, 1)
                     samples[idx] += " " + auc + " ("+ str(average_tricks) + ") "
@@ -126,8 +126,8 @@ class BotBid:
         else:
             who = "NN"
         # Without detailed logging we only save 20 samples
-        if not self.verbose:
-            samples=samples[:20]
+        #if not self.verbose:
+        #    samples=samples[:20]
         
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples, shape=p_shp, hcp=p_hcp, who = who)
     
@@ -272,6 +272,8 @@ class BotBid:
         auction = [*auction_so_far, candidate_bid]
         
         n_samples = hands_np.shape[0]
+        if self.verbose:
+            print("bidding_rollout - n_samples: ", n_samples)
         assert n_samples > 0
         
         n_steps_vals = [0, 0, 0, 0]
@@ -282,21 +284,32 @@ class BotBid:
         auction_np = np.ones((n_samples, 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
         for i, bid in enumerate(auction):
             auction_np[:,i] = bidding.BID2ID[bid]
-            
+
         bid_i = len(auction) - 1
         turn_i = len(auction) % 4
         while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
             X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.ns, self.ew)
             y_bid_np = self.model.model_seq(X)
-            if (y_bid_np.ndim == 2): 
-                x_bid_np = y_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
-                bid_np = x_bid_np[:,-1,:]
-            else:
-                bid_np = y_bid_np[:,-1,:]
+            x_bid_np = y_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
+            bid_np = x_bid_np[:,-1,:]
             assert bid_np.shape[1] == 40
+            # We can get invalid bids back from the neural network, so we need to filter those away first
+            invalid_bids = True
+            while invalid_bids:
+                invalid_bids = False
+                for i in range(n_samples):
+                    bid = np.argmax(bid_np[i])
+                    auction = bidding.get_auction_as_list(auction_np[i])
+                    #print(auction)
+                    # Pass is always aloowed
+                    if bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction):
+                        invalid_bids = True
+                        #sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]}\n")
+                        bid_np[i][bid] = 0
+                #assert(bid_i > 1)
+
             bid_i += 1
             auction_np[:,bid_i] = np.argmax(bid_np, axis=1)
-            
             n_steps_vals[turn_i] += 1
             turn_i = (turn_i + 1) % 4
         assert len(auction_np) > 0

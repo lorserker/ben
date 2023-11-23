@@ -33,7 +33,7 @@ def bid_hand(hands, dealer, vuln, models_ns_ew, do_search, samplers, verbose):
 
     dealer_i = 'NESW'.index(dealer)
     
-    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], models_ns_ew[i % 2].ns, models_ns_ew[i % 2].ew, samplers[i % 2], verbose) for i, hand in enumerate(hands)]
+    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], samplers[i % 2], verbose) for i, hand in enumerate(hands)]
 
     auction = ['PAD_START'] * dealer_i
 

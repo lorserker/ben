@@ -34,10 +34,13 @@ class Models:
         no_search_threshold = float(conf['bidding']['no_search_threshold'])
         lead_threshold = float(conf['lead']['lead_threshold'])
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
-        include_system = bool(conf['models']['include_system'])
+        include_system = conf.getboolean('models','include_system')
         if include_system == True:
             ns = float(conf['models']['ns'])
             ew = float(conf['models']['ew'])
+        else:
+            ns = -1
+            ew = -1
         return cls(
             bidder_model=Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder'])),
             binfo=BidInfo(os.path.join(base_path, conf['bidding']['info'])),
