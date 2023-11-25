@@ -137,8 +137,4 @@ with tf.Session() as sess:
 
     saver.save(sess, model_path, global_step=n_iterations)
 
-    shutil.rmtree(model_path + '_saved_model')
-
-    # Save the model in the SavedModel format
-    tf.saved_model.simple_save(sess, model_path + '_saved_model', inputs={'seq_in': seq_in, 'keep_prob': keep_prob}, outputs={'out_hcp_seq': out_hcp_seq, 'out_shape_seq': out_shape_seq})
-    
+   
