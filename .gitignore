@@ -53,11 +53,10 @@ scripts/training/*/model
 scripts/training/**/*.npy
 scripts/match/bidding/0.*
 scripts/training/**/*.out
-src/Eastdb.*
-src/Westdb.*
-src/Northdb.*
-src/Southdb.*
+src/East*
+src/West*
+src/North*
+src/South*
 scripts/training/data/input-17-11*
 
 src/hfmodels
-

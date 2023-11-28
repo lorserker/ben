@@ -1,6 +1,6 @@
 import json
 import sys
-sys.path.append('../../src')
+sys.path.append('../../../src')
 
 import scoring
 import compare

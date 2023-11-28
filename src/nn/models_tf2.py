@@ -34,7 +34,8 @@ class Models:
         no_search_threshold = float(conf['bidding']['no_search_threshold'])
         lead_threshold = float(conf['lead']['lead_threshold'])
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
-        include_system = conf.getboolean('models','include_system')
+        include_system = conf.getboolean('models', 'include_system', fallback=False)
+        use_bba = conf.getboolean('models', 'use_bba', fallback=False)
         if include_system == True:
             ns = float(conf['models']['ns'])
             ew = float(conf['models']['ew'])
@@ -43,8 +44,9 @@ class Models:
             ew = -1
         return cls(
             bidder_model=Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder'])),
-            binfo=BidInfo(os.path.join(base_path, conf['bidding']['info'])),
-            lead=Leader(os.path.join(base_path, conf['lead']['lead'])),
+            binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info'])),
+            lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit'])),
+            lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt'])),
             sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy'])),
             player_models=[
                 BatchPlayerLefty('lefty', os.path.join(base_path, conf['cardplay']['lefty'])),
@@ -58,7 +60,8 @@ class Models:
             lead_accept_nn=lead_accept_nn,
             include_system=include_system,
             ns=ns,
-            ew=ew
+            ew=ew,
+            use_bba=use_bba
         )
     
     @property

@@ -49,10 +49,11 @@ class Card:
 
 class CandidateCard:
 
-    def __init__(self, card, insta_score, expected_tricks, p_make_contract=None, expected_score=None):
+    def __init__(self, card, insta_score, expected_tricks_sd = None, expected_tricks_dd = None, p_make_contract=None, expected_score=None):
         self.card = card
         self.insta_score = None if insta_score is None else float(insta_score)
-        self.expected_tricks = None if expected_tricks is None else float(expected_tricks)
+        self.expected_tricks_sd = None if expected_tricks_sd is None else float(expected_tricks_sd)
+        self.expected_tricks_dd = None if expected_tricks_dd is None else float(expected_tricks_dd)
         self.p_make_contract = None if p_make_contract is None else float(p_make_contract)
         self.expected_score = None if expected_score is None else float(expected_score)
 
@@ -62,8 +63,10 @@ class CandidateCard:
         }
         if self.insta_score is not None:
             result['insta_score'] = round(self.insta_score,4)
-        if self.expected_tricks is not None:
-            result['expected_tricks'] = round(self.expected_tricks,2)
+        if self.expected_tricks_sd is not None:
+            result['expected_tricks_sd'] = round(self.expected_tricks_sd,2)
+        if self.expected_tricks_dd is not None:
+            result['expected_tricks_dd'] = round(self.expected_tricks_dd,2)
         if self.p_make_contract is not None:
             result['p_make_contract'] = round(self.p_make_contract,2)
         if self.expected_score is not None:

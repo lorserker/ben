@@ -58,7 +58,7 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, verbose):
+    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
         self.play_accept_threshold = play_accept_threshold
@@ -69,6 +69,8 @@ class Sample:
         self.sample_boards_for_auction_opening_lead = sample_boards_for_auction_opening_lead
         self.sample_hands_opening_lead = sample_hands_opening_lead
         self.sample_hands_play = sample_hands_play
+        self.min_sample_hands_play = min_sample_hands_play
+        self.sample_boards_for_play = sample_boards_for_play
         self.verbose = verbose
 
     @classmethod
@@ -84,8 +86,9 @@ class Sample:
         sample_boards_for_auction_opening_lead = int(conf['sampling']['sample_boards_for_auction_opening_lead'])
         sample_hands_opening_lead = int(conf['sampling']['sample_hands_opening_lead'])
         sample_hands_play = int(conf['cardplay']['sample_hands_play'])
-
-        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, verbose)
+        min_sample_hands_play = int(conf['cardplay']['min_sample_hands_play'])
+        sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
+        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -179,7 +182,7 @@ class Sample:
 
         # re-apply constraints
         accept_hcp = np.ones(n_samples).astype(bool)
-        # print(lho_pard_rho.shape)
+        
         for i in range(3):
             if np.round(c_hcp[i]) >= 11:
                 accept_hcp &= binary.get_hcp(lho_pard_rho[:, i, :]) >= np.round(c_hcp[i]) - 2
@@ -367,17 +370,12 @@ class Sample:
             cards = ak_out_i[s_all_r, js_r]
             receivers = distr2_vec(r_shp[s_all_r, :, cards//8], r_hcp[s_all_r])
 
-            can_receive_cards = cards_received[s_all_r,
-                                               receivers] < n_max_cards[s_all_r, receivers]
+            can_receive_cards = cards_received[s_all_r, receivers] < n_max_cards[s_all_r, receivers]
 
-            cards_received[s_all_r[can_receive_cards],
-                           receivers[can_receive_cards]] += 1
-            h1_h2[s_all_r[can_receive_cards],
-                  receivers[can_receive_cards], cards[can_receive_cards]] += 1
-            r_hcp[s_all_r[can_receive_cards],
-                  receivers[can_receive_cards]] -= 3
-            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards],
-                  cards[can_receive_cards] // 8] -= 0.5
+            cards_received[s_all_r[can_receive_cards], receivers[can_receive_cards]] += 1
+            h1_h2[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
+            r_hcp[s_all_r[can_receive_cards], receivers[can_receive_cards]] -= 3
+            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= 0.5
             js[s_all_r[can_receive_cards]] += 1
 
         js = np.zeros(n_samples, dtype=int)
@@ -390,22 +388,18 @@ class Sample:
             cards = small_out_i[s_all_r, js_r]
             receivers = distr_vec(r_shp[s_all_r, :, cards//8])
 
-            can_receive_cards = cards_received[s_all_r,
-                                               receivers] < n_max_cards[s_all_r, receivers]
+            can_receive_cards = cards_received[s_all_r, receivers] < n_max_cards[s_all_r, receivers]
 
-            cards_received[s_all_r[can_receive_cards],
-                           receivers[can_receive_cards]] += 1
-            h1_h2[s_all_r[can_receive_cards],
-                  receivers[can_receive_cards], cards[can_receive_cards]] += 1
-            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards],
-                  cards[can_receive_cards] // 8] -= 0.5
+            cards_received[s_all_r[can_receive_cards], receivers[can_receive_cards]] += 1
+            h1_h2[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
+            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= 0.5
             js[s_all_r[can_receive_cards]] += 1
 
         assert np.sum(h1_h2) == n_samples * np.sum(n_cards_to_receive)
 
         return h1_h2
 
-    def get_opening_lead_scores(self, auction, vuln, binfo, lead_model, hand, opening_lead_card, ns, ew):
+    def get_opening_lead_scores(self, auction, vuln, models, hand, opening_lead_card, ns, ew):
         contract = bidding.get_contract(auction)
 
         level = int(contract[0])
@@ -435,12 +429,15 @@ class Sample:
 
         A = binary.get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, ns, ew)
 
-        p_hcp, p_shp = binfo.model(A)
+        p_hcp, p_shp = models.binfo_model.model(A)
 
         b[:, :3] = p_hcp.reshape((-1, n_steps, 3))[:, -1, :].reshape((-1, 3))
         b[:, 3:] = p_shp.reshape((-1, n_steps, 12))[:, -1, :].reshape((-1, 12))
 
-        lead_softmax = lead_model.model(x, b)
+        if (contract[1] == "N"):
+            lead_softmax = models.lead_nt_model.model(x, b)
+        else:
+            lead_softmax = models.lead_suit_model.model(x, b)
 
         return lead_softmax[:, opening_lead_card]
 
@@ -474,7 +471,7 @@ class Sample:
 
         return min_scores
 
-    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand, vuln, models, ns, ew):
+    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand, vuln, models):
         n_samples = self.sample_hands_play
         if self.verbose:
             print(f"Called init_rollout_states {n_samples}")
@@ -501,8 +498,8 @@ class Sample:
             h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
 
             h1_h2 = self.shuffle_cards_bidding_info(
-                40*n_samples,
-                models.binfo,
+                self.sample_boards_for_play,
+                models.binfo_model,
                 auction,
                 hand,
                 vuln,
@@ -513,8 +510,8 @@ class Sample:
                 hidden_cards,
                 [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
                 [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
-                ns,
-                ew
+                models.ns,
+                models.ew
             )
 
             hidden_hand1, hidden_hand2 = h1_h2[:, 0], h1_h2[:, 1]
@@ -555,7 +552,6 @@ class Sample:
                     states[hidden_1_i][:, k, card] += 1
                 for card in player_cards_played[hidden_2_i][k:]:
                     states[hidden_2_i][:, k, card] += 1
-            # print(states[0])
         else:
             # In cheat mode all cards are known
             contract = bidding.get_contract(auction)
@@ -570,6 +566,8 @@ class Sample:
 
         samples = []
         unique_indices = np.ones(states[0].shape[0]).astype(bool)
+
+        # this is just to see how many smaples we actually have
         for i in range(states[0].shape[0]):
             sample = '%s %s %s %s' % (
                 hand_to_str(states[0][i, 0, :32].astype(int)),
@@ -581,25 +579,82 @@ class Sample:
                 unique_indices[i] = False
             else:
                 samples.append(sample)
-        # if trick_i == 2 and player_i == 3:
-        #    print("player_i: ", player_i)
-        #    for i in range(len(samples)):
-        #        print(f'{samples[i]}')
+
         # Use the unique_indices to filter player_states
         states = [state[unique_indices] for state in states]
         if self.verbose:
             print(f"Unique states {states[0].shape[0]}")
-        if (states[0].shape[0] < n_samples // 2) or n_samples < 0:
+        if (states[0].shape[0] < n_samples // 10) or n_samples < 0:
             if self.verbose:
                 print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
-            return states, -1, -1
+            return states, [], -1, -1
 
-        # re-apply constraints
+        accept, c_hcp, c_shp = self.validate_shape_and_hcp_for_sample(auction, known_nesw, hand, vuln, models, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states)
+
+        if np.sum(accept) < n_samples:
+            accept = np.ones_like(accept).astype(bool)
+        # end of re-applyconstraints
+
+        states = [state[accept] for state in states]
+        if self.verbose:
+            print(f"States {states[0].shape[0]} before checking opening lead (after shape and hcp)")
+        if (states[0].shape[0] < n_samples // 10):
+            if self.verbose:
+                print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+            return states, [], c_hcp, c_shp
+
+        # reject samples inconsistent with the opening lead
+        states = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states)
+        # We will only check opening lead if we have a lot of samples, as we can't trust other will follow the same lead rules
+        if self.verbose:
+            print(f"States {states[0].shape[0]} after checking lead")
+        if (states[0].shape[0] < n_samples // 10):
+            if self.verbose:
+                print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+            return states, [], c_hcp, c_shp
+
+        # start = time.time()
+        min_bid_scores = np.ones(states[0].shape[0])
+
+        # Loop the samples for each of the 2 hidden hands to check bidding
+        for h_i in [hidden_1_i, hidden_2_i]:
+            h_i_nesw = player_to_nesw_i(h_i, contract)
+            bid_scores = self.get_bid_scores(h_i_nesw, auction, vuln, states[h_i][:, 0, :32], models.bidder_model, models.ns, models.ew)
+            min_bid_scores = np.minimum(min_bid_scores, bid_scores)
+
+        # With only few cards left we will not filter the samples according to the bidding.
+        if trick_i <= 11:
+            # trusting the bidding after sampling cards
+            # This could probably be set based on number of deals matching or sorted
+            bid_accept_threshold = self.bid_accept_play_threshold
+
+            while np.sum(min_bid_scores > bid_accept_threshold) < self.min_sample_hands_play and bid_accept_threshold > 0.000001:
+                bid_accept_threshold *= 0.9
+
+            states = [state[min_bid_scores > bid_accept_threshold] for state in states]
+
+            if self.verbose:
+                print(f"States {states[0].shape[0]} after checking the bidding")
+            if (states[0].shape[0] < n_samples // 10):
+                if self.verbose:
+                    print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+                return states, min_bid_scores, c_hcp, c_shp
+
+        # To save time we reduce no of samples to 3 times what is required before we validate the actual play
+        states = [state[:3*n_samples] for state in states]
+
+        if trick_i <= 9:
+            states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, models.player_models, hidden_1_i, hidden_2_i, states)
+        if self.verbose:
+            print(f"States {states[0].shape[0]} after checking the play. Returning {min(states[0].shape[0],n_samples)}")
+        return [state[:n_samples] for state in states], min_bid_scores, c_hcp, c_shp
+    
+    def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, models, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states):
         n_steps = 1 + (len(auction)-1) // 4
 
-        A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, ns, ew)
+        A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models.ns, models.ew)
 
-        p_hcp, p_shp = models.binfo.model(A)
+        p_hcp, p_shp = models.binfo_model.model(A)
 
         # Only take the result from the latest bidding round
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
@@ -643,105 +698,49 @@ class Sample:
 
         accept = accept_hcp & accept_shp
 
-        if np.sum(accept) < n_samples:
-            accept = np.ones_like(accept).astype(bool)
-        # end of re-applyconstraints
+        return accept, c_hcp, c_shp
 
-        states = [state[accept] for state in states]
-        if self.verbose:
-            print(f"States {states[0].shape[0]} before checking opening lead (after shape and hcp)")
-        if (states[0].shape[0] < n_samples // 2 or n_samples < 10):
-            if self.verbose:
-                print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
-            return states, c_hcp, c_shp
-
-        # reject samples inconsistent with the opening lead
-        # t_start = time.time()
-        if hidden_1_i == 0 or hidden_2_i == 0:
+    def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states):
+        if (hidden_1_i == 0 or hidden_2_i == 0) and states[0].shape[0] > self.min_sample_hands_play * 2:
             opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
-            lead_scores = self.get_opening_lead_scores(auction, vuln, models.binfo, models.lead, states[0][:, 0, :32], opening_lead, ns, ew)
+            lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :32], opening_lead, models.ns, models.ew)
 
             # How much trust that opponents would have lead the actual card from the hand sampled
             lead_accept_threshold = self.lead_accept_threshold
-            while np.sum(lead_scores > lead_accept_threshold) < 20:
+            while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0.0001:
                 lead_accept_threshold *= 0.9
 
-            states = [state[lead_scores > lead_accept_threshold]
-                      for state in states]
-            if self.verbose:
-                print(f"States {states[0].shape[0]} after checking lead")
-            if (states[0].shape[0] < n_samples // 2):
-                if self.verbose:
-                    print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
-                return states, c_hcp, c_shp
+            # If we did not find 2 samples we ignore the test for opening lead
+            # Should probably test for number of samples before the test
+            if np.sum(lead_scores >= lead_accept_threshold) > 1:
+                states = [state[lead_scores > lead_accept_threshold] for state in states]
+                
+        return states
 
-        # reject samples inconsistent with the bidding
-        if trick_i <= 9:
-            # start = time.time()
-            min_bid_scores = np.ones(states[0].shape[0])
-
-            # Loop the samples for each of the 2 hidden hands
-            for h_i in [hidden_1_i, hidden_2_i]:
-                h_i_nesw = player_to_nesw_i(h_i, contract)
-                # print(f"h_i = {h_i} h_i_nesw = {h_i_nesw}")
-                bid_scores = self.get_bid_scores(h_i_nesw, auction, vuln, states[h_i][:, 0, :32], models.bidder_model, ns, ew)
-                # indices_of_highest_values = np.argsort(bid_scores)[:10][::-1]
-                # print(indices_of_highest_values)
-                # for index in indices_of_highest_values:
-                #    print(f"Index: {index}, Value: {bid_scores[index]}")
-                # if trick_i == 2 and h_i == 2 and player_i == 3:
-                #    print("player_i: ", player_i)
-                #    print(h_i, bid_scores.shape[0])
-                #    for i in range(bid_scores.shape[0]):
-                #        print(f'{bid_scores[i]:.3f} {hand_to_str(states[h_i][:, 0, :32][i])}')
-
-                min_bid_scores = np.minimum(min_bid_scores, bid_scores)
-
-            # trusting the bidding after sampling cards
-            # This could probably be set based on number of deals matching or sorted
-            bid_accept_threshold = self.bid_accept_play_threshold
-
-            while np.sum(min_bid_scores > bid_accept_threshold) < 20:
-                bid_accept_threshold *= 0.9
-
-            states = [state[min_bid_scores > bid_accept_threshold] for state in states]
-
-            if self.verbose:
-                print(f"States {states[0].shape[0]} after checking the bidding")
-            if (states[0].shape[0] < n_samples // 2):
-                if self.verbose:
-                    print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
-                return states, c_hcp, c_shp
-
-        # To save time we reduce no of samples to 2 times what is required
-        # states = [state[:2*n_samples] for state in states]
-
-        # reject samples inconsistent with the play
-        # t_start = time.time()
+    # Check that the play until now is expected with the samples
+    def validate_play_until_now(self, trick_i, current_trick, leader_i, player_cards_played, player_models, hidden_1_i, hidden_2_i, states):
         min_scores = np.ones(states[0].shape[0])
+        for p_i in [hidden_1_i, hidden_2_i]:
 
-        if trick_i <= 9:
-            for p_i in [hidden_1_i, hidden_2_i]:
+            if trick_i == 0 and p_i == 0:
+                continue
 
-                if trick_i == 0 and p_i == 0:
-                    continue
+            card_played_current_trick = []
+            for i, card in enumerate(current_trick):
+                if (leader_i + i) % 4 == p_i:
+                    card_played_current_trick.append(card)
 
-                card_played_current_trick = []
-                for i, card in enumerate(current_trick):
-                    if (leader_i + i) % 4 == p_i:
-                        card_played_current_trick.append(card)
+            cards_played_prev_tricks = player_cards_played[p_i][1:trick_i] if p_i == 0 else player_cards_played[p_i][:trick_i]
 
-                cards_played_prev_tricks = player_cards_played[p_i][1:trick_i] if p_i == 0 else player_cards_played[p_i][:trick_i]
+            cards_played = cards_played_prev_tricks + card_played_current_trick
 
-                cards_played = cards_played_prev_tricks + card_played_current_trick
+            if len(cards_played) == 0:
+                continue
 
-                if len(cards_played) == 0:
-                    continue
+            p_cards = player_models[p_i].model(states[p_i][:, :11, :])
+            card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]
 
-                p_cards = models.player_models[p_i].model(states[p_i][:, :11, :])
-                card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]
-
-                min_scores = np.minimum(min_scores, np.min(card_scores, axis=1))
+            min_scores = np.minimum(min_scores, np.min(card_scores, axis=1))
 
         # Trust in the play until now
         play_accept_threshold = self.play_accept_threshold
@@ -753,6 +752,5 @@ class Sample:
         s_accepted = min_scores > play_accept_threshold
 
         states = [state[s_accepted] for state in states]
-        if self.verbose:
-            print(f"States {states[0].shape[0]} after checking the play. Returning {n_samples}")
-        return [state[:n_samples] for state in states], c_hcp, c_shp
+        return states
+    

@@ -112,7 +112,6 @@ def convert_cards(card_string):
     
     updated_sequences = [replace_x(seq) for seq in sequences]
     updated_card_string = ' '.join(updated_sequences)
-    print(updated_card_string)
     return updated_card_string
 
 

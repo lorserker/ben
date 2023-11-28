@@ -25,9 +25,10 @@ class BotBid:
         self.max_candidate_score = models.no_search_threshold
         self.model = models.bidder_model
         self.state = models.bidder_model.zero_state
-        self.lead_model = models.lead
+        self.lead_suit_model = models.lead_suit_model
+        self.lead_nt_model = models.lead_nt_model
         self.sd_model = models.sd_model
-        self.binfo_model = models.binfo
+        self.binfo_model = models.binfo_model
         self.ns = models.ns
         self.ew = models.ew
         self.sample = sampler
@@ -338,7 +339,7 @@ class BotBid:
             
             X_ftrs[i,:], B_ftrs[i,:] = binary.get_lead_binary(sample_auction, hand_on_lead, self.binfo_model, self.vuln, self.ns, self.ew)
         
-        lead_softmax = self.lead_model.model(X_ftrs, B_ftrs)
+        lead_softmax = self.lead_suit_model.model(X_ftrs, B_ftrs)
         lead_cards = np.argmax(lead_softmax, axis=1)
         
         X_sd = np.zeros((n_samples, 32 + 5 + 4*32))
@@ -392,9 +393,10 @@ class BotLead:
         self.hand = binary.parse_hand_f(32)(hand_str)
         self.hand52 = binary.parse_hand_f(52)(hand_str)
 
-        self.lead_model = models.lead
+        self.lead_suit_model = models.lead_suit_model
+        self.lead_nt_model = models.lead_nt_model
         self.bidder_model = models.bidder_model
-        self.binfo_model = models.binfo
+        self.binfo_model = models.binfo_model
         self.sd_model = models.sd_model
         self.ns = models.ns
         self.ew = models.ew
@@ -413,7 +415,7 @@ class BotLead:
             candidate_cards.append(CandidateCard(
                 card=Card.from_code(card_i, xcards=True),
                 insta_score=lead_softmax[0,card_i],
-                expected_tricks=np.mean(tricks[:,i,0]),
+                expected_tricks_sd=np.mean(tricks[:,i,0]),
                 p_make_contract=np.mean(tricks[:,i,1])
             ))
         
@@ -421,7 +423,7 @@ class BotLead:
         if (candidate_cards[0].insta_score > self.lead_accept_nn):
             opening_lead = candidate_cards[0].card.code() 
         else:
-            candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.p_make_contract, 2), -round(c.expected_tricks, 2)))
+            candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.p_make_contract, 2), -round(c.expected_tricks_sd, 2)))
             opening_lead = candidate_cards[0].card.code()
 
         if opening_lead % 8 == 7:
@@ -453,7 +455,11 @@ class BotLead:
 
     def get_lead_candidates(self, auction):
         x_ftrs, b_ftrs = binary.get_lead_binary(auction, self.hand, self.binfo_model, self.vuln, self.ns, self.ew)
-        lead_softmax = self.lead_model.model(x_ftrs, b_ftrs)
+        contract = bidding.get_contract(auction)
+        if contract[1] == "N":
+            lead_softmax = self.lead_nt_model.model(x_ftrs, b_ftrs)
+        else:
+            lead_softmax = self.lead_suit_model.model(x_ftrs, b_ftrs)
         lead_softmax = follow_suit(lead_softmax, self.hand, np.array([[0, 0, 0, 0]]))
 
         candidates = []
@@ -589,6 +595,7 @@ class CardPlayer:
         from ddsolver import ddsolver
         
         n_samples = players_states[0].shape[0]
+        assert n_samples > 0, "No samples for DDSolver"
 
         unavailable_cards = set(list(np.nonzero(self.hand52)[0]) + list(np.nonzero(self.public52)[0]) + current_trick52)
 
@@ -643,17 +650,19 @@ class CardPlayer:
                     hands[j] = '.'.join(suits)
             # We always use West as start, but hands are in BEN from LHO
             hands_pbn.append('W:' + ' '.join(hands))
-            #if self.verbose:
-            #    print(hands_pbn[-1])
+            if self.verbose:
+                print('W:' + ' '.join(hands))
 
         t_start = time.time()
 
-        #if self.verbose:
-        #    print(hands_pbn)
+        if self.verbose:
+            print(hands_pbn)
 
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn)
         card_tricks = ddsolver.expected_tricks(dd_solved)
         card_ev = self.get_card_ev(dd_solved)
+        if self.verbose:
+            print("card_ev:", card_ev)
 
         card_result = {}
         for key in dd_solved.keys():
@@ -705,8 +714,8 @@ class CardPlayer:
         card_options, card_scores = all_cards[s_opt], card_softmax[s_opt]
 
         card_nn = {c:s for c, s in zip(card_options, card_scores)}
-        #if self.verbose:
-        #    print(card_nn)
+        if self.verbose:
+            print(card_nn)
 
         candidate_cards = []
         
@@ -716,7 +725,7 @@ class CardPlayer:
             candidate_cards.append(CandidateCard(
                 card=Card.from_code(card52),
                 insta_score=card_nn.get(card32, 0),
-                expected_tricks=e_tricks,
+                expected_tricks_dd=e_tricks,
                 p_make_contract=None,
                 expected_score=e_score
             ))
@@ -726,8 +735,7 @@ class CardPlayer:
         candidate_cards = sorted(candidate_cards, key=lambda c: (c.expected_score, c.insta_score + np.random.random() / 10000), reverse=True)
 
         samples = []
-        if self.verbose:
-            print(f"players_states {players_states[0].shape[0]}")
+
         for i in range(players_states[0].shape[0]):
             samples.append('%s %s %s %s' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),
@@ -742,12 +750,9 @@ class CardPlayer:
         card_resp = CardResp(
             card=candidate_cards[0].card,
             candidates=candidate_cards,
-            samples=samples, # [:20]
+            samples=samples,
             shape=-1,
             hcp=-1
         )
-
-        #if self.verbose:
-        #    pprint.pprint(card_resp.to_dict(), width=200)
 
         return card_resp

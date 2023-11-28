@@ -11,7 +11,7 @@ type ".\eamon\auctionsEW.json" | python lead.py --bidder=A.conf > ".\eamon\leads
 type ".\eamon\leads1.json" | python score.py > ".\eamon\results1.json"  
 type ".\eamon\leads2.json" | python score.py > ".\eamon\results2.json"
 
-python compare.py .\eamon\results1.json .\eamon\results2.json > .\eamon\compare.json 
+python ..\..\..\src\compare.py .\eamon\results1.json .\eamon\results2.json > .\eamon\compare.json 
 
 type ".\eamon\compare.json" | python printmatch.py >.\eamon\match.txt
 

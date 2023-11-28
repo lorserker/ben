@@ -70,7 +70,7 @@ cat leads2.json | python score.py > results2.json
 Finally compare the results from the two tables to see who has done better.
 
 ```
-python compare.py results1.json results2.json > compare.json
+python ..\..\..\src\compare.py results1.json results2.json > compare.json
 ```
 
 The output file will contain the comparison and result (IMPs) for each deal from the set (one deal per line) as json objects. An example of such a comparison object is:

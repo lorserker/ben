@@ -143,8 +143,8 @@ class TMClient:
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
 
-        if bbabid == 99:
-            bot = BBABotBid(self.models.ns, self.models.ew ,self.player_i,self.hand_str,vuln, self.dealer_i)
+        if self.models.use_bba:
+            bot = BBABotBid(1, 1 ,self.player_i,self.hand_str,vuln, self.dealer_i)
         else:
             bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.verbose)
         auction = ['PAD_START'] * self.dealer_i
@@ -279,20 +279,25 @@ class TMClient:
                     # it's dummy's turn and this is the declarer
                     print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
-                    rollout_states, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
+                    rollout_states, min_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
+                    if (len(min_scores)) > 0:
+                        samples_with_score = [f"{sample} {score:.4f}"  for sample, score in zip(card_resp.samples, min_scores)]
+                        card_resp.samples = samples_with_score
+
                     self.card_responses.append(card_resp)
 
                     if (self.verbose):
                         for idx, candidate in enumerate(card_resp.candidates, start=1):
-                            print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks {candidate.expected_tricks:.2f} #Insta_score {candidate.insta_score:.4f}")
+                            if candidate.expected_tricks_sd:
+                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks (SD) {candidate.expected_tricks_sd:.2f} #Insta_score {candidate.insta_score:.4f}")
+                            if candidate.expected_tricks_dd:
+                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks (DD) {candidate.expected_tricks_dd:.2f} #Insta_score {candidate.insta_score:.4f}")
                         for idx, sample in enumerate(card_resp.samples, start=1):                  
                             print(f"{sample}")
-                            #if idx == 20:
-                            #    break
 
                     card52 = card_resp.card.code()
                     
@@ -301,24 +306,26 @@ class TMClient:
                     await asyncio.sleep(0.01)
 
                 elif player_i == cardplayer_i and player_i != 1:
-                    #if (self.verbose):
-                    # we are on play
-                    #    print(f'{player_i} turn')
 
-                    rollout_states, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
+                    rollout_states, min_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
+                    if (len(min_scores)) > 0:
+                        samples_with_score = [f"{sample} {score:.4f}"  for sample, score in zip(card_resp.samples, min_scores)]
+                        card_resp.samples = samples_with_score
+
                     self.card_responses.append(card_resp)
 
                     if (self.verbose):
                         for idx, candidate in enumerate(card_resp.candidates, start=1):
-                            print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks {candidate.expected_tricks:.2f} #Insta_score {candidate.insta_score:.4f}")
+                            if candidate.expected_tricks_sd:
+                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks (SD) {candidate.expected_tricks_sd:.2f} #Insta_score {candidate.insta_score:.4f}")
+                            if candidate.expected_tricks_dd:
+                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Tricks (DD) {candidate.expected_tricks_dd:.2f} #Insta_score {candidate.insta_score:.4f}")
                         for idx, sample in enumerate(card_resp.samples, start=1):                  
                             print(f"{sample}")
-                            #if idx == 20:
-                            #    break
 
                     card52 = card_resp.card.code()
 
@@ -690,7 +697,6 @@ async def main():
     parser.add_argument("--seat", required=True, help="Where to sit (North, East, South or West)")
     parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--biddingonly", type=bool, default=False, help="Only bid, no play")
-    parser.add_argument("--bbabid", type=bool, default=False, help="Use BBA for bidding")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()
@@ -699,7 +705,6 @@ async def main():
     port = args.port
     name = args.name
     seat = args.seat
-    bbabid = args.bbabid
     configfile = args.config
 
     verbose = args.verbose
@@ -729,14 +734,27 @@ async def main():
     if client.is_connected:
         await client.send_ready()
 
+    shelf_filename = f"{base_path}/{seat}-{name}"
+    # Delete the shelf file if it exists
+    if os.path.exists(shelf_filename + '.dat'):
+        os.remove(shelf_filename + '.dat')
+        # Remove other associated files generated by shelve
+        for ext in ('.bak', '.dat', '.dir'):
+            filename = shelf_filename + ext
+            if os.path.exists(filename):
+                os.remove(filename)
+
     while client.is_connected:
         await client.run(biddingonly)
         # The deal just played should be saved for later review
         # if bidding only we do not save the deal
         if not biddingonly:
-            with shelve.open(f"{base_path}/{seat}db") as db:
+            with shelve.open(shelf_filename) as db:
                 deal = client.to_dict()
-                db[uuid.uuid4().hex] = deal
+                if deal["board_number"]+"-Open" not in db:
+                    db[deal["board_number"]+"-Open"] = deal
+                else:
+                    db[deal["board_number"]+"-Closed"] = deal
 
 
 if __name__ == "__main__":

@@ -20,8 +20,6 @@ class CardByCard:
         self.cards = {}
         self.models = models
         self.sampler = sampler
-        self.ns = models.ns
-        self.ew = models.ew
         self.verbose = verbose
 
     def analyze(self):
@@ -46,21 +44,21 @@ class CardByCard:
     
     @staticmethod
     def bid_eval(bid, bid_resp):
-        qualifier = '.'
+        qualifier = 'OK'
         if bid_resp.candidates[0].bid != bid:
-            qualifier = '?'
+            qualifier = f'? NN-value: {bid_resp.candidates[0].bid} {bid_resp.candidates[0].insta_score:.3f}'
         print(f'{bid} {qualifier}')
 
     @staticmethod
     def card_eval(card, card_resp):
-        qualifier = '.'
-        best_tricks = card_resp.candidates[0].expected_tricks
+        qualifier = 'OK'
+        best_tricks = card_resp.candidates[0].expected_tricks_dd
         for candidate in card_resp.candidates:
             if candidate.card.symbol() == card:
-                if best_tricks - candidate.expected_tricks > 0.1:
-                    qualifier = '?'
-                if best_tricks - candidate.expected_tricks > 0.6:
-                    qualifier = '??'
+                if best_tricks - candidate.expected_tricks_dd > 0.1:
+                    qualifier = f'? losing: {best_tricks - candidate.expected_tricks_dd:.2f}'
+                if best_tricks - candidate.expected_tricks_dd > 0.6:
+                    qualifier = f'?? losing: {best_tricks - candidate.expected_tricks_dd:.2f}'
         print(f'{card} {qualifier}')
 
     def analyze_opening_lead(self):
@@ -123,10 +121,15 @@ class CardByCard:
                 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models, self.ns, self.ew)
+                    rollout_states, min_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models)
+
 
                 card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
-                card_resp = CardResp(Card.from_symbol(self.play[card_i]), card_resp.candidates, card_resp.samples, c_shp, c_hcp)
+                if (len(min_scores)) > 0:
+                    samples_with_score = [f"{sample} {score:.4f}"  for sample, score in zip(card_resp.samples, min_scores)]
+                else:
+                    samples_with_score = card_resp.samples
+                card_resp = CardResp(Card.from_symbol(self.play[card_i]), card_resp.candidates, samples_with_score, c_shp, c_hcp)
                 self.card_responses.append(card_resp)
                 self.cards[self.play[card_i]] = card_resp
 

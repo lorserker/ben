@@ -24,7 +24,7 @@ EPBot_PATH = os.path.join(BIN_FOLDER, EPBot_LIB)
 
 class BBABotBid: 
 
-    # Define constants for system types and conventions (replace these with actual values)
+    # Define constants for system types and conventions 
     C_NS = 0
     C_WE = 1
     C_INTERPRETED = 13
@@ -36,15 +36,16 @@ class BBABotBid:
     conventions_list = {
         "1D opening with 4 cards": False,
         "1D opening with 5 cards": False,
-        "1m opening allows 5M": True,
+        "1m opening allows 5M": False,
+        "1m opening allows 5M strong": True,
         "1M-3M blocking": False,
         "1M-3M inviting": True,
-        "5431 convention after 1NT": True,
+        "5431 convention after 1NT": False,
         "5NT pick a slam": True,
         "Bergen": False,
         "Blackwood 0123": False,
-        "Blackwood 0314": True,
-        "Blackwood 1430": False,
+        "Blackwood 0314": False,
+        "Blackwood 1430": True,
         "BROMAD": False,
         "Canape style": False,
         "Cappelletti": False,
@@ -60,9 +61,10 @@ class BBABotBid:
         "Forcing 1NT": False,
         "Fourth suit": True,
         "French 2D": False,
-        "Gambling": False,
+        "Gambling": True,
         "Gazzilli": False,
         "Gerber": True,
+        "Gerber only for 1NT and 2NT openings": True,
         "Ghestem": False,
         "Inverted minors": True,
         "Jacoby 2NT": True,
@@ -77,15 +79,15 @@ class BBABotBid:
         "Maximal Doubles": True,
         "Michaels Cuebid": True,
         "Mini Splinter": False,
-        "Minor Suit Stayman after 1NT": True,
+        "Minor Suit Stayman after 1NT": False,
         "Minor Suit Stayman after 2NT": True,
-        "Minor Suit Transfers after 1NT": False,
+        "Minor Suit Transfers after 1NT": True,
         "Minor Suit Transfers after 2NT": False,
         "Mixed raise": True,
         "Multi": False,
         "Multi-Landy": True,
-        "Namyats": False,
-        "Ogust": False,
+        "Namyats": True,
+        "Ogust": True,
         "Polish two suiters": False,
         "Quantitative 4NT": True,
         "Raptor 1NT": False,
@@ -100,7 +102,7 @@ class BBABotBid:
         "Semi forcing 1NT": False,
         "SMOLEN": True,
         "Snapdragon Double": False,
-        "Soloway Jump Shifts": False,
+        "Soloway Jump Shifts": True,
         "Soloway Jump Shifts Extended": False,
         "Splinter": True,
         "Support 1NT": True,

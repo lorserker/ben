@@ -10,7 +10,7 @@ type ".\%trust%\auctionsEW.json" | python lead.py --bidder=%trust%.conf > .\%tru
 type ".\%trust%\leads1.json" | python score.py > .\%trust%\results1.json  
 type ".\%trust%\leads2.json" | python score.py > .\%trust%\results2.json  
 
-python compare.py .\%trust%\results1.json .\%trust%\results2.json > .\%trust%\compare.json 
+python ..\..\..\src\compare.py .\%trust%\results1.json .\%trust%\results2.json > .\%trust%\compare.json 
 
 type ".\%trust%\compare.json" | python printmatch.py >.\%trust%\match.txt
 

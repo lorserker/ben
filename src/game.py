@@ -110,7 +110,7 @@ class Driver:
         hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
 
         # Now you can use hash_integer as a seed
-        print("Setting seed=",hash_integer)
+        print("Setting seed (Full deal)=",hash_integer)
         np.random.seed(hash_integer)
 
 
@@ -134,11 +134,6 @@ class Driver:
             auction = await self.bidding()
 
         self.contract = bidding.get_contract(auction)
-
-        #if self.verbose:
-        #    print("****** Bid responses ******")
-        #    for bid_resp in self.bid_responses:
-        #        pprint.pprint(bid_resp.to_dict(), width=120)
 
         if self.contract is None:
             return
@@ -273,12 +268,17 @@ class Driver:
                 c_hcp = -1
                 c_shp = -1
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape(
-                        (-1, 32)), [self.vuln_ns, self.vuln_ew], self.models, self.ns, self.ew)
+                    rollout_states, min_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape(
+                        (-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
 
                 await asyncio.sleep(0.01)
 
                 card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states)
+                
+                if (len(min_scores)) > 0:
+                    samples_with_score = [f"{sample} {score:.4f}"  for sample, score in zip(card_resp.samples, min_scores)]
+                    card_resp.samples = samples_with_score
+
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
                 if self.verbose:
@@ -425,6 +425,17 @@ class Driver:
 
     
     async def opening_lead(self, auction):
+        # Calculate the SHA-256 hash
+        hash_object = hashlib.sha256(self.deal_str.encode())
+        hash_bytes = hash_object.digest()
+
+        # Convert the first 4 bytes of the hash to an integer and take modulus
+        hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
+
+        # Now you can use hash_integer as a seed
+        print("Setting seed (Opening lead)=",hash_integer)
+        np.random.seed(hash_integer)
+
         contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)
 
@@ -458,7 +469,7 @@ class Driver:
 
         players = []
         for i, level in enumerate(self.human):
-            if level == 99:
+            if self.models.use_bba:
                 from bba.BBA import BBABotBid
                 players.append(BBABotBid(self.models.ns, self.models.ew, i, hands_str[i], vuln, self.dealer_i))
             elif level == 1:
