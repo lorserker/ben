@@ -1,5 +1,4 @@
 import os
-import re
 
 # Directory containing the files
 directory_path = './'
