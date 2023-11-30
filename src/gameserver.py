@@ -153,7 +153,7 @@ async def handler(websocket, path, board_no):
             # example of to use a fixed deal
             # rdeal = ('5.983.AKT7.K9862 986.QT4.865.AQT7 JT7.J7652.3.J653 AKQ432.AK.QJ942.', 'N None')
             driver.human = [0.1, 0.1, 1, 0.1]
-            driver.set_deal(None, *rdeal, ns, ew, False)
+            driver.set_deal(None, *rdeal, models.ns, models.ew, False)
             print(f"Deal: {rdeal}")
         else:
             rdeal = boards[board_no[0]]['deal']
