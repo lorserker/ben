@@ -1,7 +1,6 @@
 .DS_Store
 .ipynb_checkpoints
 __pycache__
-src/gamedb.*
 
 scripts/match/bidding/0.1
 scripts/match/bidding/0.2
@@ -39,13 +38,11 @@ scripts/training/opening lead/data
 scripts/training/opening lead/models
 scripts/training/opening lead/lead_bin
 scripts/training/opening lead/lead_model_b
-src/db
 models/lead_model_c
 models/lead_model
 UCBC 2024/Boards/*.sql
 UCBC 2024/Boards/*.exe
 UCBC 2024/2023 Practice
-models/UCBC
 UCBC 2024/Boards/data
 UCBC 2024/Boards/All.PBN
 scripts/training/bidding/binfo_bin
@@ -53,10 +50,9 @@ scripts/training/*/model
 scripts/training/**/*.npy
 scripts/match/bidding/0.*
 scripts/training/**/*.out
-src/East*
-src/West*
-src/North*
-src/South*
 scripts/training/data/input-17-11*
 
 src/hfmodels
+src/**/*.bak
+src/**/*.dir
+src/**/*.dat

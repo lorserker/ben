@@ -15,17 +15,17 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from batcher import Batcher
 
-model_path = './model/lead'
+model_path = './model/lead_suit'
 
 seed = 1337
 
 batch_size = 64
 display_step = 1000
-epochs = 1
+epochs = 50
 
-X_train = np.load('./lead_bin/X.npy')
-B_train = np.load('./lead_bin/B.npy')
-y_train = np.load('./lead_bin/y.npy')
+X_train = np.load('./lead_bin_suit/X.npy')
+B_train = np.load('./lead_bin_suit/B.npy')
+y_train = np.load('./lead_bin_suit/y.npy')
 
 n_examples = X_train.shape[0]
 n_ftrs = X_train.shape[1]
@@ -98,21 +98,3 @@ with tf.Session() as sess:
         sess.run(train_step, feed_dict={X: x_batch, B: b_batch, y: y_batch, keep_prob: 0.6, learning_rate: 0.001 / (2**(i/5e5))})
 
     saver.save(sess, model_path, global_step=n_iterations)
-
-    # Define a dictionary of inputs and outputs for the SavedModel format
-    inputs = {'X': X, 'B': B, 'keep_prob': keep_prob}
-    outputs = {'lead_softmax': lead_softmax}
-
-    # Save the model in the SavedModel format
-    saved_model_dir = model_path + '_saved_model'
-
-    try:
-        shutil.rmtree(model_path + '_saved_model')
-        print("Directory removed successfully.")
-    except FileNotFoundError:
-        pass  # Ignore the "Directory not found" exception
-    except Exception as e:
-        print(f"An error occurred: {e}")
-
-
-    #tf.saved_model.simple_save(sess, saved_model_dir, inputs, outputs)
