@@ -137,7 +137,7 @@
             if (data.samples.length > 0)
                 document.querySelector('#info').innerHTML += `
                 <p  class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples:</strong></p>
-                <div id="sampleLines${i}">
+                <div id="sampleLines${i}" class="hidden">
                 <ul>${data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
                 </div>
                 `;

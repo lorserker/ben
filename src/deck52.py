@@ -80,7 +80,7 @@ def hand32to52str(hand32):
             if x[i, j] > 0:
                 symbol = symbols[j]
                 if symbol == 'x':
-                    s += 'x' * x[i, j]
+                    s += 'x' * int(x[i, j])
                 else:
                     s += symbol
         suits.append(s)

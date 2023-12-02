@@ -264,18 +264,24 @@ class Driver:
                         hands52=[card_player.hand52 for card_player in card_players],
                         n_samples=20
                     )
-                rollout_states = None
-                c_hcp = -1
-                c_shp = -1
+
                 if isinstance(card_players[player_i], bots.CardPlayer):
                     rollout_states, min_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape(
                         (-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
+                    assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
+
+                else: 
+                    rollout_states = None
+                    min_scores = None
+                    c_hcp = -1
+                    c_shp = -1
+
 
                 await asyncio.sleep(0.01)
 
                 card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states)
                 
-                if (len(min_scores)) > 0:
+                if (min_scores is not None and len(min_scores)) > 0:
                     samples_with_score = [f"{sample} {score:.4f}"  for sample, score in zip(card_resp.samples, min_scores)]
                     card_resp.samples = samples_with_score
 
@@ -450,7 +456,6 @@ class Driver:
                 [self.vuln_ns, self.vuln_ew], 
                 hands_str[(decl_i + 1) % 4], 
                 self.models,
-                self.models.lead_threshold,
                 self.sampler,
                 self.verbose
             )

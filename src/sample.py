@@ -567,7 +567,7 @@ class Sample:
         samples = []
         unique_indices = np.ones(states[0].shape[0]).astype(bool)
 
-        # this is just to see how many smaples we actually have
+        # this is just to see how many samples we actually have
         for i in range(states[0].shape[0]):
             sample = '%s %s %s %s' % (
                 hand_to_str(states[0][i, 0, :32].astype(int)),
@@ -587,6 +587,8 @@ class Sample:
         if (states[0].shape[0] < n_samples // 10) or n_samples < 0:
             if self.verbose:
                 print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+
+            assert states[0].shape[0] > 0, "No samples for DDSolver"
             return states, [], -1, -1
 
         accept, c_hcp, c_shp = self.validate_shape_and_hcp_for_sample(auction, known_nesw, hand, vuln, models, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states)
@@ -601,6 +603,7 @@ class Sample:
         if (states[0].shape[0] < n_samples // 10):
             if self.verbose:
                 print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+            assert states[0].shape[0] > 0, "No samples for DDSolver"
             return states, [], c_hcp, c_shp
 
         # reject samples inconsistent with the opening lead
@@ -611,6 +614,7 @@ class Sample:
         if (states[0].shape[0] < n_samples // 10):
             if self.verbose:
                 print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
+            assert states[0].shape[0] > 0, "No samples for DDSolver"
             return states, [], c_hcp, c_shp
 
         # start = time.time()
@@ -628,17 +632,21 @@ class Sample:
             # This could probably be set based on number of deals matching or sorted
             bid_accept_threshold = self.bid_accept_play_threshold
 
-            while np.sum(min_bid_scores > bid_accept_threshold) < self.min_sample_hands_play and bid_accept_threshold > 0.000001:
-                bid_accept_threshold *= 0.9
+            while np.sum(min_bid_scores > bid_accept_threshold) < self.min_sample_hands_play and bid_accept_threshold > 0:
+                bid_accept_threshold *= 0.5
 
-            states = [state[min_bid_scores > bid_accept_threshold] for state in states]
+            bidding_states = [state[min_bid_scores > bid_accept_threshold] for state in states]
 
             if self.verbose:
-                print(f"States {states[0].shape[0]} after checking the bidding")
-            if (states[0].shape[0] < n_samples // 10):
+                print(f"States {bidding_states[0].shape[0]} after checking the bidding")
+            if (bidding_states[0].shape[0] < n_samples // 10):
                 if self.verbose:
                     print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
-                return states, min_bid_scores, c_hcp, c_shp
+                if bidding_states[0].shape[0] == 0:
+                    bidding_states = states[:10]
+                    min_bid_scores = min_bid_scores[:10]
+                assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
+                return bidding_states, min_bid_scores, c_hcp, c_shp
 
         # To save time we reduce no of samples to 3 times what is required before we validate the actual play
         states = [state[:3*n_samples] for state in states]
@@ -647,6 +655,7 @@ class Sample:
             states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, models.player_models, hidden_1_i, hidden_2_i, states)
         if self.verbose:
             print(f"States {states[0].shape[0]} after checking the play. Returning {min(states[0].shape[0],n_samples)}")
+        assert states[0].shape[0] > 0, "No samples for DDSolver"
         return [state[:n_samples] for state in states], min_bid_scores, c_hcp, c_shp
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, models, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states):
@@ -707,8 +716,8 @@ class Sample:
 
             # How much trust that opponents would have lead the actual card from the hand sampled
             lead_accept_threshold = self.lead_accept_threshold
-            while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0.0001:
-                lead_accept_threshold *= 0.9
+            while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
+                lead_accept_threshold *= 0.5
 
             # If we did not find 2 samples we ignore the test for opening lead
             # Should probably test for number of samples before the test

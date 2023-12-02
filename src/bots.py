@@ -12,7 +12,7 @@ from bidding import bidding
 from sample import Sample
 from binary import parse_hand_f
 
-from util import hand_to_str, expected_tricks, p_make_contract, follow_suit
+from util import hand_to_str, expected_tricks_sd, p_make_contract, follow_suit
 
 
 class BotBid:
@@ -74,7 +74,7 @@ class BotBid:
                 if self.verbose:
                     print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.4f} Samples: {len(hands_np)}")
                 auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np)
-                contracts, decl_tricks_softmax = self.expected_tricks(hands_np, auctions_np)
+                contracts, decl_tricks_softmax = self.expected_tricks_sd(hands_np, auctions_np)
 
                 for idx, (auction2, (contract, trick)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax))):
                     auc = bidding.get_auction_as_string(auction2)
@@ -316,10 +316,10 @@ class BotBid:
         assert len(auction_np) > 0
         
         return auction_np
-
-    def expected_tricks(self, hands_np, auctions_np):
+    
+    def expected_tricks_sd(self, hands_np, auctions_np):
         n_samples = hands_np.shape[0]
-        #n_samples = 1
+
         s_all = np.arange(n_samples, dtype=np.int32)
         auctions, contracts = [], []
         declarers = np.zeros(n_samples, dtype=np.int32)
@@ -330,6 +330,7 @@ class BotBid:
         for i in range(n_samples):
             sample_auction = [bidding.ID2BID[bid_i] for bid_i in list(auctions_np[i, :]) if bid_i != 1]
             auctions.append(sample_auction)
+
             contract = bidding.get_contract(sample_auction)
             contracts.append(contract)
             strains[i] = 'NSHDC'.index(contract[1])
@@ -355,18 +356,6 @@ class BotBid:
         X_sd[:,(32 + 5 + 3*32):] = hands_np[s_all, declarers]
         
         X_sd[s_all, lead_cards] = 1
-        
-        #from ddsolver import ddsolver
-        #self.dd = ddsolver.DDSolver(dds_mode=2)
-        #hands_pbn = ['W:' + ' '.join(deck52.hand32to52str(hand) for hand in hands_np[0])]
-        #print(hands_pbn)
-        #hands_pbn[0] = deck52.convert_cards(hands_pbn[0])
-        #print(hands_pbn)
-        #dd_solved = self.dd.solve(strains[0], (declarers[0] + 1) % 4, [], hands_pbn)
-        #print(dd_solved)
-        #card_tricks = ddsolver.expected_tricks(dd_solved)
-        #print(card_tricks)
-
 
         decl_tricks_softmax = self.sd_model.model(X_sd)
         #print(decl_tricks_softmax)
@@ -387,7 +376,7 @@ class BotBid:
 
 class BotLead:
 
-    def __init__(self, vuln, hand_str, models, lead_threshold, sample, verbose):
+    def __init__(self, vuln, hand_str, models, sample, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
@@ -402,12 +391,12 @@ class BotLead:
         self.ew = models.ew
         self.sample = sample
         self.verbose = verbose
-        self.lead_threshold = lead_threshold
+        self.lead_threshold = models.lead_threshold
         self.lead_accept_nn = models.lead_accept_nn
 
     def find_opening_lead(self, auction):
         lead_card_indexes, lead_softmax = self.get_lead_candidates(auction)
-        accepted_samples, sorted_score, tricks, p_hcp, p_shp = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
+        accepted_samples, sorted_bidding_score, tricks, p_hcp, p_shp = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
 
         candidate_cards = []
         for i, card_i in enumerate(lead_card_indexes):
@@ -416,14 +405,16 @@ class BotLead:
                 card=Card.from_code(card_i, xcards=True),
                 insta_score=lead_softmax[0,card_i],
                 expected_tricks_sd=np.mean(tricks[:,i,0]),
-                p_make_contract=np.mean(tricks[:,i,1])
+                p_make_contract=np.mean(tricks[:,i,1]),
+                expected_score_sd = None
             ))
         
         candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score, reverse=True)
+
         if (candidate_cards[0].insta_score > self.lead_accept_nn):
             opening_lead = candidate_cards[0].card.code() 
         else:
-            candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.p_make_contract, 2), -round(c.expected_tricks_sd, 2)))
+            candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.p_make_contract, 3), round(c.expected_tricks_sd, 3)))
             opening_lead = candidate_cards[0].card.code()
 
         if opening_lead % 8 == 7:
@@ -442,7 +433,7 @@ class BotLead:
                 hand_to_str(accepted_samples[i,0,:]),
                 hand_to_str(accepted_samples[i,1,:]),
                 hand_to_str(accepted_samples[i,2,:]),
-                sorted_score[i]
+                sorted_bidding_score[i]
             ))
 
         return CardResp(
@@ -501,8 +492,34 @@ class BotLead:
             print("Generated samples:", accepted_samples.shape[0])
             print(f'Now simulate on {self.sample.sample_hands_opening_lead} deals to find opening lead')
         accepted_samples = accepted_samples[:self.sample.sample_hands_opening_lead]
-        n_accepted = accepted_samples.shape[0]
 
+
+        tricks = self.single_dummy_estimates(lead_card_indexes, contract, accepted_samples)
+
+        return accepted_samples, sorted_scores, tricks, p_hcp, p_shp
+
+    def double_dummy_estimates(self, lead_card_indexes, contract, accepted_samples):
+        from ddsolver import ddsolver
+        self.dd = ddsolver.DDSolver(dds_mode=2)
+        n_accepted = accepted_samples.shape[0]
+        tricks = np.zeros((n_accepted, len(lead_card_indexes), 2))
+        strain_i = bidding.get_strain_i(contract)
+
+        hands_pbn = ['W:' + deck52.hand32to52str(self.hand) + ' ' + ' '.join(deck52.hand32to52str(hand) for hand in accepted_samples[0])]
+        hands_pbn[0] = deck52.convert_cards(hands_pbn[0])
+        dd_solved = self.dd.solve(strain_i, 0, [], hands_pbn)
+        print(lead_card_indexes)
+        print(dd_solved)
+
+        for j, lead_card_i in enumerate(lead_card_indexes):
+            dd_solved = self.dd.solve(strain_i, 0, [], hands_pbn)
+            tricks[:, j, 0:1] = ddsolver.expected_tricks(dd_solved)
+            tricks[:, j, 1:2] = None
+        return tricks
+
+    
+    def single_dummy_estimates(self, lead_card_indexes, contract, accepted_samples):
+        n_accepted = accepted_samples.shape[0]
         X_sd = np.zeros((n_accepted, 32 + 5 + 4*32))
 
         strain_i = bidding.get_strain_i(contract)
@@ -525,10 +542,9 @@ class BotLead:
 
             tricks_softmax = self.sd_model.model(X_sd)
 
-            tricks[:, j, 0:1] = expected_tricks(tricks_softmax.copy())
+            tricks[:, j, 0:1] = expected_tricks_sd(tricks_softmax.copy())
             tricks[:, j, 1:2] = p_make_contract(contract, tricks_softmax.copy())
-
-        return accepted_samples, sorted_scores, tricks, p_hcp, p_shp
+        return tricks
 
 
 class CardPlayer:
@@ -727,12 +743,12 @@ class CardPlayer:
                 insta_score=card_nn.get(card32, 0),
                 expected_tricks_dd=e_tricks,
                 p_make_contract=None,
-                expected_score=e_score
+                expected_score_dd=e_score
             ))
 
         # This should probably focus more on making the contract, than the score
         # Tricks should take precedence over insta_score
-        candidate_cards = sorted(candidate_cards, key=lambda c: (c.expected_score, c.insta_score + np.random.random() / 10000), reverse=True)
+        candidate_cards = sorted(candidate_cards, key=lambda c: (c.expected_score_dd, c.insta_score + np.random.random() / 10000), reverse=True)
 
         samples = []
 

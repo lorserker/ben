@@ -44,7 +44,7 @@ class ConfirmSocket:
         key = await self.socket.recv()
 
         # Check if this is a claim
-        print("Trick confirm:",key)
+        # print("Trick confirm:",key)
         return key
 
 

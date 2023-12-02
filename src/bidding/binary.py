@@ -48,6 +48,7 @@ class DealData(object):
 
         padded_auction = self.auction + (['PAD_END'] * 4 * n_steps)
 
+        #print(self.auction)
         times_seen = [0, 0, 0, 0]
 
         i = 0
@@ -70,6 +71,8 @@ class DealData(object):
             partner_bid = padded_auction[i - 2] if i - 2 >= 0 else 'PAD_START'
             rho_bid = padded_auction[i - 1] if i - 1 >= 0 else 'PAD_START'
             target_bid = padded_auction[i]
+            #if target_bid != "PAD_END":
+            #    print(i, t, hand_ix, ns, ew, v_we, v_them, hcp, shape,  lho_bid, partner_bid, rho_bid, target_bid)
 
             if (ns == -1):
                 ftrs = np.concatenate((

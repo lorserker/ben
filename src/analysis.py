@@ -67,7 +67,7 @@ class CardByCard:
 
         print(self.play[0])
 
-        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, 0.05, self.sampler, False)
+        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, False)
 
         card_resp = bot_lead.find_opening_lead(self.padded_auction)
         card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, -1, -1)

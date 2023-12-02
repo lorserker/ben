@@ -334,8 +334,17 @@ class PlayInfo {
                 if ("expected_tricks" in candidate) {
                     html += '<td>e(tricks)=' + Math.round(candidate['expected_tricks'] * 1000) / 1000 + '</td>'
                 }
-                if ("expected_score" in candidate) {
-                    html += '<td>e(score)=' + Math.round(candidate['expected_score'] * 1000) / 1000 + '</td>'
+                if ("expected_tricks_sd" in candidate) {
+                    html += '<td>e(tricks)(SD)=' + Math.round(candidate['expected_tricks_sd'] * 1000) / 1000 + '</td>'
+                }
+                if ("expected_tricks_dd" in candidate) {
+                    html += '<td>e(tricks)(DD)=' + Math.round(candidate['expected_tricks_dd'] * 1000) / 1000 + '</td>'
+                }
+                if ("expected_score_sd" in candidate) {
+                    html += '<td>e(score)sd=' + Math.round(candidate['expected_score_sd'] * 1000) / 1000 + '</td>'
+                }
+                if ("expected_score_dd" in candidate) {
+                    html += '<td>e(score)dd=' + Math.round(candidate['expected_score_dd'] * 1000) / 1000 + '</td>'
                 }
                 if ("insta_score" in candidate) {
                     html += '<td>iscore=' + Math.round(candidate['insta_score'] * 1000) / 1000 + '</td>'
@@ -416,7 +425,7 @@ class PlayInfo {
         if ("samples" in this.data && this.data['samples'].length > 0) {
             html += `
                     <h3 class="samples"  onclick="toggleSamples('sampleLinesPlay')"><strong>Samples:</strong></h3>
-                    <div id="sampleLinesPlay">
+                    <div id="sampleLinesPlay" class="hidden">
                     <ul>${this.data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
                     </div>
                     `

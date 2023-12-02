@@ -18,7 +18,7 @@ def hand_to_str(hand):
         suits.append(s)
     return '.'.join(suits)
 
-def expected_tricks(tricks_softmax):
+def expected_tricks_sd(tricks_softmax):
     t_soft = tricks_softmax.reshape((-1, 14))
     result = np.zeros((t_soft.shape[0], 1))
 
