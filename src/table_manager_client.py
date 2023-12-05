@@ -29,7 +29,7 @@ from objects import Card, CardResp, BidResp
 from deck52 import decode_card
 from bidding import bidding
 from objects import Card
-from bba.BBA import BBABotBid
+
 
 bbabid = False
 
@@ -144,6 +144,7 @@ class TMClient:
         vuln = [self.vuln_ns, self.vuln_ew]
 
         if self.models.use_bba:
+            from bba.BBA import BBABotBid            
             bot = BBABotBid(1, 1 ,self.player_i,self.hand_str,vuln, self.dealer_i)
         else:
             bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.verbose)
