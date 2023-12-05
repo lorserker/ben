@@ -56,3 +56,4 @@ src/hfmodels
 src/**/*.bak
 src/**/*.dir
 src/**/*.dat
+scripts/training/data/match14 - 1.pbn
