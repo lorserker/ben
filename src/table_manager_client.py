@@ -213,7 +213,6 @@ class TMClient:
         decl_i = bidding.get_decl_i(contract)
         is_decl_vuln = [self.vuln_ns, self.vuln_ew, self.vuln_ns, self.vuln_ew][decl_i]
         cardplayer_i = (self.player_i + 3 - decl_i) % 4  # lefty=0, dummy=1, righty=2, decl=3
-        print(f'{datetime.datetime.now().strftime("%H:%M:%S")} play starts. decl_i={decl_i}, player_i={self.player_i}, cardplayer_i={cardplayer_i}')
 
         own_hand_str = self.hand_str
         dummy_hand_str = '...'
@@ -451,6 +450,15 @@ class TMClient:
                 card52 = np.nonzero(card_players[player_i].hand52)[0][0]
                 card52_symbol = Card.from_code(card52).symbol()
 
+                cr = CardResp(
+                    card=Card.from_symbol(card52_symbol),
+                    candidates=[],
+                    samples=[],
+                    shape=-1,
+                    hcp=-1
+                )
+                self.card_responses.append(cr)
+
                 await asyncio.sleep(0.01)
                 
                 if player_i == 1 and cardplayer_i == 3:
@@ -459,7 +467,7 @@ class TMClient:
                     await self.send_card_played(card52_symbol)
 
                 await asyncio.sleep(0.01)
-
+                self.card_responses
             else:
                 # someone else is on play. we just have to wait for their card
                 card52_symbol = await self.receive_card_play_for(nesw_i, trick_i)

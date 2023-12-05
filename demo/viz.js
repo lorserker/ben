@@ -335,11 +335,17 @@ class PlayInfo {
 
                 html += '<tr>'
                 html += '<td class="candidate-card">' + candidate['card'] + '</td>'
+                if ("expected_tricks" in candidate) {
+                    html += '<td>e(tricks)=' + Math.round(candidate['expected_tricks'] * 1000) / 1000 + '</td>'
+                }
                 if ("expected_tricks_sd" in candidate) {
                     html += '<td>e(tricks)(SD)=' + Math.round(candidate['expected_tricks_sd'] * 1000) / 1000 + '</td>'
                 }
                 if ("expected_tricks_dd" in candidate) {
                     html += '<td>e(tricks)(DD)=' + Math.round(candidate['expected_tricks_dd'] * 1000) / 1000 + '</td>'
+                }
+                if ("expected_score" in candidate) {
+                    html += '<td>e(score)=' + Math.round(candidate['expected_score'] * 1000) / 1000 + '</td>'
                 }
                 if ("expected_score_sd" in candidate) {
                     html += '<td>e(score)sd=' + Math.round(candidate['expected_score_sd'] * 1000) / 1000 + '</td>'

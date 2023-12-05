@@ -22,7 +22,7 @@ seed = 1337
 
 batch_size = 64
 display_step = 1000
-epochs = 1
+epochs = 100
 
 X_train = np.load('./lr3_bin/X.npy')
 y_train = np.load('./lr3_bin/y.npy')
@@ -90,10 +90,14 @@ with tf.Session() as sess:
             c_train = sess.run(cost, feed_dict={X: x_cost, y: y_cost, keep_prob: 1.0})
             t_train = sess.run(tricks_softmax, feed_dict={X: x_cost, y: y_cost, keep_prob: 1.0})
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train))
-            print(np.mean(np.argmax(t_train, axis=1) == np.argmax(y_cost, axis=1)))
-            print(np.mean(np.abs(np.argmax(t_train, axis=1) - np.argmax(y_cost, axis=1)) > 1))
-            print(np.mean(np.abs(np.argmax(t_train, axis=1) - np.argmax(y_cost, axis=1))))
-            
+            #print(np.mean(np.argmax(t_train, axis=1) == np.argmax(y_cost, axis=1)))
+            #print(np.mean(np.abs(np.argmax(t_train, axis=1) - np.argmax(y_cost, axis=1)) > 1))
+            #print(np.mean(np.abs(np.argmax(t_train, axis=1) - np.argmax(y_cost, axis=1))))
+
+            print(f"Accuracy: {np.mean(np.argmax(t_train, axis=1) == np.argmax(y_cost, axis=1)): .6f}, "
+                f"Difference > 1: {np.mean(np.abs(np.argmax(t_train, axis=1) - np.argmax(y_cost, axis=1)) > 1): .6f}, "
+                f"Mean Abs Diff: {np.mean(np.abs(np.argmax(t_train, axis=1) - np.argmax(y_cost, axis=1))): .1f}")
+
             sys.stdout.flush()
 
             saver.save(sess, model_path, global_step=i)

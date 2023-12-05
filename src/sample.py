@@ -607,8 +607,8 @@ class Sample:
             return states, [], c_hcp, c_shp
 
         # reject samples inconsistent with the opening lead
-        states = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states)
         # We will only check opening lead if we have a lot of samples, as we can't trust other will follow the same lead rules
+        states = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states)
         if self.verbose:
             print(f"States {states[0].shape[0]} after checking lead")
         if (states[0].shape[0] < n_samples // 10):
@@ -626,37 +626,45 @@ class Sample:
             bid_scores = self.get_bid_scores(h_i_nesw, auction, vuln, states[h_i][:, 0, :32], models.bidder_model, models.ns, models.ew)
             min_bid_scores = np.minimum(min_bid_scores, bid_scores)
 
+        # Sort states based on min_bid_scores
+        # sorted_states = [state for _, state in sorted(zip(min_bid_scores, states), key=lambda x: x[0], reverse=True)]
+
+        # Sort min_bid_scores and states based on min_bid_scores in descending order
+        sorted_indices = np.argsort(min_bid_scores)[::-1]
+
+        sorted_min_bid_scores = min_bid_scores[sorted_indices]
+        # Sort second dimension within each array in states based on min_bid_scores
+        bidding_states = [state[sorted_indices] for state in states]
+        
+        valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
+
         # With only few cards left we will not filter the samples according to the bidding.
         if trick_i <= 11:
             # trusting the bidding after sampling cards
             # This could probably be set based on number of deals matching or sorted
-            bid_accept_threshold = self.bid_accept_play_threshold
-
-            while np.sum(min_bid_scores > bid_accept_threshold) < self.min_sample_hands_play and bid_accept_threshold > 0:
-                bid_accept_threshold *= 0.5
-
-            bidding_states = [state[min_bid_scores > bid_accept_threshold] for state in states]
+            if valid_bidding_samples >= self.min_sample_hands_play: 
+                bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
+            else:
+                bidding_states = states[:self.min_sample_hands_play]
+                sorted_min_bid_scores = sorted_min_bid_scores[:self.min_sample_hands_play]
 
             if self.verbose:
                 print(f"States {bidding_states[0].shape[0]} after checking the bidding")
             if (bidding_states[0].shape[0] < n_samples // 10):
                 if self.verbose:
-                    print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
-                if bidding_states[0].shape[0] == 0:
-                    bidding_states = states[:10]
-                    min_bid_scores = min_bid_scores[:10]
+                    print(f"Skipping re-apply constraints due to only {bidding_states[0].shape[0]} samples")
                 assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
-                return bidding_states, min_bid_scores, c_hcp, c_shp
+                return bidding_states, sorted_min_bid_scores, c_hcp, c_shp
 
         # To save time we reduce no of samples to 3 times what is required before we validate the actual play
-        states = [state[:3*n_samples] for state in states]
+        bidding_states = [state[:3*n_samples] for state in bidding_states]
 
         if trick_i <= 9:
-            states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, models.player_models, hidden_1_i, hidden_2_i, states)
-        if self.verbose:
-            print(f"States {states[0].shape[0]} after checking the play. Returning {min(states[0].shape[0],n_samples)}")
-        assert states[0].shape[0] > 0, "No samples for DDSolver"
-        return [state[:n_samples] for state in states], min_bid_scores, c_hcp, c_shp
+            bidding_states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, models.player_models, hidden_1_i, hidden_2_i, bidding_states)
+        #if self.verbose:
+        print(f"States {bidding_states[0].shape[0]} after checking the play. Returning {min(bidding_states[0].shape[0],n_samples)}")
+        assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
+        return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, models, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states):
         n_steps = 1 + (len(auction)-1) // 4

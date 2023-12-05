@@ -158,6 +158,7 @@ class Driver:
             'card': decode_card(opening_lead52)
         }))
 
+        # If north is declarer and we are south, display the north hand
         await self.channel.send(json.dumps({
             'message': 'show_dummy',
             'player': (decl_i + 1) % 4,

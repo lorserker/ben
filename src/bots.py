@@ -84,12 +84,15 @@ class BotBid:
                     if self.verbose:
                         print(samples[idx])
     
+                # We need to find a way to use how good the samples are
                 ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
                 expected_score = np.mean(ev)
                 #if self.verbose:
                 #    print(ev)
                 adjust = 0
-                # The result is sorted based on the simulation. Adding some bonus to the bid selected by the neural network
+
+                # The result is sorted based on the simulation. 
+                # Adding some bonus to the bid selected by the neural network
                 # Should probably be configurable
                 if candidate.insta_score < 0.002:
                     adjust += -200
@@ -260,6 +263,7 @@ class BotBid:
         if lho_pard_rho.shape[0] > self.sample.sample_hands_auction:
             random_indices = np.random.permutation(lho_pard_rho.shape[0])
             lho_pard_rho = lho_pard_rho[random_indices[:self.sample.sample_hands_auction], :, :]
+            sorted_scores = sorted_scores[random_indices[:self.sample.sample_hands_auction]]
         n_samples = lho_pard_rho.shape[0]
         
         hands_np = np.zeros((n_samples, 4, 32), dtype=np.int32)
@@ -301,13 +305,13 @@ class BotBid:
                 for i in range(n_samples):
                     bid = np.argmax(bid_np[i])
                     auction = bidding.get_auction_as_list(auction_np[i])
-                    #print(auction)
-                    # Pass is always aloowed
+
+                    # Pass is always allowed
                     if bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction):
                         invalid_bids = True
                         #sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]}\n")
                         bid_np[i][bid] = 0
-                #assert(bid_i > 1)
+                    assert bid_i <= 40, f'Auction to long {auction}'
 
             bid_i += 1
             auction_np[:,bid_i] = np.argmax(bid_np, axis=1)
