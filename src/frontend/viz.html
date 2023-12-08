@@ -194,7 +194,7 @@
                                             `;
                                     if (data.samples.length > 0)
                                         document.querySelector('#info').innerHTML += `
-                                            <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples:</strong></h3>
+                                            <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples(${data.samples.length}):</strong></h3>
                                             <div id="sampleLines${i}" class="hidden">
                                             <ul>${data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
                                             </div>

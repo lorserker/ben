@@ -425,7 +425,7 @@ class PlayInfo {
 
         if ("samples" in this.data && this.data['samples'].length > 0) {
             html += `
-                    <h3 class="samples"  onclick="toggleSamples('sampleLinesPlay')"><strong>Samples:</strong></h3>
+                    <h3 class="samples" onclick="toggleSamples('sampleLinesPlay')"><strong>Samples(${this.data['samples'].length}):</strong></h3>
                     <div id="sampleLinesPlay" class="hidden">
                     <ul>${this.data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
                     </div>
