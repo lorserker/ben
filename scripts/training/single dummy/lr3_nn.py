@@ -22,7 +22,7 @@ seed = 1337
 
 batch_size = 64
 display_step = 1000
-epochs = 100
+epochs = 10
 
 X_train = np.load('./lr3_bin/X.npy')
 y_train = np.load('./lr3_bin/y.npy')
