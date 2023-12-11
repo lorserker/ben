@@ -126,7 +126,7 @@ class CardByCard:
 
                 card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
                 if (len(min_scores)) > 0:
-                    samples_with_score = [f"{sample} {score:.4f}"  for sample, score in zip(card_resp.samples, min_scores)]
+                    samples_with_score = [f"{sample} {score:.3f}"  for sample, score in zip(card_resp.samples, min_scores)]
                 else:
                     samples_with_score = card_resp.samples
                 card_resp = CardResp(Card.from_symbol(self.play[card_i]), card_resp.candidates, samples_with_score, c_shp, c_hcp)

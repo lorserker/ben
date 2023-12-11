@@ -116,54 +116,36 @@ async def handler(websocket, path, board_no):
     print("Got websocket connection")
 
     driver = game.Driver(models, human.WebsocketFactory(websocket), Sample.from_conf(configuration, verbose), verbose)
-
+    play_only = False
+    if (auto):
+        driver.human = [False, False, False, False]
     parsed_url = urlparse(path)
     query_params = parse_qs(parsed_url.query)
 
     if query_params:
         P = query_params.get('P', [None])[0]
+        if P == "5":
+            play_only = True
         deal = query_params.get('deal', [None])[0]
         board_no_query = query_params.get('board_no', [None])[0]
         if deal:
             split_values = deal[1:-1].replace("'","").split(',')
             rdeal = tuple(value.strip() for value in split_values)
-            driver.set_deal(board_no_query, *rdeal,  models.ns, models.ew, False)
+            driver.set_deal(board_no_query, *rdeal, play_only)
             print(f"Board: {board_no_query} {rdeal}")
-
-        # Trust factor is now moved to the configuration
-        # But here we would like to override the configuration
-        # Think of a better way to do that            
-        if P == "0":
-            driver.human = [0.1, -1, 0.1, -1]
-        if P == "1":
-            driver.human = [-1, 0.1, -1, 0.1]
-        if P == "2":
-            driver.human = [0.05, -1, 0.05, -1]
-        if P == "3":
-            driver.human = [-1, 0.05, -1, 0.05]
-        if P == "4":
-            driver.human = [0.1, 0.1, 0.1, 0.1]
-        if P == "5":
-            driver.human = [0.1, 0.1, 1, 0.1]
-
     else:
         if random:
             #Just take a random"
             rdeal = game.random_deal()
             # example of to use a fixed deal
-            # rdeal = ('5.983.AKT7.K9862 986.QT4.865.AQT7 JT7.J7652.3.J653 AKQ432.AK.QJ942.', 'N None')
-            driver.human = [0.1, 0.1, 1, 0.1]
-            driver.set_deal(None, *rdeal, models.ns, models.ew, False)
+            # rdeal = ('AK64.8642.Q32.Q6 9.QT973.AT5.KJ94 QT532.J5.KJ974.7 J87.AK.86.AT8532', 'W None')
+            driver.set_deal(None, *rdeal, False)
             print(f"Deal: {rdeal}")
         else:
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
-            driver.set_deal(board_no[0] + 1, rdeal, auction, models.ns, models.ew, play_only)
-            if (auto):
-                driver.human = [0.1, 0.1, 0.1, 0.1]
-            else:
-                driver.human = [0.1, 0.1, 1, 0.1]
+            driver.set_deal(board_no[0] + 1, rdeal, auction, play_only)
 
     try:
         await driver.run()

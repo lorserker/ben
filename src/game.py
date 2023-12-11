@@ -75,20 +75,19 @@ class Driver:
         np.random.seed(42)
 
         #Default is a Human South
-        self.human = [0.1, 0.1, 1, 0.1]
-        #Default is no system
-        self.ns = -1
-        self.ew = -1
-        self.sampler = sampler
+        self.human = [False, False, True, False]
+
+        self.ns = models.ns
+        self.ew = models.ew
         self.verbose = verbose
         self.play_only = False
 
-    def set_deal(self, board_number, deal_str, auction_str, ns, ew, play_only = None):
+    def set_deal(self, board_number, deal_str, auction_str, play_only = None):
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
-        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, ns, ew, 32)
-        self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, ns, ew, 52)
+        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, 32)
+        self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, 52)
 
         auction_part = auction_str.split(' ')
         if play_only == None and len(auction_part) > 2: play_only = True
@@ -98,8 +97,6 @@ class Driver:
         self.dealer_i = self.deal_data.dealer
         self.vuln_ns = self.deal_data.vuln_ns
         self.vuln_ew = self.deal_data.vuln_ew
-        self.ns = ns
-        self.ew = ew
         self.trick_winners = []
 
         # Calculate the SHA-256 hash
@@ -211,7 +208,7 @@ class Driver:
         ]
 
         # check if user is playing and is declarer
-        if self.human[2] == 1:
+        if self.human[2]:
             if decl_i == 2:
                 card_players[3] = self.factory.create_human_cardplayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
                 card_players[1] = self.factory.create_human_cardplayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
@@ -283,7 +280,7 @@ class Driver:
                 card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states)
                 
                 if (min_scores is not None and len(min_scores)) > 0:
-                    samples_with_score = [f"{sample} {score:.4f}"  for sample, score in zip(card_resp.samples, min_scores)]
+                    samples_with_score = [f"{sample} {score:.3f}"  for sample, score in zip(card_resp.samples, min_scores)]
                     card_resp.samples = samples_with_score
 
                 card_resp.hcp = c_hcp
@@ -378,7 +375,7 @@ class Driver:
                 card_players[3].n_tricks_taken += 1
 
             #print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
-            if np.any(np.array(self.human) == 1):
+            if np.any(np.array(self.human)):
                 key = await self.confirmer.confirm()
                 if key == 'q':
                     print(self.deal_str)
@@ -415,7 +412,7 @@ class Driver:
             current_trick.append(card)
             current_trick52.append(card52)
 
-        if np.any(np.array(self.human) == 1):
+        if np.any(np.array(self.human)):
             await self.confirmer.confirm()
 
         tricks.append(current_trick)
@@ -450,7 +447,7 @@ class Driver:
 
         await asyncio.sleep(0.01)
 
-        if self.human[(decl_i + 1) % 4] == 1:
+        if self.human[(decl_i + 1) % 4]:
             card_resp = await self.factory.create_human_leader().async_lead()
         else:
             bot_lead = AsyncBotLead(
@@ -481,9 +478,6 @@ class Driver:
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
-                # Overrule configuration for search threshold
-                if level != -1:
-                    self.models.search_threshold = level
                 bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, self.verbose)
                 players.append(bot)
 
@@ -593,20 +587,18 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            # rdeal = ('AQ9.543.6.AKJ876 762.A96.KQJ42.Q2 KJ83.KJ2.T753.T5 T54.QT87.A98.943', 'S Both')
+            rdeal = ('KT8.K9764.653.43 A532.J853.QT.Q76 J9764.T.J2.T9852 Q.AQ2.AK9874.AKJ', 'S Both')
 
-            driver.set_deal(None, *rdeal, models.ns, models.ew, False)
+            driver.set_deal(None, *rdeal, False)
         else:
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
-            driver.set_deal(board_no[0] + 1, rdeal, auction, models.ns, models.ew, play_only)
+            driver.set_deal(board_no[0] + 1, rdeal, auction, play_only)
             board_no[0] = (board_no[0] + 1) % len(boards)
 
         # BEN is handling all 4 hands
-        driver.human = [-1, -1, -1, -1]
-        # BBA is handling all 4 hands
-        # driver.human = [99, 99, 99, 99]
+        driver.human = [False, False, False, False]
         await driver.run()
 
         with shelve.open(f"{base_path}/gamedb") as db:

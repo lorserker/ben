@@ -249,8 +249,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns,
         auction = bidding.BID2ID['PAD_END'] * np.ones((n_samples, len(auction_input)), dtype=np.int32)
         for i, bid in enumerate(auction_input):
             auction[:, i] = bidding.BID2ID[bid]
-    #else:
-    #    print("Called with array")
+
     bid_i = hand_ix
     while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
         bid_i += 4

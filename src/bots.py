@@ -21,6 +21,7 @@ class BotBid:
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
+        # Perhaps it is an idea to store the auction (and binary version) to speed up processing
         self.min_candidate_score = models.search_threshold
         self.max_candidate_score = models.no_search_threshold
         self.model = models.bidder_model
@@ -130,8 +131,8 @@ class BotBid:
         else:
             who = "NN"
         # Without detailed logging we only save 20 samples
-        #if not self.verbose:
-        #    samples=samples[:20]
+        if self.verbose:
+            print(candidates[0].bid, " selected")
         
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples, shape=p_shp, hcp=p_hcp, who = who)
     
@@ -226,7 +227,7 @@ class BotBid:
                 # Seems to be an error in the training that needs to be solved
                 # Only report it if above threshold
                 if bid_softmax[bid_i] >= self.min_candidate_score and self.min_candidate_score != -1:
-                    sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
+                    sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]} {self.min_candidate_score}\n")
                 if len(candidates) > 0:
                     break
                 #assert(bid_i > 1)
@@ -518,7 +519,7 @@ class BotLead:
         for j, lead_card_i in enumerate(lead_card_indexes):
             dd_solved = self.dd.solve(strain_i, 0, [], hands_pbn)
             tricks[:, j, 0:1] = ddsolver.expected_tricks(dd_solved)
-            tricks[:, j, 1:2] = None
+            tricks[:, j, 1:2] = ddsolver.p_made_target(contract)(dd_solved)
         return tricks
 
     
@@ -680,13 +681,26 @@ class CardPlayer:
 
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn)
         card_tricks = ddsolver.expected_tricks(dd_solved)
+
+        # if defending the target is another
+        level = int(self.contract[0])
+        if self.player_i % 2 == 1:
+            tricks_needed = level + 6 - self.n_tricks_taken
+        else:
+            tricks_needed = 13 - (level + 6) - self.n_tricks_taken + 1
+
+        making = ddsolver.p_made_target(tricks_needed)(dd_solved)
+        #print("making: ",making, tricks_needed, self.n_tricks_taken, self.player_i)
         card_ev = self.get_card_ev(dd_solved)
         if self.verbose:
             print("card_ev:", card_ev)
 
         card_result = {}
         for key in dd_solved.keys():
-            card_result[key] = (card_tricks[key], card_ev[key])
+            if self.player_i % 2 == 1:
+                card_result[key] = (card_tricks[key], card_ev[key], making[key])
+            else:
+                card_result[key] = (card_tricks[key], card_ev[key], 1 - making[key])
 
         if self.verbose:
             print(f'dds took {time.time() - t_start:0.4}')
@@ -739,14 +753,14 @@ class CardPlayer:
 
         candidate_cards = []
         
-        for card52, (e_tricks, e_score) in card_dd.items():
+        for card52, (e_tricks, e_score, e_make) in card_dd.items():
             card32 = deck52.card52to32(card52)
 
             candidate_cards.append(CandidateCard(
                 card=Card.from_code(card52),
                 insta_score=card_nn.get(card32, 0),
                 expected_tricks_dd=e_tricks,
-                p_make_contract=None,
+                p_make_contract=e_make,
                 expected_score_dd=e_score
             ))
 
@@ -763,9 +777,6 @@ class CardPlayer:
                 hand_to_str(players_states[2][i,0,:32].astype(int)),
                 hand_to_str(players_states[3][i,0,:32].astype(int)),
             ))
-
-        #Remove duplicates
-        samples = list(set(samples)) 
         
         card_resp = CardResp(
             card=candidate_cards[0].card,

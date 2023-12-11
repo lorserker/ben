@@ -145,7 +145,7 @@ class TMClient:
 
         if self.models.use_bba:
             from bba.BBA import BBABotBid            
-            bot = BBABotBid(1, 1 ,self.player_i,self.hand_str,vuln, self.dealer_i)
+            bot = BBABotBid(self.models.ns, self.models.ew ,self.player_i,self.hand_str,vuln, self.dealer_i)
         else:
             bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.verbose)
         auction = ['PAD_START'] * self.dealer_i
@@ -284,7 +284,7 @@ class TMClient:
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
                     if (len(min_scores)) > 0:
-                        samples_with_score = [f"{sample} {score:.4f}"  for sample, score in zip(card_resp.samples, min_scores)]
+                        samples_with_score = [f"{sample} {score:.3f}" for sample, score in zip(card_resp.samples, min_scores)]
                         card_resp.samples = samples_with_score
 
                     self.card_responses.append(card_resp)
@@ -312,7 +312,7 @@ class TMClient:
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
                     if (len(min_scores)) > 0:
-                        samples_with_score = [f"{sample} {score:.4f}"  for sample, score in zip(card_resp.samples, min_scores)]
+                        samples_with_score = [f"{sample} {score:.3f}" for sample, score in zip(card_resp.samples, min_scores)]
                         card_resp.samples = samples_with_score
 
                     self.card_responses.append(card_resp)

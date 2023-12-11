@@ -247,6 +247,7 @@ class Sample:
             index = 2
         else:
             index = 0
+
         X_lho[:, :, :] = A_lho
         X_lho[:, :, 7+index:39+index] = lho_pard_rho[:, 0:1, :]
         X_lho[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 0, :]).reshape((-1, 1)) - 10) / 4
@@ -288,18 +289,21 @@ class Sample:
 
         # How much to trust the bidding for the samples
         accepted_samples = sorted_samples[sorted_scores >= self.bidding_threshold_sampling]
+        if self.verbose:
+            print("Samples after bidding filtering: ", len(accepted_samples), " Threshold: ", self.bidding_threshold_sampling)
 
+        # If we havent found enough samples, just return the minimum number from configuration
+        # It could be an idea to add an extra sampling in a later version
         if len(accepted_samples) < self._min_sample_hands_auction:
-            # We found nothing that matches the bidding above the threshold of 0.02
-            # Perhaps a longer bidding generally lowers the score for matching the bidding
-            # For now we just return 3 best samples. That is better than none
             accepted_samples = sorted_samples[:self._min_sample_hands_auction]
 
         return accepted_samples, sorted_scores, c_hcp[0], c_shp[0]
 
+    # shuffle the cards between the 2 hiddin hands
     def shuffle_cards_bidding_info(self, n_samples, binfo, auction, hand, vuln, known_nesw, h_1_nesw, h_2_nesw, visible_cards, hidden_cards, cards_played, shown_out_suits, ns, ew):
         n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2])
-
+        if self.verbose:
+            print("shuffle_cards_bidding_info cards to sample: ", n_cards_to_receive)
         n_steps = 1 + len(auction) // 4
 
         A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, ns, ew)
@@ -339,12 +343,9 @@ class Sample:
                     p_shp[other_hand_i, suit] -= 0.5
                     cards_shownout_suits.append(card)
 
-        hidden_cards = [
-            c for c in hidden_cards if c not in cards_shownout_suits]
-        ak_cards = [c for c in hidden_cards if c in {
-            0, 1, 8, 9, 16, 17, 24, 25}]
-        small_cards = [c for c in hidden_cards if c not in {
-            0, 1, 8, 9, 16, 17, 24, 25}]
+        hidden_cards = [c for c in hidden_cards if c not in cards_shownout_suits]
+        ak_cards = [c for c in hidden_cards if c in {0, 1, 8, 9, 16, 17, 24, 25}]
+        small_cards = [c for c in hidden_cards if c not in {0, 1, 8, 9, 16, 17, 24, 25}]
 
         ak_out_i = np.zeros((n_samples, len(ak_cards)), dtype=int)
         ak_out_i[:, :] = np.array(ak_cards)
@@ -397,7 +398,10 @@ class Sample:
 
         assert np.sum(h1_h2) == n_samples * np.sum(n_cards_to_receive)
 
-        return h1_h2
+        # Shuffle the samples generated
+        indices = np.arange(n_samples)
+
+        return h1_h2[indices]
 
     def get_opening_lead_scores(self, auction, vuln, models, hand, opening_lead_card, ns, ew):
         contract = bidding.get_contract(auction)
@@ -445,6 +449,7 @@ class Sample:
         n_steps = 1 + len(auction) // 4
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, ns, ew)
         X = np.zeros((hand.shape[0], n_steps, A.shape[-1]))
+        #print(X.shape)
         if ns == -1:
             index = 0
         else:
@@ -452,7 +457,7 @@ class Sample:
 
         X[:, :, :] = A
         X[:, :, 7+index:39+index] = hand.reshape((-1, 1, 32))
-        X[:, :, 39+index:] = A[nesw_i, :, 39+index:]
+        #X[:, :, 39+index:] = A[nesw_i, :, 39+index:]
         X[:, :, 2+index] = (binary.get_hcp(hand).reshape((-1, 1)) - 10) / 4
         X[:, :, 3+index:7+index] = (binary.get_shape(hand).reshape((-1, 1, 4)) - 3.25) / 1.75
 
@@ -463,6 +468,7 @@ class Sample:
         min_scores = np.ones(hand.shape[0])
 
         # We check the bid for each bidding round
+        # Perhaps this should be calculated more statiscal, as we are just taking the bid with the lowest score
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
@@ -564,10 +570,10 @@ class Sample:
         if self.verbose:
             print(f"players_states {states[0].shape[0]} trick {trick_i}")
 
-        samples = []
         unique_indices = np.ones(states[0].shape[0]).astype(bool)
 
-        # this is just to see how many samples we actually have
+        # this is to see how many samples we actually have
+        samples = []
         for i in range(states[0].shape[0]):
             sample = '%s %s %s %s' % (
                 hand_to_str(states[0][i, 0, :32].astype(int)),
@@ -584,12 +590,6 @@ class Sample:
         states = [state[unique_indices] for state in states]
         if self.verbose:
             print(f"Unique states {states[0].shape[0]}")
-        if (states[0].shape[0] < n_samples // 10) or n_samples < 0:
-            if self.verbose:
-                print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
-
-            assert states[0].shape[0] > 0, "No samples for DDSolver"
-            return states, [], -1, -1
 
         accept, c_hcp, c_shp = self.validate_shape_and_hcp_for_sample(auction, known_nesw, hand, vuln, models, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states)
 
@@ -600,22 +600,12 @@ class Sample:
         states = [state[accept] for state in states]
         if self.verbose:
             print(f"States {states[0].shape[0]} before checking opening lead (after shape and hcp)")
-        if (states[0].shape[0] < n_samples // 10):
-            if self.verbose:
-                print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
-            assert states[0].shape[0] > 0, "No samples for DDSolver"
-            return states, [], c_hcp, c_shp
 
         # reject samples inconsistent with the opening lead
         # We will only check opening lead if we have a lot of samples, as we can't trust other will follow the same lead rules
         states = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states)
         if self.verbose:
             print(f"States {states[0].shape[0]} after checking lead")
-        if (states[0].shape[0] < n_samples // 10):
-            if self.verbose:
-                print(f"Skipping re-apply constraints due to only {states[0].shape[0]} samples")
-            assert states[0].shape[0] > 0, "No samples for DDSolver"
-            return states, [], c_hcp, c_shp
 
         # start = time.time()
         min_bid_scores = np.ones(states[0].shape[0])
@@ -626,17 +616,19 @@ class Sample:
             bid_scores = self.get_bid_scores(h_i_nesw, auction, vuln, states[h_i][:, 0, :32], models.bidder_model, models.ns, models.ew)
             min_bid_scores = np.minimum(min_bid_scores, bid_scores)
 
-        # Sort states based on min_bid_scores
-        # sorted_states = [state for _, state in sorted(zip(min_bid_scores, states), key=lambda x: x[0], reverse=True)]
+        # Round min_bid_scores to 2 decimals
+        rounded_scores = np.round(min_bid_scores, 3)
 
-        # Sort min_bid_scores and states based on min_bid_scores in descending order
-        sorted_indices = np.argsort(min_bid_scores)[::-1]
+        # Get the indices that would sort the rounded scores in descending order
+        sorted_indices = np.argsort(rounded_scores)[::-1]
 
         sorted_min_bid_scores = min_bid_scores[sorted_indices]
         # Sort second dimension within each array in states based on min_bid_scores
         bidding_states = [state[sorted_indices] for state in states]
         
         valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
+        if self.verbose:
+            print("Bidding samples accepted: ",valid_bidding_samples)
 
         # With only few cards left we will not filter the samples according to the bidding.
         if trick_i <= 11:
@@ -650,19 +642,14 @@ class Sample:
 
             if self.verbose:
                 print(f"States {bidding_states[0].shape[0]} after checking the bidding")
-            if (bidding_states[0].shape[0] < n_samples // 10):
-                if self.verbose:
-                    print(f"Skipping re-apply constraints due to only {bidding_states[0].shape[0]} samples")
-                assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
-                return bidding_states, sorted_min_bid_scores, c_hcp, c_shp
 
         # To save time we reduce no of samples to 3 times what is required before we validate the actual play
         bidding_states = [state[:3*n_samples] for state in bidding_states]
 
         if trick_i <= 9:
             bidding_states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, models.player_models, hidden_1_i, hidden_2_i, bidding_states)
-        #if self.verbose:
-        print(f"States {bidding_states[0].shape[0]} after checking the play. Returning {min(bidding_states[0].shape[0],n_samples)}")
+        if self.verbose:
+            print(f"States {bidding_states[0].shape[0]} after checking the play. Returning {min(bidding_states[0].shape[0],n_samples)}")
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
         return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp
     

@@ -80,7 +80,8 @@ class DDSolver:
 def expected_tricks(card_results):
     return {card:(sum(values)/len(values)) for card, values in card_results.items()}
 
-def p_made_target(target):
+def p_made_target(tricks_needed):
+
     def fun(card_results):
-        return {card:(sum(x for x in values if x >= target)/len(values)) for card, values in card_results.items()}
+        return {card:round(sum(1 for x in values if x >= tricks_needed)/len(values),2) for card, values in card_results.items()}
     return fun
