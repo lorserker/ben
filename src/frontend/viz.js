@@ -351,7 +351,7 @@ class PlayInfo {
                     html += '<td>iscore=' + Math.round(candidate['insta_score'] * 1000) / 1000 + '</td>'
                 }
                 if ("p_make_contract" in candidate) {
-                    html += '<td>e(make)=' + Math.round(candidate['p_make_contract'] * 1000) / 1000 + '</td>'
+                    html += '<td>e(make/set)=' + Math.round(candidate['p_make_contract'] * 1000) / 1000 + '</td>'
                 }
                 html += '</tr>'
             }
@@ -427,7 +427,7 @@ class PlayInfo {
             html += `
                     <h3 class="samples" onclick="toggleSamples('sampleLinesPlay')"><strong>Samples(${this.data['samples'].length}):</strong></h3>
                     <div id="sampleLinesPlay" class="hidden">
-                    <ul>${this.data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
+                    <ul>${this.data.samples.map(sample => `<li>${sample.replace('\n',"<br>")}</li>`).join('')}</ul>
                     </div>
                     `
         }
