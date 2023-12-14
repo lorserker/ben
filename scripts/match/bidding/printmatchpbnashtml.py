@@ -18,15 +18,11 @@ def load(fin):
         if line.startswith("% PBN") or line == "\n":
             if dealer != None:
                 v = False
-                if vulnerable == "Both":
+                if (vulnerable == "All" or vulnerable == "Both"):
                     v = True
-                if declarer == "N" and vulnerable == "N-S":
+                if (declarer == "N" or declarer == "S") and (vulnerable == "NS" or vulnerable == "N-S"):
                     v= True
-                if declarer == "S" and vulnerable == "N-S":
-                    v= True
-                if declarer == "E" and vulnerable == "E-W":
-                    v= True
-                if declarer == "W" and vulnerable == "E-W":
+                if (declarer == "E" or declarer == "W") and (vulnerable == "EW" or vulnerable == "E-W"):
                     v= True
                 X = scoring.score(contract_parts, v , int(result))
                 if declarer == "E":
@@ -41,7 +37,7 @@ def load(fin):
         if line.startswith('[Declarer'):
             declarer = extract_value(line)
         if line.startswith('[Contract'):
-            contract_parts = extract_value(line)
+            contract_parts = extract_value(line.upper())
         if line.startswith('[Board'):
             board = extract_value(line)
             if not board.isdigit():
@@ -81,7 +77,7 @@ new_data_list = []
 for i in range(0, len(data_list), 2):
     if (i+1 >= len(data_list)): 
         continue
-    imp = compare.get_imps(data_list[i][-1],-data_list[i+1][-1])
+    imp = compare.get_imps(data_list[i][-1],data_list[i+1][-1])
     # Sum positive and negative imp values
     if imp > 0:
         positive_imp_sum += imp
@@ -131,11 +127,6 @@ for i, board_data in enumerate(sorted_data):
     res2 = f"<td class='align-right'>{score2}</td>" if score2 is not None else "<td class='align-right'></td>"
     tricks2 = f"<td class='align-right'>{result2}</td>" if result2 is not None else "<td class='align-right'></td>"
 
-    #print(res1)
-    #print(res2)
-    #print(tricks1)
-    #print(tricks2)
-
     # Split Imps column into positive and negative columns
     imp_positive = f"<td class='align-right'>{imp if imp > 0 else '--'}</td>"
     imp_negative = f"<td class='align-right'>{abs(imp) if imp < 0 else '--'}</td>"
@@ -143,7 +134,7 @@ for i, board_data in enumerate(sorted_data):
     # Add class to the row based on imp value
     row_class = "positive-imp" if imp > 0 else "negative-imp" if imp < 0 else "zero-imp"
     row_height_class = "row-height"
-    row_html = f"<tr class='{row_class} {row_height_class}'><td class='align-center'><a href='board{board}.html'>{board}</a></td><td>{declarer1} {contract1}</td>{tricks1}{res1}<td>{declarer2} {contract2}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
+    row_html = f"<tr class='{row_class} {row_height_class}'><td class='align-center'><a href='BEN.htm#Board{board}Open'>{board}</a></td><td>{declarer1} {contract1}</td>{tricks1}{res1}<td>{declarer2} {contract2}</td>{tricks2}{res2}{imp_positive}{imp_negative}</tr>\n"
 
     # Split rows evenly between the two tables
     if i < len(sorted_data) / 2:

@@ -145,7 +145,7 @@
                                 let dealer = 'NESW'.charAt(deal.data.dealer)
                                 const rebidContent = '<a href="/app/bridge.html?deal=' +
                                     '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + '\')' +
-                                    '&P=5&board_no=' + deal.board_number() + '"> Bid and play it again </a><br>';
+                                    '&P=1&board_no=' + deal.board_number() + '"> Bid and play it again </a><br>';
 
                                 document.querySelector('#rebid').innerHTML = rebidContent;
 
@@ -196,7 +196,7 @@
                                         document.querySelector('#info').innerHTML += `
                                             <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples(${data.samples.length}):</strong></h3>
                                             <div id="sampleLines${i}" class="hidden">
-                                            <ul>${data.samples.map(sample => `<li>${sample}</li>`).join('')}</ul>
+                                            <ul>${data.samples.map(sample => `<li>${sample.replace(/\n/g,"<br>")}</li>`).join('')}</ul>
                                             </div>
                                             `;
                                     i += 1;
