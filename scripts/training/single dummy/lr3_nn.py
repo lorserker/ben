@@ -13,19 +13,24 @@ logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-
 from batcher import Batcher
+
+if len(sys.argv) < 2:
+    print("Usage: python binfo_nn.py inputdirectory ")
+    sys.exit(1)
+
+bin_dir = sys.argv[1]
 
 model_path = './model/single_dummy'
 
 seed = 1337
 
 batch_size = 64
-display_step = 1000
+display_step = 10000
 epochs = 10
 
-X_train = np.load('./lr3_bin/X.npy')
-y_train = np.load('./lr3_bin/y.npy')
+X_train = np.load(os.path.join(bin_dir, 'X.npy'))
+y_train = np.load(os.path.join(bin_dir, 'y.npy'))
 
 n_examples = X_train.shape[0]
 n_ftrs = X_train.shape[1]
@@ -38,6 +43,7 @@ n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
 print("Iterations               ", n_iterations)
 print("Model path:              ",model_path)
 
+sys.stdout.flush()
 
 n_hidden_units = 512
 
@@ -69,11 +75,9 @@ tricks_softmax = tf.nn.softmax(tricks_logit, name='tricks_softmax')
 
 cost = tf.losses.softmax_cross_entropy(y, tricks_logit)
 
-
 learning_rate = tf.placeholder(tf.float32, name='learning_rate')
 
 train_step = tf.train.AdamOptimizer(learning_rate).minimize(cost)
-
 
 batch = Batcher(n_examples, batch_size)
 cost_batch = Batcher(n_examples, batch_size)
@@ -90,9 +94,6 @@ with tf.Session() as sess:
             c_train = sess.run(cost, feed_dict={X: x_cost, y: y_cost, keep_prob: 1.0})
             t_train = sess.run(tricks_softmax, feed_dict={X: x_cost, y: y_cost, keep_prob: 1.0})
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train))
-            #print(np.mean(np.argmax(t_train, axis=1) == np.argmax(y_cost, axis=1)))
-            #print(np.mean(np.abs(np.argmax(t_train, axis=1) - np.argmax(y_cost, axis=1)) > 1))
-            #print(np.mean(np.abs(np.argmax(t_train, axis=1) - np.argmax(y_cost, axis=1))))
 
             print(f"Accuracy: {np.mean(np.argmax(t_train, axis=1) == np.argmax(y_cost, axis=1)): .6f}, "
                 f"Difference > 1: {np.mean(np.abs(np.argmax(t_train, axis=1) - np.argmax(y_cost, axis=1)) > 1): .6f}, "
@@ -102,6 +103,6 @@ with tf.Session() as sess:
 
             saver.save(sess, model_path, global_step=i)
         
-        sess.run(train_step, feed_dict={X: x_batch, y: y_batch, keep_prob: 0.6, learning_rate: 0.001 / (2**(i/5e5))})
+        sess.run(train_step, feed_dict={X: x_batch, y: y_batch, keep_prob: 0.8, learning_rate: 0.001})
 
     saver.save(sess, model_path, global_step=n_iterations)

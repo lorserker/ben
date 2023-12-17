@@ -81,8 +81,9 @@ class Driver:
         self.ew = models.ew
         self.verbose = verbose
         self.play_only = False
+        self.claim = models.claim
 
-    def set_deal(self, board_number, deal_str, auction_str, play_only = None):
+    def set_deal(self, board_number, deal_str, auction_str, play_only = None, bidding_only=False):
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
@@ -94,6 +95,7 @@ class Driver:
         if play_only:
             self.auction = self.deal_data.auction
             self.play_only = play_only
+        self.bidding_only = bidding_only
         self.dealer_i = self.deal_data.dealer
         self.vuln_ns = self.deal_data.vuln_ns
         self.vuln_ew = self.deal_data.vuln_ew
@@ -145,6 +147,9 @@ class Driver:
             'strain': strain_i
         }))
 
+        if self.bidding_only:
+            return
+        
         print("trick 1")
 
         opening_lead52 = (await self.opening_lead(auction)).card.code()
@@ -255,7 +260,7 @@ class Driver:
                     continue
 
                 # Don't calculate claim before trick 6    
-                if trick_i > 5 and len(current_trick) == 0 and player_i in (1, 3):
+                if self.claim and trick_i > 5 and len(current_trick) == 0 and player_i in (1, 3):
                     claimer.claim(
                         strain_i=strain_i,
                         player_i=player_i,
@@ -417,6 +422,12 @@ class Driver:
 
         tricks.append(current_trick)
         tricks52.append(current_trick52)
+        if trick_winner % 2 == 0:
+            card_players[0].n_tricks_taken += 1
+            card_players[2].n_tricks_taken += 1
+        else:
+            card_players[1].n_tricks_taken += 1
+            card_players[3].n_tricks_taken += 1
 
         trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         trick_won_by.append(trick_winner)
@@ -426,6 +437,9 @@ class Driver:
         pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
 
         self.trick_winners = trick_won_by
+
+        # Print contract and result
+        print("Contract: ",self.contract, card_players[3].n_tricks_taken, " tricks")
 
     
     async def opening_lead(self, auction):
@@ -522,6 +536,7 @@ async def main():
     parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
     parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--playonly", type=bool, default=False, help="Just play, no bidding")
+    parser.add_argument("--biddingonly", type=bool, default=False, help="Just bidding, no play")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()
@@ -530,6 +545,7 @@ async def main():
     verbose = args.verbose
     auto = args.auto
     play_only = args.playonly
+    bidding_only = args.biddingonly
     boards = []
 
     if args.boards:
@@ -587,23 +603,28 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            rdeal = ('KT8.K9764.653.43 A532.J853.QT.Q76 J9764.T.J2.T9852 Q.AQ2.AK9874.AKJ', 'S Both')
+            # rdeal = ('AJ64.9865.9.Q987 Q7.AT43.QT3.AT63 982.J2.A542.KJ42 KT53.KQ7.KJ876.5', 'E None')
 
-            driver.set_deal(None, *rdeal, False)
+            print(f"Playing Board: {rdeal}")
+            driver.set_deal(None, *rdeal, False, bidding_only=bidding_only)
         else:
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
-            driver.set_deal(board_no[0] + 1, rdeal, auction, play_only)
-            board_no[0] = (board_no[0] + 1) % len(boards)
+            driver.set_deal(board_no[0] + 1, rdeal, auction, play_only=play_only, bidding_only=bidding_only)
+            board_no[0] = (board_no[0] + 1)
 
         # BEN is handling all 4 hands
         driver.human = [False, False, False, False]
+        t_start = time.time()
         await driver.run()
 
-        with shelve.open(f"{base_path}/gamedb") as db:
-            deal = driver.to_dict()
-            db[uuid.uuid4().hex] = deal
+        if not bidding_only:
+            with shelve.open(f"{base_path}/gamedb") as db:
+                deal = driver.to_dict()
+                print("Saving Board: ",driver.hands)
+                print(f'Board played in {time.time() - t_start:0.1f} seconds')
+                db[uuid.uuid4().hex] = deal
 
         if not auto:
             user_input = input("\n Q to quit or any other key for next deal ")

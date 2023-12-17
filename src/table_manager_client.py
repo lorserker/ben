@@ -292,9 +292,9 @@ class TMClient:
                     if (self.verbose):
                         for idx, candidate in enumerate(card_resp.candidates, start=1):
                             if candidate.expected_tricks_sd:
-                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_sd)).ljust(5)} Tricks (SD) {candidate.expected_tricks_sd:.2f} #Insta_score {candidate.insta_score:.4f}")
+                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_sd)).ljust(5)} Tricks (SD) {candidate.expected_tricks_sd:.2f} #Insta_score {candidate.insta_score:.3f}")
                             if candidate.expected_tricks_dd:
-                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_dd)).ljust(5)} Tricks (DD) {candidate.expected_tricks_dd:.2f} #Insta_score {candidate.insta_score:.4f}")
+                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_dd)).ljust(5)} Tricks (DD) {candidate.expected_tricks_dd:.2f} #Insta_score {candidate.insta_score:.3f}")
                         for idx, sample in enumerate(card_resp.samples, start=1):                  
                             print(f"{sample}")
 
@@ -753,12 +753,15 @@ async def main():
                 os.remove(filename)
 
     while client.is_connected:
+        t_start = time.time()
         await client.run(biddingonly)
-        # The deal just played should be saved for later review
+        # The deal just played is saved for later review
         # if bidding only we do not save the deal
         if not biddingonly:
             with shelve.open(shelf_filename) as db:
                 deal = client.to_dict()
+                print("Saving Board: ",client.deal_str)
+                print(f'Board played in {time.time() - t_start:0.1f} seconds')
                 if deal["board_number"]+"-Open" not in db:
                     db[deal["board_number"]+"-Open"] = deal
                 else:

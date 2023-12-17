@@ -168,17 +168,20 @@ class Sample:
 
             can_receive_cards = cards_received[s_all_r, receivers] < 13
 
-            cards_received[s_all_r[can_receive_cards],
-                           receivers[can_receive_cards]] += 1
-            lho_pard_rho[s_all_r[can_receive_cards],
-                         receivers[can_receive_cards], cards[can_receive_cards]] += 1
-            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards],
-                  cards[can_receive_cards] // 8] -= 0.5
+            cards_received[s_all_r[can_receive_cards], receivers[can_receive_cards]] += 1
+            lho_pard_rho[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
+            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= 0.5
             js[s_all_r[can_receive_cards]] += 1
 
-            loop_counter += 1  # Increment the loop counter
-            if loop_counter >= 76:  # Check if the counter reaches 76
-                break  #
+            # This loop_counter stops the handgeneration, and might be implemented to stop instead of using time to get last cards distributed
+            # This can result in hands with 12 cards, and interestingly the bidding can be OK with 12 cards, and also single dummy is fine
+            # But after implementing the option of Double Dummy for opening lead it is a problem
+            # So we could just ship the boards where a player has 12 cards, but for now we just remove the counter
+            #loop_counter += 1  # Increment the loop counter
+            #if loop_counter >= 250:  # Check if the counter reaches 76
+            #    print("Loop counter >= 76")
+            #    break  #
+
 
         # re-apply constraints
         accept_hcp = np.ones(n_samples).astype(bool)
@@ -636,9 +639,13 @@ class Sample:
             # This could probably be set based on number of deals matching or sorted
             if valid_bidding_samples >= self.min_sample_hands_play: 
                 bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
+                random_indices = np.random.permutation(bidding_states[0].shape[0])
+                bidding_states = [state[random_indices] for state in bidding_states]
+
             else:
-                bidding_states = states[:self.min_sample_hands_play]
                 sorted_min_bid_scores = sorted_min_bid_scores[:self.min_sample_hands_play]
+                sorted_indices = sorted_indices[:self.min_sample_hands_play]
+                bidding_states = [state[sorted_indices] for state in bidding_states]
 
             if self.verbose:
                 print(f"States {bidding_states[0].shape[0]} after checking the bidding")

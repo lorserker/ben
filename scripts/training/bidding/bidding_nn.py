@@ -30,6 +30,10 @@ n_examples = y_train.shape[0]
 n_ftrs = X_train.shape[2]
 n_bids = y_train.shape[2]
 
+# If NS/EW cc included update name of model
+if n_ftrs == 161:
+    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding'
+
 print("Size input hand:         ", n_ftrs)
 print("Examples for training:   ", n_examples)
 print("Batch size:              ", batch_size)

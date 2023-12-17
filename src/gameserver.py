@@ -11,6 +11,7 @@ import tensorflow as tf
 
 import uuid
 import shelve
+import time
 import asyncio
 import websockets
 import argparse
@@ -148,16 +149,17 @@ async def handler(websocket, path, board_no):
             driver.set_deal(board_no[0] + 1, rdeal, auction, play_only)
 
     try:
+        t_start = time.time()
         await driver.run()
 
         with shelve.open(f"{get_execution_path()}/gamedb") as db:
             deal_bots = driver.to_dict()
+            print("Saving Board: ",driver.hands)
+            print(f'Board played in {time.time() - t_start:0.1f} seconds')
             db[uuid.uuid4().hex] = deal_bots
             print('Deal saved')
             if not random:
-                board_no[0] = board_no[0] + 1
-                if (board_no[0] > len(boards)):
-                    board_no[0] = 0
+                board_no[0] = (board_no[0] + 1) % len(boards)
 
     
     except ConnectionClosedOK  as ex:

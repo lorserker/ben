@@ -27,12 +27,14 @@ def main():
     parser = argparse.ArgumentParser(description="Process bidding data using a bidder model.")
     parser.add_argument("config_path", help="Path to the configuration file")
     parser.add_argument("filename", help="Path to the input filename containing hands and dealer information")
+    parser.add_argument("--alternate", type=bool, default=False, help="Skip the closed room board")
     parser.add_argument("--verbose", type=bool, default=False, help="Print extra information")
     args = parser.parse_args()
 
     config_path = args.config_path
     filename = args.filename
     verbose = args.verbose
+    alternate = args.alternate
 
     np.set_printoptions(precision=2, suppress=True, linewidth=220)
 
@@ -64,19 +66,14 @@ def main():
         print(f"Loaded {n} deals")
         for i in range(n):
             print("Board: ",i+1)
+            if alternate and i % 2 == 1:
+                continue
             parts = lines[i*2].strip().split()
             hands = parts[:]
             parts = lines[i*2+1].strip().replace("  "," ").split()
             dealer_i = 'NESW'.index(parts[0])
             vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
             vuln_ns, vuln_ew = vuln[parts[1]]
-            #Read NS and EW system from conf-file
-            if i % 2 == 0:
-                models.ns = 1
-                models.ew = 2
-            else:
-                models.ns = 2
-                models.ew = 1
             bidder_bots = [BotBid([vuln_ns, vuln_ew], hand, models, sampler, verbose) for hand in hands]
 
             auction = ['PAD_START'] * dealer_i

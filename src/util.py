@@ -26,11 +26,13 @@ def expected_tricks_sd(tricks_softmax):
         result = result + i * t_soft[:,i:i+1]
     return result
 
-def p_make_contract(contract, tricks_softmax):
+def p_defeat_contract(contract, tricks_softmax):
     level = int(contract[0])
     tricks_needed = level + 6
 
-    return np.sum(tricks_softmax.reshape((-1, 14))[:,tricks_needed:], axis=1, keepdims=True)
+    declarerwins =  np.sum(tricks_softmax.reshape((-1, 14))[:,tricks_needed:], axis=1, keepdims=True)
+    defeat = 1 - declarerwins
+    return defeat
 
 def view_samples(hand1, hand2):
     for i in range(min(5, hand1.shape[0])):

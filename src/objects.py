@@ -63,13 +63,13 @@ class CandidateCard:
             'card': self.card.symbol(),
         }
         if self.insta_score is not None:
-            result['insta_score'] = round(self.insta_score,4)
+            result['insta_score'] = round(self.insta_score,3)
         if self.expected_tricks_sd is not None:
-            result['expected_tricks_sd'] = round(self.expected_tricks_sd,3)
+            result['expected_tricks_sd'] = round(self.expected_tricks_sd,2)
         if self.expected_tricks_dd is not None:
-            result['expected_tricks_dd'] = round(self.expected_tricks_dd,3)
+            result['expected_tricks_dd'] = round(self.expected_tricks_dd,2)
         if self.p_make_contract is not None:
-            result['p_make_contract'] = round(self.p_make_contract,3)
+            result['p_make_contract'] = round(self.p_make_contract,2)
         if self.expected_score_sd is not None:
             result['expected_score_sd'] = round(self.expected_score_sd)
         if self.expected_score_dd is not None:
@@ -141,7 +141,7 @@ class CandidateBid:
         }
 
         if self.insta_score is not None:
-            result['insta_score'] = round(self.insta_score,4)
+            result['insta_score'] = round(self.insta_score,3)
 
         if self.expected_score is not None:
             result['expected_score'] = round(self.expected_score)

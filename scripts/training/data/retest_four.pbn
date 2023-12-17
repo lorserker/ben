@@ -1,0 +1,1696 @@
+% PBN 2.1
+% EXPORT
+%Content-type: text/x-pbn; charset=ISO-8859-1
+%Creator: BridgeComposer Version 5.104.1
+%Created: Fri Dec 15 20:51:28 2023 +0000
+%BCOptions Center STBorder STShade
+%BidAndCardSpacing Thin
+%BoardsPerPage 1
+%CardTableColors #008000,#ffffff,#aaaaaa
+%DDAFormat 0
+%DefaultPagination 0
+%Font:CardTable "Arial",11,400,0
+%Font:Commentary "Times New Roman",12,400,0
+%Font:Diagram "Times New Roman",12,400,0
+%Font:Event "Times New Roman",12,400,0
+%Font:FixedPitch "Courier New",10,400,0
+%Font:HandRecord "Arial",11,400,0
+%GutterSize 500,500
+%HRTitleDate 0
+%HRTitleEvent ""
+%HRTitleSetID ""
+%HRTitleSetIDPrefix ""
+%HRTitleSite ""
+%HtmlClubs entity,"https://bridgecomposer.com/suitimg/c.gif"
+%HtmlDiamonds entity,"https://bridgecomposer.com/suitimg/d.gif"
+%HtmlHearts entity,"https://bridgecomposer.com/suitimg/h.gif"
+%HtmlNavBar 0.75,#cfe2f3
+%HtmlSpades entity,"https://bridgecomposer.com/suitimg/s.gif"
+%Margins 1000,1000,1000,1000
+%PaperSize 1,0,0,2
+%ParaIndent 0
+%PipColors #000000,#ff0000,#ff0000,#000000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%ScoreTableColors #e6e6e6,#000000
+%SectionSpacing 0,0,0
+%SelectedBoard 41
+%ShowBoardLabels 2
+%ShowCardTable 2
+%TSTCustomSortOrder Default
+%TSTReport List
+%TSTReportOrder ByNumber
+%TSTReportShade Yes
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "1"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AQJ52.43.82.9542 8.T9.AQJ9653.KJ6 KT7.Q852.K4.AQ83 9643.AKJ76.T7.T7"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4D"]
+[Result "9"]
+{PAR of the deal: 4D X -1 played by East : -100 pts
+PAR computation time: 00'02"
+Feasability: 9 4 6 9 8 4 9 7 4 5 9 4 6 9 8 4 9 6 4 5 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+Pass 1D X 1H
+2S 3D Pass Pass
+3S 4D Pass Pass
+Pass
+[Play "S"]
+S7 S3 SA S8
+CQ C7 C4 C6
+CA CT C5 CK
+SK S4 S2 D3
+H2 HK H3 HT
+DK DT D2 D6
+D4 D7 D8 DQ
+C3 H6 C2 CJ
+H5 HA H4 H9
+H8 H7 S5 DJ
+C8 HJ SJ D5
+ST S6 C9 D9
+HQ S9 SQ DA
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "2"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:A9653.743.542.J3 JT72.A9862.J9.Q7 KQ84.5.K6.A96542 .KQJT.AQT873.KT8"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "6HX"]
+[Result "12"]
+{PAR of the deal: 6S X -5 played by North: -1400 pts
+PAR computation time: 00'01"
+Feasability: 7 1 1 7 2 6 12 12 6 8 7 1 1 7 2 6 12 12 6 9 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+Pass Pass 1C X
+1S 3H 3S 4NT
+Pass 5D Pass 6H
+X Pass Pass Pass
+[Play "N"]
+DK DA D5 D9
+H5 HK H3 H2
+C2 HQ H7 H6
+C6 HJ H4 H8
+CA C8 C3 CQ
+C4 CK CJ C7
+C5 CT S5 DJ
+D6 D3 D2 H9
+S4 HT S3 S2
+S8 DQ D4 S7
+SQ DT S6 ST
+SK D7 S9 SJ
+C9 D8 SA HA
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "3"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:KT75.KT6.Q95.T93 Q9.7432.732.AQJ2 63.QJ98.AK84.K76 AJ842.A5.JT6.854"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "1SX"]
+[Result "7"]
+{PAR of the deal: 3H  = played by North: 140 points
+PAR computation time: 00'01"
+Feasability: 7 9 9 6 8 6 4 4 6 5 7 9 9 6 8 6 4 4 6 5 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+Pass Pass 1D 1S
+Pass Pass X Pass
+Pass Pass
+[Play "N"]
+S7 S9 S6 S2
+SK SQ S3 S4
+D5 D2 DK D6
+D9 D3 DA DT
+H6 H2 HQ HA
+S5 C2 C6 SA
+ST D7 D4 SJ
+C3 CJ CK C5
+DQ H3 D8 DJ
+HK H4 H8 H5
+HT H7 HJ S8
+C9 CQ C7 C4
+CT CA H9 C8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "4"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:KJ93.QT4.KJ5.K62 Q6.J863.AQT84.T4 42.AK.972.AQJ753 AT875.9752.63.98"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "8"]
+{PAR of the deal: 4NT = played by South : 630 points
+PAR computation time: 00'02"
+Feasability: 9 6 5 7 7 3 6 7 6 3 9 7 6 7 10 3 6 7 6 3 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+1C 1D 3NT Pass
+Pass Pass
+[Play "E"]
+D6 D5 DT D2
+H7 H4 H6 HA
+C9 CK CT C7
+C8 C6 C4 CA
+H5 HT HJ HK
+S5 C2 D8 CQ
+S7 S3 H3 CJ
+S8 S9 H8 C5
+ST SJ S6 C3
+D3 DK DA D7
+H2 DJ DQ D9
+H9 HQ D4 S2
+SA SK SQ S4
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "5"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:A82.KJ42.J986.43 QT76.AT5.K743.Q8 K93.976.A.KJT976 J54.Q83.QT52.A52"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3DX"]
+[Result "6"]
+{PAR of the deal: 2NT = played by East : 120 points
+PAR computation time: 00'03"
+Feasability: 4 7 5 6 4 9 6 8 6 8 4 7 4 6 4 9 6 8 6 8 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "W"]
+Pass Pass 1C Pass
+1H X 2C 2D
+Pass Pass 2H Pass
+Pass 3D Pass Pass
+X Pass Pass Pass
+[Play "W"]
+C4 CQ CK CA
+D8 DK DA D5
+C3 C8 CJ C2
+HJ HA H6 H3
+D6 D3 C7 DQ
+H2 D7 C6 C5
+HK H5 H9 HQ
+SA S7 S9 S4
+S2 S6 SK S5
+D9 D4 CT D2
+DJ HT H7 DT
+H4 ST C9 H8
+S8 SQ S3 SJ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "6"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:QJT6.A4.J9873.J4 985.QJ32.5.T8632 K43.K9.KQ64.AK97 A72.T8765.AT2.Q5"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "7"]
+{PAR of the deal: 5D  = played by North: 400 points
+PAR computation time: 00'01"
+Feasability: 8 11 6 9 8 5 2 7 3 2 8 11 6 9 8 5 2 7 3 2 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+Pass Pass 1D 1H
+X 3H 3NT Pass
+Pass Pass
+[Play "W"]
+H5 H4 HJ HK
+D2 DJ D5 D4
+DA D7 S5 DK
+H6 HA H2 H9
+CQ CJ C2 C7
+HT S6 HQ S4
+H7 C4 H3 S3
+H8 ST S8 C9
+SA SJ S9 SK
+C5 D3 C3 CA
+DT D8 C6 DQ
+S2 D9 C8 CK
+S7 SQ CT D6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "7"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:642.J2.KJ853.952 3.A9863.QT4.AT87 KT.QT75.962.QJ43 AQJ9875.K4.A7.K6"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "6NT"]
+[Result "12"]
+{PAR of the deal: 6NT = played by East : 1440 points
+PAR computation time: 00'05"
+Feasability: 2 3 2 1 1 10 10 11 12 12 1 3 2 1 1 10 10 11 12 12 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+Pass Pass Pass 2C
+Pass 2H Pass 2S
+Pass 3C Pass 3S
+Pass 4NT Pass 5H
+Pass 6NT Pass Pass
+Pass
+[Play "N"]
+D9 D7 DK D4
+C3 C6 C2 C8
+C4 CK C5 C7
+H7 H4 HJ HA
+ST SJ S6 S3
+D6 DA D3 DT
+SK SA S2 CT
+H5 HK H2 H3
+CJ SQ S4 H8
+HT S5 D5 CA
+D2 S7 D8 H6
+CQ S8 C9 DQ
+HQ S9 DJ H9
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "8"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:65.T654.Q73.T743 KT3.KQJ32.A.AK85 AQ982.7.J98642.2 J74.A98.KT5.QJ96"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "5H"]
+[Result "12"]
+{PAR of the deal: 6C  = played by South : 1370 points
+PAR computation time: 00'02"
+Feasability: 10 4 10 8 11 1 7 2 5 2 12 5 11 8 11 1 7 2 5 2 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass 1H 2H =1= Pass
+2S 3C 3S 4H
+Pass Pass 4S X
+Pass 5H Pass Pass
+Pass
+[Note "1: Alert."]
+[Play "W"]
+SA S7 S6 S3
+D9 D5 DQ DA
+H7 HA H6 H2
+S8 H9 H4 HQ
+C2 CJ C4 C5
+D2 H8 HT HK
+D4 C6 H5 HJ
+D6 C9 C3 CK
+D8 CQ C7 C8
+DJ DK D3 ST
+S2 DT D7 SK
+S9 S4 S5 H3
+SQ SJ CT CA
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "9"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:T86.JT43.QT6.J95 9753.Q765.32.AQT J4.AK9.A985.7643 AKQ2.82.KJ74.K82"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2S"]
+[Result "9"]
+{PAR of the deal: 4S  = played by North: 420 points
+PAR computation time: 00'02"
+Feasability: 7 8 8 10 8 6 5 5 3 5 7 8 8 9 8 6 5 5 3 5 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass Pass 1D 1NT
+Pass 2C Pass 2S
+Pass Pass Pass
+[Play "E"]
+S6 S5 SJ SK
+C5 CQ C7 C2
+D6 D3 D8 DK
+S8 S7 S4 SQ
+ST S3 C3 SA
+HT H6 H9 H2
+DQ D2 D5 D7
+DT H7 DA D4
+H3 H5 HA H8
+H4 HQ HK S2
+C9 S9 D9 DJ
+CJ CA C4 C8
+HJ CT C6 CK
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "10"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:K83.Q532.T75.975 T76.K76.AQ86.A64 AJ5.J.943.KQJT82 Q942.AT984.KJ2.3"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3H"]
+[Result "9"]
+{PAR of the deal: 4H  = played by East : 620 points
+PAR computation time: 00'02"
+Feasability: 7 3 3 3 4 6 10 10 9 8 7 3 3 3 4 6 10 10 9 8 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+Pass 1D 2C X =1=
+Pass 2NT Pass 3H
+Pass Pass Pass
+[Note "1: Alert."]
+[Play "S"]
+C9 CA C8 C3
+H5 H6 HJ HA
+H2 HK C2 H4
+D7 D6 D3 DJ
+HQ H7 D4 H8
+C5 C4 CT HT
+H3 S6 D9 H9
+D5 DQ S5 D2
+DT DA SJ DK
+S3 D8 CJ S2
+S8 S7 SA S4
+C7 C6 CK S9
+SK ST CQ SQ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "11"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:J84.KQ982.KT98.5 KQ2.JT76.A754.T7 AT75.A3.J2.AK986 963.54.Q63.QJ432"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "10"]
+{PAR of the deal: 5NT = played by East : 460 points
+PAR computation time: 00'06"
+Feasability: 4 2 3 2 2 9 10 10 11 11 4 2 3 2 2 9 10 10 11 11 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "W"]
+Pass Pass 1NT Pass
+2D Pass 2H Pass
+3D Pass 3NT Pass
+Pass Pass
+[Play "S"]
+C3 C5 CT CA
+D6 D8 D4 DJ
+D3 D9 D5 D2
+S3 S4 S2 ST
+C4 S8 C7 C9
+C2 DT D7 CK
+H5 H2 H6 HA
+H4 HQ H7 H3
+S6 HK HT C6
+S9 SJ SQ SA
+CJ H8 HJ C8
+CQ DK DA S5
+DQ H9 SK S7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "12"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:63.86.Q743.A7642 T7.AT975.AT52.J9 AQ8.Q42.KJ98.KQT KJ9542.KJ3.6.853"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "1NT"]
+[Result "10"]
+{PAR of the deal: 3H  = played by North: 140 points
+PAR computation time: 00'02"
+Feasability: 4 4 9 9 6 7 8 3 4 6 4 5 9 9 6 8 8 3 4 6 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass Pass 1NT Pass
+Pass Pass
+[Play "N"]
+S2 S3 ST SQ
+C5 CA C9 CT
+D6 D3 D5 DJ
+C3 C2 CJ CK
+C8 C4 D2 CQ
+S4 D4 DA DK
+H3 H6 HA H2
+S5 S6 S7 SA
+S9 DQ DT D9
+HJ C6 H5 D8
+SJ C7 H7 H4
+SK D7 H9 HQ
+HK H8 HT S8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "13"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:9876.AKQJ.Q52.AT 5.T643.984.J9532 KQJ4.8752.J76.K8 AT32.9.AKT3.Q764"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "9"]
+{PAR of the deal: 4C X -1 played by East : -100 pts
+PAR computation time: 00'01"
+Feasability: 4 6 7 9 8 9 7 4 4 5 4 6 7 9 8 9 7 4 4 5 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+1NT Pass 2C Pass
+2H Pass 4H Pass
+Pass Pass
+[Play "E"]
+S5 SJ SA S7
+D4 D6 DA D2
+D8 D7 DK D5
+D9 DJ DT DQ
+HT H2 H9 HJ
+H3 H7 C7 HQ
+C2 CK C4 CT
+H4 H8 D3 HK
+C3 C8 C6 CA
+H6 SQ S2 S6
+CJ S4 CQ HA
+C5 SK S3 S8
+C9 H5 ST S9
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "14"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:KJ953.A975.JT73. .K64.AK9542.AJT2 AQT7642.T3.Q.K43 8.QJ82.86.Q98765"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "6SX"]
+[Result "12"]
+{PAR of the deal: 5S  = played by East : 450 points
+PAR computation time: 00'08"
+Feasability: 10 9 8 1 5 2 4 5 11 8 10 9 8 1 5 2 4 5 11 8 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass 1D 4S Pass
+Pass 5D Pass Pass
+6S Pass Pass X
+Pass Pass Pass
+[Play "N"]
+D8 D3 DK DQ
+C5 S3 CA C4
+S8 S5 D2 ST
+C7 S9 C2 C3
+D6 D7 D9 S6
+C6 H5 CT CK
+H2 HA H6 H3
+C8 DJ D5 HT
+H8 DT DA S4
+C9 SJ D4 S2
+HJ H7 H4 SQ
+CQ SK CJ S7
+HQ H9 HK SA
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "15"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:8732.4.JT8.AK985 K64.KQ65.KQ763.T AQT95.J987.5.QJ4 J.AT32.A942.7632"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5DX"]
+[Result "10"]
+{PAR of the deal: 5D X -1 played by East : -100 pts
+PAR computation time: 00'02"
+Feasability: 10 3 3 10 4 3 10 9 2 3 10 3 3 10 4 3 10 9 2 3 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+Pass 1D 1S X =1=
+3D 3H Pass 4H
+Pass Pass 4S 5D
+X Pass Pass Pass
+[Note "1: Alert."]
+[Play "N"]
+D5 D9 DT DK
+CJ C2 CK CT
+HJ HA H4 H6
+S5 DA D8 D3
+SQ SJ S2 S4
+H9 H2 DJ H5
+C4 C3 CA D7
+H7 H3 C5 HK
+H8 HT S7 HQ
+S9 D2 S3 S6
+CQ C6 C8 DQ
+SA D4 S8 SK
+ST C7 C9 D6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "16"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:T65.QJT95.KJT9.3 AKJ74..Q64.AKJT6 Q9.K632.A75.8742 832.A874.832.Q95"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "9"]
+{PAR of the deal: 5H X -2 played by East : -300 pts
+PAR computation time: 00'01"
+Feasability: 10 5 4 9 9 2 6 9 2 2 10 5 4 10 10 2 6 9 2 2 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass 1S Pass 2S
+Pass 4H Pass 4S
+Pass Pass Pass
+[Play "W"]
+C7 C9 C3 C6
+H2 HA HQ D4
+S9 S2 S5 SA
+C2 CQ S6 CT
+D5 D2 DJ D6
+DA D3 DT DQ
+C4 C5 ST CJ
+D7 D8 DK S7
+SQ S3 H5 SK
+C8 H7 H9 CA
+H3 H4 D9 CK
+H6 S8 HT SJ
+HK H8 HJ S4
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "17"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:9.QJ873.AJ84.QJ2 Q86.942.KQ52.T76 AKJT2.K.973.K943 7543.AT65.T6.A85"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "8"]
+{PAR of the deal: 4NT = played by North: 430 points
+PAR computation time: 00'07"
+Feasability: 10 9 9 10 10 2 4 4 3 3 10 9 9 10 10 2 4 4 3 3 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+1H Pass 1S Pass
+2D Pass 3NT Pass
+Pass Pass
+[Play "W"]
+C8 CJ C6 C3
+HA H3 H2 HK
+CA CQ C7 C4
+C5 C2 CT CK
+DT H7 D5 C9
+D6 DA D2 D3
+H5 HQ H4 S2
+H6 HJ H9 ST
+S3 S9 S8 SA
+S4 D4 DQ D9
+S5 D8 DK D7
+S7 H8 S6 SK
+HT DJ SQ SJ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "18"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:T6.KJT865.52.J62 K852.9.Q98.AQ953 Q73.AQ4.AK6.T874 AJ94.732.JT743.K"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4HX"]
+[Result "8"]
+{PAR of the deal: 3S  = played by East : 140 points
+PAR computation time: 00'00"
+Feasability: 5 3 8 3 6 8 10 5 9 5 5 3 8 3 6 8 10 5 9 5 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+Pass 1C X 1S
+2H 2S 3H 3S
+4H Pass Pass X
+Pass Pass Pass
+[Play "W"]
+H9 H4 H2 HJ
+C3 HQ H3 H6
+C5 C7 CK C6
+D8 DK D3 D2
+D9 DA D4 D5
+DQ D6 D7 H5
+SK S7 S4 S6
+CA C4 DJ C2
+CQ C8 H7 CJ
+S2 S3 SA ST
+S5 SQ SJ H8
+C9 HA DT HK
+S8 CT S9 HT
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "19"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:QJ9.K8.Q8765.QT8 KT7652.JT5.9.KJ3 A843.AQ943.A2.75 .762.KJT43.A9642"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "1NT"]
+[Result "9"]
+{PAR of the deal: 2NT = played by North: 120 points
+PAR computation time: 00'02"
+Feasability: 5 7 7 8 8 8 5 4 5 4 5 7 8 8 8 8 5 4 5 4 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+Pass Pass 1H Pass
+1NT Pass Pass Pass =1=
+[Note "1: Alert."]
+[Play "E"]
+S6 S3 H2 S9
+S2 S4 H6 SJ
+H5 HQ H7 H8
+HT H4 C2 HK
+D9 DA D3 D5
+HJ HA C4 D6
+S5 H9 D4 D7
+S7 D2 DK D8
+C3 C5 CA C8
+CK C7 C6 CQ
+CJ S8 C9 CT
+ST SA DT SQ
+SK H3 DJ DQ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "20"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:A8653..J964.Q873 Q942.AQ8743.7.J2 KJ7.K2.AT532.AK9 T.JT965.KQ8.T654"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "10"]
+{PAR of the deal: 4S  = played by East : 620 points
+PAR computation time: 00'14"
+Feasability: 3 2 8 3 4 10 11 5 10 9 3 2 8 3 4 9 11 5 10 9 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass Pass 1D Pass
+2S =1= Pass 4S Pass
+Pass Pass
+[Note "1: Alert."]
+[Play "S"]
+CJ CK C4 C3
+S4 S7 ST SA
+S2 SJ H5 S3
+S9 SK C6 S5
+C2 CA C5 C7
+SQ C9 CT CQ
+HA H2 H6 S8
+D7 DA D8 D4
+H7 D2 DQ D9
+H4 HK HJ C8
+H3 D3 DK D6
+H8 D5 HT S6
+HQ DT H9 DJ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "21"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:4.Q9.KQJT43.J643 A763.KT73.85.K72 KQ985.A8.A96.AQ9 JT2.J6542.72.T85"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NT"]
+[Result "8"]
+{PAR of the deal: 6D  = played by North: 920 points
+PAR computation time: 00'04"
+Feasability: 11 12 8 10 11 2 1 5 3 2 10 11 8 9 9 2 1 5 3 2 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+2D Pass 3NT Pass
+Pass Pass
+[Play "W"]
+H4 HQ HK H8
+H2 H9 HT HA
+D7 D3 D8 DA
+D2 DT D5 D6
+C5 DK H3 D9
+S2 DJ S7 S5
+ST DQ C2 S8
+C8 D4 S3 S9
+CT C3 C7 CA
+SJ S4 SA SQ
+H5 C6 CK C9
+HJ C4 H7 CQ
+H6 CJ S6 SK
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "22"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:Q9.T976.K3.AJ874 J2.J2.AJ86.KQT96 AK765.AQ.Q542.53 T843.K8543.T97.2"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "1S"]
+[Result "8"]
+{PAR of the deal: 3S  = played by North: 140 points
+PAR computation time: 00'09"
+Feasability: 7 7 7 9 8 5 5 5 4 5 8 7 8 9 8 5 5 5 4 5 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+Pass 1C 1S Pass
+Pass Pass
+[Play "E"]
+C2 CA C6 C5
+HK H6 H2 HQ
+DT D3 DJ DQ
+H5 H7 HJ HA
+D7 DK DA D2
+H3 C7 CK C3
+S8 C4 CQ S6
+H4 H9 SJ SK
+S3 SQ S2 S5
+H8 HT CT D4
+S4 CJ C9 D5
+ST S9 D6 SA
+D9 C8 D8 S7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "23"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:4.92.KQT973.QT54 K53.KJ876.J542.7 AT92.AQT.6.AK986 QJ876.543.A8.J32"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "9"]
+{PAR of the deal: 6C  = played by North: 920 points
+PAR computation time: 00'04"
+Feasability: 12 11 7 7 10 1 2 5 5 2 12 11 7 7 10 1 2 5 5 2 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+2D Pass 2NT Pass
+3H Pass 3NT Pass
+Pass Pass
+[Play "E"]
+S7 S4 SK S2
+SJ D7 S5 ST
+S6 D3 S3 S9
+D8 DQ D5 D6
+C2 C4 C7 CA
+C3 CQ D2 C6
+H3 H2 H6 HA
+CJ C5 D4 CK
+S8 CT H7 SA
+H4 H9 DJ C8
+H5 D9 H8 C9
+DA DT HK HQ
+SQ DK HJ HT
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "24"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:.7632.AKQ82.KJ62 QJ954.Q9.9753.74 KT72.AT84.T.Q853 A863.KJ5.J64.AT9"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4HX"]
+[Result "10"]
+{PAR of the deal: 4S X -3 played by North: -500 pts
+PAR computation time: 00'12"
+Feasability: 3 4 3 7 5 10 9 10 6 8 3 4 3 7 5 10 9 10 6 8 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "W"]
+1D Pass 1H X
+2H 2S 3H Pass
+4H X Pass Pass
+Pass
+[Play "S"]
+SA H2 S9 S2
+H5 H3 HQ HA
+S3 H6 S4 S7
+D6 DA D7 DT
+D4 DK D3 ST
+HJ H7 H9 HT
+HK C2 C7 H8
+S8 D2 SJ SK
+CA C6 C4 C3
+S6 D8 SQ H4
+C9 CJ D5 C5
+CT CK S5 C8
+DJ DQ D9 CQ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "25"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:A97.AQ75.Q74.A92 KQT5.J.AKJ9.KQJ5 86.KT832.T862.T8 J432.964.53.7643"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2H"]
+[Result "8"]
+{PAR of the deal: 3S  = played by East : 140 points
+PAR computation time: 00'02"
+Feasability: 4 6 8 3 7 9 6 5 9 6 3 6 8 3 7 9 6 5 9 6 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+1NT X 2D Pass
+2H Pass Pass Pass
+[Play "E"]
+DA D2 D5 D4
+HJ H3 H4 HA
+D9 HT H6 H5
+S5 S6 S4 SA
+C5 C8 C7 CA
+ST H2 H9 HQ
+CJ CT C3 C2
+SK S8 S2 S7
+CK H8 C4 C9
+DK D6 D3 DQ
+CQ D8 C6 H7
+DJ DT S3 D7
+SQ HK SJ S9
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "26"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:J743.KQ53.T96.AK .82.QJ7432.85432 QT986.T94.K8.T96 AK52.AJ76.A5.QJ7"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3NTX"]
+[Result "5"]
+{PAR of the deal: 4C  = played by North: 130 points
+PAR computation time: 00'02"
+Feasability: 10 10 7 5 6 3 3 5 8 7 10 10 7 5 6 3 3 5 8 7 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "W"]
+1D Pass 1S X
+2S 3D Pass 3NT
+Pass Pass X Pass
+Pass Pass
+[Play "W"]
+S7 D2 SQ S2
+S3 D4 ST SA
+CK C5 C6 CJ
+CA C4 C9 C7
+SJ H2 S6 SK
+D6 C3 CT CQ
+H5 H8 H4 HA
+D9 D3 D8 DA
+DT DJ DK D5
+S4 C2 S8 S5
+H3 D7 S9 H6
+HQ C8 HT HJ
+HK DQ H9 H7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "27"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:KJ974.K8.A96.987 A852.765.T5.QT54 Q6.943.Q82.AKJ32 T3.AQJT2.KJ743.6"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3S"]
+[Result "10"]
+{PAR of the deal: 3S  = played by West: 140 points
+PAR computation time: 00'03"
+Feasability: 3 6 8 3 3 9 5 4 9 8 3 6 8 3 3 10 6 5 9 8 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass Pass 1C 2NT
+3S Pass Pass Pass
+[Play "S"]
+H6 H3 HA H8
+H5 H4 HQ HK
+S5 SQ ST S4
+SA S6 S3 SJ
+DT DQ DK DA
+S2 D2 D7 S9
+S8 H9 H2 SK
+CT CK C6 C8
+D5 D8 DJ D6
+H7 C2 HJ S7
+CQ CA D4 C9
+C5 C3 D3 C7
+C4 CJ HT D9
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "28"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:KJT954.Q63.T98.A AQ6.J752.7.QJ932 732.AT4.QJ4.8765 8.K98.AK6532.KT4"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3SX"]
+[Result "7"]
+{PAR of the deal: 5C  = played by East : 600 points
+PAR computation time: 00'01"
+Feasability: 2 3 3 7 3 11 9 9 6 9 2 3 3 7 3 11 9 9 6 9 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+1S Pass 2S 3D
+3S X =1= Pass Pass
+Pass
+[Note "1: Alert."]
+[Play "W"]
+D7 D4 DK D8
+C2 DJ DA D9
+S6 DQ D6 DT
+CQ C7 C4 CA
+H7 HT HK H6
+C3 C6 CK S9
+H2 HA H8 H3
+SA S3 S8 SK
+H5 H4 H9 HQ
+SQ S7 CT S4
+C9 C5 D2 S5
+CJ S2 D3 SJ
+HJ C8 D5 ST
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "29"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:AK76.K92..KQJ743 842.JT6.KJ92.T95 JT3.A75.AQ85.A82 Q95.Q843.T7643.6"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "6NT"]
+[Result "13"]
+{PAR of the deal: 7NT = played by East : 1520 points
+PAR computation time: 00'02"
+Feasability: 0 5 2 0 0 13 8 11 13 13 0 5 2 0 0 13 8 11 13 13 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+1C Pass 1D Pass
+2S Pass 6NT Pass
+Pass Pass
+[Play "N"]
+H4 HK H6 H5
+C6 C3 C9 CA
+SQ SK S4 ST
+S5 S6 S2 SJ
+D6 CJ C5 C2
+D4 CK CT C8
+D3 CQ D2 D5
+D7 C4 D9 H7
+S9 SA S8 S3
+H3 C7 DJ D8
+DT S7 DK DQ
+H8 H2 HT HA
+HQ H9 HJ DA
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "30"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:5..QT76543.T8742 AJT.QJ9852..AQJ5 962.T7643.AK8.K3 KQ8743.AK.J92.96"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "11"]
+{PAR of the deal: 7S  = played by West: 1510 points
+PAR computation time: 00'02"
+Feasability: 5 10 1 0 1 7 3 11 12 6 5 10 1 0 1 4 3 11 13 6 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+Pass 1H Pass 1S
+Pass 3H Pass 4H
+Pass Pass Pass
+[Play "S"]
+DA D2 D7 H2
+H4 HK D5 H5
+S2 S3 S5 SA
+S6 SQ D3 ST
+CK C6 C4 CQ
+H3 HA D4 H8
+S9 SK D6 SJ
+H7 S4 C7 C5
+C3 C9 CT CA
+H6 S7 C2 HQ
+HT S8 DT HJ
+D8 D9 C8 CJ
+DK DJ DQ H9
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "31"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:KQT86.843.T87.84 A9543..96.JT9652 J7.K962.Q532.AQ3 2.AQJT75.AKJ4.K7"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3H"]
+[Result "10"]
+{PAR of the deal: 3H  = played by North: 140 points
+PAR computation time: 00'07"
+Feasability: 10 9 9 8 8 2 3 3 5 4 10 9 9 8 8 2 3 4 5 4 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass Pass 1D X
+1S Pass 1NT 3H
+Pass Pass Pass
+[Play "E"]
+D7 D9 DQ DA
+H3 S3 H6 HA
+H4 C6 HK HT
+D8 D6 D2 DK
+H8 C2 H2 HJ
+C8 S5 H9 HQ
+C4 S4 C3 H7
+DT S9 D3 H5
+S6 C5 D5 DJ
+S8 C9 S7 D4
+ST CT CA CK
+SQ CJ CQ C7
+SK SA SJ S2
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "32"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:J987.9.AQJ4.Q943 K62.AKT5.K83.KJ7 AQ543.QJ432.52.2 T.876.T976.AT865"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "1NT"]
+[Result "8"]
+{PAR of the deal: 3S  = played by North: 140 points
+PAR computation time: 00'08"
+Feasability: 5 6 6 9 7 8 7 7 4 6 4 6 6 9 7 8 7 6 4 6 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+Pass 1NT Pass Pass
+Pass
+[Play "S"]
+H3 H6 H9 HT
+C2 C5 CQ CJ
+S5 ST SJ S2
+D5 D6 DA D3
+SA D7 S9 SK
+SQ D9 S7 S6
+D2 DT DJ DK
+H2 C6 C3 CK
+H4 CT C4 C7
+S3 CA C9 H5
+HJ C8 D4 D8
+HQ H7 DQ HA
+S4 H8 S8 HK
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "33"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:K94.J96.A964.532 Q75.752.KT.KQT96 AJ62.AKT3.Q75.J4 T83.Q84.J832.A87"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "2NT"]
+[Result "6"]
+{PAR of the deal: 3H  = played by North: 140 points
+PAR computation time: 00'02"
+Feasability: 6 9 9 9 7 7 4 4 4 6 6 9 9 9 7 7 4 4 4 6 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+Pass Pass 1NT Pass
+2NT Pass Pass Pass
+[Play "E"]
+D2 D6 DK D5
+C7 C2 CK C4
+CA C3 CT CJ
+C8 C5 C9 H3
+S3 D4 CQ S6
+S8 H6 C6 D7
+ST SK S5 S2
+D3 S4 S7 SA
+H8 H9 H2 HK
+D8 D9 DT DQ
+H4 HJ H5 HA
+HQ S9 H7 HT
+DJ DA SQ SJ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "34"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:AT962.AT.A32.Q87 874..QT7.JT96532 Q53.Q632.K986.K4 KJ.KJ98754.J54.A"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "7"]
+{PAR of the deal: 4NT = played by South : 630 points
+PAR computation time: 00'01"
+Feasability: 5 7 6 7 8 7 3 7 4 3 6 7 6 7 10 7 3 7 4 3 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+1S Pass 2S 3H
+3S Pass 4S Pass
+Pass Pass
+[Play "W"]
+CJ C4 CA C7
+S4 H6 H9 HT
+CT CK SJ C8
+S7 H3 HJ HA
+C2 SQ SK CQ
+S8 H2 H7 D3
+D7 D6 DJ DA
+DT DK D5 D2
+DQ D9 D4 S6
+C3 S3 H4 S2
+C5 D8 H5 S9
+C6 S5 H8 SA
+C9 HQ HK ST
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "35"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:Q9752.Q3.Q43.AJT KJ83.AKJ6.KJ7.95 AT64.98.9852.863 .T7542.AT6.KQ742"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4H"]
+[Result "12"]
+{PAR of the deal: 6H  = played by North: 1430 points
+PAR computation time: 00'11"
+Feasability: 11 9 12 7 9 2 4 1 5 3 11 9 12 8 10 2 4 1 5 3 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass 1NT Pass 2D
+Pass 3H Pass 4H
+Pass Pass Pass
+[Play "W"]
+D9 D6 DQ DK
+H9 H5 H3 HK
+C3 CQ CA C5
+D2 DT D4 D7
+H8 H4 HQ HA
+D5 DA D3 DJ
+C6 CK CT C9
+C8 C7 CJ H6
+S4 H7 S2 S3
+S6 C2 S5 S8
+ST C4 S7 SJ
+D8 H2 S9 HJ
+SA HT SQ SK
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "36"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:KQ874.KT74.J75.K A3.Q3.A863.QJ862 T965.J985.QT4.74 J2.A62.K92.AT953"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3C"]
+[Result "10"]
+{PAR of the deal: 5C  = played by East : 400 points
+PAR computation time: 00'02"
+Feasability: 2 2 7 7 2 11 10 6 6 9 2 2 7 7 2 11 10 6 6 9 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+1S Pass Pass X
+2H X =1= 2S 3C
+Pass Pass Pass
+[Note "1: Alert."]
+[Play "S"]
+SK SA S6 S2
+CK C2 C7 CA
+S4 C6 C4 C3
+D7 D3 D4 DK
+D5 DA DT D2
+SQ S3 S9 SJ
+DJ D6 DQ D9
+HK H3 H5 H2
+H7 HQ H8 H6
+S7 D8 S5 C5
+H4 C8 H9 HA
+S8 CQ HJ CT
+HT CJ ST C9
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "37"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:AKJT32.JT92.J.Q7 65.63.Q972.AKT95 9.AKQ8754.KT4.J6 Q874..A8653.8432"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "5H"]
+[Result "10"]
+{PAR of the deal: 5D X -1 played by East : -200 pts
+PAR computation time: 00'01"
+Feasability: 3 3 10 8 7 9 10 1 5 3 3 3 10 8 7 9 10 1 4 3 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+1S 2C 3H 4C
+4H Pass Pass 5C
+5H Pass Pass Pass
+[Play "E"]
+C4 C7 CK C6
+DA DJ DQ DK
+C2 CQ CA CJ
+D8 H2 D2 D4
+C3 HJ H6 H7
+S7 SA S6 S9
+S4 SK S5 DT
+S8 SJ D7 H5
+D3 H9 H3 H4
+SQ ST C5 H8
+D5 HT C9 HA
+C8 S2 CT HK
+D6 S3 D9 HQ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "38"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:6532.J4.87432.Q6 KJ4.A98.65.KJ853 98.KQ7652.KQT.A7 AQT7.T3.AJ9.T942"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "2S"]
+[Result "11"]
+{PAR of the deal: 3S  = played by North: 140 points
+PAR computation time: 00'01"
+Feasability: 10 6 6 9 7 2 6 7 3 2 10 6 6 9 7 2 6 7 3 2 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "E"]
+Pass 1C 1H X
+Pass 1S 2H 2S
+Pass Pass Pass
+[Play "W"]
+DK DA D2 D5
+S9 S7 S6 SK
+DQ D9 D3 D6
+CA C4 C6 C3
+C7 C2 CQ CK
+S8 ST S2 S4
+H7 SQ S3 SJ
+DT SA S5 H8
+H2 CT D4 C5
+H5 C9 H4 C8
+H6 DJ D7 H9
+HQ H3 HJ HA
+HK HT D8 CJ
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "39"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:K95.T432.J92.AT4 JT.K7.AKT853.963 A864.A985.74.J72 Q732.QJ6.Q6.KQ85"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "9"]
+{PAR of the deal: 2NT = played by East : 120 points
+PAR computation time: 00'02"
+Feasability: 5 4 7 6 5 8 8 6 7 8 5 4 7 6 5 8 8 6 7 8 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "S"]
+Pass 1D Pass 1S
+Pass 2D Pass 2NT
+Pass 3NT Pass Pass
+Pass
+[Play "S"]
+H4 HK HA H6
+H3 H7 H5 HQ
+D2 D3 D7 DQ
+CA C3 C7 CQ
+H2 ST H8 HJ
+D9 DK D4 D6
+DJ DA S4 S3
+S5 DT S6 S2
+C4 D5 S8 S7
+S9 D8 H9 SQ
+CT C9 C2 CK
+HT C6 CJ C5
+SK SJ SA C8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "40"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:KQ82.KQ86.T52.KT AJ954.AT.Q743.87 T6.J4.KJ86.AQJ42 73.97532.A9.9653"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "10"]
+{PAR of the deal: 3NT = played by West: 400 points
+PAR computation time: 00'05"
+Feasability: 3 4 4 5 3 9 8 8 7 9 3 4 4 5 3 10 9 9 7 9 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "W"]
+1D 1S 2C Pass
+2NT Pass 3NT Pass
+Pass Pass
+[Play "N"]
+D4 D6 D9 DT
+C7 C2 C5 CT
+C8 C4 C3 CK
+D7 D8 DA D2
+HA HJ H2 H6
+HT H4 H3 HK
+D3 S6 H7 HQ
+DQ DK H5 D5
+S4 CA C6 H8
+S5 CQ C9 S2
+S9 CJ S7 S8
+SJ DJ S3 SQ
+SA ST H9 SK
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "41"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:J.AKQ754.Q74.K32 AK7.JT9.2.AQJT76 T85.3.AKJT983.95 Q96432.862.65.84"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4H"]
+[Result "10"]
+{PAR of the deal: 3H  = played by West: 140 points
+PAR computation time: 00'01"
+Feasability: 8 0 0 7 0 4 10 8 1 1 8 0 0 7 0 5 10 9 2 5 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "W"]
+1H 2C 3D =1= Pass
+4H Pass Pass Pass
+[Note "1: Alert."]
+[Play "N"]
+SA S5 S9 SJ
+CA C5 C4 C2
+CQ C9 C8 CK
+C6 H3 H6 C3
+S7 S8 S3 H5
+H9 D3 H2 HQ
+HT D8 H8 HA
+HJ D9 S6 HK
+D2 DT D5 D4
+C7 DJ D6 D7
+CT DA S4 DQ
+CJ DK S2 H7
+SK ST SQ H4
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "42"]
+[West "WBridge5"]
+[North "dec13"]
+[East "WBridge5"]
+[South "dec13"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AKQ6.K9843.J6.Q8 J73.5.KQ8432.T95 T8.AQJ762.A.A764 9542.T.T975.KJ32"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "7H"]
+[Result "12"]
+{PAR of the deal: 6NT = played by North: 990 points
+PAR computation time: 00'03"
+Feasability: 8 6 12 11 12 2 6 1 1 1 8 6 12 11 12 4 6 1 1 1 }
+[BCFlags "1f"]
+[Generator "BridgeComposer Version 5.104.1"]
+[Auction "N"]
+1H Pass 2NT Pass
+3H Pass 4C Pass
+4D Pass 4NT Pass
+5H Pass 5NT Pass
+6D Pass 7H Pass
+Pass Pass
+[Play "E"]
+CT C4 CK C8
+S3 S8 S5 SK
+H5 HJ HT H3
+C5 C7 C2 CQ
+D4 DA D7 D6
+C9 C6 CJ H4
+S7 ST S2 SQ
+SJ H2 S4 SA
+D2 CA C3 S6
+D3 H7 D5 H8
+D8 H6 D9 DJ
+DQ HQ DT H9
+DK HA S9 HK

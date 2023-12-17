@@ -87,33 +87,35 @@ def hand32to52str(hand32):
     card_string = '.'.join(suits)
     return card_string
 
-def convert_cards(card_string):
-    original_strings = ["765432", "765432", "765432", "765432"]
-    strings = original_strings.copy()
+def convert_cards(card_string, opening_lead, hand_str):
+    updated_card_string = card_string
+    pips = [[True for _ in range(6)] for _ in range(4)]
+    if opening_lead % 13 >= 7:
+        pips[opening_lead // 13][12 - (opening_lead % 13)] = False
+    suit = 0
+    for k in range(len(hand_str)):
+        if hand_str[k] == '.':
+            suit += 1
+            continue
+        if not hand_str[k].isdigit():
+            continue
+        card = int(hand_str[k])
+        if card < 8:
+            pips[suit][card-2] = False
+    # This should be random assignment of the pips
+    hands = updated_card_string.split(' ')
+    for k in range(4):
+        suits = hands[k].split(".")
+        for j in range(4):
+            for l in reversed(range(6)):
+                if pips[j][l] and "x" in suits[j]: 
+                    suits[j] = suits[j].replace("x",str(l+2),1) 
+                    pips[j][l] = False
+        hands[k] = ".".join(suits)
 
-    sequences = card_string.split(' ')
-
-    def replace_x(sequence):
-        nonlocal strings
-        new_sequence = ''
-        i = 0
-        for char in sequence:
-            if char == 'x':
-                new_sequence += strings[i][0]
-                strings[i] = strings[i][1:]
-            elif char == '.':
-                i += 1
-                new_sequence += '.'
-            else:
-                new_sequence += char
-                if char == ' ':
-                    i = 0
-        return new_sequence
-    
-    updated_sequences = [replace_x(seq) for seq in sequences]
-    updated_card_string = ' '.join(updated_sequences)
+    updated_card_string = " ".join(hands)
+    assert 'x' not in updated_card_string, "All pips not replaced"
     return updated_card_string
-
 
 def get_trick_winner_i(trick, strain_i):
     trick_cards_suit = [card // 13 for card in trick]
