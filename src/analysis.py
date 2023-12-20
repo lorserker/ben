@@ -121,15 +121,12 @@ class CardByCard:
                 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, min_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models)
 
+                card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
+                card_resp.hcp = c_hcp
+                card_resp.shape = c_shp
 
-                card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
-                if (len(min_scores)) > 0:
-                    samples_with_score = [f"{sample} {score:.3f}"  for sample, score in zip(card_resp.samples, min_scores)]
-                else:
-                    samples_with_score = card_resp.samples
-                card_resp = CardResp(Card.from_symbol(self.play[card_i]), card_resp.candidates, samples_with_score, c_shp, c_hcp)
                 self.card_responses.append(card_resp)
                 self.cards[self.play[card_i]] = card_resp
 

@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['..\\src\\calculate_DCWER.py'],
+    ['..\\scripts\\training\\playing\\calculate_DCWER.py'],
     pathex=['..\\src'],
     binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],

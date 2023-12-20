@@ -58,8 +58,8 @@ class AsyncBotLead(bots.BotLead):
         return self.find_opening_lead(auction)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states):
-        return self.play_card(trick_i, leader_i, current_trick52, players_states)
+    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores):
+        return self.play_card(trick_i, leader_i, current_trick52, players_states, bidding_scores)
     
     
 class Driver:
@@ -269,25 +269,20 @@ class Driver:
                     )
 
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, min_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape(
+                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape(
                         (-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
                     assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
 
                 else: 
                     rollout_states = None
-                    min_scores = None
+                    bidding_scores = None
                     c_hcp = -1
                     c_shp = -1
 
-
                 await asyncio.sleep(0.01)
 
-                card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states)
+                card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
                 
-                if (min_scores is not None and len(min_scores)) > 0:
-                    samples_with_score = [f"{sample} {score:.3f}"  for sample, score in zip(card_resp.samples, min_scores)]
-                    card_resp.samples = samples_with_score
-
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
                 if self.verbose:
@@ -379,7 +374,8 @@ class Driver:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
 
-            #print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
+            if self.verbose:
+                print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
             if np.any(np.array(self.human)):
                 key = await self.confirmer.confirm()
                 if key == 'q':
@@ -422,6 +418,8 @@ class Driver:
 
         tricks.append(current_trick)
         tricks52.append(current_trick52)
+        
+        trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         if trick_winner % 2 == 0:
             card_players[0].n_tricks_taken += 1
             card_players[2].n_tricks_taken += 1
@@ -429,8 +427,10 @@ class Driver:
             card_players[1].n_tricks_taken += 1
             card_players[3].n_tricks_taken += 1
 
-        trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
+
         trick_won_by.append(trick_winner)
+        if self.verbose:
+            print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
 
         # Decode each element of tricks52
         decoded_tricks52 = [[deck52.decode_card(item) for item in inner] for inner in tricks52]
@@ -439,7 +439,7 @@ class Driver:
         self.trick_winners = trick_won_by
 
         # Print contract and result
-        print("Contract: ",self.contract, card_players[3].n_tricks_taken, " tricks")
+        print("Contract: ",self.contract, card_players[3].n_tricks_taken, "tricks")
 
     
     async def opening_lead(self, auction):
@@ -603,7 +603,7 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            # rdeal = ('AJ64.9865.9.Q987 Q7.AT43.QT3.AT63 982.J2.A542.KJ42 KT53.KQ7.KJ876.5', 'E None')
+            rdeal = ('AJ64.9865.9.Q987 Q7.AT43.QT3.AT63 982.J2.A542.KJ42 KT53.KQ7.KJ876.5', 'E None')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=bidding_only)

@@ -58,11 +58,12 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, verbose):
+    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
         self.play_accept_threshold = play_accept_threshold
         self.bid_accept_play_threshold = bid_accept_play_threshold
+        self.bid_extend_play_threshold = bid_extend_play_threshold
         self._sample_hands_auction = sample_hands_auction
         self._min_sample_hands_auction = min_sample_hands_auction
         self.sample_boards_for_auction = sample_boards_for_auction
@@ -79,6 +80,7 @@ class Sample:
         bidding_threshold_sampling = float(conf['sampling']['bidding_threshold_sampling'])
         play_accept_threshold = float(conf['sampling']['play_accept_threshold'])
         bid_accept_play_threshold = float(conf['sampling']['bid_accept_play_threshold'])
+        bid_extend_play_threshold = float(conf['sampling'].get('bid_extend_play_threshold', 0))
         sample_hands_auction = int(conf['sampling']['sample_hands_auction'])
         min_sample_hands_auction = int(conf['sampling']['min_sample_hands_auction'])
         sample_boards_for_auction = int(conf['sampling']['sample_boards_for_auction'])
@@ -88,7 +90,7 @@ class Sample:
         sample_hands_play = int(conf['cardplay']['sample_hands_play'])
         min_sample_hands_play = int(conf['cardplay']['min_sample_hands_play'])
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
-        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, verbose)
+        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -449,6 +451,7 @@ class Sample:
         return lead_softmax[:, opening_lead_card]
 
     def get_bid_scores(self, nesw_i, auction, vuln, hand, bidder_model, ns, ew):
+        
         n_steps = 1 + len(auction) // 4
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, ns, ew)
         X = np.zeros((hand.shape[0], n_steps, A.shape[-1]))
@@ -471,12 +474,13 @@ class Sample:
         min_scores = np.ones(hand.shape[0])
 
         # We check the bid for each bidding round
-        # Perhaps this should be calculated more statiscal, as we are just taking the bid with the lowest score
+        # Perhaps this should be calculated more statistical, as we are just taking the bid with the lowest score
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
-        # for i in range(min_scores.shape[0]):
-        #    print(f'{min_scores[i]:.3f} {hand_to_str(hand[i])}')
+        if self.verbose:
+            for i in range(min_scores.shape[0]):
+                print(f'{min_scores[i]:.3f} {hand_to_str(hand[i])}')
 
         return min_scores
 
@@ -500,14 +504,19 @@ class Sample:
                 [np.array(x, dtype=np.int32) for x in player_cards_played]
             )
             hidden_cards = get_all_hidden_cards(visible_cards)
-
+            hidden_cards_no = len(hidden_cards)
             contract = bidding.get_contract(auction)
             known_nesw = player_to_nesw_i(player_i, contract)
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
             h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
-
+            sample_boards_for_play = self.sample_boards_for_play
+            if hidden_cards_no < 16:
+                sample_boards_for_play = sample_boards_for_play // 4
+            if hidden_cards_no < 8:
+                sample_boards_for_play = sample_boards_for_play // 10
+            # The more cards we know the less samples are needed to 
             h1_h2 = self.shuffle_cards_bidding_info(
-                self.sample_boards_for_play,
+                sample_boards_for_play,
                 models.binfo_model,
                 auction,
                 hand,
@@ -619,7 +628,7 @@ class Sample:
             bid_scores = self.get_bid_scores(h_i_nesw, auction, vuln, states[h_i][:, 0, :32], models.bidder_model, models.ns, models.ew)
             min_bid_scores = np.minimum(min_bid_scores, bid_scores)
 
-        # Round min_bid_scores to 2 decimals
+        # Round min_bid_scores to 3 decimals
         rounded_scores = np.round(min_bid_scores, 3)
 
         # Get the indices that would sort the rounded scores in descending order
@@ -637,15 +646,18 @@ class Sample:
         if trick_i <= 11:
             # trusting the bidding after sampling cards
             # This could probably be set based on number of deals matching or sorted
-            if valid_bidding_samples >= self.min_sample_hands_play: 
+            if valid_bidding_samples >= self.sample_hands_play: 
                 bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
+                # Randomize the samples, as we have to many
                 random_indices = np.random.permutation(bidding_states[0].shape[0])
                 bidding_states = [state[random_indices] for state in bidding_states]
-
-            else:
-                sorted_min_bid_scores = sorted_min_bid_scores[:self.min_sample_hands_play]
-                sorted_indices = sorted_indices[:self.min_sample_hands_play]
-                bidding_states = [state[sorted_indices] for state in bidding_states]
+                sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
+            else:            
+                if valid_bidding_samples < self.min_sample_hands_play: 
+                    bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
+                else:
+                    bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
+                sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
 
             if self.verbose:
                 print(f"States {bidding_states[0].shape[0]} after checking the bidding")

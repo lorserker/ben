@@ -1,4 +1,6 @@
 import itertools
+import sys
+sys.path.append('../../../src')
 from ddsolver import ddsolver
 
 import shelve
@@ -118,9 +120,11 @@ def calculate_DCWER_BEN():
     dcrs = 0
     dfrn = 0
     dfrs = 0
+    j = 0
     with shelve.open(DB_NAME) as db:
         deal_items = sorted(list(db.items()), key=lambda x: x[1]['timestamp'], reverse=True)
         for deal_id, deal in deal_items:
+            j += 1
             deal_str = deal["hands"]
             outcome_str = deal['contract']
             if outcome_str is None:
@@ -155,10 +159,14 @@ def calculate_DCWER_BEN():
             #if deals_s > 2 and deals_n > 5:
             #    break
         
-        print(f"DCWER  (suit) {deals_s_dec:>4} = {((dcrn)*100/ (deals_s_dec*24)):.2f}%")
+        print(f"Calculated on {j} deals.")
+        print(f"DCWER  (suit) {deals_s_dec:>4} = {((dcrs)*100/ (deals_s_dec*24)):.2f}%")
         print(f"DCWER  (NT)   {deals_n_dec:>4} = {((dcrn)*100/ (deals_n_dec*24)):.2f}%")
-        print(f"DFWER  (suit) {deals_s_def:>4} = {((dfrn)*100/ (deals_s_def*24)):.2f}%")
+        print(f"DFWER  (suit) {deals_s_def:>4} = {((dfrs)*100/ (deals_s_def*24)):.2f}%")
         print(f"DFWER  (NT)   {deals_n_def:>4} = {((dfrn)*100/ (deals_n_def*24)):.2f}%")
+        print()
+        print(f"DCWER  (suit) {deals_s_dec+deals_n_dec:>4} = {((dcrs+dcrn)*100/ ((deals_s_dec+deals_n_dec)*24)):.2f}%")
+        print(f"DFWER  (suit) {deals_s_def+deals_n_def:>4} = {((dfrs+dfrn)*100/ ((deals_s_def+deals_n_def)*24)):.2f}%")
 
 if __name__ == '__main__':
 

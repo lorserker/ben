@@ -278,14 +278,11 @@ class TMClient:
                     # it's dummy's turn and this is the declarer
                     print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
-                    rollout_states, min_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
 
-                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
+                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
-                    if (len(min_scores)) > 0:
-                        samples_with_score = [f"{sample} {score:.3f}" for sample, score in zip(card_resp.samples, min_scores)]
-                        card_resp.samples = samples_with_score
 
                     self.card_responses.append(card_resp)
 
@@ -306,14 +303,11 @@ class TMClient:
 
                 elif player_i == cardplayer_i and player_i != 1:
 
-                    rollout_states, min_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
 
-                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states)
+                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
-                    if (len(min_scores)) > 0:
-                        samples_with_score = [f"{sample} {score:.3f}" for sample, score in zip(card_resp.samples, min_scores)]
-                        card_resp.samples = samples_with_score
 
                     self.card_responses.append(card_resp)
 

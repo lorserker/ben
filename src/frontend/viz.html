@@ -187,11 +187,17 @@
                                                 `).join('')}
                                             </ul>
                                             `;
-                                    if (data.hcp && (data.hcp != -1))
+                                    if (data.hcp && (data.hcp != -1)) {
+                                        let formattedShape = [];
+                                        for (let i = 0; i < data.shape.length; i += 4) {
+                                            formattedShape.push(data.shape.slice(i, i + 4).join('-'));
+                                        }
+                                        formattedShape = formattedShape.join('  ');                                    
                                         document.querySelector('#info').innerHTML += `
                                             <p><strong>HCP:</strong> ${data.hcp.join(' - ')}</p>
-                                            <p><strong>Shape:</strong> ${data.shape.join('-')}</p>
+                                            <p><strong>Shape:</strong> ${formattedShape}</p>
                                             `;
+                                    }
                                     if (data.samples.length > 0)
                                         document.querySelector('#info').innerHTML += `
                                             <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples(${data.samples.length}):</strong></h3>

@@ -60,7 +60,7 @@ class BotBid:
         candidates, passout = self.get_bid_candidates(auction)
         if self.verbose:
             print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
-        hands_np, sorted_score, p_hcp, p_shp = self.sample_hands(auction)
+        hands_np, sorted_score, p_hcp, p_shp = self.sample_hands_auction(auction)
         samples = []
         for i in range(hands_np.shape[0]):
             samples.append('%s %s %s %s %.5f' % (
@@ -260,10 +260,16 @@ class BotBid:
 
         return bid_np
     
-    def sample_hands(self, auction_so_far):
+    def sample_hands_auction(self, auction_so_far):
         turn_to_bid = len(auction_so_far) % 4
+        # The longer the aution the more hands we might need to sample
+        sample_boards_for_auction = self.sample.sample_boards_for_auction
+        if len(auction_so_far) > 12:
+            sample_boards_for_auction *= 2
+        if len(auction_so_far) > 24:
+            sample_boards_for_auction *= 4
         lho_pard_rho, sorted_scores, p_hcp, p_shp = self.sample.sample_cards_auction(
-            auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction)
+            auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew, sample_boards_for_auction)
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
         if lho_pard_rho.shape[0] > self.sample.sample_hands_auction:
@@ -715,10 +721,10 @@ class CardPlayer:
     def set_public_card_played52(self, card52):
         self.public52[card52] -= 1
 
-    def play_card(self, trick_i, leader_i, current_trick52, players_states):
+    def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores):
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         card52_dd = self.next_card52(trick_i, leader_i, current_trick52, players_states)
-        card_resp = self.next_card(trick_i, leader_i, current_trick, players_states, card52_dd)
+        card_resp = self.next_card(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores)
 
         return card_resp
 
@@ -843,15 +849,15 @@ class CardPlayer:
         )
         return x.reshape(-1)
     
-    def next_card(self, trick_i, leader_i, current_trick, players_states, card_dd):
+    def next_card(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
         if self.verbose:
             print(f'Next card response time: {time.time() - t_start:0.4f}')
 
         all_cards = np.arange(32)
-        ## This might be a parameter
-        s_opt = card_softmax > 0.01
+        ## This could be a parameter, but only used for display purposes
+        s_opt = card_softmax > 0.001
 
         card_options, card_scores = all_cards[s_opt], card_softmax[s_opt]
 
@@ -874,6 +880,7 @@ class CardPlayer:
 
         # Now we will select the card to play
         # We have 3 factors, and they could all be right, so we remove most of the decimals
+        # We should probably also consider bidding_scores in this 
         candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.p_make_contract, 1), round(c.expected_tricks_dd, 1), round(c.insta_score, 2)), reverse=True)
 
         samples = []
@@ -885,7 +892,10 @@ class CardPlayer:
                 hand_to_str(players_states[2][i,0,:32].astype(int)),
                 hand_to_str(players_states[3][i,0,:32].astype(int)),
             ))
-        
+
+        if (len(bidding_scores)) > 0:
+            samples = [f"{sample} {score:.3f}" for sample, score in zip(samples, bidding_scores)]
+
         card_resp = CardResp(
             card=candidate_cards[0].card,
             candidates=candidate_cards,

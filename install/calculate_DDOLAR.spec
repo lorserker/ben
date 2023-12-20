@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(
-    ['..\\src\\calculate_DDOLAR.py'],
+    ['..\\scripts\\training\\opening lead\\calculate_DDOLAR.py'],
     pathex=['..\\src'],
     binaries=[('..\\bin\\dds.dll', '.')],
     datas=[],
