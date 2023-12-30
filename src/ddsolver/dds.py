@@ -38,7 +38,7 @@ else:  # linux
 
 try:
     DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)
-    print("Loading DDS:",DDS_PATH)
+    #print("Loading DDS:",DDS_PATH)
     dds = cdll.LoadLibrary(DDS_PATH)
 except:  # could be mac/linux on aarch64
     DDS_PATH = 'libdds.so' # use system lib from libdds-dev

@@ -23,7 +23,7 @@ import numpy as np
 
 SEATS = ['north', 'east', 'south', 'west']
 
-def lead(obj, models, ns, ew, sampler, verbose):
+def lead(obj, models, sampler, verbose):
     if obj['contract'] is None:
         return None
     
@@ -47,13 +47,8 @@ if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
     parser.add_argument('--bidder', type=str)
-    parser.add_argument("--ns", type=int, default=-1, help="System for NS")
-    parser.add_argument("--ew", type=int, default=-1, help="System for EW")
 
     args = parser.parse_args()
-
-    ns = args.ns
-    ew = args.ew
 
     sys.stderr.write(f'NS = {args.bidder}\n')
     
@@ -76,7 +71,7 @@ if __name__ == '__main__':
     sampler = Sample.from_conf(configuration)
     for line in sys.stdin:
         obj = json.loads(line)
-        obj['lead'] = lead(obj, models, ns, ew, sampler, False)
+        obj['lead'] = lead(obj, models, sampler, False)
 
         print(json.dumps(obj))
         sys.stdout.flush()

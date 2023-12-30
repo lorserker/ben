@@ -88,7 +88,7 @@ class Driver:
         self.deal_str = deal_str
         self.hands = deal_str.split()
         self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, 32)
-        self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, 52)
+        #self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, 52)
 
         auction_part = auction_str.split(' ')
         if play_only == None and len(auction_part) > 2: play_only = True
@@ -109,7 +109,8 @@ class Driver:
         hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
 
         # Now you can use hash_integer as a seed
-        print("Setting seed (Full deal)=",hash_integer)
+        if self.verbose:
+            print("Setting seed (Full deal)=",hash_integer)
         np.random.seed(hash_integer)
 
 
@@ -451,7 +452,8 @@ class Driver:
         hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
 
         # Now you can use hash_integer as a seed
-        print("Setting seed (Opening lead)=",hash_integer)
+        if self.verbose:
+            print("Setting seed (Opening lead)=",hash_integer)
         np.random.seed(hash_integer)
 
         contract = bidding.get_contract(auction)
@@ -603,7 +605,7 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            rdeal = ('AJ64.9865.9.Q987 Q7.AT43.QT3.AT63 982.J2.A542.KJ42 KT53.KQ7.KJ876.5', 'E None')
+            # rdeal = ('AK.AKQ6.AK85.AKQ Q6532.97.743.653 JT7.JT5.QJT96.T4 984.8432.2.J9872', 'E E-W')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=bidding_only)

@@ -294,6 +294,11 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns,
         X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(ew))
     return X_padded
 
+def calculate_step(auction):
+    # This is number of levels to get from the neural network. See it as the no of bid the player is to make - inclding PAD_START
+    n_steps = 1 + len(auction) // 4
+    return n_steps
+
 
 def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
     contract = bidding.get_contract(auction)
@@ -320,7 +325,7 @@ def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
     x[10:] = hand.reshape(32)
 
     b = np.zeros(15)
-    n_steps = 1 + len(auction) // 4
+    n_steps = calculate_step(auction)
     A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, ns, ew)
 
     p_hcp, p_shp = binfo.model(A)

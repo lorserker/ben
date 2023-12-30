@@ -1,6 +1,9 @@
 :: These builds are for windows
 pyinstaller ..\src\appserver.py --onefile --path=..\src --add-data "..\src\frontend;frontend"
 
+pyinstaller ..\src\pbn2ben.py --onefile --path=..\src 
+pyinstaller ..\src\pbn2bba.py --onefile --path=..\src 
+
 pyinstaller ..\src\game.py --onefile --path=..\src --add-binary ..\bin\dds.dll;.
 pyinstaller ..\src\gameserver.py --onefile --path=..\src --add-binary ..\bin\dds.dll;.
 pyinstaller ..\src\table_manager_client.py --onefile --path=..\src --add-binary ..\bin\dds.dll;. 

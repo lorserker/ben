@@ -17,16 +17,14 @@ from bidding import bidding
 
 auction = []
 
-def get_info_for_opening(hand, bid, model):
+def get_info_for_opening(hand, bid, models):
     auction = [bid]
-    n_steps = 1 + (len(auction)-1) // 4
-    ns = -1
-    ew = -1
+    n_steps = 1
     nesw_i = 1
     vuln = [True, False]
     hand = binary.parse_hand_f(32)(hand)
-    A = binary.get_auction_binary(n_steps, auction, nesw_i, hand, vuln, ns, ew)
-    p_hcp, p_shp = model.model(A)
+    A = binary.get_auction_binary(n_steps, auction, nesw_i, hand, vuln, models.ns, models.ew)
+    p_hcp, p_shp = models.binfo_model.model(A)
 
     p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
     p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
@@ -66,7 +64,7 @@ def main():
     models = Models.from_conf(config,"..\..\..")
 
     for bid in range(6,40):
-        p_hcp, p_shp = get_info_for_opening("AJT85.AKT.K63.K8",bidding.ID2BID[bid], models.binfo)
+        p_hcp, p_shp = get_info_for_opening("AJT85.AKT.K63.K8",bidding.ID2BID[bid], models)
         print(f"Opening {bidding.ID2BID[bid]}: HCP = {p_hcp[0][2]:>4.1f}, Shape = {[round(float(x), 1) for x in p_shp[0][-4:]]}")
 
     

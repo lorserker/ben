@@ -12,11 +12,12 @@ from nn.lead_singledummy_tf2 import LeadSingleDummy
 
 class Models:
 
-    def __init__(self, bidder_model, binfo, lead, sd_model, player_models, search_threshold, lead_threshold, no_search_threshold, lead_accept_nn, include_system, ns, ew):
+    def __init__(self, bidder_model, binfo, lead, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, lead_accept_nn, include_system, ns, ew):
         self.bidder_model = bidder_model
         self.binfo = binfo
         self.lead = lead
         self.sd_model = sd_model
+        self.sd_model_no_lead = sd_model_no_lead
         self.player_models = player_models
         self._lead_threshold = lead_threshold
         self._search_threshold = search_threshold
@@ -48,6 +49,7 @@ class Models:
             lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit'])),
             lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt'])),
             sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy'])),
+            sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['no_lead_single_dummy'])),
             player_models=[
                 BatchPlayerLefty('lefty', os.path.join(base_path, conf['cardplay']['lefty'])),
                 BatchPlayer('dummy', os.path.join(base_path, conf['cardplay']['dummy'])),

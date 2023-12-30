@@ -96,7 +96,7 @@ def to_numeric(value, default=0):
 
 if __name__ == '__main__':
 
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print("Usage: python bidding_binary.py inputfile outputdirectory NS=<x> EW=<y> alternate=True")
         print("NS and EW are optional. If set to -1 no information about system is included in the model.")
         print("If set to 0 the hands from that side will not be used for training.")

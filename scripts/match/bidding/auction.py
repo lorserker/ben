@@ -29,7 +29,7 @@ VULN = {
 }
 
 
-def bid_hand(hands, dealer, vuln, models_ns_ew, do_search, samplers, verbose):
+def bid_hand(hands, dealer, vuln, models_ns_ew, samplers, verbose):
 
     dealer_i = 'NESW'.index(dealer)
     
@@ -37,27 +37,11 @@ def bid_hand(hands, dealer, vuln, models_ns_ew, do_search, samplers, verbose):
 
     auction = ['PAD_START'] * dealer_i
 
-    do_search_ns = do_search == "NS" or do_search == "Both"
-    do_search_ew = do_search == "EW"or do_search == "Both"
-
     turn_i = dealer_i
 
     while not bidding.auction_over(auction):
-        if do_search_ns and ((turn_i ) % 2 == 0) :
-            bid = bidder_bots[turn_i].bid(auction).bid
-            auction.append(bid)
-        else:
-            if do_search_ew and ((turn_i ) % 2 == 1) :
-                bid = bidder_bots[turn_i].bid(auction).bid
-                auction.append(bid)
-            else:
-                # to be able to recreate the board from the gameserver we let the bot bid, but ignores the result
-                bot = copy.copy(bidder_bots[turn_i])
-                bid = bot.bid(auction).bid
-                candidates, passout = bidder_bots[turn_i].get_bid_candidates(auction)
-                bid = candidates[0].bid
-                auction.append(bid)
-        
+        bid = bidder_bots[turn_i].bid(auction).bid
+        auction.append(bid)
         turn_i = (turn_i + 1) % 4  # next player's turn
     
     return auction
@@ -68,13 +52,11 @@ if __name__ == '__main__':
     parser.add_argument('--bidderNS', type=str)
     parser.add_argument('--bidderEW', type=str)
     parser.add_argument('--set', type=str)
-    parser.add_argument('--search', type=str)
 
     args = parser.parse_args()
 
     sys.stderr.write(f'NS = {args.bidderNS}\n')
     sys.stderr.write(f'EW = {args.bidderEW}\n')
-    sys.stderr.write(f'search = {args.search}\n')
 
     configuration_ns = conf.load(args.bidderNS)
     configuration_ew = conf.load(args.bidderEW)
@@ -105,7 +87,7 @@ if __name__ == '__main__':
         hands = parts[2:]
 
         sys.stderr.write(f'Bidding board {index + 1}\n')
-        auction = bid_hand(hands, dealer, vuln, [models_ns, models_ew], args.search, [Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)],False)
+        auction = bid_hand(hands, dealer, vuln, [models_ns, models_ew], [Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)],False)
 
         record = {
             'board' : index + 1,

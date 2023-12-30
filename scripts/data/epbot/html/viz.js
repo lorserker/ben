@@ -406,17 +406,24 @@ class PlayInfo {
                             html += '</div>'
                         }
                         else {
-                            html += '<div>LHO: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            if (this.player == 0) {
+                                html += '<div>West: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            } else {
+                                html += '<div>East: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            }
                             for (let i = 0; i < 4; i++) {
                                 html += shape[i] + " "
                             }
                             html += '</div>'
-                            html += '<div>RHO: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            if (this.player == 0) {
+                                html += '<div>East: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            } else {
+                                html += '<div>West: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            }
                             for (let i = 0; i < 4; i++) {
                                 html += shape[i + 4] + " "
                             }
-                            html += '</div>'
-                        }
+                            html += '</div>'                        }
                 }
             }
 

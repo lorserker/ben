@@ -83,5 +83,5 @@ def expected_tricks(card_results):
 def p_made_target(tricks_needed):
 
     def fun(card_results):
-        return {card:round(sum(1 for x in values if x >= tricks_needed)/len(values),2) for card, values in card_results.items()}
+        return {card:round(sum(1 for x in values if x >= tricks_needed)/len(values),3) for card, values in card_results.items()}
     return fun

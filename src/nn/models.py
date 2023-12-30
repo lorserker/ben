@@ -12,7 +12,7 @@ from nn.lead_singledummy import LeadSingleDummy
 
 class Models:
 
-    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, lead_accept_nn, include_system, ns, ew, use_bba, lead_included, claim, double_dummy, min_opening_leads):
+    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, use_bba, lead_included, claim, double_dummy, min_opening_leads):
         self.bidder_model = bidder_model
         self.binfo_model = binfo_model
         self.lead_suit_model = lead_suit_model
@@ -23,6 +23,7 @@ class Models:
         self._lead_threshold = lead_threshold
         self._search_threshold = search_threshold
         self._no_search_threshold = no_search_threshold
+        self.eval_after_bid_count = eval_after_bid_count
         self._lead_accept_nn = lead_accept_nn
         self.include_system = include_system
         self.ns = ns
@@ -38,10 +39,11 @@ class Models:
         if base_path is None:
             base_path = os.getenv('BEN_HOME') or '..'
         search_threshold = float(conf['bidding']['search_threshold'])
-        no_search_threshold = float(conf['bidding']['no_search_threshold'])
+        no_search_threshold = conf.getfloat('bidding','no_search_threshold', fallback=1)
+        eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=12)
         lead_threshold = float(conf['lead']['lead_threshold'])
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
-        min_opening_leads = int(conf['lead']['min_opening_leads'])
+        min_opening_leads = conf.getint('lead','min_opening_leads', fallback=1)
         double_dummy = conf.getboolean('lead', 'double_dummy', fallback=False)
         include_system = conf.getboolean('models', 'include_system', fallback=False)
         use_bba = conf.getboolean('models', 'use_bba', fallback=False)
@@ -69,6 +71,7 @@ class Models:
             search_threshold=search_threshold,
             lead_threshold=lead_threshold,
             no_search_threshold=no_search_threshold,
+            eval_after_bid_count=eval_after_bid_count,
             lead_accept_nn=lead_accept_nn,
             include_system=include_system,
             ns=ns,

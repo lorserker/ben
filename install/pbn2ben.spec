@@ -6,7 +6,7 @@ block_cipher = None
 
 a = Analysis(
     ['..\\src\\pbn2ben.py'],
-    pathex=[],
+    pathex=['..\\src'],
     binaries=[],
     datas=[],
     hiddenimports=[],

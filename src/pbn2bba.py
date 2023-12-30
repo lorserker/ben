@@ -131,48 +131,51 @@ def load(fin):
     inside_auction_section = False
     dealer, vulnerable = None, None
     dealnumber = 0
-    for line in fin:
-        if line.startswith("% PBN") or line == "\n":
-            if dealer != None:
-                dealnumber += 1
-                encoded_str_deal = encode_board(transform_hand(hands_nesw), dealer, vulnerable, dealnumber)
-                boards.append(encoded_str_deal)      
-                auction_lines = []
-                dealer= None
-        if line.startswith('[Dealer'):
-            dealer_str = extract_value(line)
-            dealer = {'N': C_NORTH, 'E': C_EAST, 'S': C_SOUTH, 'W': C_WEST}.get(dealer_str, C_NORTH)
-        if line.startswith('[Vulnerable'):
-            vuln_str = extract_value(line)
-            vulnerable = {'None': C_NONE, 'NS': C_NS, 'EW': C_WE, 'All': C_BOTH}.get(vuln_str, C_NONE)
-        if line.startswith('[Deal '):
-            hands_pbn = extract_value(line)
-            [seat, hands] = hands_pbn.split(':')
-            hands_nesw = [''] * 4
-            first_i = 'NESW'.index(seat)
-            for hand_i, hand in enumerate(hands.split()):
-                hands_nesw[(first_i + hand_i) % 4] = hand
-        if line.startswith('[Auction'):
-            inside_auction_section = True
-            continue  
-        if inside_auction_section:
-            if line.startswith('[') or line == "\n":  # Check if it's the start of the next tag
-                inside_auction_section = False
-            else:
-                # Convert bids
-                line = line.strip().replace('.','').replace("NT","N").replace("Pass","P").replace("Double","X").replace("Redouble","XX").replace('AP','P P P')
-                # Remove extra spaces
-                line = re.sub(r'\s+', ' ', line)
-                # Remove alerts
-                line = re.sub(r'=\d{1,2}=', '', line)
-                auction_lines.append(line)  
+    try:
+        for line in fin:
+            if line.startswith("% PBN") or line == "\n":
+                if dealer != None:
+                    dealnumber += 1
+                    encoded_str_deal = encode_board(transform_hand(hands_nesw), dealer, vulnerable, dealnumber)
+                    boards.append(encoded_str_deal)      
+                    auction_lines = []
+                    dealer= None
+            if line.startswith('[Dealer'):
+                dealer_str = extract_value(line)
+                dealer = {'N': C_NORTH, 'E': C_EAST, 'S': C_SOUTH, 'W': C_WEST}.get(dealer_str, C_NORTH)
+            if line.startswith('[Vulnerable'):
+                vuln_str = extract_value(line)
+                vulnerable = {'None': C_NONE, 'NS': C_NS, 'EW': C_WE, 'All': C_BOTH}.get(vuln_str, C_NONE)
+            if line.startswith('[Deal '):
+                hands_pbn = extract_value(line)
+                [seat, hands] = hands_pbn.split(':')
+                hands_nesw = [''] * 4
+                first_i = 'NESW'.index(seat)
+                for hand_i, hand in enumerate(hands.split()):
+                    hands_nesw[(first_i + hand_i) % 4] = hand
+            if line.startswith('[Auction'):
+                inside_auction_section = True
+                continue  
+            if inside_auction_section:
+                if line.startswith('[') or line == "\n":  # Check if it's the start of the next tag
+                    inside_auction_section = False
+                else:
+                    # Convert bids
+                    line = line.strip().replace('.','').replace("NT","N").replace("Pass","P").replace("Double","X").replace("Redouble","XX").replace('AP','P P P')
+                    # Remove extra spaces
+                    line = re.sub(r'\s+', ' ', line)
+                    # Remove alerts
+                    line = re.sub(r'=\d{1,2}=', '', line)
+                    auction_lines.append(line)  
 
-        else:
-            continue
+            else:
+                continue
+    except:
+        print(line)
     # Handling last deal if ny
     if dealer != None:
-        encoded_str_Deal = encode_board(hand, dealer, vulnerable, dealnumber)
-        boards.append(encoded_str_Deal)      
+        encoded_str_deal = encode_board(transform_hand(hands_nesw), dealer, vulnerable, dealnumber)
+        boards.append(encoded_str_deal)      
     return boards
 
 def extract_value(s: str) -> str:

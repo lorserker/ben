@@ -1,10 +1,11 @@
+set BEN_HOME=D:\github\ben\
 set trust=%1
-set boards=set0010.txt
+set boards=%2
 
-python auction.py --bidderNS=%trust%.conf --bidderEW=%trust%.conf --set=%boards% --search=EW  > .\%trust%\auctionsEW.json
-python auction.py --bidderNS=%trust%.conf --bidderEW=%trust%.conf --set=%boards% --search=NS  > .\%trust%\auctionsNS.json
+python auction.py --bidderNS=%trust%.conf --bidderEW=default.conf --set=%boards% > .\%trust%\auctionsNS.json
+python auction.py --bidderNS=default.conf --bidderEW=%trust%.conf --set=%boards% > .\%trust%\auctionsEW.json
 
-type ".\%trust%\auctionsNS.json" | python lead.py --bidder=%trust%.conf > .\%trust%\leads1.json
+type ".\%trust%\auctionsNS.json" | python lead.py --bidder=default.conf > .\%trust%\leads1.json
 type ".\%trust%\auctionsEW.json" | python lead.py --bidder=%trust%.conf > .\%trust%\leads2.json
 
 type ".\%trust%\leads1.json" | python score.py > .\%trust%\results1.json  

@@ -39,7 +39,10 @@ def home():
             if 'board_number' in deal and deal['board_number'] is not None:
                 board_no_ref = f"&board_number={deal['board_number']}"
                 board_no_index = f"Board:{deal['board_number']}&nbsp;&nbsp;"
-            html += '<li><span>{}<a href="/app/viz.html?deal={}{}">{} {}</a></span>&nbsp;&nbsp;&nbsp;'.format(board_no_index,deal_id, board_no_ref, deal['contract'], len(list(filter(lambda x: x % 2 == 1, deal['trick_winners']))))
+            if deal['contract'] is not None:
+                html += '<li><span>{}<a href="/app/viz.html?deal={}{}">{} {}</a></span>&nbsp;&nbsp;&nbsp;'.format(board_no_index,deal_id, board_no_ref, deal['contract'], len(list(filter(lambda x: x % 2 == 1, deal['trick_winners']))))
+            else:
+                html += '<li><span>{}<a href="/app/viz.html?deal={}{}">{}</a></span>&nbsp;&nbsp;&nbsp;'.format(board_no_index,deal_id, board_no_ref, deal['contract'])
             html += f'<span><a href="/api/delete/deal/{deal_id}">delete</a></span></li>\n'
 
     html += '</ul>'

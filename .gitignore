@@ -59,3 +59,6 @@ src/**/*.dat
 scripts/training/data/match14 - 1.pbn
 scripts/training/**/*BEN99*
 
+scripts/training/data/*BBA*.zip
+scripts/training/data/BBA*.ben
+scripts/training/bidding/stats*.txt
