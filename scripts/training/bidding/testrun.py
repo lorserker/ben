@@ -33,6 +33,10 @@ def main():
 
     config_path = args.config_path
     filename = args.filename
+    extension = os.path.splitext(filename)[1].lower() 
+    if extension == ".pbn" or extension == ".ben":
+        print("Expecting a file with hand and bids on 2 lines")
+        sys.exit()
     verbose = args.verbose
     alternate = args.alternate
 

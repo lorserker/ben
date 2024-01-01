@@ -62,3 +62,5 @@ scripts/training/**/*BEN99*
 scripts/training/data/*BBA*.zip
 scripts/training/data/BBA*.ben
 scripts/training/bidding/stats*.txt
+scripts/training/data/5 mill deals with bidding.zip
+scripts/training/data/5 mill deals with bidding.ben

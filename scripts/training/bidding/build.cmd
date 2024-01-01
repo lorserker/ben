@@ -7,9 +7,9 @@ python bidding_nn.py bidding_bin
 python bidding_nn_tf2.py bidding_bin 
 
 REM Testrun with a single deal
-python testrun.py default.conf ..\data\1deal.ben
-python testrun.py default_tf2.conf ..\data\1deal.ben
+python testrun.py default.conf ..\data\1deal.txt
+python testrun.py default_tf2.conf ..\data\1deal.txt
 
 REM Testrun with many deals
-python testrun.py default.conf ..\data\10000deals.ben
-python testrun.py default_tf2.conf ..\data\10000deals.ben
+python testrun.py default.conf ..\data\10000deals.txt
+python testrun.py default_tf2.conf ..\data\10000deals.txt
