@@ -6,8 +6,8 @@
         <link rel="stylesheet" href="/app/style.css">
 	</head> 
     <script type="text/javascript">
-        function copyToClipboard() {
-        const bbaText = document.getElementById('bbaText');
+        function copyToClipboard(idx) {
+        const bbaText = document.getElementById('bbaText'+idx);
         const text = bbaText.textContent;
 
         const el = document.createElement('textarea');
@@ -94,11 +94,11 @@
 
   <div class="content">
 <ul>
-% for deal in deals: 
+% for index, deal in enumerate(deals):
     <li>
         <span>{{deal['board_no_index']}}  <a href="/app/viz.html?deal={{deal['deal_id']}}{{deal['board_no_ref']}}">{{deal['contract']}}{{deal.get('trick_winners_count', '')}}</a></span>&nbsp;&nbsp;
         <span><a href="{{deal['delete_url']}}">delete</a></span><br>
-        <span class="bba">BBA=<span id="bbaText">{{deal['bba']}}&nbsp;<i class="fas fa-copy" onclick="copyToClipboard()"></i>
+        <span class="bba">BBA=<span id="bbaText{{index}}">{{deal['bba']}}&nbsp;<i class="fas fa-copy" onclick="copyToClipboard({{index}})"></i>
         </span>
         </span>
     </li>
