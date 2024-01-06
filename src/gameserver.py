@@ -139,7 +139,7 @@ async def handler(websocket, path, board_no):
         else:
             np.random.seed(board_number)
             rdeal = game.random_deal()
-            driver.set_deal(None, *rdeal, False)
+            driver.set_deal(board_number, *rdeal, False)
             print(f"Deal: {rdeal}")
     else:
         if random:
