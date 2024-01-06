@@ -51,16 +51,19 @@ class ConfirmSocket:
 class Channel:
 
     async def send(self, message):
+        # From the console we just print the message
         print(message)
 
 
 class ChannelSocket:
 
-    def __init__(self, socket):
+    def __init__(self, socket, verbose):
         self.socket = socket
+        self.verbose = verbose
 
     async def send(self, message):
-        print(message)
+        if self.verbose:
+            print(message)
 
         await self.socket.send(message)
 
@@ -144,9 +147,9 @@ class HumanLeadSocket:
 
 class HumanCardPlayer:
 
-    def __init__(self, player_models, player_i, hand_str, public_hand_str, contract, is_decl_vuln):
-        self.player_models = player_models
-        self.model = player_models[player_i]
+    def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln):
+        self.player_models = models.player_models
+        self.model = models.player_models[player_i]
         self.player_i = player_i
         self.hand = parse_hand_f(32)(hand_str).reshape(32)
         self.hand52 = parse_hand_f(52)(hand_str).reshape(52)
@@ -212,8 +215,8 @@ class HumanCardPlayer:
 
 class HumanCardPlayerSocket(HumanCardPlayer):
 
-    def __init__(self, socket, player_models, player_i, hand_str, public_hand_str, contract, is_decl_vuln):
-        super().__init__(player_models, player_i, hand_str, public_hand_str, contract, is_decl_vuln)
+    def __init__(self, socket, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln):
+        super().__init__(models, player_i, hand_str, public_hand_str, contract, is_decl_vuln)
 
         self.socket = socket
 
@@ -247,8 +250,9 @@ class ConsoleFactory:
 
 class WebsocketFactory:
 
-    def __init__(self, socket):
+    def __init__(self, socket, verbose):
         self.socket = socket
+        self.verbose = verbose
 
     def create_human_bidder(self, vuln, hands_str):
         return HumanBidSocket(self.socket, vuln, hands_str)
@@ -256,11 +260,11 @@ class WebsocketFactory:
     def create_human_leader(self):
         return HumanLeadSocket(self.socket)
 
-    def create_human_cardplayer(self, player_models, player_i, hand_str, public_hand_str, contract, is_decl_vuln):
-        return HumanCardPlayerSocket(self.socket, player_models, player_i, hand_str, public_hand_str, contract, is_decl_vuln)
+    def create_human_cardplayer(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln):
+        return HumanCardPlayerSocket(self.socket, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln)
 
     def create_confirmer(self):
         return ConfirmSocket(self.socket)
 
     def create_channel(self):
-        return ChannelSocket(self.socket)
+        return ChannelSocket(self.socket, self.verbose)

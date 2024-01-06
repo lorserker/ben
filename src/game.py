@@ -176,7 +176,8 @@ class Driver:
 
         await self.channel.send(json.dumps({
             'message': 'deal_end',
-            'pbn': self.deal_str
+            'pbn': self.deal_str,
+            'dict': self.to_dict()
         }))
 
     def to_dict(self):
@@ -207,24 +208,24 @@ class Driver:
         decl_hand = self.hands[decl_i]
 
         card_players = [
-            AsyncCardPlayer(self.models.player_models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.verbose),
-            AsyncCardPlayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose),
-            AsyncCardPlayer(self.models.player_models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.verbose),
-            AsyncCardPlayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.verbose)
+            AsyncCardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.verbose),
+            AsyncCardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose),
+            AsyncCardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.verbose),
+            AsyncCardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.verbose)
         ]
 
         # check if user is playing and is declarer
         if self.human[2]:
             if decl_i == 2:
-                card_players[3] = self.factory.create_human_cardplayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
-                card_players[1] = self.factory.create_human_cardplayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
+                card_players[3] = self.factory.create_human_cardplayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
+                card_players[1] = self.factory.create_human_cardplayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
             elif decl_i == 0:
-                card_players[1] = self.factory.create_human_cardplayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
-                card_players[3] = self.factory.create_human_cardplayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
+                card_players[1] = self.factory.create_human_cardplayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
+                card_players[3] = self.factory.create_human_cardplayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
             elif decl_i == 1:
-                card_players[0] = self.factory.create_human_cardplayer(self.models.player_models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln)
+                card_players[0] = self.factory.create_human_cardplayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln)
             elif decl_i == 3:
-                card_players[2] = self.factory.create_human_cardplayer(self.models.player_models, 2, righty_hand, dummy_hand, contract, is_decl_vuln)
+                card_players[2] = self.factory.create_human_cardplayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln)
 
         claimer = Claimer(self.verbose)
 

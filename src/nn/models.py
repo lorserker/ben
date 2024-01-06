@@ -12,7 +12,7 @@ from nn.lead_singledummy import LeadSingleDummy
 
 class Models:
 
-    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, use_bba, lead_included, claim, double_dummy, min_opening_leads):
+    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review):
         self.bidder_model = bidder_model
         self.binfo_model = binfo_model
         self.lead_suit_model = lead_suit_model
@@ -33,6 +33,7 @@ class Models:
         self.claim = claim
         self.double_dummy = double_dummy
         self.min_opening_leads = min_opening_leads
+        self.sample_hands_for_review = sample_hands_for_review
 
     @classmethod
     def from_conf(cls, conf: ConfigParser, base_path=None) -> "Models":
@@ -41,6 +42,7 @@ class Models:
         search_threshold = float(conf['bidding']['search_threshold'])
         no_search_threshold = conf.getfloat('bidding','no_search_threshold', fallback=1)
         eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=12)
+        sample_hands_for_review = conf.getint('sampling', 'sample_hands_for_review', fallback=200)
         lead_threshold = float(conf['lead']['lead_threshold'])
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
         min_opening_leads = conf.getint('lead','min_opening_leads', fallback=1)
@@ -80,7 +82,8 @@ class Models:
             lead_included=lead_included,
             claim=claim,
             double_dummy=double_dummy,
-            min_opening_leads=min_opening_leads
+            min_opening_leads=min_opening_leads,
+            sample_hands_for_review=sample_hands_for_review
         )
 
     @property

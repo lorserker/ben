@@ -1,9 +1,31 @@
+ 
+.container {
+    max-width: 1200px; /* Adjust max-width as needed */
+    margin: 0 auto; /* Center the container */
+}
 
+form {
+    width: 100%;
+    display: block;
+    /* Ensure the form takes up the full width */
+}
+
+.content {
+    column-count: 3; /* Set the number of columns */
+    column-gap: 20px; /* Adjust the gap between columns */
+}
+  
+p {
+    margin: 0 0 20px; /* Margin between paragraphs */
+}
+
+  
 *, *::after, *::before {
     box-sizing: border-box;
 }
 
 body {
+    font-family: Arial, sans-serif;
     margin: 0;
     cursor: pointer;
     justify-content: center;
@@ -69,11 +91,6 @@ body {
     font-weight: bolder;
 }
 
-.grid-item {
-    /*border: 1px solid black;*/
-
-}
-
 .card {
     height: 6rem;
     width: 8%;
@@ -86,8 +103,6 @@ body {
     display: flex;
     align-items: flex-end;
     background-color: white;
-    /*filter: drop-shadow(1px 1px 1px black);*/
-
 }
 
 .card::before {
@@ -111,7 +126,6 @@ body {
 }
 
 .table-grid-item {
-    /*border: 1px solid black;*/
     display: flex;
     justify-content: center;
 }
@@ -273,3 +287,27 @@ body {
     height: 2rem;
     text-align: center;
 }
+
+/* Styles for the unordered list */
+ul {
+    list-style-type: disc; /* Sets the list item marker to a filled circle */
+    margin: 0; /* Adds space around the list */
+    padding: 0; /* Adds space around the list */
+    padding-left: 20px; /* Adds an indentation to the left */
+}
+  
+/* Styles the marker color for unordered lists */
+ul::marker {
+    color: blue; /* Changes the color of the list item markers */
+}
+
+/* Styles for list items within the unordered list */
+ul li {
+    line-height: 1; /* Sets the line height for better readability */
+}
+
+/* Style for the span with class "bba" */
+span.bba {
+    font-size: 0.6em; /* You can adjust the size as needed */
+}
+  

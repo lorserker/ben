@@ -288,3 +288,9 @@ th {
 .hidden {
     display: none;
 }
+
+form {
+    width: 100%;
+    display: block;
+    /* Ensure the form takes up the full width */
+}

@@ -20,9 +20,17 @@ ADD requirements.txt /app/
 WORKDIR /app
 RUN pip install -r requirements.txt
 
-ADD src /app/src
-ADD models /app/models
+COPY src/frontend /app/frontend/
+COPY src/*.py /app/
+ADD src/bidding /app/bidding/
+ADD src/nn /app/nn/
+ADD src/ddsolver /app/ddsolver/
+COPY "UCBC*2024/Models/" "/app/Models/"
+COPY "UCBC*2024/Conf/UCBC2024.conf" "/app/config/default.conf"
 ADD start_ben_all.sh /app/
 
-EXPOSE 4443 8080
+# Grant execution permissions to the script
+RUN chmod +x /app/start_ben_all.sh
+
+EXPOSE 8080 4443
 CMD ./start_ben_all.sh

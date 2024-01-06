@@ -88,10 +88,10 @@ class CardByCard:
         decl_hand = self.hands[decl_i]
 
         card_players = [
-            bots.CardPlayer(self.models.player_models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln),
-            bots.CardPlayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln),
-            bots.CardPlayer(self.models.player_models, 2, righty_hand, dummy_hand, contract, is_decl_vuln),
-            bots.CardPlayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
+            bots.CardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln),
+            bots.CardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln),
+            bots.CardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln),
+            bots.CardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
         ]
 
         player_cards_played = [[] for _ in range(4)]

@@ -116,24 +116,31 @@ def worker(driver):
 async def handler(websocket, path, board_no):
     print("Got websocket connection")
 
-    driver = game.Driver(models, human.WebsocketFactory(websocket), Sample.from_conf(configuration, verbose), verbose)
+    driver = game.Driver(models, human.WebsocketFactory(websocket, verbose), Sample.from_conf(configuration, verbose), verbose)
     play_only = False
     if (auto):
         driver.human = [False, False, False, False]
     parsed_url = urlparse(path)
     query_params = parse_qs(parsed_url.query)
 
+    print(query_params)
     if query_params:
         P = query_params.get('P', [None])[0]
         if P == "5":
             play_only = True
         deal = query_params.get('deal', [None])[0]
-        board_no_query = query_params.get('board_no', [None])[0]
+        board_no_query = query_params.get('board_no')
+        board_number = int(board_no_query[0]) if board_no_query and board_no_query[0] is not None else None
         if deal:
             split_values = deal[1:-1].replace("'","").split(',')
             rdeal = tuple(value.strip() for value in split_values)
-            driver.set_deal(board_no_query, *rdeal, play_only)
-            print(f"Board: {board_no_query} {rdeal}")
+            driver.set_deal(board_number, *rdeal, play_only)
+            print(f"Board: {board_number} {rdeal}")
+        else:
+            np.random.seed(board_number)
+            rdeal = game.random_deal()
+            driver.set_deal(None, *rdeal, False)
+            print(f"Deal: {rdeal}")
     else:
         if random:
             #Just take a random"
@@ -152,14 +159,9 @@ async def handler(websocket, path, board_no):
         t_start = time.time()
         await driver.run()
 
-        with shelve.open(f"{get_execution_path()}/gamedb") as db:
-            deal_bots = driver.to_dict()
-            print("Saving Board: ",driver.hands)
-            print(f'Board played in {time.time() - t_start:0.1f} seconds')
-            db[uuid.uuid4().hex] = deal_bots
-            print('Deal saved')
-            if not random:
-                board_no[0] = (board_no[0] + 1) % len(boards)
+        print(f'Board played in {time.time() - t_start:0.1f} seconds')
+        if not random and not query_params:
+            board_no[0] = (board_no[0] + 1) % len(boards)
 
     
     except ConnectionClosedOK  as ex:
@@ -171,7 +173,7 @@ async def handler(websocket, path, board_no):
 
 async def main():
     print("Listening on port: ",port)
-    start_server = websockets.serve(functools.partial(handler, board_no=board_no), "0.0.0.0", 4443)
+    start_server = websockets.serve(functools.partial(handler, board_no=board_no), "0.0.0.0", port)
     await start_server
 
 if __name__ == "__main__":

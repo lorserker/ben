@@ -37,7 +37,7 @@ def decode_card(card52):
 
 def random_deal():
     all_cards = list(range(52))
-    random.shuffle(all_cards)
+    np.random.shuffle(all_cards)
 
     hands_cards = [all_cards[:13], all_cards[13:26], all_cards[26:39], all_cards[39:]]
     hands = []

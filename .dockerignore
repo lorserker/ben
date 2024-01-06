@@ -5,15 +5,12 @@ __pycache__
 src/gamedb.*
 .vscode
 install/
-UCBC 2024/
 scripts/
 training/
 models/eamon
 src/db
 demo/
-models/lead_model_c
-models/lead_model
-models/UCBC
+models/
 src/Eastdb.*
 src/Westdb.*
 src/Northdb.*

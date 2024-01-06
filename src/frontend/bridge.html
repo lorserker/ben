@@ -98,10 +98,14 @@
         var ws
         if (dealId) {
             queryString = "?deal=" + dealId + "&P=" + playerId + "&board_no=" + board_no
+        } else {
+            queryString = "?P=" + playerId + "&board_no=" + board_no
         }
         try {
 
-            ws = new WebSocket("ws://" + location.hostname + ":4443/" + queryString)
+            var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
+            var port = location.port !== '' ? ':' + location.port : ''; // Extracts the port number, if present
+            ws = new WebSocket(protocol + location.hostname + ":4443/" + queryString)
 
             ws.addEventListener("error", function (event) {
                 console.log("WebSocket error:", event);
@@ -170,9 +174,6 @@
             let level = parseInt(event.target.textContent)
             let auction = new Auction(deal.dealer, deal.vuln, deal.auction)
             let minBiddableSuit = auction.getMinBiddableSuitForLevel(level)
-
-            console.log(auction.bids)
-            console.log(minBiddableSuit)
 
             document.querySelector('#bidding-suits').classList.remove("hidden")
 
@@ -363,8 +364,38 @@
                 west.renderEW(document.querySelector('#west'))
 
                 deal.renderAuction(document.querySelector('#table'))
+                saveDeal(data.dict)
+
             }
         };
+
+        function saveDeal(dict) {
+            // Convert JavaScript object to JSON string
+            const dataStr = JSON.stringify(dict);
+
+             // Make a POST request
+            fetch('/api/save/deal', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: dataStr,
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                console.log('Deal saved');
+                return response.json();
+            })
+            .then(data => {
+                // Redirect to another page after successful POST
+                window.location.href = '/home';
+            })
+            .catch(error => {
+                console.error('There was a problem with the fetch operation:', error);
+            });
+        }
 
     </script>  
 

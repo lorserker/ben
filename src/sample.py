@@ -106,6 +106,7 @@ class Sample:
     def sample_cards_vec(self, n_samples, p_hcp, p_shp, my_hand):
         if self.verbose:
             print("sample_cards_vec generating", n_samples)
+            t_start = time.time()
         deck = np.ones(32)
         deck[[7, 15, 23, 31]] = 6
 
@@ -216,6 +217,9 @@ class Sample:
 
         accept = accept_hcp & accept_shp
 
+        if self.verbose:
+            print(f'sample_cards_vec took {time.time() - t_start:0.4}')
+            
         if np.sum(accept) > 10:
             return lho_pard_rho[accept]
         else:
@@ -506,9 +510,6 @@ class Sample:
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
-        if self.verbose:
-            for i in range(min_scores.shape[0]):
-                print(f'{min_scores[i]:.3f} {hand_to_str(hand[i])}')
 
         return min_scores
 

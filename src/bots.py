@@ -39,6 +39,7 @@ class BotBid:
         self.lead_included = models.lead_included
         self.samples = []
         self.eval_after_bid_count = models.eval_after_bid_count
+        self.sample_hands_for_review = models.sample_hands_for_review
 
     @staticmethod
     def get_bid_number_for_player_to_bid(auction):
@@ -152,7 +153,7 @@ class BotBid:
         if self.verbose:
             print(candidates[0].bid, " selected")
         
-        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples, shape=p_shp, hcp=p_hcp, who=who)
+        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who)
     
     @staticmethod
     def do_rollout(auction, candidates, samples, max_candidate_score):
@@ -466,6 +467,7 @@ class BotLead:
         self.lead_accept_nn = models.lead_accept_nn
         self.lead_included = models.lead_included
         self.min_opening_leads = models.min_opening_leads
+        self.sample_hands_for_review = models.sample_hands_for_review
 
     def find_opening_lead(self, auction):
         lead_card_indexes, lead_softmax = self.get_lead_candidates(auction)
@@ -504,7 +506,7 @@ class BotLead:
         samples = []
         if self.verbose:
             print(f"Accepted samples for opening lead: {accepted_samples.shape[0]}")
-        for i in range(accepted_samples.shape[0]):
+        for i in range(min(self.sample_hands_for_review, accepted_samples.shape[0])):
             samples.append('%s %s %s %.5f' % (
                 hand_to_str(accepted_samples[i,0,:]),
                 hand_to_str(accepted_samples[i,1,:]),
@@ -542,7 +544,7 @@ class BotLead:
             if score < self.lead_threshold and len(candidates) >= self.min_opening_leads:
                 break
             if self.verbose:
-                print(Card.from_code(c, xcards=True), score)
+                print(f"{Card.from_code(c, xcards=True)} {score:.3f}")
             candidates.append(c)
             lead_softmax_copy[0][c] = 0
 
@@ -609,8 +611,9 @@ class BotLead:
                         hand_str += 'AKQJT98765432'[l]
                 if (k != 3): 
                     hand_str += '.'
-            if self.verbose:
-                print("Opening lead being examined: ", Card.from_code(opening_lead52),opening_lead52)
+            #if self.verbose:
+            print("Opening lead being examined: ", Card.from_code(opening_lead52))
+            t_start = time.time()
             for i in range(n_accepted):
                 hands_pbn = ['W:' + hand_str + ' ' + ' '.join(deck52.hand32to52str(hand) for hand in accepted_samples[i])]
                 hands_pbn[0] = deck52.convert_cards(hands_pbn[0],opening_lead52, hand_str)
@@ -620,6 +623,8 @@ class BotLead:
                 first_item = dd_solved[first_key]
                 tricks[i, j, 0] = first_item[0]
                 tricks[i, j, 1] = 1 if (13 - first_item[0]) >= tricks_needed else 0
+            #if self.verbose:
+            print(f'dds took {time.time() - t_start:0.4}')
         return tricks
 
     
@@ -698,9 +703,9 @@ class BotLead:
 
 class CardPlayer:
 
-    def __init__(self, player_models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, verbose = False):
-        self.player_models = player_models
-        self.playermodel = player_models[player_i]
+    def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, verbose = False):
+        self.player_models = models.player_models
+        self.playermodel = models.player_models[player_i]
         self.player_i = player_i
         self.hand = parse_hand_f(32)(hand_str).reshape(32)
         self.hand52 = parse_hand_f(52)(hand_str).reshape(52)
@@ -711,7 +716,7 @@ class CardPlayer:
         self.verbose = verbose
         self.level = int(contract[0])
         self.strain_i = bidding.get_strain_i(contract)
-
+        self.sample_hands_for_review = models.sample_hands_for_review
         self.init_x_play(parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
 
         self.score_by_tricks_taken = [scoring.score(self.contract, self.is_decl_vuln, n_tricks) for n_tricks in range(14)]
@@ -815,14 +820,12 @@ class CardPlayer:
                     hands[j] = '.'.join(suits)
             # We always use West as start, but hands are in BEN from LHO
             hands_pbn.append('W:' + ' '.join(hands))
-            if self.verbose:
-                print('W:' + ' '.join(hands))
 
-        t_start = time.time()
 
         if self.verbose:
-            print(hands_pbn)
+            print(hands_pbn[:10])
 
+        t_start = time.time()
         #print("Samples: ",n_samples, " Solving: ",len(hands_pbn))
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn)
         card_tricks = ddsolver.expected_tricks(dd_solved)
@@ -913,7 +916,7 @@ class CardPlayer:
 
         samples = []
 
-        for i in range(players_states[0].shape[0]):
+        for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
             samples.append('%s %s %s %s' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),
                 hand_to_str(players_states[1][i,0,:32].astype(int)),

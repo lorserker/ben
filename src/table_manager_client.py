@@ -234,10 +234,10 @@ class TMClient:
             decl_hand_str = own_hand_str
 
         card_players = [
-            bots.CardPlayer(self.models.player_models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose),
-            bots.CardPlayer(self.models.player_models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose),
-            bots.CardPlayer(self.models.player_models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose),
-            bots.CardPlayer(self.models.player_models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose)
+            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose),
+            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose),
+            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose),
+            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose)
         ]
 
         player_cards_played = [[] for _ in range(4)]
