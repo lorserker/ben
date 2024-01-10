@@ -118,13 +118,22 @@ async def handler(websocket, path, board_no):
 
     driver = game.Driver(models, human.WebsocketFactory(websocket, verbose), Sample.from_conf(configuration, verbose), verbose)
     play_only = False
-    if (auto):
-        driver.human = [False, False, False, False]
+    driver.human = [False, False, False, False]
     parsed_url = urlparse(path)
     query_params = parse_qs(parsed_url.query)
 
     print(query_params)
     if query_params:
+        N = query_params.get('N', [None])[0]
+        if N: driver.human[0] = True
+        E = query_params.get('E', [None])[0]
+        if E: driver.human[1] = True
+        S = query_params.get('S', [None])[0]
+        if S: driver.human[2] = True
+        W = query_params.get('W', [None])[0]
+        if W: driver.human[3] = True
+        H = query_params.get('H', [None])[0]
+        if H: driver.human_declare = True
         P = query_params.get('P', [None])[0]
         if P == "5":
             play_only = True

@@ -68,7 +68,6 @@ def create_binary(data_it, ns, ew, alternating, x, y, HCP, SHAPE, max_occurrence
         else:
             auction = f"{ew}-{ns} {v} " + ' '.join(deal_data.auction).replace("PASS","P").replace("PAD_START","-")
             x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
-
         # Check if the count for this key exceeds the limit
         if key_counts[auction] < max_occurrences:
             auctions.append(auction)
@@ -164,9 +163,6 @@ if __name__ == '__main__':
 
         x, y, HCP, SHAPE, key_counts, auctions, k = create_binary(load_deals(lines), ns, ew, alternating, x, y, HCP, SHAPE, max_occurrences, key_counts, auctions, k)
 
-    print("k:",k)
-    print(x.shape)
-    print(y.shape)
     # Create a new Counter to count all occurrences without limit
     key_counts = Counter(auctions)
     
@@ -174,7 +170,7 @@ if __name__ == '__main__':
     sorted_keys_by_count = sorted(key_counts.items(), key=lambda x: (-x[1], x[0]))  # Sort by count and key in descending order
 
     count = len(sorted_keys_by_count)
-    print(f"Found {count} bidding sequences. k={k//players_pr_hand} hands" )
+    sys.stderr.write(f"Found {count} bidding sequences. k={k//players_pr_hand} hands" )
 
     # The second training dataset is random deals, and we just use the bidding sequences we don't allready have
     max_occurrences = 2
@@ -189,15 +185,9 @@ if __name__ == '__main__':
     # Create a new Counter to count all occurrences without limit
     key_counts = Counter(auctions)
     
-    # Sort by count
-    sorted_keys_by_count = sorted(key_counts.items(), key=lambda x: (-x[1], x[0]))  # Sort by count and key in descending order
-
-    # Display keys sorted by count
-    #for key, count in sorted_keys_by_count:
-    #    print(f"{count}: {key}")
-
+   
     count = len(sorted_keys_by_count)
-    print(f"Found {count} bidding sequences. k={k//players_pr_hand} Boards" )
+    sys.stderr.write(f"Found {count} bidding sequences. k={k//players_pr_hand} Boards" )
     x = x[:k]
     y = y[:k]
     HCP = HCP[:k]
@@ -207,3 +197,9 @@ if __name__ == '__main__':
     np.save(os.path.join(out_dir, 'HCP.npy'), HCP)
     np.save(os.path.join(out_dir, 'SHAPE.npy'), SHAPE)
 
+    # Get unique keys and sort them
+    unique_sorted_keys = sorted(set(auctions))
+
+    # Print all unique keys sorted
+    for key in unique_sorted_keys:
+        print(key)

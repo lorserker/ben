@@ -244,15 +244,17 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns,
 
     auction = auction_input
 
+    bid_i = hand_ix
     if isinstance(auction, list):
         auction_input = auction_input + ['PAD_END'] * 4 * n_steps
         auction = bidding.BID2ID['PAD_END'] * np.ones((n_samples, len(auction_input)), dtype=np.int32)
         for i, bid in enumerate(auction_input):
             auction[:, i] = bidding.BID2ID[bid]
-
-    bid_i = hand_ix
-    while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
-        bid_i += 4
+        while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
+            bid_i += 4
+    else:
+        while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
+            bid_i += 4
 
     X[:, :, :2] = vuln_us_them
     X[:, :, 2:3] = hcp.reshape((n_samples, 1, 1))
@@ -295,10 +297,10 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns,
     return X_padded
 
 def calculate_step(auction):
-    # This is number of levels to get from the neural network. See it as the no of bid the player is to make - inclding PAD_START
-    n_steps = 1 + len(auction) // 4
+    # This is number of levels to get from the neural network. 
+    # print("calculate_step", auction)
+    n_steps = 1 + (len(auction) -1) // 4
     return n_steps
-
 
 def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
     contract = bidding.get_contract(auction)

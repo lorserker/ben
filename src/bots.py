@@ -17,7 +17,7 @@ from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit
 
 class BotBid:
 
-    def __init__(self, vuln, hand_str, models, sampler, verbose):
+    def __init__(self, vuln, hand_str, models, sampler, seat, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
@@ -34,6 +34,7 @@ class BotBid:
         self.ns = models.ns
         self.ew = models.ew
         self.sample = sampler
+        self.seat = seat
         self.verbose = verbose
         self.sample_boards_for_auction = sampler.sample_boards_for_auction
         self.lead_included = models.lead_included
@@ -62,22 +63,22 @@ class BotBid:
     def bid(self, auction):
         candidates, passout = self.get_bid_candidates(auction)
 
-        # To save time, this could be moved to the do_rollout section, as samples are only for display if no rollout
-        if self.verbose:
-            print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
-        hands_np, sorted_score, p_hcp, p_shp = self.sample_hands_auction(auction)
-        samples = []
-        for i in range(hands_np.shape[0]):
-            samples.append('%s %s %s %s %.5f' % (
-                hand_to_str(hands_np[i,0,:]),
-                hand_to_str(hands_np[i,1,:]),
-                hand_to_str(hands_np[i,2,:]),
-                hand_to_str(hands_np[i,3,:]),
-                sorted_score[i]
-            ))
 
-        if BotBid.do_rollout(auction, candidates, hands_np, self.max_candidate_score):
+        if BotBid.do_rollout(auction, candidates, self.max_candidate_score):
             ev_candidates = []
+            # To save time, this is moved to the do_rollout section, as samples are only for display if do rollout
+            if self.verbose:
+                print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
+            hands_np, sorted_score, p_hcp, p_shp = self.sample_hands_auction(auction)
+            samples = []
+            for i in range(hands_np.shape[0]):
+                samples.append('%s %s %s %s %.5f' % (
+                    hand_to_str(hands_np[i,0,:]),
+                    hand_to_str(hands_np[i,1,:]),
+                    hand_to_str(hands_np[i,2,:]),
+                    hand_to_str(hands_np[i,3,:]),
+                    sorted_score[i]
+                ))
             for candidate in candidates:
                 if self.verbose:
                     print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.3f} Samples: {len(hands_np)}")
@@ -149,6 +150,10 @@ class BotBid:
                     print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.3f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
         else:
             who = "NN"
+            # Perhaps we should sample some hands to get information about how BEN sees the bidding until now
+            samples = []
+            p_hcp = -1
+            p_shp = -1
         # Without detailed logging we only save 20 samples
         if self.verbose:
             print(candidates[0].bid, " selected")
@@ -156,15 +161,17 @@ class BotBid:
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who)
     
     @staticmethod
-    def do_rollout(auction, candidates, samples, max_candidate_score):
-        assert len(samples) > 0
-
+    def do_rollout(auction, candidates, max_candidate_score):
         if candidates[0].insta_score > max_candidate_score:
            return False
         
         # Just one candidate, so no need for rolling out the bidding
         if len(candidates) == 1:
             #print("Just one candidate, so no need for rolling out the bidding")
+            return False
+        
+        # Do try to simulate if first to bid
+        if not auction:
             return False
 
         return True
@@ -246,6 +253,8 @@ class BotBid:
 
             # set the score for the bid just processed to zero so it is out of the loop
             bid_softmax[bid_i] = 0
+
+        #candidates.append(CandidateBid(bid=bidding.ID2BID[2], insta_score=0.5))
 
         if self.verbose:
             print("\n".join(str(bid) for bid in candidates))
@@ -611,8 +620,8 @@ class BotLead:
                         hand_str += 'AKQJT98765432'[l]
                 if (k != 3): 
                     hand_str += '.'
-            #if self.verbose:
-            print("Opening lead being examined: ", Card.from_code(opening_lead52))
+            if self.verbose:
+                print("Opening lead being examined: ", Card.from_code(opening_lead52),n_accepted)
             t_start = time.time()
             for i in range(n_accepted):
                 hands_pbn = ['W:' + hand_str + ' ' + ' '.join(deck52.hand32to52str(hand) for hand in accepted_samples[i])]
@@ -623,8 +632,8 @@ class BotLead:
                 first_item = dd_solved[first_key]
                 tricks[i, j, 0] = first_item[0]
                 tricks[i, j, 1] = 1 if (13 - first_item[0]) >= tricks_needed else 0
-            #if self.verbose:
-            print(f'dds took {time.time() - t_start:0.4}')
+            if self.verbose:
+                print(f'dds took {time.time() - t_start:0.4}')
         return tricks
 
     

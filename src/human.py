@@ -27,9 +27,7 @@ def render_hand(hands_str, indentation):
 class Confirm:
 
     async def confirm(self):
-        print('console confirm')
-        key = input('\npress any key ...')
-        return key
+        return
 
 class ConfirmSocket:
 
@@ -62,9 +60,7 @@ class ChannelSocket:
         self.verbose = verbose
 
     async def send(self, message):
-        if self.verbose:
-            print(message)
-
+        print(message)
         await self.socket.send(message)
 
 

@@ -79,24 +79,36 @@ class Hand {
     render(element) {
         element.textContent = ''
 
-        this.suits[0].forEach(c => c.render(element))
-        this.suits[1].forEach(c => c.render(element))
-        this.suits[3].forEach(c => c.render(element))
-        this.suits[2].forEach(c => c.render(element))
+        const order = [0, 1, 3, 2];
+
+        for (let i of order) {
+            this.suits[i].forEach(c => c.render(element)) 
+        }
     }
 
     renderEW(element) {
-        element.innerHTML = ""
+        element.textContent = '';
+    
+        const order = [0, 1, 3, 2];
 
-        let html = '<div>'
-        html += this.suitHtml("&spades;", this.suits[0].map(c => c.rank), false)
-        html += this.suitHtml("&hearts;", this.suits[1].map(c => c.rank), true)
-        html += this.suitHtml("&diams;", this.suits[2].map(c => c.rank), true)
-        html += this.suitHtml("&clubs;", this.suits[3].map(c => c.rank), false)
-        html += '</div>'
+        for (let i of order) {
+            const suitContainer = document.createElement('div');
+            suitContainer.style.display = 'flex'; // Set suit containers to flex display
+            
+            element.appendChild(suitContainer);
         
-        element.innerHTML = html
-    }
+            // Check if the suit has no cards
+            if (this.suits[i].length === 0) {
+                suitContainer.classList.add('empty-suit'); // Add a class for an empty suit
+            } else {
+                // Render elements for each non-empty suit into their respective containers
+                this.suits[i].forEach(card => {
+                    card.render(suitContainer);
+                });
+            }
+        }
+
+    }  
 
     suitHtml(symbol, cards, red) {
         let html = '<div class="suit">'
@@ -230,13 +242,15 @@ class Trick {
 
 class Deal {
 
-    constructor(dealer, vuln, hand) {
+    constructor(dealer, vuln, hands) {
         this.dealer = dealer
         this.vuln = vuln
-        this.hand = hand
+        this.hands = []
+        for (let i = 0; i < 4; i++) {
+            if (hands[i] != "")
+                this.hands[i] = parseHand(hands[i])
+        }
         this.tricksCount = [0, 0]
-
-        this.public = undefined
 
         this.turn = this.dealer
         this.auction = []

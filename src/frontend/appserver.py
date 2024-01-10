@@ -222,18 +222,31 @@ def index():
 @app.route('/submit', method="POST")
 def index(): 
     url = None
+    north = request.forms.get('N')
+    east = request.forms.get('E')
+    south = request.forms.get('S')
+    west = request.forms.get('W')    
+    human = request.forms.get('H')    
+    autocomplete = request.forms.get('A')
+    player = ""
+    if north: player += "&N=x"
+    if east: player += "&E=x"
+    if south: player += "&S=x"
+    if west: player += "&W=x"
+    if human: player += "&H=x"
+    if autocomplete: player += "&A=x"
     dealtext = request.forms.get('dealtext')
     if dealtext:
         dealer = request.forms.get('dealer')
         board_no = request.forms.get('board')
         vulnerable = request.forms.get('vulnerable')
-        url = f'/app/bridge.html?deal=(%27{dealtext}%27, %27{dealer} {vulnerable}%27)&P=0&board_no={board_no}'
+        url = f'/app/bridge.html?deal=(%27{dealtext}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
     
     dealpbn = request.forms.get('dealpbn')
     if dealpbn:
         dealpbn = request.forms.get('dealpbn')
         dealer, vulnerable, hands, board_no = parse_pbn(dealpbn.splitlines())
-        url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27)&P=0&board_no={board_no}'
+        url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
 
     deallin = request.forms.get('deallin')
     if deallin:
@@ -241,18 +254,18 @@ def index():
         lin = deallin["lin"]
         dealer, vulnerable, hands, board_no = parse_lin(lin[0])
         hands = " ".join(hands)
-        url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27)&P=0&board_no={board_no}'
+        url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
 
     dealbba = request.forms.get('dealbba')
     if dealbba:
         hand, dealer, vulnerable, board_no = decode_board(dealbba)
         deal_as_str = hand_as_string(hand)
-        url = f'/app/bridge.html?deal=(%27{deal_as_str}%27, %27{dealer} {vulnerable}%27)&P=0&board_no={board_no}'
+        url = f'/app/bridge.html?deal=(%27{deal_as_str}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
     if url:
         redirect(url)
     else:
         board_no = request.forms.get('board')
-        redirect(f"/app/bridge.html?P=0&board_no={board_no}")
+        redirect(f"/app/bridge.html?board_no={board_no}{player}")
 
 @app.route('/home')
 def home():

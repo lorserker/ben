@@ -227,9 +227,11 @@ class Sample:
 
     def sample_cards_auction(self, auction, nesw_i, hand, vuln, bidder_model, binfo, ns, ew, n_samples):
         n_steps = binary.calculate_step(auction)
+
         if self.verbose:
             print("sample_cards_auction, nsteps=", n_steps)
             print("NS: ", ns, "EW: ", ew, "Auction: ", auction)
+            print("nesw_i", nesw_i)
 
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, ns, ew)
         A_lho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 1) % 4, hand, vuln, ns, ew)
@@ -243,10 +245,11 @@ class Sample:
 
         c_hcp = (lambda x: 4 * x + 10)(p_hcp.copy())
         c_shp = (lambda x: 1.75 * x + 3.25)(p_shp.copy())
+        
         if self.verbose:
             print("Player: ", 'NESW'[nesw_i], "Hand: ", hand_to_str(hand[0]))
-            print("HCP: ", c_hcp[0])
-            print("Shape: ", c_shp[0])
+            print("HCP: ", c_hcp)
+            print("Shape: ", c_shp)
 
         # setting a seed here would allow us to have the same samples during the bidding
         # Calculate the SHA-256 hash
@@ -300,7 +303,7 @@ class Sample:
         rho_sample_bids = bidder_model.model_seq(X_rho).reshape((n_samples, n_steps, -1))
 
         # Consider having scores for partner and opponents
-        # Current implementation should be updated due to long sequwnces is difficult to match
+        # Current implementation should be updated due to long sequences is difficult to match
         min_scores = np.ones(n_samples)
 
         for i in range(n_steps):
@@ -335,13 +338,12 @@ class Sample:
 
         return accepted_samples, sorted_scores, c_hcp[0], c_shp[0], good_quality
 
-    # shuffle the cards between the 2 hiddin hands
+    # shuffle the cards between the 2 hidden hands
     def shuffle_cards_bidding_info(self, n_samples, binfo, auction, hand, vuln, known_nesw, h_1_nesw, h_2_nesw, visible_cards, hidden_cards, cards_played, shown_out_suits, ns, ew):
         n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2])
         if self.verbose:
             print("shuffle_cards_bidding_info cards to sample: ", n_cards_to_receive)
         n_steps = binary.calculate_step(auction)
-
 
         A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, ns, ew)
 

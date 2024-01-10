@@ -30,7 +30,7 @@ class CardByCard:
         self.analyze_play()
 
     def analyze_bidding(self):
-        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, self.verbose) for hand in self.hands]
+        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.verbose) for idx, hand in enumerate(self.hands)]
 
         player_i = self.dealer_i
         bid_i = self.dealer_i

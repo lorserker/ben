@@ -11,7 +11,7 @@ CARD_INDEX_LOOKUP = dict(
 
 class DealData(object):
 
-    def __init__(self, dealer, vuln_ns, vuln_ew, hands, auction, ns, ew, n_cards=52):
+    def __init__(self, dealer, vuln_ns, vuln_ew, hands, auction, ns, ew, deal_str, auction_str, n_cards=52):
         self.n_cards = n_cards
         self.dealer = dealer
         self.vuln_ns = vuln_ns
@@ -22,6 +22,8 @@ class DealData(object):
         self.auction = auction
         self.ns = ns
         self.ew = ew
+        self.deal_str = deal_str
+        self.auction_str = auction_str
 
     def __str__(self):
         return f"DealData: n_cards={self.n_cards}, NS={self.ns}, EW={self.ew}, dealer={self.dealer}, vuln_ns={self.vuln_ns}, vuln_ew={self.vuln_ew}, hands={self.hands}, shapes={self.shapes}, hcp={self.hcp}, auction={self.auction}"
@@ -37,7 +39,7 @@ class DealData(object):
         vuln_ns, vuln_ew = vuln[auction_parts[1]]
         auction = (['PAD_START'] * dealer_ix) + auction_parts[2:]
 
-        return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, ns, ew, n_cards)
+        return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, ns, ew, deal_str, auction_str, n_cards)
 
     def get_binary(self, ns, ew, n_steps=8):
         if ns == -1:

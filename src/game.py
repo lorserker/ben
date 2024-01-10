@@ -76,7 +76,7 @@ class Driver:
 
         #Default is a Human South
         self.human = [False, False, True, False]
-
+        self.human_declare = False
         self.ns = models.ns
         self.ew = models.ew
         self.verbose = verbose
@@ -88,7 +88,6 @@ class Driver:
         self.deal_str = deal_str
         self.hands = deal_str.split()
         self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, 32)
-        #self.deal_data_52 = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, 52)
 
         auction_part = auction_str.split(' ')
         if play_only == None and len(auction_part) > 2: play_only = True
@@ -115,11 +114,19 @@ class Driver:
 
 
     async def run(self):
+        result_list = self.hands.copy()
+
+        # If human involved hide the unseen hands
+        if np.any(np.array(self.human)):
+            for i in range(len(self.human)):
+                if not self.human[i]:
+                    result_list[i] = ""
+
         await self.channel.send(json.dumps({
             'message': 'deal_start',
             'dealer': self.dealer_i,
             'vuln': [self.vuln_ns, self.vuln_ew],
-            'hand': self.deal_str.split()[2]
+            'hand': result_list
         }))
 
         self.bid_responses = []
@@ -161,12 +168,22 @@ class Driver:
             'card': decode_card(opening_lead52)
         }))
 
-        # If north is declarer and we are south, display the north hand
-        await self.channel.send(json.dumps({
-            'message': 'show_dummy',
-            'player': (decl_i + 1) % 4,
-            'dummy': self.deal_str.split()[0] if decl_i == 0 else self.deal_str.split()[(decl_i + 2) % 4]
-        }))
+        # If human is dummy display declarers hand
+        if self.human[(decl_i + 2) % 4]:
+            hand = self.deal_str.split()[decl_i]
+            await self.channel.send(json.dumps({
+                'message': 'show_dummy',
+                'player': decl_i,
+                'dummy': hand
+            }))
+        else:
+            # dummys hand
+            hand = self.deal_str.split()[(decl_i + 2) % 4]
+            await self.channel.send(json.dumps({
+                'message': 'show_dummy',
+                'player': (decl_i + 2) % 4,
+                'dummy': hand
+            }))
 
         if self.verbose: 
             for card_resp in self.card_responses:
@@ -214,18 +231,21 @@ class Driver:
             AsyncCardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.verbose)
         ]
 
-        # check if user is playing and is declarer
-        if self.human[2]:
-            if decl_i == 2:
-                card_players[3] = self.factory.create_human_cardplayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
-                card_players[1] = self.factory.create_human_cardplayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
-            elif decl_i == 0:
-                card_players[1] = self.factory.create_human_cardplayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
-                card_players[3] = self.factory.create_human_cardplayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
-            elif decl_i == 1:
-                card_players[0] = self.factory.create_human_cardplayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln)
-            elif decl_i == 3:
-                card_players[2] = self.factory.create_human_cardplayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln)
+        # check if user is playing and update card players accordingly
+        # the card players are allways positioned relative to declarer (lefty = 0, dummy = 1 ...)
+        for i in range(4): 
+            if self.human[i]:
+                # We are declarer or human declare and dummy
+                if decl_i == i or self.human_declare and decl_i == (i + 2) % 4:
+                    card_players[3] = self.factory.create_human_cardplayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
+                    card_players[1] = self.factory.create_human_cardplayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln)
+                    
+                # We are lefty
+                if i == (decl_i + 1) % 4:
+                    card_players[0] = self.factory.create_human_cardplayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln)
+                # We are righty
+                if i == (decl_i + 3) % 4:
+                    card_players[2] = self.factory.create_human_cardplayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln)
 
         claimer = Claimer(self.verbose)
 
@@ -383,6 +403,8 @@ class Driver:
                 if key == 'q':
                     print(self.deal_str)
                     return
+            else:
+                await self.confirmer.confirm()
 
             # update cards shown
             for i, card in enumerate(current_trick):
@@ -415,8 +437,7 @@ class Driver:
             current_trick.append(card)
             current_trick52.append(card52)
 
-        if np.any(np.array(self.human)):
-            await self.confirmer.confirm()
+        await self.confirmer.confirm()
 
         tricks.append(current_trick)
         tricks52.append(current_trick52)
@@ -495,7 +516,7 @@ class Driver:
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
             else:
-                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, self.verbose)
+                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.verbose)
                 players.append(bot)
 
         auction = ['PAD_START'] * self.dealer_i
