@@ -66,15 +66,16 @@ class ChannelSocket:
 
 class HumanBid:
 
-    def __init__(self, vuln, hands_str):
+    def __init__(self, vuln, hands_str, name):
         self.hands_str = hands_str
         self.vuln = vuln
+        self.name = name
 
     async def async_bid(self, auction):
         self.render_auction_hand(auction)
         print('\n')
         bid = input('enter bid: ').strip().upper()
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="Human")
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.name)
 
     def render_auction_hand(self, auction):
         clear_screen()
@@ -101,8 +102,9 @@ class HumanBid:
 
 class HumanBidSocket:
 
-    def __init__(self, socket, vuln, hands_str):
+    def __init__(self, socket, vuln, hands_str, name):
         self.socket = socket
+        self.name = name
 
     async def async_bid(self, auction):
         await self.socket.send(json.dumps({
@@ -114,7 +116,7 @@ class HumanBidSocket:
 
         bid = await self.socket.recv()
 
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = "Human")
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = self.name)
     
 
 class HumanLead:
@@ -228,8 +230,8 @@ class HumanCardPlayerSocket(HumanCardPlayer):
 
 class ConsoleFactory:
 
-    def create_human_bidder(self, vuln, hands_str):
-        return HumanBid(vuln, hands_str)
+    def create_human_bidder(self, vuln, hands_str, name):
+        return HumanBid(vuln, hands_str, name)
 
     def create_human_leader(self):
         return HumanLead()
@@ -250,8 +252,8 @@ class WebsocketFactory:
         self.socket = socket
         self.verbose = verbose
 
-    def create_human_bidder(self, vuln, hands_str):
-        return HumanBidSocket(self.socket, vuln, hands_str)
+    def create_human_bidder(self, vuln, hands_str, name):
+        return HumanBidSocket(self.socket, vuln, hands_str, name)
 
     def create_human_leader(self):
         return HumanLeadSocket(self.socket)

@@ -122,7 +122,6 @@ async def handler(websocket, path, board_no):
     parsed_url = urlparse(path)
     query_params = parse_qs(parsed_url.query)
 
-    print(query_params)
     if query_params:
         N = query_params.get('N', [None])[0]
         if N: driver.human[0] = True
@@ -134,6 +133,14 @@ async def handler(websocket, path, board_no):
         if W: driver.human[3] = True
         H = query_params.get('H', [None])[0]
         if H: driver.human_declare = True
+        #T = query_params.get('T', [None])[0]
+        #if T: timeout = T
+        #A = query_params.get('A', [None])[0]
+        #if A: autocomplete = True
+        name = query_params.get('name', [None])[0]
+        if name: driver.name = name
+        #C = query_params.get('C', [None])[0]
+        #if C: cont = True
         P = query_params.get('P', [None])[0]
         if P == "5":
             play_only = True
@@ -147,7 +154,7 @@ async def handler(websocket, path, board_no):
             print(f"Board: {board_number} {rdeal}")
         else:
             np.random.seed(board_number)
-            rdeal = game.random_deal()
+            rdeal = game.random_deal(board_number)
             driver.set_deal(board_number, *rdeal, False)
             print(f"Deal: {rdeal}")
     else:

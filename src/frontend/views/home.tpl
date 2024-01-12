@@ -91,14 +91,32 @@
   <h2>Seatings</h2>
 
   <div class="content">
+    <div class="inner-div">
+    <label for="name">Name:</label>
+    <input type="input" id="name" data-default=""><br>
     Controlled by human: <br>
     <input type="checkbox" id="N" data-default="false"><label for="N">North</label>
     <input type="checkbox" id="E" data-default="false"><label for="E">East</label>
     <input type="checkbox" id="S" data-default="true"><label for="S">South</label>
     <input type="checkbox" id="W" data-default="false"><label for="W">West</label><br>
+    </div>
+    <div class="inner-div">
     Other options: <br>
-    <input type="checkbox" id="H" data-default="true"><label for="H">Human declares</label>
-    <input type="checkbox" id="A" data-default="true"><label for="A">Autocomplete trick after 5 sec</label>
+    <input type="checkbox" id="H" data-default="true"><label for="H">Human declares</label><br>
+    </div>
+    <div class="inner-div">
+    Automation<br>
+    <input type="checkbox" id="A" data-default="true"><label for="A">Autocomplete trick after
+    <select id="T">
+        <option value="0">0</option>
+        <option value="1">1</option>
+        <option value="2" selected>2</option>
+        <option value="5">5</option>
+        <option value="10">10</option>
+    </select>
+    seconds<br>
+    <input type="checkbox" id="C" data-default="true"><label for="C">Continue to next deal (Requires board number)</label><br>
+    </div>
 
   </div>
 </div>
@@ -122,6 +140,32 @@
 
 <script type="text/javascript">
 
+  // Retrieve the input field element
+  const inputField = document.getElementById('name');
+
+  // Check if there's a value in localStorage, if so, set the input field value to that
+  if (localStorage.getItem('inputValue')) {
+    inputField.value = localStorage.getItem('inputValue');
+  }
+
+  // Add an event listener to store the input field value in localStorage when it changes
+  inputField.addEventListener('input', function() {
+    localStorage.setItem('inputValue', inputField.value);
+  });
+
+    // Retrieve the dropdown element
+    const dropdown = document.getElementById('T');
+
+    // Check if there's a value in localStorage, if so, set the dropdown value to that
+    if (localStorage.getItem('selectedValue')) {
+      dropdown.value = localStorage.getItem('selectedValue');
+    }
+
+    // Add an event listener to store the selected value in localStorage when the dropdown changes
+    dropdown.addEventListener('change', function() {
+      localStorage.setItem('selectedValue', dropdown.value);
+    });
+
 // Get reference to the checkboxes and forms
 const checkbox1 = document.getElementById('N');
 const checkbox2 = document.getElementById('E');
@@ -129,6 +173,7 @@ const checkbox3 = document.getElementById('S');
 const checkbox4 = document.getElementById('W');
 const checkbox5 = document.getElementById('H');
 const checkbox6 = document.getElementById('A');
+const checkbox7 = document.getElementById('C');
 
 // Function to save checkbox state in localStorage
 function saveCheckboxState(checkboxId, checked) {
@@ -141,7 +186,8 @@ function loadCheckboxState(checkboxId, defaultChecked) {
 
     // If no value exists in localStorage, set a default value
     if (savedCheckboxState === null) {
-        saveCheckboxState(checkboxId, defaultChecked); // Set default value to false (unchecked)
+        checkboxId.checked = defaultChecked
+        saveCheckboxState(checkboxId, defaultChecked); // Set to default value
         return false;
     } else {
         return savedCheckboxState === 'true';
@@ -174,12 +220,20 @@ function includeCheckboxValues(event) {
 
     if (selectedForm) {
         const formData = new FormData(selectedForm);
-        const checkboxes = [checkbox1, checkbox2, checkbox3, checkbox4, checkbox5, checkbox6];
+        const checkboxes = [checkbox1, checkbox2, checkbox3, checkbox4, checkbox5, checkbox6, checkbox7];
         checkboxes.forEach(checkbox => {
             if (checkbox.checked) {
                 formData.append(checkbox.id, checkbox.value);
             }
         });
+
+        // Append input field value
+        const inputField = document.getElementById('name');
+        formData.append('name', inputField.value);
+
+        // Append dropdown selected value
+        const dropdown = document.getElementById('T');
+        formData.append('T', dropdown.value);
 
         // You can submit the form data using fetch or XMLHttpRequest here
         // For example:

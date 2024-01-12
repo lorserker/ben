@@ -113,7 +113,7 @@
         let i = 0
         log['bids'].forEach(data => {
             document.querySelector('#info').innerHTML += `
-            <p><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' + data.who : ''}</p>
+            <p class="bid"><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' + data.who : ''}</p>
             `;
             if (data.candidates.length > 0)
                 document.querySelector('#info').innerHTML += `
@@ -121,7 +121,7 @@
                 <ul>
                     ${data.candidates.map(candidate => `
                         <li>
-                            Call: ${candidate.call},
+                            Bid: ${candidate.call.replace("PASS","P").padStart(2, ' ')},
                             ${candidate.expected_score !== undefined ? `Expected score: ${candidate.expected_score},` : ''}
                             ${candidate.insta_score !== undefined ? `NN Score: ${candidate.insta_score},` : ''}
                             ${candidate.adjustment !== undefined ? `Adjusted: ${candidate.adjustment}` : ''}
@@ -145,11 +145,11 @@
         }
         );
 
-        document.getElementById("btn-next").addEventListener("click", function() {
+        document.getElementById("btn-next").addEventListener("click", function () {
             deal.next()
         })
 
-        document.getElementById("btn-prev").addEventListener("click", function() {
+        document.getElementById("btn-prev").addEventListener("click", function () {
             deal.prev()
         })
 

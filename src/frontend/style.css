@@ -26,6 +26,11 @@ form {
     margin: 0; /* Remove default margins */
 }
 
+.inner-div {
+    break-inside: avoid-column; /* Prevent column breaks inside paragraphs */
+    margin: 0; /* Remove default margins */
+}
+
 p {
     margin: 0 0 20px; /* Margin between paragraphs */
 }
@@ -73,7 +78,7 @@ body {
     align-items: flex-start; /* Adjust alignment as needed */
     justify-content: flex-start; /* Adjust justification as needed */
     font-size: 3rem;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 
@@ -92,7 +97,7 @@ body {
 }
 
 #table .seat-label {
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -133,7 +138,7 @@ body {
     position: relative;
     top: -2rem;
     font-size: 2rem;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
     font-weight: bold;
 }
 
@@ -186,7 +191,7 @@ body {
     border-radius: 3px;
     background-color: #efcdf5e0;
     font-size: 1.5rem;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 #boardno {
@@ -225,7 +230,7 @@ body {
     padding: .5rem;
     border: 1px solid black;
     border-radius: 5px;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
     font-size: 2rem;
     background-color: white;
     width: 3rem;
@@ -242,7 +247,7 @@ body {
     padding: .5rem;
     border: 1px solid black;
     border-radius: 5px;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
     font-size: 2rem;
     background-color: white;
     width: 4rem;
@@ -259,7 +264,7 @@ body {
     padding: .5rem;
     border: 1px solid black;
     border-radius: 5px;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
     font-size: 2rem;
     background-color: white;
     width: 8rem;
@@ -304,7 +309,7 @@ body {
     padding: .5rem;
     border: 1px solid black;
     border-radius: 5px;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
     font-size: 1rem;
     background-color: white;
     width: 4rem;

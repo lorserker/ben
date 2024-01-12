@@ -5,10 +5,14 @@ import random
 suits = ['S', 'H', 'D', 'C']
 ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2']
 dealer = ['N', 'E', 'S', 'W']
-vuln = ['None', 'N-S', 'E-W', 'Both', 'N-S', 'E-W', 'Both', 'None',
-        'N-S', 'E-W', 'Both', 'None', 'N-S', 'Both', 'None', 'N-S', 'E-W']
-vulnGib = ['-', 'NS', 'EW', 'both', 'NS', 'EW', 'both', '-',
-        'NS', 'EW', 'both', '-', 'NS', 'both', '-', 'NS', 'EW']
+vuln = ['None', 'N-S', 'E-W', 'Both', 
+        'N-S', 'E-W', 'Both', 'None',
+        'E-W', 'Both', 'None', 'N-S', 
+        'Both', 'None', 'N-S', 'E-W']
+vulnGib = ['-', 'NS', 'EW', 'both', 
+           'NS', 'EW', 'both', '-',
+           'EW', 'both', '-', 'NS',
+           'both', '-', 'NS', 'EW']
 
 
 def sort_cards(hand):

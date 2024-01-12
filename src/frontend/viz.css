@@ -44,7 +44,7 @@
     height: 18%;
     padding-top: 4px;
     font-size: 24px;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 #vul-north {
@@ -102,7 +102,7 @@
 }
 
 .dealer {
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 .font-red {
@@ -187,7 +187,7 @@
     height: 28px;
     font-size: 20px;
     text-align: center;
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
 }
 
 .trick-card.highlight {

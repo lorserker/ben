@@ -57,6 +57,22 @@ def random_dealer_vuln():
 
     return '%s %s' % (dealer, vuln)
 
+def board_dealer_vuln(number):
+    dealerList = ['N', 'E', 'S', 'W']
+    vulnList = ['None', 'N-S', 'E-W', 'Both', 
+        'N-S', 'E-W', 'Both', 'None',
+        'E-W', 'Both', 'None', 'N-S', 
+        'Both', 'None', 'N-S', 'E-W']
+
+    if number:
+        dealer = dealerList[(number-1) % 4]
+        vuln = vulnList[(number-1) % 16]
+    else:         
+        dealer = np.random.choice(['N', 'E', 'S', 'W'])
+        vuln = np.random.choice(['None', 'N-S', 'E-W', 'Both'])
+
+    return '%s %s' % (dealer, vuln)
+
 
 def card32to52(c32):
     suit = c32 // 8

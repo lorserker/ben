@@ -75,6 +75,7 @@ class Sample:
         self.use_bidding_info = use_biddinginfo
         self.verbose = verbose
 
+
     @classmethod
     def from_conf(cls, conf: ConfigParser, verbose=False) -> "Sample":
         lead_accept_threshold = float(conf['sampling']['lead_accept_threshold'])
@@ -496,10 +497,9 @@ class Sample:
             index = 2
 
         X[:, :, :] = A
-        X[:, :, 7+index:39+index] = hand.reshape((-1, 1, 32))
-        #X[:, :, 39+index:] = A[nesw_i, :, 39+index:]
-        X[:, :, 2+index] = (binary.get_hcp(hand).reshape((-1, 1)) - 10) / 4
-        X[:, :, 3+index:7+index] = (binary.get_shape(hand).reshape((-1, 1, 4)) - 3.25) / 1.75
+        #X[:, :, 7+index:39+index] = hand.reshape((-1, 1, 32))
+        #X[:, :, 2+index] = (binary.get_hcp(hand).reshape((-1, 1)) - 10) / 4
+        #X[:, :, 3+index:7+index] = (binary.get_shape(hand).reshape((-1, 1, 4)) - 3.25) / 1.75
 
         actual_bids = bidding.get_bid_ids(auction, nesw_i, n_steps)
         sample_bids = bidder_model.model_seq(X)
@@ -536,6 +536,7 @@ class Sample:
             )
             hidden_cards = get_all_hidden_cards(visible_cards)
             hidden_cards_no = len(hidden_cards)
+            print("hidden_cards_no",hidden_cards_no)
             contract = bidding.get_contract(auction)
             known_nesw = player_to_nesw_i(player_i, contract)
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
@@ -652,11 +653,24 @@ class Sample:
             if self.verbose:
                 print(f"States {states[0].shape[0]} after checking lead")
 
+        # To save time we reduce no of samples to 3 times what is required before we validate the actual play
+        # bidding_states = [state[:3*n_samples] for state in bidding_states]
+
+        if self.play_accept_threshold > 0:
+            if trick_i < 11:
+                states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, models.player_models, hidden_1_i, hidden_2_i, states)
+            else:
+                states = self.validate_play_until_now(10, [], leader_i, player_cards_played, models.player_models, hidden_1_i, hidden_2_i, states)
+        if self.verbose:
+            print(f"States {states[0].shape[0]} after checking the play.")
+
         # start = time.time()
         min_bid_scores = np.ones(states[0].shape[0])
 
         # Loop the samples for each of the 2 hidden hands to check bidding
+        # We should generally trust our partners bidding most
         for h_i in [hidden_1_i, hidden_2_i]:
+            #if (player_i + 2) % 4 == h_i:
             h_i_nesw = player_to_nesw_i(h_i, contract)
             bid_scores = self.get_bid_scores(h_i_nesw, auction, vuln, states[h_i][:, 0, :32], models.bidder_model, models.ns, models.ew)
             min_bid_scores = np.minimum(min_bid_scores, bid_scores)
@@ -698,18 +712,7 @@ class Sample:
                     bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
                 sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
 
-            if self.verbose:
-                print(f"States {bidding_states[0].shape[0]} after checking the bidding")
-
-        # To save time we reduce no of samples to 3 times what is required before we validate the actual play
-        bidding_states = [state[:3*n_samples] for state in bidding_states]
-
-        if trick_i <= 9 and self.play_accept_threshold > 0:
-            if self.verbose:
-                print("Validating play")
-            bidding_states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, models.player_models, hidden_1_i, hidden_2_i, bidding_states)
-        if self.verbose:
-            print(f"States {bidding_states[0].shape[0]} after checking the play. Returning {min(bidding_states[0].shape[0],n_samples)}")
+        print(f"Returning {min(bidding_states[0].shape[0],n_samples)}")
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
         return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp
     
@@ -765,12 +768,15 @@ class Sample:
         return accept, c_hcp, c_shp
 
     def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states):
-        # If we have less than 2 times minimum number of samples needed we ignore this test
+        # Only make the test if opening leader (0) is hidden
+        # and if we have less than 2 times minimum number of samples needed we ignore this test
+        # there could be an idea in doing this always for partner as we can trust his lead
         if (hidden_1_i == 0 or hidden_2_i == 0) and states[0].shape[0] > self.min_sample_hands_play * 2:
             opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
             lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :32], opening_lead, models.ns, models.ew)
 
             # How much trust that opponents would have lead the actual card from the hand sampled
+            # Perhaps we should increase the value if it was partners lead?
             lead_accept_threshold = self.lead_accept_threshold
             while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
                 lead_accept_threshold *= 0.5
@@ -783,13 +789,21 @@ class Sample:
         return states
 
     # Check that the play until now is expected with the samples
+    # In principle we do this to eliminated hands, where the card played is inconsistent with the sample
+    # We should probably only validate partner as he follow our rules (what is in the neural net)
     def validate_play_until_now(self, trick_i, current_trick, leader_i, player_cards_played, player_models, hidden_1_i, hidden_2_i, states):
+        if self.verbose:
+            print("Validating play")
+        print("trick_i", trick_i)
+        print(hidden_1_i, hidden_2_i)
         min_scores = np.ones(states[0].shape[0])
         for p_i in [hidden_1_i, hidden_2_i]:
 
             if trick_i == 0 and p_i == 0:
                 continue
-
+            # We will not test declarer
+            if p_i == 3:
+                continue
             card_played_current_trick = []
             for i, card in enumerate(current_trick):
                 if (leader_i + i) % 4 == p_i:
@@ -809,6 +823,9 @@ class Sample:
 
         # Trust in the play until now
         play_accept_threshold = self.play_accept_threshold
+
+        if self.verbose:
+            print(f"Found deals above play thresholde: {np.sum(min_scores > play_accept_threshold)} ")
 
         while np.sum(min_scores > play_accept_threshold) < 20 and play_accept_threshold > 0:
             play_accept_threshold -= 0.01

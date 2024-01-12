@@ -42,9 +42,11 @@ def get_execution_path():
     return os.getcwd()
 
 
-def random_deal():
+def random_deal(number=None):
     deal_str = deck52.random_deal()
-    auction_str = deck52.random_dealer_vuln()
+    if number == None:
+        number = np.random(16)
+    auction_str = deck52.board_dealer_vuln(number)
 
     return deal_str, auction_str
 
@@ -77,6 +79,7 @@ class Driver:
         #Default is a Human South
         self.human = [False, False, True, False]
         self.human_declare = False
+        self.name = "Human"
         self.ns = models.ns
         self.ew = models.ew
         self.verbose = verbose
@@ -126,7 +129,8 @@ class Driver:
             'message': 'deal_start',
             'dealer': self.dealer_i,
             'vuln': [self.vuln_ns, self.vuln_ew],
-            'hand': result_list
+            'hand': result_list,
+            'name': self.name
         }))
 
         self.bid_responses = []
@@ -208,7 +212,8 @@ class Driver:
             'contract': self.contract,
             'play': [c.to_dict() for c in self.card_responses],
             'trick_winners': self.trick_winners,
-            'board_number' : self.board_number
+            'board_number' : self.board_number,
+            'human': self.name
         }
 
     async def play(self, auction, opening_lead52):
@@ -514,7 +519,7 @@ class Driver:
                 from bba.BBA import BBABotBid
                 players.append(BBABotBid(self.models.ns, self.models.ew, i, hands_str[i], vuln, self.dealer_i))
             elif level == 1:
-                players.append(self.factory.create_human_bidder(vuln, hands_str[i]))
+                players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
             else:
                 bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.verbose)
                 players.append(bot)
@@ -536,7 +541,9 @@ class Driver:
             }))
 
             player_i = (player_i + 1) % 4
-
+            # give time to client to redraw
+            await asyncio.sleep(0.1)
+            
         return auction
 
 def random_deal_source():

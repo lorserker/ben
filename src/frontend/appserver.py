@@ -228,6 +228,9 @@ def index():
     west = request.forms.get('W')    
     human = request.forms.get('H')    
     autocomplete = request.forms.get('A')
+    name = request.forms.get('name')
+    timeout = request.forms.get('T')
+    cont = request.forms.get('C')
     player = ""
     if north: player += "&N=x"
     if east: player += "&E=x"
@@ -235,6 +238,9 @@ def index():
     if west: player += "&W=x"
     if human: player += "&H=x"
     if autocomplete: player += "&A=x"
+    if name: player += f"&name={name}"
+    if timeout: player += f"&T={timeout}"
+    if cont: player += "&C=x"
     dealtext = request.forms.get('dealtext')
     if dealtext:
         dealer = request.forms.get('dealer')

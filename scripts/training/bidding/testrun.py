@@ -78,7 +78,7 @@ def main():
             dealer_i = 'NESW'.index(parts[0])
             vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
             vuln_ns, vuln_ew = vuln[parts[1]]
-            bidder_bots = [BotBid([vuln_ns, vuln_ew], hand, models, sampler, verbose) for hand in hands]
+            bidder_bots = [BotBid([vuln_ns, vuln_ew], hand, models, sampler, i, verbose) for i, hand in enumerate(hands)]
 
             auction = ['PAD_START'] * dealer_i
 

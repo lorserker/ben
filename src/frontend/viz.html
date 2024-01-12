@@ -145,13 +145,13 @@
                                 let dealer = 'NESW'.charAt(deal.data.dealer)
                                 const rebidContent = '<a href="/app/bridge.html?deal=' +
                                     '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + '\')' +
-                                    '&P=1&board_no=' + deal.board_number() + '"> Bid and play it again </a><br>';
+                                    '&P=1&board_no=' + deal.board_number() + '&A=x&T=2"> Let BEN bid and play it again.</a><br>';
 
                                 document.querySelector('#rebid').innerHTML = rebidContent;
 
                                 const replayContent = '<a href="/app/bridge.html?deal=' +
                                     '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + ' ' + auction.auctionString +'\')' +
-                                    '&P=5&board_no=' + deal.board_number() + '"> Play it again </a><br>';
+                                    '&P=5&board_no=' + deal.board_number() + '&S=x"> Play it again (Human is south) </a><br>';
 
                                 document.querySelector('#replay').innerHTML = replayContent;
 
@@ -163,7 +163,7 @@
                                     '&East=' + hands[1] +
                                     '&South=' + hands[2] +
                                     '&West=' + hands[3] +
-                                    '"> Bridge Solver </a><br>';
+                                    '" target=blank> Bridge Solver (New window)</a><br>';
 
 
                                 document.querySelector('#solver').innerHTML = solverContent;
@@ -171,7 +171,7 @@
                                 let i = 0
                                 log['bids'].forEach(data => {
                                     document.querySelector('#info').innerHTML += `
-                                        <p class="bid"><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' +data.who : ''}</p>
+                                        <p class="bid"><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' + data.who : ''}</p>
                                         `;
                                     if (data.candidates.length > 0)
                                         document.querySelector('#info').innerHTML += `
@@ -179,7 +179,7 @@
                                             <ul>
                                                 ${data.candidates.map(candidate => `
                                                     <li>
-                                                        Call: ${candidate.call},
+                                                        Bid: ${candidate.call.replace("PASS","P").padStart(2, ' ')},
                                                         ${candidate.expected_score !== undefined ? `Expected score: ${candidate.expected_score},` : ''}
                                                         ${candidate.insta_score !== undefined ? `NN Score: ${candidate.insta_score},` : ''}
                                                         ${candidate.adjustment !== undefined ? `Adjusted: ${candidate.adjustment}` : ''}
