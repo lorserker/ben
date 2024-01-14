@@ -76,7 +76,16 @@ body {
     display: flex;
     flex-direction: column; /* Update to column direction for vertical stacking */
     align-items: flex-start; /* Adjust alignment as needed */
-    justify-content: flex-start; /* Adjust justification as needed */
+    justify-content: center; /* Adjust justification as needed */
+    font-size: 3rem;
+    font-family: Arial, sans-serif;
+}
+
+#east {
+    display: flex;
+    flex-direction: column; /* Update to column direction for vertical stacking */
+    align-items: flex-end; /* Adjust alignment as needed */
+    justify-content: center; /* Adjust justification as needed */
     font-size: 3rem;
     font-family: Arial, sans-serif;
 }
@@ -145,6 +154,12 @@ body {
 .red {
     color: red;
 }
+.green {
+    color: green;
+}
+.orange {
+    color: orange;
+}
 
 #table-container {
     display: grid;
@@ -185,13 +200,21 @@ body {
     width: 100%;
 }
 
-#auction {
+#auction-main {
     grid-row: span 2;
     border: 1px solid black;
     border-radius: 3px;
     background-color: #efcdf5e0;
     font-size: 1.5rem;
     font-family: Arial, sans-serif;
+    display: block;
+}
+
+#auction-container {
+    display: flex;
+    flex-direction: column;
+    height: 38vh; /* Set a minimum height for the table container */
+    overflow-y: auto; /* Add scrollbar if content overflows */
 }
 
 #boardno {
@@ -207,18 +230,31 @@ body {
 
 #auction table {
     width: 100%;
+    border-collapse: collapse;
 }
 
 #auction td {
+    border: 1px solid #ddd;
+    padding: 1px;
     text-align: center;
+    vertical-align: top;
+}
+
+#auction tr {
+    max-height: 5vh;
 }
 
 .tricks {
     font-size: 1.3rem;
-    margin-top: .5rem;
+    margin: .4rem;
     text-align: center;
     font-weight: bold;
     color: navy;
+    padding: .5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    background-color: yellowgreen;
 }
 
 #bidding-levels {
@@ -243,15 +279,15 @@ body {
 }
 
 #bidding-suits div {
-    margin: .5rem;
+    margin: .4rem;
     padding: .5rem;
     border: 1px solid black;
     border-radius: 5px;
     font-family: Arial, sans-serif;
-    font-size: 2rem;
+    font-size: 1.8rem;
     background-color: white;
-    width: 4rem;
-    height: 4rem;
+    width: 3rem;
+    height: 3rem;
     text-align: center;
 }
 
@@ -260,20 +296,24 @@ body {
 }
 
 #bidding-calls div {
-    margin: .5rem;
+    margin: .4rem;
     padding: .5rem;
     border: 1px solid black;
     border-radius: 5px;
     font-family: Arial, sans-serif;
-    font-size: 2rem;
+    font-size: 1.8rem;
     background-color: white;
-    width: 8rem;
-    height: 4rem;
+    width: 6rem;
+    height: 3rem;
     text-align: center;
 }
 
 #bidding-box .pass {
     background-color: green;
+}
+
+#bidding-box .hint {
+    background-color: yellowgreen;
 }
 
 #bidding-box .double {
@@ -296,7 +336,24 @@ body {
     display: none;
 }
 
-#claim .hidden {
+.last-trick, .claim {
+    margin: .4rem;
+    padding: .5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    background-color: yellowgreen;
+    width: 8rem;
+    height: 2rem;
+    text-align: center;
+}
+
+#last-trick .hidden {
+    display: none;
+}
+
+#claim-trick .hidden {
     display: none;
 }
 
@@ -305,14 +362,14 @@ body {
 }
 
 #claim-tricks div {
-    margin: .5rem;
+    margin: .4rem;
     padding: .5rem;
     border: 1px solid black;
     border-radius: 5px;
     font-family: Arial, sans-serif;
     font-size: 1rem;
     background-color: white;
-    width: 4rem;
+    width: 3rem;
     height: 2rem;
     text-align: center;
 }
@@ -340,3 +397,42 @@ span.bba {
     font-size: 0.6em; /* You can adjust the size as needed */
 }
   
+
+#customDialog {
+    border: 2px solid #000; /* Set border width and color */
+    background-color: #fff; /* Set background color */
+    opacity: 1 !important; /* Ensure opacity is set to 1 */
+    max-width: 400px;
+}
+
+#commentInput {
+    width: 100%;
+    height: 80px; /* Adjust the height as needed */
+}
+
+#buttonContainer {
+    margin-top: 10px;
+    text-align: right;
+}
+
+/* Style to hide the default "Close" button */
+.ui-dialog .ui-dialog-titlebar-close {
+    display: none;
+}
+
+.quality-good {
+    background-color: green;
+}
+
+.quality-ok {
+    background-color: lightsteelblue;
+}
+
+.quality-bad {
+    background-color: red;
+}
+
+.bid-nt {
+    font-size: 1.6em !important; /* You can adjust the size as needed */
+    font-weight: 700;
+}

@@ -15,8 +15,14 @@ class Card {
         card.setAttribute('data-value', this.rank)
         card.setAttribute('symbol', this.symbol)
         card.innerHTML = ['&spades;', '&hearts;', '&diams;', '&clubs;'][this.suit]
-        if (this.suit == 1 || this.suit == 2) {
+        if (this.suit == 1) {
             card.classList.add('red')
+        }
+        if (this.suit == 2) {
+            card.classList.add('orange')
+        }
+        if (this.suit == 3) {
+            card.classList.add('green')
         }
 
         element.appendChild(card)
@@ -24,19 +30,33 @@ class Card {
 
 }
 
-
 class Hand {
 
-    constructor(cards) {
-        this.cards = cards
+    constructor(cards, isPublic, rendered) {
+        this._cards = cards;
+        this.isPublic = isPublic;
+        this.rendered = rendered;
+        this.suits = [[], [], [], []];
 
-        this.suits = [[], [], [], []]
+        // Initialize suits based on the initial cards
+        this.updateSuits();
+    }
 
-        for (const element of cards) {
+    get cards() {
+        return this._cards;
+    }
+
+    set cards(newCards) {
+        this._cards = newCards;
+        this.updateSuits(); // Update suits whenever cards are set
+    }
+
+    updateSuits() {
+        for (const element of this._cards) {
             this.suits[element.suit].push(element)
         }
     }
-
+    
     isPlayable(card, trick) {
         if (!this.hasCard(card)) {
             return false
@@ -73,42 +93,43 @@ class Hand {
                 remainingCards.push(element)
             }
         }
-        return new Hand(remainingCards)
+        return new Hand(remainingCards, this.isPublic, this.rendered)
     }
 
-    render(element) {
+    render(element, direction) {
         element.textContent = ''
 
-        const order = [0, 1, 3, 2];
-
-        for (let i of order) {
-            this.suits[i].forEach(c => c.render(element)) 
-        }
-    }
-
-    renderEW(element) {
-        element.textContent = '';
-    
-        const order = [0, 1, 3, 2];
-
-        for (let i of order) {
-            const suitContainer = document.createElement('div');
-            suitContainer.style.display = 'flex'; // Set suit containers to flex display
-            
-            element.appendChild(suitContainer);
-        
-            // Check if the suit has no cards
-            if (this.suits[i].length === 0) {
-                suitContainer.classList.add('empty-suit'); // Add a class for an empty suit
-            } else {
-                // Render elements for each non-empty suit into their respective containers
-                this.suits[i].forEach(card => {
-                    card.render(suitContainer);
-                });
+        // Move trump to the left
+        let order = [0, 1, 3, 2];
+        if (deal.strain == 2) order = [1, 0, 3, 2];
+        if (deal.strain == 3) order = [2, 0, 1, 2];
+        if (deal.strain == 4) order = [3, 1, 0, 2];
+        if (direction === 'northc' || direction === 'southc') {
+            for (let i of order) {
+                this.suits[i].forEach(c => c.render(element))
             }
-        }
+        } else {
+            for (let i of order) {
+                const suitContainer = document.createElement('div');
+                suitContainer.style.display = 'flex'; // Set suit containers to flex display
 
-    }  
+                element.appendChild(suitContainer);
+
+                // Check if the suit has no cards
+                if (this.suits[i].length === 0) {
+                    suitContainer.classList.add('empty-suit'); // Add a class for an empty suit
+                } else {
+                    // Render elements for each non-empty suit into their respective containers
+                    this.suits[i].forEach(card => {
+                        card.render(suitContainer);
+                    });
+                }
+            }
+
+        }
+        this.rendered = true
+
+    }
 
     suitHtml(symbol, cards, red) {
         let html = '<div class="suit">'
@@ -130,7 +151,6 @@ class Hand {
 
 }
 
-
 function parseHand(pbnString) {
     let suits = pbnString.split('.')
     let cards = []
@@ -142,9 +162,8 @@ function parseHand(pbnString) {
         }
     }
 
-    return new Hand(cards)
+    return cards
 }
-
 
 class Contract {
     // TODO: implement
@@ -230,15 +249,16 @@ class Trick {
     }
 
     render(slotElements) {
-        slotElements.forEach(el => el.textContent = '')
-
+        slotElements.forEach(el => {
+            el.textContent = '';
+            el.style.visibility  = 'visible';
+        });
         for (let i = this.leadPlayer, j = 0; j < this.cards.length; i = (i + 1) % 4, j++) {
             this.cards[j].render(slotElements[i])
         }
     }
 
 }
-
 
 class Deal {
 
@@ -247,8 +267,10 @@ class Deal {
         this.vuln = vuln
         this.hands = []
         for (let i = 0; i < 4; i++) {
-            if (hands[i] != "")
-                this.hands[i] = parseHand(hands[i])
+            this.hands[i] = new Hand([], false, false)
+            if (hands[i] != "") {
+                this.hands[i].cards = parseHand(hands[i])
+            }
         }
         this.tricksCount = [0, 0]
 
@@ -271,27 +293,16 @@ class Deal {
     }
 
     renderAuction(element) {
-        element.textContent = ''
-
-        let html = ''
-        html += '<div>'
-        html += '<div id="auction-container"></div>'
-        html += '<div class="tricks"></div>'
-        html += '</div>'
-
-        element.innerHTML = html
-
-        this.renderTricks(document.querySelector('.tricks'))
 
         let auction = new Auction(this.dealer, this.vuln, this.auction)
 
-        auction.render(document.querySelector('#auction-container'))
+        auction.render(element)
     }
 
     renderClaim(element) {
         element.textContent = ''
         let html = ''
-        if ((this.tricksCount[0] + this.tricksCount[1]) > 13) {
+        if ((this.tricksCount[0] + this.tricksCount[1]) > 6) {
             html += 'Claim: '
             html += '<div id="claim-tricks">'
             html += '<div tricks="0">0</div>'
@@ -301,7 +312,6 @@ class Deal {
             html += '<div tricks="4">4</div>'
             html += '<div tricks="5">5</div>'
             html += '<div tricks="6">6</div>'
-            html += '<div tricks="7">7</div>'
             html += '</div>'
             element.innerHTML = html
             return true
@@ -328,8 +338,8 @@ class Deal {
         html += '</div>'
 
         html += '<div id="bidding-suits" class="hidden">'
-        html += '<div class="bid-clubs" symbol="C">&clubs;</div>'
-        html += '<div class="bid-diamonds red" symbol="D">&diams;</div>'
+        html += '<div class="bid-clubs green" symbol="C">&clubs;</div>'
+        html += '<div class="bid-diamonds orange" symbol="D">&diams;</div>'
         html += '<div class="bid-hearts red" symbol="H">&hearts;</div>'
         html += '<div class="bid-spades" symbol="S">&spades;</div>'
         html += '<div class="bid-nt" symbol="N">NT</div>'
@@ -347,6 +357,7 @@ class Deal {
         } else {
             html += '<div class="redouble invalid">XX</div>'
         }
+        html += '<div class="hint">Hint</div>'
         html += '</div>'
 
         html += '</div>'
@@ -354,7 +365,6 @@ class Deal {
         element.innerHTML = html
     }
 }
-
 
 class Auction {
 
@@ -452,7 +462,7 @@ class Auction {
                 html += '<tr>'
             }
 
-            html +='<td>' + this.formatBid(this.paddedBids[i]) + '</td>'
+            html += '<td>' + this.formatBid(this.paddedBids[i]) + '</td>'
 
             if (i % 4 == 3) {
                 html += '</tr>\n'
@@ -469,7 +479,7 @@ class Auction {
     formatBid(bid) {
         let calls = {
             '': '',
-            'PASS': 'p',
+            'PASS': 'P',
             'X': 'X',
             'XX': 'XX'
         }
@@ -485,8 +495,8 @@ class Auction {
             'N': 'NT',
             'S': '<span>&spades;</span>',
             'H': '<span class="red">&hearts;</span>',
-            'D': '<span class="red">&diams;</span>',
-            'C': '<span>&clubs;</span>'
+            'D': '<span class="orange">&diams;</span>',
+            'C': '<span class="green">&clubs;</span>'
         }
 
         return level + symbolFormat[symbol]

@@ -103,6 +103,8 @@
     <div class="inner-div">
     Other options: <br>
     <input type="checkbox" id="H" data-default="true"><label for="H">Human declares</label><br>
+    <input type="checkbox" id="V" data-default="false"><label for="H">Show all human hands</label><br>
+    <input type="checkbox" id="R" data-default="false"><label for="H">Rotate deal</label><br>
     </div>
     <div class="inner-div">
     Automation<br>
@@ -115,7 +117,7 @@
         <option value="10">10</option>
     </select>
     seconds<br>
-    <input type="checkbox" id="C" data-default="true"><label for="C">Continue to next deal (Requires board number)</label><br>
+    <input type="checkbox" id="C" data-default="false"><label for="C">Continue to next deal (Requires board number)</label><br>
     </div>
 
   </div>
@@ -126,10 +128,10 @@
   <div class="content">
 <ul>
 % for index, deal in enumerate(deals):
-    <li>
+    <li title="{{deal['feedback']}}" class="quality-{{deal['quality']}}">
         <span>{{deal['board_no_index']}}  <a href="/app/viz.html?deal={{deal['deal_id']}}{{deal['board_no_ref']}}">{{deal['contract']}}{{deal.get('trick_winners_count', '')}}</a></span>&nbsp;&nbsp;
         <span><a href="{{deal['delete_url']}}">delete</a></span><br>
-        <span class="bba">BBA=<span id="bbaText{{index}}">{{deal['bba']}}&nbsp;<i class="fas fa-copy" onclick="copyToClipboard({{index}})"></i>
+        <span class="bba" title="Copy this">BBA=<span id="bbaText{{index}}">{{deal['bba']}}&nbsp;<i class="fas fa-copy" onclick="copyToClipboard({{index}})"></i>
         </span>
         </span>
     </li>
@@ -174,6 +176,8 @@ const checkbox4 = document.getElementById('W');
 const checkbox5 = document.getElementById('H');
 const checkbox6 = document.getElementById('A');
 const checkbox7 = document.getElementById('C');
+const checkbox8 = document.getElementById('R');
+const checkbox9 = document.getElementById('V');
 
 // Function to save checkbox state in localStorage
 function saveCheckboxState(checkboxId, checked) {
@@ -188,7 +192,7 @@ function loadCheckboxState(checkboxId, defaultChecked) {
     if (savedCheckboxState === null) {
         checkboxId.checked = defaultChecked
         saveCheckboxState(checkboxId, defaultChecked); // Set to default value
-        return false;
+        return defaultChecked;
     } else {
         return savedCheckboxState === 'true';
     }
@@ -220,7 +224,7 @@ function includeCheckboxValues(event) {
 
     if (selectedForm) {
         const formData = new FormData(selectedForm);
-        const checkboxes = [checkbox1, checkbox2, checkbox3, checkbox4, checkbox5, checkbox6, checkbox7];
+        const checkboxes = [checkbox1, checkbox2, checkbox3, checkbox4, checkbox5, checkbox6, checkbox7, checkbox8, checkbox9];
         checkboxes.forEach(checkbox => {
             if (checkbox.checked) {
                 formData.append(checkbox.id, checkbox.value);

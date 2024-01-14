@@ -9,13 +9,56 @@
   <link rel="stylesheet" href="style.css">
   <script type="text/javascript" src="bridge.js"></script>
 
+<!-- Include jQuery and jQuery UI -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+
+
+<script>
+  $(function() {
+    // Initialize the dialog
+    $("#customDialog").dialog({
+      autoOpen: false,
+      modal: true,
+      position: { my: "center", at: "bottom", of: "#bidding" }, // Position relative to the button
+      buttons: {}
+    });
+  })
+</script>
+
 </head>
 
 <body>
 
+<!-- HTML for the dialog -->
+<div id="customDialog" title="Feedback">
+    <textarea id="commentInput" placeholder="Enter your comments here..."></textarea>
+    <div id="buttonContainer">
+        <button id="nosaveButton">Do not save</button>
+        <button id="badButton">Bad</button>
+        <button id="okButton">OK</button>
+      <button id="goodButton">Good</button>
+    </div>
+  </div>
+
     <div id="container">
         <div id="north" class="grid-item"></div>
-        <div id="auction" class="grid-item"></div>
+        <div id="auction-main" class="grid-item">
+            <div id="auction-container"></div>
+            <div class="tricks">Tricks</div>
+            <div class="last-trick" style="visibility: hidden">Show last trick</div>
+            <div class="claim" style="display: none">Claim
+                <div id="claim-tricks" style="display: none">
+                    <div tricks="0">0</div>
+                    <div tricks="1">1</div>
+                    <div tricks="2">2</div>
+                    <div tricks="3">3</div>
+                    <div tricks="4">4</div>
+                    <div tricks="5">5</div>
+                    <div tricks="6">6</div>
+                </div>
+            </div>
+        </div>
         <div id="west" class="grid-item"></div>
         <div id="table" class="grid-item">
             <div id="table-container">
@@ -46,19 +89,6 @@
         <div id="bidding" class="grid-item"></div>
     </div>
 
-    <div id="claim" style="display: none">
-        <div id="claim-tricks">
-            <div tricks="0">0</div>
-            <div tricks="1">1</div>
-            <div tricks="2">2</div>
-            <div tricks="3">3</div>
-            <div tricks="4">4</div>
-            <div tricks="5">5</div>
-            <div tricks="6">6</div>
-            <div tricks="7">7</div>
-        </div>
-    </div>
-
     <div><a href="/home">Home</a></div>
 
     <div id="auctionstr"></div>
@@ -80,6 +110,8 @@
         const name = urlParams.get('name')
         const timeout = urlParams.get('T')
         const cont = urlParams.get('C')
+        const rotate = urlParams.get('R')
+        const visible = urlParams.get('V')
 
         let no_human = !north && !east && !south && !west
         let player = ""
@@ -92,6 +124,8 @@
         if (name) player += "&name=" + name
         if (timeout) player += "&T=" + timeout
         if (cont) player += "&C=x"
+        if (rotate) player += "&R=x"
+        if (visible) player += "&V=x"
         var queryString = ""
         var ws
         if (dealId) {
@@ -131,10 +165,28 @@
             ]
         }
 
+        // Hide the information
+        function hideTrickCardSlots() {
+            const trickCardSlots = getTrickCardSlots();
+            trickCardSlots.forEach(el => el.style.visibility  = 'hidden');
+            document.querySelector('.last-trick').style.visibility = 'visible'
+        }
+
+        // Show the information
+        function showTrickCardSlots() {
+            const trickCardSlots = getTrickCardSlots();
+            trickCardSlots.forEach(el => el.style.visibility  = 'visible'); // Reset to the default display value
+            document.querySelector('.last-trick').style.visibility = 'hidden'
+        }
+
         function setTurn(playerTurn) {
             let labels = ['.label-north', '.label-east', '.label-south', '.label-west']
             labels.forEach(l => document.querySelector(l + ' .seat-label').classList.remove("turn"))
             document.querySelector(labels[playerTurn] + ' .seat-label').classList.add("turn")
+        }
+
+        function showlasttrick(event) {
+            showTrickCardSlots()
         }
 
         function cardClick(event) {
@@ -181,7 +233,7 @@
                 return
             }
             ws.send(event.target.textContent)
-            deal.expectBidInput = false
+            deal.expectBidInput = event.target.textContent != "Hint"
         }
 
         function bidSuitClick(event) {
@@ -207,10 +259,42 @@
             deal.expectCardInput = true
         }
 
+        function updateTable(deal) {
+            const hands = ['north', 'east', 'south', 'west'];
+
+            hands.forEach((direction, index) => {
+                const selector = `#${direction}`;
+                const handElement = document.querySelector(selector);
+
+                // Check if the hand should be visible
+                let shouldBeVisible = (deal.hands[index].isPublic || no_human) && (visible =='x' || deal.turn === index);
+
+                if (deal.dummy) {
+                    // Dummy is always visible
+                    if (index == deal.dummy) shouldBeVisible = true
+                    // When dummy to play we want to see declarers hand
+                    if ((index + 2) % 4 == deal.dummy && (index + 2 == deal.turn || index == deal.turn )) shouldBeVisible = true
+                }
+                if (shouldBeVisible) {
+                    // If the hand was previously hidden, make it visible again
+                    if (deal.hands[index].rendered) {
+                        handElement.style.visibility = 'visible';
+                    } else {
+                        // Call the render method with the direction
+                        deal.hands[index].render(handElement, direction);
+                    }
+                } else {
+                    if (deal.hands[index].rendered) {
+                        handElement.style.visibility = 'hidden';
+                    }
+                }
+            });
+        }
+
         document.querySelector('body').addEventListener('click', function() {
-            // THis could also be a claim - need handling
+            // This could also be a claim - need handling
             if (deal?.expectTrickConfirm) {
-                getTrickCardSlots().forEach(el => el.textContent = "")
+                hideTrickCardSlots();
                 ws.send('y')
                 if (timeoutId) clearTimeout(timeoutId);
                 deal.expectTrickConfirm = false
@@ -222,7 +306,6 @@
             }
         })
 
-
         ws.onmessage = function (event) {
             console.log('received message')
             console.log(event.data)
@@ -230,8 +313,12 @@
             let data = JSON.parse(event.data)
 
             if (data.message == "deal_start") {
-                deal = new Deal(data.dealer, data.vuln, data.hand)
 
+                deal = new Deal(data.dealer, data.vuln, data.hand)
+                if (north) deal.hands[0].isPublic = true
+                if (east) deal.hands[1].isPublic = true
+                if (south) deal.hands[2].isPublic = true
+                if (west) deal.hands[3].isPublic = true
                 let dealerLabel = ['.label-north', '.label-east', '.label-south', '.label-west'][deal.dealer]
 
                 document.querySelector(dealerLabel + ' .seat-label').classList.add("dealer")
@@ -246,17 +333,18 @@
 
                 setTurn(deal.dealer)
 
-                if (north || no_human) deal.hands[0].render(document.querySelector('#north'))
-                if (east || no_human) deal.hands[1].renderEW(document.querySelector('#east'))
-                if (south || no_human) deal.hands[2].render(document.querySelector('#south'))
-                if (west || no_human) deal.hands[3].renderEW(document.querySelector('#west'))
-                deal.renderAuction(document.querySelector('#auction'))
+                updateTable(deal)
+                deal.renderAuction(document.querySelector('#auction-container'))
                 deal.renderBiddingBox(document.querySelector('#bidding'))
+                document.querySelectorAll('.last-trick')
+                    .forEach(c => c.addEventListener('click', showlasttrick))
+
             } else if (data.message == "bid_made") {
                 deal.auction = data.auction
-                deal.renderAuction(document.querySelector('#auction'))
+                deal.renderAuction(document.querySelector('#auction-container'))
                 deal.turn = (deal.turn + 1) % 4
             } else if (data.message == "get_bid_input") {
+                updateTable(deal)
                 deal.auction = data.auction
                 deal.canDouble = data.can_double
                 deal.canRedouble = data.can_redouble
@@ -269,29 +357,27 @@
                     el.addEventListener("click", biddingLevelClick))
                 document.querySelectorAll('#bidding-suits div').forEach(el =>
                     el.addEventListener("click", bidSuitClick))
+            } else if (data.message == "hint") {
+                alert(data.bids)
             } else if (data.message == "auction_end") {
                 deal.auction = data.auction
                 deal.declarer = data.declarer
                 deal.strain = data.strain
-                deal.dummy = (deal.declarer + 2) % 4
                 deal.turn = (data.declarer + 1) % 4
                 setTurn(deal.turn)
                 deal.currentTrick = new Trick(deal.turn, [])
 
-                //document.querySelector('#north').textContent = ''
                 document.querySelector('#bidding').textContent = ''
-                deal.renderAuction(document.querySelector('#auction'))
+                deal.renderAuction(document.querySelector('#auction-container'))
 
                 document.querySelectorAll('.card')
                     .forEach(c => c.addEventListener('click', cardClick))
             } else if (data.message == "show_dummy") {
 
-                deal.hands[data.player] = parseHand(data.dummy)
-
-                if (data.player == 0) deal.hands[data.player].render(document.querySelector('#north'))
-                if (data.player == 1) deal.hands[data.player].renderEW(document.querySelector('#east'))
-                if (data.player == 2) deal.hands[data.player].render(document.querySelector('#south'))
-                if (data.player == 3) deal.hands[data.player].renderEW(document.querySelector('#west'))
+                deal.dummy = (deal.declarer + 2) % 4
+                deal.hands[data.player].cards = parseHand(data.dummy)
+                deal.hands[data.player].isPublic = true
+                updateTable(deal)
 
                 document.querySelectorAll('.card')
                     .forEach(c => c.addEventListener('click', cardClick))
@@ -299,57 +385,58 @@
                 let card = new Card(data.card)
                 
                 deal.currentTrick.cards.push(card)
+                document.querySelector('.last-trick').style.visibility = 'hidden'
 
                 if (no_human) {
                     deal.hands[data.player] = deal.hands[data.player].play(card)
-                    if (data.player == 0) deal.hands[0].render(document.querySelector('#north'))
-                    if (data.player == 1) deal.hands[1].renderEW(document.querySelector('#east'))
-                    if (data.player == 2) deal.hands[2].render(document.querySelector('#south'))
-                    if (data.player == 3) deal.hands[3].renderEW(document.querySelector('#west'))
+                    if (data.player == 0) deal.hands[0].render(document.querySelector('#north'), 'north')
+                    if (data.player == 1) deal.hands[1].render(document.querySelector('#east'), 'east')
+                    if (data.player == 2) deal.hands[2].render(document.querySelector('#south', 'south'))
+                    if (data.player == 3) deal.hands[3].render(document.querySelector('#west'), 'west')
                 } else {
                     // First check if dummy is to be updated
                     if (data.player == deal.dummy) {
                         deal.hands[data.player] = deal.hands[data.player].play(card)
                         if (deal.dummy == 0) {
-                            deal.hands[data.player].render(document.querySelector('#north'))
+                            deal.hands[data.player].render(document.querySelector('#north'), 'north')
                         } 
                         if (deal.dummy == 1) {
-                            deal.hands[data.player].renderEW(document.querySelector('#east'))
+                            deal.hands[data.player].render(document.querySelector('#east'), 'east')
                         } 
                         if (deal.dummy == 2) {
-                            deal.hands[data.player].render(document.querySelector('#south'))
+                            deal.hands[data.player].render(document.querySelector('#south'), 'south')
                         } 
                         if (deal.dummy == 3) {
-                            deal.hands[data.player].renderEW(document.querySelector('#west'))
+                            deal.hands[data.player].render(document.querySelector('#west'), 'west')
                         }
                     } else {
                         if (deal.hands[data.player]) {
                             // Then check if declarer is human
                             deal.hands[data.player] = deal.hands[data.player].play(card)
                             if (data.player == 0 && north) {
-                                deal.hands[data.player].render(document.querySelector('#north'))
+                                deal.hands[data.player].render(document.querySelector('#north'), 'north')
                             } 
                             if (data.player == 1 && east) {
-                                deal.hands[data.player].renderEW(document.querySelector('#east'))
+                                deal.hands[data.player].render(document.querySelector('#east'), 'east')
                             } 
                             if (data.player == 2 && south) {
-                                deal.hands[data.player].render(document.querySelector('#south'))
+                                deal.hands[data.player].render(document.querySelector('#south'), 'south')
                             } 
                             if (data.player == 3 && west) {
-                                deal.hands[data.player].renderEW(document.querySelector('#west'))
+                                deal.hands[data.player].render(document.querySelector('#west'), 'west')
                             } 
                             // Finally we need to update declarer if we are dummy
                             if (data.player == 0 && deal.declarer == data.player && south) {
-                                deal.hands[data.player].render(document.querySelector('#north'))
+                                deal.hands[data.player].render(document.querySelector('#north'), 'north')
                             } 
                             if (data.player == 1 && deal.declarer == data.player && west) {
-                                deal.hands[data.player].renderEW(document.querySelector('#east'))
+                                deal.hands[data.player].render(document.querySelector('#east'), 'east')
                             } 
                             if (data.player == 2 && deal.declarer == data.player && north) {
-                                deal.hands[data.player].render(document.querySelector('#south'))
+                                deal.hands[data.player].render(document.querySelector('#south'), 'south')
                             } 
                             if (data.player == 3 && deal.declarer == data.player && east) {
-                                deal.hands[data.player].renderEW(document.querySelector('#west'))
+                                deal.hands[data.player].render(document.querySelector('#west'), 'west')
                             } 
                         }
                     }
@@ -360,6 +447,10 @@
                 deal.turn = (data.player + 1) % 4
                 setTurn(deal.turn)
             } else if (data.message == "get_card_input") {
+                // Only show the hand you are playing
+                updateTable(deal)
+                document.querySelectorAll('.card')
+                    .forEach(c => c.addEventListener('click', cardClick))
                 deal.expectCardInput = true
             } else if (data.message == "trick_confirm") {
                 let trickWinner = deal.currentTrick.winner(deal.strain)
@@ -379,42 +470,42 @@
                     timeoutId = setTimeout(function() {
                         if (deal.expectTrickConfirm) {
                             deal.expectTrickConfirm = false;
-                            getTrickCardSlots().forEach(el => el.textContent = "")
+                            hideTrickCardSlots();
                             ws.send('y')
                         }
                     }, timeout * 1000); 
                 }
             } else if (data.message == "deal_end") {
                 let handsPBN = data.pbn.split(' ')
-                let north = parseHand(handsPBN[0])
-                let east = parseHand(handsPBN[1])
-                let south = parseHand(handsPBN[2])
-                let west = parseHand(handsPBN[3])
+                for (let i = 0; i < 4; i++) {
+                    deal.hands[i].cards = parseHand(handsPBN[i])
+                    deal.hands[i].visible = true
+                }
+                updateTable(deal)
 
-                north.render(document.querySelector('#north'))
-                south.render(document.querySelector('#south'))
-                east.renderEW(document.querySelector('#east'))
-                west.renderEW(document.querySelector('#west'))
+                $("#customDialog").dialog("open");
+                // Handle button clicks
+                $("#badButton").on("click", function() {
+                    var userFeedback = $("#commentInput").val();
+                    saveDeal(data.dict, userFeedback, "bad");
+                    $("#customDialog").dialog("close");                    
+                });
 
-                deal.renderAuction(document.querySelector('#auction'))
+                $("#okButton").on("click", function() {
+                    var userFeedback = $("#commentInput").val();
+                    saveDeal(data.dict, userFeedback, "ok");
+                    $("#customDialog").dialog("close");
+                });
 
-                setTimeout(() => {
-                    // Ask the user for confirmation
-                    const shouldSave = window.confirm("Do you want to save the deal?");
-
-                    // Check the user's choice
-                    if (shouldSave) {
-                        // User clicked OK, prompt for additional input
-                        const userFeedback = window.prompt("Was the deal good or bad?");
-                        saveDeal(data.dict, userFeedback);
-                    } else {
-                        // User clicked Cancel or closed the dialog, handle accordingly
-                        console.log("Deal not saved.");
-                        navigate()
-                    }
-                }, 0);
-
-
+                $("#goodButton").on("click", function() {
+                    var userFeedback = $("#commentInput").val();
+                    saveDeal(data.dict, userFeedback, "good");
+                    $("#customDialog").dialog("close");
+                });
+                $("#nosaveButton").on("click", function() {
+                    $("#customDialog").dialog("close");
+                    navigate();
+                });
             }
         };
 
@@ -437,7 +528,7 @@
             return url.href;
         }
 
-        function saveDeal(dict, feedback) {
+        function saveDeal(dict, feedback, quality) {
             // Convert JavaScript object to JSON string
             const dataStr = JSON.stringify(dict);
 
@@ -446,6 +537,8 @@
 
             // Add the feedback property to the object
             dataObj.feedback = feedback;
+            // Add the quality property to the object
+            dataObj.quality = quality;
 
             // Convert the JavaScript object back to a JSON string
             const newDataStr = JSON.stringify(dataObj);

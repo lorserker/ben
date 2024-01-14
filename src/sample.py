@@ -1,4 +1,3 @@
-import hashlib
 import time
 
 import numpy as np
@@ -6,7 +5,7 @@ import numpy as np
 import binary
 
 from bidding import bidding
-from util import get_all_hidden_cards
+from util import get_all_hidden_cards, calculate_seed
 from configparser import ConfigParser
 from util import hand_to_str
 
@@ -253,14 +252,8 @@ class Sample:
             print("Shape: ", c_shp)
 
         # setting a seed here would allow us to have the same samples during the bidding
-        # Calculate the SHA-256 hash
-        hash_object = hashlib.sha256(str(auction).encode())
-        hash_bytes = hash_object.digest()
-
-        # Convert the first 4 bytes of the hash to an integer and take modulus
-        hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
-
-        # Now you can use hash_integer as a seed
+        # Using deal as seed
+        hash_integer  = calculate_seed(str(auction))         
         if self.verbose:
             print("Setting seed (Sampling)=",hash_integer)
         np.random.seed(hash_integer)
@@ -536,7 +529,7 @@ class Sample:
             )
             hidden_cards = get_all_hidden_cards(visible_cards)
             hidden_cards_no = len(hidden_cards)
-            print("hidden_cards_no",hidden_cards_no)
+            
             contract = bidding.get_contract(auction)
             known_nesw = player_to_nesw_i(player_i, contract)
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
@@ -712,7 +705,8 @@ class Sample:
                     bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
                 sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
 
-        print(f"Returning {min(bidding_states[0].shape[0],n_samples)}")
+        if self.verbose:
+            print(f"Returning {min(bidding_states[0].shape[0],n_samples)}")
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
         return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp
     
@@ -794,8 +788,6 @@ class Sample:
     def validate_play_until_now(self, trick_i, current_trick, leader_i, player_cards_played, player_models, hidden_1_i, hidden_2_i, states):
         if self.verbose:
             print("Validating play")
-        print("trick_i", trick_i)
-        print(hidden_1_i, hidden_2_i)
         min_scores = np.ones(states[0].shape[0])
         for p_i in [hidden_1_i, hidden_2_i]:
 

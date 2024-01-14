@@ -1,6 +1,5 @@
 import os
 import asyncio
-import hashlib
 import logging
 
 # Set logging level to suppress warnings
@@ -34,8 +33,7 @@ from bidding.binary import DealData
 from objects import CardResp, Card, BidResp
 from claim import Claimer
 from pbn2ben import load
-
-import os
+from util import calculate_seed
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -45,7 +43,7 @@ def get_execution_path():
 def random_deal(number=None):
     deal_str = deck52.random_deal()
     if number == None:
-        number = np.random(16)
+        number = np.random.randint(1, 17)
     auction_str = deck52.board_dealer_vuln(number)
 
     return deal_str, auction_str
@@ -79,6 +77,7 @@ class Driver:
         #Default is a Human South
         self.human = [False, False, True, False]
         self.human_declare = False
+        self.rotate = False
         self.name = "Human"
         self.ns = models.ns
         self.ew = models.ew
@@ -98,19 +97,21 @@ class Driver:
             self.auction = self.deal_data.auction
             self.play_only = play_only
         self.bidding_only = bidding_only
-        self.dealer_i = self.deal_data.dealer
-        self.vuln_ns = self.deal_data.vuln_ns
-        self.vuln_ew = self.deal_data.vuln_ew
+        if self.rotate:
+            self.dealer_i = (self.deal_data.dealer + 1) % 4
+            self.vuln_ns = self.deal_data.vuln_ew
+            self.vuln_ew = self.deal_data.vuln_ns
+            self.hands.insert(0, self.hands.pop())
+            self.deal_str = " ".join(self.hands)
+            print("Rotated deal: "+self.deal_str)
+        else:
+            self.dealer_i = self.deal_data.dealer
+            self.vuln_ns = self.deal_data.vuln_ns
+            self.vuln_ew = self.deal_data.vuln_ew
         self.trick_winners = []
 
-        # Calculate the SHA-256 hash
-        hash_object = hashlib.sha256(deal_str.encode())
-        hash_bytes = hash_object.digest()
-
-        # Convert the first 4 bytes of the hash to an integer and take modulus
-        hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
-
         # Now you can use hash_integer as a seed
+        hash_integer = calculate_seed(deal_str)
         if self.verbose:
             print("Setting seed (Full deal)=",hash_integer)
         np.random.seed(hash_integer)
@@ -119,6 +120,8 @@ class Driver:
     async def run(self):
         result_list = self.hands.copy()
 
+        print(self.human)
+        print(result_list)
         # If human involved hide the unseen hands
         if np.any(np.array(self.human)):
             for i in range(len(self.human)):
@@ -147,6 +150,11 @@ class Driver:
         self.contract = bidding.get_contract(auction)
 
         if self.contract is None:
+            await self.channel.send(json.dumps({
+                'message': 'deal_end',
+                'pbn': self.deal_str,
+                'dict': self.to_dict()
+            }))
             return
 
         strain_i = bidding.get_strain_i(self.contract)
@@ -471,13 +479,8 @@ class Driver:
 
     
     async def opening_lead(self, auction):
-        # Calculate the SHA-256 hash
-        hash_object = hashlib.sha256(self.deal_str.encode())
-        hash_bytes = hash_object.digest()
 
-        # Convert the first 4 bytes of the hash to an integer and take modulus
-        hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
-
+        hash_integer = calculate_seed(self.deal_str)
         # Now you can use hash_integer as a seed
         if self.verbose:
             print("Setting seed (Opening lead)=",hash_integer)
@@ -530,19 +533,26 @@ class Driver:
 
         while not bidding.auction_over(auction):
             bid_resp = await players[player_i].async_bid(auction)
+            if bid_resp.bid == "Hint":
+                await self.channel.send(json.dumps({
+                    'message': 'hint',
+                    'bids': "Asking BEN"
+                }))
 
-            self.bid_responses.append(bid_resp)
+                await asyncio.sleep(0.1)
+            else :
+                self.bid_responses.append(bid_resp)
 
-            auction.append(bid_resp.bid)
+                auction.append(bid_resp.bid)
 
-            await self.channel.send(json.dumps({
-                'message': 'bid_made',
-                'auction': auction
-            }))
+                await self.channel.send(json.dumps({
+                    'message': 'bid_made',
+                    'auction': auction
+                }))
 
-            player_i = (player_i + 1) % 4
-            # give time to client to redraw
-            await asyncio.sleep(0.1)
+                player_i = (player_i + 1) % 4
+                # give time to client to redraw
+                await asyncio.sleep(0.1)
             
         return auction
 

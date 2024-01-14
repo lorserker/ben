@@ -141,6 +141,8 @@ async def handler(websocket, path, board_no):
         if name: driver.name = name
         #C = query_params.get('C', [None])[0]
         #if C: cont = True
+        R = query_params.get('R', [None])[0]
+        if R: driver.rotate = True
         P = query_params.get('P', [None])[0]
         if P == "5":
             play_only = True
@@ -155,16 +157,16 @@ async def handler(websocket, path, board_no):
         else:
             np.random.seed(board_number)
             rdeal = game.random_deal(board_number)
-            driver.set_deal(board_number, *rdeal, False)
             print(f"Deal: {rdeal}")
+            driver.set_deal(board_number, *rdeal, False)
     else:
         if random:
             #Just take a random"
             rdeal = game.random_deal()
             # example of to use a fixed deal
             # rdeal = ('AK64.8642.Q32.Q6 9.QT973.AT5.KJ94 QT532.J5.KJ974.7 J87.AK.86.AT8532', 'W None')
-            driver.set_deal(None, *rdeal, False)
             print(f"Deal: {rdeal}")
+            driver.set_deal(None, *rdeal, False)
         else:
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']

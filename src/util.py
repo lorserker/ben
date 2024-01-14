@@ -1,5 +1,6 @@
 import numpy as np
 import re
+import hashlib
 
 from typing import NamedTuple, List
 
@@ -85,6 +86,15 @@ def follow_suit(cards_softmax, own_cards, trick_suit):
     s = np.sum(legal_cards_softmax, axis=1, keepdims=True)
     s[s < 1e-9] = 1
     return legal_cards_softmax / s
+
+def calculate_seed(input):
+            # Calculate the SHA-256 hash
+    hash_object = hashlib.sha256(input.encode())
+    hash_bytes = hash_object.digest()
+
+    # Convert the first 4 bytes of the hash to an integer and take modulus
+    hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
+    return hash_integer
 
 
 

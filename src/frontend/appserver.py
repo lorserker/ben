@@ -231,6 +231,8 @@ def index():
     name = request.forms.get('name')
     timeout = request.forms.get('T')
     cont = request.forms.get('C')
+    rotate = request.forms.get('R')
+    visible = request.forms.get('V')
     player = ""
     if north: player += "&N=x"
     if east: player += "&E=x"
@@ -241,6 +243,8 @@ def index():
     if name: player += f"&name={name}"
     if timeout: player += f"&T={timeout}"
     if cont: player += "&C=x"
+    if rotate: player += "&R=x"
+    if visible: player += "&V=x"
     dealtext = request.forms.get('dealtext')
     if dealtext:
         dealer = request.forms.get('dealer')
@@ -281,6 +285,10 @@ def home():
         for deal_id, deal in deal_items:
             board_no_ref = ""
             board_no_index = ""
+            if 'feedback' in deal: feedback = deal['feedback']
+            else: feedback = ""
+            if 'quality' in deal: quality = deal['quality']
+            else: quality = 'ok'
             if 'board_number' in deal and deal['board_number'] is not None:
                 board_no_ref = f"&board_number={deal['board_number']}"
                 board_no_index = f"Board:{deal['board_number']}"
@@ -299,7 +307,9 @@ def home():
                     'contract': deal['contract'],
                     'trick_winners_count': len(list(filter(lambda x: x % 2 == 1, deal['trick_winners']))),
                     'delete_url': f"/api/delete/deal/{deal_id}",
-                    'bba': encoded_str_deal
+                    'bba': encoded_str_deal,
+                    'feedback':feedback,
+                    'quality': quality
                 })
             else:
                 deals.append({
@@ -308,7 +318,9 @@ def home():
                     'board_no_ref': board_no_ref,
                     'contract': deal['contract'],
                     'delete_url': f"/api/delete/deal/{deal_id}",
-                    'bba': encoded_str_deal
+                    'bba': encoded_str_deal,
+                    'feedback':feedback,
+                    'quality': quality
                 })
 
     return template('home.tpl', deals=deals)
