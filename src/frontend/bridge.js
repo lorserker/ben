@@ -102,7 +102,7 @@ class Hand {
         // Move trump to the left
         let order = [0, 1, 3, 2];
         if (deal.strain == 2) order = [1, 0, 3, 2];
-        if (deal.strain == 3) order = [2, 0, 1, 2];
+        if (deal.strain == 3) order = [2, 0, 1, 3];
         if (deal.strain == 4) order = [3, 1, 0, 2];
         if (direction === 'northc' || direction === 'southc') {
             for (let i of order) {
