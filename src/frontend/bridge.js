@@ -36,8 +36,6 @@ class Hand {
         this._cards = cards;
         this.isPublic = isPublic;
         this.rendered = rendered;
-        this.suits = [[], [], [], []];
-
         // Initialize suits based on the initial cards
         this.updateSuits();
     }
@@ -52,6 +50,7 @@ class Hand {
     }
 
     updateSuits() {
+        this.suits = [[], [], [], []];
         for (const element of this._cards) {
             this.suits[element.suit].push(element)
         }
@@ -262,7 +261,7 @@ class Trick {
 
 class Deal {
 
-    constructor(dealer, vuln, hands) {
+    constructor(dealer, vuln, hands, board_no) {
         this.dealer = dealer
         this.vuln = vuln
         this.hands = []
@@ -285,6 +284,12 @@ class Deal {
 
         this.canDouble = false
         this.canRedouble = false
+        this.board_no = board_no 
+    }
+
+    renderNumber(element) {
+        element.textContent = ''
+        element.innerHTML = this.board_no
     }
 
     renderTricks(element) {
@@ -302,21 +307,12 @@ class Deal {
     renderClaim(element) {
         element.textContent = ''
         let html = ''
-        if ((this.tricksCount[0] + this.tricksCount[1]) > 6) {
-            html += 'Claim: '
-            html += '<div id="claim-tricks">'
-            html += '<div tricks="0">0</div>'
-            html += '<div tricks="1">1</div>'
-            html += '<div tricks="2">2</div>'
-            html += '<div tricks="3">3</div>'
-            html += '<div tricks="4">4</div>'
-            html += '<div tricks="5">5</div>'
-            html += '<div tricks="6">6</div>'
-            html += '</div>'
-            element.innerHTML = html
-            return true
+        //if ((this.tricksCount[0] + this.tricksCount[1]) > 0) {
+        for (let i = 0; i < 14 - (this.tricksCount[0] + this.tricksCount[1]); i++) {
+            html += '<div tricks="' + i + '">'+i+'</div>'
         }
-        return false
+        //}
+        element.innerHTML = html
     }
 
     renderBiddingBox(element) {

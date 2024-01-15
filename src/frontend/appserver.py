@@ -297,15 +297,22 @@ def home():
             else:
                 if deal["vuln_ns"]: vulnerable = C_NS
                 if deal["vuln_ew"]: vulnerable = C_WE
-            encoded_str_deal = encode_board(transform_hand(deal["hands"].split(" ")), deal["dealer"], vulnerable, int(deal['board_number']) if deal['board_number'] is not None else 0
-)                
+            encoded_str_deal = encode_board(transform_hand(deal["hands"].split(" ")), deal["dealer"], vulnerable, int(deal['board_number']) if deal['board_number'] is not None else 0)                
+            tricks = len(list(filter(lambda x: x % 2 == 1, deal['trick_winners'])))
+            if 'claimed' in deal:
+                if 'claimedbydeclarer' in deal:
+                    if deal['claimedbydeclarer']:
+                        tricks += deal['claimed']
+                    else:
+                        tricks += (13-tricks-deal['claimed'])
+
             if deal['contract'] is not None:
                 deals.append({
                     'board_no_index': board_no_index,
                     'deal_id': deal_id,
                     'board_no_ref': board_no_ref,
                     'contract': deal['contract'],
-                    'trick_winners_count': len(list(filter(lambda x: x % 2 == 1, deal['trick_winners']))),
+                    'trick_winners_count': tricks,
                     'delete_url': f"/api/delete/deal/{deal_id}",
                     'bba': encoded_str_deal,
                     'feedback':feedback,
@@ -316,7 +323,7 @@ def home():
                     'board_no_index': board_no_index,
                     'deal_id': deal_id,
                     'board_no_ref': board_no_ref,
-                    'contract': deal['contract'],
+                    'contract': "All Pass",
                     'delete_url': f"/api/delete/deal/{deal_id}",
                     'bba': encoded_str_deal,
                     'feedback':feedback,

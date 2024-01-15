@@ -45,14 +45,24 @@ class Deal {
 
         this.playIndex += 1
 
+        // Last card
         if (this.playIndex == this.data['play'].length) {
-            let trickWinner = this.data['trick_winners'][12]
+            if (this.data['claimed']) {
+                alert("Claimed")
+            }
+            let trickWinner = this.data['trick_winners'][this.data['trick_winners'].length - 1]
+            
+            if (trickWinner % 2 == 0)
+                trickstaken = new TricksTaken(this.top().tricksTaken.ns + this.data['claimed'], 13 - this.top().tricksTaken.ns + this.data['claimed'])
+            else
+                trickstaken = new TricksTaken(13 - this.top().tricksTaken.ew + this.data['claimed'], 13 - this.top().tricksTaken.ew + this.data['claimed'])
             this.stack.push(new DealSnapshot(
                 this.top().hands,
                 this.top().bidding,
                 new Trick(trickWinner, []),
                 this.top().info,
-                new TricksTaken(this.top().tricksTaken.ns + (trickWinner + 1) % 2, this.top().tricksTaken.ew + trickWinner % 2)))
+                trickstaken))
+            this.position += 1
             return
         }
 

@@ -17,7 +17,7 @@ import json
 import asyncio
 import uuid
 import shelve
-import os 
+import re
 import argparse
 import numpy as np
 
@@ -84,6 +84,8 @@ class Driver:
         self.verbose = verbose
         self.play_only = False
         self.claim = models.claim
+        self.claimed = None
+        self.claimedbydeclarer = None
 
     def set_deal(self, board_number, deal_str, auction_str, play_only = None, bidding_only=False):
         self.board_number = board_number
@@ -120,8 +122,6 @@ class Driver:
     async def run(self):
         result_list = self.hands.copy()
 
-        print(self.human)
-        print(result_list)
         # If human involved hide the unseen hands
         if np.any(np.array(self.human)):
             for i in range(len(self.human)):
@@ -133,7 +133,8 @@ class Driver:
             'dealer': self.dealer_i,
             'vuln': [self.vuln_ns, self.vuln_ew],
             'hand': result_list,
-            'name': self.name
+            'name': self.name,
+            'board_no' : self.board_number
         }))
 
         self.bid_responses = []
@@ -153,7 +154,7 @@ class Driver:
             await self.channel.send(json.dumps({
                 'message': 'deal_end',
                 'pbn': self.deal_str,
-                'dict': self.to_dict()
+                'dict': self.to_dict() 
             }))
             return
 
@@ -172,8 +173,19 @@ class Driver:
         
         print("trick 1")
 
-        opening_lead52 = (await self.opening_lead(auction)).card.code()
+        opening_lead52 = (await self.opening_lead(auction))
 
+        if str(opening_lead52.card).startswith("Conceed"):
+
+            self.claimed = 0
+            self.claimedbydeclarer = False
+            await self.channel.send(json.dumps({
+                'message': 'deal_end',
+                'pbn': self.deal_str,
+                'dict': self.to_dict() 
+            }))
+            return
+        opening_lead52 = opening_lead52.card.code()
         await self.channel.send(json.dumps({
             'message': 'card_played',
             'player': (decl_i + 1) % 4,
@@ -210,7 +222,7 @@ class Driver:
         }))
 
     def to_dict(self):
-        return {
+        result = {
             'timestamp': time.time(),
             'dealer': self.dealer_i,
             'vuln_ns': self.vuln_ns,
@@ -223,6 +235,11 @@ class Driver:
             'board_number' : self.board_number,
             'human': self.name
         }
+        if self.claimed:
+            result['claimed'] = self.claimed
+        if self.claimedbydeclarer:
+            result['claimedbydeclarer'] = self.claimed
+        return result
 
     async def play(self, auction, opening_lead52):
         contract = bidding.get_contract(auction)
@@ -280,7 +297,7 @@ class Driver:
 
         for trick_i in range(12):
             if trick_i != 0:
-                print("trick {}".format(trick_i+1))
+                print(f"trick {trick_i+1} lead:{leader_i}")
 
             for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
                 if self.verbose:
@@ -293,15 +310,6 @@ class Driver:
                     for i, card_player in enumerate(card_players):
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
                     continue
-
-                # Don't calculate claim before trick 6    
-                if self.claim and trick_i > 5 and len(current_trick) == 0 and player_i in (1, 3):
-                    claimer.claim(
-                        strain_i=strain_i,
-                        player_i=player_i,
-                        hands52=[card_player.hand52 for card_player in card_players],
-                        n_samples=20
-                    )
 
                 if isinstance(card_players[player_i], bots.CardPlayer):
                     rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape(
@@ -316,8 +324,47 @@ class Driver:
 
                 await asyncio.sleep(0.01)
 
-                card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
-                
+                card_resp = None
+                while card_resp is None:
+                    card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
+                    # We need to handle an invalid claim
+                    if (str(card_resp.card).startswith("Conceed")) :
+                            self.claimedbydeclarer = (player_i == decl_i) or (decl_i == (player_i + 2) % 4)
+                            self.claimed = 0
+                            return
+
+                    if (str(card_resp.card).startswith("Claim")) :
+                        tricks_claimed = int(re.search(r'\d+', card_resp.card).group()) if re.search(r'\d+', card_resp.card) else None
+                        self.canclaim = claimer.claim(
+                            strain_i=strain_i,
+                            player_i=player_i,
+                            hands52=[card_player.hand52 for card_player in card_players],
+                            n_samples=50
+                        )
+                        if (tricks_claimed <= self.canclaim):
+                            print(f"Claimed {tricks_claimed} can claim {self.canclaim}")
+                            self.claimedbydeclarer = (player_i == decl_i) or (decl_i == (player_i + 2) % 4)
+                            self.claimed = tricks_claimed
+
+                            # Trick winners until claim is saved
+                            self.trick_winners = trick_won_by
+                            # Print contract and result
+                            if self.claimedbydeclarer:
+                                print(f"Contract: {self.contract} Accepted declarers claim of {tricks_claimed} tricks")
+                            else:
+                                print(f"Contract: {self.contract} Accepted opponents claim of {tricks_claimed} tricks")
+                            return
+                        else:
+                            if self.claimedbydeclarer:
+                                print(f"Declarer claimed {tricks_claimed} tricks - rejected {self.canclaim}")
+                            else:
+                                print(f"Opponents claimed {tricks_claimed} tricks - rejected {self.canclaim}")
+                            await self.channel.send(json.dumps({
+                                'message': 'claim_rejected',
+                            }))
+                            card_resp = None
+
+
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
                 if self.verbose:
@@ -517,12 +564,15 @@ class Driver:
         vuln = [self.vuln_ns, self.vuln_ew]
 
         players = []
+        hint_bots = [None, None, None, None]
+
         for i, level in enumerate(self.human):
             if self.models.use_bba:
                 from bba.BBA import BBABotBid
                 players.append(BBABotBid(self.models.ns, self.models.ew, i, hands_str[i], vuln, self.dealer_i))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
+                hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.verbose)
             else:
                 bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.verbose)
                 players.append(bot)
@@ -534,9 +584,10 @@ class Driver:
         while not bidding.auction_over(auction):
             bid_resp = await players[player_i].async_bid(auction)
             if bid_resp.bid == "Hint":
+                bid_resp = await hint_bots[player_i].async_bid(auction)
                 await self.channel.send(json.dumps({
                     'message': 'hint',
-                    'bids': "Asking BEN"
+                    'bids': bid_resp.to_dict()
                 }))
 
                 await asyncio.sleep(0.1)

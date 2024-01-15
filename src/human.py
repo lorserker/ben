@@ -133,15 +133,17 @@ class HumanLeadSocket:
         self.socket = socket
 
     async def async_lead(self):
+        candidates = []
+        samples = []
+
         await self.socket.send(json.dumps({'message': 'get_card_input'}))
 
-        card_str = await self.socket.recv()
+        human_card = await self.socket.recv()
 
-        # Check if we received a claim
-        print("Card received: ",card_str)
-        
-        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[], shape=-1, hcp=-1)
-
+        if (str(human_card).startswith("C")) :
+            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1)
+        else:    
+            return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1)
 
 class HumanCardPlayer:
 
@@ -202,13 +204,12 @@ class HumanCardPlayer:
 
         human_card = await self.get_card_input()
 
-        # If we just get a number it is a claim
-        # We need to validate the claim, so for now we just ignore the message
+        # claim and conceed both starts with a C
 
-        #if is_numeric(human_card):
-        #    human_card = await self.get_card_input()
-
-        return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1)
+        if (str(human_card).startswith("C")) :
+            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1)
+        else:    
+            return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1)
 
 
 class HumanCardPlayerSocket(HumanCardPlayer):
@@ -223,9 +224,11 @@ class HumanCardPlayerSocket(HumanCardPlayer):
             'message': 'get_card_input'
         }))
 
-        card = await self.socket.recv()
-
-        return deck52.encode_card(card)
+        human_card = await self.socket.recv()
+        if (human_card.startswith("Claim")) :
+            return human_card
+        else:    
+            return deck52.encode_card(human_card)
 
 
 class ConsoleFactory:

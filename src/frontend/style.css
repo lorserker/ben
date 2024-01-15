@@ -1,3 +1,10 @@
+/* Introduction*/
+.container {
+    max-width: 90%;
+    margin: 10 auto;
+    min-width: 1024px;
+}
+
 form {
     width: 100%;
     display: block;
@@ -58,7 +65,7 @@ body {
     justify-content: center
 }
 
-#bidding {
+.bidding {
     padding-top: 10px;
     padding-bottom: 10px;
     display: flex;
@@ -108,17 +115,47 @@ body {
 }
 
 #table .dealer {
-    text-decoration: underline;
+    position: relative;
+    /* display: inline-block; */
+    text-decoration: none;
+    color: #000; /* Set text color */
+}
+
+#table .dealer::before {
+    content: '';
+    position: absolute;
+    width: calc(100% + 5px); /* Adjust the space (10px) between text and circular underline */
+    height: calc(100% - 25px);
+    border: 2px solid grey; /* Set border color */
+    top: 2px; /* Adjust the space between text and circular underline */
+    left: -2px; /* Adjust the space between text and circular underline */
+    z-index: -1;
+    box-sizing: border-box;
 }
 
 #table .turn {
     color: yellow;
     font-weight: bolder;
+    animation: blink 1s infinite; /* Change the duration as needed */
 }
 
-.card, .empty-suit {
+.card {
     height: 4.5rem;
     width: 3rem;
+    max-width: 4.4rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-left: 2px;
+    font-size: 1.7rem;
+    justify-content: center;
+    display: flex;
+    align-items: flex-end;
+    background-color: white;
+    z-index: 100;
+}
+.empty-suit {
+    height: 4.5rem;
+    width: 1rem;
     max-width: 4.4rem;
     border: 1px solid black;
     border-radius: 5px;
@@ -166,7 +203,21 @@ body {
     justify-content: center;
 }
 
-.label-north, .label-south {
+.label-number {
+    grid-column: span 1;
+    color: #ddd;
+    margin: 10px;
+    font-size: 2rem;
+    font-family: Arial, sans-serif;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.label-north {
+    grid-column: span 3;
+}
+
+.label-south {
     grid-column: span 5;
 }
 
@@ -206,8 +257,7 @@ body {
 #auction-container {
     display: flex;
     flex-direction: column;
-    height: 38vh; /* Set a minimum height for the table container */
-    overflow-y: auto; /* Add scrollbar if content overflows */
+    height: 18rem; /* Set a minimum height for the table container */
 }
 
 #boardno {
@@ -255,8 +305,8 @@ body {
 }
 
 #bidding-levels div {
-    margin: .5rem;
-    padding: .5rem;
+    margin: .4rem;
+    padding: .4rem;
     border: 1px solid black;
     border-radius: 5px;
     font-family: Arial, sans-serif;
@@ -326,44 +376,38 @@ body {
 }
 
 #bidding-box .hidden {
-    display: none;
+    visibility: hidden; /* Hide the content but keep the space */
 }
 
-.last-trick, .claim {
+#last-trick, #claim, #conceed {
     margin: .4rem;
-    padding: .5rem;
+    padding: .25rem;
     border: 1px solid black;
     border-radius: 5px;
     font-family: Arial, sans-serif;
     font-size: 1rem;
     background-color: yellowgreen;
     width: 8rem;
-    height: 2rem;
+    height: 1.6rem;
     text-align: center;
 }
 
-#last-trick .hidden {
-    display: none;
-}
-
-#claim-trick .hidden {
-    display: none;
-}
 
 #claim-tricks {
     display: flex;
 }
 
 #claim-tricks div {
-    margin: .4rem;
-    padding: .5rem;
+    margin: .1rem;
+    margin-top: .4rem;
+    padding: .2rem;
     border: 1px solid black;
     border-radius: 5px;
     font-family: Arial, sans-serif;
     font-size: 1rem;
     background-color: white;
-    width: 3rem;
-    height: 2rem;
+    width: 2rem;
+    height: 1.5rem;
     text-align: center;
 }
 
@@ -426,6 +470,49 @@ span.bba {
 }
 
 .bid-nt {
-    font-size: 1.6em !important; /* You can adjust the size as needed */
     font-weight: 700;
+}
+
+#loader {
+    border: 12px solid #f3f3f3;
+    margin-left: 450px;
+    border-radius: 50%;
+    border-top: 12px solid #444444;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    z-index: 200;
+    margin-left: 44%;
+    margin-top: 135px;  
+}
+
+.center {
+    position: absolute;
+    top: 0;
+    bottom: 200px;
+    left: 0;
+    right: 400px;
+    margin: auto;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.blinking-element {
+    animation: blink 1s infinite; /* Change the duration as needed */
 }

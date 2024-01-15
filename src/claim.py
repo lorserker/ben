@@ -14,10 +14,10 @@ class Claimer:
     def claim(self, strain_i, player_i, hands52, n_samples):
         t_start = time.time()
 
-        hands_pbn = ['W:' + ' '.join([
-            deck52.deal_to_str(hand) for hand in hands52
-        ])]
+        hands_pbn = ['W:' + ' '.join([deck52.deal_to_str(hand) for hand in hands52])]
 
+        if self.verbose:
+            print(f"Claiming for player {player_i} {hands_pbn}")
         sampled_hands_pbn = []
         seen_hand_indexes = [player_i, 3 if player_i == 1 else 1]
         hidden_hand_indexes = [i for i in range(4) if i not in seen_hand_indexes]

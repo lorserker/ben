@@ -9,10 +9,9 @@
   <link rel="stylesheet" href="style.css">
   <script type="text/javascript" src="bridge.js"></script>
 
-<!-- Include jQuery and jQuery UI -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-
+    <!-- Include jQuery and jQuery UI -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 
 <script>
   $(function() {
@@ -29,7 +28,7 @@
 </head>
 
 <body>
-
+<div id="loader" class="center"></div> 
 <!-- HTML for the dialog -->
 <div id="customDialog" title="Feedback">
     <textarea id="commentInput" placeholder="Enter your comments here..."></textarea>
@@ -46,24 +45,25 @@
         <div id="auction-main" class="grid-item">
             <div id="auction-container"></div>
             <div class="tricks">Tricks</div>
-            <div class="last-trick" style="visibility: hidden">Show last trick</div>
-            <div class="claim" style="display: none">Claim
-                <div id="claim-tricks" style="display: none">
-                    <div tricks="0">0</div>
-                    <div tricks="1">1</div>
-                    <div tricks="2">2</div>
-                    <div tricks="3">3</div>
-                    <div tricks="4">4</div>
-                    <div tricks="5">5</div>
-                    <div tricks="6">6</div>
+            <div id="last-trick" style="visibility: hidden">Show last trick</div>
+            <div id="claim" style="visibility: hidden">Claim
+                <div id="claim-tricks">
                 </div>
+            </div>
+            <div id="conceed" style="visibility: hidden">Conceed
             </div>
         </div>
         <div id="west" class="grid-item"></div>
         <div id="table" class="grid-item">
             <div id="table-container">
+                <div class="table-grid-item label-number">
+                    <span class="seat-label"></span>
+                </div>
                 <div class="table-grid-item label-north">
                     <span class="seat-label">N</span>
+                </div>
+                <div class="table-grid-item label-number">
+                    <span class="seat-label"></span>
                 </div>
                 <div class="table-grid-item label-west">
                     <div class="seat-label">W</div>
@@ -169,14 +169,14 @@
         function hideTrickCardSlots() {
             const trickCardSlots = getTrickCardSlots();
             trickCardSlots.forEach(el => el.style.visibility  = 'hidden');
-            document.querySelector('.last-trick').style.visibility = 'visible'
+            document.querySelector('#last-trick').style.visibility = 'visible'
         }
 
         // Show the information
         function showTrickCardSlots() {
             const trickCardSlots = getTrickCardSlots();
             trickCardSlots.forEach(el => el.style.visibility  = 'visible'); // Reset to the default display value
-            document.querySelector('.last-trick').style.visibility = 'hidden'
+            document.querySelector('#last-trick').style.visibility = 'hidden'
         }
 
         function setTurn(playerTurn) {
@@ -187,6 +187,19 @@
 
         function showlasttrick(event) {
             showTrickCardSlots()
+        }
+
+        function claimTricks(event) {
+            event.stopPropagation();
+            deal.renderClaim(document.querySelector("#claim-tricks"))
+            document.querySelectorAll('#claim-tricks div').forEach(el =>
+                el.addEventListener("click", claimClick))
+        }
+
+        function resetClaim() {
+            document.querySelector('#claim').style.visibility = 'hidden'
+            document.querySelector('#claim-tricks').textContent = ""
+            document.querySelector('#conceed').style.visibility = 'hidden'
         }
 
         function cardClick(event) {
@@ -211,7 +224,7 @@
             }
             document.querySelectorAll('#bidding-levels div').forEach(el => el.classList.remove("selected"))
             document.querySelectorAll('#bidding-suits div').forEach(el => el.classList.remove("invalid"))
-            document.querySelectorAll('#claim-tricks div').forEach(el => el.classList.remove("invalid"))
+
             event.target.classList.add("selected")
 
             let level = parseInt(event.target.textContent)
@@ -251,12 +264,15 @@
         }
 
         function claimClick(event) {
-
+            event.stopPropagation();
             let claim = event.target.getAttribute("tricks")
             console.log("Claimed "+claim+ " tricks")
-            alert("Claim not implemented")
-            //ws.send(claim)
-            deal.expectCardInput = true
+            ws.send("Claim " + claim)
+        }
+
+        function conceed(event) {
+            event.stopPropagation();
+            ws.send("Conceed")
         }
 
         function updateTable(deal) {
@@ -277,12 +293,12 @@
                 }
                 if (shouldBeVisible) {
                     // If the hand was previously hidden, make it visible again
-                    if (deal.hands[index].rendered) {
+                    //if (deal.hands[index].rendered) {
                         handElement.style.visibility = 'visible';
-                    } else {
+                    //} else {
+                    //}
                         // Call the render method with the direction
                         deal.hands[index].render(handElement, direction);
-                    }
                 } else {
                     if (deal.hands[index].rendered) {
                         handElement.style.visibility = 'hidden';
@@ -291,30 +307,41 @@
             });
         }
 
-        document.querySelector('body').addEventListener('click', function() {
-            // This could also be a claim - need handling
+        function showBoard(deal) {
+            const hands = ['north', 'east', 'south', 'west'];
+
+            hands.forEach((direction, index) => {
+                const selector = `#${direction}`;
+                const handElement = document.querySelector(selector);
+                // Call the render method with the direction
+                deal.hands[index].render(handElement, direction);
+            });
+        }
+
+        function sendConfirmTrick() {
             if (deal?.expectTrickConfirm) {
+                deal.expectTrickConfirm = false;
                 hideTrickCardSlots();
                 ws.send('y')
                 if (timeoutId) clearTimeout(timeoutId);
-                deal.expectTrickConfirm = false
-                if (deal.renderClaim(document.querySelector("#claim"))) {
-                    document.querySelector('#claim').style.display = 'block'
-                    document.querySelectorAll('#claim-tricks div').forEach(el =>
-                        el.addEventListener("click", claimClick))
-                }
+                document.querySelector("#loader").style.visibility = "visible"; 
             }
+        }
+
+        document.querySelector('body').addEventListener('click', function() {
+            sendConfirmTrick()
         })
 
         ws.onmessage = function (event) {
             console.log('received message')
             console.log(event.data)
-
+            document.querySelector("#loader").style.visibility = "hidden";
             let data = JSON.parse(event.data)
 
             if (data.message == "deal_start") {
 
-                deal = new Deal(data.dealer, data.vuln, data.hand)
+                deal = new Deal(data.dealer, data.vuln, data.hand, data.board_no)
+                deal.renderNumber(document.querySelector('.label-number'))
                 if (north) deal.hands[0].isPublic = true
                 if (east) deal.hands[1].isPublic = true
                 if (south) deal.hands[2].isPublic = true
@@ -336,13 +363,18 @@
                 updateTable(deal)
                 deal.renderAuction(document.querySelector('#auction-container'))
                 deal.renderBiddingBox(document.querySelector('#bidding'))
-                document.querySelectorAll('.last-trick')
+                document.querySelectorAll('#last-trick')
                     .forEach(c => c.addEventListener('click', showlasttrick))
+                document.querySelectorAll('#claim')
+                    .forEach(c => c.addEventListener('click', claimTricks))
+                document.querySelectorAll('#conceed')
+                    .forEach(c => c.addEventListener('click', conceed))
 
             } else if (data.message == "bid_made") {
                 deal.auction = data.auction
                 deal.renderAuction(document.querySelector('#auction-container'))
                 deal.turn = (deal.turn + 1) % 4
+                setTurn(deal.turn)
             } else if (data.message == "get_bid_input") {
                 updateTable(deal)
                 deal.auction = data.auction
@@ -358,7 +390,14 @@
                 document.querySelectorAll('#bidding-suits div').forEach(el =>
                     el.addEventListener("click", bidSuitClick))
             } else if (data.message == "hint") {
-                alert(data.bids)
+                console.log(data)
+                let msg = "BEN suggest: " + data.bids.bid + "\n"
+                msg += "BEN considered: \n"
+                for (const element of data.bids.candidates) {
+                    msg += " " + element.call + " Score: "
+                    msg += element.insta_score+ "\n"
+                }
+                alert(msg)
             } else if (data.message == "auction_end") {
                 deal.auction = data.auction
                 deal.declarer = data.declarer
@@ -372,6 +411,9 @@
 
                 document.querySelectorAll('.card')
                     .forEach(c => c.addEventListener('click', cardClick))
+
+                document.querySelector("#loader").style.visibility = "visible"; 
+
             } else if (data.message == "show_dummy") {
 
                 deal.dummy = (deal.declarer + 2) % 4
@@ -385,7 +427,8 @@
                 let card = new Card(data.card)
                 
                 deal.currentTrick.cards.push(card)
-                document.querySelector('.last-trick').style.visibility = 'hidden'
+                document.querySelector('#last-trick').style.visibility = 'hidden'
+                resetClaim()
 
                 if (no_human) {
                     deal.hands[data.player] = deal.hands[data.player].play(card)
@@ -446,11 +489,21 @@
                 deal.currentTrick.render(getTrickCardSlots())
                 deal.turn = (data.player + 1) % 4
                 setTurn(deal.turn)
+                document.querySelector("#loader").style.visibility = "visible"; 
             } else if (data.message == "get_card_input") {
+                // Only claim when waiting for input and player on lead and after first trick
+                if (deal.currentTrick.cards.length == 0 && deal.tricks.length > 0) {
+                    document.querySelector('#claim').style.visibility = 'visible'
+                } else {
+                    document.querySelector('#conceed').style.visibility = 'visible'
+                }
                 // Only show the hand you are playing
                 updateTable(deal)
                 document.querySelectorAll('.card')
                     .forEach(c => c.addEventListener('click', cardClick))
+                deal.expectCardInput = true
+            } else if (data.message == "claim_rejected") {
+                alert ("Claim rejected")
                 deal.expectCardInput = true
             } else if (data.message == "trick_confirm") {
                 let trickWinner = deal.currentTrick.winner(deal.strain)
@@ -466,23 +519,26 @@
                 deal.renderTricks(document.querySelector('.tricks'))
                 deal.expectTrickConfirm = true
                 if (autocomplete) {
-                    // After 5 seconds, set expectTrickConfirm to false
+                    // After xx seconds, set expectTrickConfirm to false
                     timeoutId = setTimeout(function() {
-                        if (deal.expectTrickConfirm) {
-                            deal.expectTrickConfirm = false;
-                            hideTrickCardSlots();
-                            ws.send('y')
-                        }
+                        sendConfirmTrick()
                     }, timeout * 1000); 
                 }
             } else if (data.message == "deal_end") {
                 let handsPBN = data.pbn.split(' ')
                 for (let i = 0; i < 4; i++) {
                     deal.hands[i].cards = parseHand(handsPBN[i])
-                    deal.hands[i].visible = true
                 }
-                updateTable(deal)
-
+                showBoard(deal)
+                if (data.dict.claimed) {
+                    let trickWinner = deal.turn % 2
+                    deal.tricksCount[trickWinner] += data.dict.claimed
+                    deal.tricksCount[(trickWinner+1) % 2] = 13 - deal.tricksCount[trickWinner]
+                    deal.renderTricks(document.querySelector('.tricks'))
+                    alert ("Claim accepted")
+                }
+                document.querySelector('#last-trick').style.visibility = 'hidden'
+                resetClaim()
                 $("#customDialog").dialog("open");
                 // Handle button clicks
                 $("#badButton").on("click", function() {

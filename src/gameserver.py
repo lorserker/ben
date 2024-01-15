@@ -12,6 +12,7 @@ import tensorflow as tf
 import uuid
 import shelve
 import time
+import datetime
 import asyncio
 import websockets
 import argparse
@@ -114,7 +115,7 @@ def worker(driver):
 
 
 async def handler(websocket, path, board_no):
-    print("Got websocket connection")
+    print('{} Got websocket connection'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     driver = game.Driver(models, human.WebsocketFactory(websocket, verbose), Sample.from_conf(configuration, verbose), verbose)
     play_only = False
