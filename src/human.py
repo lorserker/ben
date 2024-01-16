@@ -143,7 +143,7 @@ class HumanLeadSocket:
         if (str(human_card).startswith("C")) :
             return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1)
         else:    
-            return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1)
+            return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1)
 
 class HumanCardPlayer:
 

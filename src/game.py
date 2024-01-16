@@ -548,6 +548,7 @@ class Driver:
                 hands_str[(decl_i + 1) % 4], 
                 self.models,
                 self.sampler,
+                (decl_i + 1) % 4,
                 self.verbose
             )
             card_resp = await bot_lead.async_lead(auction)

@@ -149,7 +149,7 @@ async def handler(websocket, path, board_no):
             play_only = True
         deal = query_params.get('deal', [None])[0]
         board_no_query = query_params.get('board_no')
-        board_number = int(board_no_query[0]) if board_no_query and board_no_query[0] is not None else None
+        board_number = int(board_no_query[0]) if board_no_query and board_no_query[0] is not None else 42
         if deal:
             split_values = deal[1:-1].replace("'","").split(',')
             rdeal = tuple(value.strip() for value in split_values)

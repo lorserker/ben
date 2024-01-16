@@ -190,6 +190,7 @@ class TMClient:
                 self.hand_str,
                 self.models,
                 self.sampler,
+                on_lead_i,
                 self.verbose
             )
             card_resp = bot_lead.find_opening_lead(auction)

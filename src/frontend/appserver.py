@@ -68,8 +68,8 @@ def hand_as_string(hand):
                 s += "."
     return s
 
-def encode_board(hand, dealer, vulnerability, deal):
-    board_extension = ((deal - 1) // 16) % 16
+def encode_board(hand, dealer, vulnerability, deal_number):
+    board_extension = ((deal_number - 1) // 16) % 16
     str_Deal = format(board_extension, 'x') + format(dealer * 4 + vulnerability, 'x')
     encryption_byte = board[dealer,vulnerability]
 

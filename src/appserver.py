@@ -39,10 +39,18 @@ def home():
             if 'board_number' in deal and deal['board_number'] is not None:
                 board_no_ref = f"&board_number={deal['board_number']}"
                 board_no_index = f"Board:{deal['board_number']}&nbsp;&nbsp;"
+            tricks = len(list(filter(lambda x: x % 2 == 1, deal['trick_winners'])))
+            if 'claimed' in deal:
+                if 'claimedbydeclarer' in deal:
+                    if deal['claimedbydeclarer']:
+                        tricks += deal['claimed']
+                    else:
+                        tricks += (13-tricks-deal['claimed'])
+
             if deal['contract'] is not None:
-                html += '<li><span>{}<a href="/app/viz.html?deal={}{}">{} {}</a></span>&nbsp;&nbsp;&nbsp;'.format(board_no_index,deal_id, board_no_ref, deal['contract'], len(list(filter(lambda x: x % 2 == 1, deal['trick_winners']))))
+                html += '<li><span>{}<a href="/app/viz.html?deal={}{}">{} {}</a></span>&nbsp;&nbsp;&nbsp;'.format(board_no_index,deal_id, board_no_ref, deal['contract'], tricks)
             else:
-                html += '<li><span>{}<a href="/app/viz.html?deal={}{}">{}</a></span>&nbsp;&nbsp;&nbsp;'.format(board_no_index,deal_id, board_no_ref, deal['contract'])
+                html += '<li><span>{}<a href="/app/viz.html?deal={}{}">All Pass</a></span>&nbsp;&nbsp;&nbsp;'.format(board_no_index,deal_id, board_no_ref)
             html += f'<span><a href="/api/delete/deal/{deal_id}">delete</a></span></li>\n'
 
     html += '</ul>'

@@ -43,8 +43,8 @@
         <label for="vulnerable">Vulnerability:</label>
         <select id="vulnerable" name="vulnerable">
             <option value="None">None</option>
-            <option value="NS">NS</option>
-            <option value="EW">EW</option>
+            <option value="N-S">NS</option>
+            <option value="E-W">EW</option>
             <option value="Both">Both</option>
         </select><br>
         <label for="deal">Text:</label>

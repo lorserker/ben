@@ -525,6 +525,7 @@
                     }, timeout * 1000); 
                 }
             } else if (data.message == "deal_end") {
+                document.querySelector('#bidding').textContent = ''
                 let handsPBN = data.pbn.split(' ')
                 for (let i = 0; i < 4; i++) {
                     deal.hands[i].cards = parseHand(handsPBN[i])
