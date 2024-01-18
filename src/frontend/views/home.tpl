@@ -56,8 +56,16 @@
     <div class="border">
     <form id="form2">
         <label for="deal">PBN:</label>
-        <textarea id="deal" name="dealpbn" cols="40"  rows="10"></textarea><br>
+        <textarea id="deal" name="dealpbn" cols="40"  rows="6"></textarea><br>
         <button type="submit" class="submit-button" data-form="form2">Play from PBN</button>    
+    </form>
+    </div>
+    <br>
+    <div class="border">
+    <form id="form6">
+        <label for="deal">BSOL:</label>
+        <textarea id="deal" name="dealbsol" cols="40"  rows="3"></textarea><br>
+        <button type="submit" class="submit-button" data-form="form6">Play from BSOL</button>    
     </form>
     </div>
     <br>

@@ -464,9 +464,11 @@ class Sample:
 
         n_steps = binary.calculate_step(auction)
 
+        binfo_model = models.binfo_model
+
         A = binary.get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, ns, ew)
 
-        p_hcp, p_shp = models.binfo_model.model(A)
+        p_hcp, p_shp = binfo_model.model(A)
 
         b[:, :3] = p_hcp.reshape((-1, n_steps, 3))[:, -1, :].reshape((-1, 3))
         b[:, 3:] = p_shp.reshape((-1, n_steps, 12))[:, -1, :].reshape((-1, 12))
@@ -509,6 +511,9 @@ class Sample:
         return min_scores
 
     def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand, vuln, models):
+        bidder_model = models.bidder_model
+        binfo_model = models.binfo_model
+
         n_samples = self.sample_hands_play
         if self.verbose:
             print(f"Called init_rollout_states {n_samples}")
@@ -542,7 +547,7 @@ class Sample:
             # The more cards we know the less samples are needed to 
             h1_h2 = self.shuffle_cards_bidding_info(
                 sample_boards_for_play,
-                models.binfo_model,
+                binfo_model,
                 auction,
                 hand,
                 vuln,
@@ -628,7 +633,7 @@ class Sample:
         if self.verbose:
             print(f"Unique states {states[0].shape[0]}")
 
-        accept, c_hcp, c_shp = self.validate_shape_and_hcp_for_sample(auction, known_nesw, hand, vuln, models, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states)
+        accept, c_hcp, c_shp = self.validate_shape_and_hcp_for_sample(auction, known_nesw, hand, vuln, binfo_model, models.ns, models.ew, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states)
 
         if self.use_bidding_info:
             if np.sum(accept) < n_samples:
@@ -665,7 +670,7 @@ class Sample:
         for h_i in [hidden_1_i, hidden_2_i]:
             #if (player_i + 2) % 4 == h_i:
             h_i_nesw = player_to_nesw_i(h_i, contract)
-            bid_scores = self.get_bid_scores(h_i_nesw, auction, vuln, states[h_i][:, 0, :32], models.bidder_model, models.ns, models.ew)
+            bid_scores = self.get_bid_scores(h_i_nesw, auction, vuln, states[h_i][:, 0, :32], bidder_model, models.ns, models.ew)
             min_bid_scores = np.minimum(min_bid_scores, bid_scores)
 
         # Round min_bid_scores to 3 decimals
@@ -710,12 +715,12 @@ class Sample:
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
         return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp
     
-    def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, models, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states):
+    def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, binfo_model, ns, ew, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states):
         n_steps = binary.calculate_step(auction)
 
-        A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models.ns, models.ew)
+        A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, ns, ew)
 
-        p_hcp, p_shp = models.binfo_model.model(A)
+        p_hcp, p_shp = binfo_model.model(A)
 
         # Only take the result from the latest bidding round
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]

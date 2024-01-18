@@ -178,7 +178,8 @@ async def handler(websocket, path, board_no):
         t_start = time.time()
         await driver.run()
 
-        print(f'Board played in {time.time() - t_start:0.1f} seconds')
+        print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+
         if not random and not query_params:
             board_no[0] = (board_no[0] + 1) % len(boards)
 

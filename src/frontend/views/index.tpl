@@ -36,6 +36,8 @@
   <li>5NT pick a slam</li>
   <li>Blackwood 1430</li>
   <li>Cue bid</li>
+  <li>DOPI</li>
+  <li>Drury</li>
   <li>Exclusion</li>
   <li>Fit showing jumps</li>
   <li>Fourth suit</li>
@@ -58,6 +60,7 @@
   <li>Responsive double</li>
   <li>ROPI</li>
   <li>Smolen</li>
+  <li>Soloway Jump Shift</li>
   <li>Splinter</li>
   <li>Support double redouble</li>
   <li>Texas</li>

@@ -1,6 +1,9 @@
 from gevent import monkey
 monkey.patch_all()
 
+# Patching to suppress the warning about invalid HTTP versions
+monkey.patch_all(warn_on_full_argv=False, warn_on_stopping=False)
+
 from bottle import Bottle, run, static_file, redirect, template, request, response
 import bottle
 bottle.BaseRequest.MEMFILE_MAX = 5 * 1024 * 1024 
@@ -10,6 +13,7 @@ import uuid
 import json
 import os
 import argparse
+import datetime
 import numpy as np
 from urllib.parse import parse_qs
 import re
@@ -178,6 +182,26 @@ def parse_lin(lin):
 
     return dealer, vuln, hands, board_no
 
+def parse_bsol(url):
+    query_params = parse_qs(url.split('?')[1])
+    # Extract the required values
+    board = query_params.get('board', [])[0]
+    dealer = query_params.get('dealer', [])[0]
+    vuln_str = query_params.get('vul', [])[0]
+    vulnerable = {'NS': 'N-S', 'EW': 'E-W', 'All': 'Both'}.get(vuln_str, vuln_str)
+
+    hands = []
+    # Concatenate the values from North, South, East, and West
+    hands.append(query_params.get('North', [])[0])
+    hands.append(query_params.get('South', [])[0])
+    hands.append(query_params.get('East', [])[0])
+    hands.append(query_params.get('West', [])[0])
+
+    hands = " ".join(hands)
+    print(hands)
+
+    return dealer, vulnerable, hands, board
+    
 def parse_pbn(fin):
     for line in fin:
         if line.startswith('[Dealer'):
@@ -258,6 +282,12 @@ def index():
         dealer, vulnerable, hands, board_no = parse_pbn(dealpbn.splitlines())
         url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
 
+    dealbsol = request.forms.get('dealbsol')
+    if dealbsol:
+        dealbsol = request.forms.get('dealbsol')
+        dealer, vulnerable, hands, board_no = parse_bsol(dealbsol)
+        url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+
     deallin = request.forms.get('deallin')
     if deallin:
         deallin = parse_qs(deallin)
@@ -298,13 +328,14 @@ def home():
                 if deal["vuln_ns"]: vulnerable = C_NS
                 if deal["vuln_ew"]: vulnerable = C_WE
             encoded_str_deal = encode_board(transform_hand(deal["hands"].split(" ")), deal["dealer"], vulnerable, int(deal['board_number']) if deal['board_number'] is not None else 0)                
+            # Trick winners are relative to declarer so 1 and 3 are declarer and dummy
             tricks = len(list(filter(lambda x: x % 2 == 1, deal['trick_winners'])))
+
             if 'claimed' in deal:
-                if 'claimedbydeclarer' in deal:
-                    if deal['claimedbydeclarer']:
-                        tricks += deal['claimed']
-                    else:
-                        tricks += (13-tricks-deal['claimed'])
+                if deal['claimedbydeclarer']:
+                    tricks += deal['claimed']
+                else:
+                    tricks += 13 - len(deal['trick_winners'])-deal['claimed']
 
             if deal['contract'] is not None:
                 deals.append({
@@ -348,18 +379,28 @@ def frontend():
 
 @app.route('/api/deals/<deal_id>')
 def deal_data(deal_id):
-    db = shelve.open(DB_NAME)
-    deal = db[deal_id]
-    db.close()
+    try:
+        db = shelve.open(DB_NAME)
+        deal = db[deal_id]
+        db.close()
 
-    return json.dumps(deal)
+        return json.dumps(deal)
+    except KeyError:
+        # Handle the case when the specified deal_id does not exist
+        error_message = {"error": f"Deal with ID {deal_id} not found"}
+        return json.dumps(error_message), 404  # Return a 404 Not Found status
 
 @app.route('/api/delete/deal/<deal_id>')
 def delete_deal(deal_id):
-    db = shelve.open(DB_NAME)
-    db.pop(deal_id)
-    db.close()
-    redirect('/home')
+    try:
+        db = shelve.open(DB_NAME)
+        db.pop(deal_id)
+        db.close()
+        redirect('/home')
+    except KeyError:
+        # Handle the case when the specified deal_id does not exist
+        error_message = {"error": f"Deal with ID {deal_id} not found"}
+        return json.dumps(error_message), 404  # Return a 404 Not Found status
 
 @app.route('/api/save/deal', method='POST')
 def save_deal():

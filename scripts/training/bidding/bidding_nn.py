@@ -21,7 +21,7 @@ model_path = 'model/bidding'
 
 batch_size = 64
 display_step = 1000
-epochs = 100
+epochs = 10
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))

@@ -13,6 +13,7 @@ import tensorflow as tf
 import deck52
 import pprint
 import time
+import datetime
 import json
 import asyncio
 import uuid
@@ -86,8 +87,11 @@ class Driver:
         self.claim = models.claim
         self.claimed = None
         self.claimedbydeclarer = None
+        self.conceed = None
 
     def set_deal(self, board_number, deal_str, auction_str, play_only = None, bidding_only=False):
+        self.play_only = play_only
+        self.bidding_only = bidding_only
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
@@ -177,6 +181,7 @@ class Driver:
 
         if str(opening_lead52.card).startswith("Conceed"):
 
+            self.conceed = True
             self.claimed = 0
             self.claimedbydeclarer = False
             await self.channel.send(json.dumps({
@@ -185,6 +190,9 @@ class Driver:
                 'dict': self.to_dict() 
             }))
             return
+        
+        self.card_responses.append(opening_lead52)
+
         opening_lead52 = opening_lead52.card.code()
         await self.channel.send(json.dumps({
             'message': 'card_played',
@@ -233,12 +241,18 @@ class Driver:
             'play': [c.to_dict() for c in self.card_responses],
             'trick_winners': self.trick_winners,
             'board_number' : self.board_number,
-            'human': self.name
+            'player': self.name,
+            'rotated': self.rotate,
+            'play_only': self.play_only,
+            'bidding_only': self.bidding_only,
+            'human': self.human
         }
-        if self.claimed:
+        if self.claimed is not None:
             result['claimed'] = self.claimed
-        if self.claimedbydeclarer:
+        if self.claimedbydeclarer is not None:
             result['claimedbydeclarer'] = self.claimed
+        if self.conceed is not None:
+            result['conceed'] = self.conceed
         return result
 
     async def play(self, auction, opening_lead52):
@@ -327,10 +341,13 @@ class Driver:
                 card_resp = None
                 while card_resp is None:
                     card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
-                    # We need to handle an invalid claim
+
                     if (str(card_resp.card).startswith("Conceed")) :
-                            self.claimedbydeclarer = (player_i == decl_i) or (decl_i == (player_i + 2) % 4)
+                            self.claimedbydeclarer = False
                             self.claimed = 0
+                            self.conceed = True
+                            self.trick_winners = trick_won_by
+                            print(f"Contract: {self.contract} Accepted conceed")
                             return
 
                     if (str(card_resp.card).startswith("Claim")) :
@@ -555,8 +572,6 @@ class Driver:
 
         await asyncio.sleep(0.01)
 
-        self.card_responses.append(card_resp)
-
         return card_resp
 
     async def bidding(self):
@@ -716,7 +731,7 @@ async def main():
             with shelve.open(f"{base_path}/gamedb") as db:
                 deal = driver.to_dict()
                 print("Saving Board: ",driver.hands)
-                print(f'Board played in {time.time() - t_start:0.1f} seconds')
+                print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 db[uuid.uuid4().hex] = deal
 
         if not auto:

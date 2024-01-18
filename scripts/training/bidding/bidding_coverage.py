@@ -63,10 +63,10 @@ def create_binary(data_it, ns, ew, alternating, x, y, HCP, SHAPE, max_occurrence
         if not deal_data.vuln_ns and deal_data.vuln_ew: v = 2
         if deal_data.vuln_ns and deal_data.vuln_ew: v = 3
         if alternating and (i % 2) == 1:
-            auction = f"{ns}-{ew} {v} " + ' '.join(deal_data.auction).replace("PASS","P").replace("PAD_START","-")
+            auction = f"{ew}-{ns} {v} " + ' '.join(deal_data.auction).replace("PASS","P").replace("PAD_START","-")
             x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, n_steps = 8)
         else:
-            auction = f"{ew}-{ns} {v} " + ' '.join(deal_data.auction).replace("PASS","P").replace("PAD_START","-")
+            auction = f"{ns}-{ew} {v} " + ' '.join(deal_data.auction).replace("PASS","P").replace("PAD_START","-")
             x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
         # Check if the count for this key exceeds the limit
         if key_counts[auction] < max_occurrences:
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     sorted_keys_by_count = sorted(key_counts.items(), key=lambda x: (-x[1], x[0]))  # Sort by count and key in descending order
 
     count = len(sorted_keys_by_count)
-    sys.stderr.write(f"Found {count} bidding sequences. k={k//players_pr_hand} hands" )
+    sys.stderr.write(f"Found {count} bidding sequences. k={k//players_pr_hand} hands\n" )
 
     # The second training dataset is random deals, and we just use the bidding sequences we don't allready have
     max_occurrences = 2

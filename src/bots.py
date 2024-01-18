@@ -24,17 +24,16 @@ class BotBid:
         # Perhaps it is an idea to store the auction (and binary version) to speed up processing
         self.min_candidate_score = models.search_threshold
         self.max_candidate_score = models.no_search_threshold
-        self.model = models.bidder_model
-        self.state = models.bidder_model.zero_state
+        self.ns = models.ns
+        self.ew = models.ew
+        self.seat = seat
+        self.bidder_model = models.bidder_model
+        self.binfo_model = models.binfo_model
         self.lead_suit_model = models.lead_suit_model
         self.lead_nt_model = models.lead_nt_model
         self.sd_model = models.sd_model
         self.sd_model_no_lead = models.sd_model_no_lead
-        self.binfo_model = models.binfo_model
-        self.ns = models.ns
-        self.ew = models.ew
         self.sample = sampler
-        self.seat = seat
         self.verbose = verbose
         self.sample_boards_for_auction = sampler.sample_boards_for_auction
         self.lead_included = models.lead_included
@@ -56,11 +55,11 @@ class BotBid:
         n_steps = BotBid.get_bid_number_for_player_to_bid(auction)
         hand_ix = len(auction) % 4
         X = binary.get_auction_binary(n_steps, auction, hand_ix, self.hand, self.vuln, self.ns, self.ew)
-
-        x = X[:,-1,:]
-        return x
+        return X
 
     def bid(self, auction):
+        # A problem, that we get candidates with a threshold, and then simulates
+        # When going negative, we would probably like to extend the candidates
         candidates, passout = self.get_bid_candidates(auction)
 
 
@@ -263,9 +262,12 @@ class BotBid:
 
     def next_bid_np(self, auction):
         x = self.get_binary(auction)
-        bid_np, next_state = self.model.model(x, self.state)
-        self.state = next_state
+        #x = x[:,-1,:]
+        #bid_np, next_state = self.bidder_model.model(x, self.state)
+        #self.state = next_state
 
+        bid_np = self.bidder_model.model_seq(x)
+        bid_np = bid_np[-1:]
         return bid_np
     
     def sample_hands_auction(self, auction_so_far):
@@ -277,7 +279,7 @@ class BotBid:
         if len(auction_so_far) > 24:
             sample_boards_for_auction *= 4
         lho_pard_rho, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(
-            auction_so_far, turn_to_bid, self.hand, self.vuln, self.model, self.binfo_model, self.ns, self.ew, sample_boards_for_auction)
+            auction_so_far, turn_to_bid, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, sample_boards_for_auction)
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
         if lho_pard_rho.shape[0] > self.sample.sample_hands_auction:
@@ -315,7 +317,7 @@ class BotBid:
         turn_i = len(auction) % 4
         while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
             X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.ns, self.ew)
-            y_bid_np = self.model.model_seq(X)
+            y_bid_np = self.bidder_model.model_seq(X)
             x_bid_np = y_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
             bid_np = x_bid_np[:,-1,:]
             assert bid_np.shape[1] == 40
@@ -351,6 +353,9 @@ class BotBid:
             n_steps_vals[turn_i] += 1
             turn_i = (turn_i + 1) % 4
         assert len(auction_np) > 0
+
+        if self.verbose:
+            print("bidding_rollout - finished ",auction_np.shape)
         
         return auction_np
     
@@ -411,7 +416,6 @@ class BotBid:
             contract = bidding.get_contract(sample_auction)
             # All pass doens't really fit, and is always 0 - we ignore it for now
             if contract is None:
-                print(sample_auction)
                 contracts.append("pass")
                 strains[i] = -1
                 declarers[i] = -1
@@ -455,7 +459,7 @@ class BotBid:
 
 class BotLead:
 
-    def __init__(self, vuln, hand_str, models, sample, verbose):
+    def __init__(self, vuln, hand_str, models, sample, seat, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
@@ -463,12 +467,13 @@ class BotLead:
 
         self.lead_suit_model = models.lead_suit_model
         self.lead_nt_model = models.lead_nt_model
+        self.ns = models.ns
+        self.ew = models.ew
+        self.seat = seat
         self.bidder_model = models.bidder_model
         self.binfo_model = models.binfo_model
         self.sd_model = models.sd_model
         self.sd_model_no_lead = models.sd_model_no_lead
-        self.ns = models.ns
-        self.ew = models.ew
         self.double_dummy = models.double_dummy
         self.sample = sample
         self.verbose = verbose

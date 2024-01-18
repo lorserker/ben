@@ -764,7 +764,7 @@ async def main():
                 cleanup_shelf(shelf_filename)
             with shelve.open(shelf_filename) as db:
                 print("Saving Board: ",client.deal_str)
-                print(f'Board played in {time.time() - t_start:0.1f} seconds')
+                print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 if deal["board_number"]+"-Open" not in db:
                     db[deal["board_number"]+"-Open"] = deal
                 else:

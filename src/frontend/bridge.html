@@ -141,6 +141,7 @@
 
             ws.addEventListener("error", function (event) {
                 console.log("WebSocket error:", event);
+                alert("Error on server: ", event )
                 document.querySelector('#auctionstr').innerHTML += 'No connection to server <br>'
             });
 

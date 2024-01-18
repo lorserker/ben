@@ -47,15 +47,27 @@ class Deal {
 
         // Last card
         if (this.playIndex == this.data['play'].length) {
-            if (this.data['claimed']) {
-                alert("Claimed")
+            let trickstaken
+            let trickWinner
+            if (typeof this.data['claimed'] !== 'undefined') {
+                alert("Claimed " + this.data['claimed'] + " tricks.")
+                trickWinner = this.data['trick_winners'][this.data['trick_winners'].length - 1]
+                // Trickwinner is relative to declarer
+                // declarer is based on position
+                if (this.declarer() % 2 == 0) {
+                    if (this.data['claimedbydeclarer']) {
+                        trickstaken = new TricksTaken(this.top().tricksTaken.ns + this.data['claimed'], 13 - (this.top().tricksTaken.ns + this.data['claimed']))
+                    } else {
+                        trickstaken = new TricksTaken(13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']) , this.top().tricksTaken.ew + 1 + this.data['claimed'])
+                    }
+                } else {
+                    if (this.data['claimedbydeclarer']) {
+                        trickstaken = new TricksTaken(13 - this.top().tricksTaken.ew + this.data['claimed'], (this.top().tricksTaken.ew + this.data['claimed']))
+                    } else {
+                        trickstaken = new TricksTaken(this.top().tricksTaken.ew + 1  + this.data['claimed'], 13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']))
+                    }
+                }
             }
-            let trickWinner = this.data['trick_winners'][this.data['trick_winners'].length - 1]
-            
-            if (trickWinner % 2 == 0)
-                trickstaken = new TricksTaken(this.top().tricksTaken.ns + this.data['claimed'], 13 - this.top().tricksTaken.ns + this.data['claimed'])
-            else
-                trickstaken = new TricksTaken(13 - this.top().tricksTaken.ew + this.data['claimed'], 13 - this.top().tricksTaken.ew + this.data['claimed'])
             this.stack.push(new DealSnapshot(
                 this.top().hands,
                 this.top().bidding,
@@ -445,7 +457,7 @@ class PlayInfo {
             html += `
                     <h3 class="samples" onclick="toggleSamples('sampleLinesPlay')"><strong>Samples(${this.data['samples'].length}):</strong></h3>
                     <div id="sampleLinesPlay" class="hidden">
-                    <ul>${this.data.samples.map(sample => `<li>${sample.replace(/\n/g,"<br>")}</li>`).join('')}</ul>
+                    <ul>${this.data.samples.map(sample => `<li>${sample.replace(/\n/g, "<br>")}</li>`).join('')}</ul>
                     </div>
                     `
         }
