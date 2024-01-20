@@ -58,6 +58,12 @@ class CandidateCard:
         self.expected_score_sd = None if expected_score_sd is None else float(expected_score_sd)
         self.expected_score_dd = None if expected_score_dd is None else float(expected_score_dd)
 
+    def __str__(self):
+        return f"CandidateCard(card={self.card}, insta_score={self.insta_score}, " \
+               f"expected_tricks_sd={self.expected_tricks_sd}, expected_tricks_dd={self.expected_tricks_dd}, " \
+               f"p_make_contract={self.p_make_contract}, expected_score_sd={self.expected_score_sd}, " \
+               f"expected_score_dd={self.expected_score_dd})"
+    
     def to_dict(self):
         result = {
             'card': self.card.symbol(),

@@ -96,8 +96,6 @@ def calculate_seed(input):
     hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
     return hash_integer
 
-
-
 class Board(NamedTuple):
     dealer: str
     vuln: List[bool]

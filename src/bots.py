@@ -342,7 +342,7 @@ class BotBid:
                             #sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]}\n")
                             bid_np[i][bid] = 0
 
-                        assert bid_i <= 40, f'Auction to long {bid_i} {auction} {auction_np[i]}'
+                        assert bid_i <= 60, f'Auction to long {bid_i} {auction} {auction_np[i]}'
                     else:
                         bid_np[i][1] = 1
                 if invalid_bids: 
@@ -507,6 +507,9 @@ class BotLead:
             # We have 3 factors, and they could all be right, so we remove most of the decimals
             # expected_tricks_sd is for declarer
             candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), -round(c.expected_tricks_sd, 1), round(c.insta_score, 2)), reverse=True)
+            # Print each CandidateCard in the list
+            for card in candidate_cards:
+                print(card)
             opening_lead = candidate_cards[0].card.code()
 
         if opening_lead % 8 == 7:

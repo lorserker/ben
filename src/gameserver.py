@@ -34,6 +34,7 @@ def get_execution_path():
 random = True
 #For some strange reason parameters parsed to the handler must be an array
 board_no = []
+seed = None
 board_no.append(0) 
 
 # Get the path to the config file
@@ -114,10 +115,10 @@ def worker(driver):
     asyncio.new_event_loop().run_until_complete(driver.run())
 
 
-async def handler(websocket, path, board_no):
+async def handler(websocket, path, board_no, seed):
     print('{} Got websocket connection'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
-    driver = game.Driver(models, human.WebsocketFactory(websocket, verbose), Sample.from_conf(configuration, verbose), verbose)
+    driver = game.Driver(models, human.WebsocketFactory(websocket, verbose), Sample.from_conf(configuration, verbose), seed, verbose)
     play_only = False
     driver.human = [False, False, False, False]
     parsed_url = urlparse(path)
@@ -149,15 +150,19 @@ async def handler(websocket, path, board_no):
             play_only = True
         deal = query_params.get('deal', [None])[0]
         board_no_query = query_params.get('board_no')
-        board_number = int(board_no_query[0]) if board_no_query and board_no_query[0] is not None else 42
+        if board_no_query and board_no_query[0] is not None: 
+            board_number = int(board_no_query[0]) 
+            np.random.seed(board_number)
+            rdeal = game.random_deal(board_number)
+        else:
+            board_number = np.random.randint(1, 64)
+            rdeal = game.random_deal()
         if deal:
             split_values = deal[1:-1].replace("'","").split(',')
             rdeal = tuple(value.strip() for value in split_values)
             driver.set_deal(board_number, *rdeal, play_only)
             print(f"Board: {board_number} {rdeal}")
         else:
-            np.random.seed(board_number)
-            rdeal = game.random_deal(board_number)
             print(f"Deal: {rdeal}")
             driver.set_deal(board_number, *rdeal, False)
     else:
@@ -193,7 +198,7 @@ async def handler(websocket, path, board_no):
 
 async def main():
     print("Listening on port: ",port)
-    start_server = websockets.serve(functools.partial(handler, board_no=board_no), "0.0.0.0", port)
+    start_server = websockets.serve(functools.partial(handler, board_no=board_no, seed=seed), "0.0.0.0", port)
     await start_server
 
 if __name__ == "__main__":

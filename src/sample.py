@@ -535,6 +535,9 @@ class Sample:
             hidden_cards = get_all_hidden_cards(visible_cards)
             hidden_cards_no = len(hidden_cards)
             
+            # In some situations we know about cards on the hidden hand, when the other hand has shown out.
+            # Currently we still sample and the discard if we hit a not valid sample.
+            # It should be possible to improve
             contract = bidding.get_contract(auction)
             known_nesw = player_to_nesw_i(player_i, contract)
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
@@ -585,6 +588,7 @@ class Sample:
                 for i in range(trick_i + 1):
                     states[player_i][:, i, 32:64] = card_players[3].x_play[0, i, :32]
                     states[3][:, i, :32] = card_players[3].x_play[0, i, :32]
+
             # add the current trick cards to the hidden hands
             if len(current_trick) > 0:
                 for i, card in enumerate(current_trick):

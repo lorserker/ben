@@ -29,6 +29,7 @@ from objects import Card, CardResp, BidResp
 from deck52 import decode_card
 from bidding import bidding
 from objects import Card
+from util import calculate_seed
 
 
 bbabid = False
@@ -80,6 +81,10 @@ class TMClient:
         self.dealer_i, self.vuln_ns, self.vuln_ew, self.hand_str = await self.receive_deal()
 
         auction = await self.bidding()
+
+        # Bidding is over and the play still requires the right number of PAD_START
+        if self.dealer_i > 1:
+            auction = ['PAD_START'] * 2 + auction
 
         await asyncio.sleep(0.01)
 
@@ -149,7 +154,7 @@ class TMClient:
             bot = BBABotBid(self.models.ns, self.models.ew ,self.player_i,self.hand_str,vuln, self.dealer_i)
         else:
             bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.verbose)
-        auction = ['PAD_START'] * self.dealer_i
+        auction = ['PAD_START'] * (self.dealer_i % 2)
 
         player_i = self.dealer_i
 
@@ -177,6 +182,12 @@ class TMClient:
         return auction
 
     async def opening_lead(self, auction):
+        hash_integer = calculate_seed(self.hand_str)
+        # Now you can use hash_integer as a seed
+        if self.verbose:
+            print("Setting seed (Opening lead)=",hash_integer)
+        np.random.seed(hash_integer)
+
         contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)
         on_lead_i = (decl_i + 1) % 4

@@ -26,7 +26,7 @@ model_path = './model/binfo'
 
 batch_size = 64
 display_step = 1000
-epochs = 10
+epochs = 50
 
 X_train = np.load(os.path.join(bin_dir, 'X.npy'))
 HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'))

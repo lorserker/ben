@@ -290,7 +290,8 @@ def index():
 
     deallin = request.forms.get('deallin')
     if deallin:
-        deallin = parse_qs(deallin)
+        query_params = deallin.split('?')
+        deallin = parse_qs(query_params[-1])
         lin = deallin["lin"]
         dealer, vulnerable, hands, board_no = parse_lin(lin[0])
         hands = " ".join(hands)

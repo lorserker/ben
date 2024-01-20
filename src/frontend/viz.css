@@ -37,6 +37,54 @@
     height: 150px;
 }
 
+#feedback {
+    position: absolute;
+    top: 370px;
+    left: 10px;
+    width: 180px;
+    height: 150px;
+}
+
+.north {
+    position: absolute;
+    top: 0px;
+    left: 50px;
+    width: 40px;
+    height: 15px;
+}
+
+.west {
+    position: absolute;
+    top: 60px;
+    left: 2px;
+    width: 40px;
+    height: 15px;
+}
+
+.east {
+    position: absolute;
+    top: 60px;
+    left: 100px;
+    width: 40px;
+    height: 15px;
+}
+
+.south {
+    position: absolute;
+    top: 120px;
+    left: 50px;
+    width: 40px;
+    height: 15px;
+}
+
+#table {
+    position: absolute;
+    top: 200px;
+    left: 200px;
+    width: 180px;
+    height: 150px;
+}
+
 .suit {
     position: relative;
     margin-top: 3px;

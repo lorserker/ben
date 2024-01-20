@@ -45,8 +45,22 @@
           <span>&clubs;</span>
       </div>
   </div>
-  <div id="east">
-      <div class="suit">
+  <div id="table">
+    <div class="north">
+        BEN
+    </div>
+    <div class="west">
+        BEN
+    </div>
+    <div class="south">
+        BEN
+    </div>
+    <div class="east">
+        BEN
+    </div>
+</div>
+    <div id="east">
+        <div class="suit">
           <span>&spades;</span>
       </div>
       <div class="suit">
@@ -59,6 +73,7 @@
           <span>&clubs;</span>
       </div>
   </div>
+  <div id="feedback"></div>
   <div id="south">
       <div class="suit">
           <span>&spades;</span>
@@ -120,6 +135,15 @@
                                 const log = JSON.parse(xhr.responseText);
                                 let deal = new Deal(log)
                                 deal.start(deal.bids)
+                                if (deal.data.human) {
+                                    if (deal.data.human[0]) document.querySelector('.north').innerHTML = deal.data.player
+                                    if (deal.data.human[1]) document.querySelector('.east').innerHTML = deal.data.player
+                                    if (deal.data.human[2]) document.querySelector('.south').innerHTML = deal.data.player
+                                    if (deal.data.human[3]) document.querySelector('.west').innerHTML = deal.data.player
+                                }
+                                if (deal.data.feedback) {
+                                    document.querySelector('#feedback').innerHTML = deal.data.feedback
+                                }
                                 document.getElementById("boardno").innerHTML=deal.board_number()
                                 let auction = new Auction(log['dealer'], log['bids'])
                                 auction.render(document.getElementById("auction"))

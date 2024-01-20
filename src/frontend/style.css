@@ -116,16 +116,14 @@ body {
 
 #table .dealer {
     position: relative;
-    /* display: inline-block; */
     text-decoration: none;
-    color: #000; /* Set text color */
 }
 
 #table .dealer::before {
     content: '';
     position: absolute;
     width: calc(100% + 5px); /* Adjust the space (10px) between text and circular underline */
-    height: calc(100% - 25px);
+    height: calc(100% - 5px);
     border: 2px solid grey; /* Set border color */
     top: 2px; /* Adjust the space between text and circular underline */
     left: -2px; /* Adjust the space between text and circular underline */
@@ -514,5 +512,5 @@ span.bba {
 }
 
 .blinking-element {
-    animation: blink 1s infinite; /* Change the duration as needed */
+    animation: blink 2s infinite; /* Change the duration as needed */
 }

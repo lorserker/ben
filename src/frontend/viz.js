@@ -56,7 +56,7 @@ class Deal {
                 // declarer is based on position
                 if (this.declarer() % 2 == 0) {
                     if (this.data['claimedbydeclarer']) {
-                        trickstaken = new TricksTaken(this.top().tricksTaken.ns + this.data['claimed'], 13 - (this.top().tricksTaken.ns + this.data['claimed']))
+                        trickstaken = new TricksTaken(this.top().tricksTaken.ns + this.data['claimed'] + 1, 13 - (this.top().tricksTaken.ns + 1 + this.data['claimed']))
                     } else {
                         trickstaken = new TricksTaken(13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']) , this.top().tricksTaken.ew + 1 + this.data['claimed'])
                     }

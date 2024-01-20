@@ -37,7 +37,7 @@ class DealData(object):
         auction_parts = auction_str.strip().replace('P', 'PASS').split()
         dealer_ix = dealer[auction_parts[0]]
         vuln_ns, vuln_ew = vuln[auction_parts[1]]
-        auction = (['PAD_START'] * dealer_ix) + auction_parts[2:]
+        auction = (['PAD_START'] * (dealer_ix % 2)) + auction_parts[2:]
 
         return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, ns, ew, deal_str, auction_str, n_cards)
 

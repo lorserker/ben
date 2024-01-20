@@ -65,15 +65,16 @@ class AsyncCardPlayer(bots.CardPlayer):
     
 class Driver:
 
-    def __init__(self, models, factory, sampler, verbose):
+    def __init__(self, models, factory, sampler, seed, verbose):
         self.models = models
         self.sampler = sampler
         self.factory = factory
         self.confirmer = factory.create_confirmer()
         self.channel = factory.create_channel()
 
-        print("Setting seed=42")
-        np.random.seed(42)
+        if seed is not None:
+            print(f"Setting seed={seed}")
+            np.random.seed(seed)
 
         #Default is a Human South
         self.human = [False, False, True, False]
@@ -88,6 +89,8 @@ class Driver:
         self.claimed = None
         self.claimedbydeclarer = None
         self.conceed = None
+        self.decl_i = None
+        self.strain_i = None
 
     def set_deal(self, board_number, deal_str, auction_str, play_only = None, bidding_only=False):
         self.play_only = play_only
@@ -152,6 +155,10 @@ class Driver:
         else:
             auction = await self.bidding()
 
+        # Bidding is over and the play still requires the right number of PAD_START
+        if self.dealer_i > 1:
+            auction = ['PAD_START'] * 2 + auction
+
         self.contract = bidding.get_contract(auction)
 
         if self.contract is None:
@@ -162,14 +169,14 @@ class Driver:
             }))
             return
 
-        strain_i = bidding.get_strain_i(self.contract)
-        decl_i = bidding.get_decl_i(self.contract)
+        self.strain_i = bidding.get_strain_i(self.contract)
+        self.decl_i = bidding.get_decl_i(self.contract)
 
         await self.channel.send(json.dumps({
             'message': 'auction_end',
-            'declarer': decl_i,
+            'declarer': self.decl_i,
             'auction': auction,
-            'strain': strain_i
+            'strain': self.strain_i
         }))
 
         if self.bidding_only:
@@ -196,24 +203,24 @@ class Driver:
         opening_lead52 = opening_lead52.card.code()
         await self.channel.send(json.dumps({
             'message': 'card_played',
-            'player': (decl_i + 1) % 4,
+            'player': (self.decl_i + 1) % 4,
             'card': decode_card(opening_lead52)
         }))
 
         # If human is dummy display declarers hand
-        if self.human[(decl_i + 2) % 4]:
-            hand = self.deal_str.split()[decl_i]
+        if self.human[(self.decl_i + 2) % 4]:
+            hand = self.deal_str.split()[self.decl_i]
             await self.channel.send(json.dumps({
                 'message': 'show_dummy',
-                'player': decl_i,
+                'player': self.decl_i,
                 'dummy': hand
             }))
         else:
             # dummys hand
-            hand = self.deal_str.split()[(decl_i + 2) % 4]
+            hand = self.deal_str.split()[(self.decl_i + 2) % 4]
             await self.channel.send(json.dumps({
                 'message': 'show_dummy',
-                'player': (decl_i + 2) % 4,
+                'player': (self.decl_i + 2) % 4,
                 'dummy': hand
             }))
 
@@ -221,7 +228,7 @@ class Driver:
             for card_resp in self.card_responses:
                 pprint.pprint(card_resp.to_dict(), width=200)
         
-        await self.play(auction, opening_lead52)
+        await self.play(self.contract, self.strain_i, self.decl_i, auction, opening_lead52)
 
         await self.channel.send(json.dumps({
             'message': 'deal_end',
@@ -247,6 +254,10 @@ class Driver:
             'bidding_only': self.bidding_only,
             'human': self.human
         }
+        if self.decl_i is not None:
+            result['declarer'] = self.decl_i
+        if self.strain_i is not None:
+            result['strain'] = self.strain_i
         if self.claimed is not None:
             result['claimed'] = self.claimed
         if self.claimedbydeclarer is not None:
@@ -255,12 +266,9 @@ class Driver:
             result['conceed'] = self.conceed
         return result
 
-    async def play(self, auction, opening_lead52):
-        contract = bidding.get_contract(auction)
+    async def play(self, contract, strain_i, decl_i, auction, opening_lead52):
         
         level = int(contract[0])
-        strain_i = bidding.get_strain_i(contract)
-        decl_i = bidding.get_decl_i(contract)
         is_decl_vuln = [self.vuln_ns, self.vuln_ew, self.vuln_ns, self.vuln_ew][decl_i]
 
         lefty_hand = self.hands[(decl_i + 1) % 4]
@@ -593,7 +601,7 @@ class Driver:
                 bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.verbose)
                 players.append(bot)
 
-        auction = ['PAD_START'] * self.dealer_i
+        auction = ['PAD_START'] * (self.dealer_i % 2)
 
         player_i = self.dealer_i
 
@@ -646,6 +654,7 @@ async def main():
     parser.add_argument("--playonly", type=bool, default=False, help="Just play, no bidding")
     parser.add_argument("--biddingonly", type=bool, default=False, help="Just bidding, no play")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
+    parser.add_argument("--seed", type=int, help="Seed for random")
 
     args = parser.parse_args()
 
@@ -654,6 +663,7 @@ async def main():
     auto = args.auto
     play_only = args.playonly
     bidding_only = args.biddingonly
+    seed = args.seed
     boards = []
 
     if args.boards:
@@ -703,7 +713,7 @@ async def main():
 
     models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
 
-    driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), verbose)
+    driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), seed, verbose)
 
     while True:
         if random: 

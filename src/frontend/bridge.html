@@ -183,7 +183,8 @@
         function setTurn(playerTurn) {
             let labels = ['.label-north', '.label-east', '.label-south', '.label-west']
             labels.forEach(l => document.querySelector(l + ' .seat-label').classList.remove("turn"))
-            document.querySelector(labels[playerTurn] + ' .seat-label').classList.add("turn")
+            if (playerTurn > -1)
+                document.querySelector(labels[playerTurn] + ' .seat-label').classList.add("turn")
         }
 
         function showlasttrick(event) {
@@ -526,6 +527,7 @@
                     }, timeout * 1000); 
                 }
             } else if (data.message == "deal_end") {
+                setTurn(-1)
                 document.querySelector('#bidding').textContent = ''
                 let handsPBN = data.pbn.split(' ')
                 for (let i = 0; i < 4; i++) {
