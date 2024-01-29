@@ -24,9 +24,12 @@ bin_dir = sys.argv[1]
 
 model_path = './model/binfo'
 
-batch_size = 64
-display_step = 1000
-epochs = 50
+# Test setting
+
+batch_size = 128
+display_step = 2000
+epochs = 100
+learning_rate = 0.002
 
 X_train = np.load(os.path.join(bin_dir, 'X.npy'))
 HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'))
@@ -39,8 +42,9 @@ n_dim_shape = SHAPE_train.shape[2]
 
 # If NS/EW cc included update name of model
 if n_ftrs == 161:
-    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-binfo'
-
+    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-binfo_same'
+else:
+    model_path = 'model/binfo'
 
 print("Size input hand:         ", n_ftrs)
 print("Examples for training:   ", n_examples)
@@ -100,12 +104,12 @@ cost_hcp = tf.losses.absolute_difference(out_hcp_target_seq, out_hcp_seq)
 cost_shape = tf.losses.absolute_difference(out_shape_target_seq, out_shape_seq)
 cost = cost_hcp + cost_shape
 
-train_step = tf.train.AdamOptimizer(0.001).minimize(cost)
+train_step = tf.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 batch = Batcher(n_examples, batch_size)
 cost_batch = Batcher(n_examples, batch_size)
 
-with tf.Session() as sess:
+with tf.compat.v1.Session() as sess:
     sess.run(tf.global_variables_initializer())
 
     saver = tf.train.Saver(max_to_keep=1)
@@ -114,8 +118,7 @@ with tf.Session() as sess:
         x_batch, hcp_batch, shape_batch = batch.next_batch([X_train, HCP_train, SHAPE_train])
         if i > 0 and (i % display_step == 0):
             x_cost, hcp_cost, shape_cost = cost_batch.next_batch([X_train, HCP_train, SHAPE_train])
-            c_train = sess.run([cost, cost_hcp, cost_shape], 
-                    feed_dict={seq_in: x_cost, seq_out_hcp: hcp_cost, seq_out_shape: shape_cost, keep_prob: 1.0})
+            c_train = sess.run([cost, cost_hcp, cost_shape], feed_dict={seq_in: x_cost, seq_out_hcp: hcp_cost, seq_out_shape: shape_cost, keep_prob: 1.0})
 
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i ,c_train))
 

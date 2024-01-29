@@ -75,7 +75,7 @@ class HumanBid:
         self.render_auction_hand(auction)
         print('\n')
         bid = input('enter bid: ').strip().upper()
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.name)
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None)
 
     def render_auction_hand(self, auction):
         clear_screen()
@@ -116,7 +116,7 @@ class HumanBidSocket:
 
         bid = await self.socket.recv()
 
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = self.name)
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = self.name, quality=None)
     
 
 class HumanLead:
@@ -124,7 +124,7 @@ class HumanLead:
     async def async_lead(self):
         card_str = input('opening lead: ').strip().upper()
 
-        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[], shape=-1, hcp=-1)
+        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[], shape=-1, hcp=-1, quality=None)
 
 
 class HumanLeadSocket:
@@ -141,9 +141,9 @@ class HumanLeadSocket:
         human_card = await self.socket.recv()
 
         if (str(human_card).startswith("Cl") or str(human_card).startswith("Co")) :
-            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1)
+            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
         else:    
-            return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1)
+            return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
 
 class HumanCardPlayer:
 
@@ -207,9 +207,9 @@ class HumanCardPlayer:
         # claim and conceed both starts with a C
 
         if (str(human_card).startswith("C")) :
-            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1)
+            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
         else:    
-            return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1)
+            return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
 
 
 class HumanCardPlayerSocket(HumanCardPlayer):

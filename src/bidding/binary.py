@@ -30,15 +30,20 @@ class DealData(object):
 
 
     @classmethod
-    def from_deal_auction_string(cls, deal_str, auction_str, ns, ew, n_cards=52):
+    def from_deal_auction_string(cls, deal_str, auction_str, ns, ew, sameforboth, n_cards=52):
         dealer = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
         vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
         hands = list(map(parse_hand_f(n_cards), deal_str.strip().split()))
         auction_parts = auction_str.strip().replace('P', 'PASS').split()
         dealer_ix = dealer[auction_parts[0]]
         vuln_ns, vuln_ew = vuln[auction_parts[1]]
-        auction = (['PAD_START'] * (dealer_ix % 2)) + auction_parts[2:]
+        # If same for both we rotate the deal
+        if sameforboth and dealer_ix > 1:
+            dealer_ix = dealer_ix % 2
+            hands.insert(0, hands.pop())
+            hands.insert(0, hands.pop())
 
+        auction = (['PAD_START'] * dealer_ix) + auction_parts[2:]
         return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, ns, ew, deal_str, auction_str, n_cards)
 
     def get_binary(self, ns, ew, n_steps=8):

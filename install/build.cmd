@@ -1,5 +1,6 @@
 :: These builds are for windows
 pyinstaller ..\src\appserver.py --onefile --path=..\src --add-data "..\src\frontend;frontend"
+pyinstaller ..\src\frontend\appserver.py --onefile --path=..\src --add-data "..\src\frontend;."  --add-data "..\src\frontend\views;views"
 
 pyinstaller ..\src\pbn2ben.py --onefile --path=..\src 
 pyinstaller ..\src\pbn2bba.py --onefile --path=..\src 

@@ -1,14 +1,14 @@
 <!doctype html>
-
 <html lang="en">
+    
 <head>
   <meta charset="utf-8">
 
   <title>Analyze Deal</title>
 
   <link rel="stylesheet" href="viz.css">
-  <script type="text/javascript" src="log.js"></script> 
-  <script type="text/javascript" src="viz.js"></script>  
+  <script src="log.js"></script> 
+  <script src="viz.js"></script>  
 
 </head>
 
@@ -101,7 +101,7 @@
 
   <div id="info"></div>
 
-  <script type="text/javascript">
+  <script>
         const urlParams = new URLSearchParams(location.search)
         const dealId = parseInt(urlParams.get("deal"))
           
@@ -115,7 +115,7 @@
             document.querySelector('#info').innerHTML += `
             <p class="bid"><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' + data.who : ''}</p>
             `;
-            if (data.candidates.length > 0)
+            if (data.candidates && data.candidates.length > 0)
                 document.querySelector('#info').innerHTML += `
                 <p><strong>Candidates:</strong></p>
                 <ul>
@@ -134,7 +134,7 @@
                 <p><strong>HCP:</strong> ${data.hcp.join(' - ')}</p>
                 <p><strong>Shape:</strong> ${data.shape.join('-')}</p>
                 `;
-            if (data.samples.length > 0)
+            if (data.samples && data.samples.length > 0)
                 document.querySelector('#info').innerHTML += `
                     <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples(${data.samples.length}):</strong></h3>
                     <div id="sampleLines${i}" class="hidden">

@@ -1,14 +1,15 @@
-<html> 
+<!DOCTYPE html>
+<html lang="en">
+
 	<head> 
     <meta charset="utf-8">
 		<title>BEN - The open source bridge engine</title> 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <link rel="stylesheet" href="/app/style.css">
-	</head> 
-    <script type="text/javascript">
+    <script>
         function copyToClipboard(idx) {
         const bbaText = document.getElementById('bbaText'+idx);
-        const text = bbaText.textContent;
+        const text = bbaText.textContent.trim();
 
         const el = document.createElement('textarea');
         el.value = text;
@@ -21,9 +22,11 @@
         alert('Copied to clipboard: ' + text);
         }
     </script>
+	</head> 
 <body> 
-
-<center><h1>Play with BEN</a></h1></center>
+<div class="center">
+    <h1>Play with BEN</h1>
+</div>
 
 <div class="container">
   <h2>Play this deal: </h2>
@@ -32,7 +35,7 @@
     <div class="border">
     <form id="form1">
         <label for="board">Board:</label>
-        <input type="input" id="board" name="board"><br>
+        <input type="text" name="board"><br>
         <label for="dealer">Dealer:</label>
         <select id="dealer" name="dealer">
             <option value="N">North</option>
@@ -56,7 +59,7 @@
     <div class="border">
     <form id="form2">
         <label for="deal">PBN:</label>
-        <textarea id="deal" name="dealpbn" cols="40"  rows="6"></textarea><br>
+        <textarea id="dealpbn" name="dealpbn" cols="40"  rows="6"></textarea><br>
         <button type="submit" class="submit-button" data-form="form2">Play from PBN</button>    
     </form>
     </div>
@@ -64,7 +67,7 @@
     <div class="border">
     <form id="form6">
         <label for="deal">BSOL:</label>
-        <textarea id="deal" name="dealbsol" cols="40"  rows="3"></textarea><br>
+        <textarea id="dealbsol" name="dealbsol" cols="40"  rows="3"></textarea><br>
         <button type="submit" class="submit-button" data-form="form6">Play from BSOL</button>    
     </form>
     </div>
@@ -88,7 +91,7 @@
     <div class="border">
     <form id="form5">
         <label for="board">Board:</label>
-        <input type="input" id="board" name="board"><br>
+        <input type="text" name="board"><br>
         <button type="submit" class="submit-button" data-form="form5">Play random</button>    
     </form>
     </div>
@@ -101,7 +104,7 @@
   <div class="content">
     <div class="inner-div">
     <label for="name">Name:</label>
-    <input type="input" id="name" data-default=""><br>
+    <input type="text" id="name" data-default=""><br>
     Controlled by human: <br>
     <input type="checkbox" id="N" data-default="false"><label for="N">North</label>
     <input type="checkbox" id="E" data-default="false"><label for="E">East</label>
@@ -116,7 +119,7 @@
     </div>
     <div class="inner-div">
     Automation<br>
-    <input type="checkbox" id="A" data-default="true"><label for="A">Autocomplete trick after
+    <input type="checkbox" id="A" data-default="true"><label for="T">Autocomplete trick after
     <select id="T">
         <option value="0">0</option>
         <option value="1">1</option>
@@ -124,11 +127,10 @@
         <option value="5">5</option>
         <option value="10">10</option>
     </select>
-    seconds<br>
+    seconds</label><br>
     <input type="checkbox" id="C" data-default="false"><label for="C">Continue to next deal (Requires board number)</label><br>
-    </div>
-
   </div>
+</div>
 </div>
 <div class="container">
   <h2>Previous played deals</h2>
@@ -148,7 +150,7 @@
 </div>
 </div>
 
-<script type="text/javascript">
+<script>
 
   // Retrieve the input field element
   const inputField = document.getElementById('name');

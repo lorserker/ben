@@ -1,3 +1,4 @@
+import sys
 from gevent import monkey
 monkey.patch_all()
 
@@ -21,6 +22,17 @@ import re
 
 app = Bottle()
 os.getcwd()
+
+BUNDLE_TEMP_DIR = ''
+print(bottle.TEMPLATE_PATH)
+
+try:
+    if getattr(sys, 'frozen') and hasattr(sys, '_MEIPASS'):
+        BUNDLE_TEMP_DIR = sys._MEIPASS
+        #Modify template
+        bottle.TEMPLATE_PATH.insert(0,BUNDLE_TEMP_DIR + '/views')
+except:
+    BUNDLE_TEMP_DIR= '' 
 
 def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
@@ -77,7 +89,7 @@ def encode_board(hand, dealer, vulnerability, deal_number):
     str_Deal = format(board_extension, 'x') + format(dealer * 4 + vulnerability, 'x')
     encryption_byte = board[dealer,vulnerability]
 
-    for j in range(1, 14):
+    for j in range(1, 14): 
         sum_value = 0
         str_cards = "AKQJT98765432"[j - 1]
         for i in range(4):
@@ -229,7 +241,7 @@ def parse_pbn(fin):
 parser = argparse.ArgumentParser(description="Appserver")
 parser.add_argument("--host", default="localhost", help="Hostname for appserver")
 parser.add_argument("--port", type=int, default=8080, help="Port for appserver")
-parser.add_argument("--db", default="../db/gamedb", help="Db for appserver")
+parser.add_argument("--db", default="../gamedb", help="Db for appserver")
 
 args = parser.parse_args()
 

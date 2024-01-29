@@ -178,7 +178,7 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
         auction[:, i] = bidding.BID2ID[bid]
     #else:
     #    print("Called with array")
-
+    #print(auction)
     bid_i = hand_ix
     while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
         bid_i += 4
@@ -245,6 +245,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns,
     auction = auction_input
 
     bid_i = hand_ix
+    #print("isinstance(auction, list)", isinstance(auction, list))
     if isinstance(auction, list):
         auction_input = auction_input + ['PAD_END'] * 4 * n_steps
         auction = bidding.BID2ID['PAD_END'] * np.ones((n_samples, len(auction_input)), dtype=np.int32)
@@ -253,8 +254,9 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns,
         while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
             bid_i += 4
     else:
-        while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
-            bid_i += 4
+        if len(auction) > 0:
+            while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
+                bid_i += 4
 
     X[:, :, :2] = vuln_us_them
     X[:, :, 2:3] = hcp.reshape((n_samples, 1, 1))
@@ -296,10 +298,14 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns,
         X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(ew))
     return X_padded
 
-def calculate_step(auction):
+def calculate_step_bidding_info(auction):
     # This is number of levels to get from the neural network. 
-    # print("calculate_step", auction)
-    n_steps = 1 + (len(auction) -1) // 4
+    n_steps = 1 + len(auction) // 4
+    return n_steps
+
+def calculate_step_bidding(auction):
+    # This is number of levels to get from the neural network. 
+    n_steps = 1 + (len(auction) - 1) // 4
     return n_steps
 
 def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
@@ -327,7 +333,7 @@ def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
     x[10:] = hand.reshape(32)
 
     b = np.zeros(15)
-    n_steps = calculate_step(auction)
+    n_steps = calculate_step_bidding_info(auction)
     A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, ns, ew)
 
     p_hcp, p_shp = binfo.model(A)

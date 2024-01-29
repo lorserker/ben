@@ -1,11 +1,15 @@
-<html> 
+<!DOCTYPE html>
+<html lang="en">
 	<head> 
     <meta charset="utf-8">
 		<title>BEN - The open source bridge engine</title> 
     <link rel="stylesheet" href="/app/style.css">
 	</head> 
 <body> 
-<h1><center>Unofficial Computer Bridge Championship 2024</center></h1>
+<div class="center">
+<h1>Unofficial Computer Bridge Championship 2024</h1>
+</div>
+
 
 <div class="container">
   <div class="content">

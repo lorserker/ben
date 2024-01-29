@@ -46,6 +46,7 @@ class TMClient:
         self.writer = None
         self.ns = models.ns
         self.ew = models.ew
+        self.sameforboth = models.sameforboth
         self.models = models
         self.sampler = sampler
         self._is_connected = False
@@ -70,7 +71,8 @@ class TMClient:
             'play': [c.to_dict() for c in self.card_responses],
             'trick_winners': self.trick_winners,
             'board_number': self.board_number,
-            'seat': self.seat
+            'seat': self.seat,
+            'opponents': self.opponents
         }
 
     async def run(self, biddingonly):
@@ -80,10 +82,10 @@ class TMClient:
 
         self.dealer_i, self.vuln_ns, self.vuln_ew, self.hand_str = await self.receive_deal()
 
-        auction = await self.bidding()
+        auction = await self.bidding(self.sameforboth)
 
         # Bidding is over and the play still requires the right number of PAD_START
-        if self.dealer_i > 1:
+        if self.dealer_i > 1 and self.sameforboth:
             auction = ['PAD_START'] * 2 + auction
 
         await asyncio.sleep(0.01)
@@ -146,15 +148,19 @@ class TMClient:
         else:
             self.opponents = matches[0]
 
-    async def bidding(self):
+    async def bidding(self, sameforboth):
         vuln = [self.vuln_ns, self.vuln_ew]
 
         if self.models.use_bba:
             from bba.BBA import BBABotBid            
             bot = BBABotBid(self.models.ns, self.models.ew ,self.player_i,self.hand_str,vuln, self.dealer_i)
         else:
-            bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.verbose)
-        auction = ['PAD_START'] * (self.dealer_i % 2)
+            bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.verbose)
+
+        if sameforboth:
+            auction = ['PAD_START'] * (self.dealer_i % 2)
+        else:
+            auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
 
@@ -171,9 +177,9 @@ class TMClient:
                 # just wait for the other player's bid
                 bid = await self.receive_bid_for(player_i)
                 if (player_i + 2) % 4 == self.player_i:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = 'Partner' )
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = 'Partner', quality=None)
                 else:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None)
                 self.bid_responses.append(bid_resp)
                 auction.append(bid)
 
@@ -247,10 +253,10 @@ class TMClient:
             decl_hand_str = own_hand_str
 
         card_players = [
-            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose),
-            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose),
-            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose),
-            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.verbose)
+            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, self.verbose),
+            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, self.verbose),
+            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, self.verbose),
+            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, self.verbose)
         ]
 
         player_cards_played = [[] for _ in range(4)]
@@ -463,7 +469,8 @@ class TMClient:
                     candidates=[],
                     samples=[],
                     shape=-1,
-                    hcp=-1
+                    hcp=-1,
+                    quality=None
                 )
                 self.card_responses.append(cr)
 
@@ -559,7 +566,8 @@ class TMClient:
             candidates=[],
             samples=[],
             shape=-1,
-            hcp=-1
+            hcp=-1, 
+            quality=None
         )
         self.card_responses.append(cr)
 
@@ -757,7 +765,8 @@ async def main():
     client = TMClient(name, seat, models, Sample.from_conf(configuration, verbose), verbose)
     print(f"Connecting to {host}:{port}")
     await client.connect(host, port)
-    
+    first = True
+
     if client.is_connected:
         await client.send_ready()
 
@@ -769,10 +778,11 @@ async def main():
         # The deal just played is saved for later review
         # if bidding only we do not save the deal
         if not biddingonly:
-            # If we just plaed board 1 we assume a new match
+            # If we just played board 1 we assume a new match
             deal = client.to_dict()
-            if deal["board_number"] == "1":
+            if deal["board_number"] == "1" and first:
                 cleanup_shelf(shelf_filename)
+                first = False
             with shelve.open(shelf_filename) as db:
                 print("Saving Board: ",client.deal_str)
                 print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))

@@ -453,6 +453,11 @@ class PlayInfo {
 
         }
 
+        if ("quality" in this.data) {
+            html += '<br><strong>Sample quality:</strong> ' + this.data['quality']
+        }
+
+
         if ("samples" in this.data && this.data['samples'].length > 0) {
             html += `
                     <h3 class="samples" onclick="toggleSamples('sampleLinesPlay')"><strong>Samples(${this.data['samples'].length}):</strong></h3>

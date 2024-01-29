@@ -215,5 +215,5 @@ class BBABotBid:
             meaning += f" {maxhcp}- hcp"
 
         print(f"Bid: {bidding.ID2BID[new_bid]}={meaning}")
-        return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA")
+        return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA", quality=None)
 

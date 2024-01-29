@@ -63,7 +63,7 @@ def main():
 
     models = Models.from_conf(config,"..\..\..")
 
-    for bid in range(6,40):
+    for bid in range(5,40):
         p_hcp, p_shp = get_info_for_opening("AJT85.AKT.K63.K8",bidding.ID2BID[bid], models)
         print(f"Opening {bidding.ID2BID[bid]}: HCP = {p_hcp[0][2]:>4.1f}, Shape = {[round(float(x), 1) for x in p_shp[0][-4:]]}")
 

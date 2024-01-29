@@ -30,7 +30,7 @@ class CardByCard:
         self.analyze_play()
 
     def analyze_bidding(self):
-        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.verbose) for idx, hand in enumerate(self.hands)]
+        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.dealer_i, self.verbose) for idx, hand in enumerate(self.hands)]
 
         player_i = self.dealer_i
         bid_i = self.dealer_i
@@ -44,10 +44,18 @@ class CardByCard:
     
     @staticmethod
     def bid_eval(bid, bid_resp):
-        qualifier = 'OK'
         if bid_resp.candidates[0].bid != bid:
-            qualifier = f'? NN-value: {bid_resp.candidates[0].bid} {bid_resp.candidates[0].insta_score:.3f}'
-        print(f'{bid} {qualifier}')
+            candidates_list = bid_resp.candidates
+            print(f'{bid} Suggested bid from NN:{bid_resp.candidates[0]}')
+            # Check if 'b' is in the "bid" property of any CandidateBid object and get the index
+            for index, candidate in enumerate(candidates_list):
+                if hasattr(candidate, "bid") and bid in candidate.bid:
+                    print(f'{bid} NN-values:{candidate}')
+                    break  # Break the loop if found
+            else:
+                print(f'{bid} is not in the bids from the neural network')
+        else:
+            print(f'{bid} OK NN-value: {bid_resp.candidates[0].insta_score:.3f}')
 
     @staticmethod
     def card_eval(card, card_resp):
@@ -70,7 +78,7 @@ class CardByCard:
         bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, False)
 
         card_resp = bot_lead.find_opening_lead(self.padded_auction)
-        card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, -1, -1)
+        card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, card_resp.hcp, card_resp.shape, card_resp.quality)
         self.card_responses.append(card_resp)
         self.cards[card_resp.card.symbol()] = card_resp
 

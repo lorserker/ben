@@ -9,7 +9,6 @@ import scoring
 
 from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 from bidding import bidding
-from sample import Sample
 from binary import parse_hand_f
 
 from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit
@@ -17,7 +16,7 @@ from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit
 
 class BotBid:
 
-    def __init__(self, vuln, hand_str, models, sampler, seat, verbose):
+    def __init__(self, vuln, hand_str, models, sampler, seat, dealer, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand = binary.parse_hand_f(32)(hand_str)
@@ -26,7 +25,9 @@ class BotBid:
         self.max_candidate_score = models.no_search_threshold
         self.ns = models.ns
         self.ew = models.ew
+        self.sameforboth = models.sameforboth
         self.seat = seat
+        self.dealer = dealer
         self.bidder_model = models.bidder_model
         self.binfo_model = models.binfo_model
         self.lead_suit_model = models.lead_suit_model
@@ -40,6 +41,7 @@ class BotBid:
         self.samples = []
         self.eval_after_bid_count = models.eval_after_bid_count
         self.sample_hands_for_review = models.sample_hands_for_review
+        self.use_biddingquality = models.use_biddingquality
 
     @staticmethod
     def get_bid_number_for_player_to_bid(auction):
@@ -61,14 +63,14 @@ class BotBid:
         # A problem, that we get candidates with a threshold, and then simulates
         # When going negative, we would probably like to extend the candidates
         candidates, passout = self.get_bid_candidates(auction)
-
+        good_quality = None
 
         if BotBid.do_rollout(auction, candidates, self.max_candidate_score):
             ev_candidates = []
             # To save time, this is moved to the do_rollout section, as samples are only for display if do rollout
             if self.verbose:
                 print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
-            hands_np, sorted_score, p_hcp, p_shp = self.sample_hands_auction(auction)
+            hands_np, sorted_score, p_hcp, p_shp, good_quality = self.sample_hands_for_auction(auction, self.seat)
             samples = []
             for i in range(hands_np.shape[0]):
                 samples.append('%s %s %s %s %.5f' % (
@@ -81,7 +83,7 @@ class BotBid:
             for candidate in candidates:
                 if self.verbose:
                     print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.3f} Samples: {len(hands_np)}")
-                auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np)
+                auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np, self.sameforboth)
                 if self.lead_included:
                     contracts, decl_tricks_softmax = self.expected_tricks_sd(hands_np, auctions_np)
                 else:
@@ -95,8 +97,8 @@ class BotBid:
                         samples[idx] += " \n " + auc + " ("+ str(average_tricks) + ") "
                     else:
                         samples[idx] += " \n " + auc
-                    if self.verbose:
-                        print(samples[idx])
+                    #if self.verbose:
+                    #print(samples[idx])
     
                 # We need to find a way to use how good the samples are
                 ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
@@ -128,6 +130,8 @@ class BotBid:
                     if bidding.BID2ID[candidate.bid] > 4:
                         if expected_score < 0:
                             adjust += expected_score * 3
+                        else:
+                            adjust += -100
 
                 if passout and candidate.bid == "X" and candidate.insta_score < self.min_candidate_score:
                     # Don't double unless the expected score is positive with a margin
@@ -141,7 +145,12 @@ class BotBid:
                     print(ev_c)
                 ev_candidates.append(ev_c)
 
-            candidates = sorted(ev_candidates, key=lambda c: c.expected_score + c.adjust, reverse=True)
+            # If the samples are bad we just trust the neural network
+            if self.use_biddingquality  and not good_quality:
+                candidates = sorted(ev_candidates, key=lambda c: c.insta_score, reverse=True)
+            else:
+                candidates = sorted(ev_candidates, key=lambda c: c.expected_score + c.adjust, reverse=True)
+            
             who = "Simulation"
             # Print candidates with their relevant information
             if self.verbose:
@@ -150,20 +159,24 @@ class BotBid:
         else:
             who = "NN"
             # Perhaps we should sample some hands to get information about how BEN sees the bidding until now
+            # For now we just pick up the bidding info
             samples = []
-            p_hcp = -1
-            p_shp = -1
+            n_steps = binary.calculate_step_bidding_info(auction)
+            p_hcp, p_shp = self.sample.get_bidding_info(self.binfo_model, n_steps, auction, self.seat, self.hand, self.vuln, self.ns, self.ew)
+            p_hcp = p_hcp[0]
+            p_shp = p_shp[0]
         # Without detailed logging we only save 20 samples
         if self.verbose:
             print(candidates[0].bid, " selected")
-        
-        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who)
+        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality)
     
     @staticmethod
     def do_rollout(auction, candidates, max_candidate_score):
         if candidates[0].insta_score > max_candidate_score:
            return False
         
+        # Perhaps we should have another threshold for Double and Redouble as when that is suggested by NN, it is probably well defined
+
         # Just one candidate, so no need for rolling out the bidding
         if len(candidates) == 1:
             #print("Just one candidate, so no need for rolling out the bidding")
@@ -234,7 +247,6 @@ class BotBid:
 
         while True:
             bid_i = np.argmax(bid_softmax)
-            #print(bid_i, bid_softmax[bid_i])
             if bid_softmax[bid_i] < self.min_candidate_score:
                 if len(candidates) >= min_candidates:
                     break
@@ -253,6 +265,7 @@ class BotBid:
             # set the score for the bid just processed to zero so it is out of the loop
             bid_softmax[bid_i] = 0
 
+        # Consider adding an option for PASS, as a possible bid, even if it is not suggested by the nn
         #candidates.append(CandidateBid(bid=bidding.ID2BID[2], insta_score=0.5))
 
         if self.verbose:
@@ -262,41 +275,39 @@ class BotBid:
 
     def next_bid_np(self, auction):
         x = self.get_binary(auction)
-        #x = x[:,-1,:]
-        #bid_np, next_state = self.bidder_model.model(x, self.state)
-        #self.state = next_state
-
         bid_np = self.bidder_model.model_seq(x)
         bid_np = bid_np[-1:]
         return bid_np
     
-    def sample_hands_auction(self, auction_so_far):
-        turn_to_bid = len(auction_so_far) % 4
+    def sample_hands_for_auction(self, auction_so_far, turn_to_bid):
         # The longer the aution the more hands we might need to sample
         sample_boards_for_auction = self.sample.sample_boards_for_auction
         if len(auction_so_far) > 12:
             sample_boards_for_auction *= 2
         if len(auction_so_far) > 24:
             sample_boards_for_auction *= 4
-        lho_pard_rho, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(
-            auction_so_far, turn_to_bid, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, sample_boards_for_auction)
+        accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(
+            auction_so_far, turn_to_bid, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, self.sameforboth,sample_boards_for_auction)
+        
+        #assert good_quality, "We did not find samples for the bidding of decent quality"
+
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
-        if lho_pard_rho.shape[0] > self.sample.sample_hands_auction:
-            random_indices = np.random.permutation(lho_pard_rho.shape[0])
-            lho_pard_rho = lho_pard_rho[random_indices[:self.sample.sample_hands_auction], :, :]
+        if accepted_samples.shape[0] > self.sample.sample_hands_auction:
+            random_indices = np.random.permutation(accepted_samples.shape[0])
+            accepted_samples = accepted_samples[random_indices[:self.sample.sample_hands_auction], :, :]
             sorted_scores = sorted_scores[random_indices[:self.sample.sample_hands_auction]]
 
-        n_samples = lho_pard_rho.shape[0]
+        n_samples = accepted_samples.shape[0]
         
         hands_np = np.zeros((n_samples, 4, 32), dtype=np.int32)
         hands_np[:,turn_to_bid,:] = self.hand
         for i in range(1, 4):
-            hands_np[:, (turn_to_bid + i) % 4, :] = lho_pard_rho[:,i-1,:]
+            hands_np[:, (turn_to_bid + i) % 4, :] = accepted_samples[:,i-1,:]
 
-        return hands_np, sorted_scores, p_hcp, p_shp 
+        return hands_np, sorted_scores, p_hcp, p_shp, good_quality 
 
-    def bidding_rollout(self, auction_so_far, candidate_bid, hands_np):
+    def bidding_rollout(self, auction_so_far, candidate_bid, hands_np, sameforboth):
         auction = [*auction_so_far, candidate_bid]
         
         n_samples = hands_np.shape[0]
@@ -316,7 +327,11 @@ class BotBid:
         bid_i = len(auction) - 1
         turn_i = len(auction) % 4
         while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
-            X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.ns, self.ew)
+            if sameforboth and self.dealer > 1:
+                hand_ix = (turn_i + 2) % 4
+            else:
+                hand_ix = turn_i
+            X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,hand_ix,:], self.vuln, self.ns, self.ew)
             y_bid_np = self.bidder_model.model_seq(X)
             x_bid_np = y_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
             bid_np = x_bid_np[:,-1,:]
@@ -482,10 +497,11 @@ class BotLead:
         self.lead_included = models.lead_included
         self.min_opening_leads = models.min_opening_leads
         self.sample_hands_for_review = models.sample_hands_for_review
+        self.use_biddingquality_in_eval = models.use_biddingquality_in_eval
 
     def find_opening_lead(self, auction):
         lead_card_indexes, lead_softmax = self.get_lead_candidates(auction)
-        accepted_samples, sorted_bidding_score, tricks, p_hcp, p_shp = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
+        accepted_samples, sorted_bidding_score, tricks, p_hcp, p_shp, good_quality = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
 
         candidate_cards = []
         for i, card_i in enumerate(lead_card_indexes):
@@ -500,7 +516,8 @@ class BotLead:
         
         candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score, reverse=True)
 
-        if (candidate_cards[0].insta_score > self.lead_accept_nn):
+        # If our sampling of the hands from the aution is bad, then we just trust the neural network
+        if (candidate_cards[0].insta_score > self.lead_accept_nn or (self.use_biddingquality_in_eval and not good_quality)):
             opening_lead = candidate_cards[0].card.code() 
         else:
             # Now we will select the card to play
@@ -508,8 +525,9 @@ class BotLead:
             # expected_tricks_sd is for declarer
             candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), -round(c.expected_tricks_sd, 1), round(c.insta_score, 2)), reverse=True)
             # Print each CandidateCard in the list
-            for card in candidate_cards:
-                print(card)
+            if self.verbose:
+                for card in candidate_cards:
+                    print(card)
             opening_lead = candidate_cards[0].card.code()
 
         if opening_lead % 8 == 7:
@@ -536,7 +554,8 @@ class BotLead:
             candidates=candidate_cards,
             samples=samples, 
             shape=p_shp,
-            hcp=p_hcp
+            hcp=p_hcp,
+            quality=good_quality
         )
 
     def get_lead_candidates(self, auction):
@@ -575,7 +594,7 @@ class BotLead:
 
         if self.verbose:
             print(f'Now generating {self.sample.sample_boards_for_auction_opening_lead} deals to find opening lead')
-        accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, self.sample.sample_boards_for_auction_opening_lead)
+        accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, False, self.sample.sample_boards_for_auction_opening_lead)
 
         if self.verbose:
             print("Generated samples:", accepted_samples.shape[0], " OK Quality", good_quality)
@@ -595,7 +614,7 @@ class BotLead:
         else:
             tricks = self.single_dummy_estimates(lead_card_indexes, contract, accepted_samples)
 
-        return accepted_samples, sorted_scores, tricks, p_hcp, p_shp
+        return accepted_samples, sorted_scores, tricks, p_hcp, p_shp, good_quality
 
     def double_dummy_estimates(self, lead_card_indexes, contract, accepted_samples):
         from ddsolver import ddsolver
@@ -720,13 +739,14 @@ class BotLead:
 
 class CardPlayer:
 
-    def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, verbose = False):
+    def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, sampler, verbose = False):
         self.player_models = models.player_models
         self.playermodel = models.player_models[player_i]
         self.player_i = player_i
         self.hand = parse_hand_f(32)(hand_str).reshape(32)
         self.hand52 = parse_hand_f(52)(hand_str).reshape(52)
         self.public52 = parse_hand_f(52)(public_hand_str).reshape(52)
+        self.dummy = self.public52.copy()
         self.contract = contract
         self.is_decl_vuln = is_decl_vuln
         self.n_tricks_taken = 0
@@ -735,7 +755,7 @@ class CardPlayer:
         self.strain_i = bidding.get_strain_i(contract)
         self.sample_hands_for_review = models.sample_hands_for_review
         self.init_x_play(parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
-
+        self.bid_accept_play_threshold = sampler.bid_accept_play_threshold
         self.score_by_tricks_taken = [scoring.score(self.contract, self.is_decl_vuln, n_tricks) for n_tricks in range(14)]
 
         from ddsolver import ddsolver
@@ -784,7 +804,8 @@ class CardPlayer:
         n_samples = players_states[0].shape[0]
         assert n_samples > 0, "No samples for DDSolver"
 
-        unavailable_cards = set(list(np.nonzero(self.hand52)[0]) + list(np.nonzero(self.public52)[0]) + current_trick52)
+        # All previously played pips are also unavailable, so we use the original dummy and not what we can see
+        unavailable_cards = set(list(np.nonzero(self.hand52)[0]) + list(np.nonzero(self.dummy)[0]) + current_trick52)
 
         pips = [
             [c for c in range(7, 13) if i*13+c not in unavailable_cards] for i in range(4)
@@ -843,7 +864,8 @@ class CardPlayer:
             print(hands_pbn[:10])
 
         t_start = time.time()
-        #print("Samples: ",n_samples, " Solving: ",len(hands_pbn))
+        if self.verbose:
+            print("Samples: ",n_samples, " Solving: ",len(hands_pbn))
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn)
         card_tricks = ddsolver.expected_tricks(dd_solved)
 
@@ -863,12 +885,10 @@ class CardPlayer:
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key], making[key])
             if self.verbose:
-                print(card_tricks[key], card_ev[key], making[key])
+                print(deck52.decode_card(key), card_tricks[key], card_ev[key], making[key])
 
         if self.verbose:
             print(f'dds took {time.time() - t_start:0.4}')
-            for key, value in card_result.items():
-                print(f"{deck52.decode_card(key)}: {value}")
 
         return card_result
     
@@ -926,11 +946,19 @@ class CardPlayer:
                 expected_score_dd=e_score
             ))
 
+        # Should be loaded from the configuration
+        quality = True
+
+        valid_bidding_samples = np.sum(bidding_scores > self.bid_accept_play_threshold)
         # Now we will select the card to play
         # We have 3 factors, and they could all be right, so we remove most of the decimals
         # We should probably also consider bidding_scores in this 
-        candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1), round(c.insta_score, 2)), reverse=True)
-
+        # If we have bad quality of samples we should probably just use the neural network
+        if valid_bidding_samples > 0:
+            candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1), round(c.insta_score, 2)), reverse=True)
+        else:
+            quality = False
+            candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
         samples = []
 
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
@@ -943,13 +971,17 @@ class CardPlayer:
 
         if (len(bidding_scores)) > 0:
             samples = [f"{sample} {score:.3f}" for sample, score in zip(samples, bidding_scores)]
+        else:
+            quality = False
 
         card_resp = CardResp(
             card=candidate_cards[0].card,
             candidates=candidate_cards,
             samples=samples,
             shape=-1,
-            hcp=-1
+            hcp=-1, 
+            quality=quality
+
         )
 
         return card_resp

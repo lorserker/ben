@@ -83,6 +83,7 @@ class Driver:
         self.name = "Human"
         self.ns = models.ns
         self.ew = models.ew
+        self.sameforboth = models.sameforboth
         self.verbose = verbose
         self.play_only = False
         self.claim = models.claim
@@ -98,7 +99,7 @@ class Driver:
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
-        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, 32)
+        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, False,  32)
 
         auction_part = auction_str.split(' ')
         if play_only == None and len(auction_part) > 2: play_only = True
@@ -151,12 +152,12 @@ class Driver:
             auction = self.auction
             for bid in auction:
                 if bidding.BID2ID[bid] > 1:
-                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly"))
+                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly"), quality=None)
         else:
-            auction = await self.bidding()
+            auction = await self.bidding(self.sameforboth)
 
         # Bidding is over and the play still requires the right number of PAD_START
-        if self.dealer_i > 1:
+        if self.sameforboth and self.dealer_i > 1:
             auction = ['PAD_START'] * 2 + auction
 
         self.contract = bidding.get_contract(auction)
@@ -207,8 +208,8 @@ class Driver:
             'card': decode_card(opening_lead52)
         }))
 
-        # If human is dummy display declarers hand
-        if self.human[(self.decl_i + 2) % 4]:
+        # If human is dummy display declarers hand unless declarer also is human
+        if self.human[(self.decl_i + 2) % 4] and not self.human[self.decl_i]:
             hand = self.deal_str.split()[self.decl_i]
             await self.channel.send(json.dumps({
                 'message': 'show_dummy',
@@ -277,10 +278,10 @@ class Driver:
         decl_hand = self.hands[decl_i]
 
         card_players = [
-            AsyncCardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.verbose),
-            AsyncCardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose),
-            AsyncCardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.verbose),
-            AsyncCardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.verbose)
+            AsyncCardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, self.verbose),
+            AsyncCardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, self.verbose),
+            AsyncCardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, self.verbose),
+            AsyncCardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler, self.verbose)
         ]
 
         # check if user is playing and update card players accordingly
@@ -509,7 +510,7 @@ class Driver:
             card52 = np.nonzero(card_players[player_i].hand52)[0][0]
             card =deck52.card52to32(card52)
 
-            card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1)
+            card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1, quality=None)
 
             await self.channel.send(json.dumps({
                 'message': 'card_played',
@@ -582,7 +583,7 @@ class Driver:
 
         return card_resp
 
-    async def bidding(self):
+    async def bidding(self, sameforboth):
         hands_str = self.deal_str.split()
         
         vuln = [self.vuln_ns, self.vuln_ew]
@@ -596,12 +597,15 @@ class Driver:
                 players.append(BBABotBid(self.models.ns, self.models.ew, i, hands_str[i], vuln, self.dealer_i))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
-                hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.verbose)
+                hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.verbose)
             else:
-                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.verbose)
+                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.verbose)
                 players.append(bot)
 
-        auction = ['PAD_START'] * (self.dealer_i % 2)
+        if sameforboth:
+            auction = ['PAD_START'] * (self.dealer_i % 2)
+        else:
+            auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
 
@@ -721,7 +725,7 @@ async def main():
             rdeal = random_deal()
 
             # example of to use a fixed deal
-            # rdeal = ('AK.AKQ6.AK85.AKQ Q6532.97.743.653 JT7.JT5.QJT96.T4 984.8432.2.J9872', 'E E-W')
+            # rdeal = ('T54.Q65.AKJ432.4 Q9.A3.T986.AKQ63 AK863.T982..T972 J72.KJ74.Q75.J85', 'W E-W')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=bidding_only)

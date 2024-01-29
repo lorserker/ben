@@ -1,7 +1,7 @@
 /* Introduction*/
 .container {
     max-width: 90%;
-    margin: 10 auto;
+    margin: 10px auto;
     min-width: 1024px;
 }
 
@@ -19,6 +19,7 @@ form {
 .border {
     padding: 3px;
     border: 1px solid #333; /* Add a border on the right side */
+    break-inside: avoid-column;
 }
 
 .content p {
@@ -89,7 +90,6 @@ body {
     font-size: 3rem;
     font-family: Arial, sans-serif;
 }
-
 
 #north {
     align-items: flex-end;
@@ -262,9 +262,9 @@ body {
     position: absolute;
     border: 1px solid black;
     border-radius: 3px;
-    left: 58px;
+    left: 55px;
     top: 62px;
-    width: 26px;
+    width: 32px;
     text-align: center;
     background-color: #efcdf5e0;
 }
@@ -390,7 +390,6 @@ body {
     text-align: center;
 }
 
-
 #claim-tricks {
     display: flex;
 }
@@ -472,6 +471,11 @@ span.bba {
 }
 
 #loader {
+    position: absolute;
+    top: 0;
+    bottom: 200px;
+    left: 0;
+    right: 400px;
     border: 12px solid #f3f3f3;
     margin-left: 450px;
     border-radius: 50%;
@@ -480,17 +484,12 @@ span.bba {
     height: 50px;
     animation: spin 1s linear infinite;
     z-index: 200;
-    margin-left: 44%;
     margin-top: 135px;  
 }
 
 .center {
-    position: absolute;
-    top: 0;
-    bottom: 200px;
-    left: 0;
-    right: 400px;
     margin: auto;
+    text-align: center;
 }
 
 @keyframes spin {

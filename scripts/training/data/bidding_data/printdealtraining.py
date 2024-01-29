@@ -20,7 +20,7 @@ def generate_html_deal(line, board_number, bidding):
         <meta charset='utf-8'>
         <title>Match deal</title>
         <link rel='stylesheet' href='viz.css'>
-        <script type="text/javascript" src="viz.js"></script>  
+        <script src="viz.js"></script>  
     </head>
     <body>
         <div id='deal'>
@@ -70,7 +70,7 @@ def generate_html_deal(line, board_number, bidding):
         <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=1&board_no={board_number}"> Se it played </a>
         <div id="auction">{bidding}</div>
 
-        <script type="text/javascript">
+        <script>
             let auction = new Auction({'NESW'.index(dealer)}, {bidding})
             auction.render(document.getElementById("auction"))
         </script>

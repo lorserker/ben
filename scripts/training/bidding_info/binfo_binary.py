@@ -55,10 +55,10 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating):
         if (i+1) % 1000 == 0: 
             print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i+1)
         if alternating and (i % 2) == 1:
-            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ew, ns, 32)
+            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ew, ns, False, 32)
             x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, n_steps = 8)
         else:
-            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ns, ew, 32)
+            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ns, ew, False, 32)
             x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
         if ns == 0:
             start_ix = i * 2

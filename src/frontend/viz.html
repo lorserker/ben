@@ -1,13 +1,13 @@
 <!doctype html>
-
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
 
   <title>Analyze Deal</title>
 
   <link rel="stylesheet" href="viz.css">
-  <script type="text/javascript" src="viz.js"></script>  
+  <script src="viz.js"></script>  
 
 </head>
 
@@ -120,7 +120,7 @@
 
   <div id="info"></div>
 
-  <script type="text/javascript">
+  <script>
 
             const urlParams = new URLSearchParams(location.search)
                 const dealId = urlParams.get("deal")
@@ -140,6 +140,16 @@
                                     if (deal.data.human[1]) document.querySelector('.east').innerHTML = deal.data.player
                                     if (deal.data.human[2]) document.querySelector('.south').innerHTML = deal.data.player
                                     if (deal.data.human[3]) document.querySelector('.west').innerHTML = deal.data.player
+                                }
+                                if (deal.data.opponents) {
+                                    if (deal.data.seat == "North"  || deal.data.seat == "South") {
+                                        document.querySelector('.east').innerHTML = deal.data.opponents
+                                        document.querySelector('.west').innerHTML = deal.data.opponents
+                                    }
+                                    else {
+                                        document.querySelector('.north').innerHTML = deal.data.opponents
+                                        document.querySelector('.south').innerHTML = deal.data.opponents
+                                    }
                                 }
                                 if (deal.data.feedback) {
                                     document.querySelector('#feedback').innerHTML = deal.data.feedback
@@ -197,7 +207,7 @@
                                     document.querySelector('#info').innerHTML += `
                                         <p class="bid"><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' + data.who : ''}</p>
                                         `;
-                                    if (data.candidates.length > 0)
+                                    if (data.candidates && data.candidates.length > 0)
                                         document.querySelector('#info').innerHTML += `
                                             <p><strong>Candidates:</strong></p>
                                             <ul>
@@ -216,13 +226,18 @@
                                         for (let i = 0; i < data.shape.length; i += 4) {
                                             formattedShape.push(data.shape.slice(i, i + 4).join('-'));
                                         }
-                                        formattedShape = formattedShape.join('  ');                                    
+                                        formattedShape = formattedShape.join(' &nbsp;&nbsp; ');                                    
                                         document.querySelector('#info').innerHTML += `
                                             <p><strong>HCP:</strong> ${data.hcp.join(' - ')}</p>
                                             <p><strong>Shape:</strong> ${formattedShape}</p>
                                             `;
+                                        if ( data.quality){
+                                            document.querySelector('#info').innerHTML += `
+                                            <p><strong>Sample quality: </strong>${data.quality}</p>
+                                            `;
+                                        }
                                     }
-                                    if (data.samples.length > 0)
+                                    if (data.samples && data.samples.length > 0)
                                         document.querySelector('#info').innerHTML += `
                                             <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples(${data.samples.length}):</strong></h3>
                                             <div id="sampleLines${i}" class="hidden">

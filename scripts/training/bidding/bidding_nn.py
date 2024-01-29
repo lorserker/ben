@@ -17,11 +17,12 @@ if len(sys.argv) < 2:
 
 bin_dir = sys.argv[1]
 
-model_path = 'model/bidding'
+# Test setting
 
-batch_size = 64
-display_step = 1000
-epochs = 50
+batch_size = 128
+display_step = 2000
+epochs = 100
+learning_rate = 0.002
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))
@@ -32,7 +33,10 @@ n_bids = y_train.shape[2]
 
 # If NS/EW cc included update name of model
 if n_ftrs == 161:
-    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding'
+    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding_same'
+else:
+    model_path = 'model/bidding'
+
 
 print("Size input hand:         ", n_ftrs)
 print("Examples for training:   ", n_examples)
@@ -85,7 +89,7 @@ for i, next_i in enumerate(next_state):
 
 cost = tf.compat.v1.losses.softmax_cross_entropy(out_bid_target, out_bid_logit)
 
-train_step = tf.compat.v1.train.AdamOptimizer(0.001).minimize(cost)
+train_step = tf.compat.v1.train.AdamOptimizer(learning_rate=learning_rate).minimize(cost)
 
 batch = Batcher(n_examples, batch_size)
 cost_batch = Batcher(n_examples, batch_size)

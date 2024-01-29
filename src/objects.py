@@ -31,7 +31,7 @@ class Card:
 
     @classmethod
     def from_symbol(cls, symbol, xcards=False):
-        assert len(symbol) == 2
+        assert len(symbol) == 2, symbol
 
         suit_symbol = symbol[0].upper()
         rank_symbol = symbol[1].upper()
@@ -59,10 +59,10 @@ class CandidateCard:
         self.expected_score_dd = None if expected_score_dd is None else float(expected_score_dd)
 
     def __str__(self):
-        return f"CandidateCard(card={self.card}, insta_score={self.insta_score}, " \
-               f"expected_tricks_sd={self.expected_tricks_sd}, expected_tricks_dd={self.expected_tricks_dd}, " \
-               f"p_make_contract={self.p_make_contract}, expected_score_sd={self.expected_score_sd}, " \
-               f"expected_score_dd={self.expected_score_dd})"
+        return f"CandidateCard(card={self.card}, insta_score={self.insta_score:0.4}, " \
+               f"exp_tricks_sd={self.expected_tricks_sd}, exp_tricks_dd={self.expected_tricks_dd}, " \
+               f"p_make_contract={self.p_make_contract}, exp_score_sd={self.expected_score_sd}, " \
+               f"exp_score_dd={self.expected_score_dd})"
     
     def to_dict(self):
         result = {
@@ -86,40 +86,46 @@ class CandidateCard:
 
 class CardResp:
 
-    def __init__(self, card, candidates, samples, shape, hcp):
+    def __init__(self, card, candidates, samples, shape, hcp, quality):
         self.card = card
         self.candidates = candidates
         self.samples = samples
         self.shape = shape
         self.hcp = hcp
+        self.quality = quality
+
+    def convert_to_floats(self, array):
+        return [round(float(value), 1) if float(value) != int(value) else int(value) for value in array]
 
     def to_dict(self):
         
+        if isinstance(self.hcp, np.ndarray):
+            hcp_values = self.convert_to_floats(self.hcp)
+        else:
+            hcp_values = self.hcp
+
         if isinstance(self.shape, np.ndarray):
-            if self.shape.ndim == 1:
-                shape_values = [round(float(x), 1) if float(x) != int(x) else int(x) for x in self.shape]
-            elif self.shape.ndim == 2:
-                shape_values = []
-                for arr in self.shape:
-                    shape_row = [round(float(x), 1) if float(x) != int(x) else int(x) for x in arr]
-                    shape_values.append(shape_row)
+            shape_values = self.convert_to_floats(self.shape)
         elif self.shape is None:
             shape_values = None
         else:
             shape_values = self.shape
-
-        if isinstance(self.hcp, np.ndarray):
-            hcp_values = [round(float(value), 1) if float(value) != int(value) else int(value) for value in self.hcp] if isinstance(self.hcp, np.ndarray) else self.hcp
-        else:
-            hcp_values = self.hcp
-
+          
         result = {
             'card': self.card.symbol(),
-            'candidates': [cand.to_dict() for cand in self.candidates],
-            'samples': self.samples,
-            'hcp': hcp_values,
-            'shape': shape_values
         }
+
+        if self.quality is not None:
+            result['quality'] = "Good" if self.quality else "Bad"
+        if hcp_values and hcp_values != -1:
+            result['hcp'] = hcp_values
+        if shape_values and shape_values != -1:    
+            result['shape'] = shape_values
+        if len(self.candidates) > 0:
+            result['candidates'] = [cand.to_dict() for cand in self.candidates]
+        if len(self.samples) > 0:
+            result['samples'] = self.samples
+
         return result
 
 
@@ -160,23 +166,27 @@ class CandidateBid:
 
 class BidResp:
 
-    def __init__(self, bid, candidates, samples, shape, hcp, who):
+    def __init__(self, bid, candidates, samples, shape, hcp, who, quality):
         self.bid = bid
         self.candidates = candidates
         self.samples = samples
         self.shape = shape
         self.hcp = hcp
         self.who = who
+        self.quality = quality
+    
+    def convert_to_floats(self, array):
+        return [round(float(value), 1) if float(value) != int(value) else int(value) for value in array]
 
     def to_dict(self):
+        
         if isinstance(self.hcp, np.ndarray):
-            hcp_values = [round(float(value), 1) if float(value) != int(value) else int(value) for value in self.hcp] if isinstance(self.hcp, np.ndarray) else self.hcp
+            hcp_values = self.convert_to_floats(self.hcp)
         else:
             hcp_values = self.hcp
 
         if isinstance(self.shape, np.ndarray):
-            shape_values = [round(float(value), 1) if float(value) != int(value) else int(value)
-                            for value in self.shape] if isinstance(self.shape, np.ndarray) else self.shape
+            shape_values = self.convert_to_floats(self.shape)
         elif self.shape is None:
             shape_values = None
         else:
@@ -184,11 +194,20 @@ class BidResp:
 
         result = {
             'bid': self.bid,
-            'candidates': [candidate.to_dict() for candidate in self.candidates],
-            'samples': self.samples,
-            'hcp': hcp_values,
-            'shape': shape_values,
             'who' : self.who
         }
+
+        if self.quality is not None:
+            result['quality'] = "Good" if self.quality else "Bad"
+        if len(self.candidates) > 0:
+            result['candidates'] = [cand.to_dict() for cand in self.candidates]
+        if len(self.samples) > 0:
+            result['samples'] = self.samples
+
+        if hcp_values and hcp_values != -1:
+            result['hcp'] = hcp_values
+        if shape_values and shape_values != -1:
+            result['shape'] = shape_values
+
         return result
 
