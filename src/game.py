@@ -262,7 +262,7 @@ class Driver:
         if self.claimed is not None:
             result['claimed'] = self.claimed
         if self.claimedbydeclarer is not None:
-            result['claimedbydeclarer'] = self.claimed
+            result['claimedbydeclarer'] = self.claimedbydeclarer
         if self.conceed is not None:
             result['conceed'] = self.conceed
         return result

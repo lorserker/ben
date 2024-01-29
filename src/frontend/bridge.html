@@ -127,7 +127,7 @@
         if (cont) player += "&C=x"
         if (rotate) player += "&R=x"
         if (visible) player += "&V=x"
-        if (playonly) player += "&P=5" 
+        if (playonly) player += "&P=" + playonly 
         var queryString = ""
         var ws
         if (dealId) {
@@ -293,11 +293,11 @@
                 // Check if the hand should be visible
                 let shouldBeVisible = (deal.hands[index].isPublic || no_human) && (visible =='x' || deal.turn === index);
 
-                if (deal.dummy) {
+                if (typeof deal.dummy != 'undefined') {
                     // Dummy is always visible
                     if (index == deal.dummy) shouldBeVisible = true
                     // When dummy to play we want to see declarers hand
-                    if ((index + 2) % 4 == deal.dummy && (index + 2 == deal.turn || index == deal.turn )) shouldBeVisible = true
+                    if ((index + 2) % 4 == deal.dummy && ((index + 2) % 4 == deal.turn || index == deal.turn )) shouldBeVisible = true
                 }
                 if (shouldBeVisible) {
                     // If the hand was previously hidden, make it visible again

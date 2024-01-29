@@ -58,6 +58,7 @@ verbose = args.verbose
 port = args.port
 auto = args.auto
 play_only = args.playonly
+boards = []
 
 if args.boards:
     filename = args.boards
@@ -65,7 +66,6 @@ if args.boards:
     if file_extension == '.ben':
         with open(filename, "r") as file:
             board_no.append(0) 
-            boards = []
             lines = file.readlines()  # 
             # Loop through the lines, grouping them into objects
             for i in range(0, len(lines), 2):
@@ -124,8 +124,6 @@ async def handler(websocket, path, board_no, seed):
     parsed_url = urlparse(path)
     query_params = parse_qs(parsed_url.query)
     deal = None
-    print(query_params)
-    print(parsed_url.query)
     N = query_params.get('N', [None])[0]
     if N: driver.human[0] = True
     E = query_params.get('E', [None])[0]
@@ -136,26 +134,21 @@ async def handler(websocket, path, board_no, seed):
     if W: driver.human[3] = True
     H = query_params.get('H', [None])[0]
     if H: driver.human_declare = True
-    #T = query_params.get('T', [None])[0]
-    #if T: timeout = T
-    #A = query_params.get('A', [None])[0]
-    #if A: autocomplete = True
     name = query_params.get('name', [None])[0]
     if name: driver.name = name
-    #C = query_params.get('C', [None])[0]
-    #if C: cont = True
     R = query_params.get('R', [None])[0]
     if R: driver.rotate = True
     P = query_params.get('P', [None])[0]
-    print("P=",P)
     if P == "5":
         play_only = True
+    print("P",P, play_only)
     deal = query_params.get('deal', [None])[0]
     board_no_query = query_params.get('board_no')
-    if board_no_query is not None and board_no_query[0] != "null"  and not deal and not random: 
+    if board_no_query is not None and board_no_query[0] != "null":
         board_number = int(board_no_query[0]) 
     else:
-        board_number = np.random.randint(1, 64)
+        if not deal and not board_no[0] > 0:
+            board_number = np.random.randint(1, 1000)
 
     # If deal provided in the URL
     if deal:
@@ -173,7 +166,6 @@ async def handler(websocket, path, board_no, seed):
             # example of to use a fixed deal
             # rdeal = ('AK64.8642.Q32.Q6 9.QT973.AT5.KJ94 QT532.J5.KJ974.7 J87.AK.86.AT8532', 'W None')
             print(f"Board: {board_number} {rdeal}")
-            print(driver.human)
             driver.set_deal(board_number, *rdeal, False)
         else:
             # Select the next from the provided inputfile
@@ -189,7 +181,7 @@ async def handler(websocket, path, board_no, seed):
 
         print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
-        if not random and not query_params:
+        if not random and len(boards) > 0:
             board_no[0] = (board_no[0] + 1) % len(boards)
 
     

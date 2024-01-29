@@ -344,7 +344,7 @@ def home():
             tricks = len(list(filter(lambda x: x % 2 == 1, deal['trick_winners'])))
 
             if 'claimed' in deal:
-                if deal['claimedbydeclarer']:
+                if 'claimedbydeclarer' in deal and deal['claimedbydeclarer']:
                     tricks += deal['claimed']
                 else:
                     tricks += 13 - len(deal['trick_winners'])-deal['claimed']
