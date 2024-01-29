@@ -67,6 +67,9 @@ class Deal {
                         trickstaken = new TricksTaken(this.top().tricksTaken.ew + 1  + this.data['claimed'], 13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']))
                     }
                 }
+            } else {
+                trickWinner = this.data['trick_winners'][12]
+                trickstaken = new TricksTaken(this.top().tricksTaken.ns + trickWinner % 2, this.top().tricksTaken.ew + (trickWinner + 1) % 2)             
             }
             this.stack.push(new DealSnapshot(
                 this.top().hands,

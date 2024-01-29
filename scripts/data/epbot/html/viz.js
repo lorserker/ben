@@ -41,14 +41,41 @@ class Deal {
 
         this.playIndex += 1
 
+        this.playIndex += 1
+
+        // Last card
         if (this.playIndex == this.data['play'].length) {
-            let trickWinner = this.data['trick_winners'][12]
+            let trickstaken
+            let trickWinner
+            if (typeof this.data['claimed'] !== 'undefined') {
+                alert("Claimed " + this.data['claimed'] + " tricks.")
+                trickWinner = this.data['trick_winners'][this.data['trick_winners'].length - 1]
+                // Trickwinner is relative to declarer
+                // declarer is based on position
+                if (this.declarer() % 2 == 0) {
+                    if (this.data['claimedbydeclarer']) {
+                        trickstaken = new TricksTaken(this.top().tricksTaken.ns + this.data['claimed'] + 1, 13 - (this.top().tricksTaken.ns + 1 + this.data['claimed']))
+                    } else {
+                        trickstaken = new TricksTaken(13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']) , this.top().tricksTaken.ew + 1 + this.data['claimed'])
+                    }
+                } else {
+                    if (this.data['claimedbydeclarer']) {
+                        trickstaken = new TricksTaken(13 - this.top().tricksTaken.ew + this.data['claimed'], (this.top().tricksTaken.ew + this.data['claimed']))
+                    } else {
+                        trickstaken = new TricksTaken(this.top().tricksTaken.ew + 1  + this.data['claimed'], 13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']))
+                    }
+                }
+            } else {
+                trickWinner = this.data['trick_winners'][12]
+                trickstaken = new TricksTaken(this.top().tricksTaken.ns + trickWinner % 2, this.top().tricksTaken.ew + (trickWinner + 1) % 2)             
+            }
             this.stack.push(new DealSnapshot(
                 this.top().hands,
                 this.top().bidding,
                 new Trick(trickWinner, []),
                 this.top().info,
-                new TricksTaken(this.top().tricksTaken.ns + (trickWinner + 1) % 2, this.top().tricksTaken.ew + trickWinner % 2)))
+                trickstaken))
+            this.position += 1
             return
         }
 
