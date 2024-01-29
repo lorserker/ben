@@ -56,18 +56,18 @@ class Deal {
                     if (this.data['claimedbydeclarer']) {
                         trickstaken = new TricksTaken(this.top().tricksTaken.ns + this.data['claimed'] + 1, 13 - (this.top().tricksTaken.ns + 1 + this.data['claimed']))
                     } else {
-                        trickstaken = new TricksTaken(13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']) , this.top().tricksTaken.ew + 1 + this.data['claimed'])
+                        trickstaken = new TricksTaken(13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']), this.top().tricksTaken.ew + 1 + this.data['claimed'])
                     }
                 } else {
                     if (this.data['claimedbydeclarer']) {
                         trickstaken = new TricksTaken(13 - this.top().tricksTaken.ew + this.data['claimed'], (this.top().tricksTaken.ew + this.data['claimed']))
                     } else {
-                        trickstaken = new TricksTaken(this.top().tricksTaken.ew + 1  + this.data['claimed'], 13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']))
+                        trickstaken = new TricksTaken(this.top().tricksTaken.ew + 1 + this.data['claimed'], 13 - (this.top().tricksTaken.ew + 1 + this.data['claimed']))
                     }
                 }
             } else {
                 trickWinner = this.data['trick_winners'][12]
-                trickstaken = new TricksTaken(this.top().tricksTaken.ns + trickWinner % 2, this.top().tricksTaken.ew + (trickWinner + 1) % 2)             
+                trickstaken = new TricksTaken(this.top().tricksTaken.ns + trickWinner % 2, this.top().tricksTaken.ew + (trickWinner + 1) % 2)
             }
             this.stack.push(new DealSnapshot(
                 this.top().hands,
@@ -436,45 +436,63 @@ class PlayInfo {
                             html += '</div>'
                         }
                         else {
+                            // RHO
                             if (this.player == 0) {
                                 html += '<div>West: ' + this.data['hcp'][0] + ' hcp, shape: '
-                            } else {
+                            }
+                            if (this.player == 1) {
+                                html += '<div>North: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            }
+                            if (this.player == 2) {
                                 html += '<div>East: ' + this.data['hcp'][0] + ' hcp, shape: '
                             }
+                            if (this.player == 3) {
+                                html += '<div>South: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            }
+
                             for (let i = 0; i < 4; i++) {
                                 html += shape[i] + " "
                             }
                             html += '</div>'
+                            // LHO
                             if (this.player == 0) {
                                 html += '<div>East: ' + this.data['hcp'][1] + ' hcp, shape: '
-                            } else {
+                            }
+                            if (this.player == 1) {
+                                html += '<div>South: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            }
+                            if (this.player == 2) {
                                 html += '<div>West: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            }
+                            if (this.player == 3) {
+                                html += '<div>North: ' + this.data['hcp'][1] + ' hcp, shape: '
                             }
                             for (let i = 0; i < 4; i++) {
                                 html += shape[i + 4] + " "
                             }
-                            html += '</div>'                        }
+                            html += '</div>'
+                        }
+                    }
                 }
+
             }
 
-        }
+            if ("quality" in this.data) {
+                html += '<br><strong>Sample quality:</strong> ' + this.data['quality']
+            }
 
-        if ("quality" in this.data) {
-            html += '<br><strong>Sample quality:</strong> ' + this.data['quality']
-        }
-
-        if ("samples" in this.data && this.data['samples'].length > 0) {
-            html += `
+            if ("samples" in this.data && this.data['samples'].length > 0) {
+                html += `
                 <h3 class="samples" onclick="toggleSamples('sampleLinesPlay')"><strong>Samples(${this.data['samples'].length}):</strong></h3>
                 <div id="sampleLinesPlay" class="hidden">
-                <ul>${this.data.samples.map(sample => `<li>${sample.replace(/\n/g,"<br>")}</li>`).join('')}</ul>
+                <ul>${this.data.samples.map(sample => `<li>${sample.replace(/\n/g, "<br>")}</li>`).join('')}</ul>
                 </div>
                 `
-        }
+            }
 
-        element.innerHTML = html
+            element.innerHTML = html
+        }
     }
-}
 
 
 class Auction {
