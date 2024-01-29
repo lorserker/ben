@@ -177,15 +177,18 @@
                                     }
 
                                 let dealer = 'NESW'.charAt(deal.data.dealer)
-                                const rebidContent = '<a href="/app/bridge.html?deal=' +
+                                let rebidContent = '<a href="/app/bridge.html?deal=' +
                                     '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + '\')' +
                                     '&P=1&board_no=' + deal.board_number() + '&A=x&T=2"> Let BEN bid and play it again.</a><br>';
+                                rebidContent += '<a href="/app/bridge.html?deal=' +
+                                    '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + '\')' +
+                                    '&P=1&board_no=' + deal.board_number() + '&S=x&A=x&T=2"> Bid and play it again as South.</a><br>';
 
                                 document.querySelector('#rebid').innerHTML = rebidContent;
 
                                 const replayContent = '<a href="/app/bridge.html?deal=' +
                                     '(\'' + deal.data.hands + '\', \'' + dealer + ' ' + vul + ' ' + auction.auctionString +'\')' +
-                                    '&P=5&board_no=' + deal.board_number() + '&S=x"> Play it again (Human is south) </a><br>';
+                                    '&P=5&board_no=' + deal.board_number() + '&S=x&A=x&T=2"> Play (no bidding) it again (Human is south) </a><br>';
 
                                 document.querySelector('#replay').innerHTML = replayContent;
 

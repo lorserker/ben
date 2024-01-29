@@ -24,7 +24,6 @@ app = Bottle()
 os.getcwd()
 
 BUNDLE_TEMP_DIR = ''
-print(bottle.TEMPLATE_PATH)
 
 try:
     if getattr(sys, 'frozen') and hasattr(sys, '_MEIPASS'):

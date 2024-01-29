@@ -112,6 +112,7 @@
         const cont = urlParams.get('C')
         const rotate = urlParams.get('R')
         const visible = urlParams.get('V')
+        const playonly = urlParams.get('P')
 
         let no_human = !north && !east && !south && !west
         let player = ""
@@ -126,12 +127,17 @@
         if (cont) player += "&C=x"
         if (rotate) player += "&R=x"
         if (visible) player += "&V=x"
+        if (playonly) player += "&P=5" 
         var queryString = ""
         var ws
         if (dealId) {
             queryString = "?deal=" + dealId + "&board_no=" + board_no + player
         } else {
-            queryString = "?board_no=" + board_no + player
+            if (board_no) {
+                queryString = "?board_no=" + board_no + player
+            } else {
+                queryString = "?" + player
+            }
         }
         try {
 

@@ -123,60 +123,64 @@ async def handler(websocket, path, board_no, seed):
     driver.human = [False, False, False, False]
     parsed_url = urlparse(path)
     query_params = parse_qs(parsed_url.query)
-
-    if query_params:
-        N = query_params.get('N', [None])[0]
-        if N: driver.human[0] = True
-        E = query_params.get('E', [None])[0]
-        if E: driver.human[1] = True
-        S = query_params.get('S', [None])[0]
-        if S: driver.human[2] = True
-        W = query_params.get('W', [None])[0]
-        if W: driver.human[3] = True
-        H = query_params.get('H', [None])[0]
-        if H: driver.human_declare = True
-        #T = query_params.get('T', [None])[0]
-        #if T: timeout = T
-        #A = query_params.get('A', [None])[0]
-        #if A: autocomplete = True
-        name = query_params.get('name', [None])[0]
-        if name: driver.name = name
-        #C = query_params.get('C', [None])[0]
-        #if C: cont = True
-        R = query_params.get('R', [None])[0]
-        if R: driver.rotate = True
-        P = query_params.get('P', [None])[0]
-        if P == "5":
-            play_only = True
-        deal = query_params.get('deal', [None])[0]
-        board_no_query = query_params.get('board_no')
-        if board_no_query and board_no_query[0] is not None: 
-            board_number = int(board_no_query[0]) 
-            np.random.seed(board_number)
-            rdeal = game.random_deal(board_number)
-        else:
-            board_number = np.random.randint(1, 64)
-            rdeal = game.random_deal()
-        if deal:
-            split_values = deal[1:-1].replace("'","").split(',')
-            rdeal = tuple(value.strip() for value in split_values)
-            driver.set_deal(board_number, *rdeal, play_only)
-            print(f"Board: {board_number} {rdeal}")
-        else:
-            print(f"Deal: {rdeal}")
-            driver.set_deal(board_number, *rdeal, False)
+    deal = None
+    print(query_params)
+    print(parsed_url.query)
+    N = query_params.get('N', [None])[0]
+    if N: driver.human[0] = True
+    E = query_params.get('E', [None])[0]
+    if E: driver.human[1] = True
+    S = query_params.get('S', [None])[0]
+    if S: driver.human[2] = True
+    W = query_params.get('W', [None])[0]
+    if W: driver.human[3] = True
+    H = query_params.get('H', [None])[0]
+    if H: driver.human_declare = True
+    #T = query_params.get('T', [None])[0]
+    #if T: timeout = T
+    #A = query_params.get('A', [None])[0]
+    #if A: autocomplete = True
+    name = query_params.get('name', [None])[0]
+    if name: driver.name = name
+    #C = query_params.get('C', [None])[0]
+    #if C: cont = True
+    R = query_params.get('R', [None])[0]
+    if R: driver.rotate = True
+    P = query_params.get('P', [None])[0]
+    print("P=",P)
+    if P == "5":
+        play_only = True
+    deal = query_params.get('deal', [None])[0]
+    board_no_query = query_params.get('board_no')
+    if board_no_query is not None and board_no_query[0] != "null"  and not deal and not random: 
+        board_number = int(board_no_query[0]) 
     else:
+        board_number = np.random.randint(1, 64)
+
+    # If deal provided in the URL
+    if deal:
+        np.random.seed(board_number)
+        split_values = deal[1:-1].replace("'","").split(',')
+        rdeal = tuple(value.strip() for value in split_values)
+        driver.set_deal(board_number, *rdeal, play_only)
+        print(f"Board: {board_number} {rdeal} {play_only}")
+    else: 
+        # If random
         if random:
             #Just take a random"
-            rdeal = game.random_deal()
+            np.random.seed(board_number)
+            rdeal = game.random_deal(board_number)
             # example of to use a fixed deal
             # rdeal = ('AK64.8642.Q32.Q6 9.QT973.AT5.KJ94 QT532.J5.KJ974.7 J87.AK.86.AT8532', 'W None')
-            print(f"Deal: {rdeal}")
-            driver.set_deal(None, *rdeal, False)
+            print(f"Board: {board_number} {rdeal}")
+            print(driver.human)
+            driver.set_deal(board_number, *rdeal, False)
         else:
+            # Select the next from the provided inputfile
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
+            np.random.seed(board_no[0]+1)
             driver.set_deal(board_no[0] + 1, rdeal, auction, play_only)
 
     try:

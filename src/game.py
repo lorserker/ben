@@ -152,16 +152,16 @@ class Driver:
             auction = self.auction
             for bid in auction:
                 if bidding.BID2ID[bid] > 1:
-                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly"), quality=None)
+                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly", quality=None))
         else:
             auction = await self.bidding(self.sameforboth)
-
-        # Bidding is over and the play still requires the right number of PAD_START
-        if self.sameforboth and self.dealer_i > 1:
-            auction = ['PAD_START'] * 2 + auction
+            # Bidding is over and the play still requires the right number of PAD_START
+            if self.sameforboth and self.dealer_i > 1:
+                auction = ['PAD_START'] * 2 + auction
 
         self.contract = bidding.get_contract(auction)
-
+        print(auction)
+        print(self.contract)
         if self.contract is None:
             await self.channel.send(json.dumps({
                 'message': 'deal_end',
