@@ -32,7 +32,7 @@ def lead(obj, models, sampler, verbose):
 
     hand_lead = obj[SEATS[lead_i]]
     bot = BotLead(VULN[obj['vuln']], hand_lead, models, sampler, lead_i, verbose)
-    lead_card_indexes, _ = bot.get_lead_candidates(obj['auction'])
+    lead_card_indexes, _ = bot.get_opening_lead_candidates(obj['auction'])
     lead_card_i = lead_card_indexes[0]
     suit_i = lead_card_i // 8
     rank_i = lead_card_i % 8

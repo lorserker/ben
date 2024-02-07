@@ -17,6 +17,11 @@ class DDSolver:
         self.bo = dds.boardsPBN()
         self.solved = dds.solvedBoards()
 
+    # Solutions
+    #1	Find the maximum number of tricks for the side to play.  Return only one of the optimum cards and its score.
+    #2	Find the maximum number of tricks for the side to play.  Return all optimum cards and their scores.
+    #3	Return all cards that can be legally played, with their scores in descending order.
+
     def solve(self, strain_i, leader_i, current_trick, hands_pbn, solutions):
         results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[:dds.MAXNOOFBOARDS], solutions)
 
