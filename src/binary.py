@@ -245,7 +245,6 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns,
     auction = auction_input
 
     bid_i = hand_ix
-    #print("isinstance(auction, list)", isinstance(auction, list))
     if isinstance(auction, list):
         auction_input = auction_input + ['PAD_END'] * 4 * n_steps
         auction = bidding.BID2ID['PAD_END'] * np.ones((n_samples, len(auction_input)), dtype=np.int32)
@@ -305,10 +304,12 @@ def calculate_step_bidding_info(auction):
 
 def calculate_step_bidding(auction):
     # This is number of levels to get from the neural network. 
+    if len(auction) == 0:
+        return 1
     n_steps = 1 + (len(auction) - 1) // 4
     return n_steps
 
-def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
+def get_auction_binary_for_lead(auction, hand, binfo, vuln, ns, ew):
     contract = bidding.get_contract(auction)
 
     level = int(contract[0])
@@ -331,8 +332,13 @@ def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
     x[8] = vuln_us
     x[9] = vuln_them
     x[10:] = hand.reshape(32)
+    return x.reshape((1, -1)), get_shape_for_lead(auction, hand, binfo, vuln, ns, ew)
 
+def get_shape_for_lead(auction, hand, binfo, vuln, ns, ew):
     b = np.zeros(15)
+    contract = bidding.get_contract(auction)
+    decl_index = bidding.get_decl_i(contract)
+    lead_index = (decl_index + 1) % 4
     n_steps = calculate_step_bidding_info(auction)
     A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, ns, ew)
 
@@ -340,4 +346,4 @@ def get_lead_binary(auction, hand, binfo, vuln, ns, ew):
 
     b[:3] = p_hcp.reshape((-1, n_steps, 3))[:, -1, :].reshape(3)
     b[3:] = p_shp.reshape((-1, n_steps, 12))[:, -1, :].reshape(12)
-    return x.reshape((1, -1)), b.reshape((1, -1))
+    return b.reshape((1, -1))

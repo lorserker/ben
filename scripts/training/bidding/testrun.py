@@ -65,10 +65,12 @@ def main():
     with open(filename, 'r') as input_file:
 
         lines = input_file.readlines()
+        # Remove comments at the beginning of the file
+        lines = [line.strip().replace("*",'') for line in lines if not line.strip().startswith('#')]        
         n = len(lines) // 2
         matching = 0
         print(f"Loaded {n} deals")
-        for i in range(n):
+        for i in range(10000):
             print("Board: ",i+1)
             if alternate and i % 2 == 1:
                 continue
@@ -80,7 +82,10 @@ def main():
             vuln_ns, vuln_ew = vuln[parts[1]]
             bidder_bots = [BotBid([vuln_ns, vuln_ew], hand, models, sampler, i, dealer_i, verbose) for i, hand in enumerate(hands)]
 
-            auction = ['PAD_START'] * dealer_i
+            if models.sameforboth:
+                auction = ['PAD_START'] * (dealer_i % 2)
+            else:
+                auction = ['PAD_START'] * dealer_i
 
             turn_i = dealer_i
 
@@ -97,7 +102,7 @@ def main():
             auction_str = " ".join(auction).replace("PASS", "P").replace('PAD_START ', '')
             trained_bidding = " ".join(parts[2:])
             if (trained_bidding != auction_str):
-                print(" ".join(hands))
+                print(" ".join(parts[:2]), " ".join(hands))
                 print(" ".join(parts[2:]))
                 print(auction_str)
             else: 

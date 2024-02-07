@@ -3,6 +3,7 @@ import sys
 sys.path.append('../../../src')
 
 import datetime
+import os.path
 import numpy as np
 import logging
 import shutil
@@ -21,8 +22,6 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 bin_dir = sys.argv[1]
-
-model_path = './model/binfo'
 
 # Test setting
 
@@ -56,7 +55,7 @@ print("Model path:              ",model_path)
 lstm_size = 128
 n_layers = 3
 
-keep_prob = tf.placeholder(tf.float32, name='keep_prob')
+keep_prob = tf.compat.v1.placeholder(tf.float32, name='keep_prob')
 
 cells = []
 for _ in range(n_layers):
@@ -68,8 +67,8 @@ for _ in range(n_layers):
 
 state = []
 for i, cell_i in enumerate(cells):
-    s_c = tf.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
-    s_h = tf.placeholder(tf.float32, [1, lstm_size], name='state_h_{}'.format(i))
+    s_c = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
+    s_h = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_h_{}'.format(i))
     state.append(tf.compat.v1.nn.rnn_cell.LSTMStateTuple(c=s_c, h=s_h))
 state = tuple(state)
 

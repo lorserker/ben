@@ -523,28 +523,32 @@ class Sample:
 
         return lead_softmax[:, opening_lead_card]
 
-    def get_bid_scores(self, nesw_i, auction, vuln, hand, bidder_model, ns, ew):
-        
+    def get_bid_scores(self, nesw_i, dealer, auction, vuln, sample_hands, bidder_model, ns, ew, sameforboth):
+        if sameforboth and dealer > 1:
+            auction = auction[:2]
+
         n_steps = binary.calculate_step_bidding(auction)
-        A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, ns, ew)
-        X = np.zeros((hand.shape[0], n_steps, A.shape[-1]))
+        A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, sample_hands, vuln, ns, ew)
+        X = np.zeros((sample_hands.shape[0], n_steps, A.shape[-1]))
         X[:, :, :] = A
 
         actual_bids = bidding.get_bid_ids(auction, nesw_i, n_steps)
         sample_bids = bidder_model.model_seq(X)
-        sample_bids = sample_bids.reshape((hand.shape[0], n_steps, -1))
+        sample_bids = sample_bids.reshape((sample_hands.shape[0], n_steps, -1))
 
-        min_scores = np.ones(hand.shape[0])
+        min_scores = np.ones(sample_hands.shape[0])
 
         # We check the bid for each bidding round
-        # Perhaps this should be calculated more statistical, as we are just taking the bid with the lowest score
+        sum = 0
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
+                #min_scores = min_scores + i * sample_bids[:, i, actual_bids[i]]
+                #sum += i
 
         return min_scores
 
-    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand, vuln, models):
+    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand, vuln, models):
         bidder_model = models.bidder_model
         binfo_model = models.binfo_model
 
@@ -705,12 +709,15 @@ class Sample:
 
         # Loop the samples for each of the 2 hidden hands to check bidding
         # We should generally trust our partners bidding most
+        
         for h_i in [hidden_1_i, hidden_2_i]:
             #if (player_i + 2) % 4 == h_i:
             h_i_nesw = player_to_nesw_i(h_i, contract)
-            bid_scores = self.get_bid_scores(h_i_nesw, auction, vuln, states[h_i][:, 0, :32], bidder_model, models.ns, models.ew)
+            bid_scores = self.get_bid_scores(h_i_nesw, dealer, auction, vuln, states[h_i][:, 0, :32], bidder_model, models.ns, models.ew,models.sameforboth)
             min_bid_scores = np.minimum(min_bid_scores, bid_scores)
 
+        # Perhaps this should be calculated more statistical, as we are just taking the bid with the lowest score
+        # This need to be updated to euclidian distance
         # Round min_bid_scores to 3 decimals
         rounded_scores = np.round(min_bid_scores, 3)
 
@@ -718,6 +725,7 @@ class Sample:
         sorted_indices = np.argsort(rounded_scores)[::-1]
 
         sorted_min_bid_scores = min_bid_scores[sorted_indices]
+        # print("sorted_min_bid_scores",sorted_min_bid_scores)
         # Sort second dimension within each array in states based on min_bid_scores
         bidding_states = [state[sorted_indices] for state in states]
         

@@ -71,3 +71,6 @@ scripts/training/data/Camrose24_1.pbn
 UCBC 2024/2024 Practice
 scripts/training/data/BEN-WBridge5.ben
 scripts/training/data/WBridge5-BEN.ben
+UCBC 2024/Boards/input.bba
+scripts/training/data/BBA*.txt
+UCBC 2024/Boards/BBA/Random 100.000-rotated.pbn

@@ -12,7 +12,7 @@ from nn.lead_singledummy import LeadSingleDummy
 
 class Models:
 
-    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, sameforboth, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval):
+    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, sameforboth, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, include_opening_lead):
         self.bidder_model = bidder_model
         self.binfo_model = binfo_model
         self.lead_suit_model = lead_suit_model
@@ -37,6 +37,8 @@ class Models:
         self.sample_hands_for_review = sample_hands_for_review
         self.use_biddingquality = use_biddingquality
         self.use_biddingquality_in_eval = use_biddingquality_in_eval
+        self.double_dummy_eval = double_dummy_eval
+        self.include_opening_lead = include_opening_lead
 
     @classmethod
     def from_conf(cls, conf: ConfigParser, base_path=None) -> "Models":
@@ -55,7 +57,9 @@ class Models:
         sameforboth = conf.getboolean('models', 'sameforboth', fallback=False)
         use_bba = conf.getboolean('models', 'use_bba', fallback=False)
         lead_included = conf.getboolean('eval', 'lead_included', fallback=True)
+        double_dummy_eval = conf.getboolean('eval', 'double_dummy_eval', fallback=False)
         claim = conf.getboolean('cardplay', 'claim', fallback=True)
+        include_opening_lead = conf.getboolean('cardplay', 'include_opening_lead', fallback=False)
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'claim', fallback=False)
         if include_system == True:
             ns = float(conf['models']['ns'])
@@ -63,6 +67,7 @@ class Models:
         else:
             ns = -1
             ew = -1
+        player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
         return cls(
             bidder_model=Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder'])),
             binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info'])),
@@ -70,12 +75,13 @@ class Models:
             lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt'])),
             sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy'])),
             sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['no_lead_single_dummy'])),
-            player_models=[
-                BatchPlayerLefty('lefty', os.path.join(base_path, conf['cardplay']['lefty'])),
-                BatchPlayer('dummy', os.path.join(base_path, conf['cardplay']['dummy'])),
-                BatchPlayer('righty', os.path.join(base_path, conf['cardplay']['righty'])),
-                BatchPlayer('decl', os.path.join(base_path, conf['cardplay']['decl']))
+
+            player_models = [
+                BatchPlayerLefty(name, os.path.join(base_path, conf['cardplay'][name])) if 'lefty' in name and include_opening_lead == False else
+                BatchPlayer(name, os.path.join(base_path, conf['cardplay'][name]))
+                for name in player_names
             ],
+
             search_threshold=search_threshold,
             lead_threshold=lead_threshold,
             no_search_threshold=no_search_threshold,
@@ -92,7 +98,9 @@ class Models:
             min_opening_leads=min_opening_leads,
             sample_hands_for_review=sample_hands_for_review,
             use_biddingquality=use_biddingquality,
-            use_biddingquality_in_eval=use_biddingquality_in_eval
+            use_biddingquality_in_eval=use_biddingquality_in_eval,
+            double_dummy_eval=double_dummy_eval,
+            include_opening_lead = include_opening_lead
         )
 
     @property

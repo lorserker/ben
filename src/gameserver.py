@@ -141,9 +141,9 @@ async def handler(websocket, path, board_no, seed):
     P = query_params.get('P', [None])[0]
     if P == "5":
         play_only = True
-    print("P",P, play_only)
     deal = query_params.get('deal', [None])[0]
     board_no_query = query_params.get('board_no')
+    board_number = None
     if board_no_query is not None and board_no_query[0] != "null":
         board_number = int(board_no_query[0]) 
     else:
@@ -152,6 +152,8 @@ async def handler(websocket, path, board_no, seed):
 
     # If deal provided in the URL
     if deal:
+        if board_number == None:
+            board_number = np.random.randint(1, 1000)
         np.random.seed(board_number)
         split_values = deal[1:-1].replace("'","").split(',')
         rdeal = tuple(value.strip() for value in split_values)

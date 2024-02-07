@@ -13,7 +13,10 @@ class CardByCard:
         self.vuln = vuln
         self.hands = hands
         self.auction = auction
-        self.padded_auction = ['PAD_START'] * self.dealer_i + self.auction
+        if models.sameforboth:
+            self.padded_auction = ['PAD_START'] * (self.dealer_i % 2)+ self.auction
+        else:
+            self.padded_auction = ['PAD_START'] * self.dealer_i + self.auction
         self.play = play
         self.bid_responses = []
         self.card_responses = []
@@ -37,7 +40,7 @@ class CardByCard:
 
         while bid_i < len(self.padded_auction):
             bid_resp = bidder_bots[player_i].bid(self.padded_auction[:bid_i])
-            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples, -1, -1, "Analysis"))
+            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples, bid_resp.hcp, bid_resp.shape, "Analysis", bid_resp.quality))
             type(self).bid_eval(self.padded_auction[bid_i], bid_resp)
             bid_i += 1
             player_i = (player_i + 1) % 4
@@ -129,7 +132,7 @@ class CardByCard:
                 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand.reshape((-1, 32)), self.vuln, self.models)
 
                 card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
                 card_resp.hcp = c_hcp

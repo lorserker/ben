@@ -38,6 +38,7 @@ class BotBid:
         self.verbose = verbose
         self.sample_boards_for_auction = sampler.sample_boards_for_auction
         self.lead_included = models.lead_included
+        self.double_dummy_eval = models.double_dummy_eval
         self.samples = []
         self.eval_after_bid_count = models.eval_after_bid_count
         self.sample_hands_for_review = models.sample_hands_for_review
@@ -86,27 +87,51 @@ class BotBid:
                 auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np, self.sameforboth)
                 if self.lead_included:
                     contracts, decl_tricks_softmax = self.expected_tricks_sd(hands_np, auctions_np)
+                    for idx, (auction2, (contract, trick)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax))):
+                        auc = bidding.get_auction_as_string(auction2)
+                        if contract.lower() != "pass":
+                            weighted_sum = sum(i * trick[i] for i in range(len(trick)))
+                            average_tricks = round(weighted_sum, 1)
+                            samples[idx] += " \n " + auc + " ("+ str(average_tricks) + ") "
+                        else:
+                            samples[idx] += " \n " + auc
                 else:
-                    contracts, decl_tricks_softmax = self.expected_tricks_sd_no_lead(hands_np, auctions_np)
-
-                for idx, (auction2, (contract, trick)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax))):
-                    auc = bidding.get_auction_as_string(auction2)
-                    if contract.lower() != "pass":
-                        weighted_sum = sum(i * trick[i] for i in range(len(trick)))
-                        average_tricks = round(weighted_sum, 1)
-                        samples[idx] += " \n " + auc + " ("+ str(average_tricks) + ") "
+                    _, decl_tricks_softmax2 = self.expected_tricks_sd(hands_np, auctions_np)
+                    contracts, decl_tricks_softmax3 = self.expected_tricks_sd_no_lead(hands_np, auctions_np)
+                    if self.double_dummy_eval:
+                        contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np, auctions_np)
+                        for idx, (auction2, (contract, trick1, trick2, trick3)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax, decl_tricks_softmax3, decl_tricks_softmax2))):
+                            auc = bidding.get_auction_as_string(auction2)
+                            if contract.lower() != "pass":
+                                weighted_sum1 = sum(i * trick1[i] for i in range(len(trick1)))
+                                average_tricks1 = round(weighted_sum1, 1)
+                                weighted_sum2 = sum(i * trick2[i] for i in range(len(trick2)))
+                                average_tricks2 = round(weighted_sum2, 1)
+                                weighted_sum3 = sum(i * trick3[i] for i in range(len(trick3)))
+                                average_tricks3 = round(weighted_sum3, 1)
+                                samples[idx] += " \n " + auc + " (" + str(average_tricks1) + ", " + str(average_tricks2) + ", " + str(average_tricks3) + ") "
+                            else:
+                                samples[idx] += " \n " + auc
                     else:
-                        samples[idx] += " \n " + auc
-                    #if self.verbose:
-                    #print(samples[idx])
+                        decl_tricks_softmax = decl_tricks_softmax3
+                        for idx, (auction2, (contract, trick1, trick2)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax3, decl_tricks_softmax2))):
+                            auc = bidding.get_auction_as_string(auction2)
+                            if contract.lower() != "pass":
+                                weighted_sum1 = sum(i * trick1[i] for i in range(len(trick1)))
+                                average_tricks1 = round(weighted_sum1, 1)
+                                weighted_sum2 = sum(i * trick2[i] for i in range(len(trick2)))
+                                average_tricks2 = round(weighted_sum2, 1)
+                                samples[idx] += " \n " + auc + " (" + str(average_tricks1) + ", " + str(average_tricks2) + ") "
+                            else:
+                                samples[idx] += " \n " + auc
+
     
                 # We need to find a way to use how good the samples are
                 ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
                 expected_score = np.mean(ev)
-                #if self.verbose:
-                #    print(ev)
+                if self.verbose:
+                    print(ev)
                 adjust = 0
-
 
                 # The result is sorted based on the simulation. 
                 # Adding some bonus to the bid selected by the neural network
@@ -165,7 +190,7 @@ class BotBid:
             p_hcp, p_shp = self.sample.get_bidding_info(self.binfo_model, n_steps, auction, self.seat, self.hand, self.vuln, self.ns, self.ew)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
-        # Without detailed logging we only save 20 samples
+
         if self.verbose:
             print(candidates[0].bid, " selected")
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality)
@@ -196,7 +221,6 @@ class BotBid:
 
         candidates = []
 
-        #print("self.min_candidate_score: ",self.min_candidate_score)
         # If self.min_candidate_score == -1 we will just take what the neural network suggest 
         if (self.min_candidate_score == -1):
             while True:
@@ -227,6 +251,8 @@ class BotBid:
             passout = True
             # If we are doubled trust the bidding model
             # This is not good if we are doubled in a splinter
+            # If we are doubled in pass out situation, never raise the suit
+            
             # if auction[-3:] == ['X', 'PASS', 'PASS']:
             #    min_candidates = 2
         else:    
@@ -326,6 +352,8 @@ class BotBid:
 
         bid_i = len(auction) - 1
         turn_i = len(auction) % 4
+
+        # Now we bid each sample to end of auction
         while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
             if sameforboth and self.dealer > 1:
                 hand_ix = (turn_i + 2) % 4
@@ -389,13 +417,19 @@ class BotBid:
             auctions.append(sample_auction)
 
             contract = bidding.get_contract(sample_auction)
-            contracts.append(contract)
-            strains[i] = 'NSHDC'.index(contract[1])
-            declarers[i] = 'NESW'.index(contract[-1])
+            # All pass doens't really fit, and is always 0 - we ignore it for now
+            if contract is None:
+                contracts.append("pass")
+                strains[i] = -1
+                declarers[i] = -1
+            else:
+                contracts.append(contract)
+                strains[i] = 'NSHDC'.index(contract[1])
+                declarers[i] = 'NESW'.index(contract[-1])
             
-            hand_on_lead = hands_np[i:i+1, (declarers[i] + 1) % 4, :]
+                hand_on_lead = hands_np[i:i+1, (declarers[i] + 1) % 4, :]
             
-            X_ftrs[i,:], B_ftrs[i,:] = binary.get_lead_binary(sample_auction, hand_on_lead, self.binfo_model, self.vuln, self.ns, self.ew)
+                X_ftrs[i,:], B_ftrs[i,:] = binary.get_auction_binary_for_lead(sample_auction, hand_on_lead, self.binfo_model, self.vuln, self.ns, self.ew)
         
         lead_softmax = self.lead_suit_model.model(X_ftrs, B_ftrs)
         lead_cards = np.argmax(lead_softmax, axis=1)
@@ -457,7 +491,49 @@ class BotBid:
         
         decl_tricks_softmax = self.sd_model_no_lead.model(X_sd)
         return contracts, decl_tricks_softmax
-    
+
+    def expected_tricks_dd(self, hands_np, auctions_np):
+        from ddsolver import ddsolver
+        self.dd = ddsolver.DDSolver()
+        n_samples = hands_np.shape[0]
+
+        declarers = np.zeros(n_samples, dtype=np.int32)
+        strains = np.zeros(n_samples, dtype=np.int32)
+        decl_tricks_softmax = np.zeros((n_samples, 14), dtype=np.int32)
+        contracts = []
+        t_start = time.time()
+        
+        for i in range(n_samples):
+            sample_auction = [bidding.ID2BID[bid_i] for bid_i in list(auctions_np[i, :]) if bid_i != 1]
+            contract = bidding.get_contract(sample_auction)
+            # All pass doens't really fit, and is always 0 - we ignore it for now
+            if contract is None:
+                contracts.append("pass")
+                strains[i] = -1
+                declarers[i] = -1
+            else:
+                contracts.append(contract)
+                strains[i] = 'NSHDC'.index(contract[1])
+                declarers[i] = 'NESW'.index(contract[-1])
+
+            # Create PBN for hand
+            hand_str = ""
+            # We need to rotate to find the right to lead
+            # Perhaps we should use our actual hand (so the pips are correct)
+            hands_pbn = ['N:' + ' '.join(deck52.hand32to52str(hand) for hand in hands_np[i])]
+            hands_pbn[0] = deck52.convert_cards(hands_pbn[0],0, hand_str)
+            # We need to find the leader
+            dd_solved = self.dd.solve(strains[i], (declarers[i] + 1) % 4, [], hands_pbn, 1)
+            # Only use 1st element from the result
+            first_key = next(iter(dd_solved))
+            first_item = dd_solved[first_key]
+            decl_tricks_softmax[i,13 - first_item[0]] = 1
+
+        if self.verbose:
+            print(f'dds took {time.time() - t_start:.3f}')
+        return contracts, decl_tricks_softmax
+        
+
     def expected_score(self, turn_to_bid, contracts, decl_tricks_softmax):
         n_samples = len(contracts)
         scores_by_trick = np.zeros((n_samples, 14))
@@ -500,7 +576,7 @@ class BotLead:
         self.use_biddingquality_in_eval = models.use_biddingquality_in_eval
 
     def find_opening_lead(self, auction):
-        lead_card_indexes, lead_softmax = self.get_lead_candidates(auction)
+        lead_card_indexes, lead_softmax = self.get_opening_lead_candidates(auction)
         accepted_samples, sorted_bidding_score, tricks, p_hcp, p_shp, good_quality = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
 
         candidate_cards = []
@@ -516,19 +592,23 @@ class BotLead:
         
         candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score, reverse=True)
 
-        # If our sampling of the hands from the aution is bad, then we just trust the neural network
-        if (candidate_cards[0].insta_score > self.lead_accept_nn or (self.use_biddingquality_in_eval and not good_quality)):
+        if candidate_cards[0].insta_score > self.lead_accept_nn:
             opening_lead = candidate_cards[0].card.code() 
         else:
-            # Now we will select the card to play
-            # We have 3 factors, and they could all be right, so we remove most of the decimals
-            # expected_tricks_sd is for declarer
-            candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), -round(c.expected_tricks_sd, 1), round(c.insta_score, 2)), reverse=True)
-            # Print each CandidateCard in the list
-            if self.verbose:
-                for card in candidate_cards:
-                    print(card)
-            opening_lead = candidate_cards[0].card.code()
+            # If our sampling of the hands from the aution is bad.
+            # We should probably try to find better samples, but for now, we just trust the neural network
+            if (self.use_biddingquality_in_eval and not good_quality):
+                opening_lead = candidate_cards[0].card.code() 
+            else:
+                # Now we will select the card to play
+                # We have 3 factors, and they could all be right, so we remove most of the decimals
+                # expected_tricks_sd is for declarer
+                candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), -round(c.expected_tricks_sd, 1), round(c.insta_score, 2)), reverse=True)
+                # Print each CandidateCard in the list
+                if self.verbose:
+                    for card in candidate_cards:
+                        print(card)
+                opening_lead = candidate_cards[0].card.code()
 
         if opening_lead % 8 == 7:
             # it's a pip ~> choose a random one
@@ -558,8 +638,8 @@ class BotLead:
             quality=good_quality
         )
 
-    def get_lead_candidates(self, auction):
-        x_ftrs, b_ftrs = binary.get_lead_binary(auction, self.hand, self.binfo_model, self.vuln, self.ns, self.ew)
+    def get_opening_lead_candidates(self, auction):
+        x_ftrs, b_ftrs = binary.get_auction_binary_for_lead(auction, self.hand, self.binfo_model, self.vuln, self.ns, self.ew)
         contract = bidding.get_contract(auction)
         if contract[1] == "N":
             lead_softmax = self.lead_nt_model.model(x_ftrs, b_ftrs)
@@ -608,7 +688,6 @@ class BotLead:
             sorted_scores = sorted_scores[random_indices[:self.sample.sample_hands_opening_lead]]
 
         # For finding the opening lead we should use the opening lead as input
-        # Consider swithing it to double dummy
         if self.double_dummy:
             tricks = self.double_dummy_estimates(lead_card_indexes, contract, accepted_samples)
         else:
@@ -619,7 +698,7 @@ class BotLead:
     def double_dummy_estimates(self, lead_card_indexes, contract, accepted_samples):
         from ddsolver import ddsolver
         #print("double_dummy_estimates",lead_card_indexes)
-        self.dd = ddsolver.DDSolver(dds_mode=2)
+        self.dd = ddsolver.DDSolver()
         n_accepted = accepted_samples.shape[0]
         tricks = np.zeros((n_accepted, len(lead_card_indexes), 2))
         strain_i = bidding.get_strain_i(contract)
@@ -651,19 +730,20 @@ class BotLead:
                 print("Opening lead being examined: ", Card.from_code(opening_lead52),n_accepted)
             t_start = time.time()
             for i in range(n_accepted):
-                hands_pbn = ['W:' + hand_str + ' ' + ' '.join(deck52.hand32to52str(hand) for hand in accepted_samples[i])]
+                hands_pbn = ['N:' + hand_str + ' ' + ' '.join(deck52.hand32to52str(hand) for hand in accepted_samples[i])]
                 hands_pbn[0] = deck52.convert_cards(hands_pbn[0],opening_lead52, hand_str)
-                dd_solved = self.dd.solve(strain_i, 0, [opening_lead52], hands_pbn)
+                # lead is relative to the order in the PBN-file, so West is 0 here
+                onlead = 0
+                dd_solved = self.dd.solve(strain_i, onlead, [opening_lead52], hands_pbn, 3)
                 # Only use 1st element from the result
                 first_key = next(iter(dd_solved))
                 first_item = dd_solved[first_key]
-                tricks[i, j, 0] = first_item[0]
+                tricks[i, j, 0] = first_item[0] 
                 tricks[i, j, 1] = 1 if (13 - first_item[0]) >= tricks_needed else 0
             if self.verbose:
                 print(f'dds took {time.time() - t_start:0.4}')
         return tricks
 
-    
     def single_dummy_estimates(self, lead_card_indexes, contract, accepted_samples):
         n_accepted = accepted_samples.shape[0]
         X_sd = np.zeros((n_accepted, 32 + 5 + 4*32))
@@ -704,38 +784,9 @@ class BotLead:
             # Reshape the result to match the original shape
             result_array = result_array.reshape((1, -1))
 
-            print("Resulting array with updated top three probabilities and zeros for the rest:")
-            print(result_array)
-
             tricks[:, j, 0:1] = expected_tricks_sd(result_array)
             tricks[:, j, 1:2] = p_defeat_contract(contract, result_array)
         return tricks
-
-    # def single_dummy_estimates_no_lead(self, contract, accepted_samples):
-    #     n_accepted = accepted_samples.shape[0]
-    #     X_sd = np.zeros((n_accepted, 5 + 4*32))
-
-    #     strain_i = bidding.get_strain_i(contract)
-    #     if strain_i == 0:
-    #         X_sd[:,strain_i] = 10
-    #     else:
-    #         X_sd[:,strain_i] = 1
-    #     # lefty
-    #     X_sd[:,(5 + 0*32):(5 + 1*32)] = self.hand.reshape(32)
-    #     # dummy
-    #     X_sd[:,(5 + 1*32):(5 + 2*32)] = accepted_samples[:,0,:].reshape((n_accepted, 32))
-    #     # righty
-    #     X_sd[:,(5 + 2*32):(5 + 3*32)] = accepted_samples[:,1,:].reshape((n_accepted, 32))
-    #     # declarer
-    #     X_sd[:,(5 + 3*32):] = accepted_samples[:,2,:].reshape((n_accepted, 32))
-
-    #     tricks = np.zeros((n_accepted, 1, 2))
-
-    #     tricks_softmax = self.sd_model_no_lead.model(X_sd)
-
-    #     tricks[:, 0, 0:1] = expected_tricks_sd(tricks_softmax.copy())
-    #     tricks[:, 0, 1:2] = p_defeat_contract(contract, tricks_softmax.copy())
-    #     return tricks
 
 class CardPlayer:
 
@@ -757,9 +808,9 @@ class CardPlayer:
         self.init_x_play(parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
         self.bid_accept_play_threshold = sampler.bid_accept_play_threshold
         self.score_by_tricks_taken = [scoring.score(self.contract, self.is_decl_vuln, n_tricks) for n_tricks in range(14)]
-
+        self.use_biddingquality_in_eval = models.use_biddingquality_in_eval
         from ddsolver import ddsolver
-        self.dd = ddsolver.DDSolver(dds_mode=2)
+        self.dd = ddsolver.DDSolver()
 
     def init_x_play(self, public_hand, level, strain_i):
         self.x_play = np.zeros((1, 13, 298))
@@ -857,7 +908,7 @@ class CardPlayer:
                         suits.append(''.join([symbols[card] for card in sorted(suit)]))
                     hands[j] = '.'.join(suits)
             # We always use West as start, but hands are in BEN from LHO
-            hands_pbn.append('W:' + ' '.join(hands))
+            hands_pbn.append('N:' + ' '.join(hands))
 
 
         if self.verbose:
@@ -866,7 +917,7 @@ class CardPlayer:
         t_start = time.time()
         if self.verbose:
             print("Samples: ",n_samples, " Solving: ",len(hands_pbn))
-        dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn)
+        dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
         card_tricks = ddsolver.expected_tricks(dd_solved)
 
         # if defending the target is another
@@ -954,10 +1005,14 @@ class CardPlayer:
         # We have 3 factors, and they could all be right, so we remove most of the decimals
         # We should probably also consider bidding_scores in this 
         # If we have bad quality of samples we should probably just use the neural network
-        if valid_bidding_samples > 0:
+        if valid_bidding_samples >= 0:
             candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1), round(c.insta_score, 2)), reverse=True)
         else:
             quality = False
+            #if self.use_biddingquality_in_eval:
+            #    candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.insta_score, 2), round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1)), reverse=True)
+            #    #candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
+            #else:
             candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
         samples = []
 

@@ -6,18 +6,24 @@ dds.SetMaxThreads(0)
 
 class DDSolver:
 
-    def __init__(self, dds_mode=0):
+    # Default for dds_mode changes to 1
+    # Transport table will be reused if same trump suit and the same or nearly the same cards distribution, deal.first can be different. 
+    # Always search to find the score. Even when the hand to play has only one card, with possible equivalents, to play.  
+    # If zero, we not always find the score
+    # If 2 transport tables ignore trump
+ 
+    def __init__(self, dds_mode=1):
         self.dds_mode = dds_mode
         self.bo = dds.boardsPBN()
         self.solved = dds.solvedBoards()
 
-    def solve(self, strain_i, leader_i, current_trick, hands_pbn):
-        results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[:dds.MAXNOOFBOARDS])
+    def solve(self, strain_i, leader_i, current_trick, hands_pbn, solutions):
+        results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[:dds.MAXNOOFBOARDS], solutions)
 
         if len(hands_pbn) > dds.MAXNOOFBOARDS:
             i = dds.MAXNOOFBOARDS
             while i < len(hands_pbn):
-                more_results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[i:i+dds.MAXNOOFBOARDS])
+                more_results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[i:i+dds.MAXNOOFBOARDS], solutions)
 
                 for card, values in more_results.items():
                     results[card] = results[card] + values
@@ -26,14 +32,14 @@ class DDSolver:
 
         return results 
 
-    def solve_helper(self, strain_i, leader_i, current_trick, hands_pbn):
+    def solve_helper(self, strain_i, leader_i, current_trick, hands_pbn, solutions):
         card_rank = [0x4000, 0x2000, 0x1000, 0x0800, 0x0400, 0x0200, 0x0100, 0x0080, 0x0040, 0x0020, 0x0010, 0x0008, 0x0004]
 
         self.bo.noOfBoards = min(dds.MAXNOOFBOARDS, len(hands_pbn))
 
         for handno in range(self.bo.noOfBoards):
             self.bo.deals[handno].trump = (strain_i - 1) % 5
-            self.bo.deals[handno].first = (leader_i - 1) % 4
+            self.bo.deals[handno].first = leader_i
 
             for i in range(3):
                 self.bo.deals[handno].currentTrickSuit[i] = 0
@@ -46,11 +52,10 @@ class DDSolver:
 
             self.bo.target[handno] = -1
             # Return all cards that can be legally played, with their scores in descending order.
-            self.bo.solutions[handno] = 3
+            self.bo.solutions[handno] = solutions
             self.bo.mode[handno] = self.dds_mode
 
         res = dds.SolveAllBoards(ctypes.pointer(self.bo), ctypes.pointer(self.solved))
-        
         if res != 1:
             error_message = dds.get_error_message(res)
             print(f"Error Code: {res}, Error Message: {error_message}")
@@ -73,7 +78,6 @@ class DDSolver:
                         if eq_card not in card_results:
                             card_results[eq_card] = []
                         card_results[eq_card].append(fut.contents.score[i])
-
         return card_results
 
 

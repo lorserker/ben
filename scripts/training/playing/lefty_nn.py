@@ -16,15 +16,15 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from batcher import Batcher
 
-model_path = './lefty_model/lefty'
+model_path = './lefty_model/lefty_suit'
 saved_model_dir = './lefty_saved_model' 
 
 batch_size = 64
 display_step = 1000
-epochs = 5
+epochs = 25
 
-X_train = np.load('./lefty_bin/X.npy')
-Y_train = np.load('./lefty_bin/Y.npy')
+X_train = np.load('./lefty_bin_suit/X.npy')
+Y_train = np.load('./lefty_bin_suit/Y.npy')
 
 n_examples = Y_train.shape[0]
 n_ftrs = X_train.shape[2]
@@ -36,6 +36,8 @@ print("Batch size:              ", batch_size)
 n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
 print("Iterations               ", n_iterations)
 print("Model path:              ",model_path)
+remove_lead = False
+
 
 lstm_size = 128
 n_layers = 3
@@ -68,8 +70,12 @@ softmax_w = tf.get_variable('softmax_w', shape=[lstm_cell.output_size, n_cards],
 
 out_rnn, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 
-out_card_logit = tf.matmul(tf.reshape(out_rnn[:,1:,:], [-1, lstm_size]), softmax_w, name='out_card_logit')
-out_card_target = tf.reshape(seq_out[:,1:,:], [-1, n_cards], name='out_card_target')
+if remove_lead:
+    out_card_logit = tf.matmul(tf.reshape(out_rnn[:,1:,:], [-1, lstm_size]), softmax_w, name='out_card_logit')
+    out_card_target = tf.reshape(seq_out[:,1:,:], [-1, n_cards], name='out_card_target')
+else:
+    out_card_logit = tf.matmul(tf.reshape(out_rnn, [-1, lstm_size]), softmax_w, name='out_card_logit')
+    out_card_target = tf.reshape(seq_out, [-1, n_cards], name='out_card_target')
 
 output, next_state = lstm_cell(x_in, state)
 

@@ -335,7 +335,7 @@ class Driver:
                     continue
 
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand.reshape(
+                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand.reshape(
                         (-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
                     assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
 
@@ -642,6 +642,7 @@ def random_deal_source():
 async def main():
     random = True
     #For some strange reason parameters parsed to the handler must be an array
+    boardno = None
     board_no = []
     board_no.append(0) 
 
@@ -696,6 +697,7 @@ async def main():
     if args.boardno:
         print(f"Starting from {args.boardno}")
         board_no[0] = args.boardno - 1
+        boardno = args.boardno
 
     if random:
         print("Playing random deals or deals from the client")
@@ -721,8 +723,11 @@ async def main():
 
     while True:
         if random: 
+            if boardno:
+                np.random.seed(boardno)
+
             #Just take a random"
-            rdeal = random_deal()
+            rdeal = random_deal(boardno)
 
             # example of to use a fixed deal
             # rdeal = ('T54.Q65.AKJ432.4 Q9.A3.T986.AKQ63 AK863.T982..T972 J72.KJ74.Q75.J85', 'W E-W')

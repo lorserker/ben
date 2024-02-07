@@ -64,16 +64,47 @@ def binary_data(deal_str, outcome_str, play_str):
     return x, y
 
 if __name__ == '__main__':
-    n = 272776
 
-    out_dir = './lefty_bin'
+    out_dir = './lefty_bin_nt'
+
+    data_it = play_data_iterator(itertools.chain(
+        #open('../data/Jack/BW5C_N.txt'), 
+        open('../data/Jack/BW5C_N.txt'))) 
+
+    data_it, copy = itertools.tee(data_it)  # Create a copy of the iterator
+    n = sum(1 for _ in copy)  # Count items in the copy
+
+    print(f"Processing {n} deals")
 
     X = np.zeros((n, 11, 298), np.float16)
     Y = np.zeros((n, 11, 32), np.float16)
 
-    for i, (deal_str, outcome_str, play_str) in enumerate(play_data_iterator(itertools.chain(
-        open('../data/jack/BW5C_N.txt'), 
-        open('../data/jack/BW5C_S.txt')))):
+    for i, (deal_str, outcome_str, play_str) in enumerate(data_it):
+        if (i != 0) and i % 1000 == 0:
+            print(i)
+
+        x_i, y_i = binary_data(deal_str, outcome_str, play_str)
+
+        X[i, :, :] = x_i
+        Y[i, :, :] = y_i
+
+    np.save(os.path.join(out_dir, 'X.npy'), X)
+    np.save(os.path.join(out_dir, 'Y.npy'), Y)
+
+    out_dir = './lefty_bin_suit'
+
+    data_it = play_data_iterator(itertools.chain(
+        open('../data/Jack/BW5C_S.txt'))) 
+
+    data_it, copy = itertools.tee(data_it)  # Create a copy of the iterator
+    n = sum(1 for _ in copy)  # Count items in the copy
+
+    print(f"Processing {n} deals")
+
+    X = np.zeros((n, 11, 298), np.float16)
+    Y = np.zeros((n, 11, 32), np.float16)
+
+    for i, (deal_str, outcome_str, play_str) in enumerate(data_it):
         if (i != 0) and i % 1000 == 0:
             print(i)
 

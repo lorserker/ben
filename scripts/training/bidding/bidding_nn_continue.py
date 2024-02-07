@@ -1,5 +1,6 @@
 import sys
 sys.path.append('../../../src')
+import os
 
 import datetime
 import numpy as np
@@ -8,8 +9,8 @@ tf.disable_v2_behavior()
 
 from batcher import Batcher
 
-checkpoint_model = sys.argv[1]  # pretrained model e.g './model/bidding-1000000'
-output_model = sys.argv[2]  # where to save new checkpoints e.g './model2/bidding'  
+checkpoint_model = sys.argv[2]  # pretrained model e.g './model/bidding-1000000'
+output_model = sys.argv[3]  # where to save new checkpoints e.g './model2/bidding'  
 
 model_path = output_model
 
@@ -18,8 +19,18 @@ start_iteration = int(checkpoint_model.split('-')[-1])
 n_iterations = 1000000
 display_step = 1000
 
-X_train = np.load('x.npy')
-y_train = np.load('y.npy')
+bin_dir = sys.argv[1]
+
+# Test setting
+
+batch_size = 128
+display_step = 2000
+epochs = 10
+learning_rate = 0.002
+
+X_train = np.load(os.path.join(bin_dir, 'x.npy'))
+y_train = np.load(os.path.join(bin_dir, 'y.npy'))
+
 
 n_examples = y_train.shape[0]
 n_ftrs = X_train.shape[2]

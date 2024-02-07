@@ -37,7 +37,7 @@ class Claimer:
             hands[hidden_hand_indexes[0]] = deck52.deal_to_str(_hand_from_cards(52, hidden_cards[:n_cards]))
             hands[hidden_hand_indexes[1]] = deck52.deal_to_str(_hand_from_cards(52, hidden_cards[n_cards:]))
 
-            sampled_hands_pbn.append('W:' + ' '.join(hands))
+            sampled_hands_pbn.append('N:' + ' '.join(hands))
 
         max_min_tricks = min(
             self._get_max_min_tricks(strain_i, player_i, hands_pbn),
@@ -51,7 +51,7 @@ class Claimer:
         return max_min_tricks
     
     def _get_max_min_tricks(self, strain_i, player_i, hands_pbn):
-        dd_solved = self.dd.solve(strain_i, player_i, [], hands_pbn)
+        dd_solved = self.dd.solve(strain_i, player_i, [], hands_pbn, 1)
         
         max_min_tricks = 0
         for _, dd_tricks in dd_solved.items():

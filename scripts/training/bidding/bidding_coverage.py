@@ -1,3 +1,5 @@
+from collections import defaultdict
+import copy
 import sys
 sys.path.append('../../../src')
 
@@ -61,7 +63,7 @@ def filter_deals(data_it, max_occurrences, auctions, key_counts, deals):
         if deal_data.vuln_ns and not deal_data.vuln_ew: v = 1
         if not deal_data.vuln_ns and deal_data.vuln_ew: v = 2
         if deal_data.vuln_ns and deal_data.vuln_ew: v = 3
-        auction = f"{ew}-{ns} {v} " + ' '.join(deal_data.auction).replace("PASS","P").replace("PAD_START","-")
+        auction = f"{ew}-{ns} {' '.join(deal_data.auction).replace('PASS','P').replace('PAD_START','-')}  {v} "
         if key_counts[auction] < max_occurrences:
             auctions.append(auction)
             key_counts[auction] += 1
@@ -129,7 +131,7 @@ def to_numeric(value, default=0):
 
 if __name__ == '__main__':
 
-    if len(sys.argv) < 1:
+    if len(sys.argv) < 2:
         print("Usage: python bidding_binary.py inputfile1 inputfile2 NS=<x> EW=<y> alternate=True sameforboth=True")
         print("NS and EW are optional. If set to -1 no information about system is included in the model.")
         print("If set to 0 the hands from that side will not be used for training.")
@@ -139,8 +141,10 @@ if __name__ == '__main__':
         sys.exit(1)
 
     infnm1 = sys.argv[1] # file where the data is
-    infnm2 = sys.argv[2] # file where the data is
-    outdir = sys.argv[3]
+    if len(sys.argv) > 2 and sys.argv[2] != "None":
+        infnm2 = sys.argv[2] # file where the data is
+    else:
+        infnm2 = None
     # Extract NS and EW values from command-line arguments if provided
     ns = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("NS=")), -1)
     ew = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("EW=")), -1)
@@ -172,6 +176,10 @@ if __name__ == '__main__':
             user_input = input("\n First two boards are identical - did you forget to add alternate=True?")
             if user_input.lower() == "y":
                 sys.exit()
+        if len(lines) > 2 and lines[0] != lines[2] and alternating:
+            user_input = input("\n First two boards are not identical - did you mean alternate=True?")
+            if user_input.lower() == "n":
+                sys.exit()
 
         data_it = load_deals(lines, sameforboth)
         filtered_deals, auctions, key_counts = filter_deals(data_it, max_occurrences, auctions, key_counts, [] )
@@ -188,15 +196,16 @@ if __name__ == '__main__':
     sys.stderr.write(f"Filtered_deals {len(filtered_deals)}\n")
 
     # The second training dataset is random deals, and we just use the bidding sequences we don't allready have
-    max_occurrences = 2
-    with open(infnm2, 'r') as file:
+    if infnm2:
+        max_occurrences = 2
+        with open(infnm2, 'r') as file:
 
-        lines = file.readlines()
-        # Remove comments at the beginning of the file
-        lines = [line for line in lines if not line.strip().startswith('#')]
-        sys.stderr.write(f"Loading {len(lines) // 2} deals for fillers\n")
-        data_it = load_deals(lines, sameforboth)
-        filtered_deals, auctions, key_counts = filter_deals(data_it, max_occurrences, auctions, key_counts, filtered_deals)
+            lines = file.readlines()
+            # Remove comments at the beginning of the file
+            lines = [line for line in lines if not line.strip().startswith('#')]
+            sys.stderr.write(f"Loading {len(lines) // 2} deals for fillers\n")
+            data_it = load_deals(lines, sameforboth)
+            filtered_deals, auctions, key_counts = filter_deals(data_it, max_occurrences, auctions, key_counts, filtered_deals)
 
     # Create a new Counter to count all occurrences without limit
     sys.stderr.write(f"Loaded {len(auctions)} auctions\n")   
@@ -206,12 +215,49 @@ if __name__ == '__main__':
     sys.stderr.write(f"Found {count} bidding sequences.\n" )
 
     sys.stderr.write(f"Filtered_deals {len(filtered_deals)}\n")
-    
-    x, y, HCP, SHAPE = create_arrays(ns, ew, players_pr_hand, len(filtered_deals))
 
-    x, y, HCP, SHAPE, key_counts, k = create_binary(filtered_deals, ns, ew, alternating, x, y, HCP, SHAPE, key_counts, k)
+    # Sorting the list based on vuln_ns, vuln_ew, and auction
+    sorted_filtered_deals = sorted(filtered_deals, key=lambda x: (x.vuln_ns, x.vuln_ew, x.auction))
 
-    sys.stderr.write(f"created {k} hands\n")
+    combinations_dict = defaultdict(list)
+    # Create a set to keep track of processed auctions
+    processed_auctions = set()
+    for board in sorted_filtered_deals:
+        auction = ' '.join(board.auction).replace('PASS','P').replace('PAD_START','-')
+        combinations_dict[auction].append((board.vuln_ns, board.vuln_ew))
+
+    sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Combinations {len(combinations_dict)}\n')
+
+    i = 0
+    for board in sorted_filtered_deals:
+        missing_combinations = []
+        auction = ' '.join(board.auction).replace('PASS','P').replace('PAD_START','-')
+        if auction in processed_auctions:
+            continue  # Skip if the auction has already been processed
+        
+        for vuln_ns in [True, False]:
+            for vuln_ew in [True, False]:
+                if (vuln_ns, vuln_ew) not in combinations_dict[auction]:
+                    missing_combinations.append((vuln_ns, vuln_ew))
+
+        for missing_combination in missing_combinations:
+            # Create a copy of the object and update vuln_ns and vuln_ew
+            new_board = copy.copy(board)
+            new_board.vuln_ns, new_board.vuln_ew = missing_combination
+            if (i+1) % 1000 == 0:
+                sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} {i+1}\n')
+                sys.stderr.flush()
+            i += 1
+            sorted_filtered_deals.append(new_board)
+        processed_auctions.add(auction)
+
+    sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} After add missing vuln {len(sorted_filtered_deals)}\n')
+
+    x, y, HCP, SHAPE = create_arrays(ns, ew, players_pr_hand, len(sorted_filtered_deals))
+
+    x, y, HCP, SHAPE, key_counts, k = create_binary(sorted_filtered_deals, ns, ew, alternating, x, y, HCP, SHAPE, key_counts, k)
+
+    sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} created {k} hands\n')
 
     if sameforboth:
         out_dir += "_same" 

@@ -19,10 +19,10 @@ bin_dir = sys.argv[1]
 
 # Test setting
 
-batch_size = 128
-display_step = 2000
+batch_size = 64
+display_step = 10000
 epochs = 100
-learning_rate = 0.002
+learning_rate = 0.001
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))
