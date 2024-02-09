@@ -147,7 +147,7 @@ class HumanLeadSocket:
 
 class HumanCardPlayer:
 
-    def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln):
+    def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, quality):
         self.player_models = models.player_models
         self.model = models.player_models[player_i]
         self.player_i = player_i
@@ -198,7 +198,7 @@ class HumanCardPlayer:
         card = input('your play: ').strip().upper()
         return deck52.encode_card(card)
 
-    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores):
+    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality):
         candidates = []
         samples = []
 
@@ -215,7 +215,7 @@ class HumanCardPlayer:
 class HumanCardPlayerSocket(HumanCardPlayer):
 
     def __init__(self, socket, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln):
-        super().__init__(models, player_i, hand_str, public_hand_str, contract, is_decl_vuln)
+        super().__init__(models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, None)
 
         self.socket = socket
 

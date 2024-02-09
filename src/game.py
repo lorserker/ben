@@ -1,4 +1,5 @@
 import os
+import sys
 import asyncio
 import logging
 
@@ -55,12 +56,12 @@ class AsyncBotBid(bots.BotBid):
         return self.bid(auction)
 
 class AsyncBotLead(bots.BotLead):
-    async def async_lead(self, auction):
+    async def async_opening_lead(self, auction):
         return self.find_opening_lead(auction)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores):
-        return self.play_card(trick_i, leader_i, current_trick52, players_states, bidding_scores)
+    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality):
+        return self.play_card(trick_i, leader_i, current_trick52, players_states, bidding_scores, quality)
     
     
 class Driver:
@@ -335,8 +336,7 @@ class Driver:
                     continue
 
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand.reshape(
-                        (-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models)
                     assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
 
                 else: 
@@ -344,12 +344,13 @@ class Driver:
                     bidding_scores = None
                     c_hcp = -1
                     c_shp = -1
+                    good_quality = None
 
                 await asyncio.sleep(0.01)
 
                 card_resp = None
                 while card_resp is None:
-                    card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
+                    card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
 
                     if (str(card_resp.card).startswith("Conceed")) :
                             self.claimedbydeclarer = False
@@ -361,6 +362,7 @@ class Driver:
 
                     if (str(card_resp.card).startswith("Claim")) :
                         tricks_claimed = int(re.search(r'\d+', card_resp.card).group()) if re.search(r'\d+', card_resp.card) else None
+                        
                         self.canclaim = claimer.claim(
                             strain_i=strain_i,
                             player_i=player_i,
@@ -577,7 +579,7 @@ class Driver:
                 (decl_i + 1) % 4,
                 self.verbose
             )
-            card_resp = await bot_lead.async_lead(auction)
+            card_resp = await bot_lead.async_opening_lead(auction)
 
         await asyncio.sleep(0.01)
 
@@ -594,7 +596,7 @@ class Driver:
         for i, level in enumerate(self.human):
             if self.models.use_bba:
                 from bba.BBA import BBABotBid
-                players.append(BBABotBid(self.models.ns, self.models.ew, i, hands_str[i], vuln, self.dealer_i))
+                players.append(BBABotBid(self.models.bba_ns, self.models.bba_ew, i, hands_str[i], vuln, self.dealer_i))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.verbose)
@@ -768,3 +770,7 @@ if __name__ == '__main__':
         loop.run_until_complete(main())
     except KeyboardInterrupt:
         pass
+    except ValueError as e:
+        print("Error in configuration - typical the models do not match the configuration - include_system ")
+        print(e)
+        sys.exit(0)

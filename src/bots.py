@@ -313,7 +313,7 @@ class BotBid:
         if len(auction_so_far) > 24:
             sample_boards_for_auction *= 4
         accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(
-            auction_so_far, turn_to_bid, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, self.sameforboth,sample_boards_for_auction)
+            auction_so_far, turn_to_bid, self.hand_str, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, self.sameforboth,sample_boards_for_auction)
         
         #assert good_quality, "We did not find samples for the bidding of decent quality"
 
@@ -605,11 +605,12 @@ class BotLead:
                 # expected_tricks_sd is for declarer
                 candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), -round(c.expected_tricks_sd, 1), round(c.insta_score, 2)), reverse=True)
                 # Print each CandidateCard in the list
-                if self.verbose:
-                    for card in candidate_cards:
-                        print(card)
                 opening_lead = candidate_cards[0].card.code()
 
+        if self.verbose:
+            print(good_quality)
+            for card in candidate_cards:
+                print(card)
         if opening_lead % 8 == 7:
             # it's a pip ~> choose a random one
             pips_mask = np.array([0,0,0,0,0,0,0,1,1,1,1,1,1])
@@ -622,7 +623,8 @@ class BotLead:
         if self.verbose:
             print(f"Accepted samples for opening lead: {accepted_samples.shape[0]}")
         for i in range(min(self.sample_hands_for_review, accepted_samples.shape[0])):
-            samples.append('%s %s %s %.5f' % (
+            samples.append('%s %s %s %s %.5f' % (
+                hand_to_str(self.hand),
                 hand_to_str(accepted_samples[i,0,:]),
                 hand_to_str(accepted_samples[i,1,:]),
                 hand_to_str(accepted_samples[i,2,:]),
@@ -674,7 +676,7 @@ class BotLead:
 
         if self.verbose:
             print(f'Now generating {self.sample.sample_boards_for_auction_opening_lead} deals to find opening lead')
-        accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, False, self.sample.sample_boards_for_auction_opening_lead)
+        accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, False, self.sample.sample_boards_for_auction_opening_lead)
 
         if self.verbose:
             print("Generated samples:", accepted_samples.shape[0], " OK Quality", good_quality)
@@ -751,7 +753,7 @@ class BotLead:
         strain_i = bidding.get_strain_i(contract)
 
         X_sd[:,32 + strain_i] = 1
-        # lefty
+        # lefty (That is us)
         X_sd[:,(32 + 5 + 0*32):(32 + 5 + 1*32)] = self.hand.reshape(32)
         # dummy
         X_sd[:,(32 + 5 + 1*32):(32 + 5 + 2*32)] = accepted_samples[:,0,:].reshape((n_accepted, 32))
@@ -792,8 +794,13 @@ class CardPlayer:
 
     def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, sampler, verbose = False):
         self.player_models = models.player_models
-        self.playermodel = models.player_models[player_i]
+        self.strain_i = bidding.get_strain_i(contract)
+        if self.strain_i == 0:
+            self.playermodel = models.player_models[player_i]
+        else:
+            self.playermodel = models.player_models[player_i + 4]
         self.player_i = player_i
+        self.hand_str = hand_str
         self.hand = parse_hand_f(32)(hand_str).reshape(32)
         self.hand52 = parse_hand_f(52)(hand_str).reshape(52)
         self.public52 = parse_hand_f(52)(public_hand_str).reshape(52)
@@ -803,7 +810,6 @@ class CardPlayer:
         self.n_tricks_taken = 0
         self.verbose = verbose
         self.level = int(contract[0])
-        self.strain_i = bidding.get_strain_i(contract)
         self.sample_hands_for_review = models.sample_hands_for_review
         self.init_x_play(parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
         self.bid_accept_play_threshold = sampler.bid_accept_play_threshold
@@ -842,10 +848,10 @@ class CardPlayer:
     def set_public_card_played52(self, card52):
         self.public52[card52] -= 1
 
-    def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores):
+    def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality):
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         card52_dd = self.next_card52(trick_i, leader_i, current_trick52, players_states)
-        card_resp = self.next_card(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores)
+        card_resp = self.next_card(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality)
 
         return card_resp
 
@@ -968,7 +974,7 @@ class CardPlayer:
         )
         return x.reshape(-1)
     
-    def next_card(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores):
+    def next_card(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
         if self.verbose:
@@ -997,9 +1003,6 @@ class CardPlayer:
                 expected_score_dd=e_score
             ))
 
-        # Should be loaded from the configuration
-        quality = True
-
         valid_bidding_samples = np.sum(bidding_scores > self.bid_accept_play_threshold)
         # Now we will select the card to play
         # We have 3 factors, and they could all be right, so we remove most of the decimals
@@ -1008,7 +1011,6 @@ class CardPlayer:
         if valid_bidding_samples >= 0:
             candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1), round(c.insta_score, 2)), reverse=True)
         else:
-            quality = False
             #if self.use_biddingquality_in_eval:
             #    candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.insta_score, 2), round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1)), reverse=True)
             #    #candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
@@ -1023,11 +1025,6 @@ class CardPlayer:
                 hand_to_str(players_states[2][i,0,:32].astype(int)),
                 hand_to_str(players_states[3][i,0,:32].astype(int)),
             ))
-
-        if (len(bidding_scores)) > 0:
-            samples = [f"{sample} {score:.3f}" for sample, score in zip(samples, bidding_scores)]
-        else:
-            quality = False
 
         card_resp = CardResp(
             card=candidate_cards[0].card,

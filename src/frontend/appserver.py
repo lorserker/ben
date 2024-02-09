@@ -17,6 +17,7 @@ import argparse
 import datetime
 import numpy as np
 from urllib.parse import parse_qs
+from urllib.parse import quote
 import re
 
 
@@ -254,6 +255,12 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 def index(): 
     return template('index.tpl') 
 
+@app.route('/error')
+def error_page():
+    error_message = request.query.message
+    # Render your error page template here, passing error_message to the template
+    return f"<h3>{error_message}</h3>"
+
 @app.route('/submit', method="POST")
 def index(): 
     url = None
@@ -289,9 +296,16 @@ def index():
     
     dealpbn = request.forms.get('dealpbn')
     if dealpbn:
-        dealpbn = request.forms.get('dealpbn')
-        dealer, vulnerable, hands, board_no = parse_pbn(dealpbn.splitlines())
-        url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+        try:
+            dealpbn = request.forms.get('dealpbn')
+            dealer, vulnerable, hands, board_no = parse_pbn(dealpbn.splitlines())
+            url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+        except Exception as e:
+            error_message = f'Error parsing PBN-input. {e}'
+            print(error_message)
+            print(dealpbn)
+            encoded_error_message = quote(error_message)
+            redirect(f'/error?message={encoded_error_message}')
 
     dealbsol = request.forms.get('dealbsol')
     if dealbsol:
@@ -302,9 +316,20 @@ def index():
     deallin = request.forms.get('deallin')
     if deallin:
         query_params = deallin.split('?')
-        deallin = parse_qs(query_params[-1])
-        lin = deallin["lin"]
-        dealer, vulnerable, hands, board_no = parse_lin(lin[0])
+        deallinparsed = parse_qs(query_params[-1])
+        try:
+            lin = deallinparsed["lin"]
+            dealer, vulnerable, hands, board_no = parse_lin(lin[0])
+        except KeyError:
+            try:
+                dealer, vulnerable, hands, board_no = parse_lin(deallin)
+            except Exception as e:
+                error_message = f'Error parsing LIN-input. {e}'
+                print(error_message)
+                print(deallin)
+                encoded_error_message = quote(error_message)
+                redirect(f'/error?message={encoded_error_message}')
+
         hands = " ".join(hands)
         url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
 
@@ -318,6 +343,7 @@ def index():
     else:
         board_no = request.forms.get('board')
         redirect(f"/app/bridge.html?board_no={board_no}{player}")
+    
 
 @app.route('/home')
 def home():
@@ -399,6 +425,8 @@ def deal_data(deal_id):
         return json.dumps(deal)
     except KeyError:
         # Handle the case when the specified deal_id does not exist
+        response.status = 404  # HTTP status code: 400 Bad Request
+        response.headers['Content-Type'] = 'application/json'  # Set response content type
         error_message = {"error": f"Deal with ID {deal_id} not found"}
         return json.dumps(error_message), 404  # Return a 404 Not Found status
 
@@ -411,6 +439,8 @@ def delete_deal(deal_id):
         redirect('/home')
     except KeyError:
         # Handle the case when the specified deal_id does not exist
+        response.status = 404  # HTTP status code: 400 Bad Request
+        response.headers['Content-Type'] = 'application/json'  # Set response content type
         error_message = {"error": f"Deal with ID {deal_id} not found"}
         return json.dumps(error_message), 404  # Return a 404 Not Found status
 

@@ -138,16 +138,16 @@ class BBABotBid:
         self.hand_str = hand.split('.')
         self.hand_str.reverse()
         self.player = EPBot()
-        #print(f"Version: {self.player.version()}")
+        print(f"Version: {self.player.version()}")
         self.dealer = dealer
         self.position = position
         # Set system types for NS and EW
-        self.player.set_system_type(self.C_NS,ns_system)
-        self.player.set_system_type(self.C_WE,ew_system)
+        self.player.set_system_type(self.C_NS,int(ns_system))
+        self.player.set_system_type(self.C_WE,int(ew_system))
 
         # This is what we play
-        print(self.player.system_name(0))
-        print(self.player.system_name(1))
+        print("System NS:", self.player.system_name(0), ns_system)
+        print("System EW:", self.player.system_name(1), ew_system)
 
          # Iterate through the conventions array and set conventions for a player at a specific position
         for convention, selected in self.conventions_list.items():
@@ -181,8 +181,8 @@ class BBABotBid:
 
     # Define a Python function to find a bid
     def bid(self, auction):
-        # Define constants for scoring
         # Send all bids to the bot
+        print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)
         self.player.new_hand(self.position, self.hand_str, self.dealer, self.vuln)
 
         for k in range(len(auction)):
@@ -191,9 +191,11 @@ class BBABotBid:
                 continue
             if bidid < 5:
                 bidid = bidid - 2
+            print("set_bid",(k % 4, bidid))
             self.player.set_bid(k % 4, bidid)
 
 
+        print("get_bid()")
         new_bid = self.player.get_bid()
 
         # Interpret the potential bid

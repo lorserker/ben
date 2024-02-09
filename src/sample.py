@@ -240,7 +240,8 @@ class Sample:
         return c_hcp, c_shp
 
         
-    def sample_cards_auction(self, auction, nesw_i, hand, vuln, bidder_model, binfo, ns, ew, sameforboth, n_samples):
+    def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, bidder_model, binfo, ns, ew, sameforboth, n_samples):
+        hand = binary.parse_hand_f(32)(hand_str)
         n_steps = binary.calculate_step_bidding_info(auction)
 
         if self.verbose:
@@ -261,9 +262,9 @@ class Sample:
 
         # setting a seed here would allow us to have the same samples during the bidding
         # Using deal as seed
-        hash_integer  = calculate_seed(str(auction))         
+        hash_integer  = calculate_seed(hand_str)         
         if self.verbose:
-            print("Setting seed (Sampling)=",hash_integer)
+            print(f"Setting seed (Sampling) from {hand_str}: {hash_integer}")
         np.random.seed(hash_integer)
             
         lho_pard_rho = self.sample_cards_vec(n_samples, c_hcp[0], c_shp[0], hand.reshape(32))
@@ -362,7 +363,7 @@ class Sample:
         # It could be an idea to add an extra sampling in a later version
         if len(accepted_samples) < self._min_sample_hands_auction:
             if self.use_distance:
-                good_quality = len(sorted_samples[sorted_scores >= 0.5])
+                good_quality = len(sorted_samples[sorted_scores >= 0.5]) > 2
                 if self.verbose:
                     print(f"Only found {len(sorted_samples[sorted_scores >= 0.5])} {self._min_sample_hands_auction}")
             else:
@@ -376,7 +377,8 @@ class Sample:
         return accepted_samples, sorted_scores, c_hcp[0], c_shp[0], good_quality
 
     # shuffle the cards between the 2 hidden hands
-    def shuffle_cards_bidding_info(self, n_samples, binfo, auction, hand, vuln, known_nesw, h_1_nesw, h_2_nesw, visible_cards, hidden_cards, cards_played, shown_out_suits, ns, ew):
+    def shuffle_cards_bidding_info(self, n_samples, binfo, auction, hand_str, vuln, known_nesw, h_1_nesw, h_2_nesw, visible_cards, hidden_cards, cards_played, shown_out_suits, ns, ew):
+        hand = binary.parse_hand_f(32)(hand_str)
         n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2])
         if self.verbose:
             print("shuffle_cards_bidding_info cards to sample: ", n_cards_to_receive)
@@ -397,6 +399,13 @@ class Sample:
 
         h1_h2 = np.zeros((n_samples, 2, 32), dtype=int)
         cards_received = np.zeros((n_samples, 2), dtype=int)
+
+        # setting a seed here would allow us to have the same samples during the bidding
+        # Using deal as seed
+        hash_integer  = calculate_seed(hand_str)         
+        if self.verbose:
+            print(f"Setting seed (Sampling bidding info) from {hand_str}: {hash_integer}")
+        np.random.seed(hash_integer)
 
         card_hcp = [4, 3, 2, 1, 0, 0, 0, 0] * 4
 
@@ -548,10 +557,10 @@ class Sample:
 
         return min_scores
 
-    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand, vuln, models):
+    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, vuln, models):
         bidder_model = models.bidder_model
         binfo_model = models.binfo_model
-
+        hand = binary.parse_hand_f(32)(hand_str)
         n_samples = self.sample_hands_play
         if self.verbose:
             print(f"Called init_rollout_states {n_samples}")
@@ -590,7 +599,7 @@ class Sample:
                 sample_boards_for_play,
                 binfo_model,
                 auction,
-                hand,
+                hand_str,
                 vuln,
                 known_nesw,
                 h_1_nesw,
@@ -733,8 +742,9 @@ class Sample:
         if self.verbose:
             print("Bidding samples accepted: ",valid_bidding_samples)
 
+        good_quality = None
         # With only few cards left we will not filter the samples according to the bidding.
-        if trick_i <= 11:
+        if trick_i <= 9:
             # trusting the bidding after sampling cards
             # This could probably be set based on number of deals matching or sorted
             if valid_bidding_samples >= self.sample_hands_play: 
@@ -743,8 +753,10 @@ class Sample:
                 random_indices = np.random.permutation(bidding_states[0].shape[0])
                 bidding_states = [state[random_indices] for state in bidding_states]
                 sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
+                good_quality = True
             else:            
                 if valid_bidding_samples < self.min_sample_hands_play: 
+                    good_quality = False
                     if np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold) == 0:
                         # We just take top three as we really have no idea about what the bidding means
                         bidding_states = [state[:3] for state in bidding_states]
@@ -759,7 +771,7 @@ class Sample:
         if self.verbose:
             print(f"Returning {min(bidding_states[0].shape[0],n_samples)}")
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
-        return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp
+        return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp, good_quality
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, binfo_model, ns, ew, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states):
         n_steps = binary.calculate_step_bidding_info(auction)
@@ -782,7 +794,7 @@ class Sample:
         c_shp = p_shp.copy()
 
         if self.verbose:
-            print(f"c_hcp:{c_hcp[0]}")
+            print(f"c_hcp:{c_hcp[0]:0.2f}")
             print(f"c_shp:{c_shp[0]}")
 
         accept_hcp = np.ones(states[0].shape[0]).astype(bool)

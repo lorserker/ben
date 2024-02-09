@@ -21,7 +21,17 @@
         // You can add a message or any other functionality after copying
         alert('Copied to clipboard: ' + text);
         }
-    </script>
+    
+        function validateForm(name) {
+            var textareaValue = document.getElementById(name).value.trim();
+            if (textareaValue === "") {
+                alert("Please enter some input before submitting.");
+                event.preventDefault()
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
+        </script>
 	</head> 
 <body> 
 <div class="center">
@@ -52,7 +62,7 @@
         </select><br>
         <label for="deal">Text:</label>
         <textarea id="deal" name="dealtext" cols="40"></textarea><br>
-        <button type="submit" class="submit-button" data-form="form1">Play from text</button>    
+        <button type="submit" class="submit-button" data-form="form1" onclick="return validateForm('deal')">Play from text</button>    
     </form>
     </div>
     <br>
@@ -60,7 +70,7 @@
     <form id="form2">
         <label for="deal">PBN:</label>
         <textarea id="dealpbn" name="dealpbn" cols="40"  rows="6"></textarea><br>
-        <button type="submit" class="submit-button" data-form="form2">Play from PBN</button>    
+        <button type="submit" class="submit-button" data-form="form2" onclick="return validateForm('dealpbn')">Play from PBN</button>    
     </form>
     </div>
     <br>
@@ -68,7 +78,7 @@
     <form id="form6">
         <label for="deal">BSOL:</label>
         <textarea id="dealbsol" name="dealbsol" cols="40"  rows="3"></textarea><br>
-        <button type="submit" class="submit-button" data-form="form6">Play from BSOL</button>    
+        <button type="submit" class="submit-button" data-form="form6" onclick="return validateForm('dealbsol')">Play from BSOL</button>    
     </form>
     </div>
     <br>
@@ -76,7 +86,7 @@
     <form id="form3">
         <label for="deal">LIN:</label>
         <textarea id="deallin" name="deallin" cols="40" rows="3"></textarea><br>
-        <button type="submit" class="submit-button" data-form="form3">Play from LIN</button>    
+        <button type="submit" class="submit-button" data-form="form3" onclick="return validateForm('deallin')">Play from LIN</button>    
     </form>
     </div>
     <br>
@@ -84,7 +94,7 @@
     <form id="form4">
         <label for="deal">BBA:</label>
         <textarea id="dealbba" name="dealbba" cols="40"></textarea><br>
-        <button type="submit" class="submit-button" data-form="form4">Play from BBA</button>    
+        <button type="submit" class="submit-button" data-form="form4" onclick="return validateForm('dealbba')">Play from BBA</button>    
     </form>
     </div>
     <br>

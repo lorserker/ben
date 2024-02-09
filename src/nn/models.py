@@ -12,7 +12,7 @@ from nn.lead_singledummy import LeadSingleDummy
 
 class Models:
 
-    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, sameforboth, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, include_opening_lead):
+    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, bba_ns, bba_ew, sameforboth, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, include_opening_lead):
         self.bidder_model = bidder_model
         self.binfo_model = binfo_model
         self.lead_suit_model = lead_suit_model
@@ -28,6 +28,8 @@ class Models:
         self.include_system = include_system
         self.ns = ns
         self.ew = ew
+        self.bba_ns = bba_ns
+        self.bba_ew = bba_ew
         self.sameforboth = sameforboth
         self.use_bba = use_bba
         self.lead_included = lead_included
@@ -67,6 +69,12 @@ class Models:
         else:
             ns = -1
             ew = -1
+        if use_bba == True:
+            bba_ns = float(conf['models']['bba_ns'])
+            bba_ew = float(conf['models']['bba_ew'])
+        else:
+            bba_ns = -1
+            bba_ew = -1
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
         return cls(
             bidder_model=Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder'])),
@@ -90,6 +98,8 @@ class Models:
             include_system=include_system,
             ns=ns,
             ew=ew,
+            bba_ns=bba_ns,
+            bba_ew=bba_ew,
             sameforboth=sameforboth,
             use_bba=use_bba,
             lead_included=lead_included,

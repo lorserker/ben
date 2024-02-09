@@ -153,7 +153,7 @@ class TMClient:
 
         if self.models.use_bba:
             from bba.BBA import BBABotBid            
-            bot = BBABotBid(self.models.ns, self.models.ew ,self.player_i,self.hand_str,vuln, self.dealer_i)
+            bot = BBABotBid(self.models.bba_ns, self.models.bba_ew ,self.player_i,self.hand_str,vuln, self.dealer_i)
         else:
             bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.verbose)
 
@@ -297,9 +297,9 @@ class TMClient:
                     # it's dummy's turn and this is the declarer
                     print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
-                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models)
 
-                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
+                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
 
@@ -322,9 +322,9 @@ class TMClient:
 
                 elif player_i == cardplayer_i and player_i != 1:
 
-                    rollout_states, bidding_scores, c_hcp, c_shp = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand.reshape((-1, 32)), [self.vuln_ns, self.vuln_ew], self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models)
 
-                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores)
+                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
 
@@ -797,18 +797,16 @@ if __name__ == "__main__":
     asyncio.set_event_loop(loop)
     try:
         loop.run_until_complete(main())
-    except KeyboardInterrupt:
-        pass
-    finally:
-        loop.close()
-
-    loop = asyncio.new_event_loop()
-    asyncio.set_event_loop(loop)
-    try:
-        loop.run_until_complete(main())
         loop.run_forever()
     except KeyboardInterrupt:
         pass
+    except ValueError as e:
+        print("Error in configuration - typical the models do not match the configuration - include_system ")
+        print(e)
+        sys.exit(0)
+    except Exception as e:
+        print(e)
+        sys.exit(0)
     finally:
         loop.close()
 

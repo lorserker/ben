@@ -321,6 +321,9 @@
             hands.forEach((direction, index) => {
                 const selector = `#${direction}`;
                 const handElement = document.querySelector(selector);
+                if (deal.hands[index].rendered) {
+                    handElement.style.visibility = 'visible';
+                } 
                 // Call the render method with the direction
                 deal.hands[index].render(handElement, direction);
             });
@@ -383,8 +386,8 @@
                 deal.renderAuction(document.querySelector('#auction-container'))
                 deal.turn = (deal.turn + 1) % 4
                 setTurn(deal.turn)
-            } else if (data.message == "get_bid_input") {
                 updateTable(deal)
+            } else if (data.message == "get_bid_input") {
                 deal.auction = data.auction
                 deal.canDouble = data.can_double
                 deal.canRedouble = data.can_redouble
@@ -412,6 +415,7 @@
                 deal.strain = data.strain
                 deal.turn = (data.declarer + 1) % 4
                 setTurn(deal.turn)
+                updateTable(deal)
                 deal.currentTrick = new Trick(deal.turn, [])
 
                 document.querySelector('#bidding').textContent = ''
@@ -519,6 +523,7 @@
 
                 deal.turn = trickWinner
                 setTurn(deal.turn)
+                updateTable(deal)
                 deal.tricks.push(deal.currentTrick)
                 deal.currentTrick = new Trick(trickWinner, [])
 

@@ -97,35 +97,29 @@ class Hand {
 
     render(element, direction) {
         element.textContent = ''
-
+        element.style.visibility = 'visible';
         // Move trump to the left
         let order = [0, 1, 3, 2];
         if (deal.strain == 2) order = [1, 0, 3, 2];
         if (deal.strain == 3) order = [2, 0, 1, 3];
         if (deal.strain == 4) order = [3, 1, 0, 2];
-        if (direction === 'northc' || direction === 'southc') {
-            for (let i of order) {
-                this.suits[i].forEach(c => c.render(element))
+        for (let i of order) {
+            const suitContainer = document.createElement('div');
+            suitContainer.style.display = 'flex'; // Set suit containers to flex display
+
+            element.appendChild(suitContainer);
+
+            // Check if the suit has no cards
+            if (this.suits[i].length === 0) {
+                suitContainer.classList.add('empty-suit'); // Add a class for an empty suit
+            } else {
+                // Render elements for each non-empty suit into their respective containers
+                this.suits[i].forEach(card => {
+                    card.render(suitContainer);
+                });
             }
-        } else {
-            for (let i of order) {
-                const suitContainer = document.createElement('div');
-                suitContainer.style.display = 'flex'; // Set suit containers to flex display
-
-                element.appendChild(suitContainer);
-
-                // Check if the suit has no cards
-                if (this.suits[i].length === 0) {
-                    suitContainer.classList.add('empty-suit'); // Add a class for an empty suit
-                } else {
-                    // Render elements for each non-empty suit into their respective containers
-                    this.suits[i].forEach(card => {
-                        card.render(suitContainer);
-                    });
-                }
-            }
-
         }
+
         this.rendered = true
 
     }

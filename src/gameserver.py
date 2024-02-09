@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 
 # Set logging level to suppress warnings
@@ -144,7 +145,7 @@ async def handler(websocket, path, board_no, seed):
     deal = query_params.get('deal', [None])[0]
     board_no_query = query_params.get('board_no')
     board_number = None
-    if board_no_query is not None and board_no_query[0] != "null":
+    if board_no_query is not None and board_no_query[0] != "null" and board_no_query[0] != "None":
         board_number = int(board_no_query[0]) 
     else:
         if not deal and not board_no[0] > 0:
@@ -186,18 +187,22 @@ async def handler(websocket, path, board_no, seed):
         if not random and len(boards) > 0:
             board_no[0] = (board_no[0] + 1) % len(boards)
 
-    
     except ConnectionClosedOK  as ex:
         print('User left')
-        
-    except Exception as ex:
-        print('Error:', ex)
-        raise ex
+    except ValueError as e:
+        print("Error in configuration - typical the models do not match the configuration - include_system ")
+        print(e)
+        sys.exit(0)
 
 async def main():
     print("Listening on port: ",port)
     start_server = websockets.serve(functools.partial(handler, board_no=board_no, seed=seed), "0.0.0.0", port)
-    await start_server
+    try:
+        await start_server
+    except:
+        print("Error in server.")
+        print(e)
+        sys.exit(0)
 
 if __name__ == "__main__":
     loop = asyncio.new_event_loop()
@@ -207,6 +212,8 @@ if __name__ == "__main__":
         loop.run_forever()
     except KeyboardInterrupt:
         pass
+    except Exception as e:
+        print(e)
+        sys.exit(0)
     finally:
         loop.close()
-

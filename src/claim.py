@@ -14,7 +14,7 @@ class Claimer:
     def claim(self, strain_i, player_i, hands52, n_samples):
         t_start = time.time()
 
-        hands_pbn = ['W:' + ' '.join([deck52.deal_to_str(hand) for hand in hands52])]
+        hands_pbn = ['N:' + ' '.join([deck52.deal_to_str(hand) for hand in hands52])]
 
         if self.verbose:
             print(f"Claiming for player {player_i} {hands_pbn}")
