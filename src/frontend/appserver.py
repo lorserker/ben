@@ -292,6 +292,7 @@ def index():
         dealer = request.forms.get('dealer')
         board_no = request.forms.get('board')
         vulnerable = request.forms.get('vulnerable')
+        dealtext = dealtext.upper()
         url = f'/app/bridge.html?deal=(%27{dealtext}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
     
     dealpbn = request.forms.get('dealpbn')

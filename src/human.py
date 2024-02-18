@@ -49,9 +49,11 @@ class ConfirmSocket:
 class Channel:
 
     async def send(self, message):
-        # From the console we just print the message
-        print(message)
-
+        # Print only the first 100 characters of the message
+        if len(message) > 200:
+            print(message[:197] + "...")
+        else:
+            print(message)
 
 class ChannelSocket:
 
@@ -60,7 +62,10 @@ class ChannelSocket:
         self.verbose = verbose
 
     async def send(self, message):
-        print(message)
+        if len(message) > 200:
+            print(message[:197] + "...")
+        else:
+            print(message)
         await self.socket.send(message)
 
 

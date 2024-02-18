@@ -97,7 +97,7 @@ class DealMeta():
             'level': self.level,
             'strain': self.strain,
             'doubled': self.doubled,
-            'decarer': self.declarer,
+            'declarer': self.declarer,
             'tricks_made': self.tricks_made,
             'leader': self.leader(),
             'declarer_vuln': self.declarer_vuln(),

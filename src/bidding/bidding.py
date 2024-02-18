@@ -120,24 +120,6 @@ def can_bid(bid, auction):
     if is_contract(bid):
         return can_bid_contract(bid, auction)
     return False
-
-def sample_bid(auction, from_bids):
-    from_bids = from_bids / (np.sum(from_bids) + 1e-6)
-    if auction_over(auction):
-        return 'PAD_END'
-    while True:
-        bid_one_hot = np.random.multinomial(1, from_bids[0])
-        bid_id = np.argmax(bid_one_hot)
-        bid = ID2BID[bid_id]
-        if can_bid(bid, auction):
-            return bid
-
-def bid_max_bid(auction, from_bids):
-    bid = ID2BID[np.argmax(from_bids)]
-    if can_bid(bid, auction):
-        return bid
-    else:
-        return sample_bid(auction, from_bids)
         
 def get_contract(auction):
     contract = None

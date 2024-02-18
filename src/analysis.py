@@ -132,7 +132,7 @@ class CardByCard:
                 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, self.vuln, self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, self.vuln, self.models, card_players[player_i].rng)
 
                 card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
                 card_resp.hcp = c_hcp

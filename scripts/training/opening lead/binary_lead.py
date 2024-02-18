@@ -214,9 +214,10 @@ def jack_data_iterator(fin):
 
 if __name__ == '__main__':
 
-    out_dir = './lead_bin_suit'
+    out_dir = './lead_bin'
 
     data_it = jack_data_iterator(itertools.chain(
+        open('../data/Jack/BW5C_N.txt'),
         open('../data/Jack/BW5C_S.txt'))) 
 
     model = BidInfo("../../../models/bw5c_info/bw5c_info-500000")

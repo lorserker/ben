@@ -23,14 +23,14 @@ def get_small_out_i(small_out):
     return result
 
 
-def distr_vec(x):
+def distr_vec(x, rng):
     xpos = np.maximum(x, 0) + 0.1
     pvals = xpos / np.sum(xpos, axis=1, keepdims=True)
 
     p_cumul = np.cumsum(pvals, axis=1)
 
     indexes = np.zeros(pvals.shape[0], dtype=np.int32)
-    rnd = np.random.rand(pvals.shape[0])
+    rnd = rng.random(pvals.shape[0])
 
     for k in range(p_cumul.shape[1]):
         indexes = indexes + (rnd > p_cumul[:, k])
@@ -38,7 +38,7 @@ def distr_vec(x):
     return indexes
 
 
-def distr2_vec(x1, x2):
+def distr2_vec(x1, x2, rng):
     x1pos = np.maximum(x1, 0) + 0.1
     x2pos = np.maximum(x2, 0) + 0.1
 
@@ -48,7 +48,7 @@ def distr2_vec(x1, x2):
     pvals = pvals1 * pvals2
     pvals = pvals / np.sum(pvals, axis=1, keepdims=True)
 
-    return distr_vec(pvals)
+    return distr_vec(pvals,rng)
 
 
 def player_to_nesw_i(player_i, contract):
@@ -104,7 +104,7 @@ class Sample:
     def min_sample_hands_auction(self):
         return self._min_sample_hands_auction
 
-    def sample_cards_vec(self, n_samples, c_hcp, c_shp, my_hand):
+    def sample_cards_vec(self, n_samples, c_hcp, c_shp, my_hand, rng):
         if self.verbose:
             print("sample_cards_vec generating", n_samples)
             t_start = time.time()
@@ -142,8 +142,8 @@ class Sample:
         # all AK's in the same hand
         if (ak_out_i.shape[1] != 0):
             # print(ak_out_i.shape[1])
-            ak_out_i = np.vectorize(np.random.permutation, signature='(n)->(n)')(ak_out_i)
-        small_out_i = np.vectorize(np.random.permutation, signature='(n)->(n)')(small_out_i)
+            ak_out_i = np.vectorize(rng.permutation, signature='(n)->(n)')(ak_out_i)
+        small_out_i = np.vectorize(rng.permutation, signature='(n)->(n)')(small_out_i)
 
         s_all = np.arange(n_samples)
 
@@ -151,7 +151,7 @@ class Sample:
         js = np.zeros(n_samples, dtype=int)
         while np.min(js) < ak_out_i.shape[1]:
             cards = ak_out_i[s_all, js]
-            receivers = distr2_vec(r_shp[s_all, :, cards//8], r_hcp)
+            receivers = distr2_vec(r_shp[s_all, :, cards//8], r_hcp, rng)
 
             can_receive_cards = cards_received[s_all, receivers] < 13
 
@@ -171,7 +171,7 @@ class Sample:
             js_r = js[s_all_r]
 
             cards = small_out_i[s_all_r, js_r]
-            receivers = distr_vec(r_shp[s_all_r, :, cards//8])
+            receivers = distr_vec(r_shp[s_all_r, :, cards//8], rng)
 
             can_receive_cards = cards_received[s_all_r, receivers] < 13
 
@@ -240,7 +240,7 @@ class Sample:
         return c_hcp, c_shp
 
         
-    def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, bidder_model, binfo, ns, ew, sameforboth, n_samples):
+    def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, bidder_model, binfo, ns, ew, sameforboth, n_samples, rng):
         hand = binary.parse_hand_f(32)(hand_str)
         n_steps = binary.calculate_step_bidding_info(auction)
 
@@ -259,15 +259,8 @@ class Sample:
         A_lho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 1) % 4, hand, vuln, ns, ew)
         A_pard = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 2) % 4, hand, vuln, ns, ew)
         A_rho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 3) % 4, hand, vuln, ns, ew)
-
-        # setting a seed here would allow us to have the same samples during the bidding
-        # Using deal as seed
-        hash_integer  = calculate_seed(hand_str)         
-        if self.verbose:
-            print(f"Setting seed (Sampling) from {hand_str}: {hash_integer}")
-        np.random.seed(hash_integer)
             
-        lho_pard_rho = self.sample_cards_vec(n_samples, c_hcp[0], c_shp[0], hand.reshape(32))
+        lho_pard_rho = self.sample_cards_vec(n_samples, c_hcp[0], c_shp[0], hand.reshape(32), rng)
 
         # Consider saving the generated boards, and add the result from previous sampling to this output
         n_samples = lho_pard_rho.shape[0]
@@ -377,7 +370,7 @@ class Sample:
         return accepted_samples, sorted_scores, c_hcp[0], c_shp[0], good_quality
 
     # shuffle the cards between the 2 hidden hands
-    def shuffle_cards_bidding_info(self, n_samples, binfo, auction, hand_str, vuln, known_nesw, h_1_nesw, h_2_nesw, visible_cards, hidden_cards, cards_played, shown_out_suits, ns, ew):
+    def shuffle_cards_bidding_info(self, n_samples, binfo, auction, hand_str, vuln, known_nesw, h_1_nesw, h_2_nesw, visible_cards, hidden_cards, cards_played, shown_out_suits, ns, ew, rng):
         hand = binary.parse_hand_f(32)(hand_str)
         n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2])
         if self.verbose:
@@ -399,13 +392,6 @@ class Sample:
 
         h1_h2 = np.zeros((n_samples, 2, 32), dtype=int)
         cards_received = np.zeros((n_samples, 2), dtype=int)
-
-        # setting a seed here would allow us to have the same samples during the bidding
-        # Using deal as seed
-        hash_integer  = calculate_seed(hand_str)         
-        if self.verbose:
-            print(f"Setting seed (Sampling bidding info) from {hand_str}: {hash_integer}")
-        np.random.seed(hash_integer)
 
         card_hcp = [4, 3, 2, 1, 0, 0, 0, 0] * 4
 
@@ -434,10 +420,10 @@ class Sample:
 
         ak_out_i = np.zeros((n_samples, len(ak_cards)), dtype=int)
         ak_out_i[:, :] = np.array(ak_cards)
-        ak_out_i = np.vectorize(lambda x: np.random.permutation(np.copy(x)), signature='(n)->(n)')(ak_out_i)
+        ak_out_i = np.vectorize(lambda x: rng.permutation(np.copy(x)), signature='(n)->(n)')(ak_out_i)
         small_out_i = np.zeros((n_samples, len(small_cards)), dtype=int)
         small_out_i[:, :] = np.array(small_cards)
-        small_out_i = np.vectorize(lambda x: np.random.permutation(np.copy(x)), signature='(n)->(n)')(small_out_i)
+        small_out_i = np.vectorize(lambda x: rng.permutation(np.copy(x)), signature='(n)->(n)')(small_out_i)
 
         r_hcp = np.zeros((n_samples, 2)) + p_hcp
         r_shp = np.zeros((n_samples, 2, 4)) + p_shp
@@ -454,7 +440,7 @@ class Sample:
 
             js_r = js[s_all_r]
             cards = ak_out_i[s_all_r, js_r]
-            receivers = distr2_vec(r_shp[s_all_r, :, cards//8], r_hcp[s_all_r])
+            receivers = distr2_vec(r_shp[s_all_r, :, cards//8], r_hcp[s_all_r], rng)
 
             can_receive_cards = cards_received[s_all_r, receivers] < n_max_cards[s_all_r, receivers]
 
@@ -472,7 +458,7 @@ class Sample:
 
             js_r = js[s_all_r]
             cards = small_out_i[s_all_r, js_r]
-            receivers = distr_vec(r_shp[s_all_r, :, cards//8])
+            receivers = distr_vec(r_shp[s_all_r, :, cards//8], rng)
 
             can_receive_cards = cards_received[s_all_r, receivers] < n_max_cards[s_all_r, receivers]
 
@@ -557,7 +543,7 @@ class Sample:
 
         return min_scores
 
-    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, vuln, models):
+    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, vuln, models, rng):
         bidder_model = models.bidder_model
         binfo_model = models.binfo_model
         hand = binary.parse_hand_f(32)(hand_str)
@@ -566,6 +552,7 @@ class Sample:
             print(f"Called init_rollout_states {n_samples}")
 
         leader_i = (player_i - len(current_trick)) % 4
+        # Dummy is always 1
         hidden_1_i, hidden_2_i = [(3, 2), (0, 2), (0, 3), (2, 0)][player_i]
 
         # If no n_samples we are using cheat mode, where all cards are known
@@ -609,7 +596,8 @@ class Sample:
                 [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
                 [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
                 models.ns,
-                models.ew
+                models.ew,
+                rng
             )
 
             hidden_hand1, hidden_hand2 = h1_h2[:, 0], h1_h2[:, 1]
@@ -744,13 +732,13 @@ class Sample:
 
         good_quality = None
         # With only few cards left we will not filter the samples according to the bidding.
-        if trick_i <= 9:
+        if trick_i <= 11:
             # trusting the bidding after sampling cards
             # This could probably be set based on number of deals matching or sorted
             if valid_bidding_samples >= self.sample_hands_play: 
                 bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
                 # Randomize the samples, as we have to many
-                random_indices = np.random.permutation(bidding_states[0].shape[0])
+                random_indices = rng.permutation(bidding_states[0].shape[0])
                 bidding_states = [state[random_indices] for state in bidding_states]
                 sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
                 good_quality = True
@@ -820,20 +808,22 @@ class Sample:
 
     def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states):
         # Only make the test if opening leader (0) is hidden
-        # and if we have less than 2 times minimum number of samples needed we ignore this test
-        # there could be an idea in doing this always for partner as we can trust his lead
+        # The primary idea is to filter away hands, that lead the Q as it denies the K
         if (hidden_1_i == 0 or hidden_2_i == 0) and states[0].shape[0] > self.min_sample_hands_play * 2:
+            if (hidden_2_i == 3):
+                # We are RHO and trust partners lead
+                lead_accept_threshold = self.lead_accept_threshold + 0.1
+            else: 
+                # How much trust that opponents would have lead the actual card from the hand sampled
+                lead_accept_threshold = self.lead_accept_threshold
+                if states[0].shape[0] <= self.min_sample_hands_play * 2:
+                    return states        
             opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
             lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :32], opening_lead, models.ns, models.ew)
-
-            # How much trust that opponents would have lead the actual card from the hand sampled
-            # Perhaps we should increase the value if it was partners lead?
-            lead_accept_threshold = self.lead_accept_threshold
             while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
                 lead_accept_threshold *= 0.5
 
             # If we did not find 2 samples we ignore the test for opening lead
-            # Should probably test for number of samples before the test
             if np.sum(lead_scores >= lead_accept_threshold) > 1:
                 states = [state[lead_scores > lead_accept_threshold] for state in states]
                 

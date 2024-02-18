@@ -4,6 +4,8 @@ import argparse
 import logging
 import os
 import conf
+import scoring
+from ddsolver.ddsolver import DDSolver
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -15,6 +17,22 @@ import numpy as np
 from sample import Sample
 from bots import BotBid
 from bidding import bidding
+
+DD = DDSolver(dds_mode=1)
+
+def get_dd_score(hands, contract, is_vulnerable):
+    if contract is None:
+        return 0
+
+    strain_i = 'NSHDC'.index(contract[1])
+    decl_i = 'NESW'.index(contract[-1])
+    hands_pbn = 'N:' + ' '.join(hands)
+    sol = DD.solve(strain_i, (decl_i + 1) % 4, [], [hands_pbn],3)
+    dd_tricks = 13 - max(vals[0] for vals in sol.values())
+    dd_score = scoring.score(contract, is_vulnerable, n_tricks=dd_tricks)
+    dd_score = dd_score if decl_i % 2 == 0 else -dd_score
+
+    return dd_score
 
 
 def get_models(bidder_model_path):
@@ -69,6 +87,9 @@ def main():
         lines = [line.strip().replace("*",'') for line in lines if not line.strip().startswith('#')]        
         n = len(lines) // 2
         matching = 0
+        better = 0
+        worse = 0
+        same = 0
         print(f"Loaded {n} deals")
         for i in range(10000):
             print("Board: ",i+1)
@@ -88,7 +109,7 @@ def main():
                 auction = ['PAD_START'] * dealer_i
 
             turn_i = dealer_i
-
+            
             while not bidding.auction_over(auction):
                 candidates, passout = bidder_bots[turn_i].get_bid_candidates(auction)
                 if len(candidates) > 0:
@@ -98,18 +119,38 @@ def main():
                 else:
                     auction.append("??")
                     break
-
-            auction_str = " ".join(auction).replace("PASS", "P").replace('PAD_START ', '')
-            trained_bidding = " ".join(parts[2:])
+            auction_str = " ".join(auction).replace('PAD_START ', '')
+            trained_bidding = " ".join(parts[2:]).replace('P',"PASS")
             if (trained_bidding != auction_str):
+                #trained_auction = [bidding.BID2ID[bid] for bid in trained_bidding.split(' ')]
+                trained_auction = [bid for bid in trained_bidding.split(' ')]
+                trained_auction = ['PAD_START'] * dealer_i + trained_auction
+                print(trained_auction)
+                contract = bidding.get_contract(trained_auction)
+                vuln = False
+                #print("Contract:",contract)
+                dd_score_before= get_dd_score(hands, contract, vuln)
                 print(" ".join(parts[:2]), " ".join(hands))
-                print(" ".join(parts[2:]))
-                print(auction_str)
+                contract = bidding.get_contract(auction)
+                vuln = False
+                dd_score_now = get_dd_score(hands, contract, vuln)
+                print(" ".join(parts[2:]), dd_score_before)
+                print(auction_str.replace('PASS','P'), dd_score_now)
+                if dd_score_before == dd_score_now:
+                    same += 1
+                else:
+                    if dd_score_now > dd_score_before:
+                        better += 1
+                    else:
+                        worse += 1
             else: 
-                print(" ".join(hands))
-                print(auction_str)
+                #print(" ".join(hands))
+                #print(auction_str)
                 matching += 1
         print(matching," boards matched")
+        print(better," boards better")
+        print(worse," boards worse")
+        print(same," boards same score")
                 
 
 if __name__ == '__main__':

@@ -23,9 +23,17 @@ def rotate_deal(file_path):
 def rotate_hand(extracted_text):
     processed_text = []
     lines = extracted_text.split('\n')
+    prefix_mapping = {"N:": "E:", "E:": "S:", "S:": "W:", "W:": "N:"}
+    processed_text = []
+
     for line in lines:
-        if line.startswith("[Deal \"N:"):
-            processed_text.append(line.replace("N:","S:"))
+        if line.startswith("[Deal"):
+            prefix = line[7:10]  # Extract the prefix
+            replacement = prefix_mapping.get(prefix, None)
+            if replacement:
+                processed_text.append(line.replace(prefix, replacement, 1))
+            else:
+                processed_text.append(line)
         else:
             processed_text.append(line)
     return '\n'.join(processed_text)

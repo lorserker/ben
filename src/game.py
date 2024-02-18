@@ -161,8 +161,6 @@ class Driver:
                 auction = ['PAD_START'] * 2 + auction
 
         self.contract = bidding.get_contract(auction)
-        print(auction)
-        print(self.contract)
         if self.contract is None:
             await self.channel.send(json.dumps({
                 'message': 'deal_end',
@@ -336,7 +334,7 @@ class Driver:
                     continue
 
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
                     assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
 
                 else: 
@@ -370,8 +368,9 @@ class Driver:
                             n_samples=50
                         )
                         if (tricks_claimed <= self.canclaim):
-                            print(f"Claimed {tricks_claimed} can claim {self.canclaim}")
-                            self.claimedbydeclarer = (player_i == decl_i) or (decl_i == (player_i + 2) % 4)
+                            # player_i is relative to declarer
+                            print(f"Claimed {tricks_claimed} can claim {self.canclaim} {player_i} {decl_i}")
+                            self.claimedbydeclarer = (player_i == 3) or (player_i == 1)
                             self.claimed = tricks_claimed
 
                             # Trick winners until claim is saved
@@ -554,12 +553,6 @@ class Driver:
 
     
     async def opening_lead(self, auction):
-
-        hash_integer = calculate_seed(self.deal_str)
-        # Now you can use hash_integer as a seed
-        if self.verbose:
-            print("Setting seed (Opening lead)=",hash_integer)
-        np.random.seed(hash_integer)
 
         contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)

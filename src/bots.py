@@ -11,7 +11,7 @@ from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 from bidding import bidding
 from binary import parse_hand_f
 
-from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit
+from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed
 
 
 class BotBid:
@@ -43,6 +43,10 @@ class BotBid:
         self.eval_after_bid_count = models.eval_after_bid_count
         self.sample_hands_for_review = models.sample_hands_for_review
         self.use_biddingquality = models.use_biddingquality
+        hash_integer  = calculate_seed(hand_str)         
+        if self.verbose:
+            print(f"Setting seed (Sampling bidding info) from {hand_str}: {hash_integer}")
+        self.rng = np.random.default_rng(hash_integer)
 
     @staticmethod
     def get_bid_number_for_player_to_bid(auction):
@@ -208,7 +212,7 @@ class BotBid:
             return False
         
         # Do try to simulate if first to bid
-        if not auction:
+        if bidding.get_contract(auction) == None:
             return False
 
         return True
@@ -313,14 +317,14 @@ class BotBid:
         if len(auction_so_far) > 24:
             sample_boards_for_auction *= 4
         accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(
-            auction_so_far, turn_to_bid, self.hand_str, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, self.sameforboth,sample_boards_for_auction)
+            auction_so_far, turn_to_bid, self.hand_str, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, self.sameforboth,sample_boards_for_auction, self.rng)
         
         #assert good_quality, "We did not find samples for the bidding of decent quality"
 
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
         if accepted_samples.shape[0] > self.sample.sample_hands_auction:
-            random_indices = np.random.permutation(accepted_samples.shape[0])
+            random_indices = self.rng.permutation(accepted_samples.shape[0])
             accepted_samples = accepted_samples[random_indices[:self.sample.sample_hands_auction], :, :]
             sorted_scores = sorted_scores[random_indices[:self.sample.sample_hands_auction]]
 
@@ -574,6 +578,10 @@ class BotLead:
         self.min_opening_leads = models.min_opening_leads
         self.sample_hands_for_review = models.sample_hands_for_review
         self.use_biddingquality_in_eval = models.use_biddingquality_in_eval
+        hash_integer  = calculate_seed(hand_str)         
+        if self.verbose:
+            print(f"Setting seed (Sampling bidding info) from {hand_str}: {hash_integer}")
+        self.rng = np.random.default_rng(hash_integer)
 
     def find_opening_lead(self, auction):
         lead_card_indexes, lead_softmax = self.get_opening_lead_candidates(auction)
@@ -615,7 +623,7 @@ class BotLead:
             # it's a pip ~> choose a random one
             pips_mask = np.array([0,0,0,0,0,0,0,1,1,1,1,1,1])
             lefty_led_pips = self.hand52.reshape((4, 13))[opening_lead // 8] * pips_mask
-            opening_lead52 = (opening_lead // 8) * 13 + np.random.choice(np.nonzero(lefty_led_pips)[0])
+            opening_lead52 = (opening_lead // 8) * 13 + self.rng.choice(np.nonzero(lefty_led_pips)[0])
         else:
             opening_lead52 = deck52.card32to52(opening_lead)
 
@@ -676,7 +684,7 @@ class BotLead:
 
         if self.verbose:
             print(f'Now generating {self.sample.sample_boards_for_auction_opening_lead} deals to find opening lead')
-        accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, False, self.sample.sample_boards_for_auction_opening_lead)
+        accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, False, self.sample.sample_boards_for_auction_opening_lead, self.rng)
 
         if self.verbose:
             print("Generated samples:", accepted_samples.shape[0], " OK Quality", good_quality)
@@ -685,7 +693,7 @@ class BotLead:
         # We have more samples, then we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
         if accepted_samples.shape[0] > self.sample.sample_hands_opening_lead:
-            random_indices = np.random.permutation(accepted_samples.shape[0])
+            random_indices = self.rng.permutation(accepted_samples.shape[0])
             accepted_samples = accepted_samples[random_indices[:self.sample.sample_hands_opening_lead], :, :]
             sorted_scores = sorted_scores[random_indices[:self.sample.sample_hands_opening_lead]]
 
@@ -717,7 +725,7 @@ class BotLead:
                 # it's a pip ~> choose a random one
                 pips_mask = np.array([0,0,0,0,0,0,0,1,1,1,1,1,1])
                 lefty_led_pips = self.hand52.reshape((4, 13))[lead_card_i // 8] * pips_mask
-                opening_lead52 = (lead_card_i // 8) * 13 + np.random.choice(np.nonzero(lefty_led_pips)[0])
+                opening_lead52 = (lead_card_i // 8) * 13 + self.rng.choice(np.nonzero(lefty_led_pips)[0])
             else:
                 opening_lead52 = deck52.card32to52(lead_card_i)
             # Create PBN for hand
@@ -817,6 +825,10 @@ class CardPlayer:
         self.use_biddingquality_in_eval = models.use_biddingquality_in_eval
         from ddsolver import ddsolver
         self.dd = ddsolver.DDSolver()
+        hash_integer  = calculate_seed(hand_str)         
+        if self.verbose:
+            print(f"Setting seed (Sampling bidding info) from {hand_str}: {hash_integer}")
+        self.rng = np.random.default_rng(hash_integer)
 
     def init_x_play(self, public_hand, level, strain_i):
         self.x_play = np.zeros((1, 13, 298))
@@ -876,7 +888,7 @@ class CardPlayer:
         for i in range(n_samples):
             hands = [None, None, None, None]
             for j in range(4):
-                np.random.shuffle(pips[j])
+                self.rng.shuffle(pips[j])
             pip_i = [0, 0, 0, 0]
 
             hands[self.player_i] = deck52.deal_to_str(self.hand52)
@@ -1011,19 +1023,20 @@ class CardPlayer:
         if valid_bidding_samples >= 0:
             candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1), round(c.insta_score, 2)), reverse=True)
         else:
-            #if self.use_biddingquality_in_eval:
-            #    candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.insta_score, 2), round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1)), reverse=True)
-            #    #candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
-            #else:
-            candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
+            if self.use_biddingquality_in_eval:
+                candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.insta_score, 2), round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1)), reverse=True)
+                #candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
+            else:
+                candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
         samples = []
 
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
-            samples.append('%s %s %s %s' % (
+            samples.append('%s %s %s %s %.5f' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),
                 hand_to_str(players_states[1][i,0,:32].astype(int)),
                 hand_to_str(players_states[2][i,0,:32].astype(int)),
                 hand_to_str(players_states[3][i,0,:32].astype(int)),
+                bidding_scores[i]
             ))
 
         card_resp = CardResp(

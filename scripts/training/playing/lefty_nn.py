@@ -16,15 +16,15 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from batcher import Batcher
 
-model_path = './lefty_model/lefty_suit'
+model_path = './lefty_model/lefty'
 saved_model_dir = './lefty_saved_model' 
 
 batch_size = 64
 display_step = 1000
 epochs = 25
 
-X_train = np.load('./lefty_bin_suit/X.npy')
-Y_train = np.load('./lefty_bin_suit/Y.npy')
+X_train = np.load('./lefty_bin/X.npy')
+Y_train = np.load('./lefty_bin/Y.npy')
 
 n_examples = Y_train.shape[0]
 n_ftrs = X_train.shape[2]

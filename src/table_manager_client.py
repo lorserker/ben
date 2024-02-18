@@ -188,11 +188,6 @@ class TMClient:
         return auction
 
     async def opening_lead(self, auction):
-        hash_integer = calculate_seed(self.hand_str)
-        # Now you can use hash_integer as a seed
-        if self.verbose:
-            print("Setting seed (Opening lead)=",hash_integer)
-        np.random.seed(hash_integer)
 
         contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)
@@ -297,7 +292,7 @@ class TMClient:
                     # it's dummy's turn and this is the declarer
                     print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
                     card_resp.hcp = c_hcp
@@ -322,7 +317,7 @@ class TMClient:
 
                 elif player_i == cardplayer_i and player_i != 1:
 
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
 
                     card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
                     card_resp.hcp = c_hcp

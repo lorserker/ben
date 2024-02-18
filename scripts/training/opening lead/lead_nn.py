@@ -15,7 +15,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from batcher import Batcher
 
-model_path = './model/lead_suit'
+model_path = './model/lead'
 
 seed = 1337
 
@@ -23,9 +23,9 @@ batch_size = 64
 display_step = 1000
 epochs = 50
 
-X_train = np.load('./lead_bin_suit/X.npy')
-B_train = np.load('./lead_bin_suit/B.npy')
-y_train = np.load('./lead_bin_suit/y.npy')
+X_train = np.load('./lead_bin/X.npy')
+B_train = np.load('./lead_bin/B.npy')
+y_train = np.load('./lead_bin/y.npy')
 
 n_examples = X_train.shape[0]
 n_ftrs = X_train.shape[1]

@@ -162,18 +162,25 @@
 
 <script>
 
-  // Retrieve the input field element
-  const inputField = document.getElementById('name');
+    // Retrieve the input field element
+    const inputField = document.getElementById('name');
 
-  // Check if there's a value in localStorage, if so, set the input field value to that
-  if (localStorage.getItem('inputValue')) {
-    inputField.value = localStorage.getItem('inputValue');
-  }
+    // Check if there's a value in localStorage, if so, set the input field value to that
+    if (localStorage.getItem('inputValue')) {
+        inputField.value = localStorage.getItem('inputValue');
+    }
 
-  // Add an event listener to store the input field value in localStorage when it changes
-  inputField.addEventListener('input', function() {
-    localStorage.setItem('inputValue', inputField.value);
-  });
+    // Add an event listener to store the input field value in localStorage when it changes
+    inputField.addEventListener('input', function() {
+        localStorage.setItem('inputValue', inputField.value);
+    });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        var dealTextarea = document.getElementById("deal");
+        dealTextarea.addEventListener("input", function() {
+            this.value = this.value.toUpperCase();
+        });
+    });
 
     // Retrieve the dropdown element
     const dropdown = document.getElementById('T');
