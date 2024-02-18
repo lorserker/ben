@@ -41,7 +41,7 @@ def get_execution_path():
     return os.getcwd()
 
 random = True
-#For some strange reason parameters parsed to the handler must be an array
+# For some strange reason parameters parsed to the handler must be an array
 board_no = []
 seed = None
 board_no.append(0) 
@@ -86,6 +86,22 @@ host = args.host
 print(f'http://{host}:{port}/home')
 
 app = Bottle()
+
+# CORS middleware
+class CorsPlugin(object):
+    name = 'cors'
+    api = 2
+
+    def apply(self, callback, route):
+        def wrapper(*args, **kwargs):
+            response.headers['Access-Control-Allow-Origin'] = '*'  # Replace * with your allowed domain if needed
+            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
+            response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
+            if request.method != 'OPTIONS':
+                return callback(*args, **kwargs)
+        return wrapper
+
+app.install(CorsPlugin())
 
 @app.route('/')
 def default():
