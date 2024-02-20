@@ -27,8 +27,8 @@ def rotate_hand(extracted_text):
     processed_text = []
 
     for line in lines:
-        if line.startswith("[Deal"):
-            prefix = line[7:10]  # Extract the prefix
+        if line.startswith("[Deal "):
+            prefix = line[7:9]  # Extract the prefix
             replacement = prefix_mapping.get(prefix, None)
             if replacement:
                 processed_text.append(line.replace(prefix, replacement, 1))
