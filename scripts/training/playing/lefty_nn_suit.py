@@ -20,8 +20,8 @@ model_path = './lefty_model/lefty_suit'
 saved_model_dir = './lefty_saved_model' 
 
 batch_size = 64
-display_step = 1000
-epochs = 100
+display_step = 10000
+epochs = 50
 
 X_train = np.load('./lefty_bin_suit/X.npy')
 Y_train = np.load('./lefty_bin_suit/Y.npy')

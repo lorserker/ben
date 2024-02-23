@@ -17,14 +17,10 @@ model_path = output_model
 batch_size = 64
 start_iteration = int(checkpoint_model.split('-')[-1])
 n_iterations = 1000000
-display_step = 1000
+display_step = 10000
 
 bin_dir = sys.argv[1]
 
-# Test setting
-
-batch_size = 128
-display_step = 2000
 epochs = 10
 learning_rate = 0.002
 

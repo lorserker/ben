@@ -1,0 +1,1 @@
+This model is trained by Thorvald Aagaard using 10 mill deals Richard Pavlicek has analysed using Double Dummy Solver

@@ -20,7 +20,7 @@ from batcher import Batcher
 model_path = './model/decl.h5'
 
 batch_size = 64
-display_step = 1000
+display_step = 10000
 epochs = 5
 
 X_train = np.load('./decl_bin/X.npy')

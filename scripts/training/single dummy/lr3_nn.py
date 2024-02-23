@@ -27,7 +27,7 @@ seed = 1337
 
 batch_size = 64
 display_step = 10000
-epochs = 10
+epochs = 50
 
 X_train = np.load(os.path.join(bin_dir, 'X.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))

@@ -169,7 +169,7 @@ if __name__ == '__main__':
     out_dir = './righty_bin_nt'
 
     data_it = play_data_iterator(itertools.chain(
-        open('../data/play.txt'))) 
+        open('../data/WBC/play.txt'))) 
 
     data_it, data_it_nt, data_it_suit = itertools.tee(data_it,3)  # Create a copy of the iterator
     n1 = 0

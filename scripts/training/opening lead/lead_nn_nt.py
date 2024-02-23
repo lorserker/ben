@@ -15,12 +15,12 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 from batcher import Batcher
 
-model_path = './model/lead_suit'
+model_path = './model/lead_nt'
 
 seed = 1337
 
 batch_size = 64
-display_step = 1000
+display_step = 10000
 epochs = 50
 
 X_train = np.load('./lead_bin_nt/X.npy')
@@ -88,8 +88,8 @@ with tf.Session() as sess:
             x_cost, b_cost, y_cost = cost_batch.next_batch([X_train, B_train, y_train])
             c_train = sess.run(cost, feed_dict={X: x_cost, B: b_cost, y: y_cost, keep_prob: 1.0})
             l_train = sess.run(lead_softmax, feed_dict={X: x_cost, B: b_cost, y: y_cost, keep_prob: 1.0})
-            print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train))
-            print(np.mean(np.argmax(l_train, axis=1) == np.argmax(y_cost, axis=1)))
+            mean = np.mean(np.argmax(l_train, axis=1) == np.argmax(y_cost, axis=1))
+            print('{} {}. c_train={} mean={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train, mean))
                 
             sys.stdout.flush()
 

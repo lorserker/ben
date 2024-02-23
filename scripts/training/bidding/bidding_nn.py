@@ -21,7 +21,7 @@ bin_dir = sys.argv[1]
 
 batch_size = 64
 display_step = 10000
-epochs = 100
+epochs = 50
 learning_rate = 0.001
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))

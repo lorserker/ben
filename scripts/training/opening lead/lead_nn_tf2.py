@@ -14,7 +14,7 @@ B_train = np.load('./lead_bin/B.npy')
 y_train = np.load('./lead_bin/y.npy')
 
 batch_size = 64
-display_step = 1000
+display_step = 10000
 epochs = 1
 
 n_examples = X_train.shape[0]

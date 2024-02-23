@@ -21,7 +21,7 @@ model_path = './model/single_dummy.h5'
 seed = 1337
 
 batch_size = 64
-display_step = 1000
+display_step = 10000
 epochs = 1
 
 X_train = np.load('./lr3_bin/X.npy')

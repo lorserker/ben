@@ -18,7 +18,7 @@ bin_dir = sys.argv[1]
 model_path = 'model/bidding.h5'
 
 batch_size = 1
-display_step = 1000
+display_step = 10000
 epochs = 1
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))

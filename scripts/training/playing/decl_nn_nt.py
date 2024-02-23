@@ -19,8 +19,8 @@ from batcher import Batcher
 model_path = './decl_model/decl_nt'
 saved_model_dir = './decl_saved_model' 
 batch_size = 64
-display_step = 1000
-epochs = 100
+display_step = 10000
+epochs = 50
 
 X_train = np.load('./decl_bin_nt/X.npy')
 Y_train = np.load('./decl_bin_nt/Y.npy')

@@ -1,0 +1,1 @@
+This model is trained by Lorand using deals from Jack

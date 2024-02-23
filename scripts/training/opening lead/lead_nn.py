@@ -20,7 +20,7 @@ model_path = './model/lead'
 seed = 1337
 
 batch_size = 64
-display_step = 1000
+display_step = 10000
 epochs = 50
 
 X_train = np.load('./lead_bin/X.npy')

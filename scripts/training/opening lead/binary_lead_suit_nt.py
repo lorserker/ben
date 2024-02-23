@@ -214,12 +214,12 @@ def play_data_iterator(fin):
 
 if __name__ == '__main__':
     n_steps = 8
-    model = BidInfo("../../../models/bw5c_info/bw5c_info-500000")
+    model = BidInfo("../data/WBC/binfo-550000")
 
     out_dir = './lead_bin_nt'
 
     data_it = play_data_iterator(itertools.chain(
-        open('../data/play.txt'))) 
+        open('../data/WBC/play.txt'))) 
 
     data_it, data_it_nt, data_it_suit = itertools.tee(data_it,3)  # Create a copy of the iterator
     n1 = 0

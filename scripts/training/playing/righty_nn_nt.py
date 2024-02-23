@@ -19,8 +19,8 @@ from batcher import Batcher
 model_path = './righty_model/righty_nt'
 saved_model_dir = './righty_saved_model' 
 batch_size = 64
-display_step = 1000
-epochs = 5
+display_step = 10000
+epochs = 50
 
 X_train = np.load('./righty_bin_nt/X.npy')
 Y_train = np.load('./righty_bin_nt/Y.npy')

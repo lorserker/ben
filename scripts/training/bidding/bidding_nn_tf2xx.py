@@ -19,7 +19,7 @@ model_path = './model/bidding.h5'
 
 # Batch size is 1 so we can reset state between each sequence
 batch_size = 32
-display_step = 1000
+display_step = 10000
 epochs = 1
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))

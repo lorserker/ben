@@ -6,7 +6,7 @@ import numpy as np
 
 from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup
 
-from scripts.training.playing.binary_righty_suit_nt import binary_hand, get_card_index, encode_card, get_play_labels, play_data_iterator
+from binary_righty_suit_nt import binary_hand, get_card_index, encode_card, get_play_labels, play_data_iterator
 
 def binary_data_dummy(deal_str, outcome_str, play_str):
     x = np.zeros((1, 11, 298), np.float16)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     out_dir = './dummy_bin_nt'
 
     data_it = play_data_iterator(itertools.chain(
-        open('../data/play.txt'))) 
+        open('../data/WBC/play.txt'))) 
 
     data_it, data_it_nt, data_it_suit = itertools.tee(data_it,3)  # Create a copy of the iterator
     n1 = 0

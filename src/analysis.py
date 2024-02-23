@@ -13,10 +13,7 @@ class CardByCard:
         self.vuln = vuln
         self.hands = hands
         self.auction = auction
-        if models.sameforboth:
-            self.padded_auction = ['PAD_START'] * (self.dealer_i % 2)+ self.auction
-        else:
-            self.padded_auction = ['PAD_START'] * self.dealer_i + self.auction
+        self.padded_auction = ['PAD_START'] * self.dealer_i + self.auction
         self.play = play
         self.bid_responses = []
         self.card_responses = []
@@ -28,8 +25,9 @@ class CardByCard:
     def analyze(self):
         print('analyzing the bidding')
         self.analyze_bidding()
-        print('analyzing the play')
+        print('analyzing opening lead')
         self.analyze_opening_lead()
+        print('analyzing play')
         self.analyze_play()
 
     def analyze_bidding(self):
@@ -78,16 +76,17 @@ class CardByCard:
 
         print(self.play[0])
 
-        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, False)
+        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, (decl_i + 1) % 4, False)
 
         card_resp = bot_lead.find_opening_lead(self.padded_auction)
         card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, card_resp.hcp, card_resp.shape, card_resp.quality)
         self.card_responses.append(card_resp)
         self.cards[card_resp.card.symbol()] = card_resp
+        type(self).card_eval(self.play[0], card_resp)
 
     def analyze_play(self):
-        contract = bidding.get_contract(self.padded_auction)
         
+        contract = bidding.get_contract(self.padded_auction)
         level = int(contract[0])
         strain_i = bidding.get_strain_i(contract)
         decl_i = bidding.get_decl_i(contract)
@@ -99,10 +98,10 @@ class CardByCard:
         decl_hand = self.hands[decl_i]
 
         card_players = [
-            bots.CardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln),
-            bots.CardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln),
-            bots.CardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln),
-            bots.CardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
+            bots.CardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler),
+            bots.CardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler),
+            bots.CardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler),
+            bots.CardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler)
         ]
 
         player_cards_played = [[] for _ in range(4)]
