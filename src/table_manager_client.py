@@ -283,18 +283,19 @@ class TMClient:
                 if trick_i == 0 and player_i == 0:
                     #print('skipping')
                     for i, card_player in enumerate(card_players):
+                        card_player.set_real_card_played(opening_lead52, player_i)
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
 
                     continue
 
                 card52 = None
-                if player_i == 1 and cardplayer_i == 3:
-                    # it's dummy's turn and this is the declarer
+                # it's dummy's turn and this is the declarer
+                if (player_i == 1 and cardplayer_i == 3):
                     print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
-
-                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
+                if (player_i == cardplayer_i and player_i != 1) or (player_i == 1 and cardplayer_i == 3):
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
+                    card_resp = await card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
 
@@ -311,35 +312,11 @@ class TMClient:
 
                     card52 = card_resp.card.code()
                     
-                    await self.send_card_played_for_dummy(card_resp.card.symbol()) 
-
-                    await asyncio.sleep(0.01)
-
-                elif player_i == cardplayer_i and player_i != 1:
-
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
-
-                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
-                    card_resp.hcp = c_hcp
-                    card_resp.shape = c_shp
-
-                    self.card_responses.append(card_resp)
-
-                    if (self.verbose):
-                        for idx, candidate in enumerate(card_resp.candidates, start=1):
-                            if candidate.expected_tricks_sd:
-                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_sd)).ljust(5)} Tricks (SD) {candidate.expected_tricks_sd:.2f} #Insta_score {candidate.insta_score:.4f}")
-                            if candidate.expected_tricks_dd:
-                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_dd)).ljust(5)} Tricks (DD) {candidate.expected_tricks_dd:.2f} #Insta_score {candidate.insta_score:.4f}")
-                        for idx, sample in enumerate(card_resp.samples, start=1):                  
-                            print(f"{sample}")
-
-                    card52 = card_resp.card.code()
-
-                    await asyncio.sleep(0.01)
-                    
-                    await self.send_card_played(card_resp.card.symbol()) 
-
+                    if (player_i == 1 and cardplayer_i == 3):
+                        await self.send_card_played_for_dummy(card_resp.card.symbol()) 
+                    else:
+                        await self.send_card_played(card_resp.card.symbol()) 
+                        
                     await asyncio.sleep(0.01)
 
                 else:
@@ -350,6 +327,7 @@ class TMClient:
                 card = deck52.card52to32(card52)
                 
                 for card_player in card_players:
+                    card_player.set_real_card_played(card52, player_i)
                     card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=player_i, card=card)
 
                 current_trick.append(card)
@@ -366,6 +344,7 @@ class TMClient:
                 # update shown out state
                 if card // 8 != current_trick[0] // 8:  # card is different suit than lead card
                     shown_out_suits[player_i].add(current_trick[0] // 8)
+                        
 
             # sanity checks after trick completed
             assert len(current_trick) == 4
@@ -380,6 +359,11 @@ class TMClient:
 
             tricks.append(current_trick)
             tricks52.append(current_trick52)
+
+            if self.models.use_pimc:
+                # Only declarer and dummy used PIMC
+                card_players[1].pimc.reset_trick()
+                card_players[3].pimc.reset_trick()
 
             # initializing for the next trick
             # initialize hands
@@ -424,6 +408,11 @@ class TMClient:
             else:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
+                if self.models.use_pimc:
+                    # Only declarer and dummy used PIMC
+                    card_players[1].pimc.update_trick_needed()
+                    card_players[3].pimc.update_trick_needed()
+
 
             print('{} trick52 {} cards={}. won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
 
@@ -650,8 +639,15 @@ class TMClient:
     
     @staticmethod
     def parse_hand(s):
-        return s[s.index(':') + 1 : s.rindex('.')] \
-            .replace(' ', '').replace('-', '').replace('S', '').replace('H', '').replace('D', '').replace('C', '')
+        # Translate hand from Tablemanager format to PBN
+        try:
+            hand = s[s.index(':') + 1 : s.rindex('.')] \
+                .replace(' ', '').replace('-', '').replace('S', '').replace('H', '').replace('D', '').replace('C', '')
+            return hand
+        except Exception as ex:
+            print(ex)
+            print(f"Protocol error. Received {hand} - Expected a hand")
+
 
     async def send_message(self, message: str):
         time.sleep(0.1)

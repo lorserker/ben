@@ -108,6 +108,8 @@ except KeyError:
 
 models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
 
+# Override any configuration of claim, as it is included in the UI
+models.claim = True
 print('models loaded')
 
 

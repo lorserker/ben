@@ -5,7 +5,7 @@ monkey.patch_all()
 # Patching to suppress the warning about invalid HTTP versions
 monkey.patch_all(warn_on_full_argv=False, warn_on_stopping=False)
 
-from bottle import Bottle, run, static_file, redirect, template, request, response
+from bottle import Bottle, run, static_file, redirect, template, request, response, HTTPError
 import bottle
 bottle.BaseRequest.MEMFILE_MAX = 5 * 1024 * 1024 
 
@@ -72,6 +72,10 @@ board[C_NORTH, C_BOTH] = 13
 board[C_EAST, C_NONE] = 14
 board[C_SOUTH, C_NS] = 15
 board[C_WEST, C_WE] = 16
+
+def is_valid_deal_id(deal_id):
+    # Check if the deal_id is a valid hexadecimal string
+    return bool(re.match('^[0-9a-fA-F]{32}$', deal_id))
 
 def hand_as_string(hand):
     s = ""
@@ -418,6 +422,7 @@ def frontend():
 
 @app.route('/api/deals/<deal_id>')
 def deal_data(deal_id):
+    print("Getting:", deal_id)
     try:
         db = shelve.open(DB_NAME)
         deal = db[deal_id]
@@ -425,25 +430,25 @@ def deal_data(deal_id):
 
         return json.dumps(deal)
     except KeyError:
-        # Handle the case when the specified deal_id does not exist
-        response.status = 404  # HTTP status code: 400 Bad Request
-        response.headers['Content-Type'] = 'application/json'  # Set response content type
-        error_message = {"error": f"Deal with ID {deal_id} not found"}
-        return json.dumps(error_message), 404  # Return a 404 Not Found status
+        print("Deal not found")
+        raise HTTPError(404, "Deal not found")
 
 @app.route('/api/delete/deal/<deal_id>')
 def delete_deal(deal_id):
+    print("Deleting:", deal_id)
+    if not is_valid_deal_id(deal_id):
+        print("Invalid deal ID")
+        raise HTTPError(400, "Invalid deal ID")
     try:
         db = shelve.open(DB_NAME)
         db.pop(deal_id)
         db.close()
+        print("Returning to home")
+
         redirect('/home')
     except KeyError:
-        # Handle the case when the specified deal_id does not exist
-        response.status = 404  # HTTP status code: 400 Bad Request
-        response.headers['Content-Type'] = 'application/json'  # Set response content type
-        error_message = {"error": f"Deal with ID {deal_id} not found"}
-        return json.dumps(error_message), 404  # Return a 404 Not Found status
+        print("Deal not found")
+        raise HTTPError(404, "Deal not found")
 
 @app.route('/api/save/deal', method='POST')
 def save_deal():
@@ -456,9 +461,8 @@ def save_deal():
         response.headers['Content-Type'] = 'application/json'  # Set response content type
         return json.dumps({'message': 'Deal saved successfully'})
     else:
-        response.status = 400  # HTTP status code: 400 Bad Request
-        response.headers['Content-Type'] = 'application/json'  # Set response content type
-        return json.dumps({'error': 'Invalid data received'})
+        print("Invalid data received")
+        raise HTTPError(400, "Invalid data received")
     
 host = args.host
 print(f'http://{host}:{port}/home')

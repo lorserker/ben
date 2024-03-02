@@ -45,8 +45,6 @@ class Deal {
 
         this.playIndex += 1
 
-        this.playIndex += 1
-
         // Last card
         if (this.playIndex == this.data['play'].length) {
             let trickstaken

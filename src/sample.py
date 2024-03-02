@@ -5,7 +5,7 @@ import numpy as np
 import binary
 
 from bidding import bidding
-from util import get_all_hidden_cards, calculate_seed
+from util import get_all_hidden_cards, calculate_seed, convert_to_probability
 from configparser import ConfigParser
 from util import hand_to_str
 
@@ -356,9 +356,9 @@ class Sample:
         # It could be an idea to add an extra sampling in a later version
         if len(accepted_samples) < self._min_sample_hands_auction:
             if self.use_distance:
-                good_quality = len(sorted_samples[sorted_scores >= 0.5]) > 2
+                good_quality = len(sorted_samples[sorted_scores >= self.bid_accept_play_threshold]) > 2
                 if self.verbose:
-                    print(f"Only found {len(sorted_samples[sorted_scores >= 0.5])} {self._min_sample_hands_auction}")
+                    print(f"Only found {len(sorted_samples[sorted_scores >= self.bid_accept_play_threshold])} {self._min_sample_hands_auction}")
             else:
                 if self.verbose:
                     print(f"Only found {len(accepted_samples)} {self._min_sample_hands_auction}")
@@ -470,9 +470,9 @@ class Sample:
         assert np.sum(h1_h2) == n_samples * np.sum(n_cards_to_receive)
 
         # Shuffle the samples generated
-        indices = np.arange(n_samples)
-
-        return h1_h2[indices]
+        # indices = np.arange(n_samples)
+        #return h1_h2[indices]
+        return h1_h2
 
     def get_opening_lead_scores(self, auction, vuln, models, hand, opening_lead_card, ns, ew):
         contract = bidding.get_contract(auction)
@@ -569,6 +569,7 @@ class Sample:
             hidden_cards = get_all_hidden_cards(visible_cards)
             hidden_cards_no = len(hidden_cards)
             
+            assert hidden_cards_no <= 26
             # In some situations we know about cards on the hidden hand, when the other hand has shown out.
             # Currently we still sample and the discard if we hit a not valid sample.
             # It should be possible to improve
@@ -759,7 +760,10 @@ class Sample:
         if self.verbose:
             print(f"Returning {min(bidding_states[0].shape[0],n_samples)}")
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
-        return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp, good_quality
+        
+        probability_of_occurence = convert_to_probability(sorted_min_bid_scores)
+
+        return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp, good_quality, probability_of_occurence
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, binfo_model, ns, ew, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states):
         n_steps = binary.calculate_step_bidding_info(auction)

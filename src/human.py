@@ -176,6 +176,9 @@ class HumanCardPlayer:
         self.x_play[:,0,292] = level
         self.x_play[:,0,293+strain_i] = 1
 
+    def set_real_card_played(self, card, playedBy):
+        return
+
     def set_card_played(self, trick_i, leader_i, i, card):
         played_to_the_trick_already = (i - leader_i) % 4 > (self.player_i - leader_i) % 4
 
@@ -203,7 +206,7 @@ class HumanCardPlayer:
         card = input('your play: ').strip().upper()
         return deck52.encode_card(card)
 
-    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality):
+    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
         candidates = []
         samples = []
 

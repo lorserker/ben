@@ -22,13 +22,13 @@ class CardByCard:
         self.sampler = sampler
         self.verbose = verbose
 
-    def analyze(self):
+    async def analyze(self):
         print('analyzing the bidding')
         self.analyze_bidding()
         print('analyzing opening lead')
         self.analyze_opening_lead()
         print('analyzing play')
-        self.analyze_play()
+        await self.analyze_play()
 
     def analyze_bidding(self):
         bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.dealer_i, self.verbose) for idx, hand in enumerate(self.hands)]
@@ -84,7 +84,7 @@ class CardByCard:
         self.cards[card_resp.card.symbol()] = card_resp
         type(self).card_eval(self.play[0], card_resp)
 
-    def analyze_play(self):
+    async def analyze_play(self):
         
         contract = bidding.get_contract(self.padded_auction)
         level = int(contract[0])
@@ -126,14 +126,15 @@ class CardByCard:
             for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
                 if trick_i == 0 and player_i == 0:
                     for i, card_player in enumerate(card_players):
+                        card_player.set_real_card_played(opening_lead52, 0)
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
                     continue
                 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, self.vuln, self.models, card_players[player_i].rng)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, self.vuln, self.models, card_players[player_i].rng)
 
-                card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
+                card_resp = await card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
 
@@ -150,6 +151,7 @@ class CardByCard:
                 card = deck52.card52to32(card52)
 
                 for card_player in card_players:
+                    card_player.set_real_card_played(card52, player_i)
                     card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=player_i, card=card)
 
                 current_trick.append(card)
@@ -179,6 +181,10 @@ class CardByCard:
             tricks.append(current_trick)
             tricks52.append(current_trick52)
 
+            # Only declarer and dummy used PIMC
+            card_players[1].pimc.reset_trick()
+            card_players[3].pimc.reset_trick()
+            
             # initializing for the next trick
             # initialize hands
             for i, card in enumerate(current_trick):

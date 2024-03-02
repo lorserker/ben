@@ -60,8 +60,8 @@ class AsyncBotLead(bots.BotLead):
         return self.find_opening_lead(auction)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality):
-        return self.play_card(trick_i, leader_i, current_trick52, players_states, bidding_scores, quality)
+    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
+        return await self.play_card(trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits)
     
     
 class Driver:
@@ -266,6 +266,47 @@ class Driver:
             result['conceed'] = self.conceed
         return result
 
+# trick_i : 
+# 	the number of the trick (0-12)
+# player_i : 
+# 	the number of the player (0-3)
+# card_players : 
+# 	a list of bots.CardPlayer(left,dummy,right,declarer). Updated trough time
+# 	init :
+#         card_players = [
+#                     bots.CardPlayer(self.models.player_models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln),
+#                     bots.CardPlayer(self.models.player_models, 1, dummy_hand, decl_hand, contract, is_decl_vuln),
+#                     bots.CardPlayer(self.models.player_models, 2, righty_hand, dummy_hand, contract, is_decl_vuln),
+#                     bots.CardPlayer(self.models.player_models, 3, decl_hand, dummy_hand, contract, is_decl_vuln)
+#                 ] 
+#         Note : for some reason the declarer hand is set up as the public hand for the dummy.
+#         self.x_play contains the cards played as 13 list of binaries repr, one for each card played
+#         self.hand52 contains the hand of the player as a list of binaries (except for dummy)
+#         self.public52 contains the dummy hand as a list of binaries (except for dummy)
+#     each card played :
+#         card_player[player_i].set_own_card_played52(card52)
+#         if player_i==1 : (dummy)
+#             card_player.set_public_card_played52(card52) for all cards players except dummy
+#         if player_i==3 : (declarer)
+#             dummy.set_public_card_played52(card52) # Why this ? Because of the curious point mentionned before
+# shown_out_suit :
+#     A list of set, each set containing the shown_out suit as a number(spades=0,clubs=3)
+#     Updated for each card play     
+# players_cards played:
+# 	a list of 4 list(left,dummy,right,declarer). 32 repr
+# 	Updated only when the trick is finished
+# current_trick : 
+# 	the current trick, is the order the card have been played. 32 repr
+# self.padded_auction : 
+# 	The auction, with the pad at the begining
+# card_players[player_i].hand.reshape((-1, 32)) :
+# 	The 13 cards of a player, reshaped into a list. Not updated trough tricks. 32 repr 
+# self.vuln :
+# 	The vuls, as a list of two bools
+
+# After each trick is done :
+#     for each card played, init the x_play slice of the next trick. Pain in the ass
+
     async def play(self, contract, strain_i, decl_i, auction, opening_lead52):
         
         level = int(contract[0])
@@ -330,25 +371,27 @@ class Driver:
                     if self.verbose:
                         print('skipping opening lead for ',player_i)
                     for i, card_player in enumerate(card_players):
+                        card_player.set_real_card_played(opening_lead52, player_i)
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
                     continue
 
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
                     assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
 
                 else: 
-                    rollout_states = None
-                    bidding_scores = None
+                    rollout_states = []
+                    bidding_scores = []
                     c_hcp = -1
                     c_shp = -1
                     good_quality = None
-
+                    probability_of_occurence = []
+                    
                 await asyncio.sleep(0.01)
 
                 card_resp = None
                 while card_resp is None:
-                    card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality)
+                    card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
 
                     if (str(card_resp.card).startswith("Conceed")) :
                             self.claimedbydeclarer = False
@@ -409,12 +452,13 @@ class Driver:
                     'card': card_resp.card.symbol()
                 }))
 
-                card = deck52.card52to32(card52)
+                card32 = deck52.card52to32(card52)
 
                 for card_player in card_players:
-                    card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=player_i, card=card)
+                    card_player.set_real_card_played(card52, player_i)
+                    card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=player_i, card=card32)
 
-                current_trick.append(card)
+                current_trick.append(card32)
 
                 current_trick52.append(card52)
 
@@ -426,7 +470,7 @@ class Driver:
                     card_players[1].set_public_card_played52(card52)
 
                 # update shown out state
-                if card // 8 != current_trick[0] // 8:  # card is different suit than lead card
+                if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
                     shown_out_suits[player_i].add(current_trick[0] // 8)
 
             # sanity checks after trick completed
@@ -441,11 +485,17 @@ class Driver:
             tricks.append(current_trick)
             tricks52.append(current_trick52)
 
+            if isinstance(card_players[player_i], bots.CardPlayer):
+                # Only declarer and dummy used PIMC
+                if self.models.use_pimc:
+                    card_players[1].pimc.reset_trick()
+                    card_players[3].pimc.reset_trick()
+
             # initializing for the next trick
             # initialize hands
-            for i, card in enumerate(current_trick):
+            for i, card32 in enumerate(current_trick):
                 card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0:32] = card_players[(leader_i + i) % 4].x_play[:, trick_i, 0:32]
-                card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0 + card] -= 1
+                card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0 + card32] -= 1
 
             # initialize public hands
             for i in (0, 2, 3):
@@ -454,8 +504,8 @@ class Driver:
 
             for card_player in card_players:
                 # initialize last trick
-                for i, card in enumerate(current_trick):
-                    card_player.x_play[:, trick_i + 1, 64 + i * 32 + card] = 1
+                for i, card32 in enumerate(current_trick):
+                    card_player.x_play[:, trick_i + 1, 64 + i * 32 + card32] = 1
                     
                 # initialize last trick leader
                 card_player.x_play[:, trick_i + 1, 288 + leader_i] = 1
@@ -482,6 +532,11 @@ class Driver:
             else:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
+                if isinstance(card_players[player_i], bots.CardPlayer):
+                    if self.models.use_pimc:
+                        # Only declarer and dummy used PIMC
+                        card_players[1].pimc.update_trick_needed()
+                        card_players[3].pimc.update_trick_needed()
 
             if self.verbose:
                 print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
@@ -494,8 +549,8 @@ class Driver:
                 await self.confirmer.confirm()
 
             # update cards shown
-            for i, card in enumerate(current_trick):
-                player_cards_played[(leader_i + i) % 4].append(card)
+            for i, card32 in enumerate(current_trick):
+                player_cards_played[(leader_i + i) % 4].append(card32)
             
             leader_i = trick_winner
             current_trick = []
@@ -509,7 +564,7 @@ class Driver:
                 await card_players[player_i].get_card_input()
 
             card52 = np.nonzero(card_players[player_i].hand52)[0][0]
-            card =deck52.card52to32(card52)
+            card32 = deck52.card52to32(card52)
 
             card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1, quality=None)
 
@@ -521,7 +576,7 @@ class Driver:
 
             self.card_responses.append(card_resp)
             
-            current_trick.append(card)
+            current_trick.append(card32)
             current_trick52.append(card52)
 
         await self.confirmer.confirm()
@@ -725,7 +780,7 @@ async def main():
             rdeal = random_deal(boardno)
 
             # example of to use a fixed deal
-            # rdeal = ('T54.Q65.AKJ432.4 Q9.A3.T986.AKQ63 AK863.T982..T972 J72.KJ74.Q75.J85', 'W E-W')
+            rdeal = ('T54.Q65.AKJ432.4 Q9.A3.T986.AKQ63 AK863.T982..T972 J72.KJ74.Q75.J85', 'W E-W')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=bidding_only)

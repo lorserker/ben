@@ -20,6 +20,11 @@ class Card:
         rank_symbol = self.RANKS[self.rank]
         return '{}{}'.format(suit_symbol, rank_symbol)
 
+    def symbol_reversed(self):
+        suit_symbol = self.SUITS[self.suit]
+        rank_symbol = self.RANKS[self.rank]
+        return '{}{}'.format(rank_symbol, suit_symbol)
+
     def code(self):
         return len(self.RANKS) * self.suit + self.rank
 
@@ -123,7 +128,7 @@ class CardResp:
             result['shape'] = shape_values
         if len(self.candidates) > 0:
             result['candidates'] = [cand.to_dict() for cand in self.candidates]
-        if len(self.samples) > 0:
+        if self.samples != None and len(self.samples) > 0:
             result['samples'] = self.samples
 
         return result

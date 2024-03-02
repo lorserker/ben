@@ -10,6 +10,7 @@ import scoring
 from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 from bidding import bidding
 from binary import parse_hand_f
+from pimc.PIMC import BridgeAI
 
 from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed
 
@@ -43,10 +44,10 @@ class BotBid:
         self.eval_after_bid_count = models.eval_after_bid_count
         self.sample_hands_for_review = models.sample_hands_for_review
         self.use_biddingquality = models.use_biddingquality
-        hash_integer  = calculate_seed(hand_str)         
+        self.hash_integer  = calculate_seed(hand_str)         
         if self.verbose:
             print(f"Setting seed (Sampling bidding info) from {hand_str}: {hash_integer}")
-        self.rng = np.random.default_rng(hash_integer)
+        self.rng = np.random.default_rng(self.hash_integer)
 
     @staticmethod
     def get_bid_number_for_player_to_bid(auction):
@@ -316,10 +317,14 @@ class BotBid:
             sample_boards_for_auction *= 2
         if len(auction_so_far) > 24:
             sample_boards_for_auction *= 4
+        # Reset randomizer
+        self.rng = np.random.default_rng(self.hash_integer)
         accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(
             auction_so_far, turn_to_bid, self.hand_str, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, self.sameforboth,sample_boards_for_auction, self.rng)
         
         #assert good_quality, "We did not find samples for the bidding of decent quality"
+
+        print(f"Found {accepted_samples.shape[0]} samples for bidding")
 
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
@@ -510,7 +515,7 @@ class BotBid:
         for i in range(n_samples):
             sample_auction = [bidding.ID2BID[bid_i] for bid_i in list(auctions_np[i, :]) if bid_i != 1]
             contract = bidding.get_contract(sample_auction)
-            # All pass doens't really fit, and is always 0 - we ignore it for now
+            # All pass doesn't really fit, and is always 0 - we ignore it for now
             if contract is None:
                 contracts.append("pass")
                 strains[i] = -1
@@ -578,10 +583,10 @@ class BotLead:
         self.min_opening_leads = models.min_opening_leads
         self.sample_hands_for_review = models.sample_hands_for_review
         self.use_biddingquality_in_eval = models.use_biddingquality_in_eval
-        hash_integer  = calculate_seed(hand_str)         
+        self.hash_integer  = calculate_seed(hand_str)         
         if self.verbose:
-            print(f"Setting seed (Sampling bidding info) from {hand_str}: {hash_integer}")
-        self.rng = np.random.default_rng(hash_integer)
+            print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
+        self.rng = np.random.default_rng(self.hash_integer)
 
     def find_opening_lead(self, auction):
         lead_card_indexes, lead_softmax = self.get_opening_lead_candidates(auction)
@@ -605,6 +610,7 @@ class BotLead:
         else:
             # If our sampling of the hands from the aution is bad.
             # We should probably try to find better samples, but for now, we just trust the neural network
+
             if (self.use_biddingquality_in_eval and not good_quality):
                 opening_lead = candidate_cards[0].card.code() 
             else:
@@ -623,6 +629,7 @@ class BotLead:
             # it's a pip ~> choose a random one
             pips_mask = np.array([0,0,0,0,0,0,0,1,1,1,1,1,1])
             lefty_led_pips = self.hand52.reshape((4, 13))[opening_lead // 8] * pips_mask
+            # Implement human carding here
             opening_lead52 = (opening_lead // 8) * 13 + self.rng.choice(np.nonzero(lefty_led_pips)[0])
         else:
             opening_lead52 = deck52.card32to52(opening_lead)
@@ -684,6 +691,8 @@ class BotLead:
 
         if self.verbose:
             print(f'Now generating {self.sample.sample_boards_for_auction_opening_lead} deals to find opening lead')
+        # Reset randomizer
+        self.rng = np.random.default_rng(self.hash_integer)
         accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.bidder_model, self.binfo_model, self.ns, self.ew, False, self.sample.sample_boards_for_auction_opening_lead, self.rng)
 
         if self.verbose:
@@ -725,6 +734,7 @@ class BotLead:
                 # it's a pip ~> choose a random one
                 pips_mask = np.array([0,0,0,0,0,0,0,1,1,1,1,1,1])
                 lefty_led_pips = self.hand52.reshape((4, 13))[lead_card_i // 8] * pips_mask
+                # Perhaps use human carding, but it is only for estimation
                 opening_lead52 = (lead_card_i // 8) * 13 + self.rng.choice(np.nonzero(lefty_led_pips)[0])
             else:
                 opening_lead52 = deck52.card32to52(lead_card_i)
@@ -801,6 +811,7 @@ class BotLead:
 class CardPlayer:
 
     def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, sampler, verbose = False):
+        self.models = models
         self.player_models = models.player_models
         self.strain_i = bidding.get_strain_i(contract)
         if self.strain_i == 0:
@@ -825,10 +836,14 @@ class CardPlayer:
         self.use_biddingquality_in_eval = models.use_biddingquality_in_eval
         from ddsolver import ddsolver
         self.dd = ddsolver.DDSolver()
-        hash_integer  = calculate_seed(hand_str)         
+        self.hash_integer  = calculate_seed(hand_str)         
         if self.verbose:
-            print(f"Setting seed (Sampling bidding info) from {hand_str}: {hash_integer}")
-        self.rng = np.random.default_rng(hash_integer)
+            print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
+        self.rng = np.random.default_rng(self.hash_integer)
+        if (player_i == 1 or player_i == 3)  and self.models.use_pimc:
+            self.pimc = BridgeAI(models.pimc_wait, hand_str, public_hand_str, contract, player_i, self.verbose)
+            print(hand_str, public_hand_str, contract, player_i)
+
 
     def init_x_play(self, public_hand, level, strain_i):
         self.x_play = np.zeros((1, 13, 298))
@@ -836,6 +851,10 @@ class CardPlayer:
         binary.BinaryInput(self.x_play[:,0,:]).set_public_hand(public_hand)
         self.x_play[:,0,292] = level
         self.x_play[:,0,293+strain_i] = 1
+
+    def set_real_card_played(self, card, playedBy):
+        if (self.player_i == 1 or self.player_i == 3) and self.models.use_pimc:
+            self.pimc.set_card_played(card, playedBy)
 
     def set_card_played(self, trick_i, leader_i, i, card):
         played_to_the_trick_already = (i - leader_i) % 4 > (self.player_i - leader_i) % 4
@@ -860,14 +879,44 @@ class CardPlayer:
     def set_public_card_played52(self, card52):
         self.public52[card52] -= 1
 
-    def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality):
-        current_trick = [deck52.card52to32(c) for c in current_trick52]
-        card52_dd = self.next_card52(trick_i, leader_i, current_trick52, players_states)
-        card_resp = self.next_card(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality)
+    async def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
+        # If we are declarer and PIMC enabled - use PIMC
+        bridgeAI = (self.player_i == 1 or self.player_i == 3) and self.models.use_pimc
+        if bridgeAI:
+
+            # Based on player states we should be able to find min max for suits and hcps, and add that before calling PIMC
+            candidate_cards = await self.pimc.nextplay(shown_out_suits)
+            
+            candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd), reverse=True)
+
+            samples = []
+
+            for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
+                samples.append('%s %s %s %s %.5f' % (
+                    hand_to_str(players_states[0][i,0,:32].astype(int)),
+                    hand_to_str(players_states[1][i,0,:32].astype(int)),
+                    hand_to_str(players_states[2][i,0,:32].astype(int)),
+                    hand_to_str(players_states[3][i,0,:32].astype(int)),
+                    bidding_scores[i]
+                ))
+
+            card_resp = CardResp(
+                card=candidate_cards[0].card,
+                candidates=candidate_cards,
+                samples=samples,
+                shape=-1,
+                hcp=-1, 
+                quality=quality
+
+            )
+        else:
+            current_trick = [deck52.card52to32(c) for c in current_trick52]
+            card52_dd = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
+            card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality)
 
         return card_resp
 
-    def next_card52(self, trick_i, leader_i, current_trick52, players_states):
+    def get_cards_dd_evaluation(self, trick_i, leader_i, current_trick52, players_states, probabilities_list):
         from ddsolver import ddsolver
         
         n_samples = players_states[0].shape[0]
@@ -936,7 +985,11 @@ class CardPlayer:
         if self.verbose:
             print("Samples: ",n_samples, " Solving: ",len(hands_pbn))
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
-        card_tricks = ddsolver.expected_tricks(dd_solved)
+
+        if self.models.use_probability:
+            card_tricks = ddsolver.expected_tricks_dds_probabiliy(dd_solved, probabilities_list)
+        else:
+            card_tricks = ddsolver.expected_tricks_dds(dd_solved)
 
         # if defending the target is another
         level = int(self.contract[0])
@@ -946,7 +999,17 @@ class CardPlayer:
             tricks_needed = 13 - (level + 6) - self.n_tricks_taken + 1
 
         making = ddsolver.p_made_target(tricks_needed)(dd_solved)
-        card_ev = self.get_card_ev(dd_solved)
+
+        if self.models.use_probability:
+            if self.models.matchpoint:
+                card_ev = self.get_card_ev_mp(dd_solved, probabilities_list)
+            else:
+                card_ev = self.get_card_ev_probability(dd_solved, probabilities_list)
+        else:
+            if self.models.matchpoint:
+                card_ev = self.get_card_ev_mp(dd_solved)
+            else:
+                card_ev = self.get_card_ev(dd_solved)
         if self.verbose:
             print("card_ev:", card_ev)
 
@@ -963,6 +1026,7 @@ class CardPlayer:
     
     def get_card_ev(self, dd_solved):
         card_ev = {}
+        sign = 1 if self.player_i % 2 == 1 else -1
         for card, future_tricks in dd_solved.items():
             ev_sum = 0
             for ft in future_tricks:
@@ -970,12 +1034,55 @@ class CardPlayer:
                     continue
                 tot_tricks = self.n_tricks_taken + ft
                 tot_decl_tricks = tot_tricks if self.player_i % 2 == 1 else 13 - tot_tricks
-                sign = 1 if self.player_i % 2 == 1 else -1
                 ev_sum += sign * self.score_by_tricks_taken[tot_decl_tricks]
             card_ev[card] = ev_sum / len(future_tricks)
                 
         return card_ev
 
+    def get_card_ev_probability(self, dd_solved, probabilities_list):
+        card_ev = {}
+        sign = 1 if self.player_i % 2 == 1 else -1
+        for card, future_tricks in dd_solved.items():
+            ev_sum = 0
+            for ft, proba in zip(future_tricks, probabilities_list):
+                if ft < 0:
+                    continue
+                tot_tricks = self.n_tricks_taken + ft
+                tot_decl_tricks = (
+                    tot_tricks if self.player_i % 2 == 1 else 13 - tot_tricks
+                )
+                ev_sum += sign * self.score_by_tricks_taken[tot_decl_tricks] * proba
+            card_ev[card] = ev_sum
+
+        return card_ev
+    
+    def get_card_ev_mp(self, dd_solved, probabilities_list):
+        card_ev = {}
+        for card, future_tricks in dd_solved.items():
+            ev_sum = 0
+            for ft, proba in zip(future_tricks, probabilities_list):
+                if ft < 0:
+                    continue
+                ev_sum += ft * proba
+            card_ev[card] = ev_sum
+
+        return card_ev
+    
+    def get_card_ev_mp(self, dd_solved):
+        card_ev = {}
+        sign = 1 if self.player_i % 2 == 1 else -1
+        for card, future_tricks in dd_solved.items():
+            ev_sum = 0
+            for ft in future_tricks:
+                if ft < 0:
+                    continue
+                tot_tricks = self.n_tricks_taken + ft
+                tot_decl_tricks = tot_tricks if self.player_i % 2 == 1 else 13 - tot_tricks
+                ev_sum += sign * tot_decl_tricks
+            card_ev[card] = ev_sum / len(future_tricks)
+                
+        return card_ev
+    
     def next_card_softmax(self, trick_i):
         cards_softmax = self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i + 1),:])
         assert cards_softmax.shape == (1, 32), f"Expected shape (1, 32), but got shape {cards_softmax.shape}"
@@ -986,7 +1093,7 @@ class CardPlayer:
         )
         return x.reshape(-1)
     
-    def next_card(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality):
+    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
         if self.verbose:
@@ -1025,7 +1132,9 @@ class CardPlayer:
         else:
             if self.use_biddingquality_in_eval:
                 candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.insta_score, 2), round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1)), reverse=True)
-                #candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
+                candidate_cards2 = sorted(candidate_cards, key=lambda c: (round(c.expected_score_dd, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
+                if candidate_cards[0].expected_score_dd < 0 and candidate_cards2[0].expected_score_dd:
+                    candidate_cards = candidate_cards2
             else:
                 candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
         samples = []
@@ -1039,7 +1148,7 @@ class CardPlayer:
                 bidding_scores[i]
             ))
 
-        card_resp = CardResp(
+        best_card_resp = CardResp(
             card=candidate_cards[0].card,
             candidates=candidate_cards,
             samples=samples,
@@ -1049,4 +1158,60 @@ class CardPlayer:
 
         )
 
-        return card_resp
+        # for candidate_card in candidate_cards :
+        #     print(candidate_card.to_dict())
+
+        # Max expected score difference ?
+        max_expected_score = max(
+            [
+                float(c.expected_score_dd)
+                for c in candidate_cards
+                if c.expected_score_dd is not None
+            ]
+        )
+        card_with_max_expected_score = {c: c.expected_score_dd for c in candidate_cards if c.expected_score_dd == max_expected_score}
+        if len(card_with_max_expected_score) == 1:
+            return best_card_resp
+        candidate_cards = [c for c in candidate_cards if c in card_with_max_expected_score.keys()]
+
+        # Don't pick a 8 or 9 when NN difference if you have a small card in the same suit
+        for c in candidate_cards:
+            if c.card.rank in [5, 6]:  # 8 or 9
+                for compared_candidate in candidate_cards:
+                    if (
+                        compared_candidate.card.rank >= 7
+                        and compared_candidate.card.suit == c.card.suit
+                    ):
+                        c.insta_score = compared_candidate.insta_score
+                        break  # Below 7, they all have the same insta_score
+
+        # NN difference ?
+        max_insta_score = max(
+            [float(c.insta_score) for c in candidate_cards if c.insta_score is not None]
+        )
+        card_with_max_insta_score = {
+            c: c.insta_score
+            for c in candidate_cards
+            if c.insta_score == max_insta_score
+            and c.expected_score_dd == max_expected_score
+        }
+        if len(card_with_max_insta_score) == 1:
+            return best_card_resp
+
+        # # Play some human carding
+        # hand = PlayerHand.from_pbn(deck52.hand_to_str(self.hand52))
+        # valid_cards = [
+        #     Card_.from_str(c.card.symbol()) for c in card_with_max_insta_score.keys()
+        # ]
+        # return str(
+        #     play_real_card(
+        #         hand,
+        #         valid_cards,
+        #         self.trump,
+        #         self.play_record,
+        #         self.player_direction,
+        #         self.declarer,
+        #     )
+        # )
+
+        return best_card_resp

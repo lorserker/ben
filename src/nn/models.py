@@ -12,7 +12,7 @@ from nn.lead_singledummy import LeadSingleDummy
 
 class Models:
 
-    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, bba_ns, bba_ew, sameforboth, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, include_opening_lead):
+    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, bba_ns, bba_ew, sameforboth, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, include_opening_lead, use_pimc, use_probability, matchpoint, pimc_wait):
         self.bidder_model = bidder_model
         self.binfo_model = binfo_model
         self.lead_suit_model = lead_suit_model
@@ -41,6 +41,10 @@ class Models:
         self.use_biddingquality_in_eval = use_biddingquality_in_eval
         self.double_dummy_eval = double_dummy_eval
         self.include_opening_lead = include_opening_lead
+        self.use_pimc = use_pimc
+        self.pimc_wait = pimc_wait
+        self.use_probability = use_probability
+        self.matchpoint = matchpoint
 
     @classmethod
     def from_conf(cls, conf: ConfigParser, base_path=None) -> "Models":
@@ -50,6 +54,7 @@ class Models:
         no_search_threshold = conf.getfloat('bidding','no_search_threshold', fallback=1)
         eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=12)
         use_biddingquality = conf.getboolean('bidding', 'use_biddingquality', fallback=False)
+        use_probability = conf.getboolean('bidding', 'use_probability', fallback=False)
         sample_hands_for_review = conf.getint('sampling', 'sample_hands_for_review', fallback=200)
         lead_threshold = float(conf['lead']['lead_threshold'])
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
@@ -58,9 +63,12 @@ class Models:
         include_system = conf.getboolean('models', 'include_system', fallback=False)
         sameforboth = conf.getboolean('models', 'sameforboth', fallback=False)
         use_bba = conf.getboolean('models', 'use_bba', fallback=False)
+        matchpoint = conf.getboolean('models', 'matchpoint', fallback=False)
         lead_included = conf.getboolean('eval', 'lead_included', fallback=True)
         double_dummy_eval = conf.getboolean('eval', 'double_dummy_eval', fallback=False)
         claim = conf.getboolean('cardplay', 'claim', fallback=True)
+        use_pimc = conf.getboolean('cardplay', 'PIMC', fallback=False)
+        pimc_wait = conf.getfloat('cardplay','pimc_wait', fallback=0.5)
         include_opening_lead = conf.getboolean('cardplay', 'include_opening_lead', fallback=False)
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'claim', fallback=False)
         if include_system == True:
@@ -110,7 +118,11 @@ class Models:
             use_biddingquality=use_biddingquality,
             use_biddingquality_in_eval=use_biddingquality_in_eval,
             double_dummy_eval=double_dummy_eval,
-            include_opening_lead = include_opening_lead
+            include_opening_lead = include_opening_lead,
+            use_pimc = use_pimc,
+            use_probability = use_probability,
+            matchpoint = matchpoint,
+            pimc_wait = pimc_wait
         )
 
     @property
