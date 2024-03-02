@@ -48,7 +48,7 @@ The shape of a hand is the length in the 4 suits, and again it is normalized (al
 
 So we end up representing the hand as
 
-- [ 0, 0, -1.25, -0.14, -0.14, -0.14, 0.43, 0, 1, 0, 0, 1, 0, 0, 2, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1]
+- [ 0, 0, 0.5, 0.43, -0.11, 1.03, -1.29, 0, 1, 0, 0, 1, 0, 0, 2, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1]
 
 So we are calculating hcp and shape so the neural network will not have to build neurons for this, and we are condensing information about the hand like small cards, to remove the information as it is not being used in the bidding.
 
@@ -85,21 +85,23 @@ A single bid is represented as an array with 40 elements, where only 1 item is 1
 2 = PASS
 3 = Double
 4 = Redouble
-5-40 = Bids, starting from 1C and ending at 7N,
+5-39 = Bids, starting from 1C and ending at 7N,
 
-So we now have the input record for a bid as this
+So we now have the input record for a bid as this (Q7.AT43.QT3.AT63)
 
-[ 0, 0, 0.5, -0.71, 0.43, -0.14, 0.43,  
+[ 0, 0, 0.5, -0.71, 0.43, -0.11, 0.43,  
    0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 2,  
    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  
    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  
    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
+3 times PAD_START just means that the player is first hand to bid.
+
 And the expected output as this:
 
-[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+[0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-as the hand would pass (Element 3 is hot).
+as the hand would open 1C (Element 5 is hot).
 
 Now as we have a deal with 4 hands, there are 4 hands we can train at the same time, we end up with a 3-dimensional array.
 
@@ -107,7 +109,7 @@ In the current implementation (using a Recurrent Neural Network) the bids are as
 
 To avoid using state it could be possible to define that bidding consist of up to 50 bids in a sequence. The number of records for the bidding would be limited to the actual number of bids on a hand - probably about 4, but still we would use 4*50*40 elements in one-hot arrays.
 
-But I am not sure about we then will be removing the neural networks ability to generalize, but it is worht testing.
+But I am not sure about we then will be removing the neural networks ability to generalize, but it is worth testing.
 
 
 
