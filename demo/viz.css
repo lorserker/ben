@@ -294,3 +294,16 @@ form {
     display: block;
     /* Ensure the form takes up the full width */
 }
+
+.content-wrapper {
+    max-width: 80%; /* Content wrapper takes up full width */
+    margin: 3%;
+}
+
+.example {
+    display: inline-block; /* Display links inline */
+    width: 120px;
+}
+
+.link {
+}

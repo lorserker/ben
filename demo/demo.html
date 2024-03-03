@@ -4,11 +4,7 @@
 <head>
     <title>Bridge Engine Demo</title>
     <script src="log.js"></script> 
-    <style>
-        .example {
-            margin-left: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="viz.css">
 </head>
 
 <body>
@@ -16,20 +12,16 @@
     <p>This is a demo of how the bridge engine bids and plays.</p>
     <p>Below are links to random boards which the engine played (each of the four players was a robot player).</p>
     <p>Clicking on the link you will see a detailed view of the bidding and play, what options the bots considered at each point,
-    and what they "thought" the hidden hands might look like.
+    and what they "thought" the hidden hands might look like.<br>
+    <br>The 160 deals are from Camrose Trophy 2024 - First weekend, played by BEN in open and closed room.
     </p>
 
-    <div id="boards"></div>
+    <div id="boards" class="content-wrapper"></div>
 
     <script>
         var html = '';
-        for (var set_i = 0; set_i < 3; set_i++) {
-            html += '<p>';
-            for (var board_i = 0; board_i < 8; board_i++) {
-                let deal_i = set_i * 8 + board_i
-                html += '<span><a class="example" target="_blank" href="viz.html?deal=' + (deal_i + 1) + '">' + data[deal_i]['contract'] + '</a></span>'
-            }
-            html += '</p>';
+        for (var deal_i = 0; deal_i < data.length; deal_i++) {
+            html += '<span class="link"><a class="example" target="_blank" href="viz.html?deal=' + (deal_i + 1) + ('">Board:' + data[deal_i]['board_number']).padStart(3)+ "&nbsp;" + data[deal_i]['contract'] + '</a>&nbsp;&nbsp;</span>'
         }
         document.querySelector('#boards').innerHTML = html;
     </script>
