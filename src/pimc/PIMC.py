@@ -166,18 +166,21 @@ class BridgeAI:
 
     def find_trump(self, value):
         from BridgeAIDLL import Macros
-        match value:
-            case 4:
-                return Macros.Trump.Club
-            case 3:
-                return Macros.Trump.Diamond
-            case 2:
-                return Macros.Trump.Heart
-            case 1:
-                return Macros.Trump.Spade
-            case 0:
-                return Macros.Trump.No
-
+        if value == 4:
+            return Macros.Trump.Club
+        elif value == 3:
+            return Macros.Trump.Diamond
+        elif value == 2:
+            return Macros.Trump.Heart
+        elif value == 1:
+            return Macros.Trump.Spade
+        elif value == 0:
+            return Macros.Trump.No
+        else:
+            # Handle the case where value doesn't match any of the specified cases
+            # This could be raising an exception, returning a default value, or any other appropriate action
+            # For now, let's return None
+            return None
 
     # Define a Python function to find a bid
     async def nextplay(self, shown_out_suits):
