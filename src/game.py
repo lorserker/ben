@@ -29,7 +29,6 @@ import conf
 
 from sample import Sample
 from bidding import bidding
-from sample import Sample
 from deck52 import decode_card
 from bidding.binary import DealData
 from objects import CardResp, Card, BidResp
