@@ -14,30 +14,28 @@ sys.path.append("..")
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':
-    BridgeAI_LIB = 'BridgeAIDLL'
+    BGADLL_LIB = 'BGADLL'
 elif sys.platform == 'darwin':
-    BridgeAI_LIB = 'N/A'
+    BGADLL_LIB = 'N/A'
 else:
-    BridgeAI_LIB = 'N/A'
+    BGADLL_LIB = 'N/A'
 
-BridgeAI_PATH = os.path.join(BIN_FOLDER, BridgeAI_LIB)
-
-#The error you're encountering suggests that the info_meaning property is not directly accessible as an attribute in the EPBot class. Instead, you should use the get_info_meaning and set_info_meaning methods that are automatically generated for properties with a getter and setter in .NET.
+BGADLL_PATH = os.path.join(BIN_FOLDER, BGADLL_LIB)
 
 from enum import Enum
 from typing import List, Iterable
 
-class BridgeAI: 
+class BGADLL: 
 
     def __init__(self, waittime, tophand, bottomhand, contract, player_i, verbose):
         try:
            # Load the .NET assembly and import the types and classes from the assembly
-            clr.AddReference(BridgeAI_PATH)
-            from BridgeAIDLL import PIMC, Hand, Details, Macros, Extensions
+            clr.AddReference(BGADLL_PATH)
+            from BGADLL import PIMC, Hand, Details, Macros, Extensions
 
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
-            print("Error: Unable to load BridegAIDLL.dll. Make sure the DLL is in the ./bin directory")
+            print("Error: Unable to load BGAIDLL.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
             print('Error:', ex)
         self.pimc = PIMC()
@@ -65,7 +63,7 @@ class BridgeAI:
         return hcp_values.get(rank, 0)
 
     def reset_trick(self):
-        from BridgeAIDLL import Hand
+        from BGADLL import Hand
         self.playedHand = Hand()
 
     def update_trick_needed(self):
@@ -74,7 +72,7 @@ class BridgeAI:
     def set_card_played(self, card52, playedBy):
         real_card = Card.from_code(card52)
         card = real_card.symbol_reversed()
-        from BridgeAIDLL import Card as PIMCCard
+        from BGADLL import Card as PIMCCard
         self.playedHand.Add(PIMCCard(card))
         self.opposHand.Remove(PIMCCard(card))
         hcp = self.calculate_hcp(real_card.rank)
@@ -161,11 +159,13 @@ class BridgeAI:
             await asyncio.sleep(0.01)
             if self.pimc.Evaluating == False:  
                 print("Threads are finished.")
+                print(f"Playouts: {self.pimc.Playouts}")    
                 return
+        print(f"Playouts: {self.pimc.Playouts}")    
         print(f"Threads are still running after {waitTime} second.")
 
     def find_trump(self, value):
-        from BridgeAIDLL import Macros
+        from BGADLL import Macros
         if value == 4:
             return Macros.Trump.Club
         elif value == 3:
@@ -185,7 +185,7 @@ class BridgeAI:
     # Define a Python function to find a bid
     async def nextplay(self, shown_out_suits):
 
-        from BridgeAIDLL import PIMC, Hand, Details, Macros, Extensions, Card as PIMCCard
+        from BGADLL import PIMC, Hand, Details, Macros, Extensions, Card as PIMCCard
 
         self.pimc.Clear()
         if self.verbose:
@@ -244,7 +244,7 @@ class BridgeAI:
             probability = makable / count if count > 0 else 0
             if math.isnan(probability):
                 probability = 0
-            tricks = sum(t for t in output)/count
+            tricks = sum(t for t in output)/ count if count > 0 else 0
 
             candidate_cards.append(CandidateCard(
                 card=Card.from_symbol(str(card)[::-1]),

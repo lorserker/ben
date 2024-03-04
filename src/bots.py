@@ -10,7 +10,7 @@ import scoring
 from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 from bidding import bidding
 from binary import parse_hand_f
-from pimc.PIMC import BridgeAI
+from pimc.PIMC import BGADLL
 
 from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed
 
@@ -324,7 +324,8 @@ class BotBid:
         
         #assert good_quality, "We did not find samples for the bidding of decent quality"
 
-        print(f"Found {accepted_samples.shape[0]} samples for bidding")
+        if self.verbose:
+            print(f"Found {accepted_samples.shape[0]} samples for bidding")
 
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
@@ -841,7 +842,7 @@ class CardPlayer:
             print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
         self.rng = np.random.default_rng(self.hash_integer)
         if (player_i == 1 or player_i == 3)  and self.models.use_pimc:
-            self.pimc = BridgeAI(models.pimc_wait, hand_str, public_hand_str, contract, player_i, self.verbose)
+            self.pimc = BGADLL(models.pimc_wait, hand_str, public_hand_str, contract, player_i, self.verbose)
             print(hand_str, public_hand_str, contract, player_i)
 
 
@@ -881,8 +882,8 @@ class CardPlayer:
 
     async def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
         # If we are declarer and PIMC enabled - use PIMC
-        bridgeAI = (self.player_i == 1 or self.player_i == 3) and self.models.use_pimc
-        if bridgeAI:
+        BGADLL = (self.player_i == 1 or self.player_i == 3) and self.models.use_pimc
+        if BGADLL:
 
             # Based on player states we should be able to find min max for suits and hcps, and add that before calling PIMC
             candidate_cards = await self.pimc.nextplay(shown_out_suits)
