@@ -1,6 +1,0 @@
-model_checkpoint_path: "precision-1000000"
-all_model_checkpoint_paths: "precision-960000"
-all_model_checkpoint_paths: "precision-970000"
-all_model_checkpoint_paths: "precision-980000"
-all_model_checkpoint_paths: "precision-990000"
-all_model_checkpoint_paths: "precision-1000000"

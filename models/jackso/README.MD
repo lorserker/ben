@@ -1,1 +1,0 @@
-This model is trained by Ian Hodges based on data from Jack
