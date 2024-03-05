@@ -907,7 +907,7 @@ class CardPlayer:
                 min_h3 = int(np.min(h3))
                 max_h3 = int(np.max(h3))
                 
-                self.pimc.update_constraints(min_h1-2, max_h1+2, min_h3-2, max_h3+2)
+                #self.pimc.update_constraints(min_h1-2, max_h1+2, min_h3-2, max_h3+2)
 
             # Based on player states we should be able to find min max for suits and hcps, and add that before calling PIMC
             card52_dd = await self.pimc.nextplay(shown_out_suits)
