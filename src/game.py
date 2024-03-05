@@ -486,7 +486,7 @@ class Driver:
 
             if isinstance(card_players[player_i], bots.CardPlayer):
                 # Only declarer and dummy used PIMC
-                if self.models.use_pimc:
+                if self.models.pimc_use:
                     card_players[1].pimc.reset_trick()
                     card_players[3].pimc.reset_trick()
 
@@ -532,7 +532,7 @@ class Driver:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    if self.models.use_pimc:
+                    if self.models.pimc_use:
                         # Only declarer and dummy used PIMC
                         card_players[1].pimc.update_trick_needed()
                         card_players[3].pimc.update_trick_needed()
@@ -779,7 +779,7 @@ async def main():
             rdeal = random_deal(boardno)
 
             # example of to use a fixed deal
-            rdeal = ('T54.Q65.AKJ432.4 Q9.A3.T986.AKQ63 AK863.T982..T972 J72.KJ74.Q75.J85', 'W E-W')
+            rdeal = ('62.QT742.875.KJ3 .A98.KQ9432.Q742 AJT543.65.J.AT95 KQ987.KJ3.AT6.86', 'W E-W')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=bidding_only)

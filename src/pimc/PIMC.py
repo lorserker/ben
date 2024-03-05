@@ -7,6 +7,7 @@ import math
 from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 import time
 from binary import get_hcp
+import scoring
 
 from bidding import bidding
 sys.path.append("..")
@@ -27,7 +28,7 @@ from typing import List, Iterable
 
 class BGADLL: 
 
-    def __init__(self, waittime, tophand, bottomhand, contract, player_i, verbose):
+    def __init__(self, wait, tophand, bottomhand, contract, player_i, is_decl_vuln, verbose):
         try:
            # Load the .NET assembly and import the types and classes from the assembly
             clr.AddReference(BGADLL_PATH)
@@ -38,6 +39,8 @@ class BGADLL:
             print("Error: Unable to load BGAIDLL.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
             print('Error:', ex)
+        
+        self.wait = wait
         self.pimc = PIMC()
         self.pimc.Clear()
         self.full_deck = Extensions.Parse("AKQJT98765432.AKQJT98765432.AKQJT98765432.AKQJT98765432")
@@ -50,7 +53,10 @@ class BGADLL:
         self.lefty_constraints = Details(0,13,0,13,0,13,0,13,0,37)
         self.suit = bidding.get_strain_i(contract)
         self.mintricks = int(contract[0]) + 6
+        self.contract = contract
+        self.tricks_taken = 0
         self.player_i = player_i
+        self.score_by_tricks_taken = [scoring.score(self.contract, is_decl_vuln, n_tricks) for n_tricks in range(14)]
         self.verbose = verbose
 
     def calculate_hcp(self, rank):
@@ -68,6 +74,16 @@ class BGADLL:
 
     def update_trick_needed(self):
         self.mintricks += -1
+        self.tricks_taken += 1
+
+    def update_constraints(self, min1,max1, min2, max2):
+        self.lefty_constraints.MinHCP = max(min1,0)
+        self.lefty_constraints.MaxHCP = min(max1,37)
+        self.righty_constraints.MinHCP = max(min2,0)
+        self.righty_constraints.MaxHCP = min(max2,37)
+        print(self.lefty_constraints.ToString())
+        print(self.righty_constraints.ToString())
+        
 
     def set_card_played(self, card52, playedBy):
         real_card = Card.from_code(card52)
@@ -153,16 +169,16 @@ class BGADLL:
                 self.righty_constraints.MinHCP = max(0,self.righty_constraints.MinHCP - hcp)
                 self.righty_constraints.MaxHCP = max(0,self.righty_constraints.MaxHCP - hcp)
 
-    async def check_threads_finished(self, waitTime):
+    async def check_threads_finished(self):
         start_time = time.time()
-        while time.time() - start_time < waitTime:  
-            await asyncio.sleep(0.01)
+        while time.time() - start_time < self.wait:  
+            await asyncio.sleep(0.05)
             if self.pimc.Evaluating == False:  
-                print("Threads are finished.")
+                print(f"Threads are finished after {time.time() - start_time:.2f}.")
                 print(f"Playouts: {self.pimc.Playouts}")    
                 return
         print(f"Playouts: {self.pimc.Playouts}")    
-        print(f"Threads are still running after {waitTime} second.")
+        print(f"Threads are still running after {self.wait} second.")
 
     def find_trump(self, value):
         from BGADLL import Macros
@@ -229,13 +245,13 @@ class BGADLL:
         if self.verbose:
             print(trump)
         self.pimc.BeginEvaluate(trump)
-        # Wait some time for the play
-        #print("Sleeping")
+
         candidate_cards = []
 
-        await self.check_threads_finished(0.5)
+        await self.check_threads_finished()
         self.pimc.EndEvaluate()
         legalMoves = self.pimc.LegalMoves
+        candidate_cards = {}
         for card in legalMoves:
             # Calculate win probability
             output = self.pimc.Output[card]
@@ -246,13 +262,14 @@ class BGADLL:
                 probability = 0
             tricks = sum(t for t in output)/ count if count > 0 else 0
 
-            candidate_cards.append(CandidateCard(
-                card=Card.from_symbol(str(card)[::-1]),
-                insta_score=None,
-                expected_tricks_dd=tricks,
-                p_make_contract=probability,
-                expected_score_dd=None
-            ))
+            # Second element is the score. We need to calculate it
+            score = sum(self.score_by_tricks_taken[t + self.tricks_taken] for t in output) / count if count > 0 else 0
+
+            candidate_cards[Card.from_symbol(str(card)[::-1])] = (tricks, score, probability)
+
+        if self.verbose:
+            for card, (tricks, score, probability) in candidate_cards.items():
+                print(card, f"{tricks:.2f}", f"{score:.0f}", f"{probability:.2f}")
 
 
         self.pimc.EndEvaluate()

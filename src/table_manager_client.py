@@ -360,7 +360,7 @@ class TMClient:
             tricks.append(current_trick)
             tricks52.append(current_trick52)
 
-            if self.models.use_pimc:
+            if self.models.pimc_use:
                 # Only declarer and dummy used PIMC
                 card_players[1].pimc.reset_trick()
                 card_players[3].pimc.reset_trick()
@@ -408,7 +408,7 @@ class TMClient:
             else:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
-                if self.models.use_pimc:
+                if self.models.pimc_use:
                     # Only declarer and dummy used PIMC
                     card_players[1].pimc.update_trick_needed()
                     card_players[3].pimc.update_trick_needed()

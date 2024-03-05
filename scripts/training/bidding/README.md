@@ -8,7 +8,7 @@ The context is more complex and consist of
 1: The hand
 2: Vulnerability
 3: Bidding until now
-4: Opponents system
+4: Opponents system (and your system)
 
 The hand is always 13 out of 52 cards, and vulnerability has one of 4 different values
 
@@ -22,7 +22,7 @@ The vulnerability was implemented as 2 booleans, one for each side
 
 The hand was simple to represent, but to help the neural network, the shape and hcp for the hand was calculated and added to the input. As small cards doesn't have any value in the bidding the set of cards was reduced to 32.
 
-Until now the opponents system is not in use, but a system could be represented by a number, and it is possible to create a specific neurtal network, that should be used against a specific systrem (including conventions).
+To be able to distingush between the robot system and the opponents system we will have a field indicating system.
 
 But let us see at the actual implementation looking at a deal like this:
 
@@ -46,9 +46,14 @@ In a deck there is 40 high card points (hcp), and the hcp is calculated for each
 
 The shape of a hand is the length in the 4 suits, and again it is normalized (also known as z-score or standardization)
 
+        self.shapes = list(map(lambda shape: (shape - 3.25)/1.75, map(get_shape, hands)))
+        self.hcp = list(map(lambda point_count: (np.array([[point_count[0]]]) - 10) / 4, map(get_hcp, hands)))
+
 So we end up representing the hand as
 
-- [ 0, 0, 0.5, 0.43, -0.11, 1.03, -1.29, 0, 1, 0, 0, 1, 0, 0, 2, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1]
+- [0, 0, 0.5, 0.43, -0.11, 1.03, -1.29, 0, 1, 0, 0, 1, 0, 0, 2, 0, 1, 1, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 1]
+
+First two elements are the systems used, then the next two are vulnerablity, followed by hcp, shape and the actual hand
 
 So we are calculating hcp and shape so the neural network will not have to build neurons for this, and we are condensing information about the hand like small cards, to remove the information as it is not being used in the bidding.
 
@@ -76,7 +81,9 @@ So now left is the bidding, and Lorand decided that each bidding round should be
 
 Seen from a specific hand a bidding round consist of bid from LHO (Left Hand Opponent), Partner and RHO (Right Hand Opponent)
 
-When the player is the first to bid, we introduce the new bid "PADDING_START", for the 3 other player. I reality just telling, that there was no bid in the other positions.
+**BEN 2.0 has introduced the robots previous bid as input, so we are now giving the last bid from the robot as input. Then a predicted bid is used as input and we don't have to store state**
+
+When the player is the first to bid, we introduce the new bid "PADDING_START", for the 3 other player. It is in reality just telling, that there was no bid in the other positions.
 
 A single bid is represented as an array with 40 elements, where only 1 item is 1, and the rest is zero (a One-Hot array), as this will help the neural network. The values of the Hot-array is
 
@@ -89,13 +96,16 @@ A single bid is represented as an array with 40 elements, where only 1 item is 1
 
 So we now have the input record for a bid as this (Q7.AT43.QT3.AT63)
 
-[ 0, 0, 0.5, -0.71, 0.43, -0.11, 0.43,  
+[ 0, 0, 0, 0, 0.5, -0.71, 0.43, -0.11, 0.43,  
    0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 2, 0, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 0, 1, 0, 0, 2,  
+   1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  
    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  
    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,  
    1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-3 times PAD_START just means that the player is first hand to bid.
+First two elements are the systems used, then followed by the hand we declared above.
+
+4 times PAD_START just means that the player is first hand to bid.
 
 And the expected output as this:
 

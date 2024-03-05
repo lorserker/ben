@@ -12,7 +12,7 @@ from nn.lead_singledummy import LeadSingleDummy
 
 class Models:
 
-    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, bba_ns, bba_ew, sameforboth, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, include_opening_lead, use_pimc, use_probability, matchpoint, pimc_wait):
+    def __init__(self, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, include_system, ns, ew, bba_ns, bba_ew, sameforboth, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, include_opening_lead, use_probability, matchpoint, pimc_use, pimc_wait,pimc_start_trick):
         self.bidder_model = bidder_model
         self.binfo_model = binfo_model
         self.lead_suit_model = lead_suit_model
@@ -41,8 +41,9 @@ class Models:
         self.use_biddingquality_in_eval = use_biddingquality_in_eval
         self.double_dummy_eval = double_dummy_eval
         self.include_opening_lead = include_opening_lead
-        self.use_pimc = use_pimc
+        self.pimc_use = pimc_use
         self.pimc_wait = pimc_wait
+        self.pimc_start_trick = pimc_start_trick
         self.use_probability = use_probability
         self.matchpoint = matchpoint
 
@@ -67,8 +68,9 @@ class Models:
         lead_included = conf.getboolean('eval', 'lead_included', fallback=True)
         double_dummy_eval = conf.getboolean('eval', 'double_dummy_eval', fallback=False)
         claim = conf.getboolean('cardplay', 'claim', fallback=True)
-        use_pimc = conf.getboolean('cardplay', 'PIMC', fallback=False)
-        pimc_wait = conf.getfloat('cardplay','pimc_wait', fallback=0.5)
+        pimc_use = conf.getboolean('cardplay', 'pimc_use', fallback=False)
+        pimc_wait = conf.getfloat('cardplay','pimc_wait', fallback=1)
+        pimc_start_trick = conf.getfloat('cardplay','pimc_start_trick', fallback=1)
         include_opening_lead = conf.getboolean('cardplay', 'include_opening_lead', fallback=False)
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'claim', fallback=False)
         if include_system == True:
@@ -119,10 +121,11 @@ class Models:
             use_biddingquality_in_eval=use_biddingquality_in_eval,
             double_dummy_eval=double_dummy_eval,
             include_opening_lead = include_opening_lead,
-            use_pimc = use_pimc,
             use_probability = use_probability,
             matchpoint = matchpoint,
-            pimc_wait = pimc_wait
+            pimc_use = pimc_use,
+            pimc_wait = pimc_wait,
+            pimc_start_trick= pimc_start_trick
         )
 
     @property

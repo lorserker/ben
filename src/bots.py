@@ -46,7 +46,7 @@ class BotBid:
         self.use_biddingquality = models.use_biddingquality
         self.hash_integer  = calculate_seed(hand_str)         
         if self.verbose:
-            print(f"Setting seed (Sampling bidding info) from {hand_str}: {hash_integer}")
+            print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
         self.rng = np.random.default_rng(self.hash_integer)
 
     @staticmethod
@@ -841,8 +841,8 @@ class CardPlayer:
         if self.verbose:
             print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
         self.rng = np.random.default_rng(self.hash_integer)
-        if (player_i == 1 or player_i == 3)  and self.models.use_pimc:
-            self.pimc = BGADLL(models.pimc_wait, hand_str, public_hand_str, contract, player_i, self.verbose)
+        if (player_i == 1 or player_i == 3)  and self.models.pimc_use:
+            self.pimc = BGADLL(models.pimc_wait, hand_str, public_hand_str, contract, player_i, is_decl_vuln, self.verbose)
             print(hand_str, public_hand_str, contract, player_i)
 
 
@@ -854,7 +854,7 @@ class CardPlayer:
         self.x_play[:,0,293+strain_i] = 1
 
     def set_real_card_played(self, card, playedBy):
-        if (self.player_i == 1 or self.player_i == 3) and self.models.use_pimc:
+        if (self.player_i == 1 or self.player_i == 3) and self.models.pimc_use:
             self.pimc.set_card_played(card, playedBy)
 
     def set_card_played(self, trick_i, leader_i, i, card):
@@ -881,39 +881,40 @@ class CardPlayer:
         self.public52[card52] -= 1
 
     async def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
+        current_trick = [deck52.card52to32(c) for c in current_trick52]
+        samples = []
+        h1 = []
+        h3 = []
+        for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
+            samples.append('%s %s %s %s %.5f' % (
+                hand_to_str(players_states[0][i,0,:32].astype(int)),
+                hand_to_str(players_states[1][i,0,:32].astype(int)),
+                hand_to_str(players_states[2][i,0,:32].astype(int)),
+                hand_to_str(players_states[3][i,0,:32].astype(int)),
+                bidding_scores[i]
+            ))
+            if trick_i == 0:
+                # Not needed to count for declarer and dummy
+                h1.append(binary.get_hcp(hand = np.array(players_states[0][i, 0, :32].astype(int)).reshape(1,32)))
+                h3.append(binary.get_hcp(hand = np.array(players_states[2][i, 0, :32].astype(int)).reshape(1,32)))
+        
         # If we are declarer and PIMC enabled - use PIMC
-        BGADLL = (self.player_i == 1 or self.player_i == 3) and self.models.use_pimc
+        BGADLL = (self.player_i == 1 or self.player_i == 3) and self.models.pimc_use and trick_i  >= (self.models.pimc_start_trick - 1)
         if BGADLL:
+            if trick_i == 0:
+                min_h1 = int(min(h1))
+                max_h1 = int(np.max(h1))
+                min_h3 = int(np.min(h3))
+                max_h3 = int(np.max(h3))
+                
+                self.pimc.update_constraints(min_h1-2, max_h1+2, min_h3-2, max_h3+2)
 
             # Based on player states we should be able to find min max for suits and hcps, and add that before calling PIMC
-            candidate_cards = await self.pimc.nextplay(shown_out_suits)
-            
-            candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd), reverse=True)
-
-            samples = []
-
-            for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
-                samples.append('%s %s %s %s %.5f' % (
-                    hand_to_str(players_states[0][i,0,:32].astype(int)),
-                    hand_to_str(players_states[1][i,0,:32].astype(int)),
-                    hand_to_str(players_states[2][i,0,:32].astype(int)),
-                    hand_to_str(players_states[3][i,0,:32].astype(int)),
-                    bidding_scores[i]
-                ))
-
-            card_resp = CardResp(
-                card=candidate_cards[0].card,
-                candidates=candidate_cards,
-                samples=samples,
-                shape=-1,
-                hcp=-1, 
-                quality=quality
-
-            )
+            card52_dd = await self.pimc.nextplay(shown_out_suits)
+            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality,samples)            
         else:
-            current_trick = [deck52.card52to32(c) for c in current_trick52]
             card52_dd = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
-            card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality)
+            card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples)
 
         return card_resp
 
@@ -1093,8 +1094,53 @@ class CardPlayer:
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_this_trick_lead_suit(),
         )
         return x.reshape(-1)
-    
-    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality):
+
+    def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples):
+        t_start = time.time()
+        card_softmax = self.next_card_softmax(trick_i)
+        if self.verbose:
+            print(f'Next card response time: {time.time() - t_start:0.4f}')
+
+        all_cards = np.arange(32)
+        ## This could be a parameter, but only used for display purposes
+        s_opt = card_softmax > 0.001
+
+        card_options, card_scores = all_cards[s_opt], card_softmax[s_opt]
+
+        card_nn = {c:s for c, s in zip(card_options, card_scores)}
+        if self.verbose:
+            print(card_nn)
+
+        #print(binary.get_hcp(players_states[0][0,0,:].astype(int)))
+        #print(binary.get_shape(players_states[0][0,0,:32].astype(int)))
+        candidate_cards = []
+        
+        for card, (e_tricks, e_score, e_make) in card_dd.items():
+            card32 = deck52.card52to32(deck52.encode_card(str(card)))
+
+            candidate_cards.append(CandidateCard(
+                card=card,
+                insta_score=card_nn.get(card32, 0),
+                expected_tricks_dd=e_tricks,
+                p_make_contract=e_make,
+                expected_score_dd=e_score
+            ))
+
+        candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd), reverse=True)
+
+        best_card_resp = CardResp(
+            card=candidate_cards[0].card,
+            candidates=candidate_cards,
+            samples=samples,
+            shape=-1,
+            hcp=-1, 
+            quality=quality
+
+        )
+        return best_card_resp
+
+
+    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
         if self.verbose:
@@ -1138,16 +1184,6 @@ class CardPlayer:
                     candidate_cards = candidate_cards2
             else:
                 candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
-        samples = []
-
-        for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
-            samples.append('%s %s %s %s %.5f' % (
-                hand_to_str(players_states[0][i,0,:32].astype(int)),
-                hand_to_str(players_states[1][i,0,:32].astype(int)),
-                hand_to_str(players_states[2][i,0,:32].astype(int)),
-                hand_to_str(players_states[3][i,0,:32].astype(int)),
-                bidding_scores[i]
-            ))
 
         best_card_resp = CardResp(
             card=candidate_cards[0].card,
