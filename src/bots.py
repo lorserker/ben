@@ -906,7 +906,7 @@ class CardPlayer:
         # If we are declarer and PIMC enabled - use PIMC
         BGADLL = (self.player_i == 1 or self.player_i == 3) and self.models.pimc_use and trick_i  >= (self.models.pimc_start_trick - 1)
         if BGADLL:
-            if trick_i == 0:
+            if trick_i == 0 and self.models.pimc_hcp_constraints:
                 for i in range(players_states[0].shape[0]):
                     # Not needed to count for declarer and dummy
                     h1.append(binary.get_hcp(hand = np.array(players_states[0][i, 0, :32].astype(int)).reshape(1,32)))

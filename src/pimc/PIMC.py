@@ -261,9 +261,12 @@ class BGADLL:
             # Second element is the score. We need to calculate it
             score = sum(self.score_by_tricks_taken[t + self.tricks_taken] for t in output) / count if count > 0 else 0
 
+            print("adding", Card.from_symbol(str(card)[::-1]))
             candidate_cards[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2))
             if self.verbose:
                 print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f}")
 
+        print("Returning from pimc")
+        print(candidate_cards)
         self.pimc.EndEvaluate()
         return candidate_cards
