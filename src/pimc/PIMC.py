@@ -83,15 +83,16 @@ class BGADLL:
             margin = 2
         else:
             margin = 5
-        hcp_from_lead_lefty = 37 - self.east_constraints.MaxHCP
+        hcp_from_lead = 37 - self.east_constraints.MaxHCP
         self.east_constraints.MinHCP = max(min1-margin, 0)
         self.east_constraints.MaxHCP = min(max1+margin, 37)
         self.west_constraints.MinHCP = max(min2-margin, 0)
         self.west_constraints.MaxHCP = min(max2+margin, 37)
-        print(self.east_constraints.ToString())
-        print(self.west_constraints.ToString())
+        if self.verbose:
+            print(self.east_constraints.ToString())
+            print(self.west_constraints.ToString())
         # We are correcting for lead before the sampling
-        self.east_constraints.MaxHCP -= hcp_from_lead_lefty
+        self.east_constraints.MaxHCP -= hcp_from_lead
 
     def set_card_played(self, card52, playedBy):
         real_card = Card.from_code(card52)
@@ -223,7 +224,7 @@ class BGADLL:
 
         trump = self.find_trump(self.suit)
         if self.verbose:
-            print(trump)
+            print("Trump:",trump)
         self.pimc.BeginEvaluate(trump)
 
         candidate_cards = []
@@ -250,7 +251,7 @@ class BGADLL:
                 self.west_constraints = Details(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                 self.east_constraints = Details(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                 print("Trying without constraints")
-                return self.nextplay(shown_out_suits)
+                return await self.nextplay(shown_out_suits)
             makable = sum(1 for t in output if t >= self.mintricks)
             probability = makable / count if count > 0 else 0
             if math.isnan(probability):
