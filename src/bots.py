@@ -837,13 +837,22 @@ class CardPlayer:
         self.use_biddingquality_in_eval = models.use_biddingquality_in_eval
         from ddsolver import ddsolver
         self.dd = ddsolver.DDSolver()
-        self.hash_integer  = calculate_seed(hand_str)         
+        if (player_i == 1):
+            self.hash_integer  = calculate_seed(public_hand_str)         
+        else:
+            self.hash_integer  = calculate_seed(hand_str)         
         if self.verbose:
             print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
         self.rng = np.random.default_rng(self.hash_integer)
-        if (player_i == 1 or player_i == 3)  and self.models.pimc_use:
+        # When using PIMC dummy is always North
+        if (player_i == 1)  and self.models.pimc_use:
+            self.pimc = BGADLL(models.pimc_wait, public_hand_str, hand_str, contract, player_i, is_decl_vuln, self.verbose)
+            if self.verbose:
+                print(public_hand_str, hand_str, contract, player_i)
+        if (player_i == 3)  and self.models.pimc_use:
             self.pimc = BGADLL(models.pimc_wait, hand_str, public_hand_str, contract, player_i, is_decl_vuln, self.verbose)
-            print(hand_str, public_hand_str, contract, player_i)
+            if self.verbose:
+                print(hand_str, public_hand_str, contract, player_i)
 
 
     def init_x_play(self, public_hand, level, strain_i):
@@ -893,21 +902,20 @@ class CardPlayer:
                 hand_to_str(players_states[3][i,0,:32].astype(int)),
                 bidding_scores[i]
             ))
-            if trick_i == 0:
-                # Not needed to count for declarer and dummy
-                h1.append(binary.get_hcp(hand = np.array(players_states[0][i, 0, :32].astype(int)).reshape(1,32)))
-                h3.append(binary.get_hcp(hand = np.array(players_states[2][i, 0, :32].astype(int)).reshape(1,32)))
-        
+
         # If we are declarer and PIMC enabled - use PIMC
         BGADLL = (self.player_i == 1 or self.player_i == 3) and self.models.pimc_use and trick_i  >= (self.models.pimc_start_trick - 1)
         if BGADLL:
             if trick_i == 0:
+                for i in range(players_states[0].shape[0]):
+                    # Not needed to count for declarer and dummy
+                    h1.append(binary.get_hcp(hand = np.array(players_states[0][i, 0, :32].astype(int)).reshape(1,32)))
+                    h3.append(binary.get_hcp(hand = np.array(players_states[2][i, 0, :32].astype(int)).reshape(1,32)))
                 min_h1 = int(min(h1))
-                max_h1 = int(np.max(h1))
-                min_h3 = int(np.min(h3))
-                max_h3 = int(np.max(h3))
-                
-                #self.pimc.update_constraints(min_h1-2, max_h1+2, min_h3-2, max_h3+2)
+                max_h1 = int(max(h1))
+                min_h3 = int(min(h3))
+                max_h3 = int(max(h3))
+                self.pimc.set_hcp_constraints(min_h1, max_h1, min_h3, max_h3, quality)
 
             # Based on player states we should be able to find min max for suits and hcps, and add that before calling PIMC
             card52_dd = await self.pimc.nextplay(shown_out_suits)
@@ -1111,8 +1119,6 @@ class CardPlayer:
         if self.verbose:
             print(card_nn)
 
-        #print(binary.get_hcp(players_states[0][0,0,:].astype(int)))
-        #print(binary.get_shape(players_states[0][0,0,:32].astype(int)))
         candidate_cards = []
         
         for card, (e_tricks, e_score, e_make) in card_dd.items():
@@ -1126,7 +1132,7 @@ class CardPlayer:
                 expected_score_dd=e_score
             ))
 
-        candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd), reverse=True)
+        candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd, c.expected_score_dd, c.insta_score), reverse=True)
 
         best_card_resp = CardResp(
             card=candidate_cards[0].card,
