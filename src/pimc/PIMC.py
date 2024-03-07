@@ -72,6 +72,7 @@ class BGADLL:
 
     def reset_trick(self):
         from BGADLL import Hand
+        
         self.playedHand = Hand()
 
     def update_trick_needed(self):
@@ -186,11 +187,12 @@ class BGADLL:
         from BGADLL import PIMC, Hand, Details, Macros, Extensions, Card as PIMCCard
 
         self.pimc.Clear()
-        if self.verbose:
-            print("self.player_i", self.player_i)
-            print(self.northhand.ToString(), self.southhand.ToString())
-            print(self.opposHand.ToString(), self.playedHand.ToString())
-            print(shown_out_suits)
+        #if self.verbose:
+        print("self.player_i", self.player_i)
+        print(self.northhand.ToString(), self.southhand.ToString())
+        print(self.opposHand.ToString(), self.playedHand.ToString())
+        print(shown_out_suits)
+        print(Macros.Player.South if self.dummy else Macros.Player.North)
 
         # if self.declarer:
         idx = 0
@@ -233,6 +235,9 @@ class BGADLL:
         legalMoves = self.pimc.LegalMoves
         candidate_cards = {}
         for card in legalMoves:
+            if self.verbose:
+                print("Combinations:", self.pimc.Combinations)
+                print("Examined:", self.pimc.Examined)
             # Calculate win probability
             output = self.pimc.Output[card]
             count = float(len(output))
@@ -242,7 +247,6 @@ class BGADLL:
                 print(self.pimc.LegalMovesToString)
                 print("Combinations:", self.pimc.Combinations)
                 print("Examined:", self.pimc.Examined)
-                print("Declarer", self.declarer)
                 print(self.northhand.ToString(), self.southhand.ToString())
                 print(self.opposHand.ToString(), self.playedHand.ToString())
                 print(shown_out_suits)

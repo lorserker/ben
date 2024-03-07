@@ -60,7 +60,7 @@
             <option value="E-W">EW</option>
             <option value="Both">Both</option>
         </select><br>
-        <label for="deal">Text:</label>
+        <label for="deal">Deal in this format: J2.QJ53.T8754.84 64.K62.Q62.AJT65 KQ985.A.A93.K732 AT73.T9874.KJ.Q9:</label>
         <textarea id="deal" name="dealtext" cols="40"></textarea><br>
         <button type="submit" class="submit-button" data-form="form1" onclick="return validateForm('deal')">Play from text</button>    
     </form>

@@ -163,6 +163,7 @@ class Sample:
 
         # distribute small cards
         js = np.zeros(n_samples, dtype=int)
+        loop_counter = 0
         while True:
             s_all_r = s_all[js < small_out_i.shape[1]]
             if len(s_all_r) == 0:
@@ -175,6 +176,14 @@ class Sample:
 
             can_receive_cards = cards_received[s_all_r, receivers] < 13
 
+            # Count the number of True values
+            num_true_values = np.count_nonzero(can_receive_cards)
+            print("can_receive_cards", num_true_values, len(s_all_r))
+
+            if num_true_values == 0:
+                if len(s_all_r) == n_samples:
+                    break
+
             cards_received[s_all_r[can_receive_cards], receivers[can_receive_cards]] += 1
             lho_pard_rho[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
             r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= 0.5
@@ -184,10 +193,10 @@ class Sample:
             # This can result in hands with 12 cards, and interestingly the bidding can be OK with 12 cards, and also single dummy is fine
             # But after implementing the option of Double Dummy for opening lead it is a problem
             # So we could just ship the boards where a player has 12 cards, but for now we just remove the counter
-            #loop_counter += 1  # Increment the loop counter
-            #if loop_counter >= 250:  # Check if the counter reaches 76
-            #    print("Loop counter >= 76")
-            #    break  #
+            loop_counter += 1  # Increment the loop counter
+            if loop_counter % 500 == 0:  # Check if the counter reaches 76
+                print("Loop counter", loop_counter)
+                break  #
 
 
         # re-apply constraints
@@ -259,7 +268,8 @@ class Sample:
         A_lho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 1) % 4, hand, vuln, ns, ew)
         A_pard = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 2) % 4, hand, vuln, ns, ew)
         A_rho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 3) % 4, hand, vuln, ns, ew)
-            
+
+        print(n_samples, c_hcp[0], c_shp[0], hand.reshape(32), rng)            
         lho_pard_rho = self.sample_cards_vec(n_samples, c_hcp[0], c_shp[0], hand.reshape(32), rng)
 
         # Consider saving the generated boards, and add the result from previous sampling to this output
@@ -268,14 +278,11 @@ class Sample:
         if self.verbose:
             print(f"n_samples {n_samples} matching bidding info")
 
-        if (ns != -1):
-            index = 2
-        else:
-            index = 0
+        index = 2
 
-        X_lho = np.zeros((n_samples, n_steps, 159 + index))
-        X_pard = np.zeros((n_samples, n_steps, 159 + index))
-        X_rho = np.zeros((n_samples, n_steps, 159 + index))
+        X_lho = np.zeros((n_samples, n_steps, 201))
+        X_pard = np.zeros((n_samples, n_steps, 201))
+        X_rho = np.zeros((n_samples, n_steps, 201))
 
         X_lho[:, :, :] = A_lho
         X_lho[:, :, 7+index:39+index] = lho_pard_rho[:, 0:1, :]

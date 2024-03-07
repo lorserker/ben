@@ -484,10 +484,11 @@ class Driver:
             tricks.append(current_trick)
             tricks52.append(current_trick52)
 
-            if isinstance(card_players[player_i], bots.CardPlayer):
+            if self.models.pimc_use:
                 # Only declarer and dummy used PIMC
-                if self.models.pimc_use:
+                if isinstance(card_players[1], bots.CardPlayer):
                     card_players[1].pimc.reset_trick()
+                if isinstance(card_players[3], bots.CardPlayer):
                     card_players[3].pimc.reset_trick()
 
             # initializing for the next trick

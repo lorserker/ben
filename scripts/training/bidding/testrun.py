@@ -5,6 +5,8 @@ import logging
 import os
 import conf
 import scoring
+import datetime
+import time
 from ddsolver.ddsolver import DDSolver
 
 # Set logging level to suppress warnings
@@ -42,6 +44,11 @@ def get_models(bidder_model_path):
 
 
 def main():
+    sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Testrun validating bidding.\n')
+    
+    # Record the start time
+    start_time = time.time()
+
     parser = argparse.ArgumentParser(description="Process bidding data using a bidder model.")
     parser.add_argument("config_path", help="Path to the configuration file")
     parser.add_argument("filename", help="Path to the input filename containing hands and dealer information")
@@ -90,8 +97,8 @@ def main():
         better = 0
         worse = 0
         same = 0
-        print(f"Loaded {n} deals")
-        for i in range(10000):
+        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Loaded {n} deals\n')
+        for i in range(1000):
             print("Board: ",i+1)
             if alternate and i % 2 == 1:
                 continue
@@ -151,6 +158,18 @@ def main():
         print(better," boards better")
         print(worse," boards worse")
         print(same," boards same score")
+        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Matched {matching} deals\n')
+        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} better {better} deals\n')
+        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} worse {worse} deals\n')
+        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} same score {same} deals\n')
+        # Record the end time
+        end_time = time.time()
+
+        # Calculate the elapsed time in seconds
+        execution_time = end_time - start_time
+
+        # Display the result
+        print(f"Execution time: {execution_time:.2f} seconds")
                 
 
 if __name__ == '__main__':

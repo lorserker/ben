@@ -242,6 +242,34 @@ def parse_pbn(fin):
 
     return dealer, vulnerable, hands, board
 
+def validdeal(board):
+    # Define the regex pattern with allowed characters and spaces
+    pattern = r'^([2-9TJQKA]+\.){3}[2-9TJQKA]+$'
+    # Split the input string into individual deals
+    hands = board.split()
+    
+    # Check if there are exactly 4 deals
+    if len(hands) != 4:
+        print("Not 4 hands", board)
+        return False
+    
+    # Check each deal individually
+    for hand in hands:
+        print(hand, len(hand))
+        suits = hand.split('.')
+        
+        if len(suits) != 4:
+            print("Not 4 suits in ", hand)
+            return False
+        if len(hand) != 16:
+            print("Not 13 cards ", hand)
+            return False
+        result = re.match(pattern, hand)
+        if not result:
+            return False
+
+    return True
+
 parser = argparse.ArgumentParser(description="Appserver")
 parser.add_argument("--host", default="localhost", help="Hostname for appserver")
 parser.add_argument("--port", type=int, default=8080, help="Port for appserver")
@@ -297,6 +325,14 @@ def index():
         board_no = request.forms.get('board')
         vulnerable = request.forms.get('vulnerable')
         dealtext = dealtext.upper()
+        print(dealtext)
+        if not validdeal(dealtext):
+            error_message = f'Error parsing deal-input.'
+            print(error_message)
+            print(dealtext)
+            encoded_error_message = quote(error_message)
+            redirect(f'/error?message={encoded_error_message}')
+            
         url = f'/app/bridge.html?deal=(%27{dealtext}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
     
     dealpbn = request.forms.get('dealpbn')

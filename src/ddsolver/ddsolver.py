@@ -65,6 +65,7 @@ class DDSolver:
         if res != 1:
             error_message = dds.get_error_message(res)
             print(f"Error Code: {res}, Error Message: {error_message}")
+            print(hands_pbn[0].encode('utf-8'))
             return None
 
         card_results = {}
