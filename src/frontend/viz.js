@@ -383,6 +383,9 @@ class PlayInfo {
                 if ("p_make_contract" in candidate) {
                     html += '<td>e(make/set)=' + Math.round(candidate['p_make_contract'] * 100) / 100 + '</td>'
                 }
+                if ("msg" in candidate) {
+                    html += '<td title="'+ candidate['msg'] +'">[pimc]</td>'
+                }
                 html += '</tr>'
             }
 

@@ -30,6 +30,7 @@ from deck52 import decode_card
 from bidding import bidding
 from objects import Card
 from util import calculate_seed
+from pimc.PIMC import BGADLL
 
 
 bbabid = False
@@ -247,11 +248,19 @@ class TMClient:
         if cardplayer_i == 3:
             decl_hand_str = own_hand_str
 
+        if self.models.pimc_use:
+            pimc = BGADLL(self.models.pimc_wait, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose)
+            if self.verbose:
+                print("PIMC",dummy_hand_str, decl_hand_str, contract)
+        else:
+            pimc = None
+
+
         card_players = [
-            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, self.verbose),
-            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, self.verbose),
-            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, self.verbose),
-            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, self.verbose)
+            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
+            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
+            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
+            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc, self.verbose)
         ]
 
         player_cards_played = [[] for _ in range(4)]
@@ -361,9 +370,9 @@ class TMClient:
             tricks52.append(current_trick52)
 
             if self.models.pimc_use:
-                # Only declarer and dummy used PIMC
-                card_players[1].pimc.reset_trick()
-                card_players[3].pimc.reset_trick()
+                # Only declarer and use PIMC
+                if isinstance(card_players[3], bots.CardPlayer):
+                    card_players[3].pimc.reset_trick()
 
             # initializing for the next trick
             # initialize hands
@@ -409,9 +418,9 @@ class TMClient:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
                 if self.models.pimc_use:
-                    # Only declarer and dummy used PIMC
-                    card_players[1].pimc.update_trick_needed()
-                    card_players[3].pimc.update_trick_needed()
+                    # Only declarer use PIMC
+                    if isinstance(card_players[3], bots.CardPlayer):
+                        card_players[3].pimc.update_trick_needed()
 
 
             print('{} trick52 {} cards={}. won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), trick_winner))

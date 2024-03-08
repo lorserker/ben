@@ -54,7 +54,7 @@ class Card:
 
 class CandidateCard:
 
-    def __init__(self, card, insta_score, expected_tricks_sd = None, expected_tricks_dd = None, p_make_contract=None, expected_score_sd=None, expected_score_dd=None):
+    def __init__(self, card, insta_score, expected_tricks_sd = None, expected_tricks_dd = None, p_make_contract=None, expected_score_sd=None, expected_score_dd=None, msg=None):
         self.card = card
         self.insta_score = None if insta_score is None else float(insta_score)
         self.expected_tricks_sd = None if expected_tricks_sd is None else float(expected_tricks_sd)
@@ -62,12 +62,13 @@ class CandidateCard:
         self.p_make_contract = None if p_make_contract is None else float(p_make_contract)
         self.expected_score_sd = None if expected_score_sd is None else float(expected_score_sd)
         self.expected_score_dd = None if expected_score_dd is None else float(expected_score_dd)
+        self.msg = msg
 
     def __str__(self):
         return f"CandidateCard(card={self.card}, insta_score={self.insta_score:0.4}, " \
                f"exp_tricks_sd={self.expected_tricks_sd}, exp_tricks_dd={self.expected_tricks_dd}, " \
                f"p_make_contract={self.p_make_contract}, exp_score_sd={self.expected_score_sd}, " \
-               f"exp_score_dd={self.expected_score_dd})"
+               f"exp_score_dd={self.expected_score_dd}), msg={self.msg}"
     
     def to_dict(self):
         result = {
@@ -85,6 +86,8 @@ class CandidateCard:
             result['expected_score_sd'] = round(self.expected_score_sd)
         if self.expected_score_dd is not None:
             result['expected_score_dd'] = round(self.expected_score_dd)
+        if self.msg is not None:
+            result['msg'] = self.msg
 
         return result
 

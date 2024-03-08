@@ -35,6 +35,7 @@ from objects import CardResp, Card, BidResp
 from claim import Claimer
 from pbn2ben import load
 from util import calculate_seed
+from pimc.PIMC import BGADLL
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -316,11 +317,18 @@ class Driver:
         righty_hand = self.hands[(decl_i + 3) % 4]
         decl_hand = self.hands[decl_i]
 
+        if self.models.pimc_use:
+            pimc = BGADLL(self.models.pimc_wait, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose)
+            if self.verbose:
+                print("PIMC",dummy_hand, decl_hand, contract)
+        else:
+            pimc = None
+
         card_players = [
-            AsyncCardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, self.verbose),
-            AsyncCardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, self.verbose),
-            AsyncCardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, self.verbose),
-            AsyncCardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler, self.verbose)
+            AsyncCardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
+            AsyncCardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
+            AsyncCardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
+            AsyncCardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, self.verbose)
         ]
 
         # check if user is playing and update card players accordingly
@@ -485,9 +493,7 @@ class Driver:
             tricks52.append(current_trick52)
 
             if self.models.pimc_use:
-                # Only declarer and dummy used PIMC
-                if isinstance(card_players[1], bots.CardPlayer):
-                    card_players[1].pimc.reset_trick()
+                # Only declarer use PIMC
                 if isinstance(card_players[3], bots.CardPlayer):
                     card_players[3].pimc.reset_trick()
 
@@ -532,10 +538,9 @@ class Driver:
             else:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
-                if isinstance(card_players[player_i], bots.CardPlayer):
-                    if self.models.pimc_use:
-                        # Only declarer and dummy used PIMC
-                        card_players[1].pimc.update_trick_needed()
+                if self.models.pimc_use:
+                    # Only declarer use PIMC
+                    if isinstance(card_players[3], bots.CardPlayer):
                         card_players[3].pimc.update_trick_needed()
 
             if self.verbose:

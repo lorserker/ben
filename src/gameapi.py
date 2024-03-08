@@ -297,10 +297,10 @@ def frontend():
             decl_hand_str = own_hand_str
 
         state.card_players = [
-                    CardPlayer(models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, False),
-                    CardPlayer(models, 1, dummy_str, hand_str, contract, is_decl_vuln, sampler, False),
-                    CardPlayer(models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, False),
-                    CardPlayer(models, 3, hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, False)
+                    CardPlayer(models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler),
+                    CardPlayer(models, 1, dummy_str, hand_str, contract, is_decl_vuln, sampler),
+                    CardPlayer(models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler),
+                    CardPlayer(models, 3, hand_str, dummy_hand_str, contract, is_decl_vuln, sampler)
             ]
         cards = [played[i:i+2] for i in range(0, len(played), 2)]
         for i in range(len(cards)):

@@ -181,9 +181,10 @@ class CardByCard:
             tricks.append(current_trick)
             tricks52.append(current_trick52)
 
-            # Only declarer and dummy used PIMC
-            card_players[1].pimc.reset_trick()
-            card_players[3].pimc.reset_trick()
+            if self.models.pimc_use:
+                # Only declarer and use PIMC
+                if isinstance(card_players[3], bots.CardPlayer):
+                    card_players[3].pimc.reset_trick()
             
             # initializing for the next trick
             # initialize hands

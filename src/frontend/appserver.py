@@ -255,7 +255,6 @@ def validdeal(board):
     
     # Check each deal individually
     for hand in hands:
-        print(hand, len(hand))
         suits = hand.split('.')
         
         if len(suits) != 4:
@@ -266,6 +265,7 @@ def validdeal(board):
             return False
         result = re.match(pattern, hand)
         if not result:
+            print("Wrong format ", hand)
             return False
 
     return True
