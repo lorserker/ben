@@ -270,9 +270,9 @@ class Sample:
 
         index = 2
 
-        X_lho = np.zeros((n_samples, n_steps, 201))
-        X_pard = np.zeros((n_samples, n_steps, 201))
-        X_rho = np.zeros((n_samples, n_steps, 201))
+        X_lho = np.zeros((n_samples, n_steps, 161))
+        X_pard = np.zeros((n_samples, n_steps, 161))
+        X_rho = np.zeros((n_samples, n_steps, 161))
 
         X_lho[:, :, :] = A_lho
         X_lho[:, :, 7+index:39+index] = lho_pard_rho[:, 0:1, :]
