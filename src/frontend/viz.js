@@ -182,7 +182,6 @@ class DealSnapshot {
     }
 }
 
-
 class Hand {
 
     constructor(handPBN) {
@@ -244,7 +243,6 @@ class Hand {
     }
 }
 
-
 class Trick {
 
     constructor(onLead, cards) {
@@ -305,7 +303,6 @@ class Trick {
     }
 }
 
-
 class DealerVuln {
 
     constructor(dealer, vulnNS, vulnEW) {
@@ -339,7 +336,6 @@ class DealerVuln {
 
     }
 }
-
 
 class PlayInfo {
 
@@ -499,7 +495,6 @@ class PlayInfo {
     }
 }
 
-
 class Auction {
 
     constructor(dealer, bids) {
@@ -574,7 +569,6 @@ class Auction {
     }
 
 }
-
 
 class TricksTaken {
 

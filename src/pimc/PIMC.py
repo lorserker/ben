@@ -28,19 +28,20 @@ BGADLL_PATH = os.path.join(BIN_FOLDER, BGADLL_LIB)
 
 class BGADLL:
 
-    def __init__(self, wait, northhand, southhand, contract, is_decl_vuln, verbose):
+    def __init__(self, models, northhand, southhand, contract, is_decl_vuln, verbose):
         try:
            # Load the .NET assembly and import the types and classes from the assembly
             clr.AddReference(BGADLL_PATH)
-            from BGADLL import PIMC, Hand, Details, Macros, Extensions
+            from BGADLL import PIMC, Hand, Constraints, Macros, Extensions
 
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
-            print("Error: Unable to load BGAIDLL.dll. Make sure the DLL is in the ./bin directory")
+            print("Error: Unable to load BGADLL.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
+            print("Make sure the dll is not writeprotected")
             print('Error:', ex)
-
-        self.wait = wait
+        self.max_playout = models.pimc_max_playout
+        self.wait = models.pimc_wait
         self.pimc = PIMC()
         self.pimc.Clear()
         self.full_deck = Extensions.Parse("AKQJT98765432.AKQJT98765432.AKQJT98765432.AKQJT98765432")
@@ -49,8 +50,8 @@ class BGADLL:
         self.opposHand = self.full_deck.Except(self.northhand.Union(self.southhand))
         self.playedHand = Hand()
         # Constraint are Clubs, Diamonds ending with hcp
-        self.west_constraints = Details(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
-        self.east_constraints = Details(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
+        self.west_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
+        self.east_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
         self.suit = bidding.get_strain_i(contract)
         self.mintricks = int(contract[0]) + 6
         self.contract = contract
@@ -191,7 +192,7 @@ class BGADLL:
                 print(f"Threads are finished after {time.time() - start_time:.2f}.")
                 print(f"Playouts: {self.pimc.Playouts}")
                 return
-        print(f"Threads are still running after {self.wait} second.")
+        print(f"Threads are still running after {self.wait} second. Examined {self.pimc.Examined} of {self.pimc.Combinations}")
         self.pimc.EndEvaluate()
         # Allow running threads to finalize
         await asyncio.sleep(0.1)
@@ -218,7 +219,7 @@ class BGADLL:
     # Define a Python function to find a bid
     async def nextplay(self, player_i, shown_out_suits):
 
-        from BGADLL import PIMC, Hand, Details, Macros, Extensions, Card as PIMCCard
+        from BGADLL import PIMC, Hand, Constraints, Macros, Extensions, Card as PIMCCard
 
         self.pimc.Clear()
         if self.verbose:
@@ -252,14 +253,12 @@ class BGADLL:
             print("West (LHO)",self.west_constraints.ToString())
 
         self.pimc.SetupEvaluation([self.northhand, self.southhand], self.opposHand, self.playedHand, [self.east_constraints,
-                                  self.west_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North)
+                                  self.west_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North, self.max_playout)
 
         trump = self.find_trump(self.suit)
         if self.verbose:
             print("Trump:",trump)
         self.pimc.BeginEvaluate(trump)
-
-        candidate_cards = []
 
         await self.check_threads_finished()
         if self.verbose:
@@ -283,8 +282,8 @@ class BGADLL:
                 print("Voids",shown_out_suits)
                 print("East (RHO)", self.east_constraints.ToString())
                 print("West (LHO)", self.west_constraints.ToString())
-                self.west_constraints = Details(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
-                self.east_constraints = Details(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
+                self.west_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
+                self.east_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                 print("Trying without constraints")
                 return await self.nextplay(player_i, shown_out_suits)
             makable = sum(1 for t in output if t >= self.mintricks)
@@ -302,4 +301,7 @@ class BGADLL:
                 print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f}")
 
         self.pimc.EndEvaluate()
+        if self.verbose:
+            print(candidate_cards)
+            print("Returning from PIMC")
         return candidate_cards

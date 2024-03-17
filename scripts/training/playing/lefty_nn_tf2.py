@@ -8,8 +8,6 @@ from tensorflow import keras
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import LSTM, Dense, Input
 from tensorflow.keras.optimizers import Adam
-import os
-import logging
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)

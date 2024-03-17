@@ -154,31 +154,24 @@ def get_hcp(hand):
     return np.sum(points, axis=(1, 2))
 
 
-def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
+def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
     assert (len(hand.shape) == 2)
     assert (hand.shape[1] == 32)
 
     n_samples = hand.shape[0]
+    bids = 4 if models.model_version == 2 else 3
 
-    # Do not add 2 cells for biddingsystem, we will add the at the end of the function
-    X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + 3*40), dtype=np.float16)
+    X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + bids*40), dtype=np.float16)
 
-    #print("Hand: ",hand_ix)
-    #print(ns, ew)
     vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float32)
     shp = (get_shape(hand) - 3.25) / 1.75
     hcp = (get_hcp(hand) - 10) / 4
 
-    #auction = auction_input
-
-    #if isinstance(auction, list):
     auction_input = auction_input + ['PAD_END'] * 4 * n_steps # To prevent index errors in the next section
     auction = bidding.BID2ID['PAD_END'] * np.ones((n_samples, len(auction_input)), dtype=np.int32)
     for i, bid in enumerate(auction_input):
         auction[:, i] = bidding.BID2ID[bid]
-    #else:
-    #    print("Called with array")
-    #print(auction)
+
     bid_i = hand_ix
     while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
         bid_i += 4
@@ -192,6 +185,11 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
     step_i = 0
     s_all = np.arange(n_samples, dtype=np.int32)
     while step_i < n_steps:
+        if bid_i - 4 >= 0:
+            my_bid = auction[:, bid_i - 4]
+            #print("Me", bidding.ID2BID[my_bid[0]])
+        else:
+            my_bid = bidding.BID2ID['PAD_START']
         if bid_i - 3 >= 0:
             lho_bid = auction[:, bid_i - 3]
             #print("LHO", bidding.ID2BID[lho_bid[0]])
@@ -207,36 +205,43 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
             #print("RHO", bidding.ID2BID[rho_bid[0]])
         else:
             rho_bid = bidding.BID2ID['PAD_START']
-        X[s_all, step_i, 39+lho_bid] = 1
-        X[s_all, step_i, (39+40)+partner_bid] = 1
-        X[s_all, step_i, (39+2*40)+rho_bid] = 1
+        if bids == 4:
+            X[s_all, step_i, 39+my_bid] = 1
+            X[s_all, step_i, (39+40)+lho_bid] = 1
+            X[s_all, step_i, (39+2*40)+partner_bid] = 1
+            X[s_all, step_i, (39+3*40)+rho_bid] = 1
+        else:
+            X[s_all, step_i, 39+lho_bid] = 1
+            X[s_all, step_i, (39+40)+partner_bid] = 1
+            X[s_all, step_i, (39+2*40)+rho_bid] = 1
 
         step_i += 1
         bid_i += 4
 
     # Insert bidding system, -1 means no system
-    if (ns == -1):
+    if (models.model_version == 0):
         return X
     # Better to add these at the beginning of this function
     padding_width = ((0, 0), (0, 0), (1, 0))
     if (hand_ix % 2 == 0):
-        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(ew))
-        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(ns))
+        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(models.ew))
+        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(models.ns))
     else:
-        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(ns))
-        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(ew))
+        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(models.ns))
+        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(models.ew))
 
     return X_padded
 
 
-def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns, ew):
+def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, models):
+    #print(auction_input, hand_ix)
     assert (len(hand.shape) == 2)
     assert (hand.shape[1] == 32)
 
     n_samples = hand.shape[0]
-
+    bids = 4 if models.model_version == 2 else 3
     # Do not add 2 cells for biddingsystem, we will add the at the end of the function
-    X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + 3*40), dtype=np.float16)
+    X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + bids*40), dtype=np.float16)
 
     vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float32)
     shp = (get_shape(hand) - 3.25) / 1.75
@@ -265,52 +270,66 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, ns,
     step_i = 0
     s_all = np.arange(n_samples, dtype=np.int32)
     while step_i < n_steps:
+        if bid_i - 4 >= 0:
+            my_bid = auction[:, bid_i - 4]
+            #print("Me", bidding.ID2BID[lho_bid[0]])
+        else:
+            my_bid = bidding.BID2ID['PAD_START']
         if bid_i - 3 >= 0:
             lho_bid = auction[:, bid_i - 3]
+            #print("LHO", bidding.ID2BID[lho_bid[0]])
         else:
             lho_bid = bidding.BID2ID['PAD_START']
         if bid_i - 2 >= 0:
             partner_bid = auction[:, bid_i - 2]
+            #print("PAR", bidding.ID2BID[partner_bid[0]])
         else:
             partner_bid = bidding.BID2ID['PAD_START']
         if bid_i - 1 >= 0:
             rho_bid = auction[:, bid_i - 1]
+            #print("RHO", bidding.ID2BID[rho_bid[0]])
         else:
             rho_bid = bidding.BID2ID['PAD_START']
-        X[s_all, step_i, 39+lho_bid] = 1
-        X[s_all, step_i, (39+40)+partner_bid] = 1
-        X[s_all, step_i, (39+2*40)+rho_bid] = 1
+        if bids == 4:
+            X[s_all, step_i, 39+my_bid] = 1
+            X[s_all, step_i, (39+40)+lho_bid] = 1
+            X[s_all, step_i, (39+2*40)+partner_bid] = 1
+            X[s_all, step_i, (30+3*40)+rho_bid] = 1
+        else:
+            X[s_all, step_i, 39+lho_bid] = 1
+            X[s_all, step_i, (39+40)+partner_bid] = 1
+            X[s_all, step_i, (39+2*40)+rho_bid] = 1
 
         step_i += 1
         bid_i += 4
 
     # Insert bidding system, -1 means no system
-    if (ns == -1):
+    if (models.model_version == 0):
         return X
     # Better to add these at the beginning of this function
     padding_width = ((0, 0), (0, 0), (1, 0))
     if (hand_ix % 2 == 0):
-        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(ew))
-        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(ns))
+        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(models.ew))
+        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(models.ns))
     else:
-        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(ns))
-        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(ew))
+        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(models.ns))
+        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(models.ew))
     return X_padded
 
-def calculate_step_bidding_info(auction):
+def calculate_step_bidding_info(auction, models):
     # This is number of levels to get from the neural network. 
     n_steps = 1 + len(auction) // 4
     return n_steps
 
-def calculate_step_bidding(auction):
+def calculate_step_bidding(auction, models):
     # This is number of levels to get from the neural network. 
     if len(auction) == 0:
         return 1
     n_steps = 1 + (len(auction) - 1) // 4
     return n_steps
 
-def get_auction_binary_for_lead(auction, hand, binfo, vuln, ns, ew):
-    contract = bidding.get_contract(auction)
+def get_auction_binary_for_lead(auction, hand, vuln, dealer, models):
+    contract = bidding.get_contract(auction, dealer, models)
 
     level = int(contract[0])
     strain = bidding.get_strain_i(contract)
@@ -332,17 +351,17 @@ def get_auction_binary_for_lead(auction, hand, binfo, vuln, ns, ew):
     x[8] = vuln_us
     x[9] = vuln_them
     x[10:] = hand.reshape(32)
-    return x.reshape((1, -1)), get_shape_for_lead(auction, hand, binfo, vuln, ns, ew)
+    return x.reshape((1, -1)), get_shape_for_lead(auction, hand, vuln, contract, models)
 
-def get_shape_for_lead(auction, hand, binfo, vuln, ns, ew):
+def get_shape_for_lead(auction, hand, vuln, contract, models):
     b = np.zeros(15)
-    contract = bidding.get_contract(auction)
     decl_index = bidding.get_decl_i(contract)
     lead_index = (decl_index + 1) % 4
-    n_steps = calculate_step_bidding_info(auction)
-    A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, ns, ew)
+    n_steps = calculate_step_bidding_info(auction, models)
 
-    p_hcp, p_shp = binfo.model(A)
+    A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, models)
+
+    p_hcp, p_shp = models.binfo_model.model(A)
 
     b[:3] = p_hcp.reshape((-1, n_steps, 3))[:, -1, :].reshape(3)
     b[3:] = p_shp.reshape((-1, n_steps, 12))[:, -1, :].reshape(12)

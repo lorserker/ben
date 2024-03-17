@@ -154,66 +154,12 @@ def parse_lin(lin):
 
     return Board(dealer, vuln, hands, auction, play)
 
-
-# TODO: maybe we don't need this function
-def to_bbo_viewer(deal_data, tricks, trick_won_by):
-    decl_i = bidding.get_decl_i(bidding.get_contract(deal_data.auction))
-
-    nesw_indexes = [(decl_i + 1) % 4, (decl_i + 2) % 4, (decl_i + 3) % 4, decl_i]
-
-    player_i = 0
-
-    hands = [[[],[],[],[]], [[],[],[],[]], [[],[],[],[]], [[],[],[],[]]]
-
-    play = []
-
-    for trick, won_by in zip(tricks, trick_won_by):
-        for card in trick:
-            suit = card // 13
-            rank = 'AKQJT98765432'[card % 13]
-            hands[nesw_indexes[player_i]][suit].append(rank)
-            play.append('SHDC'[suit] + rank)
-            player_i = (player_i + 1) % 4
-        player_i = won_by
-
-    auction = []
-    for call in deal_data.auction:
-        if call == 'PAD_START':
-            continue
-        if call == 'PAD_END':
-            break
-        if call == 'PASS':
-            auction.append('p')
-        elif call == 'X':
-            auction.append('d')
-        elif call == 'XX':
-            auction.append('r')
-        else:
-            auction.append(call.lower())
-
-    def hand_to_bbo(hand):
-        return 's{}h{}d{}c{}'.format(
-            ''.join(hand[0]), ''.join(hand[1]), ''.join(hand[2]), ''.join(hand[3])
-        )
-
-    url = 'http://www.bridgebase.com/tools/handviewer.html'
-
-    vuln = {
-        (True, True): 'b',
-        (True, False): 'n',
-        (False, True): 'e',
-        (False, False): '-'
-    }[(deal_data.vuln_ns, deal_data.vuln_ew)]
-
-    params = 'd={}&v={}&a={}&w={}&n={}&e={}&s={}&p={}'.format(
-        'NESW'[deal_data.dealer],
-        vuln,
-        ''.join(auction),
-        hand_to_bbo(hands[3]),
-        hand_to_bbo(hands[0]),
-        hand_to_bbo(hands[1]),
-        hand_to_bbo(hands[2]),
-        ''.join(play)
-    )
-
-    return url + '?' + params
+def get_play_status(hand, current_trick):
+    if current_trick == [] or len(current_trick) == 4:
+        return "Lead"
+    if len(hand.suits[current_trick[0].suit]) == 0:
+        return "Discard"
+    elif len(hand.suits[current_trick[0].suit]) == 1:
+        return "Forced"
+    else:
+        return "Follow"

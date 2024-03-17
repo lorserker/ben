@@ -23,7 +23,7 @@ def get_info_for_opening(hand, bid, models):
     nesw_i = 1
     vuln = [True, False]
     hand = binary.parse_hand_f(32)(hand)
-    A = binary.get_auction_binary(n_steps, auction, nesw_i, hand, vuln, models.ns, models.ew)
+    A = binary.get_auction_binary(n_steps, auction, nesw_i, hand, vuln, models)
     p_hcp, p_shp = models.binfo_model.model(A)
 
     p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]

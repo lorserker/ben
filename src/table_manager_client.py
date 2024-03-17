@@ -7,12 +7,10 @@ logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-import uuid
 import shelve
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
 import ipaddress
-import sys
 import argparse
 import re
 import time
@@ -20,20 +18,13 @@ import asyncio
 import numpy as np
 from sample import Sample
 import bots
-import deck52
 import conf
 import datetime
 import pprint
 from objects import Card, CardResp, BidResp
 
-from deck52 import decode_card
+from deck52 import card52to32, decode_card, get_trick_winner_i, hand_to_str
 from bidding import bidding
-from objects import Card
-from util import calculate_seed
-from pimc.PIMC import BGADLL
-
-
-bbabid = False
 
 SEATS = ['North', 'East', 'South', 'West']
 
@@ -45,9 +36,6 @@ class TMClient:
         self.player_i = SEATS.index(self.seat)
         self.reader = None
         self.writer = None
-        self.ns = models.ns
-        self.ew = models.ew
-        self.sameforboth = models.sameforboth
         self.models = models
         self.sampler = sampler
         self._is_connected = False
@@ -83,15 +71,11 @@ class TMClient:
 
         self.dealer_i, self.vuln_ns, self.vuln_ew, self.hand_str = await self.receive_deal()
 
-        auction = await self.bidding(self.sameforboth)
-
-        # Bidding is over and the play still requires the right number of PAD_START
-        if self.dealer_i > 1 and self.sameforboth:
-            auction = ['PAD_START'] * 2 + auction
+        auction = await self.bidding()
 
         await asyncio.sleep(0.01)
 
-        self.contract = bidding.get_contract(auction)
+        self.contract = bidding.get_contract(auction, self.dealer_i, self.models)
         if  self.contract is None:
             return
 
@@ -149,7 +133,7 @@ class TMClient:
         else:
             self.opponents = matches[0]
 
-    async def bidding(self, sameforboth):
+    async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
 
         if self.models.use_bba:
@@ -158,10 +142,7 @@ class TMClient:
         else:
             bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.verbose)
 
-        if sameforboth:
-            auction = ['PAD_START'] * (self.dealer_i % 2)
-        else:
-            auction = ['PAD_START'] * self.dealer_i
+        auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
 
@@ -190,7 +171,7 @@ class TMClient:
 
     async def opening_lead(self, auction):
 
-        contract = bidding.get_contract(auction)
+        contract = bidding.get_contract(auction, self.dealer_i, self.models)
         decl_i = bidding.get_decl_i(contract)
         on_lead_i = (decl_i + 1) % 4
         
@@ -204,6 +185,7 @@ class TMClient:
                 self.models,
                 self.sampler,
                 on_lead_i,
+                self.dealer_i,
                 self.verbose
             )
             card_resp = bot_lead.find_opening_lead(auction)
@@ -222,7 +204,7 @@ class TMClient:
             return await self.receive_card_play_for(on_lead_i, 0)
 
     async def play(self, auction, opening_lead52):
-        contract = bidding.get_contract(auction)
+        contract = bidding.get_contract(auction, self.dealer_i, self.models)
         
         level = int(contract[0])
         strain_i = bidding.get_strain_i(contract)
@@ -249,7 +231,8 @@ class TMClient:
             decl_hand_str = own_hand_str
 
         if self.models.pimc_use:
-            pimc = BGADLL(self.models.pimc_wait, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose)
+            from pimc.PIMC import BGADLL
+            pimc = BGADLL(self.models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose)
             if self.verbose:
                 print("PIMC",dummy_hand_str, decl_hand_str, contract)
         else:
@@ -273,7 +256,7 @@ class TMClient:
         tricks52 = []
         trick_won_by = []
 
-        opening_lead = deck52.card52to32(opening_lead52)
+        opening_lead = card52to32(opening_lead52)
 
         current_trick = [opening_lead]
         current_trick52 = [opening_lead52]
@@ -333,7 +316,7 @@ class TMClient:
                     card52_symbol = await self.receive_card_play_for(nesw_i, trick_i)
                     card52 = Card.from_symbol(card52_symbol).code()
                 
-                card = deck52.card52to32(card52)
+                card = card52to32(card52)
                 
                 for card_player in card_players:
                     card_player.set_real_card_played(card52, player_i)
@@ -408,7 +391,7 @@ class TMClient:
                 assert np.sum(card_players[i].x_play[:, trick_i + 1, 0:32], axis=1) == 13 - trick_i - 1
                 assert np.sum(card_players[i].x_play[:, trick_i + 1, 32:64], axis=1) == 13 - trick_i - 1
 
-            trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
+            trick_winner = (leader_i + get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
             trick_won_by.append(trick_winner)
 
             if trick_winner % 2 == 0:
@@ -481,7 +464,7 @@ class TMClient:
                 card52_symbol = await self.receive_card_play_for(nesw_i, trick_i)
                 card52 = Card.from_symbol(card52_symbol).code()
 
-            card = deck52.card52to32(card52)
+            card = card52to32(card52)
 
             current_trick.append(card)
             current_trick52.append(card52)
@@ -495,7 +478,7 @@ class TMClient:
         tricks.append(current_trick)
         tricks52.append(current_trick52)
 
-        trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
+        trick_winner = (leader_i + get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         trick_won_by.append(trick_winner)
 
         if (self.verbose):
@@ -504,14 +487,14 @@ class TMClient:
         self.trick_winners = trick_won_by
         
         # Decode each element of tricks52
-        decoded_tricks52 = [[deck52.decode_card(item) for item in inner] for inner in tricks52]
+        decoded_tricks52 = [[decode_card(item) for item in inner] for inner in tricks52]
         pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
 
         concatenated_str = ""
 
         for i in range(len(player_cards_played52)):
             index = (i + (3-decl_i)) % len(player_cards_played52)
-            concatenated_str += deck52.hand_to_str(player_cards_played52[index]) + " "
+            concatenated_str += hand_to_str(player_cards_played52[index]) + " "
 
         # Remove the trailing space
         self.deal_str = concatenated_str.strip()
@@ -801,10 +784,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     except ValueError as e:
-        print("Error in configuration - typical the models do not match the configuration - include_system ")
-        print(e)
-        sys.exit(0)
-    except Exception as e:
+        print("Error in configuration - typical the models do not match the configuration.")
         print(e)
         sys.exit(0)
     finally:

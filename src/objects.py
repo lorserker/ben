@@ -50,7 +50,31 @@ class Card:
         n_ranks = 8 if xcards else 13
         return cls(suit=code // n_ranks, rank=code % n_ranks, xcards=xcards)
 
+class Auction:
+    def __init__(self) -> None:
+        self.auction = None
+        self.contract = None
+        self.dealer = None
 
+    def auction_over(self):
+        if len(self.auction) < 4:
+            return False
+        if self.auction[-1] == 'PAD_END':
+            return True
+        contract = self.last_contract(self.auction)
+        if contract is None:
+            return all([bid == 'PASS' for bid in self.auction[-4:]]) and all([bid == 'PAD_START' for bid in self.auction[:-4]])
+        else:
+            return all([bid == 'PASS' for bid in self.auction[-3:]])
+
+    def last_contract(self, auction):
+        for bid in reversed(auction):
+            if self.is_contract(bid):
+                return bid
+        return None
+
+    def is_contract(self, bid):
+        return bid[0].isdigit()
 
 class CandidateCard:
 

@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-import sys
 import datetime
 sys.path.append('../../../src')
 import tensorflow.compat.v1 as tf

@@ -22,13 +22,12 @@ if len(sys.argv) < 2:
     sys.exit(1)
 
 bin_dir = sys.argv[1]
+print(sys.argv)
 
-# Test setting
-
-batch_size = 128
+batch_size = 64
 display_step = 10000
-epochs = 50
-learning_rate = 0.002
+epochs = 100
+learning_rate = 0.001
 
 X_train = np.load(os.path.join(bin_dir, 'X.npy'))
 HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'))
@@ -40,10 +39,13 @@ n_dim_hcp = HCP_train.shape[2]
 n_dim_shape = SHAPE_train.shape[2]
 
 # If NS/EW cc included update name of model
-if n_ftrs == 161:
-    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-binfo_same'
+if n_ftrs == 201:
+    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-binfo-V2'
 else:
-    model_path = 'model/binfo'
+    if n_ftrs == 161:
+        model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-binfo'
+    else:
+        model_path = 'model/binfo'
 
 print("Size input hand:         ", n_ftrs)
 print("Examples for training:   ", n_examples)
@@ -65,12 +67,13 @@ for _ in range(n_layers):
     )
     cells.append(cell)
 
-state = []
-for i, cell_i in enumerate(cells):
-    s_c = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
-    s_h = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_h_{}'.format(i))
-    state.append(tf.compat.v1.nn.rnn_cell.LSTMStateTuple(c=s_c, h=s_h))
-state = tuple(state)
+if n_ftrs < 200:
+    state = []
+    for i, cell_i in enumerate(cells):
+        s_c = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
+        s_h = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_h_{}'.format(i))
+        state.append(tf.compat.v1.nn.rnn_cell.LSTMStateTuple(c=s_c, h=s_h))
+    state = tuple(state)
 
 x_in = tf.placeholder(tf.float32, [1, n_ftrs], name='x_in')
     
@@ -90,14 +93,16 @@ out_hcp_target_seq = tf.reshape(seq_out_hcp, [-1, n_dim_hcp], name='out_hcp_targ
 out_shape_seq = tf.matmul(tf.reshape(out_rnn, [-1, lstm_size]), w_shape, name='out_shape_seq')
 out_shape_target_seq = tf.reshape(seq_out_shape, [-1, n_dim_shape], name='out_shape_target_seq')
 
-output, next_state = lstm_cell(x_in, state)
+if n_ftrs < 200:
+    output, next_state = lstm_cell(x_in, state)
+    for i, next_i in enumerate(next_state):
+        tf.identity(next_i.c, name='next_c_{}'.format(i))
+        tf.identity(next_i.h, name='next_h_{}'.format(i))
+else:
+    output, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 
 out_hcp = tf.matmul(output, w_hcp, name='out_hcp')
 out_shape = tf.matmul(output, w_shape, name='out_shape')
-
-for i, next_i in enumerate(next_state):
-    tf.identity(next_i.c, name='next_c_{}'.format(i))
-    tf.identity(next_i.h, name='next_h_{}'.format(i))
 
 cost_hcp = tf.losses.absolute_difference(out_hcp_target_seq, out_hcp_seq)
 cost_shape = tf.losses.absolute_difference(out_shape_target_seq, out_shape_seq)
@@ -122,20 +127,6 @@ with tf.compat.v1.Session() as sess:
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i ,c_train))
 
             p_hcp_seq, p_shape_seq = sess.run([out_hcp_seq, out_shape_seq], feed_dict={seq_in: x_cost, seq_out_hcp: hcp_cost, seq_out_shape: shape_cost, keep_prob: 1.0})
-
-            print(
-                np.mean(np.abs(hcp_cost[:,0,:] - p_hcp_seq.reshape(hcp_cost.shape)[:,0,:])),
-                np.mean(np.abs(hcp_cost[:,1,:] - p_hcp_seq.reshape(hcp_cost.shape)[:,1,:])),
-                np.mean(np.abs(hcp_cost[:,2,:] - p_hcp_seq.reshape(hcp_cost.shape)[:,2,:])),
-                np.mean(np.abs(hcp_cost[:,3,:] - p_hcp_seq.reshape(hcp_cost.shape)[:,3,:])),
-                np.mean(np.abs(hcp_cost[:,-1,:] - p_hcp_seq.reshape(hcp_cost.shape)[:,-1,:])))
-            print(
-                np.mean(np.abs(shape_cost[:,0,:] - p_shape_seq.reshape(shape_cost.shape)[:,0,:])),
-                np.mean(np.abs(shape_cost[:,1,:] - p_shape_seq.reshape(shape_cost.shape)[:,1,:])),
-                np.mean(np.abs(shape_cost[:,2,:] - p_shape_seq.reshape(shape_cost.shape)[:,2,:])),
-                np.mean(np.abs(shape_cost[:,3,:] - p_shape_seq.reshape(shape_cost.shape)[:,3,:])),
-                np.mean(np.abs(shape_cost[:,-1,:] - p_shape_seq.reshape(shape_cost.shape)[:,-1,:])))
-            
             
             sys.stdout.flush()
 

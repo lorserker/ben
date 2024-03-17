@@ -131,6 +131,7 @@ class BBABotBid:
             # Provide a message to the user if the assembly is not found
             print("Error: Unable to load EPBot86.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
+            print("Make sure the dll is not writeprotected")
             print('Error:', ex)
         self.ns_system = ns_system
         self.ew_system = ew_system

@@ -30,27 +30,22 @@ class DealData(object):
 
 
     @classmethod
-    def from_deal_auction_string(cls, deal_str, auction_str, ns, ew, sameforboth, n_cards=52):
+    def from_deal_auction_string(cls, deal_str, auction_str, ns, ew, n_cards=52):
         dealer = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
         vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
         hands = list(map(parse_hand_f(n_cards), deal_str.strip().split()))
         auction_parts = auction_str.strip().replace('P', 'PASS').split()
         dealer_ix = dealer[auction_parts[0]]
         vuln_ns, vuln_ew = vuln[auction_parts[1]]
-        # If same for both we rotate the deal
-        if sameforboth and dealer_ix > 1:
-            dealer_ix = dealer_ix % 2
-            hands.insert(0, hands.pop())
-            hands.insert(0, hands.pop())
 
         auction = (['PAD_START'] * dealer_ix) + auction_parts[2:]
         return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, ns, ew, deal_str, auction_str, n_cards)
 
-    def get_binary(self, ns, ew, n_steps=8):
+    def get_binary(self, ns, ew, bids, n_steps=8):
         if ns == -1:
-            X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+            X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + bids * 40), dtype=np.float16)
         else: 
-            X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+            X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + bids * 40), dtype=np.float16)
         y = np.zeros((4, n_steps, 40), dtype=np.float16)
 
         padded_auction = self.auction + (['PAD_END'] * 4 * n_steps)
@@ -74,39 +69,30 @@ class DealData(object):
             hcp = self.hcp[hand_ix]
             shape = self.shapes[hand_ix]
             
+            if bids == 4:
+                my_bid = padded_auction[i - 4] if i - 4 >= 0 else 'PAD_START'
             lho_bid = padded_auction[i - 3] if i - 3 >= 0 else 'PAD_START'
             partner_bid = padded_auction[i - 2] if i - 2 >= 0 else 'PAD_START'
             rho_bid = padded_auction[i - 1] if i - 1 >= 0 else 'PAD_START'
             target_bid = padded_auction[i]
-            #if target_bid != "PAD_END":
-            #    print(i, t, hand_ix, ns, ew, v_we, v_them, hcp, shape,  lho_bid, partner_bid, rho_bid, target_bid)
 
-            if (ns == -1):
-                ftrs = np.concatenate((
-                    vuln,
-                    hcp,
-                    shape,
-                    self.hands[hand_ix],
-                    bidding.encode_bid(lho_bid),
-                    bidding.encode_bid(partner_bid),
-                    bidding.encode_bid(rho_bid)
-                ), axis=1)
+            # Create an array with [ns, ew] only if neither ns nor ew is -1
+            if hand_ix % 2 == 0:
+                ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([],ndmin=2)
             else:
-                # Create an array with [ns, ew] only if neither ns nor ew is -1
-                if hand_ix % 2 == 0:
-                    ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
-                else:
-                    ns_ew_array = np.array([ew, ns], ndmin=2) if ns != -1 and ew != -1 else np.array([])
-                ftrs = np.concatenate((
-                    ns_ew_array,
-                    vuln,
-                    hcp,
-                    shape,
-                    self.hands[hand_ix],
-                    bidding.encode_bid(lho_bid),
-                    bidding.encode_bid(partner_bid),
-                    bidding.encode_bid(rho_bid)
-                ), axis=1)
+                ns_ew_array = np.array([ew, ns], ndmin=2) if ns != -1 and ew != -1 else np.array([],ndmin=2)
+
+            ftrs = np.concatenate((
+                ns_ew_array,
+                vuln,
+                hcp,
+                shape,
+                self.hands[hand_ix],
+                bidding.encode_bid(my_bid) if bids == 4 else np.array([], ndmin=2),
+                bidding.encode_bid(lho_bid),
+                bidding.encode_bid(partner_bid),
+                bidding.encode_bid(rho_bid)
+            ), axis=1)
             X[hand_ix, t, :] = ftrs
             y[hand_ix, t, :] = bidding.encode_bid(target_bid)
             times_seen[hand_ix] += 1
@@ -117,11 +103,11 @@ class DealData(object):
 
         return X, y
     
-    def get_binary_hcp_shape(self, ns, ew,  n_steps=8):
+    def get_binary_hcp_shape(self, ns, ew, bids, n_steps=8):
         if ns == -1:
-            X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+            X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + bids * 40), dtype=np.float16)
         else: 
-            X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
+            X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + bids * 40), dtype=np.float16)
         y = np.zeros((4, n_steps, 40), dtype=np.float16)
         HCP = np.zeros((4, n_steps, 3), dtype=np.float16)
         SHAPE = np.zeros((4, n_steps, 12), dtype=np.float16)
@@ -146,6 +132,8 @@ class DealData(object):
             hcp = self.hcp[hand_ix]
             shape = self.shapes[hand_ix]
             
+            if bids == 4:
+                my_bid = padded_auction[i - 4] if i - 4 >= 0 else 'PAD_START'
             lho_bid = padded_auction[i - 3] if i - 3 >= 0 else 'PAD_START'
             partner_bid = padded_auction[i - 2] if i - 2 >= 0 else 'PAD_START'
             rho_bid = padded_auction[i - 1] if i - 1 >= 0 else 'PAD_START'
@@ -153,32 +141,21 @@ class DealData(object):
 
             # Create an array with [ns, ew] only if neither ns nor ew is -1
             if hand_ix % 2 == 0:
-                ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([])
+                ns_ew_array = np.array([ns, ew], ndmin=2) if ns != -1 and ew != -1 else np.array([],ndmin=2)
             else:
-                ns_ew_array = np.array([ew, ns], ndmin=2) if ns != -1 and ew != -1 else np.array([])
+                ns_ew_array = np.array([ew, ns], ndmin=2) if ns != -1 and ew != -1 else np.array([],ndmin=2)
 
-            if (ns == -1):
-                ftrs = np.concatenate((
-                    vuln,
-                    hcp,
-                    shape,
-                    self.hands[hand_ix],
-                    bidding.encode_bid(lho_bid),
-                    bidding.encode_bid(partner_bid),
-                    bidding.encode_bid(rho_bid)
-                ), axis=1)
-            else:
-                ftrs = np.concatenate((
-                    ns_ew_array,
-                    vuln,
-                    hcp,
-                    shape,
-                    self.hands[hand_ix],
-                    bidding.encode_bid(lho_bid),
-                    bidding.encode_bid(partner_bid),
-                    bidding.encode_bid(rho_bid)
-                ), axis=1)
-
+            ftrs = np.concatenate((
+                ns_ew_array,
+                vuln,
+                hcp,
+                shape,
+                self.hands[hand_ix],
+                bidding.encode_bid(my_bid) if bids == 4 else np.array([], ndmin=2),
+                bidding.encode_bid(lho_bid),
+                bidding.encode_bid(partner_bid),
+                bidding.encode_bid(rho_bid)
+            ), axis=1)
 
             X[hand_ix, t, :] = ftrs
             y[hand_ix, t, :] = bidding.encode_bid(target_bid)

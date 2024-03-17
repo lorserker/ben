@@ -3,6 +3,9 @@ from typing import Dict, List
 
 from ddsolver import dds
 
+# The number of threads is automatically configured by DDS on Windows, taking into account the number of processor cores and available memory.  
+# The number of threads can be influenced using by calling `SetMaxThreads`. 
+# This function should probably always be called on Linux/Mac, with a zero argument for auto-configuration.
 dds.SetMaxThreads(0)
 
 class DDSolver:

@@ -38,7 +38,7 @@ def load_deals_no_contracts(fin):
     yield (deal_str, auction_str, None)
 
 
-def create_binary(data_it, n, out_dir, ns, ew, alternating):
+def create_binary(data_it, n, out_dir, ns, ew, alternating, bids):
     if ns == 0 or ew == 0:
         rows_pr_hand = 2
     else:
@@ -55,11 +55,11 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating):
         if (i+1) % 1000 == 0: 
             print(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i+1)
         if alternating and (i % 2) == 1:
-            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ew, ns, False, 32)
-            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, n_steps = 8)
+            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ew, ns, 32)
+            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, bids=bids, n_steps = 8)
         else:
-            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ns, ew, False, 32)
-            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
+            deal_data = DealData.from_deal_auction_string(deal_str, auction_str, ns, ew, 32)
+            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, bids=bids, n_steps = 8)
         if ns == 0:
             start_ix = i * 2
             x[start_ix:start_ix+1,:,:] = x_part[1]
@@ -109,7 +109,7 @@ def to_numeric(value, default=0):
 if __name__ == '__main__':
     
     if len(sys.argv) < 3:
-        print("Usage: python binfo_binary.py inputfile outputdirectory NS=<x> EW=<y> alternate=<>")
+        print("Usage: python binfo_binary.py inputfile outputdirectory NS=<x> EW=<y> alternate=<> version=1")
         print("NS, EW and alternate are optional. If set to -1 no information about system is included in the model.")
         print("If set to 0 the hands from that side will not be used for training.")
         print("The input file is the BEN-format (1 line with hands, and next line with the bidding).")
@@ -121,6 +121,7 @@ if __name__ == '__main__':
     # Extract NS and EW values from command-line arguments if provided
     ns = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), -1)
     ew = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), -1)
+    version = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("version=")), 1)
 
     ns = to_numeric(ns)
     ew = to_numeric(ew)
@@ -139,4 +140,4 @@ if __name__ == '__main__':
             if user_input.lower() == "y":
                 sys.exit()
 
-        create_binary(load_deals_no_contracts(lines), n, outdir, ns, ew, alternating)
+        create_binary(load_deals_no_contracts(lines), n, outdir, ns, ew, alternating, 4 if version == 2 else 3)

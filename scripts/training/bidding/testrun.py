@@ -1,5 +1,5 @@
 import sys
-sys.path.append('../../../src')
+sys.path.append('D:/github/ben/src')
 import argparse
 import logging
 import os
@@ -16,9 +16,9 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 import numpy as np
 
+from bidding import bidding
 from sample import Sample
 from bots import BotBid
-from bidding import bidding
 
 DD = DDSolver(dds_mode=1)
 
@@ -98,7 +98,7 @@ def main():
         worse = 0
         same = 0
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Loaded {n} deals\n')
-        for i in range(1000):
+        for i in range(n):
             print("Board: ",i+1)
             if alternate and i % 2 == 1:
                 continue
@@ -109,11 +109,8 @@ def main():
             vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
             vuln_ns, vuln_ew = vuln[parts[1]]
             bidder_bots = [BotBid([vuln_ns, vuln_ew], hand, models, sampler, i, dealer_i, verbose) for i, hand in enumerate(hands)]
-
-            if models.sameforboth:
-                auction = ['PAD_START'] * (dealer_i % 2)
-            else:
-                auction = ['PAD_START'] * dealer_i
+    
+            auction = ['PAD_START'] * dealer_i
 
             turn_i = dealer_i
             
@@ -132,13 +129,12 @@ def main():
                 #trained_auction = [bidding.BID2ID[bid] for bid in trained_bidding.split(' ')]
                 trained_auction = [bid for bid in trained_bidding.split(' ')]
                 trained_auction = ['PAD_START'] * dealer_i + trained_auction
-                print(trained_auction)
-                contract = bidding.get_contract(trained_auction)
+                contract = bidding.get_contract(trained_auction, dealer_i, models)
                 vuln = False
                 #print("Contract:",contract)
                 dd_score_before= get_dd_score(hands, contract, vuln)
                 print(" ".join(parts[:2]), " ".join(hands))
-                contract = bidding.get_contract(auction)
+                contract = bidding.get_contract(auction, dealer_i, models)
                 vuln = False
                 dd_score_now = get_dd_score(hands, contract, vuln)
                 print(" ".join(parts[2:]), dd_score_before)
@@ -154,10 +150,6 @@ def main():
                 #print(" ".join(hands))
                 #print(auction_str)
                 matching += 1
-        print(matching," boards matched")
-        print(better," boards better")
-        print(worse," boards worse")
-        print(same," boards same score")
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Matched {matching} deals\n')
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} better {better} deals\n')
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} worse {worse} deals\n')

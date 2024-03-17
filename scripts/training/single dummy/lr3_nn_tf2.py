@@ -1,7 +1,5 @@
 import sys
 import numpy as np
-import sys
-import datetime
 import os
 import logging
 import tensorflow as tf

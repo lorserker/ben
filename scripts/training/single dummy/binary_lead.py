@@ -2,7 +2,6 @@ import itertools
 import os
 import sys
 sys.path.append('../../../src')
-import os.path
 import numpy as np
 
 from bidding import bidding

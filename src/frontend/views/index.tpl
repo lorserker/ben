@@ -84,6 +84,7 @@
 For practive purpose EW is playing the same system as WBridge5, so the errors from EW is not as important, and you should focus on Norths bidding.</p>
 
 <p><a href="/home">Play</a></p>
+<p><a href="/api">Ask BEN</a></p>
 </div>
 
 </body> 

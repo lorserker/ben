@@ -1,15 +1,15 @@
 from gevent import monkey
+from gevent.pywsgi import WSGIServer
 
 from bots import BotBid, BotLead, CardPlayer
 from bidding import bidding
-from objects import Card
+from objects import Card, CardResp
 import deck52
+from pimc.PIMC import BGADLL
 monkey.patch_all()
 
-from bottle import Bottle, run, static_file, redirect, template, request, response
-from bottle_session import SessionPlugin
-
-import bottle
+from flask import Flask, request, jsonify
+from flask_cors import CORS
 import json
 import os
 import logging
@@ -22,27 +22,217 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
 
-import uuid
-import shelve
-import time
-import datetime
-import asyncio
-import websockets
+import pprint
 import argparse
-import game
-import human
 import conf
-import functools
-import os
 import numpy as np
-from websockets.exceptions import ConnectionClosedOK
 from sample import Sample
 from urllib.parse import parse_qs, urlparse
 from pbn2ben import load
 
+dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
+
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
     return os.getcwd()
+
+async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, position, verbose):
+    
+    level = int(contract[0])
+    is_decl_vuln = [vuln_ns, vuln_ew, vuln_ns, vuln_ew][decl_i]
+    cardplayer_i = position  # lefty=0, dummy=1, righty=2, decl=3
+
+    lefty_hand = hands[(decl_i + 1) % 4]
+    dummy_hand = hands[(decl_i + 2) % 4]
+    righty_hand = hands[(decl_i + 3) % 4]
+    decl_hand = hands[decl_i]
+
+    if models.pimc_use:
+        pimc = BGADLL(models, dummy_hand, decl_hand, contract, is_decl_vuln, verbose)
+        if verbose:
+            print("PIMC",dummy_hand, decl_hand, contract)
+    else:
+        pimc = None
+
+    card_players = [
+        CardPlayer(models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, sampler, pimc, verbose),
+        CardPlayer(models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, sampler, pimc, verbose),
+        CardPlayer(models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, sampler, pimc, verbose),
+        CardPlayer(models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, sampler, pimc, verbose)
+    ]
+
+    player_cards_played = [[] for _ in range(4)]
+    player_cards_played52 = [[] for _ in range(4)]
+    shown_out_suits = [set() for _ in range(4)]
+
+    leader_i = 0
+
+    tricks = []
+    tricks52 = []
+    trick_won_by = []
+
+    opening_lead52 = Card.from_symbol(play[0]).code()
+    opening_lead = deck52.card52to32(opening_lead52)
+
+    current_trick = [opening_lead]
+    current_trick52 = [opening_lead52]
+
+    card_players[0].hand52[opening_lead52] -= 1
+    card_i = 0
+
+    for trick_i in range(13):
+        if trick_i != 0:
+            print(f"trick {trick_i+1} lead:{leader_i}")
+
+        for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
+            if verbose:
+                print('player {}'.format(player_i))
+            
+            if trick_i == 0 and player_i == 0:
+                # To get the state right we ask for the play when using Tf.2X
+                if verbose:
+                    print('skipping opening lead for ',player_i)
+                for i, card_player in enumerate(card_players):
+                    card_player.set_real_card_played(opening_lead52, player_i)
+                    card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
+                continue
+
+            card_i += 1
+            if card_i >= len(play):
+                if isinstance(card_players[player_i], CardPlayer):
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].rng)
+                    assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
+
+                else: 
+                    rollout_states = []
+                    bidding_scores = []
+                    c_hcp = -1
+                    c_shp = -1
+                    good_quality = None
+                    probability_of_occurence = []
+                    
+
+                card_resp = None
+                while card_resp is None:
+                    card_resp = await card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
+
+                print(card_resp)
+                card_resp.hcp = c_hcp
+                card_resp.shape = c_shp
+                if verbose:
+                    pprint.pprint(card_resp.to_dict(), width=200)
+                
+                return card_resp
+
+            card52 = Card.from_symbol(play[card_i]).code()
+            print(play[card_i], card52, card_i, player_i, cardplayer_i)
+            card32 = deck52.card52to32(card52)
+
+            for card_player in card_players:
+                card_player.set_real_card_played(card52, player_i)
+                card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=player_i, card=card32)
+
+            current_trick.append(card32)
+
+            current_trick52.append(card52)
+
+            card_players[player_i].set_own_card_played52(card52)
+            if player_i == 1:
+                for i in [0, 2, 3]:
+                    card_players[i].set_public_card_played52(card52)
+            if player_i == 3:
+                card_players[1].set_public_card_played52(card52)
+
+            # update shown out state
+            if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
+                shown_out_suits[player_i].add(current_trick[0] // 8)
+
+        # sanity checks after trick completed
+        assert len(current_trick) == 4
+
+        for i in [cardplayer_i] + ([1] if cardplayer_i == 3 else []):
+            if cardplayer_i == 1:
+                break
+            assert np.min(card_player.hand52) == 0, card_player.hand52
+            assert np.min(card_player.public52) == 0
+            assert np.sum(card_player.hand52) == 13 - trick_i - 1
+            assert np.sum(card_player.public52) == 13 - trick_i - 1
+
+        tricks.append(current_trick)
+        tricks52.append(current_trick52)
+
+        if models.pimc_use:
+            # Only declarer use PIMC
+            if isinstance(card_players[3], CardPlayer):
+                card_players[3].pimc.reset_trick()
+
+        # initializing for the next trick
+        # initialize hands
+        for i, card32 in enumerate(current_trick):
+            card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0:32] = card_players[(leader_i + i) % 4].x_play[:, trick_i, 0:32]
+            card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0 + card32] -= 1
+
+        # initialize public hands
+        for i in (0, 2, 3):
+            card_players[i].x_play[:, trick_i + 1, 32:64] = card_players[1].x_play[:, trick_i + 1, 0:32]
+        card_players[1].x_play[:, trick_i + 1, 32:64] = card_players[3].x_play[:, trick_i + 1, 0:32]
+
+        for card_player in card_players:
+            # initialize last trick
+            for i, card32 in enumerate(current_trick):
+                card_player.x_play[:, trick_i + 1, 64 + i * 32 + card32] = 1
+                
+            # initialize last trick leader
+            card_player.x_play[:, trick_i + 1, 288 + leader_i] = 1
+
+            # initialize level
+            card_player.x_play[:, trick_i + 1, 292] = level
+
+            # initialize strain
+            card_player.x_play[:, trick_i + 1, 293 + strain_i] = 1
+
+        # sanity checks for next trick
+        for i in [cardplayer_i] + ([1] if cardplayer_i == 3 else []):
+            if cardplayer_i == 1:
+                break
+            assert np.min(card_player.x_play[:, trick_i + 1, 0:32]) == 0
+            assert np.min(card_player.x_play[:, trick_i + 1, 32:64]) == 0
+            assert np.sum(card_player.x_play[:, trick_i + 1, 0:32], axis=1) == 13 - trick_i - 1
+            assert np.sum(card_player.x_play[:, trick_i + 1, 32:64], axis=1) == 13 - trick_i - 1
+
+        trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
+        trick_won_by.append(trick_winner)
+
+        if trick_winner % 2 == 0:
+            card_players[0].n_tricks_taken += 1
+            card_players[2].n_tricks_taken += 1
+        else:
+            card_players[1].n_tricks_taken += 1
+            card_players[3].n_tricks_taken += 1
+            if models.pimc_use:
+                # Only declarer use PIMC
+                if isinstance(card_players[3], CardPlayer):
+                    card_players[3].pimc.update_trick_needed()
+
+        if verbose:
+            print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(deck52.decode_card, current_trick52)), trick_winner))
+
+        # update cards shown
+        for i, card32 in enumerate(current_trick):
+            player_cards_played[(leader_i + i) % 4].append(card32)
+        
+        for i, card in enumerate(current_trick52):
+            player_cards_played52[(leader_i + i) % 4].append(card)
+
+        leader_i = trick_winner
+        current_trick = []
+        current_trick52 = []
+
+
+def create_auction(bids, dealer_i):
+    auction = [bid.replace('--', "PASS").replace('Db', 'X').replace('Rd', 'XX') for bid in bids]
+    auction = ['PAD_START'] * dealer_i + auction
+    return auction
 
 random = True
 # For some strange reason parameters parsed to the handler must be an array
@@ -87,264 +277,138 @@ sampler = Sample.from_conf(configuration, False)
 print('models loaded')
 
 host = args.host
-print(f'http://{host}:{port}/home')
+print(f'http://{host}:{port}/')
 
-app = Bottle()
-
-plugin = SessionPlugin(cookie_lifetime=600)
-app.install(plugin)
-
-# CORS middleware
-class CorsPlugin(object):
-    name = 'cors'
-    api = 2
-
-    def apply(self, callback, route):
-        def wrapper(*args, **kwargs):
-            response.headers['Access-Control-Allow-Origin'] = '*'  # Replace * with your allowed domain if needed
-            response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, OPTIONS'
-            response.headers['Access-Control-Allow-Headers'] = 'Origin, Accept, Content-Type, X-Requested-With, X-CSRF-Token'
-            if request.method != 'OPTIONS':
-                return callback(*args, **kwargs)
-        return wrapper
-
-app.install(CorsPlugin())
-
-class CardPlayerPool:
-    def __init__(self):
-        self.player_pool = {}
-
-    def get_player(self, username):
-        # Retrieve the player object from the pool
-        return self.player_pool.get(username)
-
-    def set_player(self, username, player):
-        # Set the player object in the pool
-        self.player_pool[username] = player
-
-    def remove_player(self, username):
-        # Remove the player object from the pool
-        if username in self.player_pool:
-            del self.player_pool[username]
-            
-player_pool = CardPlayerPool()
-
-class Player:
-    def __init__(self, user):
-        self.user = user
-        self.trick_i = 0
-        self.cardplayer_i = -1
-        self.leader_i = 0
-        self.player_cards_played = [[] for _ in range(4)]
-        self.shown_out_suits = [set() for _ in range(4)]
-        self.dealer_i = 0
-        self.current_trick = []
-        self.current_trick52 = []
-        # Initialize other attributes as needed
+app = Flask(__name__)
+CORS(app) 
 
 @app.route('/')
-def default():
-    html = '<h1><a href="/app/bridge.html?S=x&A=2&T=2">Play Now</a></h1>\n'
+def home():
+    html = '<h1><a href="/">Play Now</a></h1>\n'
     return html
-
-@app.route('/systems')
-def default():
-    html = '<select name="systems" id="systems" onchange="systemChange(this);"><option value="">Select your system</option>'
-
-    html += '<option value="1">2over1</option>'           
-    html += '<option value="2">BBO Advanced 1.3</option>'
-    html += '<option value="3">SAYC</option>'
-    html += '</select> '
-    return html
-
-def create_auction(bids, dealer_i, sameforboth):
-    auction = [bid.replace('--', "PASS").replace('Db', 'X').replace('Rd', 'XX') for bid in bids]
-    if sameforboth:
-        auction = ['PAD_START'] * (dealer_i % 2) + auction
-    else:
-        auction = ['PAD_START'] * dealer_i + auction
-    return auction
 
 @app.route('/bid')
-def frontend():
-    # First we extract our hand
-    hand = request.query.get("hand").replace('_','.')
-    seat = request.query.get("seat")
-    #print(hand)
-    # Then vulnerability
-    v = request.query.get("vul")
-    #print(v)
-    vuln = []
-    vuln.append('@v' in v)
-    vuln.append('@V' in v)
-    # And finally the bidding, where we deduct dealer and our position
-    dealerInp = request.query.get("dealer")
-    dealer = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
-    dealer_i = dealer[dealerInp]
-    position = dealer[seat]
-    ctx = request.query.get("ctx")
-    # Split the string into chunks of every second character
-    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
-    auction = create_auction(bids, dealer_i, models.sameforboth)
-    hint_bot = BotBid(vuln, hand, models, sampler, position, dealer_i, verbose)
-    bid = hint_bot.bid(auction)
-    print(bid.bid)
-    player_pool = CardPlayerPool()
-    return json.dumps(bid.to_dict())
-
+def bid():
+    try:
+        # First we extract our hand
+        hand = request.args.get("hand").replace('_','.')
+        seat = request.args.get("seat")
+        #print(hand)
+        # Then vulnerability
+        v = request.args.get("vul")
+        #print(v)
+        vuln = []
+        vuln.append('@v' in v)
+        vuln.append('@V' in v)
+        # And finally the bidding, where we deduct dealer and our position
+        dealer = request.args.get("dealer")
+        dealer_i = dealer_enum[dealer]
+        position = dealer_enum[seat]
+        ctx = request.args.get("ctx")
+        # Split the string into chunks of every second character
+        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+        auction = create_auction(bids, dealer_i)
+        hint_bot = BotBid(vuln, hand, models, sampler, position, dealer_i, verbose)
+        bid = hint_bot.bid(auction)
+        print(bid.bid)
+        return json.dumps(bid.to_dict())
+    except Exception as e:
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
+    
 @app.route('/lead')
-def frontend():
-    # First we extract our hand
-    hand = request.query.get("hand").replace('_','.')
-    seat = request.query.get("seat")
-    print(hand)
-    # Then vulnerability
-    v = request.query.get("vul")
-    print(v)
-    vuln = []
-    vuln.append('@v' in v)
-    vuln.append('@V' in v)
-    # And finally the bidding, where we deduct dealer and our position
-    dealerInp = request.query.get("dealer")
-    dealer = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
-    dealer_i = dealer[dealerInp]
-    position = dealer[seat]
-    ctx = request.query.get("ctx")
-    # Split the string into chunks of every second character
-    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
-    auction = create_auction(bids, dealer_i, False)
-    hint_bot = BotLead(vuln, hand, models, sampler, position, verbose)
-    card_resp = hint_bot.find_opening_lead(auction)
-    card_symbol = card_resp.card.symbol()
-    print(card_symbol)
-    result = {
-            'card': card_symbol,
-        }
-    return json.dumps(result)
-
-@app.route('/trick')
-def trick():
-    result = {
-            'status': "OK"
-        }
-    return json.dumps(result)
-
-@app.route('/updateplay')
-
-def updatePlay():
-    result = {
-            'status': "OK"
-        }
-    return json.dumps(result)
+def lead():
+    try:
+        # First we extract our hand and seat
+        hand = request.args.get("hand").replace('_','.')
+        seat = request.args.get("seat")
+        # Then vulnerability
+        v = request.args.get("vul")
+        vuln = []
+        vuln.append('@v' in v)
+        vuln.append('@V' in v)
+        # And finally the dealer and bidding
+        dealer = request.args.get("dealer")
+        dealer_i = dealer_enum[dealer]
+        position = dealer_enum[seat]
+        ctx = request.args.get("ctx")
+        # Split the string into chunks of every second character
+        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+        auction = create_auction(bids, dealer_i)
+        hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, verbose)
+        card_resp = hint_bot.find_opening_lead(auction)
+        user = request.args.get("user")
+        card_resp.who = user
+        print("Leading:", card_resp.card.symbol())
+        result = card_resp.to_dict()
+        return json.dumps(result)
+    except Exception as e:
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
 
 @app.route('/play')
-def frontend():
-    # First we extract our hand
-    hand_str = request.query.get("hand").replace('_','.')
-    dummy_str = request.query.get("dummy").replace('_','.')
-    played = request.query.get("played")
-    seat = request.query.get("seat")
-    print(hand_str, dummy_str)
+async def frontend():
+    #try:
+    # First we extract the hands and seat
+    hand_str = request.args.get("hand").replace('_','.')
+    dummy_str = request.args.get("dummy").replace('_','.')
+    played = request.args.get("played")
+    seat = request.args.get("seat")
     # Then vulnerability
-    v = request.query.get("vul")
-    # And finally the bidding, where we deduct dealer and our position
-    dealerInp = request.query.get("dealer")
-    dealer = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
-    dealer_i = dealer[dealerInp]
-    position_i = dealer[seat]
+    v = request.args.get("vul")
     vuln = []
-    if position_i % 2 == 0:
-        vuln.append('@v' in v)
-        vuln.append('@V' in v)
-    else:
-        vuln.append('@V' in v)
-        vuln.append('@v' in v)
-    ctx = request.query.get("ctx")
+    vuln.append('@v' in v)
+    vuln.append('@V' in v)
+    # And finally the bidding, where we deduct dealer and our position
+    dealer = request.args.get("dealer")
+    dealer_i = dealer_enum[dealer]
+    position_i = dealer_enum[seat]
+    ctx = request.args.get("ctx")
     # Split the string into chunks of every second character
     bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
-    auction = create_auction(bids, dealer_i, False)
-    contract = bidding.get_contract(auction)
-    print(contract)
+    cards = [played[i:i+2] for i in range(0, len(played), 2)]
+    print(played)
+    print(cards)
+    # Validate number of cards played according to position
+    auction = create_auction(bids, dealer_i)
+    contract = bidding.get_contract(auction, dealer_i, models)
     decl_i = bidding.get_decl_i(contract)
-    print(decl_i)
-    user = request.query.get("user")
-    print(player_pool)
-    state = player_pool.get_player(user)
-    print(state)
-    if state == None:
-        # This is first time we are playing, so dummy is needed in the request
-        state = Player(user)
+    strain_i = bidding.get_strain_i(contract)
+    user = request.args.get("user")
+    # Hand is following N,E,S,W
+    hands = ['...', '...', '...', '...']
+    hands[position_i] = hand_str
+    if ((decl_i + 2) % 4) == position_i:
+        # We are dummy
+        hands[decl_i] = dummy_str
+    else:        
+        hands[(decl_i + 2) % 4] = dummy_str
 
-        is_decl_vuln = [vuln[0], vuln[1], vuln[0], vuln[1]][decl_i]
-        state.cardplayer_i = (position_i + 3 - decl_i) % 4
-        own_hand_str = hand_str
-        dummy_hand_str = '...'
 
-        if state.cardplayer_i != 1:
-            dummy_hand_str = dummy_str
-
-        lefty_hand_str = '...'
-        if state.cardplayer_i == 0:
-            lefty_hand_str = own_hand_str
-        
-        righty_hand_str = '...'
-        if state.cardplayer_i == 2:
-            righty_hand_str = own_hand_str
-        
-        decl_hand_str = '...'
-        if state.cardplayer_i == 3:
-            decl_hand_str = own_hand_str
-
-        state.card_players = [
-                    CardPlayer(models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler),
-                    CardPlayer(models, 1, dummy_str, hand_str, contract, is_decl_vuln, sampler),
-                    CardPlayer(models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler),
-                    CardPlayer(models, 3, hand_str, dummy_hand_str, contract, is_decl_vuln, sampler)
-            ]
-        cards = [played[i:i+2] for i in range(0, len(played), 2)]
-        for i in range(len(cards)):
-            card52 = deck52.encode_card(cards[i])
-            card32 = deck52.card52to32(card52)
-            state.current_trick52.append(card52)
-            state.current_trick.append(card32)
-            for card_player in state.card_players:
-                    card_player.set_card_played(trick_i=state.trick_i, leader_i=state.leader_i, i=state.cardplayer_i, card=card32)
-
-            state.card_players[state.cardplayer_i].set_own_card_played52(card52)
-            if state.cardplayer_i == 1:
-                for i in [0, 2, 3]:
-                    state.card_players[i].set_public_card_played52(card52)
-            if state.cardplayer_i == 3:
-                state.card_players[1].set_public_card_played52(card52)
-
-            # update shown out state
-            if card32 // 8 != state.current_trick[0] // 8:  # card is different suit than lead card
-                state.shown_out_suits[state.cardplayer_i].add(state.current_trick[0] // 8)
-
-    else:
-        print("state reloaded")
-        state.cardplayer_i = (position_i + 3 - decl_i) % 4
-
-    print("cardplayer_i", state.cardplayer_i)
-    rollout_states, bidding_scores, c_hcp, c_shp, good_quality = sampler.init_rollout_states(state.trick_i, state.cardplayer_i, state.card_players, state.player_cards_played, state.shown_out_suits, state.current_trick, dealer_i, auction, state.card_players[state.cardplayer_i].hand_str, vuln, models, state.card_players[state.cardplayer_i].rng)
-
-    card_resp = state.card_players[state.cardplayer_i].play_card(state.trick_i, state.leader_i, state.current_trick52, rollout_states, bidding_scores, good_quality)
-    card_resp.hcp = c_hcp
-    card_resp.shape = c_shp
-
-    # Now create the player for playing rest of the hand
-    print(state)
-    player_pool.set_player(user, state)
-
-    print(player_pool)
-    card_symbol = card_resp.card.symbol()
-    print(card_symbol)
-    result = {
-            'card': card_symbol,
-        }
+    # Are we declaring
+    if decl_i == position_i:
+        cardplayer = 3
+    if decl_i == (position_i + 2) % 4:
+        cardplayer = 1
+    if (decl_i + 1) % 4 == position_i:
+        cardplayer = 0
+    if (decl_i + 3) % 4 == position_i:
+        cardplayer = 2
+    print(cardplayer)
+    print(hands)
+    card_resp = await play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, False)
+    print("Playing:", card_resp.card.symbol())
+    result = card_resp.to_dict()
+    print(json.dumps(result))
     return json.dumps(result)
+    #except Exception as e:
+    #    print(e)
+    #    error_message = "An error occurred: {}".format(str(e))
+    #    return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
+
 
 if __name__ == "__main__":
-    run(app, host=host, port=port, server='gevent', log=None)
-
+    # Run the Flask app with gevent server
+    http_server = WSGIServer((host, port), app)
+    http_server.serve_forever()

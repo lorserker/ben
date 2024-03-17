@@ -14,10 +14,8 @@ if len(sys.argv) < 2:
     print("Usage: python bidding_nn inputdirectory")
     sys.exit(1)
 
-
 bin_dir = sys.argv[1]
-
-# Test setting
+print(sys.argv)
 
 batch_size = 64
 display_step = 10000
@@ -32,10 +30,13 @@ n_ftrs = X_train.shape[2]
 n_bids = y_train.shape[2]
 
 # If NS/EW cc included update name of model
-if n_ftrs == 161:
-    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding_same'
+if n_ftrs == 201:
+    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding-V2'
 else:
-    model_path = 'model/bidding'
+    if n_ftrs == 161:
+        model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding'
+    else:
+        model_path = 'model/bidding'
 
 
 print("Size input hand:         ", n_ftrs)
@@ -57,13 +58,13 @@ for _ in range(n_layers):
         output_keep_prob=keep_prob
     )
     cells.append(cell)
-
-state = []
-for i, cell_i in enumerate(cells):
-    s_c = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
-    s_h = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_h_{}'.format(i))
-    state.append(tf.compat.v1.nn.rnn_cell.LSTMStateTuple(c=s_c, h=s_h))
-state = tuple(state)
+if n_ftrs < 200:
+    state = []
+    for i, cell_i in enumerate(cells):
+        s_c = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
+        s_h = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_h_{}'.format(i))
+        state.append(tf.compat.v1.nn.rnn_cell.LSTMStateTuple(c=s_c, h=s_h))
+    state = tuple(state)
 
 x_in = tf.compat.v1.placeholder(tf.float32, [1, n_ftrs], name='x_in')
     
@@ -79,13 +80,16 @@ out_rnn, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 out_bid_logit = tf.matmul(tf.reshape(out_rnn, [-1, lstm_size]), softmax_w, name='out_bid_logit')
 out_bid_target = tf.reshape(seq_out, [-1, n_bids], name='out_bid_target')
 
-output, next_state = lstm_cell(x_in, state)
+
+if n_ftrs < 200:
+    output, next_state = lstm_cell(x_in, state)
+    for i, next_i in enumerate(next_state):
+        tf.identity(next_i.c, name='next_c_{}'.format(i))
+        tf.identity(next_i.h, name='next_h_{}'.format(i))
+else:
+    output, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 
 out_bid = tf.nn.softmax(tf.matmul(output, softmax_w), name='out_bid')
-
-for i, next_i in enumerate(next_state):
-    tf.identity(next_i.c, name='next_c_{}'.format(i))
-    tf.identity(next_i.h, name='next_h_{}'.format(i))
 
 cost = tf.compat.v1.losses.softmax_cross_entropy(out_bid_target, out_bid_logit)
 

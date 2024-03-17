@@ -1,4 +1,3 @@
-import random
 import numpy as np
 
 def deal_to_str(deal):

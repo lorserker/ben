@@ -4919,39 +4919,6 @@ S D 12
 [Event ""]
 [Site ""]
 [Date "2023.10.23"]
-[Board "158"]
-% 0993F1A687DC3791DD41FAC57481
-[West "EPB 2"]
-[North "EPB 3"]
-[East "EPB 4"]
-[South "EPB 1"]
-[Room "Open"]
-[Room "IMP"]
-[Dealer "S"]
-[Vulnerable "EW"]
-[Deal "N:9.J642.AK862.AJ9 63.AT87.QJ943.Q5 AQJ82.Q.5.K87642 KT754.K953.T7.T3"]
-[Declarer "S"]
-[Contract "6C"]
-[Result "11"]
-[Score "NS -50"]
-[Scoring "IMP"]
-[Auction "S"]
-1C    Pass  1D    Pass
-1S    Pass  3N    Pass
-4S    Pass  4N =1=    Pass
-5H    Pass  6C    Pass
-Pass  Pass
-[Note "1:Blackwood 1430, for clubs"]
-[Play "W"]
-*
-[BidSystemEW "Sayc - Standard American Yellow Card"]
-[BidSystemNS "Sayc - Standard American Yellow Card"]
-[OptimumResultTable "Declarer Suit Tricks"]
-S C 11
-
-[Event ""]
-[Site ""]
-[Date "2023.10.23"]
 [Board "159"]
 % 0D4E26CEDE3A55CD32D05CD48DBE
 [West "EPB 2"]

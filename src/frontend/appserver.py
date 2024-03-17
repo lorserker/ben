@@ -240,7 +240,7 @@ def parse_pbn(fin):
         else:
             continue
 
-    return dealer, vulnerable, hands, board
+    return dealer, vulnerable, " ".join(hands_nesw), board
 
 def validdeal(board):
     # Define the regex pattern with allowed characters and spaces
@@ -340,6 +340,7 @@ def index():
         try:
             dealpbn = request.forms.get('dealpbn')
             dealer, vulnerable, hands, board_no = parse_pbn(dealpbn.splitlines())
+            print(hands)
             url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
         except Exception as e:
             error_message = f'Error parsing PBN-input. {e}'
@@ -455,6 +456,10 @@ def frontend():
     filename = 'favicon.ico'
     file_path = os.path.join(script_dir, '')    
     return static_file(filename, root=file_path)
+
+@app.route('/api')
+def index():
+    return template('api')
 
 @app.route('/api/deals/<deal_id>')
 def deal_data(deal_id):

@@ -1,0 +1,596 @@
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "1"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:T9.QJT74.T984.T6 AQ74.K82.AK7.AKQ K8532.A9.Q652.J8 J6.653.J3.975432"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result ""]
+[Auction "N"]
+Pass      2C        2S        Pass      
+Pass      3NT       Pass      Pass      
+Pass      
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "3NT.9.EW"]
+[DDResults "42425555666676663222"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "2"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:AKQ62.K9.AKJT.Q9 75.QT53.5.KJ8654 JT93.42.Q942.T73 84.AJ876.8763.A2"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "10"]
+[Auction "E"]
+2C        3C        Pass      Pass      
+3S        Pass      4S        Pass      
+Pass      Pass      
+[Play "S"]
+D5 D2 D8 DJ 
+S7 S9 S4 S2 
+S5 S3 S8 SK 
+C5 D4 D3 DT 
+C4 D9 D7 DK 
+H5 DQ D6 DA 
+C6 ST H7 S6 
+H3 H2 H6 HK 
+C8 C3 CA C9 
+CK C7 C2 CQ 
+HT H4 H8 H9 
+HQ CT HJ SA 
+CJ SJ HA SQ 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "4S.10.EW"]
+[DDResults "74743333A9A933339999"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "3"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:J76.K652.94.A973 QT.T73.KQ3.T8652 985432..752.KQJ4 AK.AQJ984.AJT86."]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "12"]
+[Auction "S"]
+Pass      Pass      Pass      2C        
+Pass      2D        2S        4H        
+Pass      Pass      Pass      
+[Play "S"]
+S6 ST S2 SA 
+H2 H3 D2 HA 
+HK H7 S5 H4 
+H6 HT S4 H9 
+D4 D3 D5 DJ 
+D9 DK D7 D6 
+S7 SQ S3 SK 
+H5 C2 C4 HQ 
+C3 DQ CK DT 
+C7 C6 CQ HJ 
+C9 C8 S9 H8 
+SJ CT S8 DA 
+CA C5 CJ D8 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "6SX.7.NS"]
+[DDResults "55558787111111217675"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "4"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:AK2.2.87.AKQJ432 Q86.AQT4.KQ652.T T75.9753.A93.865 J943.KJ86.JT4.97"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "10"]
+[Auction "W"]
+2C        2D        Pass      Pass      
+3C        Pass      3NT       Pass      
+Pass      Pass      
+[Play "S"]
+DJ D7 D2 DA 
+C7 CJ CT C5 
+C9 CQ D5 C6 
+D4 C2 HT C8 
+S4 SK S6 S5 
+H8 CA H4 D3 
+H6 CK DQ H3 
+DT C4 D6 H5 
+S3 C3 HA H7 
+S9 SA S8 S7 
+HJ H2 HQ H9 
+SJ S2 SQ ST 
+HK D8 DK D9 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "5"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:95.T76.98652.A32 AKQJ62.A84.KQ.97 T3.KQ93.J3.KQJ86 874.J52.AT74.T54"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4S"]
+[Result "11"]
+[Auction "N"]
+Pass      2C        X         2D        
+Pass      2S        Pass      4S        
+Pass      Pass      Pass      
+[Play "S"]
+CK C4 C2 C7 
+CQ C5 C3 C9 
+C6 CT CA S6 
+S3 S4 S5 SJ 
+ST S7 S9 SQ 
+D3 D4 D6 DQ 
+DJ D7 D2 DK 
+H3 H2 H7 HA 
+H9 S8 D9 S2 
+CJ DA D8 H4 
+HK DT D5 H8 
+HQ H5 HT SA 
+C8 HJ H6 SK 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "6"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:AKQJ53.92.AQ964. 6.QT875.KT.KQJ75 82.AK43.8752.A86 T974.J6.J3.T9432"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "6S"]
+[Result "12"]
+[Auction "E"]
+2C        2H        2NT       Pass      
+3S        Pass      4NT       Pass      
+5D        Pass      5H        Pass      
+5NT       Pass      6S        Pass      
+Pass      Pass      
+[Play "S"]
+CK CA C9 D6 
+S6 S2 S7 SQ 
+C5 S8 S4 SJ 
+H7 D2 S9 SK 
+CJ H3 ST SA 
+H8 HK H6 H2 
+H5 HA HJ H9 
+DT D5 D3 DA 
+DK D8 DJ D4 
+C7 C6 C4 S5 
+HQ D7 C3 DQ 
+HT H4 C2 S3 
+CQ C8 CT D9 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "7CX.8.NS"]
+[DDResults "21211111545411118888"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "7"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:QT952.QJ63.97.74 K63.A9.862.QJ953 AJ4.KT742.5.T862 87.85.AKQJT43.AK"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "13"]
+[Auction "S"]
+Pass      Pass      Pass      2C        
+2S        2NT       Pass      3NT       
+Pass      Pass      Pass      
+[Play "N"]
+SJ S7 S2 SK 
+D5 DT D7 D2 
+C2 CA C4 C3 
+C6 CK C7 C5 
+H2 H5 H3 HA 
+C8 D4 S5 CQ 
+CT H8 H6 CJ 
+H7 S8 SQ C9 
+H4 DA D9 D8 
+S4 DK ST D6 
+HT DQ HQ S6 
+HK DJ S9 S3 
+SA D3 HJ H9 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "6HX.9.NS"]
+[DDResults "30308888999910205050"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "8"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:Q964.AKQ7.K6.AKQ JT53.JT93.42.J95 K7.652.J853.T643 A82.84.AQT97.872"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "8"]
+[Auction "W"]
+2C        Pass      2D        X         
+2NT       Pass      3NT       Pass      
+Pass      Pass      
+[Play "N"]
+D4 D3 DA D6 
+H9 H2 H8 HK 
+C5 C3 C8 CQ 
+H3 H5 H4 HQ 
+C9 C4 C2 CK 
+CJ C6 C7 CA 
+HT H6 D9 HA 
+S3 SK SA S4 
+ST S7 S8 S9 
+HJ D5 D7 H7 
+D2 D8 DT DK 
+S5 CT S2 SQ 
+SJ DJ DQ S6 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "1H.9.EW"]
+[DDResults "54545555444455554343"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "9"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:T8743.43.KJ83.A8 AK.AQJT87..QJ543 J5.K2.QT76542.T2 Q962.965.A9.K976"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "6H"]
+[Result "11"]
+[Auction "N"]
+Pass      2C        3D        X         
+6D        6H        Pass      Pass      
+Pass      
+[Play "S"]
+D6 DA D3 SK 
+HK H9 H4 H8 
+D4 D9 DK H7 
+H2 H5 H3 HT 
+C2 CK CA C3 
+CT C7 C8 CQ 
+S5 S2 S4 SA 
+D7 C9 S3 C5 
+SJ SQ S8 C4 
+D5 H6 S7 HA 
+D2 C6 D8 CJ 
+DT S9 ST HQ 
+DQ S6 DJ HJ 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "10"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:.AKQJ983.A7.Q975 J98.T5.9852.AT82 Q7432..KQJT3.J63 AKT65.7642.64.K4"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4H"]
+[Result "12"]
+[Auction "E"]
+2C        Pass      2D        2S        
+4H        Pass      Pass      Pass      
+[Play "S"]
+S8 S2 SK H3 
+H5 C3 H4 HJ 
+HT S4 H7 HQ 
+D2 S3 H6 HA 
+C2 C6 H2 HK 
+D5 S7 S6 H9 
+C8 CJ S5 H8 
+D9 D3 D6 DA 
+D8 DK D4 D7 
+S9 DQ C4 C9 
+CT DJ ST C7 
+SJ DT CK CQ 
+CA SQ SA C5 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "4H.10.EW"]
+[DDResults "71717777313154544343"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "11"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:982.JT765.J7.J93 KQJT4.84.8532.82 765.A92.AT94.654 A3.KQ3.KQ6.AKQT7"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "12"]
+[Auction "S"]
+Pass      Pass      Pass      2C        
+2H        2S        Pass      2NT       
+Pass      3H        Pass      3S        
+Pass      3NT       Pass      Pass      
+Pass      
+[Play "S"]
+H6 H8 HA H3 
+H5 H4 H9 HK 
+C3 C2 C6 CQ 
+S8 S4 S6 SA 
+S2 ST S5 S3 
+S9 SK S7 D6 
+H7 SQ D9 DQ 
+C9 SJ C4 DK 
+CJ C8 C5 CA 
+HJ D3 H2 HQ 
+D7 D2 D4 CK 
+HT D8 DT CT 
+DJ D5 DA C7 
+[BidSystemNS "Standard American Yellow Card Thorvald aggro overcall"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "3NT.11.EW"]
+[DDResults "22222121444433332222"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "12"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:QJT.65.T96.AT873 754.Q83.Q83.J952 A96.AK9.AKJ75.KQ K832.JT742.42.64"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "6C"]
+[Result "11"]
+[Auction "W"]
+Pass      Pass      2C        2H        
+3C        Pass      3D        Pass      
+3H        Pass      4NT       Pass      
+5C        Pass      6C        Pass      
+Pass      Pass      
+[Play "S"]
+S2 ST S7 S6 
+C4 C3 C2 CK 
+C6 C7 C5 CQ 
+D4 D6 D8 DK 
+H2 H5 H8 HK 
+H4 H6 H3 HA 
+D2 D9 D3 DA 
+S3 DT DQ D5 
+S8 SJ S5 SA 
+H7 SQ C9 D7 
+SK CT S4 S9 
+HJ CA CJ H9 
+HT C8 HQ DJ 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "6NT.12.EW"]
+[DDResults "11113232544411112111"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "13"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:T.AJ872.954.9874 AKQ3.K6.Q.AKJ632 852.T954.AJT8.T5 J9764.Q3.K7632.Q"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "5S"]
+[Result "11"]
+[Auction "N"]
+Pass      2C        Pass      2D        
+2H        3C        3H        X         
+Pass      3S        Pass      4S        
+Pass      4NT       Pass      5D        
+Pass      5S        Pass      Pass      
+Pass      
+[Play "S"]
+HT H3 HA H6 
+DA D2 D5 DQ 
+H4 HQ H2 HK 
+S2 SJ ST S3 
+C5 CQ C4 C3 
+D8 DK D4 C6 
+DJ D7 D9 SA 
+S5 S4 C9 SK 
+S8 S7 H8 SQ 
+CT D6 C8 CA 
+H5 D3 C7 CK 
+H9 S9 H7 CJ 
+DT S6 HJ C2 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "3NT.11.EW"]
+[DDResults "22222121878754543131"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "14"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:J97.K732.98653.6 T3.JT6.QJT7.7532 AKQ654.Q.A4.AKJ8 82.A9854.K2.QT94"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "6S"]
+[Result "12"]
+[Auction "E"]
+Pass      Pass      2C        2H        
+Pass      Pass      2S        Pass      
+4S        Pass      4NT       Pass      
+5D        X         6S        Pass      
+Pass      Pass      
+[Play "N"]
+CT C6 C2 CJ 
+S2 S7 S3 SQ 
+C9 S9 C3 C8 
+HA H2 H6 HQ 
+S8 SJ ST S6 
+H5 HK HJ D4 
+D2 D6 D7 DA 
+C4 D9 C7 CA 
+CQ D8 C5 CK 
+H4 H3 DQ SA 
+H9 D5 DJ SK 
+H8 D3 DT S5 
+DK H7 HT S4 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "4S.11.EW"]
+[DDResults "33332121555554546666"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "15"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:KJT92.T42.Q8.543 AQ7.AK97.AK6.A96 853.J86.T9.KQ872 64.Q53.J75432.JT"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "13"]
+[Auction "S"]
+Pass      2C        X         2D        
+Pass      2NT       Pass      3NT       
+Pass      Pass      Pass      
+[Play "N"]
+C7 CT C5 C9 
+H6 H3 H2 HA 
+D9 D2 D8 DK 
+DT D3 DQ DA 
+S5 D4 S9 D6 
+H8 HQ H4 H7 
+C2 DJ S2 C6 
+S3 D7 C3 S7 
+C8 D5 C4 H9 
+S8 S4 ST SQ 
+HJ H5 HT HK 
+CK CJ SK CA 
+CQ S6 SJ SA 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]
+[ParScore "7NT.13.EW"]
+[DDResults "00004444000000004343"]
+
+[Event "Jack Saved Deal"]
+[Site ""]
+[Date "2024.03.10"]
+[Board "16"]
+[West "Jack"]
+[North "Jack"]
+[East "Jack"]
+[South "Etha"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:AKQ874.A.QJ965.T 6.J942.2.AKJ8432 92.K8.AKT8743.65 JT53.QT7653..Q97"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "6D"]
+[Result "12"]
+[Auction "W"]
+2C        3C        3D        4C        
+Pass      Pass      4D        Pass      
+4H        Pass      5D        Pass      
+6D        Pass      Pass      Pass      
+[Play "S"]
+C7 CT CK C5 
+C9 D5 CA C6 
+H3 D6 D2 D4 
+S3 SA S6 S2 
+H7 HA H4 H8 
+S5 SK CJ S9 
+SJ SQ C8 HK 
+ST S8 H2 D8 
+H6 D9 C4 D7 
+H5 DQ C3 DT 
+HT DJ H9 D3 
+HQ S7 C2 DA 
+CQ S4 HJ DK 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald aggro overcall"]

@@ -47,7 +47,7 @@ class CardByCard:
     def bid_eval(bid, bid_resp):
         if bid_resp.candidates[0].bid != bid:
             candidates_list = bid_resp.candidates
-            print(f'{bid} Suggested bid from NN:{bid_resp.candidates[0]}')
+            print(f'{bid} Suggested bid from NN: {bid_resp.candidates[0]}')
             # Check if 'b' is in the "bid" property of any CandidateBid object and get the index
             for index, candidate in enumerate(candidates_list):
                 if hasattr(candidate, "bid") and bid in candidate.bid:
@@ -71,12 +71,12 @@ class CardByCard:
         print(f'{card} {qualifier}')
 
     def analyze_opening_lead(self):
-        contract = bidding.get_contract(self.padded_auction)
+        contract = bidding.get_contract(self.padded_auction, self.dealer_i, self.models)
         decl_i = bidding.get_decl_i(contract)
 
         print(self.play[0])
 
-        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, (decl_i + 1) % 4, False)
+        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, (decl_i + 1) % 4, self.dealer_i, False)
 
         card_resp = bot_lead.find_opening_lead(self.padded_auction)
         card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, card_resp.hcp, card_resp.shape, card_resp.quality)
@@ -85,8 +85,7 @@ class CardByCard:
         type(self).card_eval(self.play[0], card_resp)
 
     async def analyze_play(self):
-        
-        contract = bidding.get_contract(self.padded_auction)
+        contract = bidding.get_contract(self.padded_auction, self.dealer_i, self.models)
         level = int(contract[0])
         strain_i = bidding.get_strain_i(contract)
         decl_i = bidding.get_decl_i(contract)
@@ -97,11 +96,19 @@ class CardByCard:
         righty_hand = self.hands[(decl_i + 3) % 4]
         decl_hand = self.hands[decl_i]
 
+        if self.models.pimc_use:
+            from pimc.PIMC import BGADLL
+            pimc = BGADLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose)
+            if self.verbose:
+                print("PIMC",dummy_hand, decl_hand, contract)
+        else:
+            pimc = None
+
         card_players = [
-            bots.CardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler),
-            bots.CardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler),
-            bots.CardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler),
-            bots.CardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler)
+            bots.CardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
+            bots.CardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
+            bots.CardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
+            bots.CardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, self.verbose)
         ]
 
         player_cards_played = [[] for _ in range(4)]
@@ -126,7 +133,7 @@ class CardByCard:
             for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
                 if trick_i == 0 and player_i == 0:
                     for i, card_player in enumerate(card_players):
-                        card_player.set_real_card_played(opening_lead52, 0)
+                        card_player.set_real_card_played(opening_lead52, 0, True)
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
                     continue
                 

@@ -1,7 +1,6 @@
 import sys
 import numpy as np
 import datetime
-import sys
 sys.path.append('../../../src')
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()

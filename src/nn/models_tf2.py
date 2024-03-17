@@ -12,7 +12,7 @@ from nn.lead_singledummy_tf2 import LeadSingleDummy
 
 class Models:
 
-    def __init__(self, bidder_model, binfo, lead, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, lead_accept_nn, include_system, ns, ew):
+    def __init__(self, bidder_model, binfo, lead, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, lead_accept_nn, ns, ew, model_version):
         self.bidder_model = bidder_model
         self.binfo = binfo
         self.lead = lead
@@ -23,21 +23,21 @@ class Models:
         self._search_threshold = search_threshold
         self._no_search_threshold = no_search_threshold
         self._lead_accept_nn = lead_accept_nn
-        self.include_system = include_system
         self.ns = ns
         self.ew = ew
+        self.model_version = model_version
 
     @classmethod
     def from_conf(cls, conf: ConfigParser, base_path=None) -> "Models":
         if base_path is None:
             base_path = os.getenv('BEN_HOME') or '..'
+        model_version = conf.getint('models','model_version', fallback=1)
         search_threshold = float(conf['bidding']['search_threshold'])
         no_search_threshold = float(conf['bidding']['no_search_threshold'])
         lead_threshold = float(conf['lead']['lead_threshold'])
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
-        include_system = conf.getboolean('models', 'include_system', fallback=False)
         use_bba = conf.getboolean('models', 'use_bba', fallback=False)
-        if include_system == True:
+        if model_version != 0:
             ns = float(conf['models']['ns'])
             ew = float(conf['models']['ew'])
         else:
@@ -60,10 +60,10 @@ class Models:
             lead_threshold=lead_threshold,
             no_search_threshold=no_search_threshold,
             lead_accept_nn=lead_accept_nn,
-            include_system=include_system,
             ns=ns,
             ew=ew,
-            use_bba=use_bba
+            use_bba=use_bba,
+            model_version = model_version
         )
     
     @property

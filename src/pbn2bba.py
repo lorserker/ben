@@ -113,7 +113,7 @@ def decode_board(encoded_str_Deal):
     return hand, dealer, vulnerable, deal
 
 def transform_hand(hands):
-    print(hands)
+    #print(hands)
     hand = [TypeHand() for _ in range(4)]
 
     for i in range(4):
@@ -126,7 +126,7 @@ def transform_hand(hands):
     return hand
 
 def load(fin):
-    boards = [] 
+    boards = set()
     auction_lines = []
     inside_auction_section = False
     dealer, vulnerable = None, None
@@ -137,7 +137,11 @@ def load(fin):
                 if dealer != None:
                     dealnumber += 1
                     encoded_str_deal = encode_board(transform_hand(hands_nesw), dealer, vulnerable, dealnumber)
-                    boards.append(encoded_str_deal)      
+                    # Do we have the board all ready, then discard it with a message
+                    if encoded_str_deal in boards:
+                        print("Repeated",hands_nesw)
+                    else:
+                        boards.add(encoded_str_deal)      
                     auction_lines = []
                     dealer= None
             if line.startswith('[Dealer'):

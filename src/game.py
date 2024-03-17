@@ -11,7 +11,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
 
-import deck52
 import pprint
 import time
 import datetime
@@ -29,7 +28,7 @@ import conf
 
 from sample import Sample
 from bidding import bidding
-from deck52 import decode_card
+from deck52 import board_dealer_vuln, decode_card, card52to32, get_trick_winner_i, random_deal
 from bidding.binary import DealData
 from objects import CardResp, Card, BidResp
 from claim import Claimer
@@ -42,11 +41,11 @@ def get_execution_path():
     return os.getcwd()
 
 
-def random_deal(number=None):
-    deal_str = deck52.random_deal()
+def random_deal_board(number=None):
+    deal_str = random_deal()
     if number == None:
         number = np.random.randint(1, 17)
-    auction_str = deck52.board_dealer_vuln(number)
+    auction_str = board_dealer_vuln(number)
 
     return deal_str, auction_str
 
@@ -81,10 +80,9 @@ class Driver:
         self.human = [False, False, True, False]
         self.human_declare = False
         self.rotate = False
-        self.name = "Human"
+        self.name = models.name
         self.ns = models.ns
         self.ew = models.ew
-        self.sameforboth = models.sameforboth
         self.verbose = verbose
         self.play_only = False
         self.claim = models.claim
@@ -100,7 +98,7 @@ class Driver:
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
-        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew, False,  32)
+        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew,  32)
 
         auction_part = auction_str.split(' ')
         if play_only == None and len(auction_part) > 2: play_only = True
@@ -155,12 +153,9 @@ class Driver:
                 if bidding.BID2ID[bid] > 1:
                     self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly", quality=None))
         else:
-            auction = await self.bidding(self.sameforboth)
-            # Bidding is over and the play still requires the right number of PAD_START
-            if self.sameforboth and self.dealer_i > 1:
-                auction = ['PAD_START'] * 2 + auction
+            auction = await self.bidding()
 
-        self.contract = bidding.get_contract(auction)
+        self.contract = bidding.get_contract(auction, self.dealer_i, self.models)
         if self.contract is None:
             await self.channel.send(json.dumps({
                 'message': 'deal_end',
@@ -227,6 +222,7 @@ class Driver:
         if self.verbose: 
             for card_resp in self.card_responses:
                 pprint.pprint(card_resp.to_dict(), width=200)
+
         
         await self.play(self.contract, self.strain_i, self.decl_i, auction, opening_lead52)
 
@@ -318,7 +314,7 @@ class Driver:
         decl_hand = self.hands[decl_i]
 
         if self.models.pimc_use:
-            pimc = BGADLL(self.models.pimc_wait, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose)
+            pimc = BGADLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose)
             if self.verbose:
                 print("PIMC",dummy_hand, decl_hand, contract)
         else:
@@ -358,7 +354,7 @@ class Driver:
         tricks52 = []
         trick_won_by = []
 
-        opening_lead = deck52.card52to32(opening_lead52)
+        opening_lead = card52to32(opening_lead52)
 
         current_trick = [opening_lead]
         current_trick52 = [opening_lead52]
@@ -459,7 +455,7 @@ class Driver:
                     'card': card_resp.card.symbol()
                 }))
 
-                card32 = deck52.card52to32(card52)
+                card32 = card52to32(card52)
 
                 for card_player in card_players:
                     card_player.set_real_card_played(card52, player_i)
@@ -529,7 +525,7 @@ class Driver:
                 assert np.sum(card_player.x_play[:, trick_i + 1, 0:32], axis=1) == 13 - trick_i - 1
                 assert np.sum(card_player.x_play[:, trick_i + 1, 32:64], axis=1) == 13 - trick_i - 1
 
-            trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
+            trick_winner = (leader_i + get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
             trick_won_by.append(trick_winner)
 
             if trick_winner % 2 == 0:
@@ -545,13 +541,6 @@ class Driver:
 
             if self.verbose:
                 print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
-            if np.any(np.array(self.human)):
-                key = await self.confirmer.confirm()
-                if key == 'q':
-                    print(self.deal_str)
-                    return
-            else:
-                await self.confirmer.confirm()
 
             # update cards shown
             for i, card32 in enumerate(current_trick):
@@ -561,6 +550,14 @@ class Driver:
             current_trick = []
             current_trick52 = []
 
+            if np.any(np.array(self.human)):
+                key = await self.confirmer.confirm()
+                if key == 'q':
+                    print(self.deal_str)
+                    return
+            else:
+                await self.confirmer.confirm()
+
         # play last trick
         print("trick 13")
         for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
@@ -568,8 +565,10 @@ class Driver:
             if not isinstance(card_players[player_i], bots.CardPlayer):
                 await card_players[player_i].get_card_input()
 
+            print(np.nonzero(card_players[player_i].hand52))
             card52 = np.nonzero(card_players[player_i].hand52)[0][0]
-            card32 = deck52.card52to32(card52)
+            print(np.nonzero(card_players[player_i].hand52)[0][0])
+            card32 = card52to32(card52)
 
             card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1, quality=None)
 
@@ -589,7 +588,7 @@ class Driver:
         tricks.append(current_trick)
         tricks52.append(current_trick52)
         
-        trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
+        trick_winner = (leader_i + get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         if trick_winner % 2 == 0:
             card_players[0].n_tricks_taken += 1
             card_players[2].n_tricks_taken += 1
@@ -603,7 +602,7 @@ class Driver:
             print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
 
         # Decode each element of tricks52
-        decoded_tricks52 = [[deck52.decode_card(item) for item in inner] for inner in tricks52]
+        decoded_tricks52 = [[decode_card(item) for item in inner] for inner in tricks52]
         pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
 
         self.trick_winners = trick_won_by
@@ -614,7 +613,7 @@ class Driver:
     
     async def opening_lead(self, auction):
 
-        contract = bidding.get_contract(auction)
+        contract = bidding.get_contract(auction, self.dealer_i, self.models)
         decl_i = bidding.get_decl_i(contract)
 
         hands_str = self.deal_str.split()
@@ -630,6 +629,7 @@ class Driver:
                 self.models,
                 self.sampler,
                 (decl_i + 1) % 4,
+                self.dealer_i,
                 self.verbose
             )
             card_resp = await bot_lead.async_opening_lead(auction)
@@ -638,7 +638,7 @@ class Driver:
 
         return card_resp
 
-    async def bidding(self, sameforboth):
+    async def bidding(self):
         hands_str = self.deal_str.split()
         
         vuln = [self.vuln_ns, self.vuln_ew]
@@ -657,10 +657,7 @@ class Driver:
                 bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.verbose)
                 players.append(bot)
 
-        if sameforboth:
-            auction = ['PAD_START'] * (self.dealer_i % 2)
-        else:
-            auction = ['PAD_START'] * self.dealer_i
+        auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
 
@@ -692,7 +689,7 @@ class Driver:
 
 def random_deal_source():
     while True:
-        yield random_deal()
+        yield random_deal_board()
 
 async def main():
     random = True
@@ -782,10 +779,10 @@ async def main():
                 np.random.seed(boardno)
 
             #Just take a random"
-            rdeal = random_deal(boardno)
+            rdeal = random_deal_board(boardno)
 
             # example of to use a fixed deal
-            rdeal = ('62.QT742.875.KJ3 .A98.KQ9432.Q742 AJT543.65.J.AT95 KQ987.KJ3.AT6.86', 'W E-W')
+            # rdeal = ('62.QT742.875.KJ3 .A98.KQ9432.Q742 AJT543.65.J.AT95 KQ987.KJ3.AT6.86', 'W E-W')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=bidding_only)
@@ -804,7 +801,7 @@ async def main():
         if not bidding_only:
             with shelve.open(f"{base_path}/gamedb") as db:
                 deal = driver.to_dict()
-                print("Saving Board: ",driver.hands)
+                print(f"Saving Board: {driver.hands} in {base_path}/gamedb")
                 print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 db[uuid.uuid4().hex] = deal
 
@@ -823,7 +820,3 @@ if __name__ == '__main__':
         loop.run_until_complete(main())
     except KeyboardInterrupt:
         pass
-    except ValueError as e:
-        print("Error in configuration - typical the models do not match the configuration - include_system ")
-        print(e)
-        sys.exit(0)

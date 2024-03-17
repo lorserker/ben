@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BEN - The oracle</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/app/viz.css">
+ 
+    <!-- Include jQuery and jQuery UI -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+</head>
+
+<body>
+    <div id="loader"></div> 
+    <div id="dealdiv">
+        <h1>Enter Board information</h1>
+        <label for="userInput">User:</label>
+        <input type="text" id="userInput" placeholder="Enter user" required oninput="saveUser()"><br>
+
+        <label for="dealerInput">Dealer:</label>
+        <select id="dealerInput">
+            <option value="N" selected>North</option>
+            <option value="S">South</option>
+            <option value="E">East</option>
+            <option value="W">West</option>
+        </select><br>
+
+        <label for="seatInput">Seat:</label>
+        <select id="seatInput">
+            <option value="N">North</option>
+            <option value="S" selected>South</option>
+            <option value="E">East</option>
+            <option value="W">West</option>
+        </select><br>
+
+        <label for="vulInput">Vulnerable:</label>
+        <select id="vulInput">
+            <option value="">None</option>
+            <option value="@v">NS</option>
+            <option value="@V">EW</option>
+            <option value="@v@v">Both</option>
+        </select><br>
+
+        <label for="biddingInput">Bidding:</label>
+        <input type="text" id="biddingInput" size="60" placeholder="Enter bidding (1S-P-2H-P-P-P)" onmouseover="showTooltip(3)" onmouseout="hideTooltip(3)"><br>
+        <small id="tooltip3" style="display: none;">Please enter the bids separated by hyphens. Allowed bids: 1C, 1D, 1H, 1S, 1N, ..., 7N, X, XX, P</small><br><br>
+
+        <label for="handInput">Hand:</label>
+        <input type="text" id="handInput" size="40"  placeholder="Enter hand (ie AKJT.QT9.J987.5432)" required onmouseover="showTooltip(1)" onmouseout="hideTooltip(1)"><br>
+
+        <label for="handInput">Dummy/Declarer:</label>
+        <input type="text" id="dummyInput" size="40" placeholder="Enter hand (e.g., AKJT.QT9.J987.5432)" required onmouseover="showTooltip(1)" onmouseout="hideTooltip(1)"><br>
+        <small id="tooltip1" style="display: none;">Please enter the hand as four suits separated by '.'</small><br>
+            
+        <label for="playInput">Play:</label>
+        <input type="text" id="playInput"  size="70" placeholder="Enter cards (S7H3H6)" required onmouseover="showTooltip(2)" onmouseout="hideTooltip(2)"><br>
+        <small id="tooltip2" style="display: none;">Please enter all the played cards including cards from BEN</small><br><br>
+
+                    
+        <button onclick="callAPI('bid')">Ask BEN for bid</button>&nbsp;&nbsp;
+        <button onclick="callAPI('play')">Ask BEN for play</button><br><br>
+        <div id="result"></div><br><br>
+        <div id="info"></div><br><br>
+        <div><a href="/home">Home</a></div>
+        </div>
+
+
+    <script>
+        function showTooltip(idx) {
+            var tooltip = document.getElementById("tooltip"+idx);
+            tooltip.style.display = "inline";
+        }
+
+        function hideTooltip(idx) {
+            var tooltip = document.getElementById("tooltip"+idx);
+            tooltip.style.display = "none";
+        }        
+        function validateHand(hand) {
+            const regex = /^([2-9TJQKA]+\.){3}[2-9TJQKA]+$/;
+            return regex.test(hand);
+        }
+
+        function validateBidding(bidding) {
+            const regex = /^$|^([1-7][SHDCN]|X|XX|P)(-([1-7][SHDCN]|X|XX|P))*$/;
+            return regex.test(bidding);
+        }
+
+        function validatePlay(play) {
+            const regex = /^([SHDC][2-9TJQKA]){0,52}$/;
+            return regex.test(play);
+        }
+
+        function displayBid(data) {
+            let html = `
+                <p class="bid"><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' + data.who : ''}</p>
+                `;
+            if (data.candidates && data.candidates.length > 0)
+                html += `
+                    <p><strong>Candidates:</strong></p>
+                    <ul>
+                        ${data.candidates.map(candidate => `
+                            <li>
+                                Bid: ${candidate.call.replace("PASS","P").padStart(2, ' ')},
+                                ${candidate.expected_score !== undefined ? `Expected score: ${candidate.expected_score},` : ''}
+                                ${candidate.insta_score !== undefined ? `NN Score: ${candidate.insta_score},` : ''}
+                                ${candidate.adjustment !== undefined ? `Adjusted: ${candidate.adjustment}` : ''}
+                            </li>                               
+                        `).join('')}
+                    </ul>
+                    `;
+            if (data.hcp && (data.hcp != -1)) {
+                let formattedShape = [];
+                for (let i = 0; i < data.shape.length; i += 4) {
+                    formattedShape.push(data.shape.slice(i, i + 4).join('-'));
+                }
+                formattedShape = formattedShape.join(' &nbsp;&nbsp; ');                                    
+                html += `
+                    <p><strong>HCP:</strong> ${data.hcp.join(' - ')}</p>
+                    <p><strong>Shape:</strong> ${formattedShape}</p>
+                    `;
+                if (data.quality) {
+                    html += `
+                    <p><strong>Sample quality: </strong>${data.quality}</p>
+                    `;
+                }
+            }
+            if (data.samples && data.samples.length > 0)
+                html += `
+                    <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples(${data.samples.length}):</strong></h3>
+                    <div id="sampleLines${i}" class="hidden">
+                    <ul>${data.samples.map(sample => `<li>${sample.replace(/\n/g,"<br>")}</li>`).join('')}</ul>
+                    </div>
+                    `;
+            document.querySelector('#info').innerHTML = html + document.querySelector('#info').innerHTML
+
+        }
+
+        function displayPlay(data) {
+            element.innerHTML = ""
+
+            let html = ""
+
+            if ("candidates" in this.data && this.data.candidates.length > 0) {
+                html += '<h3>Candidates</h3>'
+                html += '<table>'
+
+                for (const element of this.data.candidates) {
+                    let candidate = element
+
+                    html += '<tr>'
+                    html += '<td class="candidate-card">' + candidate['card'] + '</td>'
+                    if ("expected_tricks_sd" in candidate) {
+                        html += '<td>e(tricks)(SD)=' + Math.round(candidate['expected_tricks_sd'] * 100) / 100 + '</td>'
+                    }
+                    if ("expected_tricks_dd" in candidate) {
+                        html += '<td>e(tricks)(DD)=' + Math.round(candidate['expected_tricks_dd'] * 100) / 100 + '</td>'
+                    }
+                    if ("expected_score_sd" in candidate) {
+                        html += '<td>e(score)sd=' + Math.round(candidate['expected_score_sd'] * 100) / 100 + '</td>'
+                    }
+                    if ("expected_score_dd" in candidate) {
+                        html += '<td>e(score)dd=' + Math.round(candidate['expected_score_dd'] * 100) / 100 + '</td>'
+                    }
+                    if ("insta_score" in candidate) {
+                        html += '<td>iscore=' + Math.round(candidate['insta_score'] * 100) / 100 + '</td>'
+                    }
+                    if ("p_make_contract" in candidate) {
+                        html += '<td>e(make/set)=' + Math.round(candidate['p_make_contract'] * 100) / 100 + '</td>'
+                    }
+                    if ("msg" in candidate) {
+                        html += '<td title="'+ candidate['msg'] +'">[pimc]</td>'
+                    }
+                    html += '</tr>'
+                }
+
+                html += '</table><br>'
+            }
+
+            if ("hcp" in this.data && "shape" in this.data) {
+                if (this.data['hcp'] != -1 && this.data['shape'] != -1) {
+                    let shape = this.data['shape'].reduce((acc, val) => acc.concat(val), []);
+                    html += '<h3>Bidding Info</h3>'
+                    if (this.data['hcp'].length > 2) {
+                        html += '<div>Dummy: ' + this.data['hcp'][0] + ' hcp, shape: '
+                        for (let i = 0; i < 4; i++) {
+                            html += shape[i] + " "
+                        }
+                        html += '</div>'
+                        html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: '
+                        for (let i = 0; i < 4; i++) {
+                            html += shape[i + 4] + " "
+                        }
+                        html += '</div>'
+                        html += '<div>Declarer: ' + this.data['hcp'][2] + ' hcp, shape: '
+                        for (let i = 0; i < 4; i++) {
+                            html += shape[i + 8] + " "
+                        }
+                        html += '</div>'
+                    } else {
+                        // we are seated after declarer
+                        if ((this.player - this.declarer + 4) % 4 == 1) {
+                            html += '<div>Declarer: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            for (let i = 0; i < 4; i++) {
+                                html += shape[i] + " "
+                            }
+                            html += '</div>'
+                            html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            for (let i = 0; i < 4; i++) {
+                                html += shape[i + 4] + " "
+                            }
+                            html += '</div>'
+                        } else
+                            // we are seated before declarer
+                            if ((this.player - this.declarer + 4) % 4 == 3) {
+                                html += '<div>Partner: ' + this.data['hcp'][0] + ' hcp, shape: '
+                                for (let i = 0; i < 4; i++) {
+                                    html += shape[i] + " "
+                                }
+                                html += '</div>'
+                                html += '<div>Declarer: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                for (let i = 0; i < 4; i++) {
+                                    html += shape[i + 4] + " "
+                                }
+                                html += '</div>'
+                            }
+                            else {
+                                // RHO
+                                if (this.player == 0) {
+                                    html += '<div>West: ' + this.data['hcp'][0] + ' hcp, shape: '
+                                } 
+                                if (this.player == 1) {
+                                    html += '<div>North: ' + this.data['hcp'][0] + ' hcp, shape: '
+                                } 
+                                if (this.player == 2) {
+                                    html += '<div>East: ' + this.data['hcp'][0] + ' hcp, shape: '
+                                } 
+                                if (this.player == 3) {
+                                    html += '<div>South: ' + this.data['hcp'][0] + ' hcp, shape: '
+                                } 
+                                
+                                for (let i = 0; i < 4; i++) {
+                                    html += shape[i] + " "
+                                }
+                                html += '</div>'
+                                // LHO
+                                if (this.player == 0) {
+                                    html += '<div>East: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                } 
+                                if (this.player == 1) {
+                                    html += '<div>South: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                } 
+                                if (this.player == 2) {
+                                    html += '<div>West: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                } 
+                                if (this.player == 3) {
+                                    html += '<div>North: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                } 
+                                for (let i = 0; i < 4; i++) {
+                                    html += shape[i + 4] + " "
+                                }
+                                html += '</div>'
+                            }
+                    }
+                }
+
+            }
+            document.querySelector('#info').innerHTML = html + document.querySelector('#info').innerHTML
+        }
+
+        // Function to load user value from localStorage
+        function loadUser() {
+            const savedUser = localStorage.getItem('user');
+            if (savedUser) {
+                document.getElementById('userInput').value = savedUser;
+            }
+        }
+
+        // Function to save user value to localStorage
+        function saveUser() {
+            const user = document.getElementById('userInput').value;
+            localStorage.setItem('user', user);
+        }
+
+        // Call loadUser() when the page loads
+        window.onload = loadUser;
+
+        async function callAPI(action) {
+            document.querySelector("#loader").style.visibility = "visible"; 
+            let validationerror = false;
+            let hand = document.getElementById('handInput').value.toUpperCase();
+            if (!validateHand(hand)) {
+                alert("Invalid hand input. Please enter four suits delimited by .");
+                validationerror = true;
+            }
+
+            let dummy = document.getElementById('dummyInput').value.toUpperCase();
+            if ((action == 'play') && !validateHand(dummy)) {
+                alert("Invalid hand input. Please enter four suits delimited by .");
+                validationerror = true;
+            }
+
+            let bidding = document.getElementById('biddingInput').value.toUpperCase();
+            if (!validateBidding(bidding)) {
+                alert("Invalid bidding input. Please enter the bids separated by hyphens. Allowed bids: 1C, 1D, 1H, 1S, 1N, ..., 7N, X, XX, P");
+                validationerror = true;
+            }
+
+            let played =  document.getElementById('playInput').value.toUpperCase();
+            if (!validatePlay(played)) {
+                alert("Invalid played input. Please enter the cards without any spaces like this: S2SKS4");
+                validationerror = true;
+            }
+
+            if ((played == "") && (action == "play")){
+                action = "lead";
+            }
+
+            if (validationerror) {
+                document.querySelector("#loader").style.visibility = "hidden";
+                return;
+            }
+
+            bidding = bidding.replace(/-/g, '');
+            bidding = bidding.replace(/XX/g, 'Rd');
+            bidding = bidding.replace(/X/g, 'Db');
+            // Replace 'P' with '--'
+            bidding = bidding.replace(/P/g, '--');
+
+            const user = document.getElementById('userInput').value;
+            const dealer = document.getElementById('dealerInput').value;
+            const seat = document.getElementById('seatInput').value;
+            const vul = document.getElementById('vulInput').value;
+
+            // Get the current hostname and protocol
+            const hostname = window.location.hostname;
+            const protocol = window.location.protocol;
+
+            const url = `${protocol}//${hostname}:8085/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&dummy=${dummy}&played=${played}`;
+
+            try {           
+                const response = await fetch(url, {
+                    method: 'GET'
+                })
+
+                document.querySelector("#loader").style.visibility = "hidden";
+                // Check if the response is successful
+                if (!response.ok) {
+                    // Log the response status and status text
+                    console.error('Response not OK:', response.status, response.statusText);
+
+                    // Parse the response body as JSON
+                    const errorResponse = await response.json();
+                    
+                    // Extract the error message from the JSON response
+                    const errorMessage = errorResponse.error || 'Unknown error occurred';
+
+                    // Show the error message to the user
+                    alert(errorMessage);
+                    return;
+                }
+
+                // Parse the response as JSON
+                const data = await response.json();
+
+                if (action == 'bid') {
+                    document.getElementById('result').innerText = `BEN Suggest: ${data.bid}`;
+                    displayBid(data);
+                }
+                if ((action == 'play') || (action == 'lead')) {
+                    document.getElementById('result').innerText = `BEN Suggest: ${data.card}`;
+                    displayPlay(data);
+                }
+            } catch (error) {
+                document.querySelector("#loader").style.visibility = "hidden";
+                // Handle any errors that occur during the fetch request
+                alert('Error fetching data:', error.message);
+                // Show an error message to the user or perform other error handling actions
+            }
+        }
+        document.querySelector("#loader").style.visibility = "hidden";
+    </script>
+</body>
+
+</html>

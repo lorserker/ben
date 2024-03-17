@@ -26,12 +26,14 @@ SEATS = ['north', 'east', 'south', 'west']
 def lead(obj, models, sampler, verbose):
     if obj['contract'] is None:
         return None
-    
+
+    dealer_i = 'NESW'.index(obj["dealer"])
+        
     decl_i = 'NESW'.index(obj['contract'][-1])
     lead_i = (decl_i + 1) % 4
 
     hand_lead = obj[SEATS[lead_i]]
-    bot = BotLead(VULN[obj['vuln']], hand_lead, models, sampler, lead_i, verbose)
+    bot = BotLead(VULN[obj['vuln']], hand_lead, models, sampler, lead_i, dealer_i, verbose)
     lead_card_indexes, _ = bot.get_opening_lead_candidates(obj['auction'])
     lead_card_i = lead_card_indexes[0]
     suit_i = lead_card_i // 8

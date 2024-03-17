@@ -1,7 +1,7 @@
 from collections import defaultdict
 import copy
 import sys
-sys.path.append('../../../src')
+sys.path.append('D:/github/ben/src')
 
 import datetime
 from collections import Counter
@@ -32,7 +32,7 @@ BID2ID.update(SUITBID2ID)
 
 ID2BID = {bid: i for i, bid in BID2ID.items()}
 
-def load_deals(fin, sameforboth):
+def load_deals(fin):
     deal_str = ''
 
     for line_number, line in enumerate(fin):
@@ -41,13 +41,13 @@ def load_deals(fin, sameforboth):
         if line_number % 2 == 0:
             deal_str = line
         else:
-            yield DealData.from_deal_auction_string(deal_str, line, ns, ew, sameforboth, 32)
+            yield DealData.from_deal_auction_string(deal_str, line, ns, ew, 32)
 
-def create_arrays(ns, ew, players_pr_hand, n):
+def create_arrays(ns, ew, players_pr_hand, n, bids):
     if (ns==-1):
         x = np.zeros((players_pr_hand * n, 8, 159), dtype=np.float16)
     else:
-        x = np.zeros((players_pr_hand * n, 8, 161), dtype=np.float16)
+        x = np.zeros((players_pr_hand * n, 8, 41 + 40*bids), dtype=np.float16)
     y = np.zeros((players_pr_hand * n, 8, 40), dtype=np.uint8)
     HCP = np.zeros((players_pr_hand * n, 8, 3), dtype=np.float16)
     SHAPE = np.zeros((players_pr_hand * n, 8, 12), dtype=np.float16)
@@ -71,7 +71,7 @@ def filter_deals(data_it, max_occurrences, auctions, key_counts, deals):
     
     return deals, auctions, key_counts
 
-def create_binary(data_it, ns, ew, alternating, x, y, HCP, SHAPE, key_counts, k):
+def create_binary(data_it, ns, ew, alternating, x, y, HCP, SHAPE, key_counts, k, bids):
 
     for i, deal_data in enumerate(data_it):
         if (i+1) % 10000 == 0:
@@ -82,9 +82,9 @@ def create_binary(data_it, ns, ew, alternating, x, y, HCP, SHAPE, key_counts, k)
         if not deal_data.vuln_ns and deal_data.vuln_ew: v = 2
         if deal_data.vuln_ns and deal_data.vuln_ew: v = 3
         if alternating and (i % 2) == 1:
-            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, n_steps = 8)
+            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, bids, n_steps = 8)
         else:
-            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, n_steps = 8)
+            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, bids, n_steps = 8)
         if ns == 0:
             # with system = 0 we discard the hand
             x[k:k+1] = x_part[1]
@@ -132,12 +132,11 @@ def to_numeric(value, default=0):
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print("Usage: python bidding_binary.py inputfile1 inputfile2 NS=<x> EW=<y> alternate=True sameforboth=True")
+        print("Usage: python bidding_binary.py inputfile1 inputfile2 NS=<x> EW=<y> alternate=True version=1")
         print("NS and EW are optional. If set to -1 no information about system is included in the model.")
         print("If set to 0 the hands from that side will not be used for training.")
         print("The input file is the BEN-format (1 line with hands, and next line with the bidding).")
         print("alternate is signaling, that the input file has both open and closed room, so NS/EW will be altarnated")
-        print("sameforboth will create a net, where North and south use the same input to the NN")
         sys.exit(1)
 
     infnm1 = sys.argv[1] # file where the data is
@@ -149,9 +148,9 @@ if __name__ == '__main__':
     ns = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("NS=")), -1)
     ew = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("EW=")), -1)
     alternating = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("alternate")), False)
-    sameforboth = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("sameforboth")), False)
+    version = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("version")), 1)
 
-    sys.stderr.write(f"{ns}, {ew}, {alternating}, {sameforboth}\n")
+    sys.stderr.write(f"{ns}, {ew}, {alternating}, {4 if version == '2' else 3}\n")
     ns = to_numeric(ns)
     ew = to_numeric(ew)
 
@@ -181,7 +180,7 @@ if __name__ == '__main__':
             if user_input.lower() == "n":
                 sys.exit()
 
-        data_it = load_deals(lines, sameforboth)
+        data_it = load_deals(lines)
         filtered_deals, auctions, key_counts = filter_deals(data_it, max_occurrences, auctions, key_counts, [] )
 
     # Create a new Counter to count all occurrences without limit
@@ -204,7 +203,7 @@ if __name__ == '__main__':
             # Remove comments at the beginning of the file
             lines = [line for line in lines if not line.strip().startswith('#')]
             sys.stderr.write(f"Loading {len(lines) // 2} deals for fillers\n")
-            data_it = load_deals(lines, sameforboth)
+            data_it = load_deals(lines)
             filtered_deals, auctions, key_counts = filter_deals(data_it, max_occurrences, auctions, key_counts, filtered_deals)
 
     # Create a new Counter to count all occurrences without limit
@@ -253,14 +252,12 @@ if __name__ == '__main__':
 
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} After add missing vuln {len(sorted_filtered_deals)}\n')
 
-    x, y, HCP, SHAPE = create_arrays(ns, ew, players_pr_hand, len(sorted_filtered_deals))
+    x, y, HCP, SHAPE = create_arrays(ns, ew, players_pr_hand, len(sorted_filtered_deals), 4 if version == "2" else 3)
 
-    x, y, HCP, SHAPE, key_counts, k = create_binary(sorted_filtered_deals, ns, ew, alternating, x, y, HCP, SHAPE, key_counts, k)
+    x, y, HCP, SHAPE, key_counts, k = create_binary(sorted_filtered_deals, ns, ew, alternating, x, y, HCP, SHAPE, key_counts, k, 4 if version == "2" else 3)
 
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} created {k} hands\n')
 
-    if sameforboth:
-        out_dir += "_same" 
     np.save(os.path.join(out_dir, 'x.npy'), x)
     np.save(os.path.join(out_dir, 'y.npy'), y)
     np.save(os.path.join(out_dir, 'HCP.npy'), HCP)

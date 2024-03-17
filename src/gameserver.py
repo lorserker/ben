@@ -10,8 +10,6 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
 
-import uuid
-import shelve
 import time
 import datetime
 import asyncio
@@ -21,7 +19,6 @@ import game
 import human
 import conf
 import functools
-import os
 import numpy as np
 from websockets.exceptions import ConnectionClosedOK
 from sample import Sample
@@ -192,7 +189,7 @@ async def handler(websocket, path, board_no, seed):
     except ConnectionClosedOK  as ex:
         print('User left')
     except ValueError as e:
-        print("Error in configuration - typical the models do not match the configuration - include_system ")
+        print("Error in configuration - typical the models do not match the configuration.")
         print(e)
         sys.exit(0)
 
