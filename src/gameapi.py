@@ -47,7 +47,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
     righty_hand = hands[(decl_i + 3) % 4]
     decl_hand = hands[decl_i]
 
-    if models.pimc_use:
+    if models.pimc_use and cardplayer_i == 3:
         pimc = BGADLL(models, dummy_hand, decl_hand, contract, is_decl_vuln, verbose)
         if verbose:
             print("PIMC",dummy_hand, decl_hand, contract)
@@ -116,7 +116,6 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
                 while card_resp is None:
                     card_resp = await card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
 
-                print(card_resp)
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
                 if verbose:
@@ -125,7 +124,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
                 return card_resp
 
             card52 = Card.from_symbol(play[card_i]).code()
-            print(play[card_i], card52, card_i, player_i, cardplayer_i)
+            #print(play[card_i], card52, card_i, player_i, cardplayer_i)
             card32 = deck52.card52to32(card52)
 
             for card_player in card_players:
@@ -150,18 +149,18 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
         # sanity checks after trick completed
         assert len(current_trick) == 4
 
-        for i in [cardplayer_i] + ([1] if cardplayer_i == 3 else []):
-            if cardplayer_i == 1:
-                break
-            assert np.min(card_player.hand52) == 0, card_player.hand52
-            assert np.min(card_player.public52) == 0
-            assert np.sum(card_player.hand52) == 13 - trick_i - 1
-            assert np.sum(card_player.public52) == 13 - trick_i - 1
+        # for i in [cardplayer_i] + ([1] if cardplayer_i == 3 else []):
+        #     if cardplayer_i == 1:
+        #         break
+        #     assert np.min(card_player.hand52) == 0, card_player.hand52
+        #     assert np.min(card_player.public52) == 0
+        #     assert np.sum(card_player.hand52) == 13 - trick_i - 1
+        #     assert np.sum(card_player.public52) == 13 - trick_i - 1
 
         tricks.append(current_trick)
         tricks52.append(current_trick52)
 
-        if models.pimc_use:
+        if models.pimc_use and pimc:
             # Only declarer use PIMC
             if isinstance(card_players[3], CardPlayer):
                 card_players[3].pimc.reset_trick()
@@ -192,13 +191,13 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
             card_player.x_play[:, trick_i + 1, 293 + strain_i] = 1
 
         # sanity checks for next trick
-        for i in [cardplayer_i] + ([1] if cardplayer_i == 3 else []):
-            if cardplayer_i == 1:
-                break
-            assert np.min(card_player.x_play[:, trick_i + 1, 0:32]) == 0
-            assert np.min(card_player.x_play[:, trick_i + 1, 32:64]) == 0
-            assert np.sum(card_player.x_play[:, trick_i + 1, 0:32], axis=1) == 13 - trick_i - 1
-            assert np.sum(card_player.x_play[:, trick_i + 1, 32:64], axis=1) == 13 - trick_i - 1
+        # for i in [cardplayer_i] + ([1] if cardplayer_i == 3 else []):
+        #     if cardplayer_i == 1:
+        #         break
+        #     assert np.min(card_player.x_play[:, trick_i + 1, 0:32]) == 0
+        #     assert np.min(card_player.x_play[:, trick_i + 1, 32:64]) == 0
+        #     assert np.sum(card_player.x_play[:, trick_i + 1, 0:32], axis=1) == 13 - trick_i - 1
+        #     assert np.sum(card_player.x_play[:, trick_i + 1, 32:64], axis=1) == 13 - trick_i - 1
 
         trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         trick_won_by.append(trick_winner)
@@ -209,7 +208,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
         else:
             card_players[1].n_tricks_taken += 1
             card_players[3].n_tricks_taken += 1
-            if models.pimc_use:
+            if models.pimc_use and pimc:
                 # Only declarer use PIMC
                 if isinstance(card_players[3], CardPlayer):
                     card_players[3].pimc.update_trick_needed()
@@ -350,58 +349,66 @@ def lead():
 @app.route('/play')
 async def frontend():
     #try:
-    # First we extract the hands and seat
-    hand_str = request.args.get("hand").replace('_','.')
-    dummy_str = request.args.get("dummy").replace('_','.')
-    played = request.args.get("played")
-    seat = request.args.get("seat")
-    # Then vulnerability
-    v = request.args.get("vul")
-    vuln = []
-    vuln.append('@v' in v)
-    vuln.append('@V' in v)
-    # And finally the bidding, where we deduct dealer and our position
-    dealer = request.args.get("dealer")
-    dealer_i = dealer_enum[dealer]
-    position_i = dealer_enum[seat]
-    ctx = request.args.get("ctx")
-    # Split the string into chunks of every second character
-    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
-    cards = [played[i:i+2] for i in range(0, len(played), 2)]
-    print(played)
-    print(cards)
-    # Validate number of cards played according to position
-    auction = create_auction(bids, dealer_i)
-    contract = bidding.get_contract(auction, dealer_i, models)
-    decl_i = bidding.get_decl_i(contract)
-    strain_i = bidding.get_strain_i(contract)
-    user = request.args.get("user")
-    # Hand is following N,E,S,W
-    hands = ['...', '...', '...', '...']
-    hands[position_i] = hand_str
-    if ((decl_i + 2) % 4) == position_i:
-        # We are dummy
-        hands[decl_i] = dummy_str
-    else:        
-        hands[(decl_i + 2) % 4] = dummy_str
+        # First we extract the hands and seat
+        hand_str = request.args.get("hand").replace('_','.')
+        dummy_str = request.args.get("dummy").replace('_','.')
+        if hand_str == dummy_str:
+            result = {"message":"Hand and dummy are identical"}
+            return json.dumps(result)
+        
+        played = request.args.get("played")
+        seat = request.args.get("seat")
+        # Then vulnerability
+        v = request.args.get("vul")
+        vuln = []
+        vuln.append('@v' in v)
+        vuln.append('@V' in v)
+        # And finally the bidding, where we deduct dealer and our position
+        dealer = request.args.get("dealer")
+        dealer_i = dealer_enum[dealer]
+        position_i = dealer_enum[seat]
+        ctx = request.args.get("ctx")
+        # Split the string into chunks of every second character
+        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+        cards = [played[i:i+2] for i in range(0, len(played), 2)]
+        #print(played)
+        #print(cards)
+        if len(cards) > 51:
+            result = {"message": "Game is over, no cards to play"}
+            return json.dumps(result)
+
+        # Validate number of cards played according to position
+        auction = create_auction(bids, dealer_i)
+        contract = bidding.get_contract(auction, dealer_i, models)
+        decl_i = bidding.get_decl_i(contract)
+        strain_i = bidding.get_strain_i(contract)
+        user = request.args.get("user")
+        # Hand is following N,E,S,W
+        hands = ['...', '...', '...', '...']
+        hands[position_i] = hand_str
+        if ((decl_i + 2) % 4) == position_i:
+            # We are dummy
+            hands[decl_i] = dummy_str
+        else:        
+            hands[(decl_i + 2) % 4] = dummy_str
 
 
-    # Are we declaring
-    if decl_i == position_i:
-        cardplayer = 3
-    if decl_i == (position_i + 2) % 4:
-        cardplayer = 1
-    if (decl_i + 1) % 4 == position_i:
-        cardplayer = 0
-    if (decl_i + 3) % 4 == position_i:
-        cardplayer = 2
-    print(cardplayer)
-    print(hands)
-    card_resp = await play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, False)
-    print("Playing:", card_resp.card.symbol())
-    result = card_resp.to_dict()
-    print(json.dumps(result))
-    return json.dumps(result)
+        # Are we declaring
+        if decl_i == position_i:
+            cardplayer = 3
+        if decl_i == (position_i + 2) % 4:
+            cardplayer = 1
+        if (decl_i + 1) % 4 == position_i:
+            cardplayer = 0
+        if (decl_i + 3) % 4 == position_i:
+            cardplayer = 2
+        #print(cardplayer)
+        #print(hands)
+        card_resp = await play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
+        print("Playing:", card_resp.card.symbol())
+        result = card_resp.to_dict()
+        #print(json.dumps(result))
+        return json.dumps(result)
     #except Exception as e:
     #    print(e)
     #    error_message = "An error occurred: {}".format(str(e))

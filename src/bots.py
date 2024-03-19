@@ -845,7 +845,7 @@ class CardPlayer:
         self.x_play[:,0,293+strain_i] = 1
 
     def set_real_card_played(self, card, playedBy, openinglead=False):
-        if (self.player_i == 3) and self.models.pimc_use:
+        if (self.player_i == 3) and self.models.pimc_use and self.pimc:
             self.pimc.set_card_played(card, playedBy, openinglead)
 
     def set_card_played(self, trick_i, leader_i, i, card):

@@ -164,7 +164,7 @@ async def handler(websocket, path, board_no, seed):
         if random:
             #Just take a random"
             np.random.seed(board_number)
-            rdeal = game.random_deal(board_number)
+            rdeal = game.random_deal_board(board_number)
             # example of to use a fixed deal
             # rdeal = ('AK64.8642.Q32.Q6 9.QT973.AT5.KJ94 QT532.J5.KJ974.7 J87.AK.86.AT8532', 'W None')
             print(f"Board: {board_number} {rdeal}")
