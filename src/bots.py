@@ -845,7 +845,8 @@ class CardPlayer:
         self.x_play[:,0,293+strain_i] = 1
 
     def set_real_card_played(self, card, playedBy, openinglead=False):
-        if (self.player_i == 3) and self.models.pimc_use and self.pimc:
+        # Dummy has no PIMC
+        if self.pimc and self.player_i != 1:
             self.pimc.set_card_played(card, playedBy, openinglead)
 
     def set_card_played(self, trick_i, leader_i, i, card):
@@ -872,6 +873,46 @@ class CardPlayer:
     def set_public_card_played52(self, card52):
         self.public52[card52] -= 1
 
+    def update_constraints(self, players_states, quality, player_i):
+        # Based on player states we should be able to find min max for suits and hcps, and add that before calling PIMC
+        # print("Updating constraints", player_i)
+        if player_i == 1:
+            idx1 = 0
+            idx2 = 2
+        if player_i == 0:
+            idx1 = 2
+            idx2 = 3
+        if player_i == 2:
+            idx1 = 0
+            idx2 = 3
+        if player_i == 3:
+            idx1 = 0
+            idx2 = 2
+        h1 = []
+        h3 = []
+        s1 = []
+        s3 = []
+        for i in range(players_states[0].shape[0]):
+            h1.append(binary.get_hcp(hand = np.array(players_states[idx1][i, 0, :32].astype(int)).reshape(1,32)))
+            s1.append(binary.get_shape(hand = np.array(players_states[idx1][i, 0, :32].astype(int)).reshape(1,32))[0])
+            h3.append(binary.get_hcp(hand = np.array(players_states[idx2][i, 0, :32].astype(int)).reshape(1,32)))
+            s3.append(binary.get_shape(hand = np.array(players_states[idx2][i, 0, :32].astype(int)).reshape(1,32))[0])
+        min_h1 = int(min(h1))
+        max_h1 = int(max(h1))
+        min_h3 = int(min(h3))
+        max_h3 = int(max(h3))
+        if self.verbose:
+            print("HCP constraints:",min_h1, max_h1, min_h3, max_h3, quality)
+        self.pimc.set_hcp_constraints(min_h1, max_h1, min_h3, max_h3, quality)
+        min_values1 = [min(col) for col in zip(*s1)]
+        max_values1 = [max(col) for col in zip(*s1)]
+        min_values3 = [min(col) for col in zip(*s3)]
+        max_values3 = [max(col) for col in zip(*s3)]
+        if self.verbose:
+            print("Shape constraints:",min_values1, max_values1, min_values3, max_values3)
+
+        self.pimc.set_shape_constraints(min_values1, max_values1, min_values3, max_values3, quality)
+
     async def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
@@ -885,42 +926,30 @@ class CardPlayer:
             ))
 
         # If we are declarer and PIMC enabled - use PIMC
-        BGADLL = (self.player_i == 1 or self.player_i == 3) and self.models.pimc_use and trick_i  >= (self.models.pimc_start_trick - 1)
-        if BGADLL:
-            # At trick one we generate constraints based on the samples
-            if trick_i == 0 and self.models.pimc_constraints:
-                h1 = []
-                h3 = []
-                s1 = []
-                s3 = []
-                for i in range(players_states[0].shape[0]):
-                    # Not needed to count for declarer and dummy
-                    h1.append(binary.get_hcp(hand = np.array(players_states[0][i, 0, :32].astype(int)).reshape(1,32)))
-                    h3.append(binary.get_hcp(hand = np.array(players_states[2][i, 0, :32].astype(int)).reshape(1,32)))
-                    s1.append(binary.get_shape(hand = np.array(players_states[0][i, 0, :32].astype(int)).reshape(1,32))[0])
-                    s3.append(binary.get_shape(hand = np.array(players_states[2][i, 0, :32].astype(int)).reshape(1,32))[0])
-                min_h1 = int(min(h1))
-                max_h1 = int(max(h1))
-                min_h3 = int(min(h3))
-                max_h3 = int(max(h3))
-                self.pimc.set_hcp_constraints(min_h1, max_h1, min_h3, max_h3, quality)
-                min_values1 = [min(col) for col in zip(*s1)]
-                max_values1 = [max(col) for col in zip(*s1)]
-                min_values3 = [min(col) for col in zip(*s3)]
-                max_values3 = [max(col) for col in zip(*s3)]
-                if self.verbose:
-                    print("Shape constraints:",min_values1, max_values1, min_values3, max_values3)
-
-                self.pimc.set_shape_constraints(min_values1, max_values1, min_values3, max_values3, quality)
-
-            # Based on player states we should be able to find min max for suits and hcps, and add that before calling PIMC
+        BGADeclaring = self.models.pimc_use_declaring and trick_i  >= (self.models.pimc_start_trick_declarer - 1)
+        BGADefending = self.models.pimc_use_defending and trick_i  >= (self.models.pimc_start_trick_defender - 1)
+        if BGADeclaring and (self.player_i == 1 or self.player_i == 3) and  trick_i == (self.models.pimc_start_trick_declarer - 1) and self.models.pimc_constraints:
+            if self.verbose:
+                print("Declaring", BGADeclaring, self.player_i, trick_i)
+            self.update_constraints(players_states, quality,self.player_i)
+        if BGADefending and (self.player_i == 0 or self.player_i == 2) and trick_i == (self.models.pimc_start_trick_defender - 1) and self.models.pimc_constraints:
+            if self.verbose:
+                print("Defending", BGADeclaring, self.player_i, trick_i)
+            self.update_constraints(players_states, quality,self.player_i)
+        if BGADeclaring and (self.player_i == 1 or self.player_i == 3):
             card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
             if self.verbose:
-                    print("PIMC result:",card52_dd)
+                print("PIMC result:",card52_dd)
             card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples)            
         else:
-            card52_dd = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
-            card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples)
+            if BGADefending and (self.player_i == 0 or self.player_i == 2):
+                card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
+                if self.verbose:
+                    print("PIMC result:",card52_dd)
+                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples)            
+            else:
+                card52_dd = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
+                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples)
 
         return card_resp
 
@@ -991,7 +1020,7 @@ class CardPlayer:
 
         t_start = time.time()
         if self.verbose:
-            print("Samples: ",n_samples, " Solving: ",len(hands_pbn))
+            print("Samples: ",n_samples, " Solving: ",len(hands_pbn), self.strain_i, leader_i, current_trick52)
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
 
         if self.models.use_probability:

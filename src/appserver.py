@@ -30,7 +30,7 @@ script_dir = os.path.dirname(os.path.abspath(__file__))
 @app.route('/')
 @app.route('/home')
 def home():
-    html = '<h1><a href="/app/bridge.html?S=x&A=2&T=2">Play Now</a></h1>\n'
+    html = '<h1><a href="/app/bridge.html?S=x&A=2&T=2&name=Human">Play Now</a></h1>\n'
 
     html += '<ul>\n'
 

@@ -5,7 +5,6 @@ from bots import BotBid, BotLead, CardPlayer
 from bidding import bidding
 from objects import Card, CardResp
 import deck52
-from pimc.PIMC import BGADLL
 monkey.patch_all()
 
 from flask import Flask, request, jsonify
@@ -42,23 +41,45 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
     is_decl_vuln = [vuln_ns, vuln_ew, vuln_ns, vuln_ew][decl_i]
     cardplayer_i = position  # lefty=0, dummy=1, righty=2, decl=3
 
-    lefty_hand = hands[(decl_i + 1) % 4]
-    dummy_hand = hands[(decl_i + 2) % 4]
-    righty_hand = hands[(decl_i + 3) % 4]
-    decl_hand = hands[decl_i]
+    lefty_hand_str = hands[(decl_i + 1) % 4]
+    dummy_hand_str = hands[(decl_i + 2) % 4]
+    righty_hand_str = hands[(decl_i + 3) % 4]
+    decl_hand_str = hands[decl_i]
 
-    if models.pimc_use and cardplayer_i == 3:
-        pimc = BGADLL(models, dummy_hand, decl_hand, contract, is_decl_vuln, verbose)
+    pimc = [None, None, None, None]
+
+    # We should only instantiate the PIMC for the position we are playing
+    if models.pimc_use_declaring and position == 3: 
+        from pimc.PIMC import BGADLL
+        declarer = BGADLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, verbose)
+        pimc[1] = declarer
+        pimc[3] = declarer
         if verbose:
-            print("PIMC",dummy_hand, decl_hand, contract)
+            print("PIMC",dummy_hand_str, decl_hand_str, contract)
     else:
-        pimc = None
+        pimc[1] = None
+        pimc[3] = None
+    if models.pimc_use_defending and (position == 0):
+        from pimc.PIMCDef import BGADefDLL
+        pimc[0] = BGADefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, verbose)
+        if verbose:
+            print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+    else:
+        pimc[0] = None
+
+    if models.pimc_use_defending and (position == 2):
+        from pimc.PIMCDef import BGADefDLL
+        pimc[2] = BGADefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, verbose)
+        if verbose:
+            print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+    else:
+        pimc[2] = None
 
     card_players = [
-        CardPlayer(models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, sampler, pimc, verbose),
-        CardPlayer(models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, sampler, pimc, verbose),
-        CardPlayer(models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, sampler, pimc, verbose),
-        CardPlayer(models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, sampler, pimc, verbose)
+        CardPlayer(models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[0], verbose),
+        CardPlayer(models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, pimc[1], verbose),
+        CardPlayer(models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[2], verbose),
+        CardPlayer(models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[3], verbose)
     ]
 
     player_cards_played = [[] for _ in range(4)]
@@ -81,7 +102,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
     card_i = 0
 
     for trick_i in range(13):
-        if trick_i != 0:
+        if trick_i != 0 and verbose:
             print(f"trick {trick_i+1} lead:{leader_i}")
 
         for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
@@ -160,10 +181,10 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
         tricks.append(current_trick)
         tricks52.append(current_trick52)
 
-        if models.pimc_use and pimc:
-            # Only declarer use PIMC
-            if isinstance(card_players[3], CardPlayer):
-                card_players[3].pimc.reset_trick()
+        if models.pimc_use_declaring or models.pimc_use_defending:
+            for card_player in card_players:
+                if isinstance(card_player, CardPlayer) and card_player.pimc:
+                    card_player.pimc.reset_trick()
 
         # initializing for the next trick
         # initialize hands
@@ -202,15 +223,20 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
         trick_winner = (leader_i + deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         trick_won_by.append(trick_winner)
 
+
         if trick_winner % 2 == 0:
             card_players[0].n_tricks_taken += 1
             card_players[2].n_tricks_taken += 1
+            if models.pimc_use_defending:
+                if isinstance(card_players[0], CardPlayer) and card_players[0].pimc:
+                    card_players[0].pimc.update_trick_needed()
+                if isinstance(card_players[2], CardPlayer) and card_players[2].pimc:
+                    card_players[2].pimc.update_trick_needed()
         else:
             card_players[1].n_tricks_taken += 1
             card_players[3].n_tricks_taken += 1
-            if models.pimc_use and pimc:
-                # Only declarer use PIMC
-                if isinstance(card_players[3], CardPlayer):
+            if models.pimc_use_declaring:
+                if isinstance(card_players[3], CardPlayer) and card_players[3].pimc :
                     card_players[3].pimc.update_trick_needed()
 
         if verbose:
@@ -246,7 +272,7 @@ base_path = os.getenv('BEN_HOME') or config_path
 
 parser = argparse.ArgumentParser(description="Game API")
 parser.add_argument("--host", default="localhost", help="Hostname for appserver")
-parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
+parser.add_argument("--config", default=f"{base_path}/config/default_api.conf", help="Filename for configuration")
 parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=8085, help="Port for appserver")
 
@@ -309,9 +335,10 @@ def bid():
         auction = create_auction(bids, dealer_i)
         hint_bot = BotBid(vuln, hand, models, sampler, position, dealer_i, verbose)
         bid = hint_bot.bid(auction)
-        print(bid.bid)
+        print("Bidding: ",bid.bid)
         return json.dumps(bid.to_dict())
     except Exception as e:
+        print(e)
         error_message = "An error occurred: {}".format(str(e))
         return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
     
@@ -342,13 +369,14 @@ def lead():
         result = card_resp.to_dict()
         return json.dumps(result)
     except Exception as e:
+        print(e)
         error_message = "An error occurred: {}".format(str(e))
         return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
 
 @app.route('/play')
 async def frontend():
-    #try:
+    try:
         # First we extract the hands and seat
         hand_str = request.args.get("hand").replace('_','.')
         dummy_str = request.args.get("dummy").replace('_','.')
@@ -392,7 +420,6 @@ async def frontend():
         else:        
             hands[(decl_i + 2) % 4] = dummy_str
 
-
         # Are we declaring
         if decl_i == position_i:
             cardplayer = 3
@@ -409,10 +436,10 @@ async def frontend():
         result = card_resp.to_dict()
         #print(json.dumps(result))
         return json.dumps(result)
-    #except Exception as e:
-    #    print(e)
-    #    error_message = "An error occurred: {}".format(str(e))
-    #    return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
+    except Exception as e:
+        print(e)
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
 
 if __name__ == "__main__":

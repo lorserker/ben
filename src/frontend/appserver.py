@@ -168,13 +168,12 @@ def parse_lin(lin):
     lin_deal = re.findall(r'(?<=md\|)(.*?)(?=\|)', lin)[0]
     dealer = {'1': 'S', '2': 'W', '3': 'N', '4': 'E'}[lin_deal[0]]
     lin_hands = lin_deal[1:].split(',')
-
-    hd_south = re.search(rx_hand, lin_hands[0]).groupdict()
-    hd_west = re.search(rx_hand, lin_hands[1]).groupdict()
-    hd_north = re.search(rx_hand, lin_hands[2]).groupdict()
+    hd_south = re.search(rx_hand, lin_hands[0].upper()).groupdict()
+    hd_west = re.search(rx_hand, lin_hands[1].upper()).groupdict()
+    hd_north = re.search(rx_hand, lin_hands[2].upper()).groupdict()
 
     if lin_hands[3]:
-        hd_east = re.search(rx_hand, lin_hands[3]).groupdict()
+        hd_east = re.search(rx_hand, lin_hands[3].upper()).groupdict()
     else:
         def seen_cards(suit):
             return set(hd_south[suit]) | set(hd_west[suit]) | set(hd_north[suit])
@@ -361,14 +360,16 @@ def index():
         deallinparsed = parse_qs(query_params[-1])
         try:
             lin = deallinparsed["lin"]
+            print(lin)
             dealer, vulnerable, hands, board_no = parse_lin(lin[0])
         except KeyError:
             try:
+                # no lin= in input, so we try to parse the string
                 dealer, vulnerable, hands, board_no = parse_lin(deallin)
             except Exception as e:
                 error_message = f'Error parsing LIN-input. {e}'
                 print(error_message)
-                print(deallin)
+                #print(deallin)
                 encoded_error_message = quote(error_message)
                 redirect(f'/error?message={encoded_error_message}')
 
@@ -480,6 +481,9 @@ def delete_deal(deal_id):
     if not is_valid_deal_id(deal_id):
         print("Invalid deal ID")
         raise HTTPError(400, "Invalid deal ID")
+    if port != 8888:
+        print("Port not valid")
+        raise HTTPError(401, "Not Auth")
     try:
         db = shelve.open(DB_NAME)
         db.pop(deal_id)

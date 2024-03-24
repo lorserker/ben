@@ -230,20 +230,39 @@ class TMClient:
         if cardplayer_i == 3:
             decl_hand_str = own_hand_str
 
-        if self.models.pimc_use:
+        pimc = [None, None, None, None]
+
+        # We should only instantiate the PIMC for the position we are playing
+        if self.models.pimc_use_declaring and (cardplayer_i == 1 or cardplayer_i == 3): 
             from pimc.PIMC import BGADLL
-            pimc = BGADLL(self.models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose)
+            declarer = BGADLL(self.models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose)
+            pimc[1] = declarer
+            pimc[3] = declarer
             if self.verbose:
                 print("PIMC",dummy_hand_str, decl_hand_str, contract)
         else:
-            pimc = None
-
+            pimc[1] = None
+            pimc[3] = None
+        if self.models.pimc_use_defending and cardplayer_i == 0:
+            from pimc.PIMCDef import BGADefDLL
+            pimc[0] = BGADefDLL(self.models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, self.verbose)
+            if self.verbose:
+                print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+        else:
+            pimc[0] = None
+        if self.models.pimc_use_defending and cardplayer_i == 2:
+            from pimc.PIMCDef import BGADefDLL
+            pimc[2] = BGADefDLL(self.models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, self.verbose)
+            if self.verbose:
+                print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+        else:
+            pimc[2] = None
 
         card_players = [
-            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
-            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
-            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc, self.verbose),
-            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc, self.verbose)
+            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[0], self.verbose),
+            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, pimc[1], self.verbose),
+            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[2], self.verbose),
+            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[3], self.verbose)
         ]
 
         player_cards_played = [[] for _ in range(4)]
@@ -352,10 +371,10 @@ class TMClient:
             tricks.append(current_trick)
             tricks52.append(current_trick52)
 
-            if self.models.pimc_use:
-                # Only declarer and use PIMC
-                if isinstance(card_players[3], bots.CardPlayer):
-                    card_players[3].pimc.reset_trick()
+            if self.models.pimc_use_declaring or self.models.pimc_use_defending:
+                for card_player in card_players:
+                    if isinstance(card_player, bots.CardPlayer) and card_player.pimc:
+                        card_player.pimc.reset_trick()
 
             # initializing for the next trick
             # initialize hands
@@ -397,14 +416,17 @@ class TMClient:
             if trick_winner % 2 == 0:
                 card_players[0].n_tricks_taken += 1
                 card_players[2].n_tricks_taken += 1
+                if self.models.pimc_use_defending:
+                    if isinstance(card_players[0], bots.CardPlayer) and card_players[0].pimc:
+                        card_players[0].pimc.update_trick_needed()
+                    if isinstance(card_players[2], bots.CardPlayer) and card_players[2].pimc:
+                        card_players[2].pimc.update_trick_needed()
             else:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
-                if self.models.pimc_use:
-                    # Only declarer use PIMC
-                    if isinstance(card_players[3], bots.CardPlayer):
+                if self.models.pimc_use_declaring:
+                    if isinstance(card_players[3], bots.CardPlayer) and card_players[3].pimc :
                         card_players[3].pimc.update_trick_needed()
-
 
             print('{} trick52 {} cards={}. won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
 
@@ -638,7 +660,7 @@ class TMClient:
             return hand
         except Exception as ex:
             print(ex)
-            print(f"Protocol error. Received {hand} - Expected a hand")
+            print(f"Protocol error. Received {s} - Expected a hand")
 
 
     async def send_message(self, message: str):

@@ -96,7 +96,7 @@ class CardByCard:
         righty_hand = self.hands[(decl_i + 3) % 4]
         decl_hand = self.hands[decl_i]
 
-        if self.models.pimc_use:
+        if self.models.pimc_use_declaring or self.models.pimc_use_defending:
             from pimc.PIMC import BGADLL
             pimc = BGADLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose)
             if self.verbose:
@@ -188,10 +188,10 @@ class CardByCard:
             tricks.append(current_trick)
             tricks52.append(current_trick52)
 
-            if self.models.pimc_use:
-                # Only declarer and use PIMC
-                if isinstance(card_players[3], bots.CardPlayer):
-                    card_players[3].pimc.reset_trick()
+            if self.models.pimc_use_declaring or self.models.pimc_use_defending:
+                for card_player in card_players:
+                    if isinstance(card_player, bots.CardPlayer) and card_player.pimc:
+                        card_player.pimc.reset_trick()
             
             # initializing for the next trick
             # initialize hands

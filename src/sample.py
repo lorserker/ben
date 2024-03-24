@@ -521,6 +521,10 @@ class Sample:
 
     def get_bid_scores(self, nesw_i, dealer, auction, vuln, sample_hands, models):
         n_steps = binary.calculate_step_bidding(auction, models)
+        if self.verbose:
+            print("n_step", n_steps)
+            print("auction", auction)
+            print("nesw_i", nesw_i)
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, sample_hands, vuln, models)
         X = np.zeros((sample_hands.shape[0], n_steps, A.shape[-1]))
         X[:, :, :] = A
@@ -536,14 +540,13 @@ class Sample:
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
+                # print(bidding.ID2BID[actual_bids[i]], min_scores)
                 #min_scores = min_scores + i * sample_bids[:, i, actual_bids[i]]
                 #sum += i
 
         return min_scores
 
     def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, vuln, models, rng):
-        bidder_model = models.bidder_model
-        binfo_model = models.binfo_model
         hand = binary.parse_hand_f(32)(hand_str)
         n_samples = self.sample_hands_play
         if self.verbose:
@@ -706,9 +709,20 @@ class Sample:
             h_i_nesw = player_to_nesw_i(h_i, contract)
             bid_scores = self.get_bid_scores(h_i_nesw, dealer, auction, vuln, states[h_i][:, 0, :32], models)
             min_bid_scores = np.minimum(min_bid_scores, bid_scores)
+        
+        # if trick_i == 7:
+        #     print("min_bid_scores", min_bid_scores)
+        #     for i in range(states[0].shape[0]):
+        #         sample = '%s %s %s %s' % (
+        #             hand_to_str(states[0][i, 0, :32].astype(int)),
+        #             hand_to_str(states[1][i, 0, :32].astype(int)),
+        #             hand_to_str(states[2][i, 0, :32].astype(int)),
+        #             hand_to_str(states[3][i, 0, :32].astype(int)),
+        #         )
+        #         print(sample)
 
         # Perhaps this should be calculated more statistical, as we are just taking the bid with the lowest score
-        # This need to be updated to euclidian distance
+        # This need to be updated to euclidian distance or logarithmic
         # Round min_bid_scores to 3 decimals
         rounded_scores = np.round(min_bid_scores, 3)
 
@@ -863,7 +877,7 @@ class Sample:
         play_accept_threshold = self.play_accept_threshold
 
         if self.verbose:
-            print(f"Found deals above play thresholde: {np.sum(min_scores > play_accept_threshold)} ")
+            print(f"Found deals above play threshold: {np.sum(min_scores > play_accept_threshold)} ")
 
         while np.sum(min_scores > play_accept_threshold) < 20 and play_accept_threshold > 0:
             play_accept_threshold -= 0.01

@@ -141,14 +141,21 @@ class HumanLeadSocket:
         candidates = []
         samples = []
 
-        await self.socket.send(json.dumps({'message': 'get_card_input'}))
+        while True:
+            try:
+                await self.socket.send(json.dumps({'message': 'get_card_input'}))
 
-        human_card = await self.socket.recv()
+                human_card = await self.socket.recv()
 
-        if (str(human_card).startswith("Cl") or str(human_card).startswith("Co")) :
-            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
-        else:    
-            return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
+                if (str(human_card).startswith("Cl") or str(human_card).startswith("Co")) :
+                    return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
+                else:    
+                    return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
+
+            except Exception as ex:
+                print(f"Exception receiving card {human_card}", ex)
+
+
 
 class HumanCardPlayer:
 
@@ -228,15 +235,19 @@ class HumanCardPlayerSocket(HumanCardPlayer):
         self.socket = socket
 
     async def get_card_input(self):
-        await self.socket.send(json.dumps({
-            'message': 'get_card_input'
-        }))
 
-        human_card = await self.socket.recv()
-        if (human_card.startswith("Cl") or human_card.startswith("Co")) :
-            return human_card
-        else:    
-            return deck52.encode_card(human_card)
+        while True:
+            try:
+                await self.socket.send(json.dumps({
+                    'message': 'get_card_input'
+                }))
+                human_card = await self.socket.recv()
+                if (human_card.startswith("Cl") or human_card.startswith("Co")) :
+                    return human_card
+                else:
+                    return deck52.encode_card(human_card)
+            except Exception as ex:
+                print(f"Exception receiving card{human_card}", ex)
 
 
 class ConsoleFactory:

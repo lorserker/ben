@@ -35,6 +35,8 @@ def bid_hand(hands, dealer, vuln, models_ns_ew, samplers, verbose):
     
     bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], samplers[i % 2], i, dealer_i, verbose) for i, hand in enumerate(hands)]
 
+    auction = ['PAD_START'] * dealer_i
+    
     turn_i = dealer_i
 
     while not bidding.auction_over(auction):

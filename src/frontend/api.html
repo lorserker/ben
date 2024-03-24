@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEN - The oracle</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" href="/app/style.css">
     <link rel="stylesheet" href="/app/viz.css">
  
     <!-- Include jQuery and jQuery UI -->
@@ -93,6 +94,7 @@
             return regex.test(play);
         }
 
+        let bids = 0;
         function displayBid(data) {
             let html = `
                 <p class="bid"><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' + data.who : ''}</p>
@@ -127,13 +129,15 @@
                     `;
                 }
             }
-            if (data.samples && data.samples.length > 0)
+            if (data.samples && data.samples.length > 0) {
                 html += `
-                    <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples(${data.samples.length}):</strong></h3>
-                    <div id="sampleLines${i}" class="hidden">
+                    <h3 class="samples"  onclick="toggleSamples('sampleLines${bids}')"><strong>Samples(${data.samples.length}):</strong></h3>
+                    <div id="sampleLines${bids}" class="hidden">
                     <ul>${data.samples.map(sample => `<li>${sample.replace(/\n/g,"<br>")}</li>`).join('')}</ul>
                     </div>
                     `;
+                bids += 1;
+            }
             document.querySelector('#info').innerHTML = html + document.querySelector('#info').innerHTML
 
         }

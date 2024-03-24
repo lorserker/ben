@@ -234,7 +234,6 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
 
 
 def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, models):
-    #print(auction_input, hand_ix)
     assert (len(hand.shape) == 2)
     assert (hand.shape[1] == 32)
 
