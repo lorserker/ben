@@ -522,6 +522,7 @@ class Sample:
     def get_bid_scores(self, nesw_i, dealer, auction, vuln, sample_hands, models):
         n_steps = binary.calculate_step_bidding(auction, models)
         if self.verbose:
+            print("sample hand", hand_to_str(sample_hands[0]))
             print("n_step", n_steps)
             print("auction", auction)
             print("nesw_i", nesw_i)
@@ -540,7 +541,7 @@ class Sample:
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
-                # print(bidding.ID2BID[actual_bids[i]], min_scores)
+                print(bidding.ID2BID[actual_bids[i]], min_scores)
                 #min_scores = min_scores + i * sample_bids[:, i, actual_bids[i]]
                 #sum += i
 
@@ -698,7 +699,15 @@ class Sample:
         if self.verbose:
             print(f"States {states[0].shape[0]} after checking the play.")
 
-        # start = time.time()
+            # for i in range(states[0].shape[0]):
+            #     sample = '%s %s %s %s' % (
+            #         hand_to_str(states[0][i, 0, :32].astype(int)),
+            #         hand_to_str(states[1][i, 0, :32].astype(int)),
+            #         hand_to_str(states[2][i, 0, :32].astype(int)),
+            #         hand_to_str(states[3][i, 0, :32].astype(int)),
+            #     )
+            #     print(sample)
+
         min_bid_scores = np.ones(states[0].shape[0])
 
         # Loop the samples for each of the 2 hidden hands to check bidding
@@ -710,6 +719,7 @@ class Sample:
             bid_scores = self.get_bid_scores(h_i_nesw, dealer, auction, vuln, states[h_i][:, 0, :32], models)
             min_bid_scores = np.minimum(min_bid_scores, bid_scores)
         
+    
         # if trick_i == 7:
         #     print("min_bid_scores", min_bid_scores)
         #     for i in range(states[0].shape[0]):

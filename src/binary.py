@@ -160,7 +160,7 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
 
     n_samples = hand.shape[0]
     bids = 4 if models.model_version == 2 else 3
-
+    # Do not add 2 cells for biddingsystem, we will add the at the end of the function
     X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + bids*40), dtype=np.float16)
 
     vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float32)
@@ -175,7 +175,6 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
     bid_i = hand_ix
     while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
         bid_i += 4
-        # n_steps += -1
 
     X[:, :, :2] = vuln_us_them
     X[:, :, 2:3] = hcp.reshape((n_samples, 1, 1))
@@ -232,7 +231,6 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
 
     return X_padded
 
-
 def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, models):
     assert (len(hand.shape) == 2)
     assert (hand.shape[1] == 32)
@@ -271,7 +269,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
     while step_i < n_steps:
         if bid_i - 4 >= 0:
             my_bid = auction[:, bid_i - 4]
-            #print("Me", bidding.ID2BID[lho_bid[0]])
+            #print("Me", bidding.ID2BID[my_bid[0]])
         else:
             my_bid = bidding.BID2ID['PAD_START']
         if bid_i - 3 >= 0:
@@ -293,7 +291,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
             X[s_all, step_i, 39+my_bid] = 1
             X[s_all, step_i, (39+40)+lho_bid] = 1
             X[s_all, step_i, (39+2*40)+partner_bid] = 1
-            X[s_all, step_i, (30+3*40)+rho_bid] = 1
+            X[s_all, step_i, (39+3*40)+rho_bid] = 1
         else:
             X[s_all, step_i, 39+lho_bid] = 1
             X[s_all, step_i, (39+40)+partner_bid] = 1
@@ -313,6 +311,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
     else:
         X_padded = np.pad(X, padding_width, mode='constant', constant_values=(models.ns))
         X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(models.ew))
+        
     return X_padded
 
 def calculate_step_bidding_info(auction, models):

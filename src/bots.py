@@ -924,7 +924,8 @@ class CardPlayer:
                 hand_to_str(players_states[3][i,0,:32].astype(int)),
                 bidding_scores[i]
             ))
-
+        if not quality and self.verbose:
+            print(samples)
         # If we are declarer and PIMC enabled - use PIMC
         BGADeclaring = self.models.pimc_use_declaring and trick_i  >= (self.models.pimc_start_trick_declarer - 1)
         BGADefending = self.models.pimc_use_defending and trick_i  >= (self.models.pimc_start_trick_defender - 1)
