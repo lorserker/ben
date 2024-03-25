@@ -541,7 +541,7 @@ class Sample:
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
-                print(bidding.ID2BID[actual_bids[i]], min_scores)
+                #print(bidding.ID2BID[actual_bids[i]], min_scores)
                 #min_scores = min_scores + i * sample_bids[:, i, actual_bids[i]]
                 #sum += i
 
