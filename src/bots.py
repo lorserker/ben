@@ -1122,13 +1122,7 @@ class CardPlayer:
         return card_ev
     
     def next_card_softmax(self, trick_i):
-        #print("self.x_play.shape",self.x_play.shape)
-        #print(trick_i + 1)
-        # Lefty only contain a model for trick 2-11
-        if self.player_i == 0 and self.models.opening_lead_included:
-            cards_softmax = self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i),:])
-        else:
-            cards_softmax = self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i + 1),:])
+        cards_softmax = self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i + 1),:])
         assert cards_softmax.shape == (1, 32), f"Expected shape (1, 32), but got shape {cards_softmax.shape}"
         #print("cards_softmax.shape",cards_softmax.shape)
         x = follow_suit(

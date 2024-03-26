@@ -735,8 +735,8 @@ async def main():
     configfile = args.config
     verbose = args.verbose
     auto = args.auto
-    play_only = args.playonly
-    bidding_only = args.biddingonly
+    playonly = args.playonly
+    biddingonly = args.biddingonly
     seed = args.seed
     boards = []
 
@@ -802,12 +802,12 @@ async def main():
             # rdeal = ('62.QT742.875.KJ3 .A98.KQ9432.Q742 AJT543.65.J.AT95 KQ987.KJ3.AT6.86', 'W E-W')
 
             print(f"Playing Board: {rdeal}")
-            driver.set_deal(None, *rdeal, False, bidding_only=bidding_only)
+            driver.set_deal(None, *rdeal, False, bidding_only=biddingonly)
         else:
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
-            driver.set_deal(board_no[0] + 1, rdeal, auction, play_only=play_only, bidding_only=bidding_only)
+            driver.set_deal(board_no[0] + 1, rdeal, auction, play_only=playonly, bidding_only=biddingonly)
             board_no[0] = (board_no[0] + 1)
 
         # BEN is handling all 4 hands
@@ -815,7 +815,7 @@ async def main():
         t_start = time.time()
         await driver.run()
 
-        if not bidding_only:
+        if not biddingonly:
             with shelve.open(f"{base_path}/gamedb") as db:
                 deal = driver.to_dict()
                 print(f"Saving Board: {driver.hands} in {base_path}/gamedb")

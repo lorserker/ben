@@ -47,7 +47,7 @@
 
         <label for="biddingInput">Bidding:</label>
         <input type="text" id="biddingInput" size="60" placeholder="Enter bidding (1S-P-2H-P-P-P)" onmouseover="showTooltip(3)" onmouseout="hideTooltip(3)"><br>
-        <small id="tooltip3" style="display: none;">Please enter the bids separated by hyphens. Allowed bids: 1C, 1D, 1H, 1S, 1N, ..., 7N, X, XX, P</small><br><br>
+        <small id="tooltip3" style="display: none;">Enter bids separated by hyphens. Allowed bids: 1C, 1D, 1H, 1S, 1N, ..., 7N, X, XX, P</small><br><br>
 
         <label for="handInput">Hand:</label>
         <input type="text" id="handInput" size="40"  placeholder="Enter hand (ie AKJT.QT9.J987.5432)" required onmouseover="showTooltip(1)" onmouseout="hideTooltip(1)"><br>
@@ -70,6 +70,11 @@
 
 
     <script>
+        function toggleSamples(containerId) {
+            const sampleLines = document.getElementById(containerId);
+            sampleLines.classList.toggle('hidden');
+        }
+
         function showTooltip(idx) {
             var tooltip = document.getElementById("tooltip"+idx);
             tooltip.style.display = "inline";
@@ -142,17 +147,14 @@
 
         }
 
-        function displayPlay(data) {
-            element.innerHTML = ""
-
+        function displayPlay(data, player, declarer) {
             let html = ""
 
-            if ("candidates" in this.data && this.data.candidates.length > 0) {
+            if ("candidates" in data && data.candidates.length > 0) {
                 html += '<h3>Candidates</h3>'
                 html += '<table>'
 
-                for (const element of this.data.candidates) {
-                    let candidate = element
+                for (const candidate of data.candidates) {
 
                     html += '<tr>'
                     html += '<td class="candidate-card">' + candidate['card'] + '</td>'
@@ -183,48 +185,48 @@
                 html += '</table><br>'
             }
 
-            if ("hcp" in this.data && "shape" in this.data) {
-                if (this.data['hcp'] != -1 && this.data['shape'] != -1) {
-                    let shape = this.data['shape'].reduce((acc, val) => acc.concat(val), []);
+            if ("hcp" in data && "shape" in data) {
+                if (data['hcp'] != -1 && data['shape'] != -1) {
+                    let shape = data['shape'].reduce((acc, val) => acc.concat(val), []);
                     html += '<h3>Bidding Info</h3>'
-                    if (this.data['hcp'].length > 2) {
-                        html += '<div>Dummy: ' + this.data['hcp'][0] + ' hcp, shape: '
+                    if (data['hcp'].length > 2) {
+                        html += '<div>Dummy: ' + data['hcp'][0] + ' hcp, shape: '
                         for (let i = 0; i < 4; i++) {
                             html += shape[i] + " "
                         }
                         html += '</div>'
-                        html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: '
+                        html += '<div>Partner: ' + data['hcp'][1] + ' hcp, shape: '
                         for (let i = 0; i < 4; i++) {
                             html += shape[i + 4] + " "
                         }
                         html += '</div>'
-                        html += '<div>Declarer: ' + this.data['hcp'][2] + ' hcp, shape: '
+                        html += '<div>Declarer: ' + data['hcp'][2] + ' hcp, shape: '
                         for (let i = 0; i < 4; i++) {
                             html += shape[i + 8] + " "
                         }
                         html += '</div>'
                     } else {
                         // we are seated after declarer
-                        if ((this.player - this.declarer + 4) % 4 == 1) {
-                            html += '<div>Declarer: ' + this.data['hcp'][0] + ' hcp, shape: '
+                        if ((player - declarer + 4) % 4 == 1) {
+                            html += '<div>Declarer: ' + data['hcp'][0] + ' hcp, shape: '
                             for (let i = 0; i < 4; i++) {
                                 html += shape[i] + " "
                             }
                             html += '</div>'
-                            html += '<div>Partner: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            html += '<div>Partner: ' + data['hcp'][1] + ' hcp, shape: '
                             for (let i = 0; i < 4; i++) {
                                 html += shape[i + 4] + " "
                             }
                             html += '</div>'
                         } else
                             // we are seated before declarer
-                            if ((this.player - this.declarer + 4) % 4 == 3) {
-                                html += '<div>Partner: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            if ((player - declarer + 4) % 4 == 3) {
+                                html += '<div>Partner: ' + data['hcp'][0] + ' hcp, shape: '
                                 for (let i = 0; i < 4; i++) {
                                     html += shape[i] + " "
                                 }
                                 html += '</div>'
-                                html += '<div>Declarer: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                html += '<div>Declarer: ' + data['hcp'][1] + ' hcp, shape: '
                                 for (let i = 0; i < 4; i++) {
                                     html += shape[i + 4] + " "
                                 }
@@ -232,17 +234,17 @@
                             }
                             else {
                                 // RHO
-                                if (this.player == 0) {
-                                    html += '<div>West: ' + this.data['hcp'][0] + ' hcp, shape: '
+                                if (player == 0) {
+                                    html += '<div>West: ' + data['hcp'][0] + ' hcp, shape: '
                                 } 
-                                if (this.player == 1) {
-                                    html += '<div>North: ' + this.data['hcp'][0] + ' hcp, shape: '
+                                if (player == 1) {
+                                    html += '<div>North: ' + data['hcp'][0] + ' hcp, shape: '
                                 } 
-                                if (this.player == 2) {
-                                    html += '<div>East: ' + this.data['hcp'][0] + ' hcp, shape: '
+                                if (player == 2) {
+                                    html += '<div>East: ' + data['hcp'][0] + ' hcp, shape: '
                                 } 
-                                if (this.player == 3) {
-                                    html += '<div>South: ' + this.data['hcp'][0] + ' hcp, shape: '
+                                if (player == 3) {
+                                    html += '<div>South: ' + data['hcp'][0] + ' hcp, shape: '
                                 } 
                                 
                                 for (let i = 0; i < 4; i++) {
@@ -250,17 +252,17 @@
                                 }
                                 html += '</div>'
                                 // LHO
-                                if (this.player == 0) {
-                                    html += '<div>East: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                if (player == 0) {
+                                    html += '<div>East: ' + data['hcp'][1] + ' hcp, shape: '
                                 } 
-                                if (this.player == 1) {
-                                    html += '<div>South: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                if (player == 1) {
+                                    html += '<div>South: ' + data['hcp'][1] + ' hcp, shape: '
                                 } 
-                                if (this.player == 2) {
-                                    html += '<div>West: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                if (player == 2) {
+                                    html += '<div>West: ' + data['hcp'][1] + ' hcp, shape: '
                                 } 
-                                if (this.player == 3) {
-                                    html += '<div>North: ' + this.data['hcp'][1] + ' hcp, shape: '
+                                if (player == 3) {
+                                    html += '<div>North: ' + data['hcp'][1] + ' hcp, shape: '
                                 } 
                                 for (let i = 0; i < 4; i++) {
                                     html += shape[i + 4] + " "
@@ -270,6 +272,20 @@
                     }
                 }
 
+            }
+            if (data.quality) {
+                    html += `
+                    <p><strong>Sample quality: </strong>${data.quality}</p>
+                    `;
+                }
+            if (data.samples && data.samples.length > 0) {
+                html += `
+                    <h3 class="samples"  onclick="toggleSamples('sampleLines${bids}')"><strong>Samples(${data.samples.length}):</strong></h3>
+                    <div id="sampleLines${bids}" class="hidden">
+                    <ul>${data.samples.map(sample => `<li>${sample.replace(/\n/g,"<br>")}</li>`).join('')}</ul>
+                    </div>
+                    `;
+                bids += 1;
             }
             document.querySelector('#info').innerHTML = html + document.querySelector('#info').innerHTML
         }
@@ -288,6 +304,10 @@
             localStorage.setItem('user', user);
         }
 
+        function findDeclarer(bidding) {
+            return 3;
+        }
+
         // Call loadUser() when the page loads
         window.onload = loadUser;
 
@@ -296,12 +316,6 @@
             let validationerror = false;
             let hand = document.getElementById('handInput').value.toUpperCase();
             if (!validateHand(hand)) {
-                alert("Invalid hand input. Please enter four suits delimited by .");
-                validationerror = true;
-            }
-
-            let dummy = document.getElementById('dummyInput').value.toUpperCase();
-            if ((action == 'play') && !validateHand(dummy)) {
                 alert("Invalid hand input. Please enter four suits delimited by .");
                 validationerror = true;
             }
@@ -322,6 +336,12 @@
                 action = "lead";
             }
 
+            let dummy = document.getElementById('dummyInput').value.toUpperCase();
+            if ((action == 'play') && !validateHand(dummy)) {
+                alert("Invalid dummy input. Please enter four suits delimited by .");
+                validationerror = true;
+            }
+
             if (validationerror) {
                 document.querySelector("#loader").style.visibility = "hidden";
                 return;
@@ -336,6 +356,7 @@
             const user = document.getElementById('userInput').value;
             const dealer = document.getElementById('dealerInput').value;
             const seat = document.getElementById('seatInput').value;
+            const player = "NESW".indexOf(seat)
             const vul = document.getElementById('vulInput').value;
 
             // Get the current hostname and protocol
@@ -374,8 +395,9 @@
                     displayBid(data);
                 }
                 if ((action == 'play') || (action == 'lead')) {
+                    const declarer = findDeclarer(bidding)
                     document.getElementById('result').innerText = `BEN Suggest: ${data.card}`;
-                    displayPlay(data);
+                    displayPlay(data, player, declarer);
                 }
             } catch (error) {
                 document.querySelector("#loader").style.visibility = "hidden";

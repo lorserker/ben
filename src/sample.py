@@ -744,6 +744,7 @@ class Sample:
         # Sort second dimension within each array in states based on min_bid_scores
         bidding_states = [state[sorted_indices] for state in states]
         
+        print("1",bidding_states[0].shape[0])
         valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
         if self.verbose:
             print("Bidding samples accepted: ",valid_bidding_samples)
@@ -760,20 +761,25 @@ class Sample:
                 bidding_states = [state[random_indices] for state in bidding_states]
                 sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
                 good_quality = True
+                print("2",bidding_states[0].shape[0])
             else:            
                 if valid_bidding_samples < self.min_sample_hands_play: 
                     good_quality = False
                     if np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold) == 0:
                         # We just take top three as we really have no idea about what the bidding means
                         bidding_states = [state[:3] for state in bidding_states]
+                        print("3A",bidding_states[0].shape[0])
                     else:
                         bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
                         # Limit to just the minimum needed
                         bidding_states = [state[:self.min_sample_hands_play] for state in bidding_states]
+                        print("3B",bidding_states[0].shape[0])
                 else:
                     bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
+                    print("4",bidding_states[0].shape[0])
                 sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
 
+        print("5",bidding_states[0].shape[0])
         if self.verbose:
             print(f"Returning {min(bidding_states[0].shape[0],n_samples)}")
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"

@@ -376,7 +376,7 @@ def lead():
 
 @app.route('/play')
 async def frontend():
-    try:
+    #try:
         # First we extract the hands and seat
         hand_str = request.args.get("hand").replace('_','.')
         dummy_str = request.args.get("dummy").replace('_','.')
@@ -400,7 +400,7 @@ async def frontend():
         bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
         cards = [played[i:i+2] for i in range(0, len(played), 2)]
         #print(played)
-        #print(cards)
+        print(cards, len(cards))
         if len(cards) > 51:
             result = {"message": "Game is over, no cards to play"}
             return json.dumps(result)
@@ -429,17 +429,17 @@ async def frontend():
             cardplayer = 0
         if (decl_i + 3) % 4 == position_i:
             cardplayer = 2
-        #print(cardplayer)
-        #print(hands)
+        print(cardplayer)
+        print(hands)
         card_resp = await play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
         #print(json.dumps(result))
         return json.dumps(result)
-    except Exception as e:
-        print(e)
-        error_message = "An error occurred: {}".format(str(e))
-        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
+    # except Exception as e:
+    #     print(e)
+    #     error_message = "An error occurred: {}".format(str(e))
+    #     return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
 
 if __name__ == "__main__":
