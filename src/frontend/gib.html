@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+
+<head>
+	<title>GIB Bidding</title>
+
+	<!-- CSS -->
+	<style>
+        body { 
+            width: 1000px; /* Set a fixed width for the body element */ 
+            margin: 0 auto; /* Center the body element within its parent */ 
+        } 
+		table {
+			border-collapse: collapse;
+			width: 800px;
+		}
+
+		th,
+		td {
+			text-align: left;
+			padding-left: 8px;
+		}
+
+		tr.us:nth-child(even) {
+			background-color: #7cbde2
+		}
+        tr.them:nth-child(even) {
+			background-color: #e2730c
+		}
+
+		th {
+			background-color: #7c0f65;
+			color: white;
+		}
+	</style>
+
+	<!--JavaScript-->
+	<script>
+        let bid = getQueryParam('bid')
+        if (!bid) {
+            bid = "*"
+        }
+
+        const numOfHyphens = (bid.match(/-/g) || []).length;
+        const who = numOfHyphens % 2 === 0 ? 'us' : 'them';
+
+        function getQueryParam(key) {
+            const queryString = window.location.search;
+            const searchParams = new URLSearchParams(queryString);
+            return searchParams.get(key);
+        }
+
+		function loadXMLDoc() {
+			let xmlhttp = new XMLHttpRequest();
+			xmlhttp.onreadystatechange = function () {
+
+				// Request finished and response 
+				// is ready and Status is "OK"
+				if (this.readyState == 4 && this.status == 200) {
+					displayBidDetails(this);
+				}
+			};
+
+			// employee.xml is the external xml file
+			xmlhttp.open("GET", "https://gibrest.bridgebase.com/u_bm/u_bm.php?s=" + bid +"&t=g&v3b=web&v3v=6.19.3&v3u=BBO1", true);
+			xmlhttp.send();
+		}
+
+		function displayBidDetails(xml) {
+			let i;
+			let xmlDoc = xml.responseXML;
+			let table =	`<tr><th>Bid</th><th>Description</th></tr>`;
+			let x = xmlDoc.getElementsByTagName("r");
+
+			// Start to fetch the data by using TagName 
+			for (i = x.length; i >0; i--) {
+                const bValue = x[i-1].getAttribute('b').toUpperCase();
+                const mValue = x[i-1].getAttribute('m');
+				table += "<tr class="+ who + "><td><a href=?bid="+  bid.substring(0,bid.length - 1) + bValue + "-*>" + bValue + "</a></td><td>" + mValue + "</td></tr>";
+			}
+
+			// Print the xml data in table form
+			document.getElementById("id").innerHTML = table;
+		}
+	</script>
+</head>
+
+<body onload="loadXMLDoc()">
+
+	<br><br>
+	<table id="id"></table>
+</body>
+
+</html>

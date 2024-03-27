@@ -462,6 +462,10 @@ def frontend():
 def index():
     return template('api')
 
+@app.route('/gib')
+def index():
+    return template('gib')
+
 @app.route('/api/deals/<deal_id>')
 def deal_data(deal_id):
     print("Getting:", deal_id)
