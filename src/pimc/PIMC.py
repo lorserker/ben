@@ -333,6 +333,8 @@ class BGADLL:
         
         candidate_cards = {}
         if self.autoplay and card != None:
+            if self.verbose:
+                print("Playing singleton:",trump)
             candidate_cards[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
             return candidate_cards            
 

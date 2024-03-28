@@ -1,5 +1,5 @@
 import sys
-sys.path.append('D:/github/ben/src')
+sys.path.append('../../../src')
 
 import datetime
 import os.path
@@ -45,7 +45,7 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating, bids):
     else:
         rows_pr_hand = 4
     if (ns==-1):
-        x = np.zeros((rows_pr_hand * n, 8, 159), dtype=np.float16)
+        x = np.zeros((rows_pr_hand * n, 8, 39 + bids * 40), dtype=np.float16)
     else:
         x = np.zeros((rows_pr_hand * n, 8, 41 + bids * 40), dtype=np.float16)
     y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.uint8)
@@ -131,6 +131,12 @@ if __name__ == '__main__':
     sys.stderr.write(f"{ns}, {ew}, {alternating}, {version}\n")
     ns = to_numeric(ns)
     ew = to_numeric(ew)
+
+    if version == "2":
+        if ns == -1:
+            ns = 1
+        if ew == -1:
+            ew = 1
 
     with open(infnm, 'r') as file:
 
