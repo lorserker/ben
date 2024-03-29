@@ -836,6 +836,9 @@ class CardPlayer:
                 print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
         self.rng = np.random.default_rng(self.hash_integer)
         self.pimc = pimc
+        # False until it kicks in
+        self.pimc_declaring = False
+        self.pimc_defending = False
 
     def init_x_play(self, public_hand, level, strain_i):
         self.x_play = np.zeros((1, 13, 298))
@@ -873,7 +876,7 @@ class CardPlayer:
     def set_public_card_played52(self, card52):
         self.public52[card52] -= 1
 
-    def update_constraints(self, players_states, quality, player_i):
+    def find_and_update_constraints(self, players_states, quality, player_i):
         # Based on player states we should be able to find min max for suits and hcps, and add that before calling PIMC
         # print("Updating constraints", player_i)
         if player_i == 1:
@@ -913,6 +916,23 @@ class CardPlayer:
 
         self.pimc.set_shape_constraints(min_values1, max_values1, min_values3, max_values3, quality)
 
+    def check_pimc_constraints(self, trick_i, players_states, quality):
+        # If we are declarer and PIMC enabled - use PIMC
+        self.pimc_declaring = self.models.pimc_use_declaring and trick_i  >= (self.models.pimc_start_trick_declarer - 1)
+        self.pimc_defending = self.models.pimc_use_defending and trick_i  >= (self.models.pimc_start_trick_defender - 1)
+        if self.models.pimc_constraints:
+            if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
+                if trick_i >= (self.models.pimc_start_trick_declarer - 1) and not self.pimc.constraints_updated:
+                    if self.verbose:
+                        print("Declaring", self.pimc_declaring, self.player_i, trick_i)
+                    self.find_and_update_constraints(players_states, quality,self.player_i)
+            if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
+                if trick_i == (self.models.pimc_start_trick_defender - 1) and not self.pimc.constraints_updated:
+                    if self.verbose:
+                        print("Defending", self.pimc_declaring, self.player_i, trick_i)
+                    self.find_and_update_constraints(players_states, quality,self.player_i)
+
+
     async def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
@@ -926,24 +946,13 @@ class CardPlayer:
             ))
         if not quality and self.verbose:
             print(samples)
-        # If we are declarer and PIMC enabled - use PIMC
-        BGADeclaring = self.models.pimc_use_declaring and trick_i  >= (self.models.pimc_start_trick_declarer - 1)
-        BGADefending = self.models.pimc_use_defending and trick_i  >= (self.models.pimc_start_trick_defender - 1)
-        if BGADeclaring and (self.player_i == 1 or self.player_i == 3) and  trick_i == (self.models.pimc_start_trick_declarer - 1) and self.models.pimc_constraints:
-            if self.verbose:
-                print("Declaring", BGADeclaring, self.player_i, trick_i)
-            self.update_constraints(players_states, quality,self.player_i)
-        if BGADefending and (self.player_i == 0 or self.player_i == 2) and trick_i == (self.models.pimc_start_trick_defender - 1) and self.models.pimc_constraints:
-            if self.verbose:
-                print("Defending", BGADeclaring, self.player_i, trick_i)
-            self.update_constraints(players_states, quality,self.player_i)
-        if BGADeclaring and (self.player_i == 1 or self.player_i == 3):
+        if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
             card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
             if self.verbose:
                 print("PIMC result:",card52_dd)
             card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples)            
         else:
-            if BGADefending and (self.player_i == 0 or self.player_i == 2):
+            if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
                 card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
                 if self.verbose:
                     print("PIMC result:",card52_dd)

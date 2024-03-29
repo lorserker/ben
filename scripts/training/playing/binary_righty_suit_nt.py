@@ -5,7 +5,7 @@ import os.path
 import numpy as np
 
 from data_access import card_index_lookup
-from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup, card_index_lookup_x, encode_card, binary_hand
+from lead_binary_util import DealMeta, seats, seat_index, suit_index_lookup, card_index_lookup_x, hot_encode_card, binary_hand
 
 def get_cards(play_str):
     cards = []
@@ -138,14 +138,14 @@ def binary_data_righty(deal_str, outcome_str, play_str):
         x[0, i, 32:64] = dummy_bin
         x[0, i, 0:32] = me_bin
         
-        x[0, i, 64:96] = encode_card(last_trick[0])
-        x[0, i, 96:128] = encode_card(last_trick[1])
-        x[0, i, 128:160] = encode_card(last_trick[2])
-        x[0, i, 160:192] = encode_card(last_trick[3])
+        x[0, i, 64:96] = hot_encode_card(last_trick[0])
+        x[0, i, 96:128] = hot_encode_card(last_trick[1])
+        x[0, i, 128:160] = hot_encode_card(last_trick[2])
+        x[0, i, 160:192] = hot_encode_card(last_trick[3])
         
-        x[0, i, 192:224] = encode_card(cards_in[0])
-        x[0, i, 224:256] = encode_card(cards_in[1])
-        x[0, i, 256:288] = encode_card(cards_in[2])
+        x[0, i, 192:224] = hot_encode_card(cards_in[0])
+        x[0, i, 224:256] = hot_encode_card(cards_in[1])
+        x[0, i, 256:288] = hot_encode_card(cards_in[2])
         
         me_bin[label_card_ix] -= 1
         

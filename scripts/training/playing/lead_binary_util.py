@@ -5,7 +5,7 @@ seats = ['W', 'N', 'E', 'S']
 seat_index = {'W': 0, 'N': 1, 'E': 2, 'S': 3}
 
 
-def encode_card(card):
+def hot_encode_card(card):
     x = np.zeros(32, np.float16)
     if card == '>>':
         return x

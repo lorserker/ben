@@ -18,8 +18,25 @@
     <div id="loader"></div> 
     <div id="dealdiv">
         <h1>Enter Board information</h1>
-        <label for="userInput">User:</label>
-        <input type="text" id="userInput" placeholder="Enter user" required oninput="saveUser()"><br>
+        <label for="userInput">Your name:</label>
+        <input type="text" id="userInput" placeholder="Enter user" required oninput="saveUser()"><br><br>
+
+        <label for="seatInput">Select your seat:</label>
+        <select id="seatInput">
+            <option value="N">North</option>
+            <option value="S" selected>South</option>
+            <option value="E">East</option>
+            <option value="W">West</option>
+        </select><br><br>
+
+        
+        <button onclick="readImportedFile()" id="importBtn" disabled>Import file</button>&nbsp;&nbsp;<input type="file" id="importFile" onchange="enableImportBtn()"><br><br>
+
+        <!-- <button id="importButton">Paste</button> -->
+        
+        <textarea id="importInput" rows="8" cols="70"></textarea>
+        <button onclick="parseDataFromClipboard()">Parse data</button><br><br>
+        <div id="parsedData" style="display: hidden"></div>
 
         <label for="dealerInput">Dealer:</label>
         <select id="dealerInput">
@@ -29,20 +46,12 @@
             <option value="W">West</option>
         </select><br>
 
-        <label for="seatInput">Seat:</label>
-        <select id="seatInput">
-            <option value="N">North</option>
-            <option value="S" selected>South</option>
-            <option value="E">East</option>
-            <option value="W">West</option>
-        </select><br>
-
         <label for="vulInput">Vulnerable:</label>
         <select id="vulInput">
             <option value="">None</option>
             <option value="@v">NS</option>
             <option value="@V">EW</option>
-            <option value="@v@v">Both</option>
+            <option value="@v@v">All</option>
         </select><br>
 
         <label for="biddingInput">Bidding:</label>
@@ -57,7 +66,7 @@
         <small id="tooltip1" style="display: none;">Please enter the hand as four suits separated by '.'</small><br>
             
         <label for="playInput">Play:</label>
-        <input type="text" id="playInput"  size="70" placeholder="Enter cards (S7H3H6)" required onmouseover="showTooltip(2)" onmouseout="hideTooltip(2)"><br>
+        <textarea id="playInput"   rows="2" cols="70" placeholder="Enter cards (S7H3H6)" required onmouseover="showTooltip(2)" onmouseout="hideTooltip(2)"></textarea><br>
         <small id="tooltip2" style="display: none;">Please enter all the played cards including cards from BEN</small><br><br>
 
                     
@@ -67,9 +76,173 @@
         <div id="info"></div><br><br>
         <div><a href="/home">Home</a></div>
         </div>
+        <br>
 
 
     <script>
+
+        let hands = [];
+
+        window.addEventListener('DOMContentLoaded', (event) => {
+            enableImportBtn();
+        });
+
+        function enableImportBtn() {
+            const btn = document.getElementById('importBtn');
+            const fileInput = document.getElementById('importFile');
+            btn.disabled = !(fileInput.files.length > 0);
+        }
+
+        function extractValue(s) {
+            const openingQuoteIndex = s.indexOf('"');
+            const closingQuoteIndex = s.lastIndexOf('"');
+
+            if (openingQuoteIndex !== -1 && closingQuoteIndex !== -1 && closingQuoteIndex > openingQuoteIndex) {
+                return s.substring(openingQuoteIndex + 1, closingQuoteIndex);
+            } else {
+                throw new Error(`Invalid string format: "${s}"`);
+            }
+        }
+
+        function convertHandLineToArray(handLine) {
+            const [seatStr, handsArr] = handLine.split(':');
+
+            const handsNesw = [''];
+            const seatIndices = {'N': 0, 'E': 1, 'S': 2, 'W': 3};
+            const index = seatIndices[seatStr];
+
+            handsArr.split(' ').forEach((hand, idx) => {
+                handsNesw[(index + idx) % 4] = hand;
+            });
+
+            return handsNesw;
+        }
+
+        function parseDataFromClipboard() {
+            const clipboardContent = document.getElementById('importInput').value;
+            const lines = clipboardContent.split(/[\r\n]+/u);
+            const parsedData = [];
+            let currentBlock = null;
+
+            let tokenKey = ''
+            document.getElementById('biddingInput').value = ''
+            document.getElementById('playInput').value = ''
+            lines.forEach((line) => {
+                const tokens = line.split(/\s+/);
+
+                if (tokens[0] === '[Dealer') {
+                    currentBlock = { key: 'Dealer', value: extractValue(line) };
+                    parsedData.push(currentBlock);
+                    document.getElementById('dealerInput').value = currentBlock.value
+                } 
+                if (tokens[0] === '[Declarer') {
+                    var declarer = extractValue(line)
+                    currentBlock = { key: 'Declarer', value: declarer };
+                    parsedData.push(currentBlock);
+                    if (declarer) {
+                        const dummy = ("NESW".indexOf(currentBlock.value) + 2) % 4
+                        document.getElementById('dummyInput').value = hands[dummy]
+                    } else {
+                        alert("No declarer in input")
+                    }
+
+                } 
+                if (tokens[0] === '[Auction') {
+                    tokenKey = "Auction"
+                    currentBlock = { key: 'Auction', value: extractValue(line) };
+                    parsedData.push(currentBlock);
+                    return;
+                }                 
+                if (tokens[0] === '[Play') {
+                    tokenKey = "Play"
+                    currentBlock = { key: 'Play', value: extractValue(line) };
+                    parsedData.push(currentBlock);
+                    return;
+                }                 
+                if (tokens[0] === '[Contract') {
+                    currentBlock = { key: 'Contract', value: extractValue(line) };
+                    parsedData.push(currentBlock);
+                }                 
+                if (tokens[0] === '[Vulnerable') {
+                    currentBlock = { key: 'Vulnerable ', value: extractValue(line) };
+                    parsedData.push(currentBlock);
+                    // Select the option node with text equal to "All"
+                    let vulOptions = document.querySelectorAll("#vulInput option");
+                    for (const element of vulOptions) {
+                        if (element.text == currentBlock.value) {
+                            element.setAttribute("selected", "");
+                            break;
+                        }
+                    }
+                } 
+                
+                if (tokens[0] === '[Deal') {
+                    currentBlock = { key: 'Deal', value: extractValue(line) };
+                    parsedData.push(currentBlock);
+                    hands = convertHandLineToArray(currentBlock.value)
+                    const seat = document.getElementById('seatInput').value;
+                    const player = "NESW".indexOf(seat)
+                    document.getElementById('handInput').value = hands[player]
+                } 
+
+                if (tokenKey && !tokens[0].startsWith("[")) {
+                    if (tokenKey === 'Auction') {
+                        line = line.replace(/Pass/g,"P").trim()
+                        line = line.replace(/NT/g,"N")
+                        line = line.replace(/ =\d+=/, '');
+                        line = line.replace(/\s/g,"-")
+                        if (document.getElementById('biddingInput').value) {
+                            document.getElementById('biddingInput').value += '-' + line;
+                        } else {
+                            document.getElementById('biddingInput').value = line;
+                        }
+                    }
+                    if (tokenKey === 'Play') {
+                        document.getElementById('playInput').value += line.replace(/\s+/g, '') + " ";
+                    }
+                } else {
+                    tokenKey = ''
+                }
+                
+            });
+            //displayParsedData(parsedData);
+        }
+
+        function displayParsedData(parsedData) {
+            const parsedDataDiv = document.getElementById('parsedData');
+            parsedDataDiv.innerHTML = '';
+
+            parsedData.forEach((item) => {
+                parsedDataDiv.innerHTML += `${item.key}: ${item.value} <br>`;
+            });
+        }
+
+        function readImportedFile() {
+            // Get the file from the input field
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+
+            // Check if a file was actually selected
+            if (!file) {
+                alert('Please select a file to import.');
+                return;
+            }
+
+            // Read the file as text
+            const reader = new FileReader();
+            reader.onload = () => {
+                const text = reader.result;
+                const filteredLines = text.split('\n')
+                    .filter((line) => !line.startsWith("%"))
+                    .join('\n');
+                const input = document.querySelector('#importInput');
+                input.value = filteredLines;
+            };
+
+            // Start reading the file
+            reader.readAsText(file);
+        }
+
         function toggleSamples(containerId) {
             const sampleLines = document.getElementById(containerId);
             sampleLines.classList.toggle('hidden');
@@ -207,7 +380,7 @@
                         html += '</div>'
                     } else {
                         // we are seated after declarer
-                        if ((player - declarer + 4) % 4 == 1) {
+                        if ((player - declarer + 4) % 4 == 3) {
                             html += '<div>Declarer: ' + data['hcp'][0] + ' hcp, shape: '
                             for (let i = 0; i < 4; i++) {
                                 html += shape[i] + " "
@@ -220,7 +393,7 @@
                             html += '</div>'
                         } else
                             // we are seated before declarer
-                            if ((player - declarer + 4) % 4 == 3) {
+                            if ((player - declarer + 4) % 4 == 1) {
                                 html += '<div>Partner: ' + data['hcp'][0] + ' hcp, shape: '
                                 for (let i = 0; i < 4; i++) {
                                     html += shape[i] + " "
@@ -327,8 +500,10 @@
             }
 
             let played =  document.getElementById('playInput').value.toUpperCase();
+            played = played.replace(/\s/g,"")
+
             if (!validatePlay(played)) {
-                alert("Invalid played input. Please enter the cards without any spaces like this: S2SKS4");
+                alert("Invalid played input. Please enter the cards like this: S2SKS4");
                 validationerror = true;
             }
 

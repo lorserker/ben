@@ -1,7 +1,7 @@
 #dealdiv {
     border: 1px solid black;
     width: 540px;
-    height: 540px;
+    min-height: 540px;
     background-color: #beecef;
 }
 

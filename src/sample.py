@@ -694,7 +694,7 @@ class Sample:
         # To save time we reduce no of samples to 3 times what is required before we validate the actual play
         # bidding_states = [state[:3*n_samples] for state in bidding_states]
 
-        if self.play_accept_threshold > 0:
+        if self.play_accept_threshold > 0 and trick_i <= 11:
             states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states, models)
         if self.verbose:
             print(f"States {states[0].shape[0]} after checking the play.")
@@ -869,15 +869,22 @@ class Sample:
                 if (leader_i + i) % 4 == p_i:
                     card_played_current_trick.append(card)
 
-            cards_played_prev_tricks = player_cards_played[p_i][1:min(trick_i, 11 if models.opening_lead_included else 10)] if p_i == 0 else player_cards_played[p_i][:trick_i]
+            # If the opening lead isn't included in the neural network for Lefty, then send from trick 2
+            if p_i == 0 and not models.opening_lead_included:
+                cards_played_prev_tricks = player_cards_played[p_i][1:trick_i]
+            else:
+                cards_played_prev_tricks = player_cards_played[p_i][:trick_i]
 
             cards_played = cards_played_prev_tricks + card_played_current_trick
 
             if len(cards_played) == 0:
                 continue
             
-            # Tricky way to handle Lefty
-            n_tricks_pred = max(11 if models.opening_lead_included else 10, trick_i + len(card_played_current_trick))
+            # We have 11 rounds of play in the neural network, but might have only 10 for Lefty
+            if p_i == 0 and not models.opening_lead_included:
+                n_tricks_pred = trick_i + len(card_played_current_trick)
+            else:
+                n_tricks_pred = trick_i + len(card_played_current_trick)
             p_cards = models.player_models[p_i].model(states[p_i][:, :n_tricks_pred, :])
             card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]
 

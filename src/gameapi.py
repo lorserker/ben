@@ -26,14 +26,25 @@ import argparse
 import conf
 import numpy as np
 from sample import Sample
-from urllib.parse import parse_qs, urlparse
-from pbn2ben import load
 
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
     return os.getcwd()
+
+def get_play_status(hand, current_trick):
+    suits = np.array(hand).reshape((4, -1))
+    shape = suits.sum(axis=1)
+    if current_trick == [] or len(current_trick) == 4:
+        return "Lead"
+    suitlead = current_trick[0] // 13
+    if shape[suitlead] == 0:
+        return "Discard"
+    elif shape[suitlead] == 1:
+        return "Forced"
+    else:
+        return "Follow"
 
 async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, position, verbose):
     
@@ -120,22 +131,15 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
 
             card_i += 1
             if card_i >= len(play):
-                if isinstance(card_players[player_i], CardPlayer):
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].rng)
-                    assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
+                play_status = get_play_status(card_players[player_i].hand52,current_trick52)
+                print(play_status)
 
-                else: 
-                    rollout_states = []
-                    bidding_scores = []
-                    c_hcp = -1
-                    c_shp = -1
-                    good_quality = None
-                    probability_of_occurence = []
-                    
+                rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].rng)
+                assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
+                
+                card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
 
-                card_resp = None
-                while card_resp is None:
-                    card_resp = await card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
+                card_resp = await card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
 
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
@@ -400,7 +404,7 @@ async def frontend():
         bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
         cards = [played[i:i+2] for i in range(0, len(played), 2)]
         #print(played)
-        print(cards, len(cards))
+        #print(cards, len(cards))
         if len(cards) > 51:
             result = {"message": "Game is over, no cards to play"}
             return json.dumps(result)

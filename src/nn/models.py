@@ -11,7 +11,7 @@ from nn.lead_singledummy import LeadSingleDummy
 
 class Models:
 
-    def __init__(self, name, model_version, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait,pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_max_playout, pimc_autoplaysingleton, pimc_max_threads):
+    def __init__(self, name, model_version, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait,pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playout, pimc_autoplaysingleton, pimc_max_threads):
         self.name = name
         self.model_version = model_version
         self.bidder_model = bidder_model
@@ -46,6 +46,7 @@ class Models:
         self.pimc_start_trick_declarer = pimc_start_trick_declarer
         self.pimc_start_trick_defender = pimc_start_trick_defender
         self.pimc_constraints = pimc_constraints
+        self.pimc_constraints_each_trick = pimc_constraints_each_trick
         self.pimc_max_playout = pimc_max_playout
         self.pimc_autoplaysingleton = pimc_autoplaysingleton
         self.use_probability = use_probability
@@ -79,7 +80,8 @@ class Models:
         pimc_start_trick_declarer = conf.getfloat('pimc','pimc_start_trick_declarer', fallback=1)
         pimc_start_trick_defender = conf.getfloat('pimc','pimc_start_trick_defender', fallback=1)
         pimc_max_playout = conf.getfloat('pimc','pimc_max_playout', fallback=-1)
-        pimc_constraints = conf.getboolean('pimc', 'pimc_constraints', fallback=False)
+        pimc_constraints = conf.getboolean('pimc', 'pimc_constraints_each_trick', fallback=False)
+        pimc_constraints_each_trick = conf.getboolean('pimc', 'pimc_constraints', fallback=False)
         pimc_autoplaysingleton = conf.getboolean('pimc', 'pimc_autoplaysingleton', fallback=False)
         pimc_max_threads = conf.getint('pimc','pimc_max_threads', fallback=-1)
         opening_lead_included = conf.getboolean('cardplay', 'opening_lead_included', fallback=False)
@@ -145,6 +147,7 @@ class Models:
             pimc_start_trick_declarer= pimc_start_trick_declarer,
             pimc_start_trick_defender= pimc_start_trick_defender,
             pimc_constraints = pimc_constraints,
+            pimc_constraints_each_trick = pimc_constraints_each_trick,
             pimc_max_playout = pimc_max_playout,
             pimc_autoplaysingleton = pimc_autoplaysingleton,
             pimc_max_threads = pimc_max_threads
