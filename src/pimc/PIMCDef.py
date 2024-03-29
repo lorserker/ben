@@ -61,6 +61,7 @@ class BGADefDLL:
         self.tricks_taken = 0
         self.score_by_tricks_taken = [scoring.score(self.contract, is_decl_vuln, n_tricks) for n_tricks in range(14)]
         self.player_i = player_i
+        self.constraints_updated = False
         self.verbose = verbose
 
     def calculate_hcp(self, rank):
@@ -85,6 +86,8 @@ class BGADefDLL:
             print("tricks_taken",self.tricks_taken)
 
     def set_shape_constraints(self, min_partner, max_partner, min_declarer, max_declarer, quality):
+        if self.constraints_updated:
+            return
         if quality:
             margin = 1
         else:
@@ -128,6 +131,7 @@ class BGADefDLL:
         self.declarer_constraints.MaxHearts = int(max_declarer[1])
         self.declarer_constraints.MaxDiamonds = int(max_declarer[2])
         self.declarer_constraints.MaxClubs = int(max_declarer[3])
+        self.constraints_updated = True
 
         if self.verbose:
             print("set_shape_constraints")
@@ -135,7 +139,8 @@ class BGADefDLL:
             print("Partner",self.partner_constraints.ToString())
 
     def set_hcp_constraints(self, min_partner, max_partner, min_declarer, max_declarer, quality):
-
+        if self.constraints_updated:
+            return
         allready_showed_declarer = 37 - self.declarer_constraints.MaxHCP
         allready_showed_partner = 37 - self.partner_constraints.MaxHCP
         if self.verbose:
