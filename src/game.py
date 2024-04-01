@@ -407,6 +407,7 @@ class Driver:
                     
                 await asyncio.sleep(0.01)
 
+                card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
                 card_resp = None
                 while card_resp is None:
                     card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
