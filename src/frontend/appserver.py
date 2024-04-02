@@ -241,9 +241,10 @@ def parse_pbn(fin):
 
     return dealer, vulnerable, " ".join(hands_nesw), board
 
+def validate_suit(part):
+    return part == '' or bool(re.match(r'\d|[TJQKA]', part))
+ 
 def validdeal(board):
-    # Define the regex pattern with allowed characters and spaces
-    pattern = r'^([2-9TJQKA]+\.){3}[2-9TJQKA]+$'
     # Split the input string into individual deals
     hands = board.split()
     
@@ -255,17 +256,19 @@ def validdeal(board):
     # Check each deal individually
     for hand in hands:
         suits = hand.split('.')
-        
+        print(suits)
         if len(suits) != 4:
             print("Not 4 suits in ", hand)
             return False
         if len(hand) != 16:
             print("Not 13 cards ", hand)
             return False
-        result = re.match(pattern, hand)
+        result =  all(validate_suit(p.strip()) for p in suits)
         if not result:
             print("Wrong format ", hand)
             return False
+
+    return True
 
     return True
 
