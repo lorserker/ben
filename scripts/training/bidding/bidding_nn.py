@@ -20,7 +20,7 @@ print(sys.argv)
 batch_size = 64
 display_step = 10000
 epochs = 50
-learning_rate = 0.001
+learning_rate = 0.0001
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))

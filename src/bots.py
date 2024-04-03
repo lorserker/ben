@@ -300,9 +300,14 @@ class BotBid:
     def next_bid_np(self, auction):
         if self.models.model_version == 0:
             x = self.get_binary(auction, self.models)
-            x = x[:,-1,:]
-            bid_np, next_state = self.models.bidder_model.model(x, self.state)
-            self.state = next_state
+            # If API we have no history
+            if self.models.api:
+                bid_np = self.models.bidder_model.model_seq(x)
+                bid_np = bid_np[-1:]
+            else:
+                x = x[:,-1,:]
+                bid_np, next_state = self.models.bidder_model.model(x, self.state)
+                self.state = next_state
         else:
             x = self.get_binary(auction, self.models)
             bid_np = self.models.bidder_model.model_seq(x)
