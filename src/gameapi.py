@@ -5,6 +5,7 @@ from bots import BotBid, BotLead, CardPlayer
 from bidding import bidding
 from objects import Card, CardResp
 import deck52
+import binary
 monkey.patch_all()
 
 from flask import Flask, request, jsonify
@@ -411,7 +412,7 @@ async def frontend():
 
         # Validate number of cards played according to position
         auction = create_auction(bids, dealer_i)
-        contract = bidding.get_contract(auction, dealer_i, models)
+        contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)
         strain_i = bidding.get_strain_i(contract)
         user = request.args.get("user")
@@ -444,6 +445,52 @@ async def frontend():
     #     print(e)
     #     error_message = "An error occurred: {}".format(str(e))
     #     return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
+
+def get_binary_contract(position, vuln, hand_str, dummy_str):
+    X = np.zeros(2 + 2 * 32, dtype=np.float16)
+
+    v_we = vuln[0] if position % 2 == 0 else vuln[1]
+    v_them = vuln[1] if position % 2 == 0 else vuln[0]
+    vuln = np.array([[v_we, v_them]], dtype=np.float32)
+    
+    hand = binary.parse_hand_f(32)(hand_str).reshape(32)
+    dummy = binary.parse_hand_f(32)(dummy_str).reshape(32)
+    ftrs = np.concatenate((
+        vuln,
+        [hand],
+        [dummy],
+    ), axis=1)
+    X = ftrs
+    return X
+
+@app.route('/contract')
+def contract():
+    # First we extract the hands and seat
+    hand_str = request.args.get("hand").replace('_','.')
+    dummy_str = request.args.get("dummy").replace('_','.')
+    seat = request.args.get("seat")
+    # Then vulnerability
+    v = request.args.get("vul")
+    vuln = []
+    vuln.append('@v' in v)
+    vuln.append('@V' in v)
+    # And finally we deduct our position
+    position_i = dealer_enum[seat]
+    X = get_binary_contract(position_i, vuln, hand_str, dummy_str)
+    contract_id, doubled, tricks = models.contract_model.model[0](X)
+    contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
+    result = {"contract": contract,
+              "tricks": tricks}
+    print(result)
+    # New call to get top 3 tricks
+    top_k_indices_tricks, top_k_probs_tricks = models.contract_model.model[1](X)
+    print(top_k_indices_tricks, top_k_probs_tricks)
+
+    # New call to get top 3 contracts
+    top_k_indices_oh, top_k_probs_oh = models.contract_model.model[2](X, k=3)
+    print(top_k_indices_oh, top_k_probs_oh)
+       
+    return json.dumps(result)    
 
 
 if __name__ == "__main__":

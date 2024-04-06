@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
         record = {
             'board' : index + 1,
-            'contract': bidding.get_contract(auction, 'NESW'.index(dealer), models_ns),
+            'contract': bidding.get_contract(auction),
             'dealer': dealer,
             'vuln': vuln,
             'north': hands[0],

@@ -129,12 +129,12 @@ def main():
                 #trained_auction = [bidding.BID2ID[bid] for bid in trained_bidding.split(' ')]
                 trained_auction = [bid for bid in trained_bidding.split(' ')]
                 trained_auction = ['PAD_START'] * dealer_i + trained_auction
-                contract = bidding.get_contract(trained_auction, dealer_i, models)
+                contract = bidding.get_contract(trained_auction)
                 vuln = False
                 #print("Contract:",contract)
                 dd_score_before= get_dd_score(hands, contract, vuln)
                 print(" ".join(parts[:2]), " ".join(hands))
-                contract = bidding.get_contract(auction, dealer_i, models)
+                contract = bidding.get_contract(auction)
                 vuln = False
                 dd_score_now = get_dd_score(hands, contract, vuln)
                 print(" ".join(parts[2:]), dd_score_before)

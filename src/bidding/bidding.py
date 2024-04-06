@@ -121,7 +121,7 @@ def can_bid(bid, auction):
         return can_bid_contract(bid, auction)
     return False
         
-def get_contract(auction, dealer_i, models):
+def get_contract(auction):
 
     contract = None
     doubled = False

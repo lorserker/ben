@@ -327,7 +327,7 @@ def calculate_step_bidding(auction, models):
     return n_steps
 
 def get_auction_binary_for_lead(auction, hand, vuln, dealer, models):
-    contract = bidding.get_contract(auction, dealer, models)
+    contract = bidding.get_contract(auction)
 
     level = int(contract[0])
     strain = bidding.get_strain_i(contract)

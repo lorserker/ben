@@ -47,8 +47,7 @@ def load(fin):
         if line.startswith('[ParContract'):
             optimum_result = extract_value(line).replace("=",'')
             parts = re.match(r'([NEWS]{1,2})\s*(\S{2,3})(\D?\d)?', optimum_result).groups()
-            print(line, parts)
-            par_contract = parts[1].replace('NT', 'N')
+            par_contract = parts[1].replace('NT', 'N').replace('+','')
             side = parts[0]
             if parts[2] is None:
                 tricks = int(par_contract[0]) + 6

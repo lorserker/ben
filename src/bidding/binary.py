@@ -11,7 +11,7 @@ CARD_INDEX_LOOKUP = dict(
 
 class DealData(object):
 
-    def __init__(self, dealer, vuln_ns, vuln_ew, hands, auction, ns, ew, deal_str, auction_str, n_cards=52):
+    def __init__(self, dealer, vuln_ns, vuln_ew, hands, auction, par, ns, ew, deal_str, auction_str, n_cards=52):
         self.n_cards = n_cards
         self.dealer = dealer
         self.vuln_ns = vuln_ns
@@ -24,22 +24,23 @@ class DealData(object):
         self.ew = ew
         self.deal_str = deal_str
         self.auction_str = auction_str
+        self.par = par
+
 
     def __str__(self):
         return f"DealData: n_cards={self.n_cards}, NS={self.ns}, EW={self.ew}, dealer={self.dealer}, vuln_ns={self.vuln_ns}, vuln_ew={self.vuln_ew}, hands={self.hands}, shapes={self.shapes}, hcp={self.hcp}, auction={self.auction}"
 
 
     @classmethod
-    def from_deal_auction_string(cls, deal_str, auction_str, ns, ew, n_cards=52):
+    def from_deal_auction_string(cls, deal_str, auction_str, par, ns, ew, n_cards=52):
         dealer = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
         vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
         hands = list(map(parse_hand_f(n_cards), deal_str.strip().split()))
         auction_parts = auction_str.strip().replace('P', 'PASS').split()
         dealer_ix = dealer[auction_parts[0]]
         vuln_ns, vuln_ew = vuln[auction_parts[1]]
-
         auction = (['PAD_START'] * dealer_ix) + auction_parts[2:]
-        return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, ns, ew, deal_str, auction_str, n_cards)
+        return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, par, ns, ew, deal_str, auction_str, n_cards)
 
     def get_binary(self, ns, ew, bids, n_steps=8):
         if ns == -1:
@@ -175,6 +176,31 @@ class DealData(object):
             assert n == n_steps
 
         return X, y, HCP, SHAPE
+
+    def get_binary_contract(self):
+        X = np.zeros(2 + 2 * self.n_cards, dtype=np.float16)
+        y = np.zeros(2 + 53, dtype=np.float16)
+        parscore = self.par.split(" ")
+
+        contract = parscore[0]
+        hand_ix = 2 if parscore[1][0] == "S" else 3 if parscore[1][0] == "W" else 1 if parscore[1][0] == "E" else 0
+        
+        v_we = self.vuln_ns if hand_ix % 2 == 0 else self.vuln_ew
+        v_them = self.vuln_ew if hand_ix % 2 == 0 else self.vuln_ns
+        vuln = np.array([[v_we, v_them]], dtype=np.float32)
+        
+        ftrs = np.concatenate((
+            vuln,
+            self.hands[hand_ix],
+            self.hands[(hand_ix + 2) % 4],
+        ), axis=1)
+        X = ftrs
+        y[0] = len(contract) > 2 and contract[2] == "X"
+        tricks_one_hot = np.zeros((1, 14), dtype=np.float32)
+        tricks_one_hot[0, int(parscore[2])] = 1
+        y[1:15] = tricks_one_hot
+        y[15:] = bidding.encode_bid(contract[0:2])
+        return X, y
 
 def get_card_index(card, n_cards):
     assert(n_cards % 4 == 0)

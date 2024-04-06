@@ -41,7 +41,7 @@ def load_deals(fin):
         if line_number % 2 == 0:
             deal_str = line
         else:
-            yield DealData.from_deal_auction_string(deal_str, line, ns, ew, 32)
+            yield DealData.from_deal_auction_string(deal_str, line, "",ns, ew, 32)
 
 def create_arrays(ns, ew, players_pr_hand, n, bids):
     if (ns==-1):

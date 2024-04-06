@@ -71,7 +71,7 @@ class CardByCard:
         print(f'{card} {qualifier}')
 
     def analyze_opening_lead(self):
-        contract = bidding.get_contract(self.padded_auction, self.dealer_i, self.models)
+        contract = bidding.get_contract(self.padded_auction)
         decl_i = bidding.get_decl_i(contract)
 
         print(self.play[0])
@@ -85,7 +85,7 @@ class CardByCard:
         type(self).card_eval(self.play[0], card_resp)
 
     async def analyze_play(self):
-        contract = bidding.get_contract(self.padded_auction, self.dealer_i, self.models)
+        contract = bidding.get_contract(self.padded_auction)
         level = int(contract[0])
         strain_i = bidding.get_strain_i(contract)
         decl_i = bidding.get_decl_i(contract)

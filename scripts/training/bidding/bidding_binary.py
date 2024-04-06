@@ -37,7 +37,7 @@ def load_deals(fin):
         if line_number % 2 == 0:
             deal_str = line
         else:
-            yield DealData.from_deal_auction_string(deal_str, line, ns, ew, 32)
+            yield DealData.from_deal_auction_string(deal_str, line, "", ns, ew, 32)
 
 def create_binary(data_it, n, out_dir, ns, ew, alternating, bids):
     if ns == 0 or ew == 0:

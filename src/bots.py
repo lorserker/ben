@@ -10,6 +10,7 @@ import scoring
 from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 from bidding import bidding
 
+import carding
 from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed
 
 
@@ -206,7 +207,7 @@ class BotBid:
             return False
         
         # Do try to simulate if first to bid
-        if bidding.get_contract(auction, self.dealer, self.models ) == None:
+        if bidding.get_contract(auction) == None:
             return False
 
         return True
@@ -426,7 +427,7 @@ class BotBid:
             sample_auction = [bidding.ID2BID[bid_i] for bid_i in list(auctions_np[i, :]) if bid_i != 1]
             auctions.append(sample_auction)
 
-            contract = bidding.get_contract(sample_auction, self.dealer, self.models)
+            contract = bidding.get_contract(sample_auction)
             # All pass doens't really fit, and is always 0 - we ignore it for now
             if contract is None:
                 contracts.append("pass")
@@ -478,8 +479,8 @@ class BotBid:
         
         for i in range(n_samples):
             sample_auction = [bidding.ID2BID[bid_i] for bid_i in list(auctions_np[i, :]) if bid_i != 1]
-            contract = bidding.get_contract(sample_auction, self.dealer, self.models)
-            # All pass doens't really fit, and is always 0 - we ignore it for now
+            contract = bidding.get_contract(sample_auction)
+            # All pass doesn't really fit, and is always 0 - we ignore it for now
             if contract is None:
                 contracts.append("pass")
                 strains[i] = -1
@@ -521,7 +522,7 @@ class BotBid:
         
         for i in range(n_samples):
             sample_auction = [bidding.ID2BID[bid_i] for bid_i in list(auctions_np[i, :]) if bid_i != 1]
-            contract = bidding.get_contract(sample_auction, self.dealer, self.models)
+            contract = bidding.get_contract(sample_auction)
             # All pass doesn't really fit, and is always 0 - we ignore it for now
             if contract is None:
                 contracts.append("pass")
@@ -621,11 +622,9 @@ class BotLead:
             for card in candidate_cards:
                 print(card)
         if opening_lead % 8 == 7:
-            # it's a pip ~> choose a random one
-            pips_mask = np.array([0,0,0,0,0,0,0,1,1,1,1,1,1])
-            lefty_led_pips = self.hand52.reshape((4, 13))[opening_lead // 8] * pips_mask
+            contract = bidding.get_contract(auction)
             # Implement human carding here
-            opening_lead52 = (opening_lead // 8) * 13 + self.rng.choice(np.nonzero(lefty_led_pips)[0])
+            opening_lead52 = carding.select_right_card(self.hand52, opening_lead, self.rng, contract, self.models)
         else:
             opening_lead52 = deck52.card32to52(opening_lead)
 
@@ -652,7 +651,7 @@ class BotLead:
 
     def get_opening_lead_candidates(self, auction):
         x_ftrs, b_ftrs = binary.get_auction_binary_for_lead(auction, self.hand, self.vuln, self.dealer, self.models)
-        contract = bidding.get_contract(auction, self.dealer, self.models)
+        contract = bidding.get_contract(auction)
         if contract[1] == "N":
             lead_softmax = self.models.lead_nt_model.model(x_ftrs, b_ftrs)
         else:
@@ -679,7 +678,7 @@ class BotLead:
         return candidates, lead_softmax
 
     def simulate_outcomes_opening_lead(self, auction, lead_card_indexes):
-        contract = bidding.get_contract(auction, self.dealer, self.models)
+        contract = bidding.get_contract(auction)
 
         decl_i = bidding.get_decl_i(contract)
         lead_index = (decl_i + 1) % 4

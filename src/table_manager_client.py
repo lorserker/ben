@@ -75,7 +75,7 @@ class TMClient:
 
         await asyncio.sleep(0.01)
 
-        self.contract = bidding.get_contract(auction, self.dealer_i, self.models)
+        self.contract = bidding.get_contract(auction)
         if  self.contract is None:
             return
 
@@ -171,7 +171,7 @@ class TMClient:
 
     async def opening_lead(self, auction):
 
-        contract = bidding.get_contract(auction, self.dealer_i, self.models)
+        contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)
         on_lead_i = (decl_i + 1) % 4
         
@@ -204,7 +204,7 @@ class TMClient:
             return await self.receive_card_play_for(on_lead_i, 0)
 
     async def play(self, auction, opening_lead52):
-        contract = bidding.get_contract(auction, self.dealer_i, self.models)
+        contract = bidding.get_contract(auction)
         
         level = int(contract[0])
         strain_i = bidding.get_strain_i(contract)

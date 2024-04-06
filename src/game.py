@@ -99,7 +99,7 @@ class Driver:
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
-        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, self.ns, self.ew,  32)
+        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, "", self.ns, self.ew,  32)
 
         auction_part = auction_str.split(' ')
         if play_only == None and len(auction_part) > 2: play_only = True
@@ -156,7 +156,7 @@ class Driver:
         else:
             auction = await self.bidding()
 
-        self.contract = bidding.get_contract(auction, self.dealer_i, self.models)
+        self.contract = bidding.get_contract(auction)
         if self.contract is None:
             await self.channel.send(json.dumps({
                 'message': 'deal_end',
@@ -631,7 +631,7 @@ class Driver:
     
     async def opening_lead(self, auction):
 
-        contract = bidding.get_contract(auction, self.dealer_i, self.models)
+        contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)
 
         hands_str = self.deal_str.split()
@@ -800,7 +800,7 @@ async def main():
             rdeal = random_deal_board(boardno)
 
             # example of to use a fixed deal
-            # rdeal = ('62.QT742.875.KJ3 .A98.KQ9432.Q742 AJT543.65.J.AT95 KQ987.KJ3.AT6.86', 'W E-W')
+            # rdeal = ('973.KT652.A42.65 8.QJ98.KQ8765.K3 AKQ4.A74.T3.QJT2 JT652.3.J9.A9874', 'N N-S')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=biddingonly)

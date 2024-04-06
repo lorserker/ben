@@ -476,7 +476,7 @@ class Sample:
         return h1_h2
 
     def get_opening_lead_scores(self, auction, vuln, models, hand, opening_lead_card, dealer):
-        contract = bidding.get_contract(auction, dealer, models)
+        contract = bidding.get_contract(auction)
 
         level = int(contract[0])
         strain = bidding.get_strain_i(contract)
@@ -575,7 +575,7 @@ class Sample:
             # In some situations we know about cards on the hidden hand, when the other hand has shown out.
             # Currently we still sample and the discard if we hit a not valid sample.
             # It should be possible to improve
-            contract = bidding.get_contract(auction, dealer, models)
+            contract = bidding.get_contract(auction)
             known_nesw = player_to_nesw_i(player_i, contract)
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
             h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
@@ -642,7 +642,7 @@ class Sample:
                     states[hidden_2_i][:, k, card] += 1
         else:
             # In cheat mode all cards are known
-            contract = bidding.get_contract(auction, dealer, models)
+            contract = bidding.get_contract(auction)
             known_nesw = player_to_nesw_i(player_i, contract)
             states = [np.zeros((1, 13, 298)) for _ in range(4)]
             for k in range(4):

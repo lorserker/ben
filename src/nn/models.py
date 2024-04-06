@@ -7,15 +7,17 @@ from nn.player import BatchPlayer, BatchPlayerLefty
 from nn.bid_info import BidInfo
 from nn.leader import Leader
 from nn.lead_singledummy import LeadSingleDummy
+from nn.contract import Contract
 
 
 class Models:
 
-    def __init__(self, name, model_version, api, bidder_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, lead_included, claim, double_dummy, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait,pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playout, pimc_autoplaysingleton, pimc_max_threads):
+    def __init__(self, name, model_version, api, bidder_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, lead_included, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review,use_biddingquality,use_biddingquality_in_eval, double_dummy_eval, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait,pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playout, pimc_autoplaysingleton, pimc_max_threads):
         self.name = name
         self.model_version = model_version
         self.api = api
         self.bidder_model = bidder_model
+        self.contract_model = contract_model
         self.binfo_model = binfo_model
         self.lead_suit_model = lead_suit_model
         self.lead_nt_model = lead_nt_model
@@ -35,6 +37,8 @@ class Models:
         self.lead_included = lead_included
         self.claim = claim
         self.double_dummy = double_dummy
+        self.lead_from_pips_nt = lead_from_pips_nt
+        self.lead_from_pips_suit = lead_from_pips_suit
         self.min_opening_leads = min_opening_leads
         self.sample_hands_for_review = sample_hands_for_review
         self.use_biddingquality = use_biddingquality
@@ -71,6 +75,8 @@ class Models:
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
         min_opening_leads = conf.getint('lead','min_opening_leads', fallback=1)
         double_dummy = conf.getboolean('lead', 'double_dummy', fallback=False)
+        lead_from_pips_nt = conf.get('lead', 'lead_from_pips_nt', fallback="random")
+        lead_from_pips_suit = conf.get('lead', 'lead_from_pips_suit', fallback="random")
         use_bba = conf.getboolean('models', 'use_bba', fallback=False)
         matchpoint = conf.getboolean('models', 'matchpoint', fallback=False)
         lead_included = conf.getboolean('eval', 'lead_included', fallback=True)
@@ -111,6 +117,7 @@ class Models:
             model_version = model_version,
             api = api,
             bidder_model = bidder_model,
+            contract_model=Contract(os.path.join(base_path, conf['contract']['contract'])),
             binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info'])),
             lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit'])),
             lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt'])),
@@ -136,6 +143,8 @@ class Models:
             lead_included=lead_included,
             claim=claim,
             double_dummy=double_dummy,
+            lead_from_pips_nt=lead_from_pips_nt,
+            lead_from_pips_suit=lead_from_pips_suit,
             min_opening_leads=min_opening_leads,
             sample_hands_for_review=sample_hands_for_review,
             use_biddingquality=use_biddingquality,
