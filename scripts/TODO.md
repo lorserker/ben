@@ -82,3 +82,10 @@ It seems that any half-way decent play bot has to use simulated, authentic play,
 So you need some sort of clever algorithm that somehow combines Monte Carlo stuff with "realistic" simulation.
 
 A playbot of this nature might, for example, play for a misdefence rather than take a small "legitimate" chance, if the misdefence is more likely. (And this sort of assumption is pretty much essential for decent defence. "If declarer had A, he would have done X, but he actually did Y, so he must have B." You might miss out on the chance of punishing idiots on occasion but you'll never get swindled. You'll basically always achieve par.)
+
+
+Consider adding a penalty for switching suit - this is a good rule for any bridge player.
+
+Use Neural Network to check if we missed a game / slam
+
+New version of the play neural network has an error where it is playing Q with QT9 over the jack, so we are using the old net

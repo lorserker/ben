@@ -51,7 +51,7 @@
             <option value="">None</option>
             <option value="@v">NS</option>
             <option value="@V">EW</option>
-            <option value="@v@v">All</option>
+            <option value="@v@V">All</option>
         </select><br>
 
         <label for="biddingInput">Bidding:</label>
@@ -72,6 +72,7 @@
                     
         <button onclick="callAPI('bid')">Ask BEN for bid</button>&nbsp;&nbsp;
         <button onclick="callAPI('play')">Ask BEN for play</button><br><br>
+        <button onclick="callAPI('contract')">Ask BEN for contract</button><br><br>
         <div id="result"></div><br><br>
         <div id="info"></div><br><br>
         <div><a href="/home">Home</a></div>
@@ -257,9 +258,28 @@
             var tooltip = document.getElementById("tooltip"+idx);
             tooltip.style.display = "none";
         }        
+
+        function validate_suit(part) {
+            return part === '' || /\d|[TJQKA]/.test(part);
+        }
+
         function validateHand(hand) {
-            const regex = /^([2-9TJQKA]+\.){3}[2-9TJQKA]+$/;
-            return regex.test(hand);
+            const suits = hand.split('.');
+            console.log(suits);
+            if (suits.length !== 4) {
+                console.log("Not 4 suits in ", hand);
+                return false;
+            }
+            if (hand.length !== 16) {
+                console.log("Not 13 cards ", hand);
+                return false;
+            }
+            const result = suits.every(p => validate_suit(p.trim()));
+            if (!result) {
+                console.log("Wrong format ", hand);
+                return false;
+            }
+            return true;
         }
 
         function validateBidding(bidding) {
@@ -517,6 +537,11 @@
                 validationerror = true;
             }
 
+            if ((action == 'contract') && !validateHand(dummy)) {
+                alert("Invalid dummy input. Please enter four suits delimited by .");
+                validationerror = true;
+            }
+
             if (validationerror) {
                 document.querySelector("#loader").style.visibility = "hidden";
                 return;
@@ -568,6 +593,9 @@
                 if (action == 'bid') {
                     document.getElementById('result').innerText = `BEN Suggest: ${data.bid}`;
                     displayBid(data);
+                }
+                if (action == 'contract') {
+                    document.getElementById('result').innerText = `BEN Suggest: ${data.contract} with ${data.tricks} tricks`;
                 }
                 if ((action == 'play') || (action == 'lead')) {
                     const declarer = findDeclarer(bidding)
