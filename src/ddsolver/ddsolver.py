@@ -94,7 +94,7 @@ class DDSolver:
 def expected_tricks_dds(card_results):
     return {card:(sum(values)/len(values)) for card, values in card_results.items()}
 
-def expected_tricks_dds_probabiliy(card_results, probabilities_list : List[float]):
+def expected_tricks_dds_probability(card_results, probabilities_list : List[float]):
     return {card: sum([p*res for p, res in zip(probabilities_list, result_list)]) for card, result_list in card_results.items()}
 
 def p_made_target(tricks_needed):

@@ -469,7 +469,8 @@ class TMClient:
                     samples=[],
                     shape=-1,
                     hcp=-1,
-                    quality=None
+                    quality=None,
+                    who = "NN"
                 )
                 self.card_responses.append(cr)
 
@@ -557,7 +558,7 @@ class TMClient:
         card_resp = await self.receive_line()
 
         card_resp_parts = card_resp.strip().split()
-
+        print("card_resp_parts", card_resp_parts)
         assert card_resp_parts[0] == SEATS[player_i], f"{card_resp_parts[0]} != {SEATS[player_i]}"
 
         cr = CardResp(
@@ -566,7 +567,8 @@ class TMClient:
             samples=[],
             shape=-1,
             hcp=-1, 
-            quality=None
+            quality=None,
+            who=self.opponents
         )
         self.card_responses.append(cr)
 

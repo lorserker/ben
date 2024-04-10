@@ -754,12 +754,12 @@ class Sample:
             # trusting the bidding after sampling cards
             # This could probably be set based on number of deals matching or sorted
             if valid_bidding_samples >= self.sample_hands_play: 
+                good_quality = True
                 bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
                 # Randomize the samples, as we have to many
                 random_indices = rng.permutation(bidding_states[0].shape[0])
                 bidding_states = [state[random_indices] for state in bidding_states]
                 sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
-                good_quality = True
             else:            
                 if valid_bidding_samples < self.min_sample_hands_play: 
                     good_quality = False
@@ -771,6 +771,7 @@ class Sample:
                         # Limit to just the minimum needed
                         bidding_states = [state[:self.min_sample_hands_play] for state in bidding_states]
                 else:
+                    good_quality = True
                     bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
                 sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
 

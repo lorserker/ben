@@ -19,7 +19,7 @@ class BotBid:
     def __init__(self, vuln, hand_str, models, sampler, seat, dealer, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
-        self.hand = binary.parse_hand_f(32)(hand_str)
+        self.hand32 = binary.parse_hand_f(32)(hand_str)
         self.models = models
         # Perhaps it is an idea to store the auction (and binary version) to speed up processing
         self.min_candidate_score = models.search_threshold
@@ -53,7 +53,7 @@ class BotBid:
     def get_binary(self, auction, models):
         n_steps = BotBid.get_bid_number_for_player_to_bid(auction)
         hand_ix = len(auction) % 4
-        X = binary.get_auction_binary(n_steps, auction, hand_ix, self.hand, self.vuln, models)
+        X = binary.get_auction_binary(n_steps, auction, hand_ix, self.hand32, self.vuln, models)
         return X
 
     def bid(self, auction):
@@ -131,40 +131,63 @@ class BotBid:
                 expected_score = np.mean(ev)
                 if self.verbose:
                     print(ev)
+
                 adjust = 0
 
-                # The result is sorted based on the simulation. 
-                # Adding some bonus to the bid selected by the neural network
-                # Should probably be configurable
-                if candidate.insta_score < 0.002:
-                    adjust += -200
-                if candidate.insta_score < 0.0002:
-                    adjust += -200
-                
-                if hands_np.shape[0] == self.sample.min_sample_hands_auction:
-                    # We only have the minimum number of samples, so they is often of bad quality
-                    # So we add more trust to the NN
-                    adjust += 500*candidate.insta_score
-                else:
-                    adjust += 50*candidate.insta_score
 
-                # If we are doubling as penalty in the pass out-situation
+                # If we have really bad scores because we added som extra, reduce the result from those
+                if candidate.insta_score < self.models.adjust_min1:
+                    adjust -= self.models.adjust_min1_by
+                if candidate.insta_score < self.models.adjust_min2:
+                    adjust -= self.models.adjust_min2_by
+                
+                # Adding some bonus to the bid selected by the neural network
+                if hands_np.shape[0] == self.sample.min_sample_hands_auction:
+                    # We only have the minimum number of samples, so they are often of bad quality
+                    # So we add more trust to the NN
+                    adjust += self.models.adjust_NN_Few_Samples*candidate.insta_score
+                else:
+                    adjust += self.models.adjust_NN*candidate.insta_score
+
                 # These adjustments should probably be configurable
                 if passout and candidate.insta_score < self.min_candidate_score:
-                    # If we are bidding in the passout situation, and is going down, assume we are doubled
+                    # If we are bidding in the passout situation, and are going down, assume we are doubled
                     if bidding.BID2ID[candidate.bid] > 4:
                         if expected_score < 0:
-                            adjust += expected_score * 3
+                            adjust += expected_score * self.models.adjust_passout_negative
                         else:
-                            adjust += -100
+                            adjust += self.models.adjust_passout
 
+                # If we are doubling as penalty in the pass out-situation
                 if passout and candidate.bid == "X" and candidate.insta_score < self.min_candidate_score:
                     # Don't double unless the expected score is positive with a margin
-                    if expected_score < 100:
-                        adjust += -200
+                    # if they are vulnerable
+                    # We should probably try to detect is they are sacrificing
+                    if self.vuln[(self.seat + 1) % 2]:
+                        if expected_score < 200:
+                            adjust -= 2 * self.models.adjust_X
+                        else:
+                            adjust -= self.models.adjust_X
                     else:
-                        adjust += -100
-                        
+                        if expected_score < 100:
+                            adjust -= 2 * self.models.adjust_X
+                        else:
+                            adjust -= self.models.adjust_X
+
+                if candidate.bid == "XX":
+                    # Don't redouble unless the expected score is positive with a margin
+                    # if they are vulnerable
+                    if self.vuln[(self.seat) % 2]:
+                        adjust -= 2 * self.models.adjust_XX
+                    else:
+                        adjust -= self.models.adjust_XX
+
+                # Consider adding a penalty for jumping to slam
+                # Another options could be to count number of times winning the slam
+
+                if not self.models.use_adjustment:
+                    adjust = 0
+
                 ev_c = candidate.with_expected_score(np.mean(ev), adjust)
                 if self.verbose:
                     print(ev_c)
@@ -187,7 +210,7 @@ class BotBid:
             # For now we just pick up the bidding info
             samples = []
             n_steps = binary.calculate_step_bidding_info(auction, self.models)
-            p_hcp, p_shp = self.sample.get_bidding_info(n_steps, auction, self.seat, self.hand, self.vuln, self.models)
+            p_hcp, p_shp = self.sample.get_bidding_info(n_steps, auction, self.seat, self.hand32, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
 
@@ -342,7 +365,7 @@ class BotBid:
         n_samples = accepted_samples.shape[0]
         
         hands_np = np.zeros((n_samples, 4, 32), dtype=np.int32)
-        hands_np[:,turn_to_bid,:] = self.hand
+        hands_np[:,turn_to_bid,:] = self.hand32
         for i in range(1, 4):
             hands_np[:, (turn_to_bid + i) % 4, :] = accepted_samples[:,i-1,:]
 
@@ -570,7 +593,7 @@ class BotLead:
     def __init__(self, vuln, hand_str, models, sample, seat, dealer, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
-        self.hand = binary.parse_hand_f(32)(hand_str)
+        self.hand32 = binary.parse_hand_f(32)(hand_str)
         self.hand52 = binary.parse_hand_f(52)(hand_str)
         self.models = models
         self.seat = seat
@@ -603,17 +626,24 @@ class BotLead:
 
         if candidate_cards[0].insta_score > self.models.lead_accept_nn:
             opening_lead = candidate_cards[0].card.code() 
+            who = "lead_accept_nn"
         else:
             # If our sampling of the hands from the aution is bad.
             # We should probably try to find better samples, but for now, we just trust the neural network
 
             if (self.models.use_biddingquality_in_eval and not good_quality):
                 opening_lead = candidate_cards[0].card.code() 
+                who = "NN"
             else:
                 # Now we will select the card to play
                 # We have 3 factors, and they could all be right, so we remove most of the decimals
                 # expected_tricks_sd is for declarer
-                candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), -round(c.expected_tricks_sd, 1), round(c.insta_score, 2)), reverse=True)
+                if self.models.matchpoint:
+                    candidate_cards = sorted(candidate_cards, key=lambda c: (-round(c.expected_tricks_sd, 1), round(c.insta_score, 2)), reverse=True)
+                    who = "Simulation (MP)"
+                else:
+                    candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), -round(c.expected_tricks_sd, 1), round(c.insta_score, 2)), reverse=True)
+                    who = "Simulation (make/set)"
                 # Print each CandidateCard in the list
                 opening_lead = candidate_cards[0].card.code()
 
@@ -633,7 +663,7 @@ class BotLead:
             print(f"Accepted samples for opening lead: {accepted_samples.shape[0]}")
         for i in range(min(self.models.sample_hands_for_review, accepted_samples.shape[0])):
             samples.append('%s %s %s %s %.5f' % (
-                hand_to_str(self.hand),
+                hand_to_str(self.hand32),
                 hand_to_str(accepted_samples[i,0,:]),
                 hand_to_str(accepted_samples[i,1,:]),
                 hand_to_str(accepted_samples[i,2,:]),
@@ -646,17 +676,18 @@ class BotLead:
             samples=samples, 
             shape=p_shp,
             hcp=p_hcp,
-            quality=good_quality
+            quality=good_quality,
+            who=who
         )
 
     def get_opening_lead_candidates(self, auction):
-        x_ftrs, b_ftrs = binary.get_auction_binary_for_lead(auction, self.hand, self.vuln, self.dealer, self.models)
+        x_ftrs, b_ftrs = binary.get_auction_binary_for_lead(auction, self.hand32, self.vuln, self.dealer, self.models)
         contract = bidding.get_contract(auction)
         if contract[1] == "N":
             lead_softmax = self.models.lead_nt_model.model(x_ftrs, b_ftrs)
         else:
             lead_softmax = self.models.lead_suit_model.model(x_ftrs, b_ftrs)
-        lead_softmax = follow_suit(lead_softmax, self.hand, np.array([[0, 0, 0, 0]]))
+        lead_softmax = follow_suit(lead_softmax, self.hand32, np.array([[0, 0, 0, 0]]))
 
         candidates = []
         # Make a copy of the lead_softmax array
@@ -766,7 +797,7 @@ class BotLead:
 
         X_sd[:,32 + strain_i] = 1
         # lefty (That is us)
-        X_sd[:,(32 + 5 + 0*32):(32 + 5 + 1*32)] = self.hand.reshape(32)
+        X_sd[:,(32 + 5 + 0*32):(32 + 5 + 1*32)] = self.hand32.reshape(32)
         # dummy
         X_sd[:,(32 + 5 + 1*32):(32 + 5 + 2*32)] = accepted_samples[:,0,:].reshape((n_accepted, 32))
         # righty
@@ -815,7 +846,7 @@ class CardPlayer:
             self.playermodel = models.player_models[player_i + 4]
         self.player_i = player_i
         self.hand_str = hand_str
-        self.hand = binary.parse_hand_f(32)(hand_str).reshape(32)
+        self.hand32 = binary.parse_hand_f(32)(hand_str).reshape(32)
         self.hand52 = binary.parse_hand_f(52)(hand_str).reshape(52)
         self.public52 = binary.parse_hand_f(52)(public_hand_str).reshape(52)
         self.dummy = self.public52.copy()
@@ -846,7 +877,7 @@ class CardPlayer:
 
     def init_x_play(self, public_hand, level, strain_i):
         self.x_play = np.zeros((1, 13, 298))
-        binary.BinaryInput(self.x_play[:,0,:]).set_player_hand(self.hand)
+        binary.BinaryInput(self.x_play[:,0,:]).set_player_hand(self.hand32)
         binary.BinaryInput(self.x_play[:,0,:]).set_public_hand(public_hand)
         self.x_play[:,0,292] = level
         self.x_play[:,0,293+strain_i] = 1
@@ -1038,7 +1069,7 @@ class CardPlayer:
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
 
         if self.models.use_probability:
-            card_tricks = ddsolver.expected_tricks_dds_probabiliy(dd_solved, probabilities_list)
+            card_tricks = ddsolver.expected_tricks_dds_probability(dd_solved, probabilities_list)
         else:
             card_tricks = ddsolver.expected_tricks_dds(dd_solved)
 
@@ -1135,6 +1166,19 @@ class CardPlayer:
         return card_ev
     
     def next_card_softmax(self, trick_i):
+        if self.verbose:
+            print("next_card_softmax", self.playermodel.name, trick_i)
+        #print(self.x_play[:,:(trick_i + 1),:])
+        #self.x_play[:, (trick_i+1 ), 0:192] = self.x_play[:, (trick_i ), 0:192]
+        #self.x_play[:, (trick_i+1 ), 292:298] = self.x_play[:, (trick_i ), 292:298]
+        # print(self.x_play[:, (trick_i ), 0:32])
+        # print(self.x_play[:, (trick_i), 32:64])
+        # print(self.x_play[:, (trick_i), 64:96])
+        # print(self.x_play[:, (trick_i), 96:128])
+        # print(self.x_play[:, (trick_i), 128:160])
+        # print(self.x_play[:, (trick_i), 160:192])
+        # print(self.x_play[:, (trick_i), 288:298])
+
         cards_softmax = self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i + 1),:])
         assert cards_softmax.shape == (1, 32), f"Expected shape (1, 32), but got shape {cards_softmax.shape}"
         #print("cards_softmax.shape",cards_softmax.shape)
@@ -1148,6 +1192,8 @@ class CardPlayer:
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
+        #if trick_i == 4:
+        #    xx
         if self.verbose:
             print(f'Next card response time: {time.time() - t_start:0.4f}')
 
@@ -1166,16 +1212,25 @@ class CardPlayer:
         for card, (e_tricks, e_score, e_make, msg) in card_dd.items():
             card32 = deck52.card52to32(deck52.encode_card(str(card)))
 
-            candidate_cards.append(CandidateCard(
-                card=card,
-                insta_score=card_nn.get(card32, 0),
-                expected_tricks_dd=e_tricks,
-                p_make_contract=e_make,
-                expected_score_dd=e_score,
-                msg=msg
-            ))
+            insta_score=card_nn.get(card32, 0)
+            if insta_score >= self.models.pimc_trust_NN:
+                candidate_cards.insert(0,CandidateCard(
+                    card=card,
+                    insta_score=insta_score,
+                    expected_tricks_dd=e_tricks,
+                    p_make_contract=e_make,
+                    expected_score_dd=e_score,
+                    msg=msg
+                ))
 
         candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd, c.expected_score_dd, c.insta_score), reverse=True)
+
+        if self.models.matchpoint:
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), x[0]), reverse=True)
+        else:
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), x[0]), reverse=True)
+
+        candidate_cards = [card for _, card in candidate_cards]
 
         best_card_resp = CardResp(
             card=candidate_cards[0].card,
@@ -1183,8 +1238,8 @@ class CardPlayer:
             samples=samples,
             shape=-1,
             hcp=-1, 
-            quality=quality
-
+            quality=quality,
+            who = "PIMC"
         )
         return best_card_resp
 
@@ -1210,7 +1265,7 @@ class CardPlayer:
         for card52, (e_tricks, e_score, e_make) in card_dd.items():
             card32 = deck52.card52to32(card52)
 
-            candidate_cards.append(CandidateCard(
+            candidate_cards.insert(0, CandidateCard(
                 card=Card.from_code(card52),
                 insta_score=card_nn.get(card32, 0),
                 expected_tricks_dd=e_tricks,
@@ -1224,65 +1279,67 @@ class CardPlayer:
         # We should probably also consider bidding_scores in this 
         # If we have bad quality of samples we should probably just use the neural network
         if valid_bidding_samples >= 0:
-            candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1), round(c.insta_score, 2)), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), x[0]), reverse=True)
+            candidate_cards = [card for _, card in candidate_cards]
+            who = "NN"
         else:
             if self.models.use_biddingquality_in_eval:
-                candidate_cards = sorted(candidate_cards, key=lambda c: (round(c.insta_score, 2), round(5*c.p_make_contract, 1), round(c.expected_tricks_dd, 1)), reverse=True)
-                candidate_cards2 = sorted(candidate_cards, key=lambda c: (round(c.expected_score_dd, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 2), round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), x[0]), reverse=True)
+                candidate_cards = [card for _, card in candidate_cards]
+                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), round(x[1].expected_tricks_dd, 1), x[0]), reverse=True)
+                candidate_cards2 = [card for _, card in candidate_cards]
                 if candidate_cards[0].expected_score_dd < 0 and candidate_cards2[0].expected_score_dd:
                     candidate_cards = candidate_cards2
+                who = "DD"
             else:
-                candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), round(c.insta_score, 2), round(c.expected_tricks_dd, 1)), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), round(x[1].expected_tricks_dd, 1), x[0]), reverse=True)
+                candidate_cards = [card for _, card in candidate_cards]
+                who = "Make"
 
+        right_card = carding.select_right_card_for_play(candidate_cards, self.rng, self.contract, self.models, self.hand_str, self.player_i, self.x_play[0, trick_i, :32], current_trick)
         best_card_resp = CardResp(
-            card=candidate_cards[0].card,
+            card=right_card,
             candidates=candidate_cards,
             samples=samples,
             shape=-1,
             hcp=-1, 
-            quality=quality
-
+            quality=quality,
+            who = who
         )
 
-        # for candidate_card in candidate_cards :
-        #     print(candidate_card.to_dict())
+        # # Max expected score difference ?
+        # max_expected_score = max(
+        #     [
+        #         float(c.expected_score_dd)
+        #         for c in candidate_cards
+        #         if c.expected_score_dd is not None
+        #     ]
+        # )
+        # card_with_max_expected_score = {c: c.expected_score_dd for c in candidate_cards if c.expected_score_dd == max_expected_score}
+        # if len(card_with_max_expected_score) == 1:
+        #     return best_card_resp
+        # candidate_cards = [c for c in candidate_cards if c in card_with_max_expected_score.keys()]
 
-        # Max expected score difference ?
-        max_expected_score = max(
-            [
-                float(c.expected_score_dd)
-                for c in candidate_cards
-                if c.expected_score_dd is not None
-            ]
-        )
-        card_with_max_expected_score = {c: c.expected_score_dd for c in candidate_cards if c.expected_score_dd == max_expected_score}
-        if len(card_with_max_expected_score) == 1:
-            return best_card_resp
-        candidate_cards = [c for c in candidate_cards if c in card_with_max_expected_score.keys()]
+        # # Don't pick a 8 or 9 when NN difference if you have a small card in the same suit
+        # # Only cards with the same expected score is considered
+        # for c in candidate_cards:
+        #     if c.card.rank in [5, 6]:  # 8 or 9
+        #         for compared_candidate in candidate_cards:
+        #             if (
+        #                 compared_candidate.card.rank >= 7
+        #                 and compared_candidate.card.suit == c.card.suit
+        #             ):
+        #                 if c.insta_score > compared_candidate.insta_score:
+        #                     c.insta_score = compared_candidate.insta_score
+        #                 break  # Below 7, they all have the same insta_score
 
-        # Don't pick a 8 or 9 when NN difference if you have a small card in the same suit
-        for c in candidate_cards:
-            if c.card.rank in [5, 6]:  # 8 or 9
-                for compared_candidate in candidate_cards:
-                    if (
-                        compared_candidate.card.rank >= 7
-                        and compared_candidate.card.suit == c.card.suit
-                    ):
-                        c.insta_score = compared_candidate.insta_score
-                        break  # Below 7, they all have the same insta_score
-
-        # NN difference ?
-        max_insta_score = max(
-            [float(c.insta_score) for c in candidate_cards if c.insta_score is not None]
-        )
-        card_with_max_insta_score = {
-            c: c.insta_score
-            for c in candidate_cards
-            if c.insta_score == max_insta_score
-            and c.expected_score_dd == max_expected_score
-        }
-        if len(card_with_max_insta_score) == 1:
-            return best_card_resp
+        # # NN difference ?
+        # max_insta_score = max(
+        #     [float(c.insta_score) for c in candidate_cards if c.insta_score is not None]
+        # )
+        # card_with_max_insta_score = {c: c.insta_score for c in candidate_cards if c.insta_score == max_insta_score and c.expected_score_dd == max_expected_score}
+        # if len(card_with_max_insta_score) == 1:
+        #     return best_card_resp
 
         # # Play some human carding
         # hand = PlayerHand.from_pbn(deck52.hand_to_str(self.hand52))

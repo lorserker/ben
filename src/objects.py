@@ -118,13 +118,14 @@ class CandidateCard:
 
 class CardResp:
 
-    def __init__(self, card, candidates, samples, shape, hcp, quality):
+    def __init__(self, card, candidates, samples, shape, hcp, quality, who):
         self.card = card
         self.candidates = candidates
         self.samples = samples
         self.shape = shape
         self.hcp = hcp
         self.quality = quality
+        self.who = who
 
     def convert_to_floats(self, array):
         return [round(float(value), 1) if float(value) != int(value) else int(value) for value in array]
@@ -145,6 +146,7 @@ class CardResp:
           
         result = {
             'card': self.card.symbol(),
+            'who' : self.who
         }
 
         if self.quality is not None:

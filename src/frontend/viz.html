@@ -234,7 +234,7 @@
                                             <p><strong>HCP:</strong> ${data.hcp.join(' - ')}</p>
                                             <p><strong>Shape:</strong> ${formattedShape}</p>
                                             `;
-                                        if (data.quality) {
+                                        if (data.quality != null) {
                                             document.querySelector('#info').innerHTML += `
                                             <p><strong>Sample quality: </strong>${data.quality}</p>
                                             `;

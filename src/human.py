@@ -129,7 +129,7 @@ class HumanLead:
     async def async_lead(self):
         card_str = input('opening lead: ').strip().upper()
 
-        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[], shape=-1, hcp=-1, quality=None)
+        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[], shape=-1, hcp=-1, quality=None, who = "Human")
 
 
 class HumanLeadSocket:
@@ -150,7 +150,7 @@ class HumanLeadSocket:
                 if (str(human_card).startswith("Cl") or str(human_card).startswith("Co")) :
                     return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
                 else:    
-                    return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
+                    return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = "Human")
 
             except Exception as ex:
                 print(f"Exception receiving card {human_card}", ex)
@@ -222,9 +222,9 @@ class HumanCardPlayer:
         # claim and conceed both starts with a C
 
         if (str(human_card).startswith("C")) :
-            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
+            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = None)
         else:    
-            return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
+            return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = "Human")
 
 
 class HumanCardPlayerSocket(HumanCardPlayer):

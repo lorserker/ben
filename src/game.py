@@ -396,7 +396,7 @@ class Driver:
                 if isinstance(card_players[player_i], bots.CardPlayer):
                     rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
                     assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
-
+                    card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
                 else: 
                     rollout_states = []
                     bidding_scores = []
@@ -407,7 +407,6 @@ class Driver:
                     
                 await asyncio.sleep(0.01)
 
-                card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
                 card_resp = None
                 while card_resp is None:
                     card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
@@ -522,6 +521,8 @@ class Driver:
 
             for card_player in card_players:
                 # initialize last trick
+                if self.verbose:
+                    print("Initialize last trick")
                 for i, card32 in enumerate(current_trick):
                     card_player.x_play[:, trick_i + 1, 64 + i * 32 + card32] = 1
                     
@@ -584,11 +585,14 @@ class Driver:
             
             if not isinstance(card_players[player_i], bots.CardPlayer):
                 await card_players[player_i].get_card_input()
+                who = "Human"
+            else:
+                who = "NN"
 
             card52 = np.nonzero(card_players[player_i].hand52)[0][0]
             card32 = card52to32(card52)
 
-            card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1, quality=None)
+            card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1, quality=None, who=who)
 
             await self.channel.send(json.dumps({
                 'message': 'card_played',
