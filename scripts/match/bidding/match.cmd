@@ -4,7 +4,7 @@ set boards=%2
 set db=%3
 
 python auction.py --bidderNS=%trust%.conf --bidderEW=default.conf --set=%boards% --db=%db% > .\%trust%\auctionsNS.json
-python auction.py --bidderNS=default.conf --bidderEW=%trust%.conf --set=%boards% > .\%trust%\auctionsEW.json
+python auction.py --bidderNS=default.conf --bidderEW=%trust%.conf --set=%boards% --db=%db% > .\%trust%\auctionsEW.json
 
 type ".\%trust%\auctionsNS.json" | python lead.py --bidder=default.conf > .\%trust%\leads1.json
 type ".\%trust%\auctionsEW.json" | python lead.py --bidder=%trust%.conf > .\%trust%\leads2.json
