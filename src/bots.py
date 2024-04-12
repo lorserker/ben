@@ -1223,7 +1223,7 @@ class CardPlayer:
                     msg=msg
                 ))
 
-        candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd, c.expected_score_dd, c.insta_score), reverse=True)
+        #candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd, c.expected_score_dd, c.insta_score), reverse=True)
 
         if self.models.matchpoint:
             candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), x[0]), reverse=True)

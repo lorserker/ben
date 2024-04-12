@@ -2,7 +2,7 @@
 % EXPORT
 %Content-type: text/x-pbn; charset=ISO-8859-1
 %Creator: BridgeComposer Version 5.104.1
-%Created: Sat Apr  6 11:40:11 2024 +0200
+%Created: Sat Apr  6 11:40:13 2024 +0200
 %BCOptions PageHeader STBorder STShade ShowHCP
 %BCOptions2 CTDlr
 %BidAndCardSpacing Thin
@@ -59,31 +59,31 @@
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "00b0a00b0a1d1d11d1d1"]
+[DoubleDummyTricks "1d1d11d1d100b0a00b0a"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW 1510"]
-[ParContract "EW 7S="]
+[OptimumScore "NS 1510"]
+[ParContract "NS 7S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  0
-N  S  0
-N  H 11
-N  D  0
-N  C 10
-S NT  0
-S  S  0
-S  H 11
-S  D  0
-S  C 10
-E NT  1
-E  S 13
-E  H  1
-E  D 13
-E  C  1
-W NT  1
-W  S 13
-W  H  1
-W  D 13
-W  C  1
+N NT  1
+N  S 13
+N  H  1
+N  D 13
+N  C  1
+S NT  1
+S  S 13
+S  H  1
+S  D 13
+S  C  1
+E NT  0
+E  S  0
+E  H 11
+E  D  0
+E  C 10
+W NT  0
+W  S  0
+W  H 11
+W  D  0
+W  C 10
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -101,31 +101,31 @@ W  C  1
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "836b5837b55a6285a628"]
+[DoubleDummyTricks "5a6285a628837b5836b5"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -100"]
-[ParContract "EW 5SX-1"]
+[OptimumScore "NS -200"]
+[ParContract "NS 5SX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  3
+N NT  5
+N  S 10
 N  H  6
-N  D 11
-N  C  5
-S NT  8
-S  S  3
-S  H  7
-S  D 11
-S  C  5
-E NT  5
-E  S 10
-E  H  6
-E  D  2
-E  C  8
-W NT  5
-W  S 10
+N  D  2
+N  C  8
+S NT  5
+S  S 10
+S  H  6
+S  D  2
+S  C  8
+E NT  8
+E  S  3
+E  H  7
+E  D 11
+E  C  5
+W NT  8
+W  S  3
 W  H  6
-W  D  2
-W  C  8
+W  D 11
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -143,31 +143,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "41a0b41a0a6a2c26a2c2"]
+[DoubleDummyTricks "6a2c26a2c241a0a41a0b"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -300"]
-[ParContract "NS 6HX-2; N 7CX-2"]
+[OptimumScore "EW -500"]
+[ParContract "EW 6HX-2; W 7CX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  4
-N  S  1
-N  H 10
-N  D  0
-N  C 11
-S NT  4
-S  S  1
-S  H 10
-S  D  0
-S  C 10
-E NT  6
-E  S 10
-E  H  2
-E  D 12
-E  C  2
-W NT  6
-W  S 10
-W  H  2
-W  D 12
-W  C  2
+N NT  6
+N  S 10
+N  H  2
+N  D 12
+N  C  2
+S NT  6
+S  S 10
+S  H  2
+S  D 12
+S  C  2
+E NT  4
+E  S  1
+E  H 10
+E  D  0
+E  C 10
+W NT  4
+W  S  1
+W  H 10
+W  D  0
+W  C 11
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -185,31 +185,31 @@ W  C  2
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "1814b1814b65c9264c92"]
+[DoubleDummyTricks "65c9264c921814b1814b"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -500"]
-[ParContract "NS 7CX-2"]
+[OptimumScore "EW -500"]
+[ParContract "EW 7CX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  1
-N  S  8
-N  H  1
-N  D  4
-N  C 11
-S NT  1
-S  S  8
-S  H  1
-S  D  4
-S  C 11
-E NT  6
-E  S  5
-E  H 12
-E  D  9
-E  C  2
-W NT  6
-W  S  4
-W  H 12
-W  D  9
-W  C  2
+N NT  6
+N  S  5
+N  H 12
+N  D  9
+N  C  2
+S NT  6
+S  S  4
+S  H 12
+S  D  9
+S  C  2
+E NT  1
+E  S  8
+E  H  1
+E  D  4
+E  C 11
+W NT  1
+W  S  8
+W  H  1
+W  D  4
+W  C 11
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -227,31 +227,31 @@ W  C  2
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "52882528826b44b6b44b"]
+[DoubleDummyTricks "6b44b6b44b5288252882"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW 450"]
-[ParContract "EW 4S+1"]
+[OptimumScore "NS 650"]
+[ParContract "NS 5S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S  2
-N  H  8
-N  D  8
-N  C  2
-S NT  5
-S  S  2
-S  H  8
-S  D  8
-S  C  2
-E NT  6
-E  S 11
-E  H  4
-E  D  4
-E  C 11
-W NT  6
-W  S 11
-W  H  4
-W  D  4
-W  C 11
+N NT  6
+N  S 11
+N  H  4
+N  D  4
+N  C 11
+S NT  6
+S  S 11
+S  H  4
+S  D  4
+S  C 11
+E NT  5
+E  S  2
+E  H  8
+E  D  8
+E  C  2
+W NT  5
+W  S  2
+W  H  8
+W  D  8
+W  C  2
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -269,31 +269,31 @@ W  C 11
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "31793318936b4376b437"]
+[DoubleDummyTricks "6b4376b4373189331793"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -500"]
-[ParContract "NS 6DX-3"]
+[OptimumScore "NS 450"]
+[ParContract "NS 4S+1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  3
-N  S  1
-N  H  7
-N  D  9
-N  C  3
-S NT  3
-S  S  1
-S  H  8
-S  D  9
-S  C  3
-E NT  6
-E  S 11
-E  H  4
-E  D  3
-E  C  7
-W NT  6
-W  S 11
-W  H  4
-W  D  3
-W  C  7
+N NT  6
+N  S 11
+N  H  4
+N  D  3
+N  C  7
+S NT  6
+S  S 11
+S  H  4
+S  D  3
+S  C  7
+E NT  3
+E  S  1
+E  H  8
+E  D  9
+E  C  3
+W NT  3
+W  S  1
+W  H  7
+W  D  9
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -311,31 +311,31 @@ W  C  7
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "56a4487a554638846388"]
+[DoubleDummyTricks "463884638887a5556a44"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4H="]
+[OptimumScore "EW 620"]
+[ParContract "EW 4H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
+N NT  4
 N  S  6
-N  H 10
-N  D  4
-N  C  4
-S NT  8
-S  S  7
-S  H 10
-S  D  5
-S  C  5
-E NT  4
-E  S  6
-E  H  3
-E  D  8
-E  C  8
-W NT  4
+N  H  3
+N  D  8
+N  C  8
+S NT  4
+S  S  6
+S  H  3
+S  D  8
+S  C  8
+E NT  8
+E  S  7
+E  H 10
+E  D  5
+E  C  5
+W NT  5
 W  S  6
-W  H  3
-W  D  8
-W  C  8
+W  H 10
+W  D  4
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -353,31 +353,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "87a1187a12463cb463cb"]
+[DoubleDummyTricks "463cb463cb87a1287a11"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -300"]
-[ParContract "NS 6HX-2"]
+[OptimumScore "EW -300"]
+[ParContract "EW 6HX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  7
-N  H 10
-N  D  1
-N  C  1
-S NT  8
-S  S  7
-S  H 10
-S  D  1
-S  C  2
-E NT  4
-E  S  6
-E  H  3
-E  D 12
-E  C 11
-W NT  4
-W  S  6
-W  H  3
-W  D 12
-W  C 11
+N NT  4
+N  S  6
+N  H  3
+N  D 12
+N  C 11
+S NT  4
+S  S  6
+S  H  3
+S  D 12
+S  C 11
+E NT  8
+E  S  7
+E  H 10
+E  D  1
+E  C  2
+W NT  8
+W  S  7
+W  H 10
+W  D  1
+W  C  1
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -395,31 +395,31 @@ W  C 11
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "21919219196b4b46b4b4"]
+[DoubleDummyTricks "6b4b46b4b42191921919"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -500"]
-[ParContract "NS 6CX-3; NS 6HX-3"]
+[OptimumScore "NS 450"]
+[ParContract "NS 4S+1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  2
-N  S  1
-N  H  9
-N  D  1
-N  C  9
-S NT  2
-S  S  1
-S  H  9
-S  D  1
-S  C  9
-E NT  6
-E  S 11
-E  H  4
-E  D 11
-E  C  4
-W NT  6
-W  S 11
-W  H  4
-W  D 11
-W  C  4
+N NT  6
+N  S 11
+N  H  4
+N  D 11
+N  C  4
+S NT  6
+S  S 11
+S  H  4
+S  D 11
+S  C  4
+E NT  2
+E  S  1
+E  H  9
+E  D  1
+E  C  9
+W NT  2
+W  S  1
+W  H  9
+W  D  1
+W  C  9
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -437,31 +437,31 @@ W  C  4
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "5993159931000ab000ab"]
+[DoubleDummyTricks "000ab000ab5993159931"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -500"]
-[ParContract "NS 5HX-2; NS 5SX-2"]
+[OptimumScore "EW -500"]
+[ParContract "EW 5HX-2; EW 5SX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S  9
-N  H  9
-N  D  3
-N  C  1
-S NT  5
-S  S  9
-S  H  9
-S  D  3
-S  C  1
-E NT  0
-E  S  0
-E  H  0
-E  D 10
-E  C 11
-W NT  0
-W  S  0
-W  H  0
-W  D 10
-W  C 11
+N NT  0
+N  S  0
+N  H  0
+N  D 10
+N  C 11
+S NT  0
+S  S  0
+S  H  0
+S  D 10
+S  C 11
+E NT  5
+E  S  9
+E  H  9
+E  D  3
+E  C  1
+W NT  5
+W  S  9
+W  H  9
+W  D  3
+W  C  1
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -479,31 +479,31 @@ W  C 11
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "551965519658c4758c47"]
+[DoubleDummyTricks "58c4758c475519655196"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -800"]
-[ParContract "NS 7DX-4"]
+[OptimumScore "EW -800"]
+[ParContract "EW 7DX-4"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  5
-N  S  5
-N  H  1
-N  D  9
-N  C  6
+N  S  8
+N  H 12
+N  D  4
+N  C  7
 S NT  5
-S  S  5
-S  H  1
-S  D  9
-S  C  6
+S  S  8
+S  H 12
+S  D  4
+S  C  7
 E NT  5
-E  S  8
-E  H 12
-E  D  4
-E  C  7
+E  S  5
+E  H  1
+E  D  9
+E  C  6
 W NT  5
-W  S  8
-W  H 12
-W  D  4
-W  C  7
+W  S  5
+W  H  1
+W  D  9
+W  C  6
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -521,31 +521,31 @@ W  C  7
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "8b3588b3595298452974"]
+[DoubleDummyTricks "52984529748b3598b358"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -500"]
-[ParContract "EW 6HX-3"]
+[OptimumScore "EW 450"]
+[ParContract "EW 4S+1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 11
-N  H  3
-N  D  5
-N  C  8
-S NT  8
-S  S 11
-S  H  3
-S  D  5
-S  C  9
-E NT  5
-E  S  2
-E  H  9
-E  D  8
-E  C  4
-W NT  5
-W  S  2
-W  H  9
-W  D  7
-W  C  4
+N NT  5
+N  S  2
+N  H  9
+N  D  8
+N  C  4
+S NT  5
+S  S  2
+S  H  9
+S  D  7
+S  C  4
+E NT  8
+E  S 11
+E  H  3
+E  D  5
+E  C  9
+W NT  8
+W  S 11
+W  H  3
+W  D  5
+W  C  8
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -563,31 +563,31 @@ W  C  4
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "00bb000bb00a00a0a00a"]
+[DoubleDummyTricks "0a00a0a00a00bb000bb0"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -200"]
-[ParContract "EW 5SX-1"]
+[OptimumScore "NS -200"]
+[ParContract "NS 5SX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  0
-N  S  0
-N  H 11
-N  D 11
-N  C  0
+N  S 10
+N  H  0
+N  D  0
+N  C 10
 S NT  0
-S  S  0
-S  H 11
-S  D 11
-S  C  0
+S  S 10
+S  H  0
+S  D  0
+S  C 10
 E NT  0
-E  S 10
-E  H  0
-E  D  0
-E  C 10
+E  S  0
+E  H 11
+E  D 11
+E  C  0
 W NT  0
-W  S 10
-W  H  0
-W  D  0
-W  C 10
+W  S  0
+W  H 11
+W  D 11
+W  C  0
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -605,31 +605,31 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "624c8624c84a9154a915"]
+[DoubleDummyTricks "4a9154a915624c8624c8"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -300"]
-[ParContract "EW 6SX-2"]
+[OptimumScore "NS -300"]
+[ParContract "NS 6SX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  2
-N  H  4
-N  D 12
-N  C  8
-S NT  6
-S  S  2
-S  H  4
-S  D 12
-S  C  8
-E NT  4
-E  S 10
-E  H  9
-E  D  1
-E  C  5
-W NT  4
-W  S 10
-W  H  9
-W  D  1
-W  C  5
+N NT  4
+N  S 10
+N  H  9
+N  D  1
+N  C  5
+S NT  4
+S  S 10
+S  H  9
+S  D  1
+S  C  5
+E NT  6
+E  S  2
+E  H  4
+E  D 12
+E  C  8
+W NT  6
+W  S  2
+W  H  4
+W  D 12
+W  C  8
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -647,31 +647,31 @@ W  C  5
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "3a4243a424538b9538b9"]
+[DoubleDummyTricks "538b9538b93a4243a424"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -200"]
-[ParContract "NS 5SX-1"]
+[OptimumScore "EW -100"]
+[ParContract "EW 5SX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  3
-N  S 10
-N  H  4
-N  D  2
-N  C  4
-S NT  3
-S  S 10
-S  H  4
-S  D  2
-S  C  4
-E NT  5
-E  S  3
-E  H  8
-E  D 11
-E  C  9
-W NT  5
-W  S  3
-W  H  8
-W  D 11
-W  C  9
+N NT  5
+N  S  3
+N  H  8
+N  D 11
+N  C  9
+S NT  5
+S  S  3
+S  H  8
+S  D 11
+S  C  9
+E NT  3
+E  S 10
+E  H  4
+E  D  2
+E  C  4
+W NT  3
+W  S 10
+W  H  4
+W  D  2
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -689,31 +689,31 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "6b22b6b22b529a2529a2"]
+[DoubleDummyTricks "529a2529a26b22b6b22b"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 5S="]
+[OptimumScore "NS -300"]
+[ParContract "NS 6DX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S 11
-N  H  2
-N  D  2
-N  C 11
-S NT  6
-S  S 11
-S  H  2
-S  D  2
-S  C 11
-E NT  5
-E  S  2
-E  H  9
-E  D 10
-E  C  2
-W NT  5
-W  S  2
-W  H  9
-W  D 10
-W  C  2
+N NT  5
+N  S  2
+N  H  9
+N  D 10
+N  C  2
+S NT  5
+S  S  2
+S  H  9
+S  D 10
+S  C  2
+E NT  6
+E  S 11
+E  H  2
+E  D  2
+E  C 11
+W NT  6
+W  S 11
+W  H  2
+W  D  2
+W  C 11
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -731,31 +731,31 @@ W  C  2
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "433a9433a939a0439a04"]
+[DoubleDummyTricks "39a0439a04433a9433a9"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -100"]
-[ParContract "NS 5DX-1"]
+[OptimumScore "EW -100"]
+[ParContract "EW 5DX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  4
-N  S  3
-N  H  3
-N  D 10
-N  C  9
-S NT  4
-S  S  3
-S  H  3
-S  D 10
-S  C  9
-E NT  3
-E  S  9
-E  H 10
-E  D  0
-E  C  4
-W NT  3
-W  S  9
-W  H 10
-W  D  0
-W  C  4
+N NT  3
+N  S  9
+N  H 10
+N  D  0
+N  C  4
+S NT  3
+S  S  9
+S  H 10
+S  D  0
+S  C  4
+E NT  4
+E  S  3
+E  H  3
+E  D 10
+E  C  9
+W NT  4
+W  S  3
+W  H  3
+W  D 10
+W  C  9
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -773,31 +773,31 @@ W  C  4
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "557a5557a56732868528"]
+[DoubleDummyTricks "6732868528557a5557a5"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 130"]
-[ParContract "NS 4D="]
+[OptimumScore "EW 130"]
+[ParContract "EW 3D+1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S  5
-N  H  7
-N  D 10
-N  C  5
-S NT  5
-S  S  5
-S  H  7
-S  D 10
-S  C  5
-E NT  6
-E  S  7
-E  H  3
-E  D  2
-E  C  8
-W NT  6
-W  S  8
-W  H  5
-W  D  2
-W  C  8
+N NT  6
+N  S  7
+N  H  3
+N  D  2
+N  C  8
+S NT  6
+S  S  8
+S  H  5
+S  D  2
+S  C  8
+E NT  5
+E  S  5
+E  H  7
+E  D 10
+E  C  5
+W NT  5
+W  S  5
+W  H  7
+W  D 10
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -815,31 +815,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "33b8833b889a2449a244"]
+[DoubleDummyTricks "9a2449a24433b8833b88"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -200"]
-[ParContract "EW 5SX-1"]
+[OptimumScore "NS -100"]
+[ParContract "NS 5SX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  3
-N  S  3
-N  H 11
-N  D  8
-N  C  8
-S NT  3
-S  S  3
-S  H 11
-S  D  8
-S  C  8
-E NT  9
-E  S 10
-E  H  2
-E  D  4
-E  C  4
-W NT  9
-W  S 10
-W  H  2
-W  D  4
-W  C  4
+N NT  9
+N  S 10
+N  H  2
+N  D  4
+N  C  4
+S NT  9
+S  S 10
+S  H  2
+S  D  4
+S  C  4
+E NT  3
+E  S  3
+E  H 11
+E  D  8
+E  C  8
+W NT  3
+W  S  3
+W  H 11
+W  D  8
+W  C  8
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -857,31 +857,31 @@ W  C  4
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "5d6755d6752066820668"]
+[DoubleDummyTricks "20668206685d6755d675"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 2210"]
-[ParContract "NS 7S="]
+[OptimumScore "EW 2210"]
+[ParContract "EW 7S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S 13
+N NT  2
+N  S  0
 N  H  6
-N  D  7
-N  C  5
-S NT  5
-S  S 13
+N  D  6
+N  C  8
+S NT  2
+S  S  0
 S  H  6
-S  D  7
-S  C  5
-E NT  2
-E  S  0
+S  D  6
+S  C  8
+E NT  5
+E  S 13
 E  H  6
-E  D  6
-E  C  8
-W NT  2
-W  S  0
+E  D  7
+E  C  5
+W NT  5
+W  S 13
 W  H  6
-W  D  6
-W  C  8
+W  D  7
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -899,31 +899,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "76b7576b753626836268"]
+[DoubleDummyTricks "362683626876b7576b75"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 5H="]
+[OptimumScore "EW 450"]
+[ParContract "EW 4H+1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  7
+N NT  3
 N  S  6
-N  H 11
-N  D  7
-N  C  5
-S NT  7
+N  H  2
+N  D  6
+N  C  8
+S NT  3
 S  S  6
-S  H 11
-S  D  7
-S  C  5
-E NT  3
+S  H  2
+S  D  6
+S  C  8
+E NT  7
 E  S  6
-E  H  2
-E  D  6
-E  C  8
-W NT  3
+E  H 11
+E  D  7
+E  C  5
+W NT  7
 W  S  6
-W  H  2
-W  D  6
-W  C  8
+W  H 11
+W  D  7
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -941,31 +941,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "54b8754b874924649246"]
+[DoubleDummyTricks "492464924654b8754b87"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 5H="]
+[OptimumScore "NS -300"]
+[ParContract "NS 5SX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S  4
-N  H 11
-N  D  8
-N  C  7
-S NT  5
-S  S  4
-S  H 11
-S  D  8
-S  C  7
-E NT  4
-E  S  9
-E  H  2
-E  D  4
-E  C  6
-W NT  4
-W  S  9
-W  H  2
-W  D  4
-W  C  6
+N NT  4
+N  S  9
+N  H  2
+N  D  4
+N  C  6
+S NT  4
+S  S  9
+S  H  2
+S  D  4
+S  C  6
+E NT  5
+E  S  4
+E  H 11
+E  D  8
+E  C  7
+W NT  5
+W  S  4
+W  H 11
+W  D  8
+W  C  7
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -983,31 +983,31 @@ W  C  6
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "59644596446459864699"]
+[DoubleDummyTricks "64598646995964459644"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 3S="]
+[OptimumScore "EW 140"]
+[ParContract "EW 3S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 5
-N  S 9
-N  H 6
-N  D 4
-N  C 4
-S NT 5
-S  S 9
+N NT 6
+N  S 4
+N  H 5
+N  D 9
+N  C 8
+S NT 6
+S  S 4
 S  H 6
-S  D 4
-S  C 4
-E NT 6
-E  S 4
-E  H 5
-E  D 9
-E  C 8
-W NT 6
-W  S 4
+S  D 9
+S  C 9
+E NT 5
+E  S 9
+E  H 6
+E  D 4
+E  C 4
+W NT 5
+W  S 9
 W  H 6
-W  D 9
-W  C 9
+W  D 4
+W  C 4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1025,31 +1025,31 @@ W  C 9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "5b3935b3934083940a4a"]
+[DoubleDummyTricks "4083940a4a5b3935b393"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -300"]
-[ParContract "W 6CX-2; W 6HX-2"]
+[OptimumScore "NS -300"]
+[ParContract "S 6CX-2; S 6HX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S 11
-N  H  3
-N  D  9
-N  C  3
-S NT  5
-S  S 11
-S  H  3
-S  D  9
-S  C  3
-E NT  4
-E  S  0
-E  H  8
-E  D  3
-E  C  9
-W NT  4
-W  S  0
-W  H 10
-W  D  4
-W  C 10
+N NT  4
+N  S  0
+N  H  8
+N  D  3
+N  C  9
+S NT  4
+S  S  0
+S  H 10
+S  D  4
+S  C 10
+E NT  5
+E  S 11
+E  H  3
+E  D  9
+E  C  3
+W NT  5
+W  S 11
+W  H  3
+W  D  9
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1067,31 +1067,31 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "68b4368b434529a4529a"]
+[DoubleDummyTricks "4529a4529a68b4368b43"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 5H="]
+[OptimumScore "NS -300"]
+[ParContract "NS 6CX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  8
-N  H 11
-N  D  4
-N  C  3
-S NT  6
-S  S  8
-S  H 11
-S  D  4
-S  C  3
-E NT  4
-E  S  5
-E  H  2
-E  D  9
-E  C 10
-W NT  4
-W  S  5
-W  H  2
-W  D  9
-W  C 10
+N NT  4
+N  S  5
+N  H  2
+N  D  9
+N  C 10
+S NT  4
+S  S  5
+S  H  2
+S  D  9
+S  C 10
+E NT  6
+E  S  8
+E  H 11
+E  D  4
+E  C  3
+W NT  6
+W  S  8
+W  H 11
+W  D  4
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1109,31 +1109,31 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "111aa111aa0aa000aa00"]
+[DoubleDummyTricks "0aa000aa00111aa111aa"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -200"]
-[ParContract "NS 5CX-1; NS 5DX-1"]
+[OptimumScore "EW -200"]
+[ParContract "EW 5CX-1; EW 5DX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  1
-N  S  1
-N  H  1
-N  D 10
-N  C 10
-S NT  1
-S  S  1
-S  H  1
-S  D 10
-S  C 10
-E NT  0
-E  S 10
-E  H 10
-E  D  0
-E  C  0
-W NT  0
-W  S 10
-W  H 10
-W  D  0
-W  C  0
+N NT  0
+N  S 10
+N  H 10
+N  D  0
+N  C  0
+S NT  0
+S  S 10
+S  H 10
+S  D  0
+S  C  0
+E NT  1
+E  S  1
+E  H  1
+E  D 10
+E  C 10
+W NT  1
+W  S  1
+W  H  1
+W  D 10
+W  C 10
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1151,31 +1151,31 @@ W  C  0
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "7bb437bb433229932299"]
+[DoubleDummyTricks "32299322997bb437bb43"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 5H=; NS 5S="]
+[OptimumScore "EW 450"]
+[ParContract "EW 5H=; EW 5S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  7
-N  S 11
-N  H 11
-N  D  4
-N  C  3
-S NT  7
-S  S 11
-S  H 11
-S  D  4
-S  C  3
-E NT  3
-E  S  2
-E  H  2
-E  D  9
-E  C  9
-W NT  3
-W  S  2
-W  H  2
-W  D  9
-W  C  9
+N NT  3
+N  S  2
+N  H  2
+N  D  9
+N  C  9
+S NT  3
+S  S  2
+S  H  2
+S  D  9
+S  C  9
+E NT  7
+E  S 11
+E  H 11
+E  D  4
+E  C  3
+W NT  7
+W  S 11
+W  H 11
+W  D  4
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1193,31 +1193,31 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "207a2207a24b63b4c63b"]
+[DoubleDummyTricks "4b63b4c63b207a2207a2"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -800"]
-[ParContract "NS 7DX-3"]
+[OptimumScore "EW -500"]
+[ParContract "EW 7DX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  2
-N  S  0
-N  H  7
-N  D 10
-N  C  2
-S NT  2
-S  S  0
-S  H  7
-S  D 10
-S  C  2
-E NT  4
-E  S 11
-E  H  6
-E  D  3
-E  C 11
-W NT  4
-W  S 12
-W  H  6
-W  D  3
-W  C 11
+N NT  4
+N  S 11
+N  H  6
+N  D  3
+N  C 11
+S NT  4
+S  S 12
+S  H  6
+S  D  3
+S  C 11
+E NT  2
+E  S  0
+E  H  7
+E  D 10
+E  C  2
+W NT  2
+W  S  0
+W  H  7
+W  D 10
+W  C  2
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1235,31 +1235,31 @@ W  C 11
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "11941119416c48c6c48c"]
+[DoubleDummyTricks "6c48c6c48c1194111941"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -1100"]
-[ParContract "NS 7HX-4"]
+[OptimumScore "EW -1100"]
+[ParContract "EW 7HX-4"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  1
-N  S  1
-N  H  9
-N  D  4
-N  C  1
-S NT  1
-S  S  1
-S  H  9
-S  D  4
-S  C  1
-E NT  6
-E  S 12
-E  H  4
-E  D  8
-E  C 12
-W NT  6
-W  S 12
-W  H  4
-W  D  8
-W  C 12
+N NT  6
+N  S 12
+N  H  4
+N  D  8
+N  C 12
+S NT  6
+S  S 12
+S  H  4
+S  D  8
+S  C 12
+E NT  1
+E  S  1
+E  H  9
+E  D  4
+E  C  1
+W NT  1
+W  S  1
+W  H  9
+W  D  4
+W  C  1
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1277,31 +1277,31 @@ W  C 12
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "894a5894a55383853838"]
+[DoubleDummyTricks "5383853838894a5894a5"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 3S="]
+[OptimumScore "EW 140"]
+[ParContract "EW 3S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  9
-N  H  4
-N  D 10
-N  C  5
-S NT  8
-S  S  9
-S  H  4
-S  D 10
-S  C  5
-E NT  5
-E  S  3
-E  H  8
-E  D  3
-E  C  8
-W NT  5
-W  S  3
-W  H  8
-W  D  3
-W  C  8
+N NT  5
+N  S  3
+N  H  8
+N  D  3
+N  C  8
+S NT  5
+S  S  3
+S  H  8
+S  D  3
+S  C  8
+E NT  8
+E  S  9
+E  H  4
+E  D 10
+E  C  5
+W NT  8
+W  S  9
+W  H  4
+W  D 10
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1319,31 +1319,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "492a2492a263b3b63b3b"]
+[DoubleDummyTricks "63b3b63b3b492a2492a2"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW 450"]
-[ParContract "EW 5H="]
+[OptimumScore "EW -300"]
+[ParContract "EW 5SX-2; EW 6DX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  4
-N  S  9
-N  H  2
-N  D 10
-N  C  2
-S NT  4
-S  S  9
-S  H  2
-S  D 10
-S  C  2
-E NT  6
-E  S  3
-E  H 11
-E  D  3
-E  C 11
-W NT  6
-W  S  3
-W  H 11
-W  D  3
-W  C 11
+N NT  6
+N  S  3
+N  H 11
+N  D  3
+N  C 11
+S NT  6
+S  S  3
+S  H 11
+S  D  3
+S  C 11
+E NT  4
+E  S  9
+E  H  2
+E  D 10
+E  C  2
+W NT  4
+W  S  9
+W  H  2
+W  D 10
+W  C  2
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1361,31 +1361,31 @@ W  C 11
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "171a1171a146c3c46c3c"]
+[DoubleDummyTricks "46c3c46c3c171a1171a1"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -500"]
-[ParContract "NS 7DX-3"]
+[OptimumScore "EW -800"]
+[ParContract "EW 7DX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  1
-N  S  7
-N  H  1
-N  D 10
-N  C  1
-S NT  1
-S  S  7
-S  H  1
-S  D 10
-S  C  1
-E NT  4
-E  S  6
-E  H 12
-E  D  3
-E  C 12
-W NT  4
-W  S  6
-W  H 12
-W  D  3
-W  C 12
+N NT  4
+N  S  6
+N  H 12
+N  D  3
+N  C 12
+S NT  4
+S  S  6
+S  H 12
+S  D  3
+S  C 12
+E NT  1
+E  S  7
+E  H  1
+E  D 10
+E  C  1
+W NT  1
+W  S  7
+W  H  1
+W  D 10
+W  C  1
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1403,31 +1403,31 @@ W  C 12
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "5aa545bb646226872278"]
+[DoubleDummyTricks "62268722785bb645aa54"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "S 4H+1; S 4S+1"]
+[OptimumScore "EW 450"]
+[ParContract "E 4H+1; E 4S+1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S 10
-N  H 10
-N  D  5
-N  C  4
-S NT  5
-S  S 11
-S  H 11
-S  D  6
-S  C  4
-E NT  6
-E  S  2
-E  H  2
+N NT  6
+N  S  2
+N  H  2
+N  D  6
+N  C  8
+S NT  7
+S  S  2
+S  H  2
+S  D  7
+S  C  8
+E NT  5
+E  S 11
+E  H 11
 E  D  6
-E  C  8
-W NT  7
-W  S  2
-W  H  2
-W  D  7
-W  C  8
+E  C  4
+W NT  5
+W  S 10
+W  H 10
+W  D  5
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1445,31 +1445,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "6a2836a2836395963959"]
+[DoubleDummyTricks "63959639596a2836a283"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -300"]
-[ParContract "EW 5CX-2; EW 5HX-2"]
+[OptimumScore "EW 420"]
+[ParContract "EW 4S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  6
-N  S 10
-N  H  2
-N  D  8
-N  C  3
+N  S  3
+N  H  9
+N  D  5
+N  C  9
 S NT  6
-S  S 10
-S  H  2
-S  D  8
-S  C  3
+S  S  3
+S  H  9
+S  D  5
+S  C  9
 E NT  6
-E  S  3
-E  H  9
-E  D  5
-E  C  9
+E  S 10
+E  H  2
+E  D  8
+E  C  3
 W NT  6
-W  S  3
-W  H  9
-W  D  5
-W  C  9
+W  S 10
+W  H  2
+W  D  8
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1487,31 +1487,31 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "68c4568c455317853188"]
+[DoubleDummyTricks "531785318868c4568c45"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 980"]
-[ParContract "NS 6H="]
+[OptimumScore "NS -1100"]
+[ParContract "NS 7CX-5; S 7DX-5"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  8
-N  H 12
-N  D  4
-N  C  5
-S NT  6
-S  S  8
-S  H 12
-S  D  4
-S  C  5
-E NT  5
-E  S  3
-E  H  1
-E  D  7
-E  C  8
-W NT  5
-W  S  3
-W  H  1
-W  D  8
-W  C  8
+N NT  5
+N  S  3
+N  H  1
+N  D  7
+N  C  8
+S NT  5
+S  S  3
+S  H  1
+S  D  8
+S  C  8
+E NT  6
+E  S  8
+E  H 12
+E  D  4
+E  C  5
+W NT  6
+W  S  8
+W  H 12
+W  D  4
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1529,31 +1529,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "3952339523337b5338b5"]
+[DoubleDummyTricks "337b5338b53952339523"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -500"]
-[ParContract "NS 5SX-2"]
+[OptimumScore "EW -500"]
+[ParContract "EW 5SX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  3
-N  S  9
-N  H  5
-N  D  2
-N  C  3
+N  S  3
+N  H  7
+N  D 11
+N  C  5
 S NT  3
-S  S  9
-S  H  5
-S  D  2
-S  C  3
+S  S  3
+S  H  8
+S  D 11
+S  C  5
 E NT  3
-E  S  3
-E  H  7
-E  D 11
-E  C  5
+E  S  9
+E  H  5
+E  D  2
+E  C  3
 W NT  3
-W  S  3
-W  H  8
-W  D 11
-W  C  5
+W  S  9
+W  H  5
+W  D  2
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1571,31 +1571,31 @@ W  C  5
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "691816919163c4c63c4c"]
+[DoubleDummyTricks "63c4c63c4c6919169181"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -800"]
-[ParContract "NS 6SX-3"]
+[OptimumScore "EW -500"]
+[ParContract "EW 6SX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  6
-N  S  9
-N  H  1
-N  D  8
-N  C  1
+N  S  3
+N  H 12
+N  D  4
+N  C 12
 S NT  6
-S  S  9
-S  H  1
-S  D  9
-S  C  1
+S  S  3
+S  H 12
+S  D  4
+S  C 12
 E NT  6
-E  S  3
-E  H 12
-E  D  4
-E  C 12
+E  S  9
+E  H  1
+E  D  9
+E  C  1
 W NT  6
-W  S  3
-W  H 12
-W  D  4
-W  C 12
+W  S  9
+W  H  1
+W  D  8
+W  C  1
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1613,31 +1613,31 @@ W  C 12
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "998b7998b74452644526"]
+[DoubleDummyTricks "4452644526998b7998b7"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N=; NS 5D="]
+[OptimumScore "EW 600"]
+[ParContract "EW 3N=; EW 5D="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H  8
-N  D 11
-N  C  7
-S NT  9
-S  S  9
-S  H  8
-S  D 11
-S  C  7
-E NT  4
-E  S  4
-E  H  5
-E  D  2
-E  C  6
-W NT  4
-W  S  4
-W  H  5
-W  D  2
-W  C  6
+N NT  4
+N  S  4
+N  H  5
+N  D  2
+N  C  6
+S NT  4
+S  S  4
+S  H  5
+S  D  2
+S  C  6
+E NT  9
+E  S  9
+E  H  8
+E  D 11
+E  C  7
+W NT  9
+W  S  9
+W  H  8
+W  D 11
+W  C  7
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1655,31 +1655,31 @@ W  C  6
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "58b3458b345429853288"]
+[DoubleDummyTricks "542985328858b3458b34"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 5H="]
+[OptimumScore "EW 650"]
+[ParContract "EW 5H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  5
-N  S  8
-N  H 11
-N  D  3
-N  C  4
+N  S  4
+N  H  2
+N  D  9
+N  C  8
 S NT  5
-S  S  8
-S  H 11
-S  D  3
-S  C  4
+S  S  3
+S  H  2
+S  D  8
+S  C  8
 E NT  5
-E  S  4
-E  H  2
-E  D  9
-E  C  8
+E  S  8
+E  H 11
+E  D  3
+E  C  4
 W NT  5
-W  S  3
-W  H  2
-W  D  8
-W  C  8
+W  S  8
+W  H 11
+W  D  3
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1697,31 +1697,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "62b2362b235a2aa5a2aa"]
+[DoubleDummyTricks "5a2aa5a2aa62b2362b23"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -100"]
-[ParContract "EW 5SX-1"]
+[OptimumScore "NS -100"]
+[ParContract "NS 5SX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  2
-N  H 11
-N  D  2
-N  C  3
-S NT  6
-S  S  2
-S  H 11
-S  D  2
-S  C  3
-E NT  5
-E  S 10
-E  H  2
-E  D 10
-E  C 10
-W NT  5
-W  S 10
-W  H  2
-W  D 10
-W  C 10
+N NT  5
+N  S 10
+N  H  2
+N  D 10
+N  C 10
+S NT  5
+S  S 10
+S  H  2
+S  D 10
+S  C 10
+E NT  6
+E  S  2
+E  H 11
+E  D  2
+E  C  3
+W NT  6
+W  S  2
+W  H 11
+W  D  2
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1739,31 +1739,31 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "5a4b25a4b20070900809"]
+[DoubleDummyTricks "00709008095a4b25a4b2"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4S="]
+[OptimumScore "NS -500"]
+[ParContract "S 5HX-3; NS 6CX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S 10
-N  H  4
-N  D 11
-N  C  2
-S NT  5
-S  S 10
-S  H  4
-S  D 11
-S  C  2
-E NT  0
-E  S  0
-E  H  7
-E  D  0
-E  C  9
-W NT  0
-W  S  0
-W  H  8
-W  D  0
-W  C  9
+N NT  0
+N  S  0
+N  H  7
+N  D  0
+N  C  9
+S NT  0
+S  S  0
+S  H  8
+S  D  0
+S  C  9
+E NT  5
+E  S 10
+E  H  4
+E  D 11
+E  C  2
+W NT  5
+W  S 10
+W  H  4
+W  D 11
+W  C  2
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1781,31 +1781,31 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "7a5867a5866285762857"]
+[DoubleDummyTricks "62857628577a5867a586"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4S="]
+[OptimumScore "EW 620"]
+[ParContract "EW 4S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  7
-N  S 10
-N  H  5
-N  D  8
-N  C  6
-S NT  7
-S  S 10
-S  H  5
-S  D  8
-S  C  6
-E NT  6
-E  S  2
-E  H  8
-E  D  5
-E  C  7
-W NT  6
-W  S  2
-W  H  8
-W  D  5
-W  C  7
+N NT  6
+N  S  2
+N  H  8
+N  D  5
+N  C  7
+S NT  6
+S  S  2
+S  H  8
+S  D  5
+S  C  7
+E NT  7
+E  S 10
+E  H  5
+E  D  8
+E  C  6
+W NT  7
+W  S 10
+W  H  5
+W  D  8
+W  C  6
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1823,31 +1823,31 @@ W  C  7
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "67a5867a585628456284"]
+[DoubleDummyTricks "562845628467a5867a58"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4H="]
+[OptimumScore "EW 420"]
+[ParContract "EW 4H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  7
-N  H 10
-N  D  5
-N  C  8
-S NT  6
-S  S  7
-S  H 10
-S  D  5
-S  C  8
-E NT  5
-E  S  6
-E  H  2
-E  D  8
-E  C  4
-W NT  5
-W  S  6
-W  H  2
-W  D  8
-W  C  4
+N NT  5
+N  S  6
+N  H  2
+N  D  8
+N  C  4
+S NT  5
+S  S  6
+S  H  2
+S  D  8
+S  C  4
+E NT  6
+E  S  7
+E  H 10
+E  D  5
+E  C  8
+W NT  6
+W  S  7
+W  H 10
+W  D  5
+W  C  8
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1865,31 +1865,31 @@ W  C  4
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "749a5749a53933839338"]
+[DoubleDummyTricks "3933839338749a5749a5"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -100"]
-[ParContract "EW 4SX-1"]
+[OptimumScore "EW 130"]
+[ParContract "EW 4D="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  7
-N  S  4
-N  H  9
-N  D 10
-N  C  5
-S NT  7
-S  S  4
-S  H  9
-S  D 10
-S  C  5
-E NT  3
-E  S  9
-E  H  3
-E  D  3
-E  C  8
-W NT  3
-W  S  9
-W  H  3
-W  D  3
-W  C  8
+N NT  3
+N  S  9
+N  H  3
+N  D  3
+N  C  8
+S NT  3
+S  S  9
+S  H  3
+S  D  3
+S  C  8
+E NT  7
+E  S  4
+E  H  9
+E  D 10
+E  C  5
+W NT  7
+W  S  4
+W  H  9
+W  D 10
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1907,31 +1907,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "66935669354629846298"]
+[DoubleDummyTricks "46298462986693566935"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 3H="]
+[OptimumScore "EW 140"]
+[ParContract "EW 3H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 6
+N NT 4
 N  S 6
-N  H 9
-N  D 3
-N  C 5
-S NT 6
+N  H 2
+N  D 9
+N  C 8
+S NT 4
 S  S 6
-S  H 9
-S  D 3
-S  C 5
-E NT 4
+S  H 2
+S  D 9
+S  C 8
+E NT 6
 E  S 6
-E  H 2
-E  D 9
-E  C 8
-W NT 4
+E  H 9
+E  D 3
+E  C 5
+W NT 6
 W  S 6
-W  H 2
-W  D 9
-W  C 8
+W  H 9
+W  D 3
+W  C 5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1949,31 +1949,31 @@ W  C 8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "937b4947b40800908009"]
+[DoubleDummyTricks "0800908009947b4937b4"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 5D="]
+[OptimumScore "EW 400"]
+[ParContract "EW 5D="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  3
-N  H  7
-N  D 11
-N  C  4
-S NT  9
-S  S  4
-S  H  7
-S  D 11
-S  C  4
-E NT  0
-E  S  8
-E  H  0
-E  D  0
-E  C  9
-W NT  0
-W  S  8
-W  H  0
-W  D  0
-W  C  9
+N NT  0
+N  S  8
+N  H  0
+N  D  0
+N  C  9
+S NT  0
+S  S  8
+S  H  0
+S  D  0
+S  C  9
+E NT  9
+E  S  4
+E  H  7
+E  D 11
+E  C  4
+W NT  9
+W  S  3
+W  H  7
+W  D 11
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -1991,31 +1991,31 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "49aa449aa42322923229"]
+[DoubleDummyTricks "232292322949aa449aa4"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -300"]
-[ParContract "EW 5CX-2"]
+[OptimumScore "EW 420"]
+[ParContract "EW 4H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  4
-N  S  9
-N  H 10
-N  D 10
-N  C  4
-S NT  4
-S  S  9
-S  H 10
-S  D 10
-S  C  4
-E NT  2
-E  S  3
-E  H  2
-E  D  2
-E  C  9
-W NT  2
-W  S  3
-W  H  2
-W  D  2
-W  C  9
+N NT  2
+N  S  3
+N  H  2
+N  D  2
+N  C  9
+S NT  2
+S  S  3
+S  H  2
+S  D  2
+S  C  9
+E NT  4
+E  S  9
+E  H 10
+E  D 10
+E  C  4
+W NT  4
+W  S  9
+W  H 10
+W  D 10
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2033,31 +2033,31 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "643aa643aa78a2278a22"]
+[DoubleDummyTricks "78a2278a22643aa643aa"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -100"]
-[ParContract "NS 5CX-1; NS 5DX-1"]
+[OptimumScore "EW -200"]
+[ParContract "EW 5CX-1; EW 5DX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  4
-N  H  3
-N  D 10
-N  C 10
-S NT  6
-S  S  4
-S  H  3
-S  D 10
-S  C 10
-E NT  7
-E  S  8
-E  H 10
-E  D  2
-E  C  2
-W NT  7
-W  S  8
-W  H 10
-W  D  2
-W  C  2
+N NT  7
+N  S  8
+N  H 10
+N  D  2
+N  C  2
+S NT  7
+S  S  8
+S  H 10
+S  D  2
+S  C  2
+E NT  6
+E  S  4
+E  H  3
+E  D 10
+E  C 10
+W NT  6
+W  S  4
+W  H  3
+W  D 10
+W  C 10
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2075,30 +2075,30 @@ W  C  2
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "110a6110a64cc364cc36"]
+[DoubleDummyTricks "4cc364cc36110a6110a6"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -500"]
-[ParContract "NS 7DX-3"]
+[OptimumScore "EW -500"]
+[ParContract "EW 7DX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  1
-N  S  1
-N  H  0
-N  D 10
+N NT  4
+N  S 12
+N  H 12
+N  D  3
 N  C  6
-S NT  1
-S  S  1
-S  H  0
-S  D 10
+S NT  4
+S  S 12
+S  H 12
+S  D  3
 S  C  6
-E NT  4
-E  S 12
-E  H 12
-E  D  3
+E NT  1
+E  S  1
+E  H  0
+E  D 10
 E  C  6
-W NT  4
-W  S 12
-W  H 12
-W  D  3
+W NT  1
+W  S  1
+W  H  0
+W  D 10
 W  C  6
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
@@ -2117,31 +2117,31 @@ W  C  6
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "865a4865a45783957839"]
+[DoubleDummyTricks "5783957839865a4865a4"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 130"]
-[ParContract "NS 4D="]
+[OptimumScore "EW 130"]
+[ParContract "EW 3D+1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  6
-N  H  5
-N  D 10
-N  C  4
-S NT  8
-S  S  6
-S  H  5
-S  D 10
-S  C  4
-E NT  5
-E  S  7
-E  H  8
-E  D  3
-E  C  9
-W NT  5
-W  S  7
-W  H  8
-W  D  3
-W  C  9
+N NT  5
+N  S  7
+N  H  8
+N  D  3
+N  C  9
+S NT  5
+S  S  7
+S  H  8
+S  D  3
+S  C  9
+E NT  8
+E  S  6
+E  H  5
+E  D 10
+E  C  4
+W NT  8
+W  S  6
+W  H  5
+W  D 10
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2159,31 +2159,31 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "9a6759a6753275832758"]
+[DoubleDummyTricks "32758327589a6759a675"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4S="]
+[OptimumScore "NS -500"]
+[ParContract "NS 5CX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 10
-N  H  6
-N  D  7
-N  C  5
-S NT  9
-S  S 10
-S  H  6
-S  D  7
-S  C  5
-E NT  3
-E  S  2
-E  H  7
-E  D  5
-E  C  8
-W NT  3
-W  S  2
-W  H  7
-W  D  5
-W  C  8
+N NT  3
+N  S  2
+N  H  7
+N  D  5
+N  C  8
+S NT  3
+S  S  2
+S  H  7
+S  D  5
+S  C  8
+E NT  9
+E  S 10
+E  H  6
+E  D  7
+E  C  5
+W NT  9
+W  S 10
+W  H  6
+W  D  7
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2201,31 +2201,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "95a5695a564838748387"]
+[DoubleDummyTricks "483874838795a5695a56"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -500"]
-[ParContract "EW 4SX-2"]
+[OptimumScore "NS -500"]
+[ParContract "NS 4SX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  5
-N  H 10
-N  D  5
-N  C  6
-S NT  9
-S  S  5
-S  H 10
-S  D  5
-S  C  6
-E NT  4
-E  S  8
-E  H  3
-E  D  8
-E  C  7
-W NT  4
-W  S  8
-W  H  3
-W  D  8
-W  C  7
+N NT  4
+N  S  8
+N  H  3
+N  D  8
+N  C  7
+S NT  4
+S  S  8
+S  H  3
+S  D  8
+S  C  7
+E NT  9
+E  S  5
+E  H 10
+E  D  5
+E  C  6
+W NT  9
+W  S  5
+W  H 10
+W  D  5
+W  C  6
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2243,31 +2243,31 @@ W  C  7
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "43a2843a281a1b51a1b5"]
+[DoubleDummyTricks "1a1b51a1b543a2843a28"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -200"]
-[ParContract "NS 5HX-1"]
+[OptimumScore "EW -100"]
+[ParContract "EW 5HX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  4
-N  S  3
-N  H 10
-N  D  2
-N  C  8
-S NT  4
-S  S  3
-S  H 10
-S  D  2
-S  C  8
-E NT  1
-E  S 10
-E  H  1
-E  D 11
-E  C  5
-W NT  1
-W  S 10
-W  H  1
-W  D 11
-W  C  5
+N NT  1
+N  S 10
+N  H  1
+N  D 11
+N  C  5
+S NT  1
+S  S 10
+S  H  1
+S  D 11
+S  C  5
+E NT  4
+E  S  3
+E  H 10
+E  D  2
+E  C  8
+W NT  4
+W  S  3
+W  H 10
+W  D  2
+W  C  8
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2285,31 +2285,31 @@ W  C  5
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "6a9446a9446348863488"]
+[DoubleDummyTricks "63488634886a9446a944"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4S="]
+[OptimumScore "NS -500"]
+[ParContract "NS 5CX-3; NS 5DX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  6
-N  S 10
-N  H  9
-N  D  4
-N  C  4
+N  S  3
+N  H  4
+N  D  8
+N  C  8
 S NT  6
-S  S 10
-S  H  9
-S  D  4
-S  C  4
+S  S  3
+S  H  4
+S  D  8
+S  C  8
 E NT  6
-E  S  3
-E  H  4
-E  D  8
-E  C  8
+E  S 10
+E  H  9
+E  D  4
+E  C  4
 W NT  6
-W  S  3
-W  H  4
-W  D  8
-W  C  8
+W  S 10
+W  H  9
+W  D  4
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2327,31 +2327,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "65bb765bb72821628216"]
+[DoubleDummyTricks "282162821665bb765bb7"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 5H="]
+[OptimumScore "EW 650"]
+[ParContract "EW 5H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  5
-N  H 11
-N  D 11
-N  C  7
-S NT  6
-S  S  5
-S  H 11
-S  D 11
-S  C  7
-E NT  2
-E  S  8
-E  H  2
-E  D  1
-E  C  6
-W NT  2
-W  S  8
-W  H  2
-W  D  1
-W  C  6
+N NT  2
+N  S  8
+N  H  2
+N  D  1
+N  C  6
+S NT  2
+S  S  8
+S  H  2
+S  D  1
+S  C  6
+E NT  6
+E  S  5
+E  H 11
+E  D 11
+E  C  7
+W NT  6
+W  S  5
+W  H 11
+W  D 11
+W  C  7
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2369,31 +2369,31 @@ W  C  6
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "2aa212aa21000aa000aa"]
+[DoubleDummyTricks "000aa000aa2aa212aa21"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -100"]
-[ParContract "EW 5CX-1; EW 5DX-1"]
+[OptimumScore "NS -100"]
+[ParContract "NS 5CX-1; NS 5DX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  2
-N  S 10
-N  H 10
-N  D  2
-N  C  1
-S NT  2
-S  S 10
-S  H 10
-S  D  2
-S  C  1
-E NT  0
-E  S  0
-E  H  0
-E  D 10
-E  C 10
-W NT  0
-W  S  0
-W  H  0
-W  D 10
-W  C 10
+N NT  0
+N  S  0
+N  H  0
+N  D 10
+N  C 10
+S NT  0
+S  S  0
+S  H  0
+S  D 10
+S  C 10
+E NT  2
+E  S 10
+E  H 10
+E  D  2
+E  C  1
+W NT  2
+W  S 10
+W  H 10
+W  D  2
+W  C  1
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2411,31 +2411,31 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "73a4374b435928a5928a"]
+[DoubleDummyTricks "5928a5928a74b4373a43"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "S 5H="]
+[OptimumScore "NS -300"]
+[ParContract "NS 5SX-2; NS 6CX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  7
-N  S  3
-N  H 10
-N  D  4
-N  C  3
-S NT  7
-S  S  4
-S  H 11
-S  D  4
-S  C  3
-E NT  5
-E  S  9
-E  H  2
-E  D  8
-E  C 10
-W NT  5
-W  S  9
-W  H  2
-W  D  8
-W  C 10
+N NT  5
+N  S  9
+N  H  2
+N  D  8
+N  C 10
+S NT  5
+S  S  9
+S  H  2
+S  D  8
+S  C 10
+E NT  7
+E  S  4
+E  H 11
+E  D  4
+E  C  3
+W NT  7
+W  S  3
+W  H 10
+W  D  4
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2453,30 +2453,30 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "8a5468a5464388643796"]
+[DoubleDummyTricks "43886437968a5468a546"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -500"]
-[ParContract "W 5DX-2"]
+[OptimumScore "NS -500"]
+[ParContract "S 5DX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 10
-N  H  5
-N  D  4
+N NT  4
+N  S  3
+N  H  8
+N  D  8
 N  C  6
-S NT  8
-S  S 10
-S  H  5
-S  D  4
+S NT  4
+S  S  3
+S  H  7
+S  D  9
 S  C  6
-E NT  4
-E  S  3
-E  H  8
-E  D  8
+E NT  8
+E  S 10
+E  H  5
+E  D  4
 E  C  6
-W NT  4
-W  S  3
-W  H  7
-W  D  9
+W NT  8
+W  S 10
+W  H  5
+W  D  4
 W  C  6
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
@@ -2495,31 +2495,31 @@ W  C  6
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "37a3237a325629b5629b"]
+[DoubleDummyTricks "5629b5629b37a3237a32"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -100"]
-[ParContract "NS 5HX-1"]
+[OptimumScore "EW -100"]
+[ParContract "EW 5HX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  3
-N  S  7
-N  H 10
-N  D  3
-N  C  2
-S NT  3
-S  S  7
-S  H 10
-S  D  3
-S  C  2
-E NT  5
-E  S  6
-E  H  2
-E  D  9
-E  C 11
-W NT  5
-W  S  6
-W  H  2
-W  D  9
-W  C 11
+N NT  5
+N  S  6
+N  H  2
+N  D  9
+N  C 11
+S NT  5
+S  S  6
+S  H  2
+S  D  9
+S  C 11
+E NT  3
+E  S  7
+E  H 10
+E  D  3
+E  C  2
+W NT  3
+W  S  7
+W  H 10
+W  D  3
+W  C  2
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2537,31 +2537,31 @@ W  C 11
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "67a4b67a4b3637136381"]
+[DoubleDummyTricks "363713638167a4b67a4b"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -500"]
-[ParContract "W 5DX-3"]
+[OptimumScore "EW 420"]
+[ParContract "EW 4H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  7
-N  H 10
-N  D  4
-N  C 11
-S NT  6
-S  S  7
-S  H 10
-S  D  4
-S  C 11
-E NT  3
-E  S  6
-E  H  3
-E  D  7
-E  C  1
-W NT  3
-W  S  6
-W  H  3
-W  D  8
-W  C  1
+N NT  3
+N  S  6
+N  H  3
+N  D  7
+N  C  1
+S NT  3
+S  S  6
+S  H  3
+S  D  8
+S  C  1
+E NT  6
+E  S  7
+E  H 10
+E  D  4
+E  C 11
+W NT  6
+W  S  7
+W  H 10
+W  D  4
+W  C 11
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2579,31 +2579,31 @@ W  C  1
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "649b8649c85941259412"]
+[DoubleDummyTricks "5941259412649c8649b8"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -800"]
-[ParContract "EW 6SX-3"]
+[OptimumScore "NS -800"]
+[ParContract "NS 6SX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  4
-N  H  9
-N  D 11
-N  C  8
-S NT  6
-S  S  4
-S  H  9
-S  D 12
-S  C  8
-E NT  5
-E  S  9
-E  H  4
-E  D  1
-E  C  2
-W NT  5
-W  S  9
-W  H  4
-W  D  1
-W  C  2
+N NT  5
+N  S  9
+N  H  4
+N  D  1
+N  C  2
+S NT  5
+S  S  9
+S  H  4
+S  D  1
+S  C  2
+E NT  6
+E  S  4
+E  H  9
+E  D 12
+E  C  8
+W NT  6
+W  S  4
+W  H  9
+W  D 11
+W  C  8
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2621,31 +2621,31 @@ W  C  2
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "57793577936463a6563a"]
+[DoubleDummyTricks "6463a6563a5779357793"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -100"]
-[ParContract "NS 4DX-1"]
+[OptimumScore "EW -100"]
+[ParContract "EW 4DX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S  7
-N  H  7
-N  D  9
-N  C  3
-S NT  5
-S  S  7
-S  H  7
-S  D  9
-S  C  3
-E NT  6
-E  S  4
-E  H  6
-E  D  3
-E  C 10
-W NT  6
-W  S  5
-W  H  6
-W  D  3
-W  C 10
+N NT  6
+N  S  4
+N  H  6
+N  D  3
+N  C 10
+S NT  6
+S  S  5
+S  H  6
+S  D  3
+S  C 10
+E NT  5
+E  S  7
+E  H  7
+E  D  9
+E  C  3
+W NT  5
+W  S  7
+W  H  7
+W  D  9
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2663,31 +2663,31 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "8c5579c6583078530785"]
+[DoubleDummyTricks "30785307859c6588c557"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -1100"]
-[ParContract "EW 7DX-5"]
+[OptimumScore "EW 980"]
+[ParContract "EW 6S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 12
-N  H  5
-N  D  5
-N  C  7
-S NT  9
-S  S 12
-S  H  6
-S  D  5
-S  C  8
-E NT  3
-E  S  0
-E  H  7
-E  D  8
-E  C  5
-W NT  3
-W  S  0
-W  H  7
-W  D  8
-W  C  5
+N NT  3
+N  S  0
+N  H  7
+N  D  8
+N  C  5
+S NT  3
+S  S  0
+S  H  7
+S  D  8
+S  C  5
+E NT  9
+E  S 12
+E  H  6
+E  D  5
+E  C  8
+W NT  8
+W  S 12
+W  H  5
+W  D  5
+W  C  7
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2705,31 +2705,31 @@ W  C  5
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "8971589715545b8544b8"]
+[DoubleDummyTricks "545b8544b88971589715"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -300"]
-[ParContract "NS 5SX-2"]
+[OptimumScore "NS 400"]
+[ParContract "NS 5D="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  9
-N  H  7
-N  D  1
-N  C  5
-S NT  8
-S  S  9
-S  H  7
-S  D  1
-S  C  5
-E NT  5
-E  S  4
-E  H  5
-E  D 11
-E  C  8
-W NT  5
-W  S  4
-W  H  4
-W  D 11
-W  C  8
+N NT  5
+N  S  4
+N  H  5
+N  D 11
+N  C  8
+S NT  5
+S  S  4
+S  H  4
+S  D 11
+S  C  8
+E NT  8
+E  S  9
+E  H  7
+E  D  1
+E  C  5
+W NT  8
+W  S  9
+W  H  7
+W  D  1
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2747,31 +2747,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "5384b5384b5a5925a582"]
+[DoubleDummyTricks "5a5925a5825384b5384b"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -100"]
-[ParContract "EW 5SX-1"]
+[OptimumScore "NS -100"]
+[ParContract "NS 5SX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  5
-N  S  3
-N  H  8
-N  D  4
-N  C 11
+N  S 10
+N  H  5
+N  D  9
+N  C  2
 S NT  5
-S  S  3
-S  H  8
-S  D  4
-S  C 11
+S  S 10
+S  H  5
+S  D  8
+S  C  2
 E NT  5
-E  S 10
-E  H  5
-E  D  9
-E  C  2
+E  S  3
+E  H  8
+E  D  4
+E  C 11
 W NT  5
-W  S 10
-W  H  5
-W  D  8
-W  C  2
+W  S  3
+W  H  8
+W  D  4
+W  C 11
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2789,31 +2789,31 @@ W  C  2
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "63a3a63a3a7a2a27a2a2"]
+[DoubleDummyTricks "7a2a27a2a263a3a63a3a"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -200"]
-[ParContract "NS 5CX-1; NS 5HX-1"]
+[OptimumScore "EW -100"]
+[ParContract "EW 5CX-1; EW 5HX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S  3
-N  H 10
-N  D  3
-N  C 10
-S NT  6
-S  S  3
-S  H 10
-S  D  3
-S  C 10
-E NT  7
-E  S 10
-E  H  2
-E  D 10
-E  C  2
-W NT  7
-W  S 10
-W  H  2
-W  D 10
-W  C  2
+N NT  7
+N  S 10
+N  H  2
+N  D 10
+N  C  2
+S NT  7
+S  S 10
+S  H  2
+S  D 10
+S  C  2
+E NT  6
+E  S  3
+E  H 10
+E  D  3
+E  C 10
+W NT  6
+W  S  3
+W  H 10
+W  D  3
+W  C 10
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2831,31 +2831,31 @@ W  C  2
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "28192281950090800908"]
+[DoubleDummyTricks "00908009082819528192"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -100"]
-[ParContract "NS 3SX-1; NS 4DX-1"]
+[OptimumScore "NS 140"]
+[ParContract "NS 3H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 2
-N  S 8
-N  H 1
-N  D 9
-N  C 2
-S NT 2
-S  S 8
-S  H 1
-S  D 9
-S  C 5
-E NT 0
-E  S 0
-E  H 9
-E  D 0
-E  C 8
-W NT 0
-W  S 0
-W  H 9
-W  D 0
-W  C 8
+N NT 0
+N  S 0
+N  H 9
+N  D 0
+N  C 8
+S NT 0
+S  S 0
+S  H 9
+S  D 0
+S  C 8
+E NT 2
+E  S 8
+E  H 1
+E  D 9
+E  C 5
+W NT 2
+W  S 8
+W  H 1
+W  D 9
+W  C 2
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2873,31 +2873,31 @@ W  C 8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "33ab333ab30a0080a008"]
+[DoubleDummyTricks "0a0080a00833ab333ab3"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -200"]
-[ParContract "EW 5SX-1"]
+[OptimumScore "NS -200"]
+[ParContract "NS 5SX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  3
-N  S  3
-N  H 10
-N  D 11
-N  C  3
-S NT  3
-S  S  3
-S  H 10
-S  D 11
-S  C  3
-E NT  0
-E  S 10
-E  H  0
-E  D  0
-E  C  8
-W NT  0
-W  S 10
-W  H  0
-W  D  0
-W  C  8
+N NT  0
+N  S 10
+N  H  0
+N  D  0
+N  C  8
+S NT  0
+S  S 10
+S  H  0
+S  D  0
+S  C  8
+E NT  3
+E  S  3
+E  H 10
+E  D 11
+E  C  3
+W NT  3
+W  S  3
+W  H 10
+W  D 11
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2915,31 +2915,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "3b3293b329009a0009a0"]
+[DoubleDummyTricks "009a0009a03b3293b329"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -300"]
-[ParContract "EW 6DX-2"]
+[OptimumScore "EW 450"]
+[ParContract "EW 5S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  3
-N  S 11
-N  H  3
-N  D  2
-N  C  9
-S NT  3
-S  S 11
-S  H  3
-S  D  2
-S  C  9
-E NT  0
-E  S  0
-E  H  9
-E  D 10
-E  C  0
-W NT  0
-W  S  0
-W  H  9
-W  D 10
-W  C  0
+N NT  0
+N  S  0
+N  H  9
+N  D 10
+N  C  0
+S NT  0
+S  S  0
+S  H  9
+S  D 10
+S  C  0
+E NT  3
+E  S 11
+E  H  3
+E  D  2
+E  C  9
+W NT  3
+W  S 11
+W  H  3
+W  D  2
+W  C  9
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2957,31 +2957,31 @@ W  C  0
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "40a2940a280d2b42b2a2"]
+[DoubleDummyTricks "0d2b42b2a240a2840a29"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW 2210"]
-[ParContract "E 7S="]
+[OptimumScore "NS 1510"]
+[ParContract "N 7S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  4
-N  S  0
-N  H 10
-N  D  2
-N  C  9
-S NT  4
-S  S  0
-S  H 10
-S  D  2
-S  C  8
-E NT  0
-E  S 13
-E  H  2
-E  D 11
-E  C  4
-W NT  2
-W  S 11
-W  H  2
-W  D 10
-W  C  2
+N NT  0
+N  S 13
+N  H  2
+N  D 11
+N  C  4
+S NT  2
+S  S 11
+S  H  2
+S  D 10
+S  C  2
+E NT  4
+E  S  0
+E  H 10
+E  D  2
+E  C  8
+W NT  4
+W  S  0
+W  H 10
+W  D  2
+W  C  9
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -2999,31 +2999,31 @@ W  C  2
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "4c3c54c3c541a1741a17"]
+[DoubleDummyTricks "41a1741a174c3c54c3c5"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -800"]
-[ParContract "EW 7HX-3"]
+[OptimumScore "NS -800"]
+[ParContract "NS 7HX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  4
-N  S 12
-N  H  3
-N  D 12
-N  C  5
+N  S  1
+N  H 10
+N  D  1
+N  C  7
 S NT  4
-S  S 12
-S  H  3
-S  D 12
-S  C  5
+S  S  1
+S  H 10
+S  D  1
+S  C  7
 E NT  4
-E  S  1
-E  H 10
-E  D  1
-E  C  7
+E  S 12
+E  H  3
+E  D 12
+E  C  5
 W NT  4
-W  S  1
-W  H 10
-W  D  1
-W  C  7
+W  S 12
+W  H  3
+W  D 12
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3041,30 +3041,30 @@ W  C  7
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "43aa644aa76933669336"]
+[DoubleDummyTricks "693366933644aa743aa6"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -100"]
-[ParContract "EW 4SX-1"]
+[OptimumScore "NS -100"]
+[ParContract "NS 4SX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  4
-N  S  3
-N  H 10
-N  D 10
+N NT  6
+N  S  9
+N  H  3
+N  D  3
 N  C  6
-S NT  4
-S  S  4
-S  H 10
-S  D 10
-S  C  7
-E NT  6
-E  S  9
-E  H  3
-E  D  3
-E  C  6
-W NT  6
-W  S  9
-W  H  3
-W  D  3
+S NT  6
+S  S  9
+S  H  3
+S  D  3
+S  C  6
+E NT  4
+E  S  4
+E  H 10
+E  D 10
+E  C  7
+W NT  4
+W  S  3
+W  H 10
+W  D 10
 W  C  6
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
@@ -3083,31 +3083,31 @@ W  C  6
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "3368a3368a9974299742"]
+[DoubleDummyTricks "99742997423368a3368a"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 130"]
-[ParContract "NS 4C="]
+[OptimumScore "NS -100"]
+[ParContract "NS 4SX-1; NS 4NX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  3
-N  S  3
-N  H  6
-N  D  8
-N  C 10
-S NT  3
-S  S  3
-S  H  6
-S  D  8
-S  C 10
-E NT  9
-E  S  9
-E  H  7
-E  D  4
-E  C  2
-W NT  9
-W  S  9
-W  H  7
-W  D  4
-W  C  2
+N NT  9
+N  S  9
+N  H  7
+N  D  4
+N  C  2
+S NT  9
+S  S  9
+S  H  7
+S  D  4
+S  C  2
+E NT  3
+E  S  3
+E  H  6
+E  D  8
+E  C 10
+W NT  3
+W  S  3
+W  H  6
+W  D  8
+W  C 10
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3125,31 +3125,31 @@ W  C  2
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "6a4b46a4b46282772827"]
+[DoubleDummyTricks "62827728276a4b46a4b4"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4S="]
+[OptimumScore "EW 620"]
+[ParContract "EW 4S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  6
-N  S 10
-N  H  4
-N  D 11
-N  C  4
-S NT  6
-S  S 10
-S  H  4
-S  D 11
-S  C  4
+N  S  2
+N  H  8
+N  D  2
+N  C  7
+S NT  7
+S  S  2
+S  H  8
+S  D  2
+S  C  7
 E NT  6
-E  S  2
-E  H  8
-E  D  2
-E  C  7
-W NT  7
-W  S  2
-W  H  8
-W  D  2
-W  C  7
+E  S 10
+E  H  4
+E  D 11
+E  C  4
+W NT  6
+W  S 10
+W  H  4
+W  D 11
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3167,31 +3167,31 @@ W  C  7
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "4a34a4a34a63a9363a93"]
+[DoubleDummyTricks "63a9363a934a34a4a34a"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -100"]
-[ParContract "EW 5HX-1"]
+[OptimumScore "NS -100"]
+[ParContract "NS 5HX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  4
-N  S 10
-N  H  3
-N  D  4
-N  C 10
-S NT  4
-S  S 10
-S  H  3
-S  D  4
-S  C 10
-E NT  6
-E  S  3
-E  H 10
-E  D  9
-E  C  3
-W NT  6
-W  S  3
-W  H 10
-W  D  9
-W  C  3
+N NT  6
+N  S  3
+N  H 10
+N  D  9
+N  C  3
+S NT  6
+S  S  3
+S  H 10
+S  D  9
+S  C  3
+E NT  4
+E  S 10
+E  H  3
+E  D  4
+E  C 10
+W NT  4
+W  S 10
+W  H  3
+W  D  4
+W  C 10
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3209,31 +3209,31 @@ W  C  3
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "74b4574b454929849298"]
+[DoubleDummyTricks "492984929874b4574b45"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -300"]
-[ParContract "EW 5SX-2"]
+[OptimumScore "EW 450"]
+[ParContract "EW 5H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  7
-N  S  4
-N  H 11
-N  D  4
-N  C  5
-S NT  7
-S  S  4
-S  H 11
-S  D  4
-S  C  5
-E NT  4
-E  S  9
-E  H  2
-E  D  9
-E  C  8
-W NT  4
-W  S  9
-W  H  2
-W  D  9
-W  C  8
+N NT  4
+N  S  9
+N  H  2
+N  D  9
+N  C  8
+S NT  4
+S  S  9
+S  H  2
+S  D  9
+S  C  8
+E NT  7
+E  S  4
+E  H 11
+E  D  4
+E  C  5
+W NT  7
+W  S  4
+W  H 11
+W  D  4
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3251,31 +3251,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "5b9745b9743246932469"]
+[DoubleDummyTricks "32469324695b9745b974"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 5S="]
+[OptimumScore "EW 650"]
+[ParContract "EW 5S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S 11
-N  H  9
-N  D  7
-N  C  4
-S NT  5
-S  S 11
-S  H  9
-S  D  7
-S  C  4
-E NT  3
-E  S  2
-E  H  4
-E  D  6
-E  C  9
-W NT  3
-W  S  2
-W  H  4
-W  D  6
-W  C  9
+N NT  3
+N  S  2
+N  H  4
+N  D  6
+N  C  9
+S NT  3
+S  S  2
+S  H  4
+S  D  6
+S  C  9
+E NT  5
+E  S 11
+E  H  9
+E  D  7
+E  C  4
+W NT  5
+W  S 11
+W  H  9
+W  D  7
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3293,31 +3293,31 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "49853498536357a6357a"]
+[DoubleDummyTricks "6357a6357a4985349853"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -100"]
-[ParContract "NS 4SX-1"]
+[OptimumScore "EW -100"]
+[ParContract "EW 4SX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  4
-N  S  9
-N  H  8
-N  D  5
-N  C  3
-S NT  4
-S  S  9
-S  H  8
-S  D  5
-S  C  3
-E NT  6
-E  S  3
-E  H  5
-E  D  7
-E  C 10
-W NT  6
-W  S  3
-W  H  5
-W  D  7
-W  C 10
+N NT  6
+N  S  3
+N  H  5
+N  D  7
+N  C 10
+S NT  6
+S  S  3
+S  H  5
+S  D  7
+S  C 10
+E NT  4
+E  S  9
+E  H  8
+E  D  5
+E  C  3
+W NT  4
+W  S  9
+W  H  8
+W  D  5
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3335,31 +3335,31 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "7a4647a4645297852978"]
+[DoubleDummyTricks "52978529787a4647a464"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -300"]
-[ParContract "EW 5HX-2"]
+[OptimumScore "EW 420"]
+[ParContract "EW 4S="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  7
-N  S 10
-N  H  4
-N  D  6
-N  C  4
-S NT  7
-S  S 10
-S  H  4
-S  D  6
-S  C  4
-E NT  5
-E  S  2
-E  H  9
-E  D  7
-E  C  8
-W NT  5
-W  S  2
-W  H  9
-W  D  7
-W  C  8
+N NT  5
+N  S  2
+N  H  9
+N  D  7
+N  C  8
+S NT  5
+S  S  2
+S  H  9
+S  D  7
+S  C  8
+E NT  7
+E  S 10
+E  H  4
+E  D  6
+E  C  4
+W NT  7
+W  S 10
+W  H  4
+W  D  6
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3377,31 +3377,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "6a5a56a5a50060800708"]
+[DoubleDummyTricks "00608007086a5a56a5a5"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4S="]
+[OptimumScore "NS -500"]
+[ParContract "NS 5CX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S 10
-N  H  5
-N  D 10
-N  C  5
-S NT  6
-S  S 10
-S  H  5
-S  D 10
-S  C  5
-E NT  0
-E  S  0
-E  H  6
-E  D  0
-E  C  8
-W NT  0
-W  S  0
-W  H  7
-W  D  0
-W  C  8
+N NT  0
+N  S  0
+N  H  6
+N  D  0
+N  C  8
+S NT  0
+S  S  0
+S  H  7
+S  D  0
+S  C  8
+E NT  6
+E  S 10
+E  H  5
+E  D 10
+E  C  5
+W NT  6
+W  S 10
+W  H  5
+W  D 10
+W  C  5
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3419,31 +3419,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "82a2482a245b3b85b3b8"]
+[DoubleDummyTricks "5b3b85b3b882a2482a24"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -300"]
-[ParContract "NS 6HX-2"]
+[OptimumScore "EW -300"]
+[ParContract "EW 6HX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  2
-N  H 10
-N  D  2
-N  C  4
-S NT  8
-S  S  2
-S  H 10
-S  D  2
-S  C  4
-E NT  5
-E  S 11
-E  H  3
-E  D 11
-E  C  8
-W NT  5
-W  S 11
-W  H  3
-W  D 11
-W  C  8
+N NT  5
+N  S 11
+N  H  3
+N  D 11
+N  C  8
+S NT  5
+S  S 11
+S  H  3
+S  D 11
+S  C  8
+E NT  8
+E  S  2
+E  H 10
+E  D  2
+E  C  4
+W NT  8
+W  S  2
+W  H 10
+W  D  2
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3461,31 +3461,31 @@ W  C  8
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "57d6057b505506d5506b"]
+[DoubleDummyTricks "5506d5506b57b5057d60"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -2000"]
-[ParContract "EW 7SX-8; EW 7NX-8"]
+[OptimumScore "EW 1510"]
+[ParContract "W 7H="]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  5
-N  S  7
-N  H 13
+N  S  5
+N  H  0
 N  D  6
-N  C  0
+N  C 13
 S NT  5
-S  S  7
-S  H 11
-S  D  5
-S  C  0
+S  S  5
+S  H  0
+S  D  6
+S  C 11
 E NT  5
-E  S  5
-E  H  0
-E  D  6
-E  C 13
+E  S  7
+E  H 11
+E  D  5
+E  C  0
 W NT  5
-W  S  5
-W  H  0
+W  S  7
+W  H 13
 W  D  6
-W  C 11
+W  C  0
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3503,31 +3503,31 @@ W  C 11
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "857b4857b44861748617"]
+[DoubleDummyTricks "4861748617857b4857b4"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 5D="]
+[OptimumScore "NS -500"]
+[ParContract "NS 5SX-3"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  5
-N  H  7
-N  D 11
-N  C  4
-S NT  8
-S  S  5
-S  H  7
-S  D 11
-S  C  4
-E NT  4
-E  S  8
-E  H  6
-E  D  1
-E  C  7
-W NT  4
-W  S  8
-W  H  6
-W  D  1
-W  C  7
+N NT  4
+N  S  8
+N  H  6
+N  D  1
+N  C  7
+S NT  4
+S  S  8
+S  H  6
+S  D  1
+S  C  7
+E NT  8
+E  S  5
+E  H  7
+E  D 11
+E  C  4
+W NT  8
+W  S  5
+W  H  7
+W  D 11
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3545,31 +3545,31 @@ W  C  7
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "5a1895a18942c5442c54"]
+[DoubleDummyTricks "42c5442c545a1895a189"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -500"]
-[ParContract "NS 6SX-2"]
+[OptimumScore "EW -500"]
+[ParContract "EW 6SX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S 10
-N  H  1
-N  D  8
-N  C  9
-S NT  5
-S  S 10
-S  H  1
-S  D  8
-S  C  9
-E NT  4
-E  S  2
-E  H 12
-E  D  5
-E  C  4
-W NT  4
-W  S  2
-W  H 12
-W  D  5
-W  C  4
+N NT  4
+N  S  2
+N  H 12
+N  D  5
+N  C  4
+S NT  4
+S  S  2
+S  H 12
+S  D  5
+S  C  4
+E NT  5
+E  S 10
+E  H  1
+E  D  8
+E  C  9
+W NT  5
+W  S 10
+W  H  1
+W  D  8
+W  C  9
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3587,31 +3587,31 @@ W  C  4
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "58a2458a24643b9643b9"]
+[DoubleDummyTricks "643b9643b958a2458a24"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -200"]
-[ParContract "NS 5HX-1"]
+[OptimumScore "EW -100"]
+[ParContract "EW 5HX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S  8
-N  H 10
-N  D  2
-N  C  4
-S NT  5
-S  S  8
-S  H 10
-S  D  2
-S  C  4
-E NT  6
-E  S  4
-E  H  3
-E  D 11
-E  C  9
-W NT  6
-W  S  4
-W  H  3
-W  D 11
-W  C  9
+N NT  6
+N  S  4
+N  H  3
+N  D 11
+N  C  9
+S NT  6
+S  S  4
+S  H  3
+S  D 11
+S  C  9
+E NT  5
+E  S  8
+E  H 10
+E  D  2
+E  C  4
+W NT  5
+W  S  8
+W  H 10
+W  D  2
+W  C  4
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3629,31 +3629,31 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "2a1a22b1b300b0a00b0a"]
+[DoubleDummyTricks "00b0a00b0a2b1b32a1a2"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -200"]
-[ParContract "EW 6HX-1"]
+[OptimumScore "NS -100"]
+[ParContract "NS 6HX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  2
-N  S 10
-N  H  1
-N  D 10
-N  C  2
-S NT  2
-S  S 11
-S  H  1
-S  D 11
-S  C  3
-E NT  0
-E  S  0
-E  H 11
-E  D  0
-E  C 10
-W NT  0
-W  S  0
-W  H 11
-W  D  0
-W  C 10
+N NT  0
+N  S  0
+N  H 11
+N  D  0
+N  C 10
+S NT  0
+S  S  0
+S  H 11
+S  D  0
+S  C 10
+E NT  2
+E  S 11
+E  H  1
+E  D 11
+E  C  3
+W NT  2
+W  S 10
+W  H  1
+W  D 10
+W  C  2
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3671,31 +3671,31 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "52c2652c264a1a44a1a5"]
+[DoubleDummyTricks "4a1a44a1a552c2652c26"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -500"]
-[ParContract "EW 6SX-2"]
+[OptimumScore "NS -500"]
+[ParContract "NS 6SX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  5
-N  S  2
-N  H 12
-N  D  2
-N  C  6
-S NT  5
-S  S  2
-S  H 12
-S  D  2
-S  C  6
-E NT  4
-E  S 10
-E  H  1
-E  D 10
-E  C  4
-W NT  4
-W  S 10
-W  H  1
-W  D 10
-W  C  5
+N NT  4
+N  S 10
+N  H  1
+N  D 10
+N  C  4
+S NT  4
+S  S 10
+S  H  1
+S  D 10
+S  C  5
+E NT  5
+E  S  2
+E  H 12
+E  D  2
+E  C  6
+W NT  5
+W  S  2
+W  H 12
+W  D  2
+W  C  6
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3713,31 +3713,31 @@ W  C  5
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "8b9238b923324aa324ba"]
+[DoubleDummyTricks "324aa324ba8b9238b923"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -100"]
-[ParContract "W 6DX-1"]
+[OptimumScore "NS -100"]
+[ParContract "S 6DX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 11
-N  H  9
-N  D  2
-N  C  3
-S NT  8
-S  S 11
-S  H  9
-S  D  2
-S  C  3
-E NT  3
-E  S  2
-E  H  4
-E  D 10
-E  C 10
-W NT  3
-W  S  2
-W  H  4
-W  D 11
-W  C 10
+N NT  3
+N  S  2
+N  H  4
+N  D 10
+N  C 10
+S NT  3
+S  S  2
+S  H  4
+S  D 11
+S  C 10
+E NT  8
+E  S 11
+E  H  9
+E  D  2
+E  C  3
+W NT  8
+W  S 11
+W  H  9
+W  D  2
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3755,31 +3755,31 @@ W  C 10
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "6a53b6a53b5389153891"]
+[DoubleDummyTricks "53891538916a53b6a53b"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4S="]
+[OptimumScore "NS -300"]
+[ParContract "NS 5DX-2"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  6
-N  S 10
-N  H  5
-N  D  3
-N  C 11
-S NT  6
-S  S 10
-S  H  5
-S  D  3
-S  C 11
-E NT  5
-E  S  3
-E  H  8
-E  D  9
-E  C  1
-W NT  5
-W  S  3
-W  H  8
-W  D  9
-W  C  1
+N NT  5
+N  S  3
+N  H  8
+N  D  9
+N  C  1
+S NT  5
+S  S  3
+S  H  8
+S  D  9
+S  C  1
+E NT  6
+E  S 10
+E  H  5
+E  D  3
+E  C 11
+W NT  6
+W  S 10
+W  H  5
+W  D  3
+W  C 11
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3797,31 +3797,31 @@ W  C  1
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "9ba679ba673227632276"]
+[DoubleDummyTricks "32276322769ba679ba67"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4S+1"]
+[OptimumScore "EW 650"]
+[ParContract "EW 4S+1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 11
-N  H 10
-N  D  6
-N  C  7
-S NT  9
-S  S 11
-S  H 10
-S  D  6
-S  C  7
-E NT  3
-E  S  2
-E  H  2
-E  D  7
-E  C  6
-W NT  3
-W  S  2
-W  H  2
-W  D  7
-W  C  6
+N NT  3
+N  S  2
+N  H  2
+N  D  7
+N  C  6
+S NT  3
+S  S  2
+S  H  2
+S  D  7
+S  C  6
+E NT  9
+E  S 11
+E  H 10
+E  D  6
+E  C  7
+W NT  9
+W  S 11
+W  H 10
+W  D  6
+W  C  7
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3839,31 +3839,31 @@ W  C  6
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "228a3228a32a2292a429"]
+[DoubleDummyTricks "2a2292a429228a3228a3"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -100"]
-[ParContract "NS 5DX-1"]
+[OptimumScore "EW -100"]
+[ParContract "EW 5DX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
 N NT  2
-N  S  2
-N  H  8
-N  D 10
-N  C  3
+N  S 10
+N  H  2
+N  D  2
+N  C  9
 S NT  2
-S  S  2
-S  H  8
-S  D 10
-S  C  3
+S  S 10
+S  H  4
+S  D  2
+S  C  9
 E NT  2
-E  S 10
-E  H  2
-E  D  2
-E  C  9
+E  S  2
+E  H  8
+E  D 10
+E  C  3
 W NT  2
-W  S 10
-W  H  4
-W  D  2
-W  C  9
+W  S  2
+W  H  8
+W  D 10
+W  C  3
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-W3-X-XX.dlr, seed 1000"]
 [Site "-"]
@@ -3881,28 +3881,28 @@ W  C  9
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
-[DoubleDummyTricks "2a4532a453838898388a"]
+[DoubleDummyTricks "838898388a2a4532a453"]
 [Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -100"]
-[ParContract "W 5CX-1"]
+[OptimumScore "NS -200"]
+[ParContract "S 5CX-1"]
 [OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  2
-N  S 10
-N  H  4
-N  D  5
-N  C  3
-S NT  2
-S  S 10
-S  H  4
-S  D  5
-S  C  3
-E NT  8
-E  S  3
-E  H  8
-E  D  8
-E  C  9
-W NT  8
-W  S  3
-W  H  8
-W  D  8
-W  C 10
+N NT  8
+N  S  3
+N  H  8
+N  D  8
+N  C  9
+S NT  8
+S  S  3
+S  H  8
+S  D  8
+S  C 10
+E NT  2
+E  S 10
+E  H  4
+E  D  5
+E  C  3
+W NT  2
+W  S 10
+W  H  4
+W  D  5
+W  C  3

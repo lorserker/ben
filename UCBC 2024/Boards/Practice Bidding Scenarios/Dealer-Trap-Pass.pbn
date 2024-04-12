@@ -1,50 +1,6 @@
-% PBN 2.1
-% EXPORT
-%Content-type: text/x-pbn; charset=ISO-8859-1
-%Creator: BridgeComposer Version 5.104.1
-%Created: Sat Apr  6 11:36:21 2024 +0200
-%BCOptions PageHeader STBorder STShade ShowHCP
-%BCOptions2 CTDlr
-%BidAndCardSpacing Thin
-%BoardsPerPage 122
-%CardTableColors #008000,#ffffff,#aaaaaa
-%DDAFormat 0
-%DefaultPagination 0
-%Font:CardTable "Arial",11,400,0
-%Font:Commentary "Arial",10,400,0
-%Font:Diagram "Arial",9,400,0
-%Font:Event "Arial",12,700,0
-%Font:FixedPitch "Courier New",10,400,0
-%Font:HandRecord "Arial",11,400,0
-%GutterSize 500,250
-%HRTitleDate 0
-%HRTitleEvent "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"
-%HRTitleSetID ""
-%HRTitleSetIDPrefix ""
-%HRTitleSite "-"
-%HtmlClubs entity,"https://bridgecomposer.com/suitimg/c.gif"
-%HtmlDiamonds entity,"https://bridgecomposer.com/suitimg/d.gif"
-%HtmlHearts entity,"https://bridgecomposer.com/suitimg/h.gif"
-%HtmlNavBar 0.75,#cfe2f3
-%HtmlOptions HeadStyle
-%HtmlSpades entity,"https://bridgecomposer.com/suitimg/s.gif"
-%Margins 500,500,500,120
-%PaperSize 1,2159,2794,2
-%ParaIndent 0
-%PdfOptions Eval
-%PipColors #000000,#ff0000,#ffc000,#24c000
-%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
-%ScoreTableColors #e6e6e6,#000000
-%SectionSpacing 5,0,0
-%SelectedBoard 0
-%ShowBoardLabels 2
-%ShowCardTable 2
-%TSTCustomSortOrder Default
-%TSTReport List
-%TSTReportOrder ByNumber
-%TSTReportShade Yes
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "1"]
 [West "-"]
@@ -54,39 +10,13 @@
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:Q.KT9862.63.AKQJ AJ5.J75.AQ982.87 K863.AQ.KJT75.92 T9742.43.4.T6543"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "b7aa8b7aa82523425234"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 460"]
-[ParContract "NS 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S  7
-N  H 10
-N  D 10
-N  C  8
-S NT 11
-S  S  7
-S  H 10
-S  D 10
-S  C  8
-E NT  2
-E  S  5
-E  H  2
-E  D  3
-E  C  4
-W NT  2
-W  S  5
-W  H  2
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "2"]
 [West "-"]
@@ -96,39 +26,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AK874.9.QJ3.Q862 QT53.AK753.K5.T9 9.QJT64.A92.KJ74 J62.82.T8764.A53"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9887a8887a4445344453"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "N 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  8
-N  H  8
-N  D  7
-N  C 10
-S NT  8
-S  S  8
-S  H  8
-S  D  7
-S  C 10
-E NT  4
-E  S  4
-E  H  4
-E  D  5
-E  C  3
-W NT  4
-W  S  4
-W  H  4
-W  D  5
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "3"]
 [West "-"]
@@ -138,39 +42,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AQT85.5.A6.KT972 763.AQ964.J54.A5 K2.KJT87.QT73.J4 J94.32.K982.Q863"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9a98aaa98a3344333443"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "S 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 10
-N  H  9
-N  D  8
-N  C 10
-S NT 10
-S  S 10
-S  H  9
-S  D  8
-S  C 10
-E NT  3
-E  S  3
-E  H  4
-E  D  4
-E  C  3
-W NT  3
-W  S  3
-W  H  4
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "4"]
 [West "-"]
@@ -180,39 +58,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:K652.AJ52.A975.4 AQ9.Q9.T86.AQ632 J7.K763.Q4.KJT97 T843.T84.KJ32.85"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "77977779776646656465"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 7
-N  S 7
-N  H 9
-N  D 7
-N  C 7
-S NT 7
-S  S 7
-S  H 9
-S  D 7
-S  C 7
-E NT 6
-E  S 6
-E  H 4
-E  D 6
-E  C 6
-W NT 5
-W  S 6
-W  H 4
-W  D 6
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "5"]
 [West "-"]
@@ -222,39 +74,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AJ985.KJ732.A7.2 KQ74.85.Q5.AQ765 32.Q9.KJ93.KJT84 T6.AT64.T8642.93"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "98988989884444544445"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 9
-N  S 8
-N  H 9
-N  D 8
-N  C 8
-S NT 9
-S  S 8
-S  H 9
-S  D 8
-S  C 8
-E NT 4
-E  S 4
-E  H 4
-E  D 4
-E  C 5
-W NT 4
-W  S 4
-W  H 4
-W  D 4
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "6"]
 [West "-"]
@@ -264,39 +90,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:KQ52.AQ72.Q765.3 .K654.KJT9.AK542 A876.93.A8.QJT86 JT943.JT8.432.97"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "79879797784455444554"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1S+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 7
-N  S 9
-N  H 8
-N  D 7
-N  C 9
-S NT 7
-S  S 9
-S  H 7
-S  D 7
-S  C 8
-E NT 4
-E  S 4
-E  H 5
-E  D 5
-E  C 4
-W NT 4
-W  S 4
-W  H 5
-W  D 5
-W  C 4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "7"]
 [West "-"]
@@ -306,39 +106,13 @@ W  C 4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:A86532..KQ6.KQT7 KQ4.AQ542.J975.3 .KJT93.A32.AJ654 JT97.876.T84.982"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9999d9999d4344043430"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 2140"]
-[ParContract "NS 7C="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H  9
-N  D  9
-N  C 13
-S NT  9
-S  S  9
-S  H  9
-S  D  9
-S  C 13
-E NT  4
-E  S  3
-E  H  4
-E  D  4
-E  C  0
-W NT  4
-W  S  3
-W  H  4
-W  D  3
-W  C  0
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "8"]
 [West "-"]
@@ -348,39 +122,13 @@ W  C  0
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:QJ543.3.A63.AJ85 K97.AQ762.KT9.QT AT.KJT85.Q74.943 862.94.J852.K762"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "89879898785456444464"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1S+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 9
-N  H 8
-N  D 7
-N  C 9
-S NT 8
-S  S 9
-S  H 8
-S  D 7
-S  C 8
-E NT 5
-E  S 4
-E  H 5
-E  D 6
-E  C 4
-W NT 4
-W  S 4
-W  H 4
-W  D 6
-W  C 4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "9"]
 [West "-"]
@@ -390,39 +138,13 @@ W  C 4
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:A2.KQJT2.K9854.7 KJ4.876.JT.AQ832 T86.A3.Q73.KJT64 Q9753.954.A62.95"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "76aa876aa83622536225"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  7
-N  S  6
-N  H 10
-N  D 10
-N  C  8
-S NT  7
-S  S  6
-S  H 10
-S  D 10
-S  C  8
-E NT  3
-E  S  6
-E  H  2
-E  D  2
-E  C  5
-W NT  3
-W  S  6
-W  H  2
-W  D  2
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "10"]
 [West "-"]
@@ -432,39 +154,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AT5.A954.AJ632.4 92.Q86.K95.AQ732 KJ874.7.Q7.KJT65 Q63.KJT32.T84.98"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9b7a99b7a93263432634"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 11
-N  H  7
-N  D 10
-N  C  9
-S NT  9
-S  S 11
-S  H  7
-S  D 10
-S  C  9
-E NT  3
-E  S  2
-E  H  6
-E  D  3
-E  C  4
-W NT  3
-W  S  2
-W  H  6
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "11"]
 [West "-"]
@@ -474,39 +170,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:KQT54.9.K96.A632 A863.AK764.75.K9 J9.QJT85.AJ4.Q87 72.32.QT832.JT54"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99978999784446544465"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 9
-N  S 9
-N  H 9
-N  D 7
-N  C 8
-S NT 9
-S  S 9
-S  H 9
-S  D 7
-S  C 8
-E NT 4
-E  S 4
-E  H 4
-E  D 6
-E  C 5
-W NT 4
-W  S 4
-W  H 4
-W  D 6
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "12"]
 [West "-"]
@@ -516,39 +186,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AQ632..AQJ42.KQ9 K74.KQ953.K7.T32 9.AJT64.T986.AJ4 JT85.872.53.8765"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aaac9aa9c93331333313"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 1370"]
-[ParContract "NS 6D="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H 10
-N  D 12
-N  C  9
-S NT 10
-S  S 10
-S  H  9
-S  D 12
-S  C  9
-E NT  3
-E  S  3
-E  H  3
-E  D  1
-E  C  3
-W NT  3
-W  S  3
-W  H  3
-W  D  1
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "13"]
 [West "-"]
@@ -558,39 +202,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AQT9.KQT964.9.A3 7.AJ52.AK832.742 K52.8.QJT74.KJT9 J8643.73.65.Q865"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99a9899a983434434344"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H 10
-N  D  9
-N  C  8
-S NT  9
-S  S  9
-S  H 10
-S  D  9
-S  C  8
-E NT  3
-E  S  4
-E  H  3
-E  D  4
-E  C  4
-W NT  3
-W  S  4
-W  H  3
-W  D  4
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "14"]
 [West "-"]
@@ -600,39 +218,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:KJ5.A76532..AT82 A72.QJ9.AK985.53 Q93.K8.QJT42.KQJ T864.T4.763.9764"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99b9a99b9a4424244242"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4H+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H 11
-N  D  9
-N  C 10
-S NT  9
-S  S  9
-S  H 11
-S  D  9
-S  C 10
-E NT  4
-E  S  4
-E  H  2
-E  D  4
-E  C  2
-W NT  4
-W  S  4
-W  H  2
-W  D  4
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "15"]
 [West "-"]
@@ -642,39 +234,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AK5.KT765.Q8743. T72.AQ9.T9.AK962 J94.J8.AK6.QJT54 Q863.432.J52.873"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "98ab898aa84532545325"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  8
-N  H 10
-N  D 11
-N  C  8
-S NT  9
-S  S  8
-S  H 10
-S  D 10
-S  C  8
-E NT  4
-E  S  5
-E  H  3
-E  D  2
-E  C  5
-W NT  4
-W  S  5
-W  H  3
-W  D  2
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "16"]
 [West "-"]
@@ -684,39 +250,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AQ975.AK852.2.K2 K43..AQ983.QJT83 T6.QT9.KJT65.A65 J82.J7643.74.974"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bbb87bab872225522255"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 460"]
-[ParContract "NS 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 11
-N  H 11
-N  D  8
-N  C  7
-S NT 11
-S  S 10
-S  H 11
-S  D  8
-S  C  7
-E NT  2
-E  S  2
-E  H  2
-E  D  5
-E  C  5
-W NT  2
-W  S  2
-W  H  2
-W  D  5
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "17"]
 [West "-"]
@@ -726,39 +266,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:K6432.AQ9.A853.4 AQ7.J643.2.AQ953 JT.K52.KQJ.KJT82 985.T87.T9764.76"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99998999983444534445"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 9
-N  S 9
-N  H 9
-N  D 9
-N  C 8
-S NT 9
-S  S 9
-S  H 9
-S  D 9
-S  C 8
-E NT 3
-E  S 4
-E  H 4
-E  D 4
-E  C 5
-W NT 3
-W  S 4
-W  H 4
-W  D 4
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "18"]
 [West "-"]
@@ -768,39 +282,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:KQ975.74.6.AQJT7 A64.KQ986.QT53.4 J3.AJT32.AJ4.952 T82.5.K9872.K863"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "8a95b8a95b2248222482"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -500"]
-[ParContract "EW 5DX-3"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 10
-N  H  9
-N  D  5
-N  C 11
-S NT  8
-S  S 10
-S  H  9
-S  D  5
-S  C 11
-E NT  2
-E  S  2
-E  H  4
-E  D  8
-E  C  2
-W NT  2
-W  S  2
-W  H  4
-W  D  8
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "19"]
 [West "-"]
@@ -810,39 +298,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AKT2.QJ432.Q97.8 J.K65.KT64.AQ762 Q8654..AJ8.KJT95 973.AT987.532.43"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9b7899b7894265442654"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 11
-N  H  7
-N  D  8
-N  C  9
-S NT  9
-S  S 11
-S  H  7
-S  D  8
-S  C  9
-E NT  4
-E  S  2
-E  H  6
-E  D  5
-E  C  4
-W NT  4
-W  S  2
-W  H  6
-W  D  5
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "20"]
 [West "-"]
@@ -852,39 +314,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:Q874.AQJ7.KQ85.3 K6.84.A762.AQ982 A32.KT5.T3.KJT64 JT95.9632.J94.75"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99a9999a984434444344"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H 10
-N  D  9
-N  C  9
-S NT  9
-S  S  9
-S  H 10
-S  D  9
-S  C  8
-E NT  4
-E  S  4
-E  H  3
-E  D  4
-E  C  4
-W NT  4
-W  S  4
-W  H  3
-W  D  4
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "21"]
 [West "-"]
@@ -894,39 +330,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AJT72.Q842..AK43 Q653.A76.KQ652.J 94.K3.AJT93.Q865 K8.JT95.874.T972"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aa87aaa87a3345233452"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 630"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H  8
-N  D  7
-N  C 10
-S NT 10
-S  S 10
-S  H  8
-S  D  7
-S  C 10
-E NT  3
-E  S  3
-E  H  4
-E  D  5
-E  C  2
-W NT  3
-W  S  3
-W  H  4
-W  D  5
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "22"]
 [West "-"]
@@ -936,39 +346,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:642.AKJ82.5.KQ54 KJT9.Q95.KQ743.8 A75.73.AJT92.AJ9 Q83.T64.86.T7632"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99a8a99a8a2424324243"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H 10
-N  D  8
-N  C 10
-S NT  9
-S  S  9
-S  H 10
-S  D  8
-S  C 10
-E NT  2
-E  S  4
-E  H  2
-E  D  4
-E  C  3
-W NT  2
-W  S  4
-W  H  2
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "23"]
 [West "-"]
@@ -978,39 +362,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AKQ43.K98764.7.2 5.QT52.KQ652.KQ8 972.A.AJT84.JT65 JT86.J3.93.A9743"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "79976799766346752467"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2; NS 1S+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 7
-N  S 9
-N  H 9
-N  D 7
-N  C 6
-S NT 7
-S  S 9
-S  H 9
-S  D 7
-S  C 6
-E NT 6
-E  S 3
-E  H 4
-E  D 6
-E  C 7
-W NT 5
-W  S 2
-W  H 4
-W  D 6
-W  C 7
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "24"]
 [West "-"]
@@ -1020,39 +378,13 @@ W  C 7
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AK84.KJ743.A65.5 J5.A985.J3.KQ984 T97.Q6.KQ2.AJT63 Q632.T2.T9874.72"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aaa9aaaa993234332343"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H 10
-N  D  9
-N  C 10
-S NT 10
-S  S 10
-S  H 10
-S  D  9
-S  C  9
-E NT  3
-E  S  2
-E  H  3
-E  D  4
-E  C  3
-W NT  3
-W  S  2
-W  H  3
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "25"]
 [West "-"]
@@ -1062,39 +394,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:KJ2.AJ9432.KJ82. A5.QT87.T3.KQ864 T76.K5.AQ9.AJT75 Q9843.6.7654.932"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a8aa8a8aa83532535325"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  8
-N  H 10
-N  D 10
-N  C  8
-S NT 10
-S  S  8
-S  H 10
-S  D 10
-S  C  8
-E NT  3
-E  S  5
-E  H  3
-E  D  2
-E  C  5
-W NT  3
-W  S  5
-W  H  3
-W  D  2
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "26"]
 [West "-"]
@@ -1104,39 +410,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:Q97.AQ73.AT5432. A65.K5.987.AQ854 KJT2.JT9.Q.KJT93 843.8642.KJ6.762"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "89a98899985334553345"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "N 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  9
-N  H 10
-N  D  9
-N  C  8
-S NT  8
-S  S  9
-S  H  9
-S  D  9
-S  C  8
-E NT  5
-E  S  3
-E  H  3
-E  D  4
-E  C  5
-W NT  5
-W  S  3
-W  H  3
-W  D  4
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "27"]
 [West "-"]
@@ -1146,39 +426,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AQ762.6.65.AQT73 JT4.AK985.K7.J98 K.QJT32.Q842.K54 9853.74.AJT93.62"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "88769887695457354573"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 120"]
-[ParContract "NS 2N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 8
-N  H 7
-N  D 6
-N  C 9
-S NT 8
-S  S 8
-S  H 7
-S  D 6
-S  C 9
-E NT 5
-E  S 4
-E  H 5
-E  D 7
-E  C 3
-W NT 5
-W  S 4
-W  H 5
-W  D 7
-W  C 3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "28"]
 [West "-"]
@@ -1188,39 +442,13 @@ W  C 3
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AT853.AJ763.2.A2 Q96.85.AK985.Q98 .K9.QJT64.KJT763 KJ742.QT42.73.54"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a899ba899b3524235242"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 630"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  8
-N  H  9
-N  D  9
-N  C 11
-S NT 10
-S  S  8
-S  H  9
-S  D  9
-S  C 11
-E NT  3
-E  S  5
-E  H  2
-E  D  4
-E  C  2
-W NT  3
-W  S  5
-W  H  2
-W  D  4
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "29"]
 [West "-"]
@@ -1230,39 +458,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:KQ542.J3.5.AQT85 A87.874.KQ973.K7 T6.AQ65.AJT82.43 J93.KT92.64.J962"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "89889897895455454554"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1S+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 9
-N  H 8
-N  D 8
-N  C 9
-S NT 8
-S  S 9
-S  H 7
-S  D 8
-S  C 9
-E NT 5
-E  S 4
-E  H 5
-E  D 5
-E  C 4
-W NT 5
-W  S 4
-W  H 5
-W  D 5
-W  C 4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "30"]
 [West "-"]
@@ -1272,39 +474,13 @@ W  C 4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AK2.QT965..A9653 QJT5.KJ3.AQ852.7 87.A4.KJT63.KJ84 9643.872.974.QT2"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "97a9b97a9b3634236342"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  7
-N  H 10
-N  D  9
-N  C 11
-S NT  9
-S  S  7
-S  H 10
-S  D  9
-S  C 11
-E NT  3
-E  S  6
-E  H  3
-E  D  4
-E  C  2
-W NT  3
-W  S  6
-W  H  3
-W  D  4
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "31"]
 [West "-"]
@@ -1314,39 +490,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:QT6.KT3.AQJ943.7 32.A5.KT62.AK952 KJ98.QJ92..QJT86 A754.8764.875.43"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "89988889885445554455"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2; N 1S+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 9
-N  H 9
-N  D 8
-N  C 8
-S NT 8
-S  S 8
-S  H 9
-S  D 8
-S  C 8
-E NT 5
-E  S 4
-E  H 4
-E  D 5
-E  C 5
-W NT 5
-W  S 4
-W  H 4
-W  D 5
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "32"]
 [West "-"]
@@ -1356,39 +506,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:KQT982.KQ3.AJ3.6 AJ5.J8.984.AQ954 .AT94.Q765.KJT73 7643.7652.KT2.82"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9aab99aab93332433323"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4H=; NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 10
-N  H 10
-N  D 11
-N  C  9
-S NT  9
-S  S 10
-S  H 10
-S  D 11
-S  C  9
-E NT  3
-E  S  3
-E  H  3
-E  D  2
-E  C  4
-W NT  3
-W  S  3
-W  H  3
-W  D  2
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "33"]
 [West "-"]
@@ -1398,39 +522,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:A842.AKQT9.8432. KT5.532.QT.AQ643 J9763.8.AJ.KJT82 Q.J764.K9765.975"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9ca789ca783135431354"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 980"]
-[ParContract "NS 6S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 12
-N  H 10
-N  D  7
-N  C  8
-S NT  9
-S  S 12
-S  H 10
-S  D  7
-S  C  8
-E NT  3
-E  S  1
-E  H  3
-E  D  5
-E  C  4
-W NT  3
-W  S  1
-W  H  3
-W  D  5
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "34"]
 [West "-"]
@@ -1440,39 +538,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AK7.76.AJ98743.3 964.A4.KQ5.KQ742 J32.KQT3.T.AJT85 QT85.J9852.62.96"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "88898888985553555535"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 120"]
-[ParContract "NS 1N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 8
-N  H 8
-N  D 9
-N  C 8
-S NT 8
-S  S 8
-S  H 8
-S  D 9
-S  C 8
-E NT 5
-E  S 5
-E  H 5
-E  D 3
-E  C 5
-W NT 5
-W  S 5
-W  H 5
-W  D 3
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "35"]
 [West "-"]
@@ -1482,39 +554,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:A64.AQJ75.2.KQ53 J.T83.KQ753.AJT7 KQ72.K9.AJT98.64 T9853.642.64.982"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "baba9aab992313423134"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 460"]
-[ParContract "N 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 10
-N  H 11
-N  D 10
-N  C  9
-S NT 10
-S  S 10
-S  H 11
-S  D  9
-S  C  9
-E NT  2
-E  S  3
-E  H  1
-E  D  3
-E  C  4
-W NT  2
-W  S  3
-W  H  1
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "36"]
 [West "-"]
@@ -1524,39 +570,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AKQ53.43.8.AJT92 J762.KQ8.KQ754.6 8.752.AJT96.KQ54 T94.AJT96.32.873"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "8a68b8a68b4374143741"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 10
-N  H  6
-N  D  8
-N  C 11
-S NT  8
-S  S 10
-S  H  6
-S  D  8
-S  C 11
-E NT  4
-E  S  3
-E  H  7
-E  D  4
-E  C  1
-W NT  4
-W  S  3
-W  H  7
-W  D  4
-W  C  1
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "37"]
 [West "-"]
@@ -1566,39 +586,13 @@ W  C  1
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:KJ74.QJ92.AJT8.7 96.AKT.Q54.KQ983 A85.765.K6.AJT62 QT32.843.9732.54"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9aa999aa993334433334"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4H=; NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 10
-N  H 10
-N  D  9
-N  C  9
-S NT  9
-S  S 10
-S  H 10
-S  D  9
-S  C  9
-E NT  3
-E  S  3
-E  H  3
-E  D  4
-E  C  4
-W NT  3
-W  S  3
-W  H  3
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "38"]
 [West "-"]
@@ -1608,39 +602,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:Q92.KJT83.AKJ64. A4.Q94.T93.AK853 KJT.A2.Q82.QJT94 87653.765.75.762"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a9cc9a9cc93311433114"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 980"]
-[ParContract "NS 6H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  9
-N  H 12
-N  D 12
-N  C  9
-S NT 10
-S  S  9
-S  H 12
-S  D 12
-S  C  9
-E NT  3
-E  S  3
-E  H  1
-E  D  1
-E  C  4
-W NT  3
-W  S  3
-W  H  1
-W  D  1
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "39"]
 [West "-"]
@@ -1650,39 +618,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:J87.A752.AKT962. A5.KJ3.743.KQ752 KQ963.T4.Q.AJT96 T42.Q986.J85.843"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9b8a99b8a91141411414"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 11
-N  H  8
-N  D 10
-N  C  9
-S NT  9
-S  S 11
-S  H  8
-S  D 10
-S  C  9
-E NT  1
-E  S  1
-E  H  4
-E  D  1
-E  C  4
-W NT  1
-W  S  1
-W  H  4
-W  D  1
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "40"]
 [West "-"]
@@ -1692,39 +634,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:KQJT73.K53..K982 A94.J98.KQ965.Q4 62.Q42.AJT42.AJT 85.AT76.873.7653"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9b87aab87a3256232562"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 11
-N  H  8
-N  D  7
-N  C 10
-S NT 10
-S  S 11
-S  H  8
-S  D  7
-S  C 10
-E NT  3
-E  S  2
-E  H  5
-E  D  6
-E  C  2
-W NT  3
-W  S  2
-W  H  5
-W  D  6
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "41"]
 [West "-"]
@@ -1734,39 +650,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AT64.J2.AKJ9875. KQJ2.8.T42.AK853 8.AKQ97.Q6.QJT62 9753.T6543.3.974"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "b79d7b79d70600506105"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 1440"]
-[ParContract "NS 7D="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S  7
-N  H  9
-N  D 13
-N  C  7
-S NT 11
-S  S  7
-S  H  9
-S  D 13
-S  C  7
-E NT  0
-E  S  6
-E  H  0
-E  D  0
-E  C  5
-W NT  0
-W  S  6
-W  H  1
-W  D  0
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "42"]
 [West "-"]
@@ -1776,39 +666,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AKT75..KQJ92.853 QJ96.KQ952.86.A2 .AJT43.AT53.J974 8432.876.74.KQT6"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "876a8876a85552455524"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 130"]
-[ParContract "NS 1D+3"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  7
-N  H  6
-N  D 10
-N  C  8
-S NT  8
-S  S  7
-S  H  6
-S  D 10
-S  C  8
-E NT  5
-E  S  5
-E  H  5
-E  D  2
-E  C  4
-W NT  5
-W  S  5
-W  H  5
-W  D  2
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "43"]
 [West "-"]
@@ -1818,39 +682,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AQJ763.3.765.AJ9 K94.KQ864.A3.T84 85.AJT72.KJ9.KQ7 T2.95.QT842.6532"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aa978aa9783346433464"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H  9
-N  D  7
-N  C  8
-S NT 10
-S  S 10
-S  H  9
-S  D  7
-S  C  8
-E NT  3
-E  S  3
-E  H  4
-E  D  6
-E  C  4
-W NT  3
-W  S  3
-W  H  4
-W  D  6
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "44"]
 [West "-"]
@@ -1860,39 +698,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AKT73.6.AQJ974.4 QJ52.8.K62.AK872 864.AKQ.85.QJT95 9.JT975432.T3.63"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a9598a95983383433834"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -500"]
-[ParContract "EW 5HX-3"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  9
-N  H  5
-N  D  9
-N  C  8
-S NT 10
-S  S  9
-S  H  5
-S  D  9
-S  C  8
-E NT  3
-E  S  3
-E  H  8
-E  D  3
-E  C  4
-W NT  3
-W  S  3
-W  H  8
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "45"]
 [West "-"]
@@ -1902,39 +714,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:KQ863.A82.AJ52.4 AJ7.JT63.3.AQ853 9.Q97.KQT8.KJT72 T542.K54.9764.96"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "888a8888a84553545535"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 130"]
-[ParContract "NS 1D+3"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  8
-N  H  8
-N  D 10
-N  C  8
-S NT  8
-S  S  8
-S  H  8
-S  D 10
-S  C  8
-E NT  4
-E  S  5
-E  H  5
-E  D  3
-E  C  5
-W NT  4
-W  S  5
-W  H  5
-W  D  3
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "46"]
 [West "-"]
@@ -1944,39 +730,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:JT4.KQ876.AKJ5.7 Q92.J532.Q.AQ832 K865.A.T96.KJT54 A73.T94.87432.96"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aa9a8aa9a83333533335"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H  9
-N  D 10
-N  C  8
-S NT 10
-S  S 10
-S  H  9
-S  D 10
-S  C  8
-E NT  3
-E  S  3
-E  H  3
-E  D  3
-E  C  5
-W NT  3
-W  S  3
-W  H  3
-W  D  3
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "47"]
 [West "-"]
@@ -1986,39 +746,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:JT9.AKQ3.KQ532.9 2.JT2.A976.AQ652 AKQ54.6.T4.KJT87 8763.98754.J8.43"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "ab999ab9993144331443"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 11
-N  H  9
-N  D  9
-N  C  9
-S NT 10
-S  S 11
-S  H  9
-S  D  9
-S  C  9
-E NT  3
-E  S  1
-E  H  4
-E  D  4
-E  C  3
-W NT  3
-W  S  1
-W  H  4
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "48"]
 [West "-"]
@@ -2028,39 +762,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AK432.72.6.AKT52 JT5.A964.AK843.7 Q.QJ5.QJT97.Q643 9876.KT83.52.J98"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9857a9857a4475244752"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  8
-N  H  5
-N  D  7
-N  C 10
-S NT  9
-S  S  8
-S  H  5
-S  D  7
-S  C 10
-E NT  4
-E  S  4
-E  H  7
-E  D  5
-E  C  2
-W NT  4
-W  S  4
-W  H  7
-W  D  5
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "49"]
 [West "-"]
@@ -2070,39 +778,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:7653.AKQJ6.4.A82 Q8.T32.AK986.K95 AKT2.85.QJT75.QT J94.974.32.J7643"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "abaa8aba973233532335"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 11
-N  H 10
-N  D 10
-N  C  8
-S NT 10
-S  S 11
-S  H 10
-S  D  9
-S  C  7
-E NT  3
-E  S  2
-E  H  3
-E  D  3
-E  C  5
-W NT  3
-W  S  2
-W  H  3
-W  D  3
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "50"]
 [West "-"]
@@ -2112,39 +794,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AJ8542.AKJ75.T2. KT7.863.A6.AK987 3.Q.KQJ973.QJT53 Q96.T942.854.642"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "8a9b88a9b85342553425"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 10
-N  H  9
-N  D 11
-N  C  8
-S NT  8
-S  S 10
-S  H  9
-S  D 11
-S  C  8
-E NT  5
-E  S  3
-E  H  4
-E  D  2
-E  C  5
-W NT  5
-W  S  3
-W  H  4
-W  D  2
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "51"]
 [West "-"]
@@ -2154,39 +810,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AJ83.AT8753.QJ7. 9.K964.K82.AQ874 KQT6.Q.543.KJT95 7542.J2.AT96.632"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "79976799765446654466"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2; NS 1S+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 7
-N  S 9
-N  H 9
-N  D 7
-N  C 6
-S NT 7
-S  S 9
-S  H 9
-S  D 7
-S  C 6
-E NT 5
-E  S 4
-E  H 4
-E  D 6
-E  C 6
-W NT 5
-W  S 4
-W  H 4
-W  D 6
-W  C 6
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "52"]
 [West "-"]
@@ -2196,39 +826,13 @@ W  C 6
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:K8432.K63.8.AQ92 AT95.AJ9.KQ543.3 6.QT.AJT96.KJ654 QJ7.87542.72.T87"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9758b7758a3585235852"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "N 5C="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  7
-N  H  5
-N  D  8
-N  C 11
-S NT  7
-S  S  7
-S  H  5
-S  D  8
-S  C 10
-E NT  3
-E  S  5
-E  H  8
-E  D  5
-E  C  2
-W NT  3
-W  S  5
-W  H  8
-W  D  5
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "53"]
 [West "-"]
@@ -2238,39 +842,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:KJ9732.AT42.8.A4 A86.K873.KQ762.7 Q.J5.AJT95.KQ865 T54.Q96.43.JT932"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9a8999a8993244332443"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 10
-N  H  8
-N  D  9
-N  C  9
-S NT  9
-S  S 10
-S  H  8
-S  D  9
-S  C  9
-E NT  3
-E  S  2
-E  H  4
-E  D  4
-E  C  3
-W NT  3
-W  S  2
-W  H  4
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "54"]
 [West "-"]
@@ -2280,39 +858,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AQ6543.7.9.AQ765 J97.AQJ6.KQ843.8 K8.KT84.AJT76.32 T2.9532.52.KJT94"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aa899aa8992254422534"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H  8
-N  D  9
-N  C  9
-S NT 10
-S  S 10
-S  H  8
-S  D  9
-S  C  9
-E NT  2
-E  S  2
-E  H  5
-E  D  4
-E  C  4
-W NT  2
-W  S  2
-W  H  5
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "55"]
 [West "-"]
@@ -2322,39 +874,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:K.AQT764.6.AQT93 AJ9.K985.KQ853.4 Q852.J.AJT92.K62 T7643.32.74.J875"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a7b9ba7b8b2524225242"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4H+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  7
-N  H 11
-N  D  9
-N  C 11
-S NT 10
-S  S  7
-S  H 11
-S  D  8
-S  C 11
-E NT  2
-E  S  5
-E  H  2
-E  D  4
-E  C  2
-W NT  2
-W  S  5
-W  H  2
-W  D  4
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "56"]
 [West "-"]
@@ -2364,39 +890,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:KQT543.K42.KJT9. 972.T73.AQ.KQ743 8.AJ6.7632.AJT85 AJ6.Q985.854.962"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "8a7a7997a74363643636"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "N 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 10
-N  H  7
-N  D 10
-N  C  7
-S NT  9
-S  S  9
-S  H  7
-S  D 10
-S  C  7
-E NT  4
-E  S  3
-E  H  6
-E  D  3
-E  C  6
-W NT  4
-W  S  3
-W  H  6
-W  D  3
-W  C  6
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "57"]
 [West "-"]
@@ -2406,39 +906,13 @@ W  C  6
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:KQ9862.Q72.KQ2.2 JT4.AJ9.73.AQ864 A.T4.AT954.KJT93 753.K8653.J86.75"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "997a8797a82261422614"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "N 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H  7
-N  D 10
-N  C  8
-S NT  7
-S  S  9
-S  H  7
-S  D 10
-S  C  8
-E NT  2
-E  S  2
-E  H  6
-E  D  1
-E  C  4
-W NT  2
-W  S  2
-W  H  6
-W  D  1
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "58"]
 [West "-"]
@@ -2448,39 +922,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:987.AQJ842..AQJ2 KJ.T653.AK982.76 AQ654..QJT64.K53 T32.K97.753.T984"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aca9aaca9a3134331343"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 1430"]
-[ParContract "NS 6S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 12
-N  H 10
-N  D  9
-N  C 10
-S NT 10
-S  S 12
-S  H 10
-S  D  9
-S  C 10
-E NT  3
-E  S  1
-E  H  3
-E  D  4
-E  C  3
-W NT  3
-W  S  1
-W  H  3
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "59"]
 [West "-"]
@@ -2490,39 +938,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AQJ2.7.AK98642.8 KT63.J.Q75.KQ952 8754.AK5.J.AJT73 9.QT986432.T3.64"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bb6baab6ba2262322623"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 460"]
-[ParContract "N 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 11
-N  H  6
-N  D 11
-N  C 10
-S NT 10
-S  S 11
-S  H  6
-S  D 11
-S  C 10
-E NT  2
-E  S  2
-E  H  6
-E  D  2
-E  C  3
-W NT  2
-W  S  2
-W  H  6
-W  D  2
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "60"]
 [West "-"]
@@ -2532,39 +954,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AKJ96532.AQ9.T2. QT87.T.KQ8.KQ953 .K8732.AJ4.AJT84 4.J654.97653.762"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aba88aba883235532155"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 11
-N  H 10
-N  D  8
-N  C  8
-S NT 10
-S  S 11
-S  H 10
-S  D  8
-S  C  8
-E NT  3
-E  S  2
-E  H  3
-E  D  5
-E  C  5
-W NT  3
-W  S  2
-W  H  1
-W  D  5
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "61"]
 [West "-"]
@@ -2574,39 +970,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:Q765.KQ73.AQT2.4 AJT.98.853.AK952 K.AT654.K4.QJT86 98432.J2.J976.73"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a8ba9a8ba93513435134"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4H+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  8
-N  H 11
-N  D 10
-N  C  9
-S NT 10
-S  S  8
-S  H 11
-S  D 10
-S  C  9
-E NT  3
-E  S  5
-E  H  1
-E  D  3
-E  C  4
-W NT  3
-W  S  5
-W  H  1
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "62"]
 [West "-"]
@@ -2616,39 +986,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:KT32.KJ875.AK6.4 A.T92.QT72.KQ873 Q54.A3.983.AJT92 J9876.Q64.J54.65"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bbb99bbb992224322243"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 460"]
-[ParContract "NS 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 11
-N  H 11
-N  D  9
-N  C  9
-S NT 11
-S  S 11
-S  H 11
-S  D  9
-S  C  9
-E NT  2
-E  S  2
-E  H  2
-E  D  4
-E  C  3
-W NT  2
-W  S  2
-W  H  2
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "63"]
 [West "-"]
@@ -2658,39 +1002,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AKQJ863.97..KQT8 752.AK864.K42.A9 .QJT53.AQJ53.752 T94.2.T9876.J643"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99969999694336433353"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 9
-N  S 9
-N  H 9
-N  D 6
-N  C 9
-S NT 9
-S  S 9
-S  H 9
-S  D 6
-S  C 9
-E NT 4
-E  S 3
-E  H 3
-E  D 6
-E  C 4
-W NT 3
-W  S 3
-W  H 3
-W  D 5
-W  C 3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "64"]
 [West "-"]
@@ -2700,39 +1018,13 @@ W  C 3
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:KQT.864.AQJT862. J9.Q72.K54.AQ754 A62.AJT95..KJT63 87543.K3.973.982"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a9ca9a9ba93412434124"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 980"]
-[ParContract "N 6H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  9
-N  H 12
-N  D 10
-N  C  9
-S NT 10
-S  S  9
-S  H 11
-S  D 10
-S  C  9
-E NT  3
-E  S  4
-E  H  1
-E  D  2
-E  C  4
-W NT  3
-W  S  4
-W  H  1
-W  D  2
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "65"]
 [West "-"]
@@ -2742,39 +1034,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:Q4.KQ54.AJT832.9 9.AT9.Q975.AK832 KJ532.7.K4.QJT76 AT876.J8632.6.54"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "77576775766686666866"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS -100"]
-[ParContract "NS 2SX-1; NS 2NX-1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 7
-N  S 7
-N  H 5
-N  D 7
-N  C 6
-S NT 7
-S  S 7
-S  H 5
-S  D 7
-S  C 6
-E NT 6
-E  S 6
-E  H 8
-E  D 6
-E  C 6
-W NT 6
-W  S 6
-W  H 8
-W  D 6
-W  C 6
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "66"]
 [West "-"]
@@ -2784,39 +1050,13 @@ W  C 6
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:K764.AK94.A743.8 T5.Q8.KQJT.KQ763 AJ82.JT6.9.AJT54 Q93.7532.8652.92"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9ca899ca894125341253"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 1430"]
-[ParContract "NS 6S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 12
-N  H 10
-N  D  8
-N  C  9
-S NT  9
-S  S 12
-S  H 10
-S  D  8
-S  C  9
-E NT  4
-E  S  1
-E  H  2
-E  D  5
-E  C  3
-W NT  4
-W  S  1
-W  H  2
-W  D  5
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "67"]
 [West "-"]
@@ -2826,39 +1066,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AQJ743.KJT4..KT7 T52.A.KQ985.Q942 98.Q972.AJT43.AJ K6.8653.762.8653"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bcc89bcc891114411154"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 980"]
-[ParContract "NS 6H=; NS 6S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 12
-N  H 12
-N  D  8
-N  C  9
-S NT 11
-S  S 12
-S  H 12
-S  D  8
-S  C  9
-E NT  1
-E  S  1
-E  H  1
-E  D  4
-E  C  4
-W NT  1
-W  S  1
-W  H  1
-W  D  5
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "68"]
 [West "-"]
@@ -2868,39 +1082,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:K96532.AJ93..A63 AT7.KT.KQ754.T54 J.854.AJT96.KQ97 Q84.Q762.832.J82"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "89989899895445354454"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2; NS 1S+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 9
-N  H 9
-N  D 8
-N  C 9
-S NT 8
-S  S 9
-S  H 9
-S  D 8
-S  C 9
-E NT 5
-E  S 4
-E  H 4
-E  D 5
-E  C 3
-W NT 5
-W  S 4
-W  H 4
-W  D 5
-W  C 4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "69"]
 [West "-"]
@@ -2910,39 +1098,13 @@ W  C 4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AJ982.KJ.7.KT832 QT3.A82.KQ985.J4 K5.Q964.AJT43.AQ 764.T753.62.9765"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bbaabbbaab2233222332"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 660"]
-[ParContract "NS 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 11
-N  H 10
-N  D 10
-N  C 11
-S NT 11
-S  S 11
-S  H 10
-S  D 10
-S  C 11
-E NT  2
-E  S  2
-E  H  3
-E  D  3
-E  C  2
-W NT  2
-W  S  2
-W  H  3
-W  D  3
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "70"]
 [West "-"]
@@ -2952,39 +1114,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AJ63.Q43.AQ985.3 54.K65.JT4.AK862 82.A987.K2.QJT75 KQT97.JT2.763.94"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "98a9898a984534535344"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  8
-N  H 10
-N  D  9
-N  C  8
-S NT  9
-S  S  8
-S  H 10
-S  D  9
-S  C  8
-E NT  4
-E  S  5
-E  H  3
-E  D  4
-E  C  5
-W NT  3
-W  S  5
-W  H  3
-W  D  4
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "71"]
 [West "-"]
@@ -2994,39 +1130,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:Q63.AKJT843.KQ.5 KJ94.Q75.6.AK973 A7..A98743.QJT64 T852.962.JT52.82"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a7aa897aa83623536234"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 630"]
-[ParContract "N 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  7
-N  H 10
-N  D 10
-N  C  8
-S NT  9
-S  S  7
-S  H 10
-S  D 10
-S  C  8
-E NT  3
-E  S  6
-E  H  2
-E  D  3
-E  C  5
-W NT  3
-W  S  6
-W  H  2
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "72"]
 [West "-"]
@@ -3036,39 +1146,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AKJ65.JT976.AK.2 Q93.A84.T5.KQ654 .K532.Q974.AJT87 T8742.Q.J8632.93"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a9c9aa9c9a2414324143"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 980"]
-[ParContract "NS 6H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  9
-N  H 12
-N  D  9
-N  C 10
-S NT 10
-S  S  9
-S  H 12
-S  D  9
-S  C 10
-E NT  2
-E  S  4
-E  H  1
-E  D  4
-E  C  3
-W NT  2
-W  S  4
-W  H  1
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "73"]
 [West "-"]
@@ -3078,39 +1162,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AKQT64..K7.K9863 J32.AQ964.86.AJT 8.KJT73.AQT42.Q5 975.852.J953.742"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bb9abbb9ab2243222432"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 460"]
-[ParContract "NS 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 11
-N  H  9
-N  D 10
-N  C 11
-S NT 11
-S  S 11
-S  H  9
-S  D 10
-S  C 11
-E NT  2
-E  S  2
-E  H  4
-E  D  3
-E  C  2
-W NT  2
-W  S  2
-W  H  4
-W  D  3
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "74"]
 [West "-"]
@@ -3120,39 +1178,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:T964.AQ762.4.AK2 KJ.JT4.AK863.963 A5.5.QJT95.QJT84 Q8732.K983.72.75"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9789b9789b3544235532"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "NS 3N=; NS 5C="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  7
-N  H  8
-N  D  9
-N  C 11
-S NT  9
-S  S  7
-S  H  8
-S  D  9
-S  C 11
-E NT  3
-E  S  5
-E  H  4
-E  D  4
-E  C  2
-W NT  3
-W  S  5
-W  H  5
-W  D  3
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "75"]
 [West "-"]
@@ -3162,39 +1194,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AKQJ5.Q954.J84.3 872.AJ.752.AQ965 T.KT82.KT6.KJT74 9643.763.AQ93.82"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "89988899884435544355"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2; NS 1S+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 9
-N  H 9
-N  D 8
-N  C 8
-S NT 8
-S  S 9
-S  H 9
-S  D 8
-S  C 8
-E NT 4
-E  S 4
-E  H 3
-E  D 5
-E  C 5
-W NT 4
-W  S 4
-W  H 3
-W  D 5
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "76"]
 [West "-"]
@@ -3204,39 +1210,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AK753.KQ84.3.952 J94.T93.AQ862.KQ T8.J2.KJT97.AJT6 Q62.A765.54.8743"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9998a9998a4444344443"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H  9
-N  D  8
-N  C 10
-S NT  9
-S  S  9
-S  H  9
-S  D  8
-S  C 10
-E NT  4
-E  S  4
-E  H  4
-E  D  4
-E  C  3
-W NT  4
-W  S  4
-W  H  4
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "77"]
 [West "-"]
@@ -3246,39 +1226,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:9643.AQJ6.KQT5.2 8.5.AJ983.AK9864 AKQ.KT3.42.QJT73 JT752.98742.76.5"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a9a7899a773436534365"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 630"]
-[ParContract "N 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  9
-N  H 10
-N  D  7
-N  C  8
-S NT  9
-S  S  9
-S  H 10
-S  D  7
-S  C  7
-E NT  3
-E  S  4
-E  H  3
-E  D  6
-E  C  5
-W NT  3
-W  S  4
-W  H  3
-W  D  6
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "78"]
 [West "-"]
@@ -3288,39 +1242,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AKJ43.5.J3.K6542 QT85.AK984.Q85.9 7.QJT63.AKT74.T3 962.72.962.AQJ87"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "98897988974553435434"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 9
-N  S 8
-N  H 8
-N  D 9
-N  C 7
-S NT 9
-S  S 8
-S  H 8
-S  D 9
-S  C 7
-E NT 4
-E  S 5
-E  H 5
-E  D 3
-E  C 4
-W NT 3
-W  S 5
-W  H 4
-W  D 3
-W  C 4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "79"]
 [West "-"]
@@ -3330,39 +1258,13 @@ W  C 4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AQJ4.J86.KJ432.6 K6.Q73.T76.AQ985 T32.A94.A9.KJT72 9875.KT52.Q85.43"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aa8a9aa8a83353433534"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 630"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H  8
-N  D 10
-N  C  9
-S NT 10
-S  S 10
-S  H  8
-S  D 10
-S  C  8
-E NT  3
-E  S  3
-E  H  5
-E  D  3
-E  C  4
-W NT  3
-W  S  3
-W  H  5
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "80"]
 [West "-"]
@@ -3372,39 +1274,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:8.AKJ72.A9763.52 QJ.Q986.82.AK964 AK763..K54.QJT87 T9542.T543.QJT.3"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "988a9988a94543345423"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  8
-N  H  8
-N  D 10
-N  C  9
-S NT  9
-S  S  8
-S  H  8
-S  D 10
-S  C  9
-E NT  4
-E  S  5
-E  H  4
-E  D  3
-E  C  3
-W NT  4
-W  S  5
-W  H  4
-W  D  2
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "81"]
 [West "-"]
@@ -3414,39 +1290,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:J853.AKJ973.2.A7 4.Q84.AQ643.KQ95 AK762..KJT98.JT8 QT9.T652.75.6432"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9b9978b9864234642345"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 11
-N  H  9
-N  D  9
-N  C  7
-S NT  8
-S  S 11
-S  H  9
-S  D  8
-S  C  6
-E NT  4
-E  S  2
-E  H  3
-E  D  4
-E  C  6
-W NT  4
-W  S  2
-W  H  3
-W  D  4
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "82"]
 [West "-"]
@@ -3456,39 +1306,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:Q9842.82.AKQJ8.Q 753.KQ974.4.AK94 A.AJT63.T532.J76 KJT6.5.976.T8532"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "878a4878a44653846528"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 130"]
-[ParContract "NS 3D+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  7
-N  H  8
-N  D 10
-N  C  4
-S NT  8
-S  S  7
-S  H  8
-S  D 10
-S  C  4
-E NT  4
-E  S  6
-E  H  5
-E  D  3
-E  C  8
-W NT  4
-W  S  6
-W  H  5
-W  D  2
-W  C  8
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "83"]
 [West "-"]
@@ -3498,39 +1322,13 @@ W  C  8
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AQT8.4.AKQJ97.82 K9.A32.842.AQ763 63.KQJ96.5.KJT54 J7542.T875.T63.9"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a899aa89992442324423"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  8
-N  H  9
-N  D  9
-N  C 10
-S NT 10
-S  S  8
-S  H  9
-S  D  9
-S  C  9
-E NT  2
-E  S  4
-E  H  4
-E  D  2
-E  C  3
-W NT  2
-W  S  4
-W  H  4
-W  D  2
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "84"]
 [West "-"]
@@ -3540,39 +1338,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:KJT92.7.AT6.KJT5 A54.AQ543.KJ98.2 Q.KJT82.32.AQ986 8763.96.Q754.743"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "8a87a8a87a3356233562"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 10
-N  H  8
-N  D  7
-N  C 10
-S NT  8
-S  S 10
-S  H  8
-S  D  7
-S  C 10
-E NT  3
-E  S  3
-E  H  5
-E  D  6
-E  C  2
-W NT  3
-W  S  3
-W  H  5
-W  D  6
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "85"]
 [West "-"]
@@ -3582,39 +1354,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:JT754.A94.4.AK53 AQ9.5.KQ873.T984 3.KT83.AJT92.Q72 K862.QJ762.65.J6"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "88989889895545455444"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 8
-N  H 9
-N  D 8
-N  C 9
-S NT 8
-S  S 8
-S  H 9
-S  D 8
-S  C 9
-E NT 5
-E  S 5
-E  H 4
-E  D 5
-E  C 4
-W NT 5
-W  S 5
-W  H 4
-W  D 4
-W  C 4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "86"]
 [West "-"]
@@ -3624,39 +1370,13 @@ W  C 4
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:T7.AKQJ543.K63.5 Q3.T72.Q42.AK842 K6542..A95.QJT76 AJ98.986.JT87.93"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "87967879674647546475"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 7
-N  H 9
-N  D 6
-N  C 7
-S NT 8
-S  S 7
-S  H 9
-S  D 6
-S  C 7
-E NT 4
-E  S 6
-E  H 4
-E  D 7
-E  C 5
-W NT 4
-W  S 6
-W  H 4
-W  D 7
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "87"]
 [West "-"]
@@ -3666,39 +1386,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:QJT84.AKQ753..96 K.9864.AQ853.A53 A932.T.KJT97.QJ2 765.J2.642.KT874"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9ba769ba764235742367"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 11
-N  H 10
-N  D  7
-N  C  6
-S NT  9
-S  S 11
-S  H 10
-S  D  7
-S  C  6
-E NT  4
-E  S  2
-E  H  3
-E  D  5
-E  C  7
-W NT  4
-W  S  2
-W  H  3
-W  D  6
-W  C  7
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "88"]
 [West "-"]
@@ -3708,39 +1402,13 @@ W  C  7
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AT9542.AKQ5..KQ6 KQ8.762.AQ972.T3 J7.J83.KJT86.A95 63.T94.543.J8742"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "abc98abb983214432144"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 980"]
-[ParContract "N 6H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 11
-N  H 12
-N  D  9
-N  C  8
-S NT 10
-S  S 11
-S  H 11
-S  D  9
-S  C  8
-E NT  3
-E  S  2
-E  H  1
-E  D  4
-E  C  4
-W NT  3
-W  S  2
-W  H  1
-W  D  4
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "89"]
 [West "-"]
@@ -3750,39 +1418,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AKQJ5.K87.QT98.6 T98.42.KJ2.AK852 2.A965.A75.QJT93 7643.QJT3.643.74"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "ababaaaaba3232332323"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "N 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 11
-N  H 10
-N  D 11
-N  C 10
-S NT 10
-S  S 10
-S  H 10
-S  D 11
-S  C 10
-E NT  3
-E  S  2
-E  H  3
-E  D  2
-E  C  3
-W NT  3
-W  S  2
-W  H  3
-W  D  2
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "90"]
 [West "-"]
@@ -3792,39 +1434,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AQJT7.AK95.8.754 K65.T72.AK972.J8 42.QJ8.QJT63.AT6 983.643.54.KQ932"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99987999874434644346"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 9
-N  S 9
-N  H 9
-N  D 8
-N  C 7
-S NT 9
-S  S 9
-S  H 9
-S  D 8
-S  C 7
-E NT 4
-E  S 4
-E  H 3
-E  D 4
-E  C 6
-W NT 4
-W  S 4
-W  H 3
-W  D 4
-W  C 6
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "91"]
 [West "-"]
@@ -3834,39 +1450,13 @@ W  C 6
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AKQ6.AQJ76.6.984 J2.K53.KQ843.KQ7 75.42.AJT72.AJT2 T9843.T98.95.653"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a9baba9b9b3423234232"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4H+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  9
-N  H 11
-N  D 10
-N  C 11
-S NT 10
-S  S  9
-S  H 11
-S  D  9
-S  C 11
-E NT  3
-E  S  4
-E  H  2
-E  D  3
-E  C  2
-W NT  3
-W  S  4
-W  H  2
-W  D  3
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "92"]
 [West "-"]
@@ -3876,39 +1466,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:KQT843.AKQ9.3.QT J95.64.AQ865.A53 A6.T82.KJT72.K96 72.J753.94.J8742"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bbb98bbb982224422245"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 660"]
-[ParContract "NS 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 11
-N  H 11
-N  D  9
-N  C  8
-S NT 11
-S  S 11
-S  H 11
-S  D  9
-S  C  8
-E NT  2
-E  S  2
-E  H  2
-E  D  4
-E  C  4
-W NT  2
-W  S  2
-W  H  2
-W  D  4
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "93"]
 [West "-"]
@@ -3918,39 +1482,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AKQT62.4.KQJ7.Q8 J98.AK985.A.7632 .QJT62.T98.AKJ95 7543.73.65432.T4"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "ab9bbab9bb2142221322"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 11
-N  H  9
-N  D 11
-N  C 11
-S NT 10
-S  S 11
-S  H  9
-S  D 11
-S  C 11
-E NT  2
-E  S  1
-E  H  4
-E  D  2
-E  C  2
-W NT  2
-W  S  1
-W  H  3
-W  D  2
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "94"]
 [West "-"]
@@ -3960,39 +1498,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AKJ95.AT4.QT75.4 8743.3.AK3.AQ873 2.KQJ98.92.KJT95 QT6.7652.J864.62"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aaa98aaa983324433244"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H 10
-N  D  9
-N  C  8
-S NT 10
-S  S 10
-S  H 10
-S  D  9
-S  C  8
-E NT  3
-E  S  3
-E  H  2
-E  D  4
-E  C  4
-W NT  3
-W  S  3
-W  H  2
-W  D  4
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "95"]
 [West "-"]
@@ -4002,39 +1514,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:Q9743.A97.AK753. J62.KQ32.4.KQ965 A.T854.QJ2.AJT43 KT85.J6.T986.872"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "989a7989a74442644426"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  8
-N  H  9
-N  D 10
-N  C  7
-S NT  9
-S  S  8
-S  H  9
-S  D 10
-S  C  7
-E NT  4
-E  S  4
-E  H  4
-E  D  2
-E  C  6
-W NT  4
-W  S  4
-W  H  4
-W  D  2
-W  C  6
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "96"]
 [West "-"]
@@ -4044,39 +1530,13 @@ W  C  6
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:QJT32.AKJ74.2.K6 K74.92.KQ865.QJ4 A8.Q3.AJT74.9853 965.T865.93.AT72"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9bb999bb993224432144"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4H+1; NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 11
-N  H 11
-N  D  9
-N  C  9
-S NT  9
-S  S 11
-S  H 11
-S  D  9
-S  C  9
-E NT  3
-E  S  2
-E  H  2
-E  D  4
-E  C  4
-W NT  3
-W  S  2
-W  H  1
-W  D  4
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "97"]
 [West "-"]
@@ -4086,39 +1546,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:KJT82..AT54.A874 A53.AK964.QJ93.2 .QJT72.K72.KJ953 Q9764.853.86.QT6"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "8779b8778b5664256642"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 5C="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  7
-N  H  7
-N  D  9
-N  C 11
-S NT  8
-S  S  7
-S  H  7
-S  D  8
-S  C 11
-E NT  5
-E  S  6
-E  H  6
-E  D  4
-E  C  2
-W NT  5
-W  S  6
-W  H  6
-W  D  4
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "98"]
 [West "-"]
@@ -4128,39 +1562,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AT9432.AQ.A986.7 K876.52.Q4.AQ942 5.KT94.KJT.KJT83 QJ.J8763.7532.65"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aaab9aaab93332333323"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 630"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H 10
-N  D 11
-N  C  9
-S NT 10
-S  S 10
-S  H 10
-S  D 11
-S  C  9
-E NT  3
-E  S  3
-E  H  3
-E  D  2
-E  C  3
-W NT  3
-W  S  3
-W  H  3
-W  D  2
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "99"]
 [West "-"]
@@ -4170,39 +1578,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AJ963.K86.8.A542 KQT2.Q42.AK632.T 5.A97.QJT74.KQ98 874.JT53.95.J763"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9889a9889a4554345543"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  8
-N  H  8
-N  D  9
-N  C 10
-S NT  9
-S  S  8
-S  H  8
-S  D  9
-S  C 10
-E NT  4
-E  S  5
-E  H  5
-E  D  4
-E  C  3
-W NT  4
-W  S  5
-W  H  5
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "100"]
 [West "-"]
@@ -4212,39 +1594,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:A96543.5.AQ98.K6 KQ8.AK832.72.J75 T.QJT74.J64.AQ83 J72.96.KT53.T942"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "999a9999a94342443424"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H  9
-N  D 10
-N  C  9
-S NT  9
-S  S  9
-S  H  9
-S  D 10
-S  C  9
-E NT  4
-E  S  3
-E  H  4
-E  D  2
-E  C  4
-W NT  4
-W  S  3
-W  H  4
-W  D  2
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "101"]
 [West "-"]
@@ -4254,39 +1610,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:A7.KJ93.AQT832.5 J652.2.KJ7.AQ863 QT43.AT74..KJT94 K98.Q865.9654.72"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99ba9a9ba93423434234"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4H+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H 11
-N  D 10
-N  C  9
-S NT 10
-S  S  9
-S  H 11
-S  D 10
-S  C  9
-E NT  3
-E  S  4
-E  H  2
-E  D  3
-E  C  4
-W NT  3
-W  S  4
-W  H  2
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "102"]
 [West "-"]
@@ -4296,39 +1626,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AJT5.AJT54..K962 KQ.963.KQ842.QT8 82.82.AJT76.AJ75 97643.KQ7.953.43"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a9b8ba9b8b2424124241"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4H+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  9
-N  H 11
-N  D  8
-N  C 11
-S NT 10
-S  S  9
-S  H 11
-S  D  8
-S  C 11
-E NT  2
-E  S  4
-E  H  2
-E  D  4
-E  C  1
-W NT  2
-W  S  4
-W  H  2
-W  D  4
-W  C  1
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "103"]
 [West "-"]
@@ -4338,39 +1642,13 @@ W  C  1
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AQT93.6532.AK54. K54.KT94.2.KQ963 62.A7.JT76.AJT72 J87.QJ8.Q983.854"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "898a8898a84453544535"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1S+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  9
-N  H  8
-N  D 10
-N  C  8
-S NT  8
-S  S  9
-S  H  8
-S  D 10
-S  C  8
-E NT  4
-E  S  4
-E  H  5
-E  D  3
-E  C  5
-W NT  4
-W  S  4
-W  H  5
-W  D  3
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "104"]
 [West "-"]
@@ -4380,39 +1658,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:QJT4.AT952.6.AQT 83.Q64.AK985.K86 AK96.87.QJT42.93 752.KJ3.73.J7542"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "8a9868a9865245652456"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 10
-N  H  9
-N  D  8
-N  C  6
-S NT  8
-S  S 10
-S  H  9
-S  D  8
-S  C  6
-E NT  5
-E  S  2
-E  H  4
-E  D  5
-E  C  6
-W NT  5
-W  S  2
-W  H  4
-W  D  5
-W  C  6
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "105"]
 [West "-"]
@@ -4422,39 +1674,13 @@ W  C  6
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:KQ754.KJT6.A76.6 JT96.84.KT.AK532 2.AQ9.QJ43.QJT94 A83.7532.9852.87"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "98999989984434445444"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 9
-N  S 8
-N  H 9
-N  D 9
-N  C 9
-S NT 9
-S  S 8
-S  H 9
-S  D 9
-S  C 8
-E NT 4
-E  S 4
-E  H 3
-E  D 4
-E  C 4
-W NT 4
-W  S 5
-W  H 4
-W  D 4
-W  C 4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "106"]
 [West "-"]
@@ -4464,39 +1690,13 @@ W  C 4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:Q8.KQ9842.AQ54.9 J943.AJT.7.AK543 AK62.3.K96.QJT86 T75.765.JT832.72"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99aa999aa93433434334"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H 10
-N  D 10
-N  C  9
-S NT  9
-S  S  9
-S  H 10
-S  D 10
-S  C  9
-E NT  3
-E  S  4
-E  H  3
-E  D  3
-E  C  4
-W NT  3
-W  S  4
-W  H  3
-W  D  3
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "107"]
 [West "-"]
@@ -4506,39 +1706,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AQ9.Q975.KQJ742. J4.J86.AT8.AQ642 KT65.AKT.5.KJT53 8732.432.963.987"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bccc9bbcc92111421114"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 980"]
-[ParContract "NS 6H=; N 6S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 12
-N  H 12
-N  D 12
-N  C  9
-S NT 11
-S  S 11
-S  H 12
-S  D 12
-S  C  9
-E NT  2
-E  S  1
-E  H  1
-E  D  1
-E  C  4
-W NT  2
-W  S  1
-W  H  1
-W  D  1
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "108"]
 [West "-"]
@@ -4548,39 +1722,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AKQ62.K752.T84.9 J75.A83.Q5.AK762 43.QJ.AKJ7.QJT85 T98.T964.9632.43"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "ababaababa3232332323"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 11
-N  H 10
-N  D 11
-N  C 10
-S NT 10
-S  S 11
-S  H 10
-S  D 11
-S  C 10
-E NT  3
-E  S  2
-E  H  3
-E  D  2
-E  C  3
-W NT  3
-W  S  2
-W  H  3
-W  D  2
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "109"]
 [West "-"]
@@ -4590,39 +1738,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:7.AKJ873.83.AT32 AJ84.QT6.KQ742.7 Q63.5.AJT65.K965 KT952.942.9.QJ84"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "75a7a75a7a6835368353"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "EW -500"]
-[ParContract "EW 4SX-2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  7
-N  S  5
-N  H 10
-N  D  7
-N  C 10
-S NT  7
-S  S  5
-S  H 10
-S  D  7
-S  C 10
-E NT  6
-E  S  8
-E  H  3
-E  D  5
-E  C  3
-W NT  6
-W  S  8
-W  H  3
-W  D  5
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "110"]
 [West "-"]
@@ -4632,39 +1754,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AKJ63..AQT95.JT5 QT4.KQ863.7.A632 85.AJT75.KJ3.Q87 972.942.8642.K94"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9a8b99a8b83352433524"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 10
-N  H  8
-N  D 11
-N  C  9
-S NT  9
-S  S 10
-S  H  8
-S  D 11
-S  C  8
-E NT  3
-E  S  3
-E  H  5
-E  D  2
-E  C  4
-W NT  3
-W  S  3
-W  H  5
-W  D  2
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "111"]
 [West "-"]
@@ -4674,39 +1770,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AT4.K875.KQ752.3 K9.J9.T863.AK542 J752.QT.A9.QJT97 Q863.A6432.J4.86"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "88798887984554545545"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 120"]
-[ParContract "NS 1N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 8
-N  H 7
-N  D 9
-N  C 8
-S NT 8
-S  S 8
-S  H 7
-S  D 9
-S  C 8
-E NT 4
-E  S 5
-E  H 5
-E  D 4
-E  C 5
-W NT 4
-W  S 5
-W  H 5
-W  D 4
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "112"]
 [West "-"]
@@ -4716,39 +1786,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AQJT8.63.AJ854.T K765.AK974.6.Q93 2.QJT85.T97.AKJ5 943.2.KQ32.87642"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99aa899aa83432533325"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 420"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H 10
-N  D 10
-N  C  8
-S NT  9
-S  S  9
-S  H 10
-S  D 10
-S  C  8
-E NT  3
-E  S  4
-E  H  3
-E  D  2
-E  C  5
-W NT  3
-W  S  3
-W  H  3
-W  D  2
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "113"]
 [West "-"]
@@ -4758,39 +1802,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:986.KQJ853.AQJ9. KJ.A96.T75.KQ432 AT72.7.K62.AJT97 Q543.T42.843.865"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "b9bb9b9bb92322423224"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 460"]
-[ParContract "NS 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S  9
-N  H 11
-N  D 11
-N  C  9
-S NT 11
-S  S  9
-S  H 11
-S  D 11
-S  C  9
-E NT  2
-E  S  3
-E  H  2
-E  D  2
-E  C  4
-W NT  2
-W  S  3
-W  H  2
-W  D  2
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "114"]
 [West "-"]
@@ -4800,39 +1818,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AQJ652..QT72.A86 KT83.KQ854.K9.73 4.AJT32.J5.KQJ95 97.976.A8643.T42"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9978a9978a4465344653"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H  7
-N  D  8
-N  C 10
-S NT  9
-S  S  9
-S  H  7
-S  D  8
-S  C 10
-E NT  4
-E  S  4
-E  H  6
-E  D  5
-E  C  3
-W NT  4
-W  S  4
-W  H  6
-W  D  5
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "115"]
 [West "-"]
@@ -4842,39 +1834,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:KQ93.AK9832.4.83 J74.JT4.AQ976.A2 AT.Q.KJT83.QJT75 8652.765.52.K964"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a9989a99893334433344"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  9
-N  H  9
-N  D  8
-N  C  9
-S NT 10
-S  S  9
-S  H  9
-S  D  8
-S  C  9
-E NT  3
-E  S  3
-E  H  3
-E  D  4
-E  C  4
-W NT  3
-W  S  3
-W  H  3
-W  D  4
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "116"]
 [West "-"]
@@ -4884,39 +1850,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:93.AQJ73.AQT97.6 KJ75.K54.6.KQ875 AT82.9.J32.AJT43 Q64.T862.K854.92"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "989b8989b84432545325"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 600"]
-[ParContract "NS 3N=; NS 5D="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  8
-N  H  9
-N  D 11
-N  C  8
-S NT  9
-S  S  8
-S  H  9
-S  D 11
-S  C  8
-E NT  4
-E  S  4
-E  H  3
-E  D  2
-E  C  5
-W NT  4
-W  S  5
-W  H  3
-W  D  2
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "117"]
 [West "-"]
@@ -4926,39 +1866,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:KJ9.AKJ72..KJ532 Q74.Q93.AQ765.QT A852.65.KJT93.A4 T63.T84.842.9876"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bbcacbbcac2113121131"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 1430"]
-[ParContract "NS 6H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 11
-N  H 12
-N  D 10
-N  C 12
-S NT 11
-S  S 11
-S  H 12
-S  D 10
-S  C 12
-E NT  2
-E  S  1
-E  H  1
-E  D  3
-E  C  1
-W NT  2
-W  S  1
-W  H  1
-W  D  3
-W  C  1
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "118"]
 [West "-"]
@@ -4968,39 +1882,13 @@ W  C  1
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:975.AKJ76.KQ654. AQ64.Q82.9.AQ762 JT32.3.AJ2.KJT85 K8.T954.T873.943"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "889a6889a65543755437"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S  8
-N  H  9
-N  D 10
-N  C  6
-S NT  8
-S  S  8
-S  H  9
-S  D 10
-S  C  6
-E NT  5
-E  S  5
-E  H  4
-E  D  3
-E  C  7
-W NT  5
-W  S  5
-W  H  4
-W  D  3
-W  C  7
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "119"]
 [West "-"]
@@ -5010,39 +1898,13 @@ W  C  7
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AK8765.5.AK2.K83 QT3.AQ987.Q.J975 .KJT63.T974.AQ64 J942.42.J8653.T2"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aa99aaa99a3343333433"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 630"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H  9
-N  D  9
-N  C 10
-S NT 10
-S  S 10
-S  H  9
-S  D  9
-S  C 10
-E NT  3
-E  S  3
-E  H  4
-E  D  3
-E  C  3
-W NT  3
-W  S  3
-W  H  4
-W  D  3
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "120"]
 [West "-"]
@@ -5052,39 +1914,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AK973.J843.A32.4 Q64.K765.8.AQ963 J.A.KQT974.KJT75 T852.QT92.J65.82"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "987b8987b83562434624"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N=; NS 5D="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  8
-N  H  7
-N  D 11
-N  C  8
-S NT  9
-S  S  8
-S  H  7
-S  D 11
-S  C  8
-E NT  3
-E  S  5
-E  H  6
-E  D  2
-E  C  4
-W NT  3
-W  S  4
-W  H  6
-W  D  2
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "121"]
 [West "-"]
@@ -5094,39 +1930,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AKJ42.AKJ87.65.5 Q975.4.A74.KQ932 T6.QT2.KT2.AJT64 83.9653.QJ983.87"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "abb78abb782225522255"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4H+1; NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 11
-N  H 11
-N  D  7
-N  C  8
-S NT 10
-S  S 11
-S  H 11
-S  D  7
-S  C  8
-E NT  2
-E  S  2
-E  H  2
-E  D  5
-E  C  5
-W NT  2
-W  S  2
-W  H  2
-W  D  5
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "122"]
 [West "-"]
@@ -5136,39 +1946,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AKJ5.AKQT98.JT.5 7.J643.K93.AK632 Q93.5.AQ76.QJT98 T8642.72.8542.74"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bababbabab2313223132"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 660"]
-[ParContract "NS 3N+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 10
-N  H 11
-N  D 10
-N  C 11
-S NT 11
-S  S 10
-S  H 11
-S  D 10
-S  C 11
-E NT  2
-E  S  3
-E  H  1
-E  D  3
-E  C  2
-W NT  2
-W  S  3
-W  H  1
-W  D  3
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "123"]
 [West "-"]
@@ -5178,39 +1962,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AQJ87.K.73.QT765 K95.953.AK982.K8 4.AJ42.QJT54.AJ9 T632.QT876.6.432"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "998aa998aa3353233532"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "NS 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H  8
-N  D 10
-N  C 10
-S NT  9
-S  S  9
-S  H  8
-S  D 10
-S  C 10
-E NT  3
-E  S  3
-E  H  5
-E  D  3
-E  C  2
-W NT  3
-W  S  3
-W  H  5
-W  D  3
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "124"]
 [West "-"]
@@ -5220,39 +1978,13 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AQ97432.QJ4..K53 K86.K765.AK863.T J5.A3.QJT72.QJ87 T.T982.954.A9642"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "8a5678a5674377443775"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 10
-N  H  5
-N  D  6
-N  C  7
-S NT  8
-S  S 10
-S  H  5
-S  D  6
-S  C  7
-E NT  4
-E  S  3
-E  H  7
-E  D  7
-E  C  4
-W NT  4
-W  S  3
-W  H  7
-W  D  7
-W  C  5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "125"]
 [West "-"]
@@ -5262,39 +1994,13 @@ W  C  5
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AJ74.K76432.A65. K63.QJ85.K.KQ873 T5.AT.JT94.AJT92 Q982.9.Q8732.654"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "88987889874544545455"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 1H+2"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 8
-N  S 8
-N  H 9
-N  D 8
-N  C 7
-S NT 8
-S  S 8
-S  H 9
-S  D 8
-S  C 7
-E NT 4
-E  S 5
-E  H 4
-E  D 4
-E  C 5
-W NT 4
-W  S 5
-W  H 4
-W  D 5
-W  C 5
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "126"]
 [West "-"]
@@ -5304,39 +2010,13 @@ W  C 5
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:QT953.8.AK852.KT AJ87.AK752.J4.65 K.QJT94.QT9.AQ42 642.63.763.J9873"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a9ab9a9ab93331433314"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  9
-N  H 10
-N  D 11
-N  C  9
-S NT 10
-S  S  9
-S  H 10
-S  D 11
-S  C  9
-E NT  3
-E  S  3
-E  H  3
-E  D  1
-E  C  4
-W NT  3
-W  S  3
-W  H  3
-W  D  1
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "127"]
 [West "-"]
@@ -5346,39 +2026,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:AQJ954.AT85.Q3.9 T72.Q63.K6.AQ753 K.K97.T852.KJT64 863.J42.AJ974.82"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "9a9779a9774346443464"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4S="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S 10
-N  H  9
-N  D  7
-N  C  7
-S NT  9
-S  S 10
-S  H  9
-S  D  7
-S  C  7
-E NT  4
-E  S  3
-E  H  4
-E  D  6
-E  C  4
-W NT  4
-W  S  3
-W  H  4
-W  D  6
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "128"]
 [West "-"]
@@ -5388,39 +2042,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:KQ983.KJ73..K952 A75.T5.AQ854.J76 T2.A62.KJT73.A43 J64.Q984.962.QT8"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aaa9aaaa9a3324333243"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H 10
-N  D  9
-N  C 10
-S NT 10
-S  S 10
-S  H 10
-S  D  9
-S  C 10
-E NT  3
-E  S  3
-E  H  2
-E  D  4
-E  C  3
-W NT  3
-W  S  3
-W  H  2
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "129"]
 [West "-"]
@@ -5430,39 +2058,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AQJ86.J7.2.AJT72 K42.KQ63.KQ753.6 75.AT94.AJT86.Q8 T93.852.94.K9543"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aa99aaa99a2344323443"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 430"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H  9
-N  D  9
-N  C 10
-S NT 10
-S  S 10
-S  H  9
-S  D  9
-S  C 10
-E NT  2
-E  S  3
-E  H  4
-E  D  4
-E  C  3
-W NT  2
-W  S  3
-W  H  4
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "130"]
 [West "-"]
@@ -5472,39 +2074,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:K86.AQT954.2.K98 Q5.J76.AQ964.A75 AT92.K3.KJT87.64 J743.82.53.QJT32"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99a9698a863434734346"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 620"]
-[ParContract "NS 4H="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H 10
-N  D  9
-N  C  6
-S NT  9
-S  S  8
-S  H 10
-S  D  8
-S  C  6
-E NT  3
-E  S  4
-E  H  3
-E  D  4
-E  C  7
-W NT  3
-W  S  4
-W  H  3
-W  D  4
-W  C  6
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "131"]
 [West "-"]
@@ -5514,39 +2090,13 @@ W  C  6
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AQJ43.AJ3.8.QT95 K87.Q84.AK973.84 .KT7.QJT64.AK632 T9652.9652.52.J7"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "b9aaca9aac2433124331"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 920"]
-[ParContract "NS 6C="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S  9
-N  H 10
-N  D 10
-N  C 12
-S NT 10
-S  S  9
-S  H 10
-S  D 10
-S  C 12
-E NT  2
-E  S  4
-E  H  3
-E  D  3
-E  C  1
-W NT  2
-W  S  4
-W  H  3
-W  D  3
-W  C  1
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "132"]
 [West "-"]
@@ -5556,39 +2106,13 @@ W  C  1
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:KQ2.KQJ875.Q74.5 T.AT62.K32.KQ986 A843.93.J9.AJT32 J9765.4.AT865.74"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "77956779566648766486"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 140"]
-[ParContract "NS 2H+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 7
-N  S 7
-N  H 9
-N  D 5
-N  C 6
-S NT 7
-S  S 7
-S  H 9
-S  D 5
-S  C 6
-E NT 6
-E  S 6
-E  H 4
-E  D 8
-E  C 7
-W NT 6
-W  S 6
-W  H 4
-W  D 8
-W  C 6
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "133"]
 [West "-"]
@@ -5598,39 +2122,13 @@ W  C 6
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:KQ765.AK8532.64. T.QJ4.KJT7.AK852 AJ3.76.A53.QJT43 9842.T9.Q982.976"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "8bb678bb673227632276"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 650"]
-[ParContract "NS 4H+1; NS 4S+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  8
-N  S 11
-N  H 11
-N  D  6
-N  C  7
-S NT  8
-S  S 11
-S  H 11
-S  D  6
-S  C  7
-E NT  3
-E  S  2
-E  H  2
-E  D  7
-E  C  6
-W NT  3
-W  S  2
-W  H  2
-W  D  7
-W  C  6
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "134"]
 [West "-"]
@@ -5640,39 +2138,13 @@ W  C  6
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:AJT654.A4.AT97.8 Q73.9.KJ86.KQ743 .KQ8763.Q2.AJT95 K982.JT52.543.62"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99b9999b894424344243"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 450"]
-[ParContract "NS 4H+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT  9
-N  S  9
-N  H 11
-N  D  9
-N  C  9
-S NT  9
-S  S  9
-S  H 11
-S  D  8
-S  C  9
-E NT  4
-E  S  4
-E  H  2
-E  D  4
-E  C  3
-W NT  4
-W  S  4
-W  H  2
-W  D  4
-W  C  3
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "135"]
 [West "-"]
@@ -5682,39 +2154,13 @@ W  C  3
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AT983.AKJ3.9543. K76.Q5.Q82.AQ943 J.T84.AK76.KJT86 Q542.9762.JT.752"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "aaab99aab93332433324"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 630"]
-[ParContract "N 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S 10
-N  H 10
-N  D 11
-N  C  9
-S NT  9
-S  S 10
-S  H 10
-S  D 11
-S  C  9
-E NT  3
-E  S  3
-E  H  3
-E  D  2
-E  C  4
-W NT  3
-W  S  3
-W  H  3
-W  D  2
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "136"]
 [West "-"]
@@ -5724,39 +2170,13 @@ W  C  4
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:AQ3.KJT43.K954.3 652.AQ97.7.AK654 KT87.5.A32.QJT92 J94.862.QJT86.87"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "99899898994354443544"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 400"]
-[ParContract "N 3N="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
-N NT 9
-N  S 9
-N  H 8
-N  D 9
-N  C 9
-S NT 8
-S  S 9
-S  H 8
-S  D 9
-S  C 9
-E NT 4
-E  S 3
-E  H 5
-E  D 4
-E  C 4
-W NT 4
-W  S 3
-W  H 5
-W  D 4
-W  C 4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "137"]
 [West "-"]
@@ -5766,39 +2186,13 @@ W  C 4
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:KT7.AQJT8.AQ85.5 Q3.K65.J92.AQ862 A642.9.K43.KJT43 J985.7432.T76.97"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "bbbcbbbbcb2221222212"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 920"]
-[ParContract "NS 6D="]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 11
-N  S 11
-N  H 11
-N  D 12
-N  C 11
-S NT 11
-S  S 11
-S  H 11
-S  D 12
-S  C 11
-E NT  2
-E  S  2
-E  H  2
-E  D  1
-E  C  2
-W NT  2
-W  S  2
-W  H  2
-W  D  1
-W  C  2
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
 
 [Event "Hand simulated by dealer with file ./dlr/Dealer-Trap-Pass.dlr, seed 2885869710"]
 [Site "-"]
+[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
 [Date ""]
 [Board "138"]
 [West "-"]
@@ -5808,33 +2202,7 @@ W  C  2
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:AK9.K54.QT9865.8 T6.J98.AK7.KQ963 Q52.AQT.42.AJT74 J8743.7632.J3.52"]
-[Scoring ""]
-[Declarer ""]
-[Contract ""]
-[Result ""]
-[BCFlags "1f"]
-[DoubleDummyTricks "a89b9a89b93532435324"]
-[Generator "Dealer Version 2.0 by Hans, Henk, and JGM"]
-[OptimumScore "NS 630"]
-[ParContract "NS 3N+1"]
-[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
-N NT 10
-N  S  8
-N  H  9
-N  D 11
-N  C  9
-S NT 10
-S  S  8
-S  H  9
-S  D 11
-S  C  9
-E NT  3
-E  S  5
-E  H  3
-E  D  2
-E  C  4
-W NT  3
-W  S  5
-W  H  3
-W  D  2
-W  C  4
+[Declarer "?"]
+[Contract "?"]
+[Result "?"]
+
