@@ -78,7 +78,8 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     sys.stderr.write(f'NS = {args.bidderNS}\n')
-    sys.stderr.write(f'EW = {args.bidderEW}\n')
+    sys.stderr.write(f'EW = {args.bidderEW}\n')    
+    sys.stderr.write(f'DB = {args.db}\n')
 
     configuration_ns = conf.load(args.bidderNS)
     configuration_ew = conf.load(args.bidderEW)
@@ -161,6 +162,6 @@ if __name__ == '__main__':
                 sys.stderr.write('{1} Board Bid in {0:0.2f} seconds.\n'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 db[uuid.uuid4().hex] = deal
 
-if db_name:
-    sys.stderr.write(f"Boards saved in {base_path}/{db_name}\n")
+    if db_name:
+        sys.stderr.write(f"Boards saved in {base_path}/{db_name}\n")
 
