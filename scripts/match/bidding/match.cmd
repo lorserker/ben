@@ -1,8 +1,9 @@
 set BEN_HOME=D:\github\ben\
 set trust=%1
 set boards=%2
+set db=%3
 
-python auction.py --bidderNS=%trust%.conf --bidderEW=default.conf --set=%boards% > .\%trust%\auctionsNS.json
+python auction.py --bidderNS=%trust%.conf --bidderEW=default.conf --set=%boards% --db=%db% > .\%trust%\auctionsNS.json
 python auction.py --bidderNS=default.conf --bidderEW=%trust%.conf --set=%boards% > .\%trust%\auctionsEW.json
 
 type ".\%trust%\auctionsNS.json" | python lead.py --bidder=default.conf > .\%trust%\leads1.json
