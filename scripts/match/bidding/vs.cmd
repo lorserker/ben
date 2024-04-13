@@ -1,13 +1,14 @@
 set BEN_HOME=D:\github\ben\
 set a=%1
 set b=%2
-set boards=%3
+set c=%3
+set boards=%4
 
-python auction.py --bidderNS=%a%.conf --bidderEW=default.conf --set=%boards% > .\%a%vs%b%\auctions%a%.json
-python auction.py --bidderNS=%b%.conf --bidderEW=default.conf --set=%boards% > .\%a%vs%b%\auctions%b%.json
+python auction.py --bidderNS=%a%.conf --bidderEW=%c%.conf --set=%boards% > .\%a%vs%b%\auctions%a%.json
+python auction.py --bidderNS=%b%.conf --bidderEW=%c%.conf --set=%boards% > .\%a%vs%b%\auctions%b%.json
 
-type ".\%a%vs%b%\auctions%a%.json" | python lead.py --bidder=default.conf > .\%a%vs%b%\leads1.json
-type ".\%a%vs%b%\auctions%b%.json" | python lead.py --bidder=default.conf > .\%a%vs%b%\leads2.json
+type ".\%a%vs%b%\auctions%a%.json" | python lead.py --bidder=%c%.conf > .\%a%vs%b%\leads1.json
+type ".\%a%vs%b%\auctions%b%.json" | python lead.py --bidder=%c%.conf > .\%a%vs%b%\leads2.json
 
 type ".\%a%vs%b%\leads1.json" | python score.py > .\%a%vs%b%\results1.json  
 type ".\%a%vs%b%\leads2.json" | python score.py > .\%a%vs%b%\results2.json  

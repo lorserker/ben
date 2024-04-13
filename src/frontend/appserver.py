@@ -491,7 +491,7 @@ def delete_deal(deal_id):
     if not is_valid_deal_id(deal_id):
         print("Invalid deal ID")
         raise HTTPError(400, "Invalid deal ID")
-    if port != 8888:
+    if port != 8888 and host != "localhost":
         print("Port not valid")
         raise HTTPError(401, "Not Auth")
     try:
