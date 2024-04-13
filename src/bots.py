@@ -453,9 +453,9 @@ class BotBid:
             contract = bidding.get_contract(sample_auction)
             # All pass doens't really fit, and is always 0 - we ignore it for now
             if contract is None:
-                contracts.append("pass")
-                strains[i] = -1
-                declarers[i] = -1
+                contracts.append("PASS")
+                strains[i] = None
+                declarers[i] = None
             else:
                 contracts.append(contract)
                 strains[i] = 'NSHDC'.index(contract[1])
@@ -505,7 +505,7 @@ class BotBid:
             contract = bidding.get_contract(sample_auction)
             # All pass doesn't really fit, and is always 0 - we ignore it for now
             if contract is None:
-                contracts.append("pass")
+                contracts.append("PASS")
                 strains[i] = -1
                 declarers[i] = -1
             else:
@@ -548,7 +548,7 @@ class BotBid:
             contract = bidding.get_contract(sample_auction)
             # All pass doesn't really fit, and is always 0 - we ignore it for now
             if contract is None:
-                contracts.append("pass")
+                contracts.append("PASS")
                 strains[i] = -1
                 declarers[i] = -1
             else:

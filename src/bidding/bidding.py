@@ -160,9 +160,13 @@ def get_contract(auction):
     return contract + xx + declarer
 
 def get_strain_i(contract):
+    if contract is None or contract == "PASS":
+        return None
     return 'NSHDC'.index(contract[1])
 
 def get_decl_i(contract):
+    if contract is None or contract == "PASS":
+        return None
     return 'NESW'.index(contract[-1])
 
 def get_bid_ids(auction, player_i, n_steps):
