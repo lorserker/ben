@@ -11,7 +11,7 @@ from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 from bidding import bidding
 
 import carding
-from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed
+from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed, get_play_status
 
 
 class BotBid:
@@ -968,7 +968,7 @@ class CardPlayer:
                     self.find_and_update_constraints(players_states, quality,self.player_i)
 
 
-    async def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
+    async def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
@@ -985,16 +985,16 @@ class CardPlayer:
             card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
             if self.verbose:
                 print("PIMC result:",card52_dd)
-            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples)            
+            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples, play_status)            
         else:
             if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
                 card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
                 if self.verbose:
                     print("PIMC result:",card52_dd)
-                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples)            
+                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples, play_status)            
             else:
                 card52_dd = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
-                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples)
+                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples, play_status)
 
         return card_resp
 
@@ -1189,7 +1189,7 @@ class CardPlayer:
         )
         return x.reshape(-1)
 
-    def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples):
+    def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples, play_status):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
         #if trick_i == 4:
@@ -1209,13 +1209,13 @@ class CardPlayer:
 
         candidate_cards = []
         
-        for card, (e_tricks, e_score, e_make, msg) in card_dd.items():
-            card32 = deck52.card52to32(deck52.encode_card(str(card)))
-
+        for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
+            card32 = deck52.card52to32(deck52.encode_card(str(card52)))
+            print(card52)
             insta_score=card_nn.get(card32, 0)
             if insta_score >= self.models.pimc_trust_NN:
                 candidate_cards.insert(0,CandidateCard(
-                    card=card,
+                    card=card52,
                     insta_score=insta_score,
                     expected_tricks_dd=e_tricks,
                     p_make_contract=e_make,
@@ -1244,7 +1244,7 @@ class CardPlayer:
         return best_card_resp
 
 
-    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples):
+    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples, play_status):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
         if self.verbose:
@@ -1262,10 +1262,10 @@ class CardPlayer:
 
         candidate_cards = []
         
+        # Small cards come from DD, but if a sequence is present it is the highest card
         for card52, (e_tricks, e_score, e_make) in card_dd.items():
             card32 = deck52.card52to32(card52)
-
-            candidate_cards.insert(0, CandidateCard(
+            candidate_cards.append(CandidateCard(
                 card=Card.from_code(card52),
                 insta_score=card_nn.get(card32, 0),
                 expected_tricks_dd=e_tricks,
@@ -1296,7 +1296,7 @@ class CardPlayer:
                 candidate_cards = [card for _, card in candidate_cards]
                 who = "Make"
 
-        right_card = carding.select_right_card_for_play(candidate_cards, self.rng, self.contract, self.models, self.hand_str, self.player_i, self.x_play[0, trick_i, :32], current_trick)
+        right_card = carding.select_right_card_for_play(candidate_cards, self.rng, self.contract, self.models, self.hand_str, self.player_i, self.x_play[0, trick_i, :32], current_trick, play_status)
         best_card_resp = CardResp(
             card=right_card,
             candidates=candidate_cards,

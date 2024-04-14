@@ -5,7 +5,7 @@ import deck52
 from bidding import bidding
 from sample import Sample
 from objects import BidResp, Card, CardResp
-
+from util import get_play_status
 class CardByCard:
 
     def __init__(self, dealer, vuln, hands, auction, play, models, sampler, verbose):
@@ -139,6 +139,8 @@ class CardByCard:
                 
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
+                    play_status = get_play_status(card_players[player_i].hand52,current_trick52)
+
                     rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, self.vuln, self.models, card_players[player_i].rng)
 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)

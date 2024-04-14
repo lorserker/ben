@@ -21,7 +21,7 @@ def find_nth_occurrence(arr, target, nth):
     raise ValueError(f"Could not find the {nth}-th occurrence of '{target}' within the array.")
 
 
-def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, player_i, played_cards, current_trick):
+def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, player_i, played_cards, current_trick, play_status):
     if len(candidate_cards) == 1:
         return candidate_cards[0].card
     

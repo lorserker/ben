@@ -33,7 +33,7 @@ from bidding.binary import DealData
 from objects import CardResp, Card, BidResp
 from claim import Claimer
 from pbn2ben import load
-from util import calculate_seed
+from util import calculate_seed, get_play_status
 from pimc.PIMC import BGADLL
 from pimc.PIMCDef import BGADefDLL
 
@@ -60,8 +60,8 @@ class AsyncBotLead(bots.BotLead):
         return self.find_opening_lead(auction)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
-        return await self.play_card(trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits)
+    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
+        return await self.play_card(trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
     
     
 class Driver:
@@ -393,6 +393,8 @@ class Driver:
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
                     continue
 
+                play_status = get_play_status(card_players[player_i].hand52,current_trick52)
+
                 if isinstance(card_players[player_i], bots.CardPlayer):
                     rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].rng)
                     assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
@@ -409,7 +411,7 @@ class Driver:
 
                 card_resp = None
                 while card_resp is None:
-                    card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits)
+                    card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
 
                     if (str(card_resp.card).startswith("Conceed")) :
                             self.claimedbydeclarer = False

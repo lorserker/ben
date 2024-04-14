@@ -132,12 +132,13 @@
             bidSeqPoint = 0;
             document.getElementById('biddingInput').value = ''
             document.getElementById('playInput').value = ''
-            let lin = document.getElementById('importInput').value;
+            // Handle firefox lin-link
+            let lin = decodeURI(document.getElementById('importInput').value).replace(/%2C/g,",");
 
             var startIndex = 0;
             parts = lin.split('=')
             if (parts.length > 1) {
-                lin = parts[1].trim();
+                lin = parts[parts.length-1].trim();
             } 
             while (startIndex < lin.length) {
                 var openPipeIndex = lin.indexOf('|', startIndex);
