@@ -421,7 +421,7 @@ def home():
                 else:
                     tricks += 13 - len(deal['trick_winners'])-deal['claimed']
             
-            if deal["bidding_only"]:
+            if "bidding_only" in deal and deal["bidding_only"]:
                 tricks = ""
 
             if deal['contract'] is not None:
