@@ -1226,9 +1226,9 @@ class CardPlayer:
         #candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd, c.expected_score_dd, c.insta_score), reverse=True)
 
         if self.models.matchpoint:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), x[0]), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
         else:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), x[0]), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
 
         candidate_cards = [card for _, card in candidate_cards]
 
@@ -1279,20 +1279,20 @@ class CardPlayer:
         # We should probably also consider bidding_scores in this 
         # If we have bad quality of samples we should probably just use the neural network
         if valid_bidding_samples >= 0:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), x[0]), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
             candidate_cards = [card for _, card in candidate_cards]
             who = "NN"
         else:
             if self.models.use_biddingquality_in_eval:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 2), round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 2), round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), -x[0]), reverse=True)
                 candidate_cards = [card for _, card in candidate_cards]
-                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), round(x[1].expected_tricks_dd, 1), x[0]), reverse=True)
+                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), round(x[1].expected_tricks_dd, 1), -x[0]), reverse=True)
                 candidate_cards2 = [card for _, card in candidate_cards]
                 if candidate_cards[0].expected_score_dd < 0 and candidate_cards2[0].expected_score_dd:
                     candidate_cards = candidate_cards2
                 who = "DD"
             else:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), round(x[1].expected_tricks_dd, 1), x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), round(x[1].expected_tricks_dd, 1), -x[0]), reverse=True)
                 candidate_cards = [card for _, card in candidate_cards]
                 who = "Make"
 

@@ -32,10 +32,9 @@
         
         <button onclick="readImportedFile()" id="importBtn" disabled>Import file</button>&nbsp;&nbsp;<input type="file" id="importFile" onchange="enableImportBtn()"><br><br>
 
-        <!-- <button id="importButton">Paste</button> -->
         
         <textarea id="importInput" rows="8" cols="70"></textarea>
-        <button onclick="parseDataFromClipboard()">Parse data</button><br><br>
+        <button onclick="parseDataFromClipboard()">Parse data as PBN</button>&nbsp;&nbsp;&nbsp;<button onclick="processLinFile()">Parse data as LIN</button><br><br>
         <div id="parsedData" style="display: hidden"></div>
 
         <label for="dealerInput">Dealer:</label>
@@ -61,7 +60,7 @@
         <label for="handInput">Hand:</label>
         <input type="text" id="handInput" size="40"  placeholder="Enter hand (ie AKJT.QT9.J987.5432)" required onmouseover="showTooltip(1)" onmouseout="hideTooltip(1)"><br>
 
-        <label for="handInput">Dummy/Declarer:</label>
+        <label for="dummyInput">Dummy/Declarer:</label>
         <input type="text" id="dummyInput" size="40" placeholder="Enter hand (e.g., AKJT.QT9.J987.5432)" required onmouseover="showTooltip(1)" onmouseout="hideTooltip(1)"><br>
         <small id="tooltip1" style="display: none;">Please enter the hand as four suits separated by '.'</small><br>
             
@@ -82,7 +81,18 @@
 
     <script>
 
+        const suitchars = 'CDHSN';
+        const cardchars = '23456789TJQKA';
+        const seatIndices = {'N': 0, 'E': 1, 'S': 2, 'W': 3};
         let hands = [];
+        var howManyCards = new Array(4);
+        var howManyCardsDealt = new Array(4);
+        var howManySuit = new Array(4);
+        var howManySuitDealt = new Array(4);
+        var howManyXs = new Array(4);
+        var deck = new Array(4);
+        var openinglead = ''
+
 
         window.addEventListener('DOMContentLoaded', (event) => {
             enableImportBtn();
@@ -109,7 +119,6 @@
             const [seatStr, handsArr] = handLine.split(':');
 
             const handsNesw = [''];
-            const seatIndices = {'N': 0, 'E': 1, 'S': 2, 'W': 3};
             const index = seatIndices[seatStr];
 
             handsArr.split(' ').forEach((hand, idx) => {
@@ -117,6 +126,264 @@
             });
 
             return handsNesw;
+        }
+        function processLinFile() {
+            bidSequence = [];
+            bidSeqPoint = 0;
+            document.getElementById('biddingInput').value = ''
+            document.getElementById('playInput').value = ''
+            let lin = document.getElementById('importInput').value;
+
+            var startIndex = 0;
+            parts = lin.split('=')
+            if (parts.length > 1) {
+                lin = parts[1].trim();
+            } 
+            while (startIndex < lin.length) {
+                var openPipeIndex = lin.indexOf('|', startIndex);
+                if (openPipeIndex < 2) break;
+                var closePipeIndex = lin.indexOf('|', openPipeIndex + 1);
+                if (closePipeIndex < 0) break;
+
+                var command = lin.substring(openPipeIndex - 2, openPipeIndex).toUpperCase();
+                var param = lin.substring(openPipeIndex + 1, closePipeIndex, 1);
+
+                processLinCommand(command, param);
+                startIndex = closePipeIndex + 1;
+            }
+            document.getElementById('biddingInput').value = bidSequence.join('-')
+            const seat = document.getElementById('seatInput').value;
+            const player = ("NESW".indexOf(seat) + 2) % 4
+            var openingsuit = suitchars.indexOf(openinglead[0])
+            var openingcard = cardchars.indexOf(openinglead[1])
+            var lefty = deck[openingsuit][openingcard]
+            var dummy = (lefty + 1) % 4
+            document.getElementById('handInput').value = ''
+            document.getElementById('dummyInput').value = ''
+            for (let i = 3; i >= 0; i--) {
+                for (let j = 12; j >= 0; j--) {
+                    if ((player) === deck[i][j]) {
+                        document.getElementById('handInput').value += cardchars[j]
+                    }
+                    if (dummy === deck[i][j]) {
+                        document.getElementById('dummyInput').value += cardchars[j]
+                    }
+                }
+                if (i > 0) {
+                    document.getElementById('handInput').value += '.'
+                    document.getElementById('dummyInput').value += '.'
+                }
+            }
+
+        }
+
+        function processLinCommand(command, param) {
+            switch (command) {
+                case 'DT':
+                    // Ignore here
+                    break;
+                case 'SV':
+                    value = 'None'
+                    if (param === 'n') {
+                        value = 'NS'
+                    }
+                    if (param === 'e') {
+                        value = 'EW'
+                    }
+                    if (param === 'b') {
+                        value = 'All'
+                    }
+                    // Select the option node with text equal to "All"
+
+                    let vulOptions = document.querySelectorAll("#vulInput option");
+                    for (const element of vulOptions) {
+                        if (element.text == value) {
+                            element.setAttribute("selected", "");
+                            break;
+                        }
+                    }
+                    break;
+                case 'MD':
+                    deal(param);
+                    document.getElementById('dealerInput').value = "SWNE"[parseInt(param.charAt(0)) - 1]
+                    break;
+                case 'SK':
+                    // Ignore here
+                    break;
+                case 'MB':
+                    processBidding(param);
+                    break;
+                case 'PC':
+                    if (openinglead == "") {
+                        openinglead = param
+                    }
+                    document.getElementById('playInput').value += param.replace(/\s+/g, '') + " ";
+                    break;
+                case 'AN':
+                    // Ignore here
+                    break;
+                case 'AH':
+                    // Ignore here
+                    break;
+                case 'PN':
+                    // Ignore here
+                    break;
+                case 'MC':
+                    // Ignore here
+                    break;
+                case 'NT':
+                    // Ignore here
+                    break;
+                case 'AT':
+                    // Ignore here
+                    break;
+                case 'ST':
+                    // Ignore here
+                    break;
+                case 'RH':
+                    // Ignore here
+                    break;
+            }
+        }
+
+        function processBidding(bidding) {
+            var i = 0;
+
+            while (i < bidding.length) {
+                var c = bidding.charAt(i).toUpperCase();
+                var len = 0;
+
+                if (c == '-') {
+                    i++;
+                    continue;
+                }
+                if (c == 'P' || c == 'D' || c == 'R' || c == '?') {
+                    len = 1;
+                } else if (c == 'X') {
+                    len = 1;
+
+                    if (i < bidding.length - 1 && bidding.charAt(i + 1).toUpperCase() == 'X') {
+                        len++;
+                    }
+                } else if (c >= '1' && c <= '7') {
+                    len = 2;
+                }
+                if (len == 0) {
+                    break;
+                }
+                bidSequence[bidSeqPoint] = bidding.substring(i, i + len);
+                bidSeqMax = bidSeqPoint;
+                bidSeqPoint++;
+                if (i + 1 < bidding.length - 1 && bidding.charAt(i + len) == '!') {
+                    len++;
+                }
+                i += len;
+            }
+        }
+
+        function deal(dealString) {
+            if (!dealString || dealString.length == 0) return false;
+
+            clearDeck();
+
+            var seat = 0;
+            var suit = -1;
+            var card = -1;
+            var p = 1;
+
+            while (p < dealString.length) {
+                var ch = dealString.charAt(p).toUpperCase();
+
+                if (ch == ',') {
+                    seat++;
+                    if (seat > 3) return false;
+                    suit = -1;
+                    card = -1;
+                }
+
+                var st = suitchars.indexOf(ch);
+
+                if (st >= 0) suit = st;
+
+                if (ch == 'X') {
+                    if (suit < 0) return false;
+                    if (howManyCardsDealt[seat] < 13) {
+                        howManyXs[seat][suit]++;
+                        howManyCards[seat]++;
+                        howManyCardsDealt[seat]++;
+                        howManySuit[seat][suit]++;
+                        howManySuitDealt[seat][suit]++;
+                    }
+                } else {
+                    if (ch == '1') {
+                        card = 8;
+                    } else {
+                        card = cardchars.indexOf(ch);
+                    }
+
+                    if (card >= 0) {
+                        if (suit < 0) return false;
+                        dealCardToPlayer(suit, card, seat);
+                    }
+                }
+                p++;
+            }
+            fillInFourthHand();
+            return true;
+        }
+
+        function fillInFourthHand() {
+            var num13 = 0;
+            var not13 = -1;
+
+            for (seat = 0; seat < 4; seat++) {
+                if (howManyCardsDealt[seat] == 13) num13++;
+                else not13 = seat;
+            }
+
+            if (num13 == 3 && not13 >= 0) {
+                for (suit = 0; suit < 4; suit++) {
+                    for (card = 0; card < 13; card++) {
+                        if (deck[suit][card] == -10) dealCardToPlayer(suit, card, not13);
+                    }
+                }
+                return true;
+            }
+            return false;
+        }
+
+        function dealCardToPlayer(suit, card, seat) {
+            var who = deck[suit][card];
+
+            if (who == -10) {
+                deck[suit][card] = seat;
+                howManyCards[seat]++;
+                howManyCardsDealt[seat]++;
+                howManySuit[seat][suit]++;
+                howManySuitDealt[seat][suit]++;
+            }
+        }
+
+        function clearDeck() {
+            for (w = 0; w < 4; w++) {
+                howManyCards[w] = 0;
+                howManyCardsDealt[w] = 0;
+                howManySuit[w] = new Array(4);
+                howManySuitDealt[w] = new Array(4);
+                howManyXs[w] = new Array(4);
+                for (s = 0; s < 4; s++) {
+                    howManySuit[w][s] = 0;
+                    howManySuitDealt[w][s] = 0;
+                    howManyXs[w][s] = 0;
+                }
+            }
+
+            for (s = 0; s < 4; s++) {
+                deck[s] = new Array(13);
+                for (c = 0; c < 13; c++) {
+                    deck[s][c] = -10;
+                }
+            }
         }
 
         function parseDataFromClipboard() {
