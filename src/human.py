@@ -148,7 +148,7 @@ class HumanLeadSocket:
                 human_card = await self.socket.recv()
 
                 if (str(human_card).startswith("Cl") or str(human_card).startswith("Co")) :
-                    return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None)
+                    return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = None)
                 else:    
                     return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = "Human")
 
@@ -213,7 +213,7 @@ class HumanCardPlayer:
         card = input('your play: ').strip().upper()
         return deck52.encode_card(card)
 
-    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits):
+    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
         candidates = []
         samples = []
 
