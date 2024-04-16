@@ -152,9 +152,11 @@
                 processLinCommand(command, param);
                 startIndex = closePipeIndex + 1;
             }
-            document.getElementById('biddingInput').value = bidSequence.join('-')
+            document.getElementById('biddingInput').value = bidSequence.join('-').toUpperCase()
             const seat = document.getElementById('seatInput').value;
-            const player = ("NESW".indexOf(seat) + 2) % 4
+            const dealer = "NESW".indexOf(document.getElementById('dealerInput').value);
+            // Deck is based from South
+            const player = ("SWNE".indexOf(seat)) % 4
             var openingsuit = suitchars.indexOf(openinglead[0])
             var openingcard = cardchars.indexOf(openinglead[1])
             var lefty = deck[openingsuit][openingcard]
@@ -185,13 +187,14 @@
                     break;
                 case 'SV':
                     value = 'None'
-                    if (param === 'n') {
+                    param = param.toUpperCase()
+                    if (param === 'N') {
                         value = 'NS'
                     }
-                    if (param === 'e') {
+                    if (param === 'E') {
                         value = 'EW'
                     }
-                    if (param === 'b') {
+                    if (param === 'B') {
                         value = 'All'
                     }
                     // Select the option node with text equal to "All"
@@ -533,7 +536,6 @@
 
         function validateHand(hand) {
             const suits = hand.split('.');
-            console.log(suits);
             if (suits.length !== 4) {
                 console.log("Not 4 suits in ", hand);
                 return false;
@@ -590,8 +592,7 @@
                     <p><strong>Shape:</strong> ${formattedShape}</p>
                     `;
                 if (data.quality != null) {
-                    html += `
-                    <p><strong>Sample quality: </strong>${data.quality}</p>
+                    html += `<br><p><strong>Sample quality: </strong>${data.quality}</p>
                     `;
                 }
             }
@@ -736,7 +737,7 @@
             }
             if (data.quality != null) {
                     html += `
-                    <p><strong>Sample quality: </strong>${data.quality}</p>
+                    <br><p><strong>Sample quality: </strong>${data.quality}</p>
                     `;
                 }
             if (data.samples && data.samples.length > 0) {
@@ -766,7 +767,12 @@
         }
 
         function findDeclarer(bidding) {
-            return 3;
+            contract = bidding.substring(bidding.length - 8, bidding.length - 6);
+            firstbid = bidding.indexOf(contract[1]);
+            const dealer = "NESW".indexOf(document.getElementById('dealerInput').value);
+            declarer = (firstbid + 1) / 2 + dealer
+            console.log(declarer, contract, firstbid, dealer);
+            return declarer
         }
 
         // Call loadUser() when the page loads
@@ -857,6 +863,11 @@
 
                 // Parse the response as JSON
                 const data = await response.json();
+                if (data.message) {
+                    document.querySelector("#loader").style.visibility = "hidden";
+                    alert(message)
+                    return
+                }
 
                 if (action == 'bid') {
                     document.getElementById('result').innerText = `BEN Suggest: ${data.bid}`;

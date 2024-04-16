@@ -244,33 +244,41 @@ def parse_pbn(fin):
 def validate_suit(part):
     return part == '' or bool(re.match(r'\d|[TJQKA]', part))
  
-def validdeal(board):
+def validdeal(board, direction):
     # Split the input string into individual deals
     hands = board.split()
     
     # Check if there are exactly 4 deals
     if len(hands) != 4:
         print("Not 4 hands", board)
-        return False
+        return None
     
     # Check each deal individually
     for hand in hands:
         suits = hand.split('.')
-        print(suits)
         if len(suits) != 4:
             print("Not 4 suits in ", hand)
-            return False
+            return None
         if len(hand) != 16:
             print("Not 13 cards ", hand)
-            return False
+            return None
         result =  all(validate_suit(p.strip()) for p in suits)
         if not result:
             print("Wrong format ", hand)
-            return False
+            return None
 
-    return True
+    # All checks passed, return the hands
+    # print("Direction", direction)        
+    if direction == "N":
+        return hands
+    if direction == "E":
+        return [hands[3], hands[0], hands[1], hands[2]]
+    if direction == "S":
+        return [hands[2], hands[3], hands[0], hands[1]]
+    if direction == "W":
+        return [hands[1], hands[2], hands[3], hands[0]]
+    return hands
 
-    return True
 
 parser = argparse.ArgumentParser(description="Appserver")
 parser.add_argument("--host", default="localhost", help="Hostname for appserver")
@@ -326,24 +334,32 @@ def index():
         dealer = request.forms.get('dealer')
         board_no = request.forms.get('board')
         vulnerable = request.forms.get('vulnerable')
-        dealtext = dealtext.upper()
-        print(dealtext)
-        if not validdeal(dealtext):
+        direction = "N"
+        dealtext = dealtext.upper().split(":")
+        if len(dealtext) == 2:
+            direction = dealtext[0][0]
+            dealtext = dealtext[1] 
+
+        deal = validdeal(dealtext, direction)
+
+        if deal == None:
             error_message = f'Error parsing deal-input.'
             print(error_message)
             print(dealtext)
             encoded_error_message = quote(error_message)
             redirect(f'/error?message={encoded_error_message}')
-            
-        url = f'/app/bridge.html?deal=(%27{dealtext}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+
+        deal = " ".join(deal)
+        print(deal)
+        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
     
     dealpbn = request.forms.get('dealpbn')
     if dealpbn:
         try:
             dealpbn = request.forms.get('dealpbn')
-            dealer, vulnerable, hands, board_no = parse_pbn(dealpbn.splitlines())
-            print(hands)
-            url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+            dealer, vulnerable, deal, board_no = parse_pbn(dealpbn.splitlines())
+            print(deal)
+            url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
         except Exception as e:
             error_message = f'Error parsing PBN-input. {e}'
             print(error_message)
@@ -354,8 +370,8 @@ def index():
     dealbsol = request.forms.get('dealbsol')
     if dealbsol:
         dealbsol = request.forms.get('dealbsol')
-        dealer, vulnerable, hands, board_no = parse_bsol(dealbsol)
-        url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+        dealer, vulnerable, deal, board_no = parse_bsol(dealbsol)
+        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
 
     deallin = request.forms.get('deallin')
     if deallin:
@@ -364,11 +380,11 @@ def index():
         try:
             lin = deallinparsed["lin"]
             print(lin)
-            dealer, vulnerable, hands, board_no = parse_lin(lin[0])
+            dealer, vulnerable, deal, board_no = parse_lin(lin[0])
         except KeyError:
             try:
                 # no lin= in input, so we try to parse the string
-                dealer, vulnerable, hands, board_no = parse_lin(deallin)
+                dealer, vulnerable, deal, board_no = parse_lin(deallin)
             except Exception as e:
                 error_message = f'Error parsing LIN-input. {e}'
                 print(error_message)
@@ -376,8 +392,8 @@ def index():
                 encoded_error_message = quote(error_message)
                 redirect(f'/error?message={encoded_error_message}')
 
-        hands = " ".join(hands)
-        url = f'/app/bridge.html?deal=(%27{hands}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+        deal = " ".join(deal)
+        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
 
     dealbba = request.forms.get('dealbba')
     if dealbba:

@@ -1211,7 +1211,7 @@ class CardPlayer:
         
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
             card32 = deck52.card52to32(deck52.encode_card(str(card52)))
-            print(card52)
+
             insta_score=card_nn.get(card32, 0)
             if insta_score >= self.models.pimc_trust_NN:
                 candidate_cards.insert(0,CandidateCard(

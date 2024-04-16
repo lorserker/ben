@@ -204,10 +204,12 @@ class BGADLL:
         real_card = Card.from_code(card52)
         if self.verbose:
             print(f"Setting card {real_card} played by {playedBy}  for PIMC")
+            
         card = real_card.symbol_reversed()
         from BGADLL import Card as PIMCCard
         self.playedHand.Add(PIMCCard(card))
         self.opposHand.Remove(PIMCCard(card))
+
         if (playedBy == 1):
             self.northhand.Remove(PIMCCard(card))
         if (playedBy == 3):

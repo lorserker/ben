@@ -153,7 +153,8 @@ class HumanLeadSocket:
                     return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = "Human")
 
             except Exception as ex:
-                print(f"Exception receiving card {human_card}", ex)
+                print(f"Exception receiving card ", ex)
+                raise ex
 
 
 
@@ -247,8 +248,8 @@ class HumanCardPlayerSocket(HumanCardPlayer):
                 else:
                     return deck52.encode_card(human_card)
             except Exception as ex:
-                print(f"Exception receiving card{human_card}", ex)
-
+                print(f"Exception receiving card", ex)
+                raise ex
 
 class ConsoleFactory:
 

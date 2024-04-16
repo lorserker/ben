@@ -421,7 +421,7 @@ async def frontend():
             cardplayer = 0
         if (decl_i + 3) % 4 == position_i:
             cardplayer = 2
-        print(cardplayer)
+        print("cardplayer:",cardplayer)
         print(hands)
         card_resp = await play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
