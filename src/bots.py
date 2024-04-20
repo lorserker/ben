@@ -660,7 +660,7 @@ class BotLead:
         if opening_lead % 8 == 7:
             contract = bidding.get_contract(auction)
             # Implement human carding here
-            opening_lead52 = carding.select_right_card(self.hand52, opening_lead, self.rng, contract, self.models)
+            opening_lead52 = carding.select_right_card(self.hand52, opening_lead, self.get_random_generator(), contract, self.models)
         else:
             opening_lead52 = deck52.card32to52(opening_lead)
 
