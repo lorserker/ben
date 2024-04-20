@@ -122,7 +122,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
             if card_i >= len(play):
                 play_status = get_play_status(card_players[player_i].hand52,current_trick52)
 
-                rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].rng)
+                rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
                 assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
@@ -289,7 +289,7 @@ except KeyError:
         from nn.models import Models
 
 models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
-sampler = Sample.from_conf(configuration, False)
+sampler = Sample.from_conf(configuration, verbose)
 
 print('models loaded')
 
@@ -325,6 +325,12 @@ def bid():
         # Split the string into chunks of every second character
         bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
         auction = create_auction(bids, dealer_i)
+        if verbose:
+            print("Hand: ",hand)
+            print("Vuln: ",vuln)
+            print("Dealer: ",dealer)
+            print("Seat: ",seat)
+            print("Auction: ",auction)
         hint_bot = BotBid(vuln, hand, models, sampler, position, dealer_i, verbose)
         bid = hint_bot.bid(auction)
         print("Bidding: ",bid.bid)

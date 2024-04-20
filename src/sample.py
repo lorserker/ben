@@ -266,8 +266,8 @@ class Sample:
 
         if self.verbose:
             print(f"n_samples {n_samples} matching bidding info")
-
-        if models.model_version == 0:
+            print("n_steps", n_steps)
+        if (models.model_version == 0 or models.ns == -1):
             index = 0
         else:
             index = 2

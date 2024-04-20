@@ -770,7 +770,7 @@
             contract = bidding.substring(bidding.length - 8, bidding.length - 6);
             firstbid = bidding.indexOf(contract[1]);
             const dealer = "NESW".indexOf(document.getElementById('dealerInput').value);
-            declarer = (firstbid + 1) / 2 + dealer
+            declarer = (firstbid + 1) / 2 + dealer - 1
             console.log(declarer, contract, firstbid, dealer);
             return declarer
         }

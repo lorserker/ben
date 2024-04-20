@@ -1,7 +1,7 @@
 from collections import defaultdict
 import copy
 import sys
-sys.path.append('D:/github/ben/src')
+sys.path.append('../../../src')
 
 import datetime
 from collections import Counter
@@ -45,7 +45,7 @@ def load_deals(fin):
 
 def create_arrays(ns, ew, players_pr_hand, n, bids):
     if (ns==-1):
-        x = np.zeros((players_pr_hand * n, 8, 159), dtype=np.float16)
+        x = np.zeros((players_pr_hand * n, 8, 39 + bids * 40), dtype=np.float16)
     else:
         x = np.zeros((players_pr_hand * n, 8, 41 + 40*bids), dtype=np.float16)
     y = np.zeros((players_pr_hand * n, 8, 40), dtype=np.uint8)
@@ -148,9 +148,9 @@ if __name__ == '__main__':
     ns = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("NS=")), -1)
     ew = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("EW=")), -1)
     alternating = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("alternate")), False)
-    version = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("version")), 1)
+    version = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("version")), 2)
 
-    sys.stderr.write(f"{ns}, {ew}, {alternating}, {4 if version == '2' else 3}\n")
+    sys.stderr.write(f"NS={ns}, EW={ew}, Alternating={alternating}, Version={version}\n")
     ns = to_numeric(ns)
     ew = to_numeric(ew)
 

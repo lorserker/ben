@@ -49,7 +49,7 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating, bids):
     else:
         x = np.zeros((rows_pr_hand * n, 8, 41 + bids * 40), dtype=np.float16)
     y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.uint8)
-    print(x.shape)
+
     HCP = np.zeros((rows_pr_hand * n, 8, 3), dtype=np.float16)
     SHAPE = np.zeros((rows_pr_hand * n, 8, 12), dtype=np.float16)
     k = 0
@@ -113,7 +113,7 @@ def to_numeric(value, default=0):
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
-        print("Usage: python bidding_binary.py inputfile outputdirectory NS=<x> EW=<y> alternate=True version=1")
+        print("Usage: python bidding_binary.py inputfile outputdirectory NS=<x> EW=<y> alternate=True version=2")
         print("NS and EW are optional. If set to -1 no information about system is included in the model.")
         print("If set to 0 the hands from that side will not be used for training.")
         print("The input file is the BEN-format (1 line with hands, and next line with the bidding).")
@@ -126,17 +126,11 @@ if __name__ == '__main__':
     ns = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), -1)
     ew = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), -1)
     alternating = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alternate")), False)
-    version = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("version")), "0")
+    version = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("version")), "2")
 
-    sys.stderr.write(f"{ns}, {ew}, {alternating}, {version}\n")
+    sys.stderr.write(f"NS={ns}, EW={ew}, Alternating={alternating}, Version={version}\n")
     ns = to_numeric(ns)
     ew = to_numeric(ew)
-
-    if version == "2":
-        if ns == -1:
-            ns = 1
-        if ew == -1:
-            ew = 1
 
     with open(infnm, 'r') as file:
 

@@ -213,8 +213,6 @@ def parse_bsol(url):
     hands.append(query_params.get('West', [])[0])
 
     hands = " ".join(hands)
-    print(hands)
-
     return dealer, vulnerable, hands, board
     
 def parse_pbn(fin):
@@ -339,6 +337,8 @@ def index():
         if len(dealtext) == 2:
             direction = dealtext[0][0]
             dealtext = dealtext[1] 
+        else:
+            dealtext = dealtext[0] 
 
         deal = validdeal(dealtext, direction)
 
@@ -371,6 +371,7 @@ def index():
     if dealbsol:
         dealbsol = request.forms.get('dealbsol')
         dealer, vulnerable, deal, board_no = parse_bsol(dealbsol)
+        print(deal)
         url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
 
     deallin = request.forms.get('deallin')
@@ -379,7 +380,6 @@ def index():
         deallinparsed = parse_qs(query_params[-1])
         try:
             lin = deallinparsed["lin"]
-            print(lin)
             dealer, vulnerable, deal, board_no = parse_lin(lin[0])
         except KeyError:
             try:
@@ -388,11 +388,12 @@ def index():
             except Exception as e:
                 error_message = f'Error parsing LIN-input. {e}'
                 print(error_message)
-                #print(deallin)
+                print(deallin)
                 encoded_error_message = quote(error_message)
                 redirect(f'/error?message={encoded_error_message}')
 
         deal = " ".join(deal)
+        print(deal)
         url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
 
     dealbba = request.forms.get('dealbba')

@@ -20,7 +20,7 @@ print(sys.argv)
 batch_size = 64
 display_step = 10000
 epochs = 50
-learning_rate = 0.0001
+learning_rate = 0.0005
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))
@@ -31,20 +31,29 @@ n_bids = y_train.shape[2]
 
 # If NS/EW cc included update name of model
 if n_ftrs == 201:
-    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding-V2'
+    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding_V2'
 else:
-    if n_ftrs == 161:
-        model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding'
+    if n_ftrs == 199:
+        model_path = 'model/bidding_V2'
     else:
-        model_path = 'model/bidding'
+        if n_ftrs == 161:
+            model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding'
+        else:
+            model_path = 'model/bidding'
 
+if len(sys.argv) > 2:
+    start_iteration = int(sys.argv[2])
+else:
+    start_iteration = 0
 
 print("Size input hand:         ", n_ftrs)
 print("Examples for training:   ", n_examples)
 print("Batch size:              ", batch_size)
 n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
 print("Iterations               ", n_iterations)
-print("Model path:              ",model_path)
+print("Start iterations         ", start_iteration)
+print("Model path:              ", model_path)
+print("Learning rate:           ", learning_rate)
 
 lstm_size = 128
 n_layers = 3
@@ -58,7 +67,7 @@ for _ in range(n_layers):
         output_keep_prob=keep_prob
     )
     cells.append(cell)
-if n_ftrs < 200:
+if n_ftrs < 180:
     state = []
     for i, cell_i in enumerate(cells):
         s_c = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
@@ -80,8 +89,7 @@ out_rnn, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 out_bid_logit = tf.matmul(tf.reshape(out_rnn, [-1, lstm_size]), softmax_w, name='out_bid_logit')
 out_bid_target = tf.reshape(seq_out, [-1, n_bids], name='out_bid_target')
 
-
-if n_ftrs < 200:
+if n_ftrs < 180:
     output, next_state = lstm_cell(x_in, state)
     for i, next_i in enumerate(next_state):
         tf.identity(next_i.c, name='next_c_{}'.format(i))
@@ -100,13 +108,21 @@ cost_batch = Batcher(n_examples, batch_size)
 
 with tf.compat.v1.Session() as sess:
     sess.run(tf.compat.v1.global_variables_initializer())
+    if start_iteration > 0:
+        print('Resuming from iteration', start_iteration)
+        print(f'{model_path}-{start_iteration}')
+        saver = tf.train.import_meta_graph(f'{model_path}-{start_iteration}.meta')
+        saver.restore(sess, f'{model_path}-{start_iteration}')
+        print("Currently not working - use bidding_nn_continue.py instead")
+        sys.exit(1)
+    else:
+        saver = tf.compat.v1.train.Saver(max_to_keep=1)
 
-    saver = tf.compat.v1.train.Saver(max_to_keep=1)
+    x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
 
-    for i in range(n_iterations):
+    for i in range(start_iteration, start_iteration + n_iterations):
         x_batch, y_batch = batch.next_batch([X_train, y_train])
         if (i != 0) and i % display_step == 0:
-            x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
             c_train = sess.run(cost, feed_dict={seq_in: x_cost, seq_out: y_cost, keep_prob: 1.0})
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train))
             sys.stdout.flush()

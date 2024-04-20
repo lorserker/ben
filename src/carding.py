@@ -50,7 +50,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
 
 def select_right_card(hand52, opening_lead, rng, contract, models):
-    print("select_right_card")
+    #print("select_right_card")
     if contract[1] != "N":
         opening_suit = opening_lead // 8
         if opening_suit == "SHDC".index(contract[1]):

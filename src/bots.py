@@ -39,7 +39,9 @@ class BotBid:
         if self.models.model_version == 0:
             self.state = models.bidder_model.zero_state
 
-
+    def get_random_generator(self):
+        return self.rng
+    
     @staticmethod
     def get_bid_number_for_player_to_bid(auction):
         hand_i = len(auction) % 4
@@ -322,7 +324,9 @@ class BotBid:
         return candidates, passout
 
     def next_bid_np(self, auction):
-        if self.models.model_version == 0:
+        if self.verbose:
+            print("next_bid_np", self.models.name)
+        if self.models.model_version == 0 or self.models.ns == -1:
             x = self.get_binary(auction, self.models)
             # If API we have no history
             if self.models.api:
@@ -358,7 +362,7 @@ class BotBid:
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
         if accepted_samples.shape[0] > self.sample.sample_hands_auction:
-            random_indices = self.rng.permutation(accepted_samples.shape[0])
+            random_indices = self.get_random_generator().permutation(accepted_samples.shape[0])
             accepted_samples = accepted_samples[random_indices[:self.sample.sample_hands_auction], :, :]
             sorted_scores = sorted_scores[random_indices[:self.sample.sample_hands_auction]]
 
@@ -603,7 +607,9 @@ class BotLead:
         self.hash_integer  = calculate_seed(hand_str)         
         if self.verbose:
             print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
-        self.rng = np.random.default_rng(self.hash_integer)
+
+    def get_random_generator(self):
+        return np.random.default_rng(self.hash_integer)
 
     def find_opening_lead(self, auction):
         # Validate input
@@ -717,8 +723,7 @@ class BotLead:
         if self.verbose:
             print(f'Now generating {self.sample.sample_boards_for_auction_opening_lead} deals to find opening lead')
         # Reset randomizer
-        self.rng = np.random.default_rng(self.hash_integer)
-        accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.sample.sample_boards_for_auction_opening_lead, self.rng, self.models)
+        accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.sample.sample_boards_for_auction_opening_lead, self.get_random_generator(), self.models)
 
         if self.verbose:
             print("Generated samples:", accepted_samples.shape[0], " OK Quality", good_quality)
@@ -727,7 +732,7 @@ class BotLead:
         # We have more samples, then we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
         if accepted_samples.shape[0] > self.sample.sample_hands_opening_lead:
-            random_indices = self.rng.permutation(accepted_samples.shape[0])
+            random_indices = self.get_random_generator().permutation(accepted_samples.shape[0])
             accepted_samples = accepted_samples[random_indices[:self.sample.sample_hands_opening_lead], :, :]
             sorted_scores = sorted_scores[random_indices[:self.sample.sample_hands_opening_lead]]
 
@@ -760,7 +765,7 @@ class BotLead:
                 pips_mask = np.array([0,0,0,0,0,0,0,1,1,1,1,1,1])
                 lefty_led_pips = self.hand52.reshape((4, 13))[lead_card_i // 8] * pips_mask
                 # Perhaps use human carding, but it is only for estimation
-                opening_lead52 = (lead_card_i // 8) * 13 + self.rng.choice(np.nonzero(lefty_led_pips)[0])
+                opening_lead52 = (lead_card_i // 8) * 13 + self.get_random_generator().choice(np.nonzero(lefty_led_pips)[0])
             else:
                 opening_lead52 = deck52.card32to52(lead_card_i)
             # Create PBN for hand
@@ -864,17 +869,19 @@ class CardPlayer:
         if (player_i == 1):
             self.hash_integer  = calculate_seed(public_hand_str)         
             if self.verbose:
-                print(f"Setting seed (Sampling bidding info) from {public_hand_str}: {self.hash_integer}")
+                print(f"Setting seed {player_i} (Sampling bidding info) from {public_hand_str}: {self.hash_integer}")
         else:
             self.hash_integer  = calculate_seed(hand_str)         
             if self.verbose:
-                print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
-        self.rng = np.random.default_rng(self.hash_integer)
+                print(f"Setting seed {player_i} (Sampling bidding info) from {hand_str}: {self.hash_integer}")
         self.pimc = pimc
         # False until it kicks in
         self.pimc_declaring = False
         self.pimc_defending = False
-
+    
+    def get_random_generator(self):
+        return np.random.default_rng(self.hash_integer)
+    
     def init_x_play(self, public_hand, level, strain_i):
         self.x_play = np.zeros((1, 13, 298))
         binary.BinaryInput(self.x_play[:,0,:]).set_player_hand(self.hand32)
@@ -1019,7 +1026,7 @@ class CardPlayer:
         for i in range(n_samples):
             hands = [None, None, None, None]
             for j in range(4):
-                self.rng.shuffle(pips[j])
+                self.get_random_generator().shuffle(pips[j])
             pip_i = [0, 0, 0, 0]
 
             hands[self.player_i] = deck52.deal_to_str(self.hand52)
@@ -1223,8 +1230,6 @@ class CardPlayer:
                     msg=msg
                 ))
 
-        #candidate_cards = sorted(candidate_cards, key=lambda c: (c.p_make_contract, c.expected_tricks_dd, c.expected_score_dd, c.insta_score), reverse=True)
-
         if self.models.matchpoint:
             candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
         else:
@@ -1262,16 +1267,32 @@ class CardPlayer:
 
         candidate_cards = []
         
+        current_card = 0
+        current_insta_score = 0
         # Small cards come from DD, but if a sequence is present it is the highest card
         for card52, (e_tricks, e_score, e_make) in card_dd.items():
             card32 = deck52.card52to32(card52)
-            candidate_cards.append(CandidateCard(
-                card=Card.from_code(card52),
-                insta_score=card_nn.get(card32, 0),
-                expected_tricks_dd=e_tricks,
-                p_make_contract=e_make,
-                expected_score_dd=e_score
-            ))
+            card=Card.from_code(card52)
+            insta_score = round(card_nn.get(card32, 0),2)
+            # For now we want lowest card first - in deck it is from A->2 so highes value is lowest card
+            if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
+                candidate_cards.insert(0, CandidateCard(
+                    card=card,
+                    insta_score=insta_score,
+                    expected_tricks_dd=e_tricks,
+                    p_make_contract=e_make,
+                    expected_score_dd=e_score
+                ))
+            else:
+                candidate_cards.append(CandidateCard(
+                    card=card,
+                    insta_score=insta_score,
+                    expected_tricks_dd=e_tricks,
+                    p_make_contract=e_make,
+                    expected_score_dd=e_score
+                ))
+            current_card = card52
+            current_insta_score = insta_score
 
         valid_bidding_samples = np.sum(bidding_scores > self.bid_accept_play_threshold)
         # Now we will select the card to play
@@ -1296,7 +1317,7 @@ class CardPlayer:
                 candidate_cards = [card for _, card in candidate_cards]
                 who = "Make"
 
-        right_card = carding.select_right_card_for_play(candidate_cards, self.rng, self.contract, self.models, self.hand_str, self.player_i, self.x_play[0, trick_i, :32], current_trick, play_status)
+        right_card = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.player_i, self.x_play[0, trick_i, :32], current_trick, play_status)
         best_card_resp = CardResp(
             card=right_card,
             candidates=candidate_cards,

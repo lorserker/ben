@@ -18,16 +18,17 @@ tf.disable_v2_behavior()
 from batcher import Batcher
 
 if len(sys.argv) < 2:
-    print("Usage: python binfo_nn.py inputdirectory ")
+    print("Usage: python binfo_nn.py inputdirectory startiteration")
+    print("startiteration is optional")
     sys.exit(1)
 
 bin_dir = sys.argv[1]
-print(sys.argv)
+
 
 batch_size = 64
 display_step = 10000
-epochs = 100
-learning_rate = 0.001
+epochs = 50
+learning_rate = 0.0005
 
 X_train = np.load(os.path.join(bin_dir, 'X.npy'))
 HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'))
@@ -40,19 +41,29 @@ n_dim_shape = SHAPE_train.shape[2]
 
 # If NS/EW cc included update name of model
 if n_ftrs == 201:
-    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-binfo-V2'
+    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-binfo_V2'
 else:
-    if n_ftrs == 161:
-        model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-binfo'
+    if n_ftrs == 199:
+        model_path = 'model/binfo_V2'
     else:
-        model_path = 'model/binfo'
+        if n_ftrs == 161:
+            model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-binfo'
+        else:
+            model_path = 'model/binfo'
+
+if len(sys.argv) > 2:
+    start_iteration = int(sys.argv[2])
+else:
+    start_iteration = 0
 
 print("Size input hand:         ", n_ftrs)
 print("Examples for training:   ", n_examples)
 print("Batch size:              ", batch_size)
 n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
 print("Iterations               ", n_iterations)
-print("Model path:              ",model_path)
+print("Start iterations         ", start_iteration)
+print("Model path:              ", model_path)
+print("Learning rate:           ", learning_rate)
 
 lstm_size = 128
 n_layers = 3
@@ -93,7 +104,7 @@ out_hcp_target_seq = tf.reshape(seq_out_hcp, [-1, n_dim_hcp], name='out_hcp_targ
 out_shape_seq = tf.matmul(tf.reshape(out_rnn, [-1, lstm_size]), w_shape, name='out_shape_seq')
 out_shape_target_seq = tf.reshape(seq_out_shape, [-1, n_dim_shape], name='out_shape_target_seq')
 
-if n_ftrs < 200:
+if n_ftrs < 180:
     output, next_state = lstm_cell(x_in, state)
     for i, next_i in enumerate(next_state):
         tf.identity(next_i.c, name='next_c_{}'.format(i))
@@ -115,13 +126,22 @@ cost_batch = Batcher(n_examples, batch_size)
 
 with tf.compat.v1.Session() as sess:
     sess.run(tf.global_variables_initializer())
+    if start_iteration > 0:
+        print('Resuming from iteration', start_iteration)
+        print(f'{model_path}-{start_iteration}')
+        saver = tf.train.import_meta_graph(f'{model_path}-{start_iteration}.meta')
+        saver.restore(sess, f'{model_path}-{start_iteration}')
+        print("Currently not working")
+        sys.exit(1)
 
-    saver = tf.train.Saver(max_to_keep=1)
+    else:
+        saver = tf.compat.v1.train.Saver(max_to_keep=1)
 
-    for i in range(n_iterations):
+    x_cost, hcp_cost, shape_cost = cost_batch.next_batch([X_train, HCP_train, SHAPE_train])
+    
+    for i in range(start_iteration, start_iteration + n_iterations):
         x_batch, hcp_batch, shape_batch = batch.next_batch([X_train, HCP_train, SHAPE_train])
         if i > 0 and (i % display_step == 0):
-            x_cost, hcp_cost, shape_cost = cost_batch.next_batch([X_train, HCP_train, SHAPE_train])
             c_train = sess.run([cost, cost_hcp, cost_shape], feed_dict={seq_in: x_cost, seq_out_hcp: hcp_cost, seq_out_shape: shape_cost, keep_prob: 1.0})
 
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i ,c_train))

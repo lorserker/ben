@@ -218,8 +218,10 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
         bid_i += 4
 
     # Insert bidding system, -1 means no system
-    if (models.model_version == 0):
+    if (models.model_version == 0 or models.ns == -1):
+        #print("Skipping bidding system")
         return X
+
     # Better to add these at the beginning of this function
     padding_width = ((0, 0), (0, 0), (1, 0))
     if (hand_ix % 2 == 0):
@@ -267,6 +269,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
     step_i = 0
     s_all = np.arange(n_samples, dtype=np.int32)
     while step_i < n_steps:
+        #print(step_i, bid_i, n_steps)
         if bid_i - 4 >= 0:
             my_bid = auction[:, bid_i - 4]
             #print("Me", bidding.ID2BID[my_bid[0]])
@@ -301,7 +304,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
         bid_i += 4
 
     # Insert bidding system, -1 means no system
-    if (models.model_version == 0):
+    if (models.model_version == 0 or models.ns == -1):
         return X
     # Better to add these at the beginning of this function
     padding_width = ((0, 0), (0, 0), (1, 0))
