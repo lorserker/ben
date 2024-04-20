@@ -13,6 +13,8 @@ from flask_cors import CORS
 import json
 import os
 import logging
+import uuid
+import shelve
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -307,6 +309,9 @@ def home():
 @app.route('/bid')
 def bid():
     try:
+        if request.args.get("tournament"):
+            matchpoint = request.args.get("tournament").lower() == "mp"
+            models.matchpoint = matchpoint
         # First we extract our hand
         hand = request.args.get("hand").replace('_','.')
         seat = request.args.get("seat")
@@ -334,6 +339,8 @@ def bid():
         hint_bot = BotBid(vuln, hand, models, sampler, position, dealer_i, verbose)
         bid = hint_bot.bid(auction)
         print("Bidding: ",bid.bid)
+        with shelve.open(f"{base_path}/gameapibiddb") as db:
+                db[uuid.uuid4().hex] = bid.to_dict()
         return json.dumps(bid.to_dict())
     except Exception as e:
         print(e)
@@ -343,6 +350,9 @@ def bid():
 @app.route('/lead')
 def lead():
     try:
+        if request.args.get("tournament"):
+            matchpoint = request.args.get("tournament").lower() == "mp"
+            models.matchpoint = matchpoint
         # First we extract our hand and seat
         hand = request.args.get("hand").replace('_','.')
         seat = request.args.get("seat")
@@ -365,6 +375,8 @@ def lead():
         card_resp.who = user
         print("Leading:", card_resp.card.symbol())
         result = card_resp.to_dict()
+        with shelve.open(f"{base_path}/gameapiplaydb") as db:
+                db[uuid.uuid4().hex] = result
         return json.dumps(result)
     except Exception as e:
         print(e)
@@ -374,7 +386,10 @@ def lead():
 
 @app.route('/play')
 async def frontend():
-    #try:
+    try:
+        if request.args.get("tournament"):
+            matchpoint = request.args.get("tournament").lower() == "mp"
+            models.matchpoint = matchpoint
         # First we extract the hands and seat
         hand_str = request.args.get("hand").replace('_','.')
         dummy_str = request.args.get("dummy").replace('_','.')
@@ -432,12 +447,14 @@ async def frontend():
         card_resp = await play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
+        with shelve.open(f"{base_path}/gameapiplaydb") as db:
+                db[uuid.uuid4().hex] = result
         #print(json.dumps(result))
         return json.dumps(result)
-    # except Exception as e:
-    #     print(e)
-    #     error_message = "An error occurred: {}".format(str(e))
-    #     return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
+    except Exception as e:
+        print(e)
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
 def get_binary_contract(position, vuln, hand_str, dummy_str):
     X = np.zeros(2 + 2 * 32, dtype=np.float16)

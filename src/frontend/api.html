@@ -152,6 +152,15 @@
                 processLinCommand(command, param);
                 startIndex = closePipeIndex + 1;
             }
+            // Replace "D" with "X" and "RD" with "XX"
+            bidSequence = bidSequence.map(item => {
+                if (item === "D") {
+                    return "X";
+                } else if (item === "RD") {
+                    return "XX";
+                }
+                return item; // Keep other items unchanged
+            });
             document.getElementById('biddingInput').value = bidSequence.join('-').toUpperCase()
             const seat = document.getElementById('seatInput').value;
             const dealer = "NESW".indexOf(document.getElementById('dealerInput').value);

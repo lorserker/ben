@@ -92,3 +92,5 @@ scripts/training/data/WBC/play.txt
 scripts/match/bidding/default
 UCBC 2024/MvsM/models/1 Mill SAYC.ben
 scripts/training/bidding/1 Mill SAYC.ben
+scripts/training/data/GIB-Thorvald.ben
+scripts/training/data/BEN-UCBC.ben

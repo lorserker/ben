@@ -1199,8 +1199,6 @@ class CardPlayer:
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples, play_status):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
-        #if trick_i == 4:
-        #    xx
         if self.verbose:
             print(f'Next card response time: {time.time() - t_start:0.4f}')
 
@@ -1231,9 +1229,9 @@ class CardPlayer:
                 ))
 
         if self.models.matchpoint:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (int(x[1].expected_tricks_dd * 10) / 10, round(x[1].insta_score, 2), -x[0]), reverse=True)
         else:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10), round(x[1].insta_score, 2), -x[0]), reverse=True)
 
         candidate_cards = [card for _, card in candidate_cards]
 
@@ -1300,20 +1298,20 @@ class CardPlayer:
         # We should probably also consider bidding_scores in this 
         # If we have bad quality of samples we should probably just use the neural network
         if valid_bidding_samples >= 0:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
             candidate_cards = [card for _, card in candidate_cards]
             who = "NN"
         else:
             if self.models.use_biddingquality_in_eval:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 2), round(5*x[1].p_make_contract, 1), round(x[1].expected_tricks_dd, 1), -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 2), round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
                 candidate_cards = [card for _, card in candidate_cards]
-                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), round(x[1].expected_tricks_dd, 1), -x[0]), reverse=True)
+                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
                 candidate_cards2 = [card for _, card in candidate_cards]
                 if candidate_cards[0].expected_score_dd < 0 and candidate_cards2[0].expected_score_dd:
                     candidate_cards = candidate_cards2
                 who = "DD"
             else:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), round(x[1].expected_tricks_dd, 1), -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
                 candidate_cards = [card for _, card in candidate_cards]
                 who = "Make"
 

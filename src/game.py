@@ -119,6 +119,7 @@ class Driver:
             self.vuln_ns = self.deal_data.vuln_ns
             self.vuln_ew = self.deal_data.vuln_ew
         self.trick_winners = []
+        self.tricks_taken = 0
 
         # Now you can use hash_integer as a seed
         hash_integer = calculate_seed(deal_str)
@@ -232,7 +233,57 @@ class Driver:
             'pbn': self.deal_str,
             'dict': self.to_dict()
         }))
-
+    
+    def asPBN(self):
+        dealer = "NESW"[self.dealer_i]
+        pbn_str = ""
+        pbn_str += '% PBN 2.1'
+        pbn_str += '% EXPORT'
+        pbn_str += '[Event ""]\n'
+        pbn_str += '[Site ""]\n'
+        pbn_str += f'[Date "{datetime.datetime.now().date().isoformat()}"]'
+        pbn_str += f'[Board "{self.board_number}"]\n'
+        pbn_str += '[West "BEN"]\n'
+        pbn_str += '[North "BEN"]\n'
+        pbn_str += '[East "BEN"]\n'
+        pbn_str += '[South "BEN"]\n'
+        pbn_str += f'[Dealer "{dealer}"]\n'
+        if self.vuln_ns and self.vuln_ew:
+            pbn_str += '[Vulnerable "All"]\n'
+        if self.vuln_ns and not self.vuln_ew:
+            pbn_str += '[Vulnerable "NS"]\n'
+        if not self.vuln_ns and self.vuln_ew:
+            pbn_str += '[Vulnerable "EW"]\n'
+        if not self.vuln_ns and not self.vuln_ew:
+            pbn_str += '[Vulnerable "None"]\n'
+        pbn_str += f'[Deal "N:{self.deal_str}"]\n'
+        pbn_str += '[Scoring "IMP"]\n'
+        pbn_str += f'[Declarer "{self.contract[-1]}"]\n'
+        pbn_str += f'[Contract "{self.contract[:-1]}"]\n'
+        pbn_str += f'[Result "{self.tricks_taken}"]\n'
+        pbn_str += f'[Auction "{dealer}"]\n'
+        for i, b in enumerate(self.bid_responses, start=1):
+            pbn_str += (b.bid)
+            if i % 4 == 0:
+                pbn_str += "\n"
+            else:
+                pbn_str += " "
+        # Add an additional line break if the total number of bids is not divisible by 4
+        if i % 4 != 0:
+            pbn_str += "\n"
+        pbn_str += '[Play ""]\n'
+        for i, c in enumerate(self.card_responses, start=1):
+            pbn_str += c.card.symbol()
+            if i % 4 == 0:
+                pbn_str += "\n"
+            else:
+                pbn_str += " "
+        pbn_str += '[HomeTeam ""]\n'
+        pbn_str += '[VisitTeam ""]\n'
+        pbn_str += '[ScoreIMP ""]\n'
+        pbn_str += '\n'
+        return pbn_str
+    
     def to_dict(self):
         result = {
             'timestamp': time.time(),
@@ -630,6 +681,7 @@ class Driver:
         pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
 
         self.trick_winners = trick_won_by
+        self.tricks_taken = card_players[3].n_tricks_taken
 
         # Print contract and result
         print("Contract: ",self.contract, card_players[3].n_tricks_taken, "tricks")
@@ -734,6 +786,7 @@ async def main():
     parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--playonly", type=bool, default=False, help="Just play, no bidding")
     parser.add_argument("--biddingonly", type=bool, default=False, help="Just bidding, no play")
+    parser.add_argument("--outputpbn", default="", help="Save each board to this PBN file")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
     parser.add_argument("--seed", type=int, help="Seed for random")
 
@@ -745,6 +798,7 @@ async def main():
     playonly = args.playonly
     biddingonly = args.biddingonly
     seed = args.seed
+    outputpbn = args.outputpbn
     boards = []
 
     if args.boards:
@@ -828,6 +882,10 @@ async def main():
                 print(f"Saving Board: {driver.hands} in {base_path}/gamedb")
                 print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 db[uuid.uuid4().hex] = deal
+
+        if outputpbn != "":
+            with open(outputpbn, "a") as file:
+                file.write(driver.asPBN())
 
         if not auto:
             user_input = input("\n Q to quit or any other key for next deal ")
