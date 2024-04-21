@@ -117,7 +117,7 @@ if __name__ == '__main__':
         print("NS and EW are optional. If set to -1 no information about system is included in the model.")
         print("If set to 0 the hands from that side will not be used for training.")
         print("The input file is the BEN-format (1 line with hands, and next line with the bidding).")
-        print("alternate is signaling, that the input file has both open and closed room, so NS/EW will be altarnated")
+        print("alternate is signaling, that the input file has both open and closed room, so NS/EW will be alternated")
         sys.exit(1)
 
     infnm = sys.argv[1] # file where the data is
