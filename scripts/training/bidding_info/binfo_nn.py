@@ -18,8 +18,7 @@ tf.disable_v2_behavior()
 from batcher import Batcher
 
 if len(sys.argv) < 2:
-    print("Usage: python binfo_nn.py inputdirectory startiteration")
-    print("startiteration is optional")
+    print("Usage: python binfo_nn.py inputdirectory")
     sys.exit(1)
 
 bin_dir = sys.argv[1]
@@ -51,17 +50,11 @@ else:
         else:
             model_path = 'model/binfo'
 
-if len(sys.argv) > 2:
-    start_iteration = int(sys.argv[2])
-else:
-    start_iteration = 0
-
 print("Size input hand:         ", n_ftrs)
 print("Examples for training:   ", n_examples)
 print("Batch size:              ", batch_size)
 n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
 print("Iterations               ", n_iterations)
-print("Start iterations         ", start_iteration)
 print("Model path:              ", model_path)
 print("Learning rate:           ", learning_rate)
 
@@ -126,20 +119,11 @@ cost_batch = Batcher(n_examples, batch_size)
 
 with tf.compat.v1.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    if start_iteration > 0:
-        print('Resuming from iteration', start_iteration)
-        print(f'{model_path}-{start_iteration}')
-        saver = tf.train.import_meta_graph(f'{model_path}-{start_iteration}.meta')
-        saver.restore(sess, f'{model_path}-{start_iteration}')
-        print("Currently not working")
-        sys.exit(1)
-
-    else:
-        saver = tf.compat.v1.train.Saver(max_to_keep=1)
+    saver = tf.compat.v1.train.Saver(max_to_keep=1)
 
     x_cost, hcp_cost, shape_cost = cost_batch.next_batch([X_train, HCP_train, SHAPE_train])
     
-    for i in range(start_iteration, start_iteration + n_iterations):
+    for i in range(n_iterations):
         x_batch, hcp_batch, shape_batch = batch.next_batch([X_train, HCP_train, SHAPE_train])
         if i > 0 and (i % display_step == 0):
             c_train = sess.run([cost, cost_hcp, cost_shape], feed_dict={seq_in: x_cost, seq_out_hcp: hcp_cost, seq_out_shape: shape_cost, keep_prob: 1.0})

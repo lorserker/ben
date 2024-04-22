@@ -11,9 +11,8 @@ from batcher import Batcher
 
 bin_dir = sys.argv[1] # Location of data
 checkpoint_model = sys.argv[2]  # pretrained model e.g './model/bidding-1000000'
-output_model = sys.argv[3]  # where to save new checkpoints e.g './model2/bidding'  
 
-model_path = output_model
+model_path = checkpoint_model.split('-')[:-1][0]
 
 batch_size = 64
 start_iteration = int(checkpoint_model.split('-')[-1])
@@ -22,16 +21,29 @@ display_step = 10000
 
 bin_dir = sys.argv[1]
 
-epochs = 10
-learning_rate = 0.002
+batch_size = 64
+display_step = 10000
+epochs = 50
+learning_rate = 0.0005
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))
 
-
 n_examples = y_train.shape[0]
 n_ftrs = X_train.shape[2]
 n_bids = y_train.shape[2]
+
+print("Size input hand:         ", n_ftrs)
+print("Examples for training:   ", n_examples)
+print("Batch size:              ", batch_size)
+n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
+print("Iterations               ", n_iterations)
+print("Start iterations         ", start_iteration)
+print("Model path:              ", model_path)
+print("Learning rate:           ", learning_rate)
+
+lstm_size = 128
+n_layers = 3
 
 graph = tf.Graph()
 sess = tf.Session(graph=graph)
@@ -55,12 +67,13 @@ with graph.as_default():
     batch = Batcher(n_examples, batch_size)
     cost_batch = Batcher(n_examples, batch_size)
 
-    saver = tf.train.Saver()
+    saver = tf.train.Saver(max_to_keep=1)
+
+    x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
 
     for i in range(start_iteration, start_iteration + n_iterations):
         x_batch, y_batch = batch.next_batch([X_train, y_train])
         if (i != 0) and i % display_step == 0:
-            x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
             c_train = sess.run(cost, feed_dict={seq_in: x_cost, seq_out: y_cost, keep_prob: 1.0})
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i, c_train))
             sys.stdout.flush()

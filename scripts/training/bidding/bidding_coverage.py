@@ -148,7 +148,7 @@ if __name__ == '__main__':
     ns = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("NS=")), -1)
     ew = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("EW=")), -1)
     alternating = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("alternate")), False)
-    version = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("version")), 2)
+    version = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("version")), "2")
 
     sys.stderr.write(f"NS={ns}, EW={ew}, Alternating={alternating}, Version={version}\n")
     ns = to_numeric(ns)
@@ -253,6 +253,7 @@ if __name__ == '__main__':
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} After add missing vuln {len(sorted_filtered_deals)}\n')
 
     x, y, HCP, SHAPE = create_arrays(ns, ew, players_pr_hand, len(sorted_filtered_deals), 4 if version == "2" else 3)
+    print(x.shape)
 
     x, y, HCP, SHAPE, key_counts, k = create_binary(sorted_filtered_deals, ns, ew, alternating, x, y, HCP, SHAPE, key_counts, k, 4 if version == "2" else 3)
 

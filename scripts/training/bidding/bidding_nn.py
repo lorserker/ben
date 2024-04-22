@@ -41,17 +41,11 @@ else:
         else:
             model_path = 'model/bidding'
 
-if len(sys.argv) > 2:
-    start_iteration = int(sys.argv[2])
-else:
-    start_iteration = 0
-
 print("Size input hand:         ", n_ftrs)
 print("Examples for training:   ", n_examples)
 print("Batch size:              ", batch_size)
 n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
 print("Iterations               ", n_iterations)
-print("Start iterations         ", start_iteration)
 print("Model path:              ", model_path)
 print("Learning rate:           ", learning_rate)
 
@@ -108,19 +102,11 @@ cost_batch = Batcher(n_examples, batch_size)
 
 with tf.compat.v1.Session() as sess:
     sess.run(tf.compat.v1.global_variables_initializer())
-    if start_iteration > 0:
-        print('Resuming from iteration', start_iteration)
-        print(f'{model_path}-{start_iteration}')
-        saver = tf.train.import_meta_graph(f'{model_path}-{start_iteration}.meta')
-        saver.restore(sess, f'{model_path}-{start_iteration}')
-        print("Currently not working - use bidding_nn_continue.py instead")
-        sys.exit(1)
-    else:
-        saver = tf.compat.v1.train.Saver(max_to_keep=1)
+    saver = tf.compat.v1.train.Saver(max_to_keep=1)
 
     x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
 
-    for i in range(start_iteration, start_iteration + n_iterations):
+    for i in range(n_iterations):
         x_batch, y_batch = batch.next_batch([X_train, y_train])
         if (i != 0) and i % display_step == 0:
             c_train = sess.run(cost, feed_dict={seq_in: x_cost, seq_out: y_cost, keep_prob: 1.0})
