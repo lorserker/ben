@@ -71,7 +71,7 @@ with graph.as_default():
 
     x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
 
-    for i in range(start_iteration, start_iteration + n_iterations):
+    for i in range(start_iteration, n_iterations):
         x_batch, y_batch = batch.next_batch([X_train, y_train])
         if (i != 0) and i % display_step == 0:
             c_train = sess.run(cost, feed_dict={seq_in: x_cost, seq_out: y_cost, keep_prob: 1.0})
