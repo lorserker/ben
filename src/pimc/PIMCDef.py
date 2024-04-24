@@ -88,32 +88,39 @@ class BGADefDLL:
     def set_shape_constraints(self, min_partner, max_partner, min_declarer, max_declarer, quality):
         if self.constraints_updated:
             return
+        # Perhaps we should have a larger margin, depending on the bidding from this hand
+        # if no bids, the hand can have a very long suits without having bid
+        # Perhaps most important for partners hand
+        # Should it be moved to configuration?
         if quality:
             margin = 1
         else:
-            margin = 2
+            margin_declarer = 2
+            margin_partner = 2
 
-        allready_showed_partner = [0,0,0,0]
-        allready_showed_partner[0] = 13 - self.partner_constraints.MaxSpades
-        allready_showed_partner[1] = 13 - self.partner_constraints.MaxHearts
-        allready_showed_partner[2] = 13 - self.partner_constraints.MaxDiamonds
-        allready_showed_partner[3] = 13 - self.partner_constraints.MaxClubs
-        allready_showed_declarer = [0,0,0,0]
-        allready_showed_declarer[0] = 13 - self.declarer_constraints.MaxSpades
-        allready_showed_declarer[1] = 13 - self.declarer_constraints.MaxHearts
-        allready_showed_declarer[2] = 13 - self.declarer_constraints.MaxDiamonds
-        allready_showed_declarer[3] = 13 - self.declarer_constraints.MaxClubs
+        allready_shown_partner = [0,0,0,0]
+        allready_shown_partner[0] = 13 - self.partner_constraints.MaxSpades
+        allready_shown_partner[1] = 13 - self.partner_constraints.MaxHearts
+        allready_shown_partner[2] = 13 - self.partner_constraints.MaxDiamonds
+        allready_shown_partner[3] = 13 - self.partner_constraints.MaxClubs
+        allready_shown_declarer = [0,0,0,0]
+        allready_shown_declarer[0] = 13 - self.declarer_constraints.MaxSpades
+        allready_shown_declarer[1] = 13 - self.declarer_constraints.MaxHearts
+        allready_shown_declarer[2] = 13 - self.declarer_constraints.MaxDiamonds
+        allready_shown_declarer[3] = 13 - self.declarer_constraints.MaxClubs
 
         if self.verbose:
-            print(min_partner, max_partner, min_declarer, max_declarer, quality)
-            print("allready_showed_d",allready_showed_declarer)
-            print("allready_showed_p",allready_showed_partner)
+            print("allready_shown_declarer",allready_shown_declarer)
+            print("allready_shown_partner",allready_shown_partner)
 
         for i in range(4):
-            min_partner[i] = max(min_partner[i] - margin - allready_showed_partner[i], 0)
-            max_partner[i] = min(max_partner[i] + margin - allready_showed_partner[i], 13)
-            min_declarer[i] = max(min_declarer[i] - margin - allready_showed_declarer[i], 0)
-            max_declarer[i] = min(max_declarer[i] + margin - allready_showed_declarer[i], 13)
+            min_partner[i] = max(min_partner[i] - margin_partner - allready_shown_partner[i], 0)
+            max_partner[i] = min(max_partner[i] + margin_partner - allready_shown_partner[i], 13)
+            min_declarer[i] = max(min_declarer[i] - margin_declarer - allready_shown_declarer[i], 0)
+            max_declarer[i] = min(max_declarer[i] + margin_declarer - allready_shown_declarer[i], 13)
+
+        if self.verbose:
+            print(min_partner, max_partner, min_declarer, max_declarer)
 
         self.partner_constraints.MinSpades = int(min_partner[0])
         self.partner_constraints.MinHearts = int(min_partner[1])
@@ -141,20 +148,20 @@ class BGADefDLL:
     def set_hcp_constraints(self, min_partner, max_partner, min_declarer, max_declarer, quality):
         if self.constraints_updated:
             return
-        allready_showed_declarer = 37 - self.declarer_constraints.MaxHCP
-        allready_showed_partner = 37 - self.partner_constraints.MaxHCP
+        allready_shown_declarer = 37 - self.declarer_constraints.MaxHCP
+        allready_shown_partner = 37 - self.partner_constraints.MaxHCP
         if self.verbose:
             print(min_partner, max_partner, min_declarer, max_declarer, quality)
-            print("allready_showed_d",allready_showed_declarer)
-            print("allready_showed_p",allready_showed_partner)
+            print("allready_shown_d",allready_shown_declarer)
+            print("allready_shown_p",allready_shown_partner)
         if quality:
             margin = 2
         else:
             margin = 5
-        self.declarer_constraints.MinHCP = max(min_declarer-margin-allready_showed_declarer, 0)
-        self.declarer_constraints.MaxHCP = min(max_declarer+margin-allready_showed_declarer, 37)
-        self.partner_constraints.MinHCP = max(min_partner-margin-allready_showed_partner, 0)
-        self.partner_constraints.MaxHCP = min(max_partner+margin-allready_showed_partner, 37)
+        self.declarer_constraints.MinHCP = max(min_declarer-margin-allready_shown_declarer, 0)
+        self.declarer_constraints.MaxHCP = min(max_declarer+margin-allready_shown_declarer, 37)
+        self.partner_constraints.MinHCP = max(min_partner-margin-allready_shown_partner, 0)
+        self.partner_constraints.MaxHCP = min(max_partner+margin-allready_shown_partner, 37)
 
         if self.verbose:
             print("set_hcp_constraints")

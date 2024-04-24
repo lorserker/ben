@@ -88,32 +88,40 @@ class BGADLL:
         if self.constraints_updated:
             return
 
+        # Perhaps we should have a larger margin, depending on the bidding from this hand
+        # if no bids, the hand can have a very long suits without having bid
+        # Should it be moved to configuration?
+
         if quality:
             margin = 1
         else:
             margin = 3
 
-        allready_showed_rho = [0,0,0,0]
-        allready_showed_rho[0] = 13 - self.rho_constraints.MaxSpades
-        allready_showed_rho[1] = 13 - self.rho_constraints.MaxHearts
-        allready_showed_rho[2] = 13 - self.rho_constraints.MaxDiamonds
-        allready_showed_rho[3] = 13 - self.rho_constraints.MaxClubs
-        allready_showed_lho = [0,0,0,0]
-        allready_showed_lho[0] = 13 - self.rho_constraints.MaxSpades
-        allready_showed_lho[1] = 13 - self.rho_constraints.MaxHearts
-        allready_showed_lho[2] = 13 - self.rho_constraints.MaxDiamonds
-        allready_showed_lho[3] = 13 - self.rho_constraints.MaxClubs
+        # allready_shown is in normal order (Spades,Hearts,Diamonds,Clubs)
+        allready_shown_rho = [0,0,0,0]
+        allready_shown_rho[0] = 13 - self.rho_constraints.MaxSpades
+        allready_shown_rho[1] = 13 - self.rho_constraints.MaxHearts
+        allready_shown_rho[2] = 13 - self.rho_constraints.MaxDiamonds
+        allready_shown_rho[3] = 13 - self.rho_constraints.MaxClubs
+        allready_shown_lho = [0,0,0,0]
+        allready_shown_lho[0] = 13 - self.lho_constraints.MaxSpades
+        allready_shown_lho[1] = 13 - self.lho_constraints.MaxHearts
+        allready_shown_lho[2] = 13 - self.lho_constraints.MaxDiamonds
+        allready_shown_lho[3] = 13 - self.lho_constraints.MaxClubs
 
         if self.verbose:
-            print(min_lho, max_lho, min_rho, max_rho, quality)
-            print("allready_showed_lho",allready_showed_lho)
-            print("allready_showed_rho",allready_showed_rho)
+            print("allready_shown_lho",allready_shown_lho)
+            print("allready_shown_rho",allready_shown_rho)
 
         for i in range(4):
-            min_lho[i] = max(min_lho[i] - margin - allready_showed_rho[i], 0)
-            max_lho[i] = min(max_lho[i] + margin - allready_showed_rho[i], 13)
-            min_rho[i] = max(min_rho[i] - margin - allready_showed_lho[i], 0)
-            max_rho[i] = min(max_rho[i] + margin - allready_showed_lho[i], 13)
+            min_lho[i] = max(min_lho[i] - margin - allready_shown_lho[i], 0)
+            max_lho[i] = min(max_lho[i] + margin - allready_shown_lho[i], 13)
+            min_rho[i] = max(min_rho[i] - margin - allready_shown_rho[i], 0)
+            max_rho[i] = min(max_rho[i] + margin - allready_shown_rho[i], 13)
+
+        if self.verbose:
+            print("LHO", min_lho, max_lho)
+            print("RHO", min_rho, max_rho)
 
         self.lho_constraints.MinSpades = int(min_lho[0])
         self.lho_constraints.MinHearts = int(min_lho[1])
@@ -141,20 +149,20 @@ class BGADLL:
     def set_hcp_constraints(self, min_lho, max_lho, min_rho, max_rho, quality):
         if self.constraints_updated:
             return
-        allready_showed_lho = 37 - self.lho_constraints.MaxHCP
-        allready_showed_rho = 37 - self.rho_constraints.MaxHCP
+        allready_shown_lho = 37 - self.lho_constraints.MaxHCP
+        allready_shown_rho = 37 - self.rho_constraints.MaxHCP
         if self.verbose:
             print(min_lho, max_lho, min_rho, max_rho, quality)
-            print("allready_showed_lho",allready_showed_lho)
-            print("allready_showed_rho",allready_showed_rho)
+            print("allready_shown_lho",allready_shown_lho)
+            print("allready_shown_rho",allready_shown_rho)
         if quality:
             margin = 2
         else:
             margin = 5
-        self.lho_constraints.MinHCP = max(min_lho-margin-allready_showed_lho, 0)
-        self.lho_constraints.MaxHCP = min(max_lho+margin-allready_showed_lho, 37)
-        self.rho_constraints.MinHCP = max(min_rho-margin-allready_showed_rho, 0)
-        self.rho_constraints.MaxHCP = min(max_rho+margin-allready_showed_rho, 37)
+        self.lho_constraints.MinHCP = max(min_lho-margin-allready_shown_lho, 0)
+        self.lho_constraints.MaxHCP = min(max_lho+margin-allready_shown_lho, 37)
+        self.rho_constraints.MinHCP = max(min_rho-margin-allready_shown_rho, 0)
+        self.rho_constraints.MaxHCP = min(max_rho+margin-allready_shown_rho, 37)
         if self.verbose:
             print("set_hcp_constraints")
             print("East (RHO)",self.rho_constraints.ToString())
@@ -273,6 +281,7 @@ class BGADLL:
 #             setattr(constraints, f"Max{['Spades', 'Hearts', 'Diamonds', 'Clubs'][suit]}", 0)
 
         # As soon as we identify a void, we remove any restrictions on the other hand
+        # if both are void, the restrictions can be anything as there will be no cards available
         if 0 in shown_out_suits[0]:
             self.lho_constraints.MinSpades = 0
             self.lho_constraints.MaxSpades = 0
