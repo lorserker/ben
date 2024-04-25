@@ -57,7 +57,8 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose):
+    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose):
+        self.lead_accept_threshold_partner_trust = lead_accept_threshold_partner_trust
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
         self.play_accept_threshold = play_accept_threshold
@@ -79,6 +80,7 @@ class Sample:
     @classmethod
     def from_conf(cls, conf: ConfigParser, verbose=False) -> "Sample":
         lead_accept_threshold = float(conf['sampling']['lead_accept_threshold'])
+        lead_accept_threshold_partner_trust = float(conf['sampling']['lead_accept_threshold_partner_trust'])
         bidding_threshold_sampling = float(conf['sampling']['bidding_threshold_sampling'])
         play_accept_threshold = float(conf['sampling']['play_accept_threshold'])
         bid_accept_play_threshold = float(conf['sampling']['bid_accept_play_threshold'])
@@ -94,7 +96,7 @@ class Sample:
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
-        return cls(lead_accept_threshold, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose)
+        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -829,12 +831,17 @@ class Sample:
         return accept, c_hcp, c_shp.flatten()
 
     def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states, dealer):
+        if self.verbose:
+            print("validate_opening_lead_for_sample")
+            print(self.lead_accept_threshold)
         # Only make the test if opening leader (0) is hidden
         # The primary idea is to filter away hands, that lead the Q as it denies the K
         if (hidden_1_i == 0 or hidden_2_i == 0) and states[0].shape[0] > self.min_sample_hands_play * 2:
             if (hidden_2_i == 3):
                 # We are RHO and trust partners lead
-                lead_accept_threshold = self.lead_accept_threshold + 0.1
+                lead_accept_threshold = self.lead_accept_threshold + self.lead_accept_threshold_partner_trust
+                if self.verbose:
+                    print(f"RHO and trust partners lead {lead_accept_threshold}")
             else: 
                 # How much trust that opponents would have lead the actual card from the hand sampled
                 lead_accept_threshold = self.lead_accept_threshold
@@ -843,7 +850,10 @@ class Sample:
             opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
             lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :32], opening_lead, dealer)
             while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
+                # We are RHO and trust partners lead
+                print("Reducing threshold")
                 lead_accept_threshold *= 0.5
+                print(lead_accept_threshold)
 
             # If we did not find 2 samples we ignore the test for opening lead
             if np.sum(lead_scores >= lead_accept_threshold) > 1:

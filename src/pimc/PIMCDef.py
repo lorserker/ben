@@ -93,7 +93,8 @@ class BGADefDLL:
         # Perhaps most important for partners hand
         # Should it be moved to configuration?
         if quality:
-            margin = 1
+            margin_declarer = 1
+            margin_partner = 1
         else:
             margin_declarer = 2
             margin_partner = 2

@@ -156,13 +156,13 @@ def decode_board(encoded_str_deal):
 def parse_lin(lin):
     rx_hand = r'S(?P<S>[2-9A,K,Q,J,T]*?)H(?P<H>[2-9A,K,Q,J,T]*?)D(?P<D>[2-9A,K,Q,J,T]*?)C(?P<C>[2-9A,K,Q,J,T]*?)$'
 
-    lin_vuln = re.findall(r'sv\|(.)\|', lin)[0]
+    lin_vuln = re.findall(r'sv\|(.)\|', lin)[0].upper()
     vuln = "None"
-    if lin_vuln == 'n':
+    if lin_vuln == 'N':
         vuln = "N-S"
-    elif lin_vuln == 'e':
+    elif lin_vuln == 'E':
         vuln = "E-W"
-    elif lin_vuln == 'b':
+    elif lin_vuln == 'B':
         vuln = "Both"
 
     lin_deal = re.findall(r'(?<=md\|)(.*?)(?=\|)', lin)[0]
