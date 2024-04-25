@@ -356,8 +356,8 @@ class PlayInfo {
 
         if ("candidates" in this.data && this.data.candidates.length > 0) {
             html += '<h3>Candidates</h3>'
-            html += '<p>We have 3 different parameters for selecting the card, and first goal is to make/set the contract (if not matchpoints), then the double dummy score, and finally the score from the neural network.'
-            html += 'But if the quality of the samples are bad (or the nn suggest a specific card with confidence), then we select the that card.'
+            html += '<p>We have 3 different parameters for selecting the card, and first goal is to make/set the contract (if not matchpoints), then the double dummy score, and finally the score from the neural network. '
+            html += 'If the quality of the samples are bad (or the nn suggest a specific card with confidence), then we select the that card. '
             html += 'Also be aware that the data is rounded to nearest even number before comparing.</p>'
             html += '<table>'
 

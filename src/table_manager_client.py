@@ -129,10 +129,11 @@ class TMClient:
         matches = re.findall(pattern, opponents)
 
         # Extracted text from the second set of quotes
-        if self.seat == "North" or self.seat == "South":
-            self.opponents = matches[1]
-        else:
-            self.opponents = matches[0]
+        if len(matches) > 1:
+            if self.seat == "North" or self.seat == "South":
+                self.opponents = matches[1]
+            else:
+                self.opponents = matches[0]
 
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]

@@ -82,3 +82,4 @@ gamedb*
 install/**/*.bak
 install/**/*.dir
 install/**/*.dat
+install/dist/table_manager_client.zip

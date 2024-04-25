@@ -1152,7 +1152,7 @@ class CardPlayer:
             for ft, proba in zip(future_tricks, probabilities_list):
                 if ft < 0:
                     continue
-                ev_sum += ft * proba
+                ev_sum += ft * proba * 100
             card_ev[card] = ev_sum
 
         return card_ev
@@ -1167,7 +1167,7 @@ class CardPlayer:
                     continue
                 tot_tricks = self.n_tricks_taken + ft
                 tot_decl_tricks = tot_tricks if self.player_i % 2 == 1 else 13 - tot_tricks
-                ev_sum += sign * tot_decl_tricks
+                ev_sum += sign * tot_decl_tricks * 100
             card_ev[card] = ev_sum / len(future_tricks)
                 
         return card_ev
