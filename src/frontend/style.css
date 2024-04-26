@@ -43,10 +43,10 @@ p {
 body {
     font-family: Arial, sans-serif;
     margin: 0;
-    cursor: pointer;
+    /* cursor: pointer; */
     justify-content: center;
     background-color: lightsteelblue;
-    user-select: none;
+    /* user-select: none; */
     -webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 

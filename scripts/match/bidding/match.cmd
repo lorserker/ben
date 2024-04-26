@@ -19,6 +19,8 @@ type ".\%model1%\compare.json" | python printmatch.py >.\%model1%\match.txt
 
 type ".\%model1%\compare.json" | python printmatchashtml.py >.\%model1%\html\match.html
 
+python printdeal.py %boards% %1\html
+
 powershell -Command "Get-Content .\%model1%\compare.json | jq .imp | Measure-Object -Sum | Select-Object -ExpandProperty Sum"
 
 type ".\%model1%\compare.json" | jq .imp >.\%model1%\imps.txt  
@@ -26,4 +28,3 @@ type ".\%model1%\compare.json" | jq .imp >.\%model1%\imps.txt
 rem find and sum positive scores
 powershell -Command "(Get-Content .\%model1%\imps.txt | ForEach-Object { $_ -as [double] }) | Where-Object { $_ -gt 0 } | Measure-Object -Sum | Select-Object -ExpandProperty Sum"
 
-python printdeal.py %boards% %1\html

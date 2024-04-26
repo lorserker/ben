@@ -1298,9 +1298,13 @@ class CardPlayer:
         # We should probably also consider bidding_scores in this 
         # If we have bad quality of samples we should probably just use the neural network
         if valid_bidding_samples >= 0:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+            if self.models.matchpoint:
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_dd, round(x[1].insta_score, 2), -x[0]), reverse=True)
+                who = "NN-MP"
+            else:
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+                who = "NN-Make"
             candidate_cards = [card for _, card in candidate_cards]
-            who = "NN"
         else:
             if self.models.use_biddingquality_in_eval:
                 candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 2), round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
@@ -1311,9 +1315,13 @@ class CardPlayer:
                     candidate_cards = candidate_cards2
                 who = "DD"
             else:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
+                if self.models.matchpoint:
+                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+                    who = "MP-Make"
+                else:
+                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
+                    who = "Make"
                 candidate_cards = [card for _, card in candidate_cards]
-                who = "Make"
 
         right_card = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.player_i, self.x_play[0, trick_i, :32], current_trick, play_status)
         best_card_resp = CardResp(

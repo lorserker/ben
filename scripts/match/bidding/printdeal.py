@@ -1,4 +1,5 @@
 import sys
+import os
 
 def generate_html_card(suit, cards):
     html = f"<div class='suit'><span>{suit}</span>"
@@ -6,6 +7,20 @@ def generate_html_card(suit, cards):
         html += f"{card}"
     html += "</div>"
     return html
+
+def delete_files_with_pattern(folder_path, pattern):
+    # List all files in the folder
+    files = os.listdir(folder_path)
+    
+    # Iterate through the files
+    for file in files:
+        # Check if the file matches the pattern
+        if file.startswith(pattern[0]) and file.endswith(pattern[1]):
+            # Construct the full file path
+            file_path = os.path.join(folder_path, file)
+            # Delete the file
+            os.remove(file_path)
+            print(f"Deleted: {file_path}")
 
 def generate_html_deal(line, board_number):
     parts = line.split()
@@ -65,9 +80,9 @@ def generate_html_deal(line, board_number):
                 {generate_html_card('&clubs;', cards[2].split('.')[3])}
             </div>
         </div>
-        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=0&board_no={board_number}"> Se it played (no search for NS) </a><br>
-        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=1&board_no={board_number}"> Se it played (no search for EW) </a><br>
-        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=4&board_no={board_number}"> Se it played (Search for both) </a><br>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=0&A=x&board_no={board_number}"> Se it played (no search for NS) </a><br>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=1&A=x&board_no={board_number}"> Se it played (no search for EW) </a><br>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('{' '.join(cards)}', '{dealer} {vulnerable}')&P=4&A=x&board_no={board_number}"> Se it played (Search for both) </a><br>
         <div id="auction"></div>
 
     </body>
@@ -76,6 +91,7 @@ def generate_html_deal(line, board_number):
     filename = f"./{folder}/Board{board_number}.html"
     with open(filename, 'w', encoding='utf-8') as file:
         file.write(html)
+    print(f"Generated: {filename}")
 
 
 if len(sys.argv) < 3:
@@ -84,6 +100,10 @@ if len(sys.argv) < 3:
 
 filename = sys.argv[1]
 folder = sys.argv[2]
+# Define the pattern for the files you want to delete
+pattern = ('B', '.html')
+
+delete_files_with_pattern(folder, pattern)
 
 # Read the file and generate HTML for each line
 with open(filename, 'r') as file:

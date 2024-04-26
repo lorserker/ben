@@ -624,6 +624,8 @@ class Driver:
             current_trick = []
             current_trick52 = []
 
+            if self.verbose:
+                print(f"Human {self.human}")
             if np.any(np.array(self.human)):
                 key = await self.confirmer.confirm()
                 if key == 'q':

@@ -198,7 +198,7 @@ async def main():
     start_server = websockets.serve(functools.partial(handler, board_no=board_no, seed=seed), "0.0.0.0", port)
     try:
         await start_server
-    except:
+    except Exception as e:
         print("Error in server.")
         print(e)
         sys.exit(0)

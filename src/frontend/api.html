@@ -578,7 +578,7 @@
                 `;
             if (data.candidates && data.candidates.length > 0)
                 html += `
-                    <p><strong>Candidates:</strong></p>
+                    <p><strong>Candidates:</strong>
                     <ul>
                         ${data.candidates.map(candidate => `
                             <li>
@@ -588,7 +588,7 @@
                                 ${candidate.adjustment !== undefined ? `Adjusted: ${candidate.adjustment}` : ''}
                             </li>                               
                         `).join('')}
-                    </ul>
+                    </ul></p>
                     `;
             if (data.hcp && (data.hcp != -1)) {
                 let formattedShape = [];
