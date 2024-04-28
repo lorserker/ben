@@ -49,6 +49,7 @@ def binary_data(deal_str, outcome_str, play_str):
         
         x[0, i, 32:64] = dummy_bin
         x[0, i, 0:32] = me_bin
+        print(me_bin)
         
         x[0, i, 64:96] = hot_encode_card(last_trick[0])
         x[0, i, 96:128] = hot_encode_card(last_trick[1])
@@ -60,7 +61,9 @@ def binary_data(deal_str, outcome_str, play_str):
         x[0, i, 256:288] = hot_encode_card(cards_in[2])
         
         me_bin[label_card_ix] -= 1
-        
+
+    print(x,Y)
+    xx        
     return x, y
 
 if __name__ == '__main__':

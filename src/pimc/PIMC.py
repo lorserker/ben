@@ -339,20 +339,24 @@ class BGADLL:
             print(Macros.Player.South if player_i == 3 else Macros.Player.North)
             print("East (RHO)",self.rho_constraints.ToString())
             print("West (LHO)",self.lho_constraints.ToString())
-            raise ex            
-
+            sys.exit(1) 
         
-        candidate_cards = {}
+        card_result = {}
         if self.autoplay and card != None:
             if self.verbose:
                 print("Playing singleton:",trump)
-            candidate_cards[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
-            return "X", candidate_cards, "Y"
+            card_result[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
+            return card_result
 
         trump = self.find_trump(self.suit)
         if self.verbose:
             print("Trump:",trump)
-        self.pimc.BeginEvaluate(trump)
+
+        try:
+            self.pimc.BeginEvaluate(trump)
+        except Exception as ex:
+            print('Error BeginEvaluate:', ex)
+            sys.exit(1)
 
         await self.check_threads_finished()
         if self.verbose:
@@ -378,7 +382,8 @@ class BGADLL:
                 self.lho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                 self.rho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                 print("Trying without constraints")
-                return "X",await self.nextplay(player_i, shown_out_suits), "Y"
+                return await self.nextplay(player_i, shown_out_suits)
+            
             makable = sum(1 for t in output if t >= self.mintricks)
             probability = makable / count if count > 0 else 0
             if math.isnan(probability):
@@ -389,14 +394,18 @@ class BGADLL:
             score = sum(self.score_by_tricks_taken[t + self.tricks_taken] for t in output) / count if count > 0 else 0
             msg = f"{self.rho_constraints.ToString()} - {self.lho_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
 
-            candidate_cards[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
+            card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
             if self.verbose:
                 print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f}")
 
-        self.pimc.EndEvaluate()
+        try:
+            self.pimc.EndEvaluate()
+        except Exception as ex:
+            print('Error EndEvaluate:', ex)
+            sys.exit(1)
         if self.verbose:
-            print(candidate_cards)
-            print(f"Returning {len(candidate_cards)} from PIMC nextplay")
-        print(candidate_cards)
-        return "X", candidate_cards, "Y"
+            print(card_result)
+            print(f"Returning {len(card_result)} from PIMC nextplay")
+
+        return card_result
     

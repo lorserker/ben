@@ -304,6 +304,7 @@ def error_page():
 @app.route('/submit', method="POST")
 def index(): 
     url = None
+    server = request.forms.get("server")
     north = request.forms.get('N')
     east = request.forms.get('E')
     south = request.forms.get('S')
@@ -351,7 +352,7 @@ def index():
 
         deal = " ".join(deal)
         print(deal)
-        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
     
     dealpbn = request.forms.get('dealpbn')
     if dealpbn:
@@ -359,7 +360,7 @@ def index():
             dealpbn = request.forms.get('dealpbn')
             dealer, vulnerable, deal, board_no = parse_pbn(dealpbn.splitlines())
             print(deal)
-            url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+            url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
         except Exception as e:
             error_message = f'Error parsing PBN-input. {e}'
             print(error_message)
@@ -372,7 +373,7 @@ def index():
         dealbsol = request.forms.get('dealbsol')
         dealer, vulnerable, deal, board_no = parse_bsol(dealbsol)
         print(deal)
-        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
 
     deallin = request.forms.get('deallin')
     if deallin:
@@ -394,18 +395,18 @@ def index():
 
         deal = " ".join(deal)
         print(deal)
-        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
 
     dealbba = request.forms.get('dealbba')
     if dealbba:
         hand, dealer, vulnerable, board_no = decode_board(dealbba)
         deal_as_str = hand_as_string(hand)
-        url = f'/app/bridge.html?deal=(%27{deal_as_str}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}'
+        url = f'/app/bridge.html?deal=(%27{deal_as_str}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
     if url:
         redirect(url)
     else:
         board_no = request.forms.get('board')
-        redirect(f"/app/bridge.html?board_no={board_no}{player}")
+        redirect(f"/app/bridge.html?board_no={board_no}{player}&server={server}")
     
 
 @app.route('/home')

@@ -348,18 +348,23 @@ class BGADefDLL:
             print("min tricks",self.mintricks)
             print("Declarer",self.declarer_constraints.ToString())
             print("Partner",self.partner_constraints.ToString())
-            raise ex            
+            sys.exit(1) 
             
         
-        candidate_cards = {}
+        card_result = {}
         if self.autoplay and card != None:
-            candidate_cards[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
-            return candidate_cards            
+            card_result[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
+            return card_result            
 
         trump = self.find_trump(self.suit)
         if self.verbose:
             print("Trump:",trump)
-        self.pimc.BeginEvaluate(trump)
+
+        try:
+            self.pimc.BeginEvaluate(trump)
+        except Exception as ex:
+            print('Error BeginEvaluate:', ex)
+            sys.exit(1)
 
         await self.check_threads_finished()
         if self.verbose:
@@ -399,12 +404,18 @@ class BGADefDLL:
             score = -sum(self.score_by_tricks_taken[13 - t - self.tricks_taken] for t in output) / count if count > 0 else 0
             msg = f"{self.declarer_constraints.ToString()} - {self.partner_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
 
-            candidate_cards[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
+            card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
             if self.verbose:
                 print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f}")
 
-        self.pimc.EndEvaluate()
+        try:
+            self.pimc.EndEvaluate()
+        except Exception as ex:
+            print('Error EndEvaluate:', ex)
+            sys.exit(1)
+
         if self.verbose:
-            print(candidate_cards)
-            print(f"Returning {len(candidate_cards)} from PIMCDef nextplay")
-        return candidate_cards
+            print(card_result)
+            print(f"Returning {len(card_result)} from PIMCDef nextplay")
+
+        return card_result

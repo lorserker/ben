@@ -39,6 +39,20 @@
 </div>
 
 <div class="container">
+    <h2>Use this server: </h2>
+    <div class="content">
+        <label for="board">Server:</label>
+        <select id="server" name="server">
+            <option value="0">2/1 GIB</option>
+            <option value="1">SAYC</option>
+            <option value="2">SAYC-WBridge5</option>
+            <option value="3">Jackos</option>
+        </select><br>
+        </div>
+    </div>
+
+
+<div class="container">
   <h2>Play this deal: </h2>
 
   <div class="content">
@@ -195,6 +209,19 @@
       localStorage.setItem('selectedValue', dropdown.value);
     });
 
+    // Retrieve the dropdown element
+    const serverdropdown = document.getElementById('server');
+
+    // Check if there's a value in localStorage, if so, set the dropdown value to that
+    if (localStorage.getItem('serverValue')) {
+      serverdropdown.value = localStorage.getItem('serverValue');
+    }
+
+    // Add an event listener to store the selected value in localStorage when the dropdown changes
+    dropdown.addEventListener('change', function() {
+      localStorage.setItem('serverValue', serverdropdown.value);
+    });
+
 // Get reference to the checkboxes and forms
 const checkbox1 = document.getElementById('N');
 const checkbox2 = document.getElementById('E');
@@ -265,6 +292,10 @@ function includeCheckboxValues(event) {
         // Append dropdown selected value
         const dropdown = document.getElementById('T');
         formData.append('T', dropdown.value);
+
+        // Append dropdown selected value
+        const serverdropdown = document.getElementById('server');
+        formData.append('server', serverdropdown.value);
 
         // You can submit the form data using fetch or XMLHttpRequest here
         // For example:

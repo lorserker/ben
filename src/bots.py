@@ -989,23 +989,21 @@ class CardPlayer:
         if not quality and self.verbose:
             print(samples)
         if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
-            x, card52_dd, y = await self.pimc.nextplay(self.player_i, shown_out_suits)
-            print("X:", x, "Y:", y)
-            print("PIMC result:",card52_dd)
+            pimc_resp_cards = await self.pimc.nextplay(self.player_i, shown_out_suits)
             if self.verbose:
-                assert card52_dd is not None, "PIMC result is None"
-                print("PIMC result:",card52_dd)
-            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples, play_status)            
+                print("PIMC result:",pimc_resp_cards)
+            assert pimc_resp_cards is not None, "PIMC result is None"
+            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
         else:
             if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
-                card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
+                pimc_resp_cards = await self.pimc.nextplay(self.player_i, shown_out_suits)
                 if self.verbose:
-                    assert card52_dd is not None, "PIMCDef result is None"
-                    print("PIMC result:",card52_dd)
-                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples, play_status)            
+                    print("PIMC result:",pimc_resp_cards)
+                assert pimc_resp_cards is not None, "PIMCDef result is None"
+                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
             else:
-                card52_dd = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
-                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples, play_status)
+                pimc_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
+                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)
 
         return card_resp
 

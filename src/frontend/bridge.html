@@ -113,6 +113,7 @@
         const rotate = urlParams.get('R')
         const visible = urlParams.get('V')
         const playonly = urlParams.get('P')
+        const server = urlParams.get('server')
 
         let no_human = !north && !east && !south && !west
         let player = ""
@@ -140,14 +141,14 @@
             }
         }
         try {
-
+            var serverport = 444 + server
             var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
             var port = location.port !== '' ? ':' + location.port : ''; // Extracts the port number, if present
-            ws = new WebSocket(protocol + location.hostname + ":4443/" + queryString)
+            ws = new WebSocket(protocol + location.hostname + ":"+  serverport + "/" + queryString)
 
             ws.addEventListener("error", function (event) {
                 console.log("WebSocket error:", event);
-                alert("Error on server: ", event )
+                alert("Error on server: ", location.hostname + ":"+  serverport,  event )
                 document.querySelector('#auctionstr').innerHTML += 'No connection to server <br>'
             });
 
