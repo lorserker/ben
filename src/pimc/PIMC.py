@@ -32,15 +32,16 @@ class BGADLL:
         try:
            # Load the .NET assembly and import the types and classes from the assembly
             clr.AddReference(BGADLL_PATH)
-            from BGADLL import PIMC, Hand, Constraints, Macros, Extensions
+            from BGADLL import PIMC, Hand, Constraints, Extensions
 
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
             print("Error: Unable to load BGADLL.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
-            print("Make sure the dll is not writeprotected")
+            print("Make sure the dll is not write protected")
             print('Error:', ex)
-            raise ex
+            sys.exit(1)
+
         self.max_playout = models.pimc_max_playout
         self.wait = models.pimc_wait
         self.autoplay = models.pimc_autoplaysingleton
@@ -83,7 +84,6 @@ class BGADLL:
             print("mintricks",self.mintricks)
             print("tricks_taken",self.tricks_taken)
             
-
     def set_shape_constraints(self, min_lho, max_lho, min_rho, max_rho, quality):
         if self.constraints_updated:
             return
@@ -229,7 +229,7 @@ class BGADLL:
     async def check_threads_finished(self):
         start_time = time.time()
         while time.time() - start_time < self.wait:
-            await asyncio.sleep(0.05)
+            time.sleep(0.05)
             if self.pimc.Evaluating == False:
                 if self.verbose:    
                     print(f"Threads are finished after {time.time() - start_time:.2f}.")
@@ -237,9 +237,13 @@ class BGADLL:
                 return
         if self.verbose:    
             print(f"Threads are still running after {self.wait} second. Examined {self.pimc.Examined} of {self.pimc.Combinations}")
-        self.pimc.EndEvaluate()
+        try:
+            self.pimc.EndEvaluate()
+        except Exception as ex:
+            print('Error EndEvaluate:', ex)
+            sys.exit(1)
         # Allow running threads to finalize
-        await asyncio.sleep(0.1)
+        time.sleep(0.1)
         if self.verbose:    
             print(f"Playouts: {self.pimc.Playouts}")
 
@@ -263,10 +267,13 @@ class BGADLL:
 
     # Define a Python function to find a bid
     async def nextplay(self, player_i, shown_out_suits):
+        from BGADLL import Constraints, Macros,  Card as PIMCCard
 
-        from BGADLL import PIMC, Hand, Constraints, Macros, Extensions, Card as PIMCCard
-
-        self.pimc.Clear()
+        try:
+            self.pimc.Clear()
+        except Exception as ex:
+            print('Error Clear:', ex)
+            sys.exit(1)
         if self.verbose:
             print("player_i", player_i)
             print(self.northhand.ToString(), self.southhand.ToString())
@@ -340,17 +347,17 @@ class BGADLL:
             print("East (RHO)",self.rho_constraints.ToString())
             print("West (LHO)",self.lho_constraints.ToString())
             sys.exit(1) 
-        
+
+        trump = self.find_trump(self.suit)
+        if self.verbose:
+            print("Trump:",trump)
+
         card_result = {}
         if self.autoplay and card != None:
             if self.verbose:
                 print("Playing singleton:",trump)
             card_result[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
             return card_result
-
-        trump = self.find_trump(self.suit)
-        if self.verbose:
-            print("Trump:",trump)
 
         try:
             self.pimc.BeginEvaluate(trump)
@@ -362,47 +369,51 @@ class BGADLL:
         if self.verbose:
             print("Combinations:", self.pimc.Combinations)
             print("Examined:", self.pimc.Examined)
-        legalMoves = self.pimc.LegalMoves
-        for card in legalMoves:
-            # Calculate win probability
-            output = self.pimc.Output[card]
-            count = float(len(output))
-            # If we found no playout we need to reevaluate without constraints
-            if count == 0:
-                print(card)
-                print(self.pimc.LegalMovesToString)
-                print("Combinations:", self.pimc.Combinations)
-                print("Examined:", self.pimc.Examined)
-                print(self.northhand.ToString(), self.southhand.ToString())
-                print(self.opposHand.ToString(), self.playedHand.ListAsString())
-                print("min tricks",self.mintricks)
-                print("Voids",shown_out_suits)
-                print("East (RHO)", self.rho_constraints.ToString())
-                print("West (LHO)", self.lho_constraints.ToString())
-                self.lho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
-                self.rho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
-                print("Trying without constraints")
-                return await self.nextplay(player_i, shown_out_suits)
-            
-            makable = sum(1 for t in output if t >= self.mintricks)
-            probability = makable / count if count > 0 else 0
-            if math.isnan(probability):
-                probability = 0
-            tricks = sum(t for t in output) / count if count > 0 else 0
-
-            # Second element is the score. We need to calculate it
-            score = sum(self.score_by_tricks_taken[t + self.tricks_taken] for t in output) / count if count > 0 else 0
-            msg = f"{self.rho_constraints.ToString()} - {self.lho_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
-
-            card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
-            if self.verbose:
-                print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f}")
-
         try:
-            self.pimc.EndEvaluate()
+            legalMoves = self.pimc.LegalMoves
+            for card in legalMoves:
+                # Calculate win probability
+                output = self.pimc.Output[card]
+                count = float(len(output))
+                # If we found no playout we need to reevaluate without constraints
+                if self.verbose:
+                    print(card, output, count)
+                if count == 0:
+                    print(card)
+                    print(self.pimc.LegalMovesToString)
+                    print("Combinations:", self.pimc.Combinations)
+                    print("Examined:", self.pimc.Examined)
+                    print(self.northhand.ToString(), self.southhand.ToString())
+                    print(self.opposHand.ToString(), self.playedHand.ListAsString())
+                    print("min tricks",self.mintricks)
+                    print("Voids",shown_out_suits)
+                    print("East (RHO)", self.rho_constraints.ToString())
+                    print("West (LHO)", self.lho_constraints.ToString())
+                    self.lho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
+                    self.rho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
+                    print("Trying without constraints")
+                    card_result = await self.nextplay(player_i, shown_out_suits)
+                    print("Done without constraints")
+                    return card_result
+                
+                makable = sum(1 for t in output if t >= self.mintricks)
+                probability = makable / count if count > 0 else 0
+                if math.isnan(probability):
+                    probability = 0
+                tricks = sum(t for t in output) / count if count > 0 else 0
+
+                # Second element is the score. We need to calculate it
+                score = sum(self.score_by_tricks_taken[t + self.tricks_taken] for t in output) / count if count > 0 else 0
+                msg = f"{self.rho_constraints.ToString()} - {self.lho_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+
+                card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
+                if self.verbose:
+                    print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f}")
+
         except Exception as ex:
-            print('Error EndEvaluate:', ex)
+            print('Error legalMoves:', ex)
             sys.exit(1)
+
         if self.verbose:
             print(card_result)
             print(f"Returning {len(card_result)} from PIMC nextplay")

@@ -218,7 +218,7 @@
     }
 
     // Add an event listener to store the selected value in localStorage when the dropdown changes
-    dropdown.addEventListener('change', function() {
+    serverdropdown.addEventListener('change', function() {
       localStorage.setItem('serverValue', serverdropdown.value);
     });
 
