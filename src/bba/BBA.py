@@ -133,6 +133,7 @@ class BBABotBid:
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
             print("Make sure the dll is not writeprotected")
             print('Error:', ex)
+            raise ex
         self.ns_system = ns_system
         self.ew_system = ew_system
         self.vuln = vuln

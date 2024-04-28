@@ -562,7 +562,8 @@ class TMClient:
         card_resp = await self.receive_line()
 
         card_resp_parts = card_resp.strip().split()
-        print("card_resp_parts", card_resp_parts)
+        if self.verbose:
+            print("card_resp_parts", card_resp_parts)
         assert card_resp_parts[0] == SEATS[player_i], f"{card_resp_parts[0]} != {SEATS[player_i]}"
 
         cr = CardResp(

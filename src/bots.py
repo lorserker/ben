@@ -991,12 +991,14 @@ class CardPlayer:
         if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
             card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
             if self.verbose:
+                assert card52_dd is not None, "PIMC result is None"
                 print("PIMC result:",card52_dd)
             card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples, play_status)            
         else:
             if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
                 card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
                 if self.verbose:
+                    assert card52_dd is not None, "PIMCDef result is None"
                     print("PIMC result:",card52_dd)
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, card52_dd, bidding_scores, quality, samples, play_status)            
             else:
@@ -1299,7 +1301,7 @@ class CardPlayer:
         # If we have bad quality of samples we should probably just use the neural network
         if valid_bidding_samples >= 0:
             if self.models.matchpoint:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_dd, round(x[1].insta_score, 2), -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_dd, round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
                 who = "NN-MP"
             else:
                 candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
@@ -1316,7 +1318,7 @@ class CardPlayer:
                 who = "DD"
             else:
                 if self.models.matchpoint:
-                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
                     who = "MP-Make"
                 else:
                     candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)

@@ -396,5 +396,5 @@ class BGADLL:
         self.pimc.EndEvaluate()
         if self.verbose:
             print(candidate_cards)
-            print("Returning from PIMC")
+            print(f"Returning {len(candidate_cards)} from PIMC nextplay")
         return candidate_cards
