@@ -347,7 +347,7 @@ class BGADLL:
             if self.verbose:
                 print("Playing singleton:",trump)
             candidate_cards[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
-            return candidate_cards            
+            return "X", candidate_cards, "Y"
 
         trump = self.find_trump(self.suit)
         if self.verbose:
@@ -378,7 +378,7 @@ class BGADLL:
                 self.lho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                 self.rho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                 print("Trying without constraints")
-                return await self.nextplay(player_i, shown_out_suits)
+                return "X",await self.nextplay(player_i, shown_out_suits), "Y"
             makable = sum(1 for t in output if t >= self.mintricks)
             probability = makable / count if count > 0 else 0
             if math.isnan(probability):
@@ -397,4 +397,6 @@ class BGADLL:
         if self.verbose:
             print(candidate_cards)
             print(f"Returning {len(candidate_cards)} from PIMC nextplay")
-        return candidate_cards
+        print(candidate_cards)
+        return "X", candidate_cards, "Y"
+    

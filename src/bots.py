@@ -989,7 +989,9 @@ class CardPlayer:
         if not quality and self.verbose:
             print(samples)
         if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
-            card52_dd = await self.pimc.nextplay(self.player_i, shown_out_suits)
+            x, card52_dd, y = await self.pimc.nextplay(self.player_i, shown_out_suits)
+            print("X:", x, "Y:", y)
+            print("PIMC result:",card52_dd)
             if self.verbose:
                 assert card52_dd is not None, "PIMC result is None"
                 print("PIMC result:",card52_dd)
