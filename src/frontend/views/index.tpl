@@ -14,9 +14,9 @@
 <div class="container">
   <div class="content">
 <p>BEN is going to participate in UCBC2024, and you can help by playing with BEN and report any errors found.</p>
-
+<br>
 <p>The official site for the championship can be found at: <a href="https://robot-bridge.co.uk/2024-championships">UCBC 2024</a></p>
-
+<br>
 <p>From the condition of contest: </p>
 
 <ul>        
@@ -26,10 +26,10 @@
   The systems and conventions used must comply with the ACBL list used at the World Computer Bridge Championships: <a href="http://www.allevybridge.com/allevy/computerbridge/WCBC_coc.html">Condition of contest</a>
 </ul>        
 
-
+<br>
 <p>We do not have access to all the participating robots, and currently we do not know, the system preferred by the different robots.</p>
-
-<p>Currently I have selected this configuration for BEN, but it might change:</p>
+<br>
+<p>I have selected this configuration for BEN, but it might change:</p>
 
 <ul>     
   <li>SAYC</li>	
@@ -81,11 +81,13 @@
   </div>
   <br><br>
 <p>So on the next page you can play deals with BEN, but remember the above conventions and systems in use.
-For practive purpose EW is playing the same system as WBridge5, so the errors from EW is not as important, and you should focus on Norths bidding.</p>
+For practive purpose EW is playing the same system as WBridge5, so the errors from EW is not as important, and you should focus on Norths bidding.
+It is possible to change the server and bid with 2/1 like GIB.</p>
 
 <p><a href="/home">Play</a></p>
 <p><a href="/gib">GIB system definition</a></p>
 <p><a href="/api">Ask BEN</a></p>
+<p><a href="https://www.netbridge.dk/bridge/Upload/BEN/Training/html/index.html">Training data</a></p>
 </div>
 
 </body> 

@@ -413,6 +413,7 @@ class Driver:
 
         player_cards_played = [[] for _ in range(4)]
         shown_out_suits = [set() for _ in range(4)]
+        discards = [set() for _ in range(4)]
 
         leader_i = 0
 
@@ -543,6 +544,7 @@ class Driver:
                 # update shown out state
                 if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
                     shown_out_suits[player_i].add(current_trick[0] // 8)
+                    discards[player_i].add(card32)
 
             # sanity checks after trick completed
             assert len(current_trick) == 4
@@ -862,7 +864,7 @@ async def main():
             rdeal = random_deal_board(boardno)
 
             # example of to use a fixed deal
-            # rdeal = ('973.KT652.A42.65 8.QJ98.KQ8765.K3 AKQ4.A74.T3.QJT2 JT652.3.J9.A9874', 'N N-S')
+            # rdeal = ('Q874..K7.KJT9652 AT3.AKJT.A964.A3 J95.9863.QT5.Q84 K62.Q7542.J832.7', 'N None')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=biddingonly)

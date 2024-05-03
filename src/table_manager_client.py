@@ -1,6 +1,7 @@
 import sys
 import os
 import logging
+import traceback
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -270,7 +271,8 @@ class TMClient:
         player_cards_played = [[] for _ in range(4)]
         player_cards_played52 = [[] for _ in range(4)]
         shown_out_suits = [set() for _ in range(4)]
-
+        discards = [set() for _ in range(4)]
+        
         leader_i = 0
 
         tricks = []
@@ -340,13 +342,13 @@ class TMClient:
                     card52_symbol = await self.receive_card_play_for(nesw_i, trick_i)
                     card52 = Card.from_symbol(card52_symbol).code()
                 
-                card = card52to32(card52)
+                card32 = card52to32(card52)
                 
                 for card_player in card_players:
                     card_player.set_real_card_played(card52, player_i)
-                    card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=player_i, card=card)
+                    card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=player_i, card=card32)
 
-                current_trick.append(card)
+                current_trick.append(card32)
 
                 current_trick52.append(card52)
 
@@ -358,8 +360,9 @@ class TMClient:
                     card_players[1].set_public_card_played52(card52)
 
                 # update shown out state
-                if card // 8 != current_trick[0] // 8:  # card is different suit than lead card
+                if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
                     shown_out_suits[player_i].add(current_trick[0] // 8)
+                    discards[player_i].add(card32)
                         
 
             # sanity checks after trick completed
@@ -383,9 +386,9 @@ class TMClient:
 
             # initializing for the next trick
             # initialize hands
-            for i, card in enumerate(current_trick):
+            for i, card32 in enumerate(current_trick):
                 card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0:32] = card_players[(leader_i + i) % 4].x_play[:, trick_i, 0:32]
-                card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0 + card] -= 1
+                card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0 + card32] -= 1
 
             # initialize public hands
             for i in (0, 2, 3):
@@ -394,8 +397,8 @@ class TMClient:
 
             for card_player in card_players:
                 # initialize last trick
-                for i, card in enumerate(current_trick):
-                    card_player.x_play[:, trick_i + 1, 64 + i * 32 + card] = 1
+                for i, card32 in enumerate(current_trick):
+                    card_player.x_play[:, trick_i + 1, 64 + i * 32 + card32] = 1
                     
                 # initialize last trick leader
                 card_player.x_play[:, trick_i + 1, 288 + leader_i] = 1
@@ -436,10 +439,10 @@ class TMClient:
             print('{} trick52 {} cards={}. won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
 
             # update cards shown
-            for i, card in enumerate(current_trick):
-                player_cards_played[(leader_i + i) % 4].append(card)
-            for i, card in enumerate(current_trick52):
-                player_cards_played52[(leader_i + i) % 4].append(card)
+            for i, card32 in enumerate(current_trick):
+                player_cards_played[(leader_i + i) % 4].append(card32)
+            for i, card32 in enumerate(current_trick52):
+                player_cards_played52[(leader_i + i) % 4].append(card32)
             
             leader_i = trick_winner
             current_trick = []
@@ -492,16 +495,16 @@ class TMClient:
                 card52_symbol = await self.receive_card_play_for(nesw_i, trick_i)
                 card52 = Card.from_symbol(card52_symbol).code()
 
-            card = card52to32(card52)
+            card32 = card52to32(card52)
 
-            current_trick.append(card)
+            current_trick.append(card32)
             current_trick52.append(card52)
 
         # update cards shown
-        for i, card in enumerate(current_trick):
-            player_cards_played[(leader_i + i) % 4].append(card)
-        for i, card in enumerate(current_trick52):
-            player_cards_played52[(leader_i + i) % 4].append(card)
+        for i, card32 in enumerate(current_trick):
+            player_cards_played[(leader_i + i) % 4].append(card32)
+        for i, card32 in enumerate(current_trick52):
+            player_cards_played52[(leader_i + i) % 4].append(card32)
 
         tricks.append(current_trick)
         tricks52.append(current_trick52)
@@ -816,7 +819,15 @@ if __name__ == "__main__":
     except ValueError as e:
         print("Error in configuration - typical the models do not match the configuration.")
         print(e)
-        sys.exit(0)
+        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+        traceback_lines = "".join(traceback_str).splitlines()
+        file_traceback = None
+        for line in reversed(traceback_lines):
+            if line.startswith("  File"):
+                file_traceback = line
+                break
+        if file_traceback:
+            print(file_traceback)  # This will print the last section starting with "File"
     finally:
         loop.close()
 

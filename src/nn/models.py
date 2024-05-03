@@ -87,11 +87,11 @@ class Models:
         if base_path is None:
             base_path = os.getenv('BEN_HOME') or '..'
         name = conf.get('models', 'name', fallback="BEN")
-        model_version = conf.getint('models', 'model_version', fallback=1)
+        model_version = conf.getint('models', 'model_version', fallback=2)
         api = conf.getboolean('models', 'api', fallback=False)
         search_threshold = float(conf['bidding']['search_threshold'])
         no_search_threshold = conf.getfloat('bidding', 'no_search_threshold', fallback=1)
-        eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=12)
+        eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=24)
         use_biddingquality = conf.getboolean('bidding', 'use_biddingquality', fallback=False)
         use_probability = conf.getboolean('bidding', 'use_probability', fallback=False)
         sample_hands_for_review = conf.getint('sampling', 'sample_hands_for_review', fallback=200)

@@ -17,9 +17,9 @@ bin_dir = sys.argv[1]
 
 model_path = 'model/bidding.h5'
 
-batch_size = 1
+batch_size = 64
 display_step = 10000
-epochs = 1
+epochs = 10
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))
@@ -59,10 +59,11 @@ model.compile(loss='categorical_crossentropy', optimizer=Adam(learning_rate=0.00
 batch = Batcher(n_examples, batch_size)
 cost_batch = Batcher(n_examples, batch_size)
 
+x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
+
 for i in range(n_iterations):
     x_batch, y_batch = batch.next_batch([X_train, y_train])
     if (i != 0) and i % display_step == 0:
-        x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
         c_train = model.evaluate(x_cost, y_cost, verbose=0)
         print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i, c_train))
         sys.stdout.flush()

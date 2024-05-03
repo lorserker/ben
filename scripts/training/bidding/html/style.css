@@ -1,0 +1,515 @@
+/* Introduction*/
+.container {
+    max-width: 600px;
+    margin: 10px auto;
+    min-width: 600px;
+}
+
+form {
+    width: 100%;
+    display: block;
+    /* Ensure the form takes up the full width */
+}
+
+.content {
+    column-count: 1; /* Set the number of columns */
+    column-gap: 20px; /* Adjust the gap between columns */
+}
+
+.border {
+    padding: 3px;
+    border: 1px solid #333; /* Add a border on the right side */
+    break-inside: avoid-column;
+}
+
+.content p {
+    break-inside: avoid-column; /* Prevent column breaks inside paragraphs */
+    margin: 10; /* Remove default margins */
+}
+
+.inner-div {
+    break-inside: avoid-column; /* Prevent column breaks inside paragraphs */
+    margin: 0; /* Remove default margins */
+}
+
+p {
+    margin: 0 0 20px; /* Margin between paragraphs */
+}
+
+*, *::after, *::before {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    /* cursor: pointer; */
+    justify-content: center;
+    background-color: lightsteelblue;
+    /* user-select: none; */
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+}
+
+#container {
+    display: grid;
+    grid-template-columns: minmax(200px, 1fr) minmax(200px, 1fr) minmax(200px, 1fr)  minmax(200px, 1fr);
+    grid-template-rows: minmax(100px, 1fr) minmax(300px, 3fr) minmax(100px, 1fr) minmax(100px, 1fr);
+    height: 700px; /* Set a maximum height for the container */
+    max-width: 96%;
+    gap: 10px; /* Add spacing between grid items */}
+
+#north, #south {
+    grid-column: span 3;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center
+}
+
+.bidding {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    display: flex;
+    justify-content: center
+}
+
+#west, #east {
+    display: flex;
+    flex-direction: column; /* Update to column direction for vertical stacking */
+    align-items: flex-start; /* Adjust alignment as needed */
+    justify-content: center; /* Adjust justification as needed */
+    font-size: 3rem;
+    font-family: Arial, sans-serif;
+}
+
+#east {
+    display: flex;
+    flex-direction: column; /* Update to column direction for vertical stacking */
+    align-items: flex-end; /* Adjust alignment as needed */
+    justify-content: center; /* Adjust justification as needed */
+    font-size: 3rem;
+    font-family: Arial, sans-serif;
+}
+
+#north {
+    align-items: flex-end;
+}
+
+#south {
+    align-items: flex-start;
+}
+
+#table {
+    background-color: green;
+    border-radius: .5rem;
+    filter: drop-shadow(2px 2px 2px black);
+}
+
+#table .seat-label {
+    font-family: Arial, sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+#table .dealer {
+    position: relative;
+    text-decoration: none;
+}
+
+#table .dealer::before {
+    content: '';
+    position: absolute;
+    width: calc(100% + 5px); /* Adjust the space (10px) between text and circular underline */
+    height: calc(100% - 5px);
+    border: 2px solid grey; /* Set border color */
+    top: 2px; /* Adjust the space between text and circular underline */
+    left: -2px; /* Adjust the space between text and circular underline */
+    z-index: -1;
+    box-sizing: border-box;
+}
+
+#table .turn {
+    color: yellow;
+    font-weight: bolder;
+    animation: blink 1s infinite; /* Change the duration as needed */
+}
+
+.card {
+    height: 4.5rem;
+    width: 3rem;
+    max-width: 4.4rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-left: 2px;
+    font-size: 1.7rem;
+    justify-content: center;
+    display: flex;
+    align-items: flex-end;
+    background-color: white;
+    z-index: 100;
+}
+.empty-suit {
+    height: 4.5rem;
+    width: 1rem;
+    max-width: 4.4rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    margin-left: 2px;
+    font-size: 1.7rem;
+    justify-content: center;
+    display: flex;
+    align-items: flex-end;
+    background-color: white;
+    z-index: 100;
+}
+
+.empty-suit {
+    visibility: hidden; /* Hide the content but keep the space */
+}
+
+.card::before {
+    content: attr(data-value);
+    position: relative;
+    top: -2rem;
+    font-size: 2rem;
+    font-family: Arial, sans-serif;
+    font-weight: bold;
+}
+
+.red {
+    color: red;
+}
+.green {
+    color: green;
+}
+.orange {
+    color: orange;
+}
+
+#table-container {
+    display: grid;
+    grid-template-columns: 1fr 2fr 2fr 2fr 1fr;
+    grid-template-rows: 1fr 3fr 3fr 1fr;
+    height: 100%;
+}
+
+.table-grid-item {
+    display: flex;
+    justify-content: center;
+}
+
+.label-number {
+    grid-column: span 1;
+    color: #ddd;
+    margin: 10px;
+    font-size: 2rem;
+    font-family: Arial, sans-serif;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.label-north {
+    grid-column: span 3;
+}
+
+.label-south {
+    grid-column: span 5;
+}
+
+.label-west, .label-east {
+    grid-row: span 2;
+}
+
+.trick-west, .trick-east {
+    grid-row: span 2;
+    align-items: center;
+}
+
+.trick-north {
+    align-items: flex-end;
+    padding-bottom: 5px;
+}
+
+.trick-south {
+    align-items: flex-start;
+    padding-top: 5px;
+}
+
+#table .card {
+    width: 100%;
+}
+
+#auction-main {
+    grid-row: span 2;
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: #efcdf5e0;
+    font-size: 1.5rem;
+    font-family: Arial, sans-serif;
+    display: block;
+}
+
+#auction-container {
+    display: flex;
+    flex-direction: column;
+    height: 18rem; /* Set a minimum height for the table container */
+}
+
+#boardno {
+    position: absolute;
+    border: 1px solid black;
+    border-radius: 3px;
+    left: 55px;
+    top: 62px;
+    width: 32px;
+    text-align: center;
+    background-color: #efcdf5e0;
+}
+
+#auction table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#auction td {
+    border: 1px solid #ddd;
+    padding: 1px;
+    text-align: center;
+    vertical-align: top;
+}
+
+#auction tr {
+    max-height: 5vh;
+}
+
+.tricks {
+    font-size: 1.3rem;
+    margin: .4rem;
+    text-align: center;
+    font-weight: bold;
+    color: navy;
+    padding: .5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    background-color: yellowgreen;
+}
+
+#bidding-levels {
+    display: flex;
+}
+
+#bidding-levels div {
+    margin: .4rem;
+    padding: .4rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 2rem;
+    background-color: white;
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+}
+
+#bidding-suits {
+    display: flex;
+}
+
+#bidding-suits div {
+    margin: .4rem;
+    padding: .5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 1.8rem;
+    background-color: white;
+    width: 3rem;
+    height: 3rem;
+    text-align: center;
+}
+
+#bidding-calls {
+    display: flex;
+}
+
+#bidding-calls div {
+    margin: .4rem;
+    padding: .5rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 1.8rem;
+    background-color: white;
+    width: 6rem;
+    height: 3rem;
+    text-align: center;
+}
+
+#bidding-box .pass {
+    background-color: green;
+}
+
+#bidding-box .hint {
+    background-color: yellowgreen;
+}
+
+#bidding-box .double {
+    background-color: red;
+}
+
+#bidding-box .redouble {
+    background-color: blue;
+}
+
+#bidding-box .invalid {
+    background-color: grey;
+}
+
+#bidding-box .selected {
+    background-color: yellow;
+}
+
+#bidding-box .hidden {
+    visibility: hidden; /* Hide the content but keep the space */
+}
+
+#last-trick, #claim, #conceed {
+    margin: .4rem;
+    padding: .25rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    background-color: yellowgreen;
+    width: 8rem;
+    height: 1.6rem;
+    text-align: center;
+}
+
+#claim-tricks {
+    display: flex;
+}
+
+#claim-tricks div {
+    margin: .1rem;
+    margin-top: .4rem;
+    padding: .2rem;
+    border: 1px solid black;
+    border-radius: 5px;
+    font-family: Arial, sans-serif;
+    font-size: 1rem;
+    background-color: white;
+    width: 2rem;
+    height: 1.5rem;
+    text-align: center;
+}
+
+/* Styles for the unordered list */
+ul {
+    list-style-type: disc; /* Sets the list item marker to a filled circle */
+    margin: 0; /* Adds space around the list */
+    padding: 0; /* Adds space around the list */
+    padding-left: 20px; /* Adds an indentation to the left */
+}
+  
+/* Styles the marker color for unordered lists */
+ul::marker {
+    color: blue; /* Changes the color of the list item markers */
+}
+
+/* Styles for list items within the unordered list */
+ul li {
+    line-height: 1; /* Sets the line height for better readability */
+}
+
+/* Style for the span with class "bba" */
+span.bba {
+    font-size: 0.6em; /* You can adjust the size as needed */
+}
+  
+
+#customDialog {
+    border: 2px solid #000; /* Set border width and color */
+    background-color: #fff; /* Set background color */
+    opacity: 1 !important; /* Ensure opacity is set to 1 */
+    max-width: 400px;
+}
+
+#commentInput {
+    width: 100%;
+    height: 80px; /* Adjust the height as needed */
+}
+
+#buttonContainer {
+    margin-top: 10px;
+    text-align: right;
+}
+
+/* Style to hide the default "Close" button */
+.ui-dialog .ui-dialog-titlebar-close {
+    display: none;
+}
+
+.quality-good {
+    background-color: green;
+}
+
+.quality-ok {
+    background-color: lightsteelblue;
+}
+
+.quality-bad {
+    background-color: red;
+}
+
+.bid-nt {
+    font-weight: 700;
+}
+
+#loader {
+    position: absolute;
+    top: 0;
+    bottom: 200px;
+    left: 0;
+    right: 400px;
+    border: 12px solid #f3f3f3;
+    margin-left: 450px;
+    border-radius: 50%;
+    border-top: 12px solid #444444;
+    width: 50px;
+    height: 50px;
+    animation: spin 1s linear infinite;
+    z-index: 200;
+    margin-top: 135px;  
+}
+
+.center {
+    margin: auto;
+    text-align: center;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes blink {
+    0% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+.blinking-element {
+    animation: blink 2s infinite; /* Change the duration as needed */
+}

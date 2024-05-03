@@ -13,7 +13,7 @@ X_train = np.load('./lead_bin/X.npy')
 B_train = np.load('./lead_bin/B.npy')
 y_train = np.load('./lead_bin/y.npy')
 
-batch_size = 64
+batch_size = 1
 display_step = 10000
 epochs = 1
 
@@ -63,11 +63,11 @@ compiled_model.summary()
 
 batch = Batcher(n_examples, batch_size)
 cost_batch = Batcher(n_examples, batch_size)
+x_cost, b_cost, y_cost = cost_batch.next_batch([X_train, B_train, y_train])
 
 for i in range(n_iterations):
     x_batch, b_batch, y_batch = batch.next_batch([X_train, B_train, y_train])
     if (i != 0) and i % display_step == 0:
-        x_cost, b_cost, y_cost = cost_batch.next_batch([X_train, B_train, y_train])
         c_train = compiled_model.evaluate([x_cost, b_cost], y_cost, batch_size, verbose=2)
         l_train = compiled_model.predict([x_cost, b_cost], batch_size, verbose=0)
         cost = np.mean(np.argmax(l_train, axis=1) == np.argmax(y_cost, axis=1))

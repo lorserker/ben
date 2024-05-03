@@ -40,14 +40,14 @@ class Bidder:
     def init_model_seq(self):
         model = self.load_model()
         def pred_fun_seq(x):
-            filled_x = np.zeros((x.shape[0],8,159))
+            filled_x = np.zeros((x.shape[0],8,199))
             filled_x[:, :x.shape[1], :] = x[:, :x.shape[1], :]
             #sequence_length = 8
             #x_reshaped = np.repeat(x, sequence_length, axis=1)
             #print(x_reshaped.shape)
             bids = model.predict(filled_x, verbose=0)
             #print("pred_fun_seq: ",bids.shape)
-            return bids[:, :x.shape[1], :]
+            return bids[:, :x.shape[1], :][0]
 
         return pred_fun_seq
 

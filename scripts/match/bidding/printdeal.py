@@ -35,6 +35,7 @@ def generate_html_deal(line, board_number):
         <meta charset='utf-8'>
         <title>Match deal</title>
         <link rel='stylesheet' href='viz.css'>
+        <script src="viz.js"></script>  
     </head>
     <body>
         <div id='deal'>

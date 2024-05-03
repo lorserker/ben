@@ -82,10 +82,10 @@ with tf.Session() as sess:
 
     saver = tf.train.Saver(max_to_keep=1)
 
+    x_cost, b_cost, y_cost = cost_batch.next_batch([X_train, B_train, y_train])
     for i in range(n_iterations):
         x_batch, b_batch, y_batch = batch.next_batch([X_train, B_train, y_train])
         if i != 0 and (i % display_step) == 0:
-            x_cost, b_cost, y_cost = cost_batch.next_batch([X_train, B_train, y_train])
             c_train = sess.run(cost, feed_dict={X: x_cost, B: b_cost, y: y_cost, keep_prob: 1.0})
             l_train = sess.run(lead_softmax, feed_dict={X: x_cost, B: b_cost, y: y_cost, keep_prob: 1.0})
             mean = np.mean(np.argmax(l_train, axis=1) == np.argmax(y_cost, axis=1))

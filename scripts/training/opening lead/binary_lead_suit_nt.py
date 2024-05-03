@@ -150,7 +150,7 @@ def create_binary(data_it, out_dir, model, n_steps=8):
     data_it, copy = itertools.tee(data_it)  # Create a copy of the iterator
     n = sum(1 for _ in copy)  # Count items in the copy
 
-    A = np.zeros((n, n_steps, 2 + 1 + 4 + 32 + 3 * 40), dtype=np.float16)
+    #A = np.zeros((n, n_steps, 2 + 1 + 4 + 32 + 3 * 40), dtype=np.float16)
     B = np.zeros((n, 15), dtype=np.float16)
     X = np.zeros((n, 42), dtype=np.float16)
     y = np.zeros((n, 32), dtype=np.float16)
@@ -161,7 +161,8 @@ def create_binary(data_it, out_dir, model, n_steps=8):
         deal_data = DealData.from_deal_meta_auction_play_string(deal_str, meta_str, auction_str, play_str)
         a_part, x_part, y_part = deal_data.get_binary(n_steps)
         
-        A[i:i+1, :, :] = a_part
+        #A[i:i+1, :, :] = a_part
+        # We need to remove redundant boards with the same lead
         X[i:i+1, :] = x_part
         y[i:i+1, :] = y_part
 
@@ -173,7 +174,7 @@ def create_binary(data_it, out_dir, model, n_steps=8):
         B[i:i+1, :] = b
 
 
-    np.save(os.path.join(out_dir, 'A.npy'), A)
+    #np.save(os.path.join(out_dir, 'A.npy'), A)
     np.save(os.path.join(out_dir, 'B.npy'), B)
     np.save(os.path.join(out_dir, 'X.npy'), X)
     np.save(os.path.join(out_dir, 'y.npy'), y)
@@ -214,7 +215,7 @@ def play_data_iterator(fin):
 
 if __name__ == '__main__':
     n_steps = 8
-    model = BidInfo("../data/WBC/binfo-550000")
+    model = BidInfo("../data/WBC/binfo-1500000")
 
     out_dir = './lead_bin_nt'
 

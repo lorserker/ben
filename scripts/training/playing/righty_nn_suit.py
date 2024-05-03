@@ -69,13 +69,9 @@ out_rnn, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 out_card_logit = tf.matmul(tf.reshape(out_rnn, [-1, lstm_size]), softmax_w, name='out_card_logit')
 out_card_target = tf.reshape(seq_out, [-1, n_cards], name='out_card_target')
 
-output, next_state = lstm_cell(x_in, state)
+output, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 
 out_card = tf.nn.softmax(tf.matmul(output, softmax_w), name='out_card')
-
-for i, next_i in enumerate(next_state):
-    tf.identity(next_i.c, name='next_c_{}'.format(i))
-    tf.identity(next_i.h, name='next_h_{}'.format(i))
 
 cost = tf.losses.softmax_cross_entropy(out_card_target, out_card_logit)
 

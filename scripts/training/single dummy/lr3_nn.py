@@ -15,7 +15,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 from batcher import Batcher
 
 if len(sys.argv) < 2:
-    print("Usage: python binfo_nn.py inputdirectory ")
+    print("Usage: python lr3_nn.py inputdirectory ")
     sys.exit(1)
 
 bin_dir = sys.argv[1]

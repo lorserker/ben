@@ -329,7 +329,7 @@ class BotBid:
         if self.models.model_version == 0 or self.models.ns == -1:
             x = self.get_binary(auction, self.models)
             # If API we have no history
-            if self.models.api:
+            if self.models.model_version == 2:
                 bid_np = self.models.bidder_model.model_seq(x)
                 bid_np = bid_np[-1:]
             else:
@@ -616,16 +616,20 @@ class BotLead:
         # We should check that auction match, that we are on lead
         lead_card_indexes, lead_softmax = self.get_opening_lead_candidates(auction)
         accepted_samples, sorted_bidding_score, tricks, p_hcp, p_shp, good_quality = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
+        contract = bidding.get_contract(auction)
+        scores_by_trick = scoring.contract_scores_by_trick(contract, tuple(self.vuln))
 
         candidate_cards = []
         for i, card_i in enumerate(lead_card_indexes):
             assert(tricks[:,i,0].all() >= 0)
+            tricks_int = tricks[:,i,0].astype(int)
+            score = np.mean(scores_by_trick [tricks_int])
             candidate_cards.append(CandidateCard(
                 card=Card.from_code(card_i, xcards=True),
                 insta_score=lead_softmax[0,card_i],
                 expected_tricks_sd=np.mean(tricks[:,i,0]),
                 p_make_contract=np.mean(tricks[:,i,1]),
-                expected_score_sd = None
+                expected_score_sd = -score
             ))
         
         candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score, reverse=True)

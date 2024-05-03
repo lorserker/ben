@@ -113,6 +113,7 @@ class CardByCard:
 
         player_cards_played = [[] for _ in range(4)]
         shown_out_suits = [set() for _ in range(4)]
+        discards = [set() for _ in range(4)]
 
         leader_i = 0
 
@@ -158,13 +159,13 @@ class CardByCard:
                     return
                 
                 card52 = card_resp.card.code()
-                card = deck52.card52to32(card52)
+                card32 = deck52.card52to32(card52)
 
                 for card_player in card_players:
                     card_player.set_real_card_played(card52, player_i)
-                    card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=player_i, card=card)
+                    card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=player_i, card=card32)
 
-                current_trick.append(card)
+                current_trick.append(card32)
 
                 current_trick52.append(card52)
 
@@ -176,8 +177,9 @@ class CardByCard:
                     card_players[1].set_public_card_played52(card52)
 
                 # update shown out state
-                if card // 8 != current_trick[0] // 8:  # card is different suit than lead card
+                if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
                     shown_out_suits[player_i].add(current_trick[0] // 8)
+                    discards[player_i].add(card32)
 
             # sanity checks after trick completed
             assert len(current_trick) == 4
@@ -198,9 +200,9 @@ class CardByCard:
             
             # initializing for the next trick
             # initialize hands
-            for i, card in enumerate(current_trick):
+            for i, card32 in enumerate(current_trick):
                 card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0:32] = card_players[(leader_i + i) % 4].x_play[:, trick_i, 0:32]
-                card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0 + card] -= 1
+                card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0 + card32] -= 1
 
             # initialize public hands
             for i in (0, 2, 3):
@@ -209,8 +211,8 @@ class CardByCard:
 
             for card_player in card_players:
                 # initialize last trick
-                for i, card in enumerate(current_trick):
-                    card_player.x_play[:, trick_i + 1, 64 + i * 32 + card] = 1
+                for i, card32 in enumerate(current_trick):
+                    card_player.x_play[:, trick_i + 1, 64 + i * 32 + card32] = 1
                     
                 # initialize last trick leader
                 card_player.x_play[:, trick_i + 1, 288 + leader_i] = 1
@@ -239,8 +241,8 @@ class CardByCard:
                 card_players[3].n_tricks_taken += 1
 
             # update cards shown
-            for i, card in enumerate(current_trick):
-                player_cards_played[(leader_i + i) % 4].append(card)
+            for i, card32 in enumerate(current_trick):
+                player_cards_played[(leader_i + i) % 4].append(card32)
             
             leader_i = trick_winner
             current_trick = []

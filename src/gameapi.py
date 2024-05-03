@@ -87,6 +87,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
     player_cards_played = [[] for _ in range(4)]
     player_cards_played52 = [[] for _ in range(4)]
     shown_out_suits = [set() for _ in range(4)]
+    discards = [set() for _ in range(4)]
 
     leader_i = 0
 
@@ -160,6 +161,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
             # update shown out state
             if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
                 shown_out_suits[player_i].add(current_trick[0] // 8)
+                discards[player_i].add(card32)
 
         # sanity checks after trick completed
         assert len(current_trick) == 4
@@ -372,7 +374,7 @@ def lead():
         hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, verbose)
         card_resp = hint_bot.find_opening_lead(auction)
         user = request.args.get("user")
-        card_resp.who = user
+        #card_resp.who = user
         print("Leading:", card_resp.card.symbol())
         result = card_resp.to_dict()
         with shelve.open(f"{base_path}/gameapiplaydb") as db:

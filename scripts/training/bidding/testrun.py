@@ -115,7 +115,7 @@ def main():
             turn_i = dealer_i
             
             while not bidding.auction_over(auction):
-                candidates, passout = bidder_bots[turn_i].get_bid_candidates(auction)
+                candidates, _ = bidder_bots[turn_i].get_bid_candidates(auction)
                 if len(candidates) > 0:
                     bid = candidates[0].bid
                     auction.append(bid)
@@ -126,17 +126,32 @@ def main():
             auction_str = " ".join(auction).replace('PAD_START ', '')
             trained_bidding = " ".join(parts[2:]).replace('P',"PASS")
             if (trained_bidding != auction_str):
-                #trained_auction = [bidding.BID2ID[bid] for bid in trained_bidding.split(' ')]
                 trained_auction = [bid for bid in trained_bidding.split(' ')]
                 trained_auction = ['PAD_START'] * dealer_i + trained_auction
                 contract = bidding.get_contract(trained_auction)
-                vuln = False
-                #print("Contract:",contract)
-                dd_score_before= get_dd_score(hands, contract, vuln)
+                if not contract == None:
+                    vuln = False
+                    declarer = contract[:-1]
+                    if declarer == "N" or declarer == "S":
+                        vuln = vuln_ns
+                    else :
+                        vuln = vuln_ew
+
+                    dd_score_before= get_dd_score(hands, contract, vuln)
+                else:
+                    dd_score_before = 0
                 print(" ".join(parts[:2]), " ".join(hands))
                 contract = bidding.get_contract(auction)
-                vuln = False
-                dd_score_now = get_dd_score(hands, contract, vuln)
+                if not contract == None:
+                    vuln = False
+                    declarer = contract[:-1]
+                    if declarer == "N" or declarer == "S":
+                        vuln = vuln_ns
+                    else :
+                        vuln = vuln_ew
+                    dd_score_now = get_dd_score(hands, contract, vuln)
+                else:
+                    dd_score_now = 0
                 print(" ".join(parts[2:]), dd_score_before)
                 print(auction_str.replace('PASS','P'), dd_score_now)
                 if dd_score_before == dd_score_now:
@@ -147,8 +162,20 @@ def main():
                     else:
                         worse += 1
             else: 
-                #print(" ".join(hands))
-                #print(auction_str)
+                contract = bidding.get_contract(auction)
+                if not contract == None:
+                    declarer = contract[:-1]
+                    if declarer == "N" or declarer == "S":
+                        vuln = vuln_ns
+                    else :
+                        vuln = vuln_ew
+                    vuln = False
+                    dd_score_now = get_dd_score(hands, contract, vuln)
+                else:
+                    dd_score_now = 0
+                print(" ".join(parts[:2]), " ".join(hands))
+                print(auction_str, dd_score_now)
+                print(auction_str, dd_score_now)
                 matching += 1
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Matched {matching} deals\n')
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} better {better} deals\n')

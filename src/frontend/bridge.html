@@ -113,8 +113,8 @@
         const rotate = urlParams.get('R')
         const visible = urlParams.get('V')
         const playonly = urlParams.get('P')
-        const server = urlParams.get('server')
-
+        let server = urlParams.get('server')
+        if (!server) server = '3'
         let no_human = !north && !east && !south && !west
         let player = ""
         if (north) player += "&N=x"
@@ -141,7 +141,7 @@
             }
         }
         try {
-            var serverport = 444 + server
+            var serverport = '444' + server
             var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
             var port = location.port !== '' ? ':' + location.port : ''; // Extracts the port number, if present
             ws = new WebSocket(protocol + location.hostname + ":"+  serverport + "/" + queryString)

@@ -49,7 +49,7 @@ print("Iterations               ", n_iterations)
 print("Model path:              ", model_path)
 print("Learning rate:           ", learning_rate)
 
-lstm_size = 128
+lstm_size = 256
 n_layers = 3
 
 keep_prob = tf.compat.v1.placeholder(tf.float32, name='keep_prob')
