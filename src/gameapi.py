@@ -343,7 +343,7 @@ def bid():
         bid = hint_bot.bid(auction)
         print("Bidding: ",bid.bid)
         with shelve.open(f"{base_path}/gameapibiddb") as db:
-                db[uuid.uuid4().hex] = bid.to_dict()
+                db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
         return json.dumps(bid.to_dict())
     except Exception as e:
         print(e)
@@ -388,7 +388,7 @@ def lead():
         print("Leading:", card_resp.card.symbol())
         result = card_resp.to_dict()
         with shelve.open(f"{base_path}/gameapiplaydb") as db:
-                db[uuid.uuid4().hex] = result
+                db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "lead":result}
         return json.dumps(result)
     except Exception as e:
         print(e)
@@ -469,8 +469,7 @@ async def frontend():
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
         with shelve.open(f"{base_path}/gameapiplaydb") as db:
-                db[uuid.uuid4().hex] = result
-        #print(json.dumps(result))
+                db[uuid.uuid4().hex] =  {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
         return json.dumps(result)
     except Exception as e:
         print(e)
