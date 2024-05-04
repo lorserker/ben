@@ -9,6 +9,10 @@ tf.disable_v2_behavior()
 
 from batcher import Batcher
 
+if len(sys.argv) < 2:
+    print("Usage: python bidding_nn.py inputdirectory checkpoint_model")
+    sys.exit(1)
+
 bin_dir = sys.argv[1] # Location of data
 checkpoint_model = sys.argv[2]  # pretrained model e.g './model/bidding-1000000'
 

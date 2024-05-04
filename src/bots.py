@@ -1181,20 +1181,10 @@ class CardPlayer:
     def next_card_softmax(self, trick_i):
         if self.verbose:
             print("next_card_softmax", self.playermodel.name, trick_i)
-        #print(self.x_play[:,:(trick_i + 1),:])
-        #self.x_play[:, (trick_i+1 ), 0:192] = self.x_play[:, (trick_i ), 0:192]
-        #self.x_play[:, (trick_i+1 ), 292:298] = self.x_play[:, (trick_i ), 292:298]
-        # print(self.x_play[:, (trick_i ), 0:32])
-        # print(self.x_play[:, (trick_i), 32:64])
-        # print(self.x_play[:, (trick_i), 64:96])
-        # print(self.x_play[:, (trick_i), 96:128])
-        # print(self.x_play[:, (trick_i), 128:160])
-        # print(self.x_play[:, (trick_i), 160:192])
-        # print(self.x_play[:, (trick_i), 288:298])
 
         cards_softmax = self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i + 1),:])
         assert cards_softmax.shape == (1, 32), f"Expected shape (1, 32), but got shape {cards_softmax.shape}"
-        #print("cards_softmax.shape",cards_softmax.shape)
+
         x = follow_suit(
             cards_softmax,
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_player_hand(),
@@ -1227,17 +1217,21 @@ class CardPlayer:
             if insta_score >= self.models.pimc_trust_NN:
                 candidate_cards.insert(0,CandidateCard(
                     card=card52,
-                    insta_score=insta_score,
+                    insta_score=round(insta_score,2),
                     expected_tricks_dd=e_tricks,
                     p_make_contract=e_make,
                     expected_score_dd=e_score,
                     msg=msg
                 ))
 
+        if self.verbose:
+            for i in range(len(candidate_cards)):
+                print(candidate_cards[i].card, candidate_cards[i].insta_score, candidate_cards[i].expected_tricks_dd, candidate_cards[i].p_make_contract, candidate_cards[i].expected_score_dd, int(candidate_cards[i].expected_tricks_dd * 10) / 10)
+
         if self.models.matchpoint:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (int(x[1].expected_tricks_dd * 10) / 10, round(x[1].insta_score, 2), -x[0]), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_dd, x[1].insta_score, -x[0]), reverse=True)
         else:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10), round(x[1].insta_score, 2), -x[0]), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), x[1].expected_score_dd, x[1].insta_score, -x[0]), reverse=True)
 
         candidate_cards = [card for _, card in candidate_cards]
 
@@ -1248,7 +1242,7 @@ class CardPlayer:
             shape=-1,
             hcp=-1, 
             quality=quality,
-            who = "PIMC"
+            who = "PIMC-MP" if self.models.matchpoint else "PIMC" 
         )
         return best_card_resp
 

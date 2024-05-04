@@ -29,7 +29,7 @@ def save_objects_to_file(selected_objects, filename):
 # Main function
 def main():
     if len(sys.argv) != 2:
-        print("Usage: python script.py <input_filename>")
+        print("Usage: python select_sample.py <input_filename>")
         return
         
     # File containing 100000 lines

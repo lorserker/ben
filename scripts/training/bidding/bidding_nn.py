@@ -11,7 +11,7 @@ tf.disable_v2_behavior()
 from batcher import Batcher
 
 if len(sys.argv) < 2:
-    print("Usage: python bidding_nn inputdirectory")
+    print("Usage: python bidding_nn.py inputdirectory")
     sys.exit(1)
 
 bin_dir = sys.argv[1]

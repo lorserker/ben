@@ -1,6 +1,7 @@
 import os
 import sys
 import logging
+import traceback
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -191,6 +192,15 @@ async def handler(websocket, path, board_no, seed):
     except ValueError as e:
         print("Error in configuration - typical the models do not match the configuration.")
         print(e)
+        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+        traceback_lines = "".join(traceback_str).splitlines()
+        file_traceback = None
+        for line in reversed(traceback_lines):
+            if line.startswith("  File"):
+                file_traceback = line
+                break
+        if file_traceback:
+            print(file_traceback)  # This will print the last section starting with "File"
         sys.exit(0)
 
 async def main():
@@ -201,6 +211,15 @@ async def main():
     except Exception as e:
         print("Error in server.")
         print(e)
+        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+        traceback_lines = "".join(traceback_str).splitlines()
+        file_traceback = None
+        for line in reversed(traceback_lines):
+            if line.startswith("  File"):
+                file_traceback = line
+                break
+        if file_traceback:
+            print(file_traceback)  # This will print the last section starting with "File"
         sys.exit(0)
 
 if __name__ == "__main__":
@@ -213,6 +232,15 @@ if __name__ == "__main__":
         pass
     except Exception as e:
         print(e)
+        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+        traceback_lines = "".join(traceback_str).splitlines()
+        file_traceback = None
+        for line in reversed(traceback_lines):
+            if line.startswith("  File"):
+                file_traceback = line
+                break
+        if file_traceback:
+            print(file_traceback)  # This will print the last section starting with "File"
         sys.exit(0)
     finally:
         loop.close()

@@ -63,7 +63,8 @@ class TMClient:
             'trick_winners': self.trick_winners,
             'board_number': self.board_number,
             'seat': self.seat,
-            'opponents': self.opponents
+            'opponents': self.opponents,
+            'models': self.models.name
         }
 
     async def run(self, biddingonly):
@@ -106,8 +107,18 @@ class TMClient:
         try:
             self.reader, self.writer = await asyncio.open_connection(host, port)
             self._is_connected = True
-        except ConnectionRefusedError as ex: 
-            print(f"Server not responding {str(ex)}")
+        except ConnectionRefusedError as e: 
+            traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+            traceback_lines = "".join(traceback_str).splitlines()
+            file_traceback = None
+            for line in reversed(traceback_lines):
+                if line.startswith("  File"):
+                    file_traceback = line
+                    break
+            if file_traceback:
+                print(file_traceback)  # This will print the last section starting with "File"
+
+            print(f"Server not responding {str(e)}")
             self._is_connected = False
             asyncio.get_event_loop().stop()
             return

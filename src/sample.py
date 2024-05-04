@@ -57,11 +57,12 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose):
+    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose):
         self.lead_accept_threshold_partner_trust = lead_accept_threshold_partner_trust
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
         self.play_accept_threshold = play_accept_threshold
+        self.min_play_accept_threshold_samples = min_play_accept_threshold_samples
         self.bid_accept_play_threshold = bid_accept_play_threshold
         self.bid_accept_threshold_bidding = bid_accept_threshold_bidding
         self.bid_extend_play_threshold = bid_extend_play_threshold
@@ -84,6 +85,7 @@ class Sample:
         lead_accept_threshold_partner_trust = float(conf['sampling']['lead_accept_threshold_partner_trust'])
         bidding_threshold_sampling = float(conf['sampling']['bidding_threshold_sampling'])
         play_accept_threshold = float(conf['sampling']['play_accept_threshold'])
+        min_play_accept_threshold_samples = conf.getint('sampling','min_play_accept_threshold_samples',fallback=20)
         bid_accept_play_threshold = float(conf['sampling']['bid_accept_play_threshold'])
         bid_accept_threshold_bidding = float(conf['sampling']['bid_accept_threshold_bidding'])
         bid_extend_play_threshold = float(conf['sampling'].get('bid_extend_play_threshold', 0))
@@ -98,7 +100,7 @@ class Sample:
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
-        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose)
+        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -693,24 +695,14 @@ class Sample:
             states = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states, dealer)
             if self.verbose:
                 print(f"States {states[0].shape[0]} after checking lead")
-
-        # To save time we reduce no of samples to 3 times what is required before we validate the actual play
-        # bidding_states = [state[:3*n_samples] for state in bidding_states]
+        assert states[0].shape[0] > 0, "No samples after opening lead"
 
         if self.play_accept_threshold > 0 and trick_i <= 11:
             states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states, models, contract)
         if self.verbose:
             print(f"States {states[0].shape[0]} after checking the play.")
 
-            # for i in range(states[0].shape[0]):
-            #     sample = '%s %s %s %s' % (
-            #         hand_to_str(states[0][i, 0, :32].astype(int)),
-            #         hand_to_str(states[1][i, 0, :32].astype(int)),
-            #         hand_to_str(states[2][i, 0, :32].astype(int)),
-            #         hand_to_str(states[3][i, 0, :32].astype(int)),
-            #     )
-            #     print(sample)
-
+        assert states[0].shape[0] > 0, "No samples after checking play"
         min_bid_scores = np.ones(states[0].shape[0])
 
         # Loop the samples for each of the 2 hidden hands to check bidding
@@ -746,7 +738,9 @@ class Sample:
         # print("sorted_min_bid_scores",sorted_min_bid_scores)
         # Sort second dimension within each array in states based on min_bid_scores
         bidding_states = [state[sorted_indices] for state in states]
-        
+        assert states[0].shape[0] > 0, "No samples after bidding"
+       
+        # Count how many samples we found matching the bidding
         valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
         if self.verbose:
             print("Bidding samples accepted: ",valid_bidding_samples)
@@ -771,7 +765,7 @@ class Sample:
                         # We just take top three as we really have no idea about what the bidding means
                         bidding_states = [state[:3] for state in bidding_states]
                     else:
-                        bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
+                        bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
                         good_quality = True
                         # Limit to just the minimum needed
                         bidding_states = [state[:self.min_sample_hands_play] for state in bidding_states]
@@ -932,7 +926,7 @@ class Sample:
         if self.verbose:
             print(f"Found deals above play threshold: {np.sum(min_scores > play_accept_threshold)} ")
 
-        while np.sum(min_scores > play_accept_threshold) < 20 and play_accept_threshold > 0:
+        while np.sum(min_scores > play_accept_threshold) < self.min_play_accept_threshold_samples and play_accept_threshold > 0:
             play_accept_threshold -= 0.01
             # print(f"play_accept_threshold {play_accept_threshold} reduced")
 

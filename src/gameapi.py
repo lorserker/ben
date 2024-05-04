@@ -1,3 +1,4 @@
+import traceback
 from gevent import monkey
 from gevent.pywsgi import WSGIServer
 
@@ -346,6 +347,15 @@ def bid():
         return json.dumps(bid.to_dict())
     except Exception as e:
         print(e)
+        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+        traceback_lines = "".join(traceback_str).splitlines()
+        file_traceback = None
+        for line in reversed(traceback_lines):
+            if line.startswith("  File"):
+                file_traceback = line
+                break
+        if file_traceback:
+            print(file_traceback)  # This will print the last section starting with "File"
         error_message = "An error occurred: {}".format(str(e))
         return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
     
@@ -382,6 +392,15 @@ def lead():
         return json.dumps(result)
     except Exception as e:
         print(e)
+        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+        traceback_lines = "".join(traceback_str).splitlines()
+        file_traceback = None
+        for line in reversed(traceback_lines):
+            if line.startswith("  File"):
+                file_traceback = line
+                break
+        if file_traceback:
+            print(file_traceback)  # This will print the last section starting with "File"
         error_message = "An error occurred: {}".format(str(e))
         return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
@@ -455,6 +474,15 @@ async def frontend():
         return json.dumps(result)
     except Exception as e:
         print(e)
+        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+        traceback_lines = "".join(traceback_str).splitlines()
+        file_traceback = None
+        for line in reversed(traceback_lines):
+            if line.startswith("  File"):
+                file_traceback = line
+                break
+        if file_traceback:
+            print(file_traceback)  # This will print the last section starting with "File"
         error_message = "An error occurred: {}".format(str(e))
         return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
