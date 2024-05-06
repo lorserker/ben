@@ -21,15 +21,24 @@ def find_nth_occurrence(arr, target, nth):
     raise ValueError(f"Could not find the {nth}-th occurrence of '{target}' within the array.")
 
 
-def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, player_i, played_cards, current_trick, play_status):
+def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, played_cards, current_trick, play_status):
+    print("select_right_card_for_play")
     if len(candidate_cards) == 1:
         return candidate_cards[0].card
     
     if player_i  == 1:
         # For dummy just take lowest card. Could be stressing opponents by taking highest of touching cards.
+        print("First card for dummy", candidate_cards[0].card)
+        print(hand_str)
+        print(dummy_str)
+        print("play_status", play_status)
         return candidate_cards[0].card
     if player_i == 3:
         # For declarer pick a random card, when touching honors and NN is equal (Will not happen in practice)
+        print("First card for declarer", candidate_cards[0].card)
+        print(hand_str)
+        print(dummy_str)
+        print("play_status", play_status)
         return candidate_cards[0].card       
     suit = candidate_cards[0].card.code() // 13
     hand52 = binary.parse_hand_f(52)(hand_str)
@@ -50,7 +59,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
 
 def select_right_card(hand52, opening_lead, rng, contract, models):
-    #print("select_right_card")
+    print("select_right_card")
     if contract[1] != "N":
         opening_suit = opening_lead // 8
         if opening_suit == "SHDC".index(contract[1]):

@@ -37,6 +37,8 @@
         <button onclick="parseDataFromClipboard()">Parse data as PBN</button>&nbsp;&nbsp;&nbsp;<button onclick="processLinFile()">Parse data as LIN</button><br><br>
         <div id="parsedData" style="display: hidden"></div>
 
+        <input type="checkbox" id="matchpoint" data-default="false"><label for="matchpoint">Matchpoint</label><br>
+    
         <label for="dealerInput">Dealer:</label>
         <select id="dealerInput">
             <option value="N" selected>North</option>
@@ -845,12 +847,13 @@
             const seat = document.getElementById('seatInput').value;
             const player = "NESW".indexOf(seat)
             const vul = document.getElementById('vulInput').value;
-
+            const mp = document.getElementById('matchpoint').checked;
+            const matchpoint = mp  ?  "mp" : "";
             // Get the current hostname and protocol
             const hostname = window.location.hostname;
             const protocol = window.location.protocol;
 
-            const url = `${protocol}//${hostname}:8085/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&dummy=${dummy}&played=${played}`;
+            const url = `${protocol}//${hostname}:8085/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&dummy=${dummy}&played=${played}&tournament=${matchpoint}`;
 
             try {           
                 const response = await fetch(url, {
@@ -878,7 +881,7 @@
                 const data = await response.json();
                 if (data.message) {
                     document.querySelector("#loader").style.visibility = "hidden";
-                    alert(message)
+                    alert(data.message)
                     return
                 }
 

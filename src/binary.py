@@ -250,6 +250,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
 
     bid_i = hand_ix
     if isinstance(auction, list):
+        #print("Using auction list")
         auction_input = auction_input + ['PAD_END'] * 4 * n_steps
         auction = bidding.BID2ID['PAD_END'] * np.ones((n_samples, len(auction_input)), dtype=np.int32)
         for i, bid in enumerate(auction_input):
@@ -271,25 +272,25 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
     while step_i < n_steps:
         #print(step_i, bid_i, n_steps)
         if bid_i - 4 >= 0:
-            my_bid = auction[:, bid_i - 4][0]
+            my_bid = auction[:, bid_i - 4]
             #print("Me", bidding.ID2BID[my_bid])
         else:
             my_bid = bidding.BID2ID['PAD_START']
             #print("Me", bidding.ID2BID[my_bid])
         if bid_i - 3 >= 0:
-            lho_bid = auction[:, bid_i - 3][0]
+            lho_bid = auction[:, bid_i - 3]
             #print("LHO", bidding.ID2BID[lho_bid])
         else:
             lho_bid = bidding.BID2ID['PAD_START']
             #print("LHO", bidding.ID2BID[lho_bid])
         if bid_i - 2 >= 0:
-            partner_bid = auction[:, bid_i - 2][0]
+            partner_bid = auction[:, bid_i - 2]
             #print("PAR", bidding.ID2BID[partner_bid])
         else:
             partner_bid = bidding.BID2ID['PAD_START']
             #print("PAR", bidding.ID2BID[partner_bid])
         if bid_i - 1 >= 0:
-            rho_bid = auction[:, bid_i - 1][0]
+            rho_bid = auction[:, bid_i - 1]
             #print("RHO", bidding.ID2BID[rho_bid])
         else:
             rho_bid = bidding.BID2ID['PAD_START']

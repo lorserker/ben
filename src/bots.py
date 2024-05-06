@@ -377,7 +377,7 @@ class BotBid:
 
     def bidding_rollout(self, auction_so_far, candidate_bid, hands_np):
         auction = [*auction_so_far, candidate_bid]
-        
+        #print("auction: ", auction)
         n_samples = hands_np.shape[0]
         if self.verbose:
             print("bidding_rollout - n_samples: ", n_samples)
@@ -394,13 +394,18 @@ class BotBid:
 
         bid_i = len(auction) - 1
         turn_i = len(auction) % 4
+        #np.set_printoptions(precision=1, suppress=True)
 
         # Now we bid each sample to end of auction
         while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
+            #auction = bidding.get_auction_as_list(auction_np[2])
+            #print(n_steps_vals, turn_i, bid_i, auction)
             X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models)
             y_bid_np = self.models.bidder_model.model_seq(X)
+            #print(y_bid_np)
             x_bid_np = y_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
             bid_np = x_bid_np[:,-1,:]
+            #print(bid_np)
             assert bid_np.shape[1] == 40
             # We can get invalid bids back from the neural network, so we need to filter those away first
             invalid_bids = True
@@ -420,7 +425,7 @@ class BotBid:
                         if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
                             invalid_bids = True
                             #sys.stderr.write(str(auction))
-                            #sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]}\n")
+                            sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]}\n")
                             bid_np[i][bid] = 0
 
                         assert bid_i <= 60, f'Auction to long {bid_i} {auction} {auction_np[i]}'
@@ -430,6 +435,9 @@ class BotBid:
                     continue
 
             bid_i += 1
+            #print("Adding", bidding.ID2BID[np.argmax(bid_np, axis=1)])
+            #print("Adding", np.argmax(bid_np, axis=1))
+            #print(bid_np)
             auction_np[:,bid_i] = np.argmax(bid_np, axis=1)
             n_steps_vals[turn_i] += 1
             turn_i = (turn_i + 1) % 4
@@ -855,6 +863,7 @@ class CardPlayer:
             self.playermodel = models.player_models[player_i + 4]
         self.player_i = player_i
         self.hand_str = hand_str
+        self.public_hand_str = public_hand_str
         self.hand32 = binary.parse_hand_f(32)(hand_str).reshape(32)
         self.hand52 = binary.parse_hand_f(52)(hand_str).reshape(52)
         self.public52 = binary.parse_hand_f(52)(public_hand_str).reshape(52)
@@ -1323,7 +1332,7 @@ class CardPlayer:
                     who = "Make"
                 candidate_cards = [card for _, card in candidate_cards]
 
-        right_card = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.player_i, self.x_play[0, trick_i, :32], current_trick, play_status)
+        right_card = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, self.x_play[0, trick_i, :32], current_trick, play_status)
         best_card_resp = CardResp(
             card=right_card,
             candidates=candidate_cards,
