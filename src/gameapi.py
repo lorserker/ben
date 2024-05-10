@@ -124,6 +124,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
 
             card_i += 1
             if card_i >= len(play):
+                assert (player_i == position or (player_i == 1 and position == 3)), f"Cardplay order is not correct {play} {player_i} {position}"
                 play_status = get_play_status(card_players[player_i].hand52,current_trick52)
 
                 rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
@@ -131,7 +132,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
                 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
 
-                card_resp = await card_players[player_i].play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                card_resp = await card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
 
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
@@ -417,6 +418,10 @@ async def frontend():
         if hand_str == dummy_str:
             result = {"message":"Hand and dummy are identical"}
             return json.dumps(result)
+
+        if "" == dummy_str:
+            result = {"message":"No dummy provided"}
+            return json.dumps(result)
         
         played = request.args.get("played")
         seat = request.args.get("seat")
@@ -463,8 +468,8 @@ async def frontend():
             cardplayer = 0
         if (decl_i + 3) % 4 == position_i:
             cardplayer = 2
-        print("cardplayer:",cardplayer)
-        print(hands)
+        #print("cardplayer:",cardplayer)
+        #print(hands)
         card_resp = await play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()

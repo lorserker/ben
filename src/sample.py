@@ -57,7 +57,7 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose):
+    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, exclude_samples, verbose):
         self.lead_accept_threshold_partner_trust = lead_accept_threshold_partner_trust
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
@@ -76,6 +76,7 @@ class Sample:
         self.sample_boards_for_play = sample_boards_for_play
         self.use_bidding_info = use_biddinginfo
         self.use_distance = use_distance
+        self.exclude_samples = exclude_samples
         self.verbose = verbose
 
 
@@ -89,6 +90,7 @@ class Sample:
         bid_accept_play_threshold = float(conf['sampling']['bid_accept_play_threshold'])
         bid_accept_threshold_bidding = float(conf['sampling']['bid_accept_threshold_bidding'])
         bid_extend_play_threshold = float(conf['sampling'].get('bid_extend_play_threshold', 0))
+        exclude_samples = float(conf['sampling'].get('exclude_samples', 0))
         sample_hands_auction = int(conf['sampling']['sample_hands_auction'])
         min_sample_hands_auction = int(conf['sampling']['min_sample_hands_auction'])
         sample_boards_for_auction = int(conf['sampling']['sample_boards_for_auction'])
@@ -100,7 +102,7 @@ class Sample:
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
-        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, verbose)
+        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, exclude_samples, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -326,14 +328,16 @@ class Sample:
             distances = np.zeros(n_samples)
             # Calculate the Euclidean distance for each index
             for i in range(n_samples):
-                distances[i] += np.sqrt((min_scores[i] - min_scores_lho[i])**2)
-                #print(distances[i])
-                distances[i] += 2 * np.sqrt((min_scores[i] - min_scores_partner[i])**2)
-                #print(distances[i])
-                distances[i] += np.sqrt((min_scores[i] - min_scores_rho[i])**2)
-            
-                #print(distances[i])
-
+                # Calculate absolute differences
+                abs_diff_lho = np.abs(min_scores[i] - min_scores_lho[i])
+                abs_diff_partner = np.abs(min_scores[i] - min_scores_partner[i])
+                abs_diff_rho = np.abs(min_scores[i] - min_scores_rho[i])
+                
+                distances[i] = abs_diff_lho + 2 * abs_diff_partner + abs_diff_rho
+                # Increase the distance if any absolute difference is less than 0.001
+                if abs_diff_lho < self.exclude_samples or abs_diff_partner < self.exclude_samples or abs_diff_rho < self.exclude_samples:
+                    distances[i] += 1
+                    
             # Normalize the total distance to a scale between 0 and 100
             max_distance = 4  # Replace with the maximum possible distance in your context
             scaled_distance_A = ((max_distance - distances) / max_distance)

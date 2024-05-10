@@ -84,8 +84,9 @@
     <form id="form2">
         <label for="deal">PBN:</label>
         <textarea id="dealpbn" name="dealpbn" cols="40"  rows="6"></textarea><br>
-        <button type="submit" class="submit-button" data-form="form2" onclick="return validateForm('dealpbn')">Play from PBN</button>    
+        <button type="submit" class="submit-button" data-form="form2" onclick="return validateForm('dealpbn')">Play from PBN</button>   <br> 
     </form>
+        <button onclick="readImportedFile()" id="importBtn" disabled>Import file</button>&nbsp;&nbsp;<input type="file" accept=".pbn" id="importFile" onchange="enableImportBtn()"><br><br>
     </div>
     <br>
     <div class="border">
@@ -175,6 +176,42 @@
 </div>
 
 <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            enableImportBtn();
+        });
+
+        function enableImportBtn() {
+            const btn = document.getElementById('importBtn');
+            const fileInput = document.getElementById('importFile');
+            btn.disabled = !(fileInput.files.length > 0);
+        }
+
+
+        function readImportedFile() {
+            // Get the file from the input field
+            const fileInput = document.getElementById('importFile');
+            const file = fileInput.files[0];
+
+            // Check if a file was actually selected
+            if (!file) {
+                alert('Please select a file to import.');
+                return;
+            }
+
+            // Read the file as text
+            const reader = new FileReader();
+            reader.onload = () => {
+                const text = reader.result;
+                const filteredLines = text.split('\n')
+                    .filter((line) => !line.startsWith("%"))
+                    .join('\n');
+                const input = document.querySelector('#dealpbn');
+                input.value = filteredLines;
+            };
+
+            // Start reading the file
+            reader.readAsText(file);
+        }
 
     // Retrieve the input field element
     const inputField = document.getElementById('name');

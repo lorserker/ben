@@ -23,7 +23,9 @@ class Models:
                  adjust_min1,
                  adjust_min2,
                  adjust_min1_by,
-                 adjust_min2_by
+                 adjust_min2_by,
+                 use_suitc,
+                 check_final_contract
                  ):
         self.name = name
         self.model_version = model_version
@@ -81,6 +83,9 @@ class Models:
         self.adjust_min2 = adjust_min2
         self.adjust_min1_by = adjust_min1_by
         self.adjust_min2_by = adjust_min2_by
+        self.use_suitc = use_suitc
+        self.check_final_contract = check_final_contract
+
 
     @classmethod
     def from_conf(cls, conf: ConfigParser, base_path=None) -> "Models":
@@ -93,6 +98,7 @@ class Models:
         no_search_threshold = conf.getfloat('bidding', 'no_search_threshold', fallback=1)
         eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=24)
         use_biddingquality = conf.getboolean('bidding', 'use_biddingquality', fallback=False)
+        check_final_contract = conf.getboolean('bidding', 'check_final_contract', fallback=False)
         use_probability = conf.getboolean('bidding', 'use_probability', fallback=False)
         sample_hands_for_review = conf.getint('sampling', 'sample_hands_for_review', fallback=200)
         lead_threshold = float(conf['lead']['lead_threshold'])
@@ -131,6 +137,7 @@ class Models:
 
         opening_lead_included = conf.getboolean('cardplay', 'opening_lead_included', fallback=False)
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'claim', fallback=False)
+        use_suitc = conf.getboolean('cardplay', 'use_suitc', fallback=False)
         if use_bba == True:
             bba_ns = float(conf['models']['bba_ns'])
             bba_ew = float(conf['models']['bba_ew'])
@@ -211,7 +218,9 @@ class Models:
             adjust_min1=adjust_min1,
             adjust_min2=adjust_min2,
             adjust_min1_by=adjust_min1_by,
-            adjust_min2_by=adjust_min2_by
+            adjust_min2_by=adjust_min2_by,
+            use_suitc=use_suitc,
+            check_final_contract=check_final_contract
         )
 
     @property

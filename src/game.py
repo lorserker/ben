@@ -3,6 +3,8 @@ import sys
 import asyncio
 import logging
 
+import scoring
+
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
@@ -60,8 +62,8 @@ class AsyncBotLead(bots.BotLead):
         return self.find_opening_lead(auction)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    async def async_play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
-        return await self.play_card(trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
+    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
+        return await self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
     
     
 class Driver:
@@ -241,7 +243,7 @@ class Driver:
         pbn_str += '% EXPORT'
         pbn_str += '[Event ""]\n'
         pbn_str += '[Site ""]\n'
-        pbn_str += f'[Date "{datetime.datetime.now().date().isoformat()}"]'
+        pbn_str += f'[Date "{datetime.datetime.now().date().isoformat()}"]\n'
         pbn_str += f'[Board "{self.board_number}"]\n'
         pbn_str += '[West "BEN"]\n'
         pbn_str += '[North "BEN"]\n'
@@ -259,8 +261,16 @@ class Driver:
         pbn_str += f'[Deal "N:{self.deal_str}"]\n'
         pbn_str += '[Scoring "IMP"]\n'
         pbn_str += f'[Declarer "{self.contract[-1]}"]\n'
-        pbn_str += f'[Contract "{self.contract[:-1]}"]\n'
-        pbn_str += f'[Result "{self.tricks_taken}"]\n'
+        if self.contract is None:
+            pbn_str += f'[Contract ""]\n'
+        else:
+            pbn_str += f'[Contract "{self.contract[:-1]}"]\n'
+            pbn_str += f'[Result "{self.tricks_taken}"]\n'
+            if (self.contract[-1] == "N" or self.contract[-1] =="S"):
+                pbn_str += f'[Score "{scoring.score(self.contract, self.vuln_ns, self.tricks_taken)}"]\n'
+            else:
+                pbn_str += f'[Score "{-scoring.score(self.contract, self.vuln_ew, self.tricks_taken)}"]\n'
+
         pbn_str += f'[Auction "{dealer}"]\n'
         for i, b in enumerate(self.bid_responses, start=1):
             pbn_str += (b.bid)
@@ -463,7 +473,7 @@ class Driver:
 
                 card_resp = None
                 while card_resp is None:
-                    card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                    card_resp = await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
 
                     if (str(card_resp.card).startswith("Conceed")) :
                             self.claimedbydeclarer = False
@@ -864,7 +874,7 @@ async def main():
             rdeal = random_deal_board(boardno)
 
             # example of to use a fixed deal
-            # rdeal = ('Q874..K7.KJT9652 AT3.AKJT.A964.A3 J95.9863.QT5.Q84 K62.Q7542.J832.7', 'N None')
+            rdeal = ("KQJ7.A542.AQJ5.5 853.KJ9.K8.KQ984 64.T73.96432.A32 AT92.Q86.T7.JT76", 'N None')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=biddingonly)

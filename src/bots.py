@@ -419,13 +419,13 @@ class BotBid:
                         # if Pass returned after the bidding really is over
                         if (bid == 2 and bidding.auction_over(auction)):
                             sys.stderr.write(str(auction))
-                            sys.stderr.write(f"Pass not valid as auction is over: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                            sys.stderr.write(f" Pass not valid as auction is over: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
                             bid_np[i][1] = 1
                         # Pass is always allowed
                         if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
                             invalid_bids = True
-                            #sys.stderr.write(str(auction))
-                            sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]}\n")
+                            sys.stderr.write(str(auction))
+                            sys.stderr.write(f" Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
                             bid_np[i][bid] = 0
 
                         assert bid_i <= 60, f'Auction to long {bid_i} {auction} {auction_np[i]}'
@@ -732,9 +732,10 @@ class BotLead:
         decl_i = bidding.get_decl_i(contract)
         lead_index = (decl_i + 1) % 4
 
+        # Consider changing this to a loop, so it is the target result that defines how many samples we should generate
         if self.verbose:
             print(f'Now generating {self.sample.sample_boards_for_auction_opening_lead} deals to find opening lead')
-        # Reset randomizer
+        
         accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.sample.sample_boards_for_auction_opening_lead, self.get_random_generator(), self.models)
 
         if self.verbose:
@@ -988,7 +989,7 @@ class CardPlayer:
                     self.find_and_update_constraints(players_states, quality,self.player_i)
 
 
-    async def play_card(self, trick_i, leader_i, current_trick52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
+    async def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
@@ -1006,17 +1007,17 @@ class CardPlayer:
             if self.verbose:
                 print("PIMC result:",pimc_resp_cards)
             assert pimc_resp_cards is not None, "PIMC result is None"
-            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
+            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
         else:
             if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
                 pimc_resp_cards = await self.pimc.nextplay(self.player_i, shown_out_suits)
                 if self.verbose:
                     print("PIMC result:",pimc_resp_cards)
                 assert pimc_resp_cards is not None, "PIMCDef result is None"
-                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
+                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
             else:
                 pimc_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
-                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)
+                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, tricks52, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)
 
         return card_resp
 
@@ -1201,7 +1202,7 @@ class CardPlayer:
         )
         return x.reshape(-1)
 
-    def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples, play_status):
+    def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
         if self.verbose:
@@ -1244,19 +1245,22 @@ class CardPlayer:
 
         candidate_cards = [card for _, card in candidate_cards]
 
+        who = "PIMC-MP" if self.models.matchpoint else "PIMC" 
+
+        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who)
         best_card_resp = CardResp(
-            card=candidate_cards[0].card,
+            card=right_card,
             candidates=candidate_cards,
             samples=samples,
             shape=-1,
             hcp=-1, 
             quality=quality,
-            who = "PIMC-MP" if self.models.matchpoint else "PIMC" 
+            who = who
         )
         return best_card_resp
 
 
-    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, players_states, card_dd, bidding_scores, quality, samples, play_status):
+    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status):
         t_start = time.time()
         card_softmax = self.next_card_softmax(trick_i)
         if self.verbose:
@@ -1332,7 +1336,7 @@ class CardPlayer:
                     who = "Make"
                 candidate_cards = [card for _, card in candidate_cards]
 
-        right_card = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, self.x_play[0, trick_i, :32], current_trick, play_status)
+        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who)
         best_card_resp = CardResp(
             card=right_card,
             candidates=candidate_cards,
