@@ -120,15 +120,14 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
 def select_right_card(hand52, opening_lead, rng, contract, models):
     #print("select_right_card")
+    opening_suit = opening_lead // 8
+    suit_length = np.sum(hand52.reshape((4, 13))[opening_suit])
     if contract[1] != "N":
-        opening_suit = opening_lead // 8
         if opening_suit == "SHDC".index(contract[1]):
             # In trump always lead lowest from pips
             card_index = 13 - 1 - np.nonzero(np.flip(hand52.reshape((4, 13))[opening_suit]))[0][0]
             return card_index + 13 * opening_suit
     else:
-        opening_suit = opening_lead // 8
-        suit_length = np.sum(hand52.reshape((4, 13))[opening_suit])
         if models.lead_from_pips_nt == "attitude" and suit_length > 1:
             # Need to check for honor in the suit
             if suit_length < 4:
