@@ -228,7 +228,7 @@ class Driver:
                 pprint.pprint(card_resp.to_dict(), width=200)
 
         
-        await self.play(self.contract, self.strain_i, self.decl_i, auction, opening_lead52)
+        self.card_play = await self.play(self.contract, self.strain_i, self.decl_i, auction, opening_lead52)
 
         await self.channel.send(json.dumps({
             'message': 'deal_end',
@@ -239,8 +239,8 @@ class Driver:
     def asPBN(self):
         dealer = "NESW"[self.dealer_i]
         pbn_str = ""
-        pbn_str += '% PBN 2.1'
-        pbn_str += '% EXPORT'
+        pbn_str += '% PBN 2.1\n'
+        pbn_str += '% EXPORT\n'
         pbn_str += '[Event ""]\n'
         pbn_str += '[Site ""]\n'
         pbn_str += f'[Date "{datetime.datetime.now().date().isoformat()}"]\n'
@@ -260,16 +260,17 @@ class Driver:
             pbn_str += '[Vulnerable "None"]\n'
         pbn_str += f'[Deal "N:{self.deal_str}"]\n'
         pbn_str += '[Scoring "IMP"]\n'
-        pbn_str += f'[Declarer "{self.contract[-1]}"]\n'
+        declarer = self.contract[-1]
+        pbn_str += f'[Declarer "{declarer}"]\n'
         if self.contract is None:
-            pbn_str += f'[Contract ""]\n'
+            pbn_str += '[Contract ""]\n'
         else:
             pbn_str += f'[Contract "{self.contract[:-1]}"]\n'
             pbn_str += f'[Result "{self.tricks_taken}"]\n'
             if (self.contract[-1] == "N" or self.contract[-1] =="S"):
-                pbn_str += f'[Score "{scoring.score(self.contract, self.vuln_ns, self.tricks_taken)}"]\n'
+                pbn_str += f'[Score "NS {scoring.score(self.contract, self.vuln_ns, self.tricks_taken)}"]\n'
             else:
-                pbn_str += f'[Score "{-scoring.score(self.contract, self.vuln_ew, self.tricks_taken)}"]\n'
+                pbn_str += f'[Score "EW {scoring.score(self.contract, self.vuln_ew, self.tricks_taken)}"]\n'
 
         pbn_str += f'[Auction "{dealer}"]\n'
         for i, b in enumerate(self.bid_responses, start=1):
@@ -281,16 +282,17 @@ class Driver:
         # Add an additional line break if the total number of bids is not divisible by 4
         if i % 4 != 0:
             pbn_str += "\n"
-        pbn_str += '[Play ""]\n'
-        for i, c in enumerate(self.card_responses, start=1):
-            pbn_str += c.card.symbol()
-            if i % 4 == 0:
-                pbn_str += "\n"
-            else:
-                pbn_str += " "
+        declarer_i = "NESW".index(declarer)
+        leader = "NESW"[(declarer_i + 1) % 4]            
+        pbn_str += f'[Play "{leader}"]\n'
+        for i in range(13):
+            for j in range(4):
+                pbn_str += Card.from_code(self.card_play[j][i]).symbol() + " "
+            pbn_str += "\n"
         pbn_str += '[HomeTeam ""]\n'
         pbn_str += '[VisitTeam ""]\n'
         pbn_str += '[ScoreIMP ""]\n'
+        pbn_str += '[Room ""]\n'
         pbn_str += '\n'
         return pbn_str
     
@@ -424,6 +426,7 @@ class Driver:
         player_cards_played = [[] for _ in range(4)]
         shown_out_suits = [set() for _ in range(4)]
         discards = [set() for _ in range(4)]
+        card_play = [[] for _ in range(4)]
 
         leader_i = 0
 
@@ -435,6 +438,7 @@ class Driver:
 
         current_trick = [opening_lead]
         current_trick52 = [opening_lead52]
+        card_play[0].append(opening_lead52)
 
         card_players[0].hand52[opening_lead52] -= 1
 
@@ -543,6 +547,8 @@ class Driver:
                 current_trick.append(card32)
 
                 current_trick52.append(card52)
+
+                card_play[player_i].append(card52)
 
                 card_players[player_i].set_own_card_played52(card52)
                 if player_i == 1:
@@ -671,6 +677,7 @@ class Driver:
             
             current_trick.append(card32)
             current_trick52.append(card52)
+            card_play[player_i].append(card52)
 
         await self.confirmer.confirm()
 
@@ -699,6 +706,8 @@ class Driver:
 
         # Print contract and result
         print("Contract: ",self.contract, card_players[3].n_tricks_taken, "tricks")
+
+        return card_play
 
     
     async def opening_lead(self, auction):

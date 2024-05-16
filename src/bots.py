@@ -58,6 +58,23 @@ class BotBid:
         X = binary.get_auction_binary(n_steps, auction, hand_ix, self.hand32, self.vuln, models)
         return X
 
+    def get_binary_contract(self, position, vuln, hand_str, dummy_str):
+        X = np.zeros(2 + 2 * 32, dtype=np.float16)
+
+        v_we = vuln[0] if position % 2 == 0 else vuln[1]
+        v_them = vuln[1] if position % 2 == 0 else vuln[0]
+        vuln = np.array([[v_we, v_them]], dtype=np.float32)
+        
+        hand = binary.parse_hand_f(32)(hand_str).reshape(32)
+        dummy = binary.parse_hand_f(32)(dummy_str).reshape(32)
+        ftrs = np.concatenate((
+            vuln,
+            [hand],
+            [dummy],
+        ), axis=1)
+        X = ftrs
+        return X
+
     def bid(self, auction):
         # Validate input
         if (len(auction)) % 4 != self.seat:
@@ -70,7 +87,7 @@ class BotBid:
 
         if self.do_rollout(auction, candidates, self.max_candidate_score):
             ev_candidates = []
-            # To save time, this is moved to the do_rollout section, as samples are only for display if do rollout
+            # To save time, this is moved to the do_rollout section, as samples are only for display if no rollout
             if self.verbose:
                 print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
             hands_np, sorted_score, p_hcp, p_shp, good_quality = self.sample_hands_for_auction(auction, self.seat)
@@ -218,6 +235,22 @@ class BotBid:
 
         if self.verbose:
             print(candidates[0].bid, " selected")
+
+        print("self.models.check_final_contract", self.models.check_final_contract)
+        print("candidates[0].bid", candidates[0].bid)
+        if self.models.check_final_contract:
+            if candidates[0].bid == "PASS" and len(samples) > 0:
+                # We need to find a sample or two from the bidding
+                print(samples[0].split(" ")[0])
+                X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[0].split(" ")[0])
+                contract_id, doubled, tricks = self.models.contract_model.model[0](X)
+                contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
+                result = {"contract": contract,
+                        "tricks": tricks}
+                print(result)
+
+        # We return the bid with the highest expected score or highest adjusted score 
+
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality)
     
     def do_rollout(self, auction, candidates, max_candidate_score):
@@ -983,7 +1016,7 @@ class CardPlayer:
                         print("Declaring", self.pimc_declaring, self.player_i, trick_i)
                     self.find_and_update_constraints(players_states, quality,self.player_i)
             if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
-                if trick_i == (self.models.pimc_start_trick_defender - 1) and not self.pimc.constraints_updated:
+                if trick_i >= (self.models.pimc_start_trick_defender - 1) and not self.pimc.constraints_updated:
                     if self.verbose:
                         print("Defending", self.pimc_declaring, self.player_i, trick_i)
                     self.find_and_update_constraints(players_states, quality,self.player_i)

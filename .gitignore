@@ -86,4 +86,5 @@ install/dist/table_manager_client.zip
 scripts/training/bidding/sampling_1000.prt
 scripts/training/bidding/html/*.html
 src/frontend/api.json
-src/CBE*.pbn
+src/CBE*.*
+src/GIB.*
