@@ -236,8 +236,8 @@ class BotBid:
         if self.verbose:
             print(candidates[0].bid, " selected")
 
-        print("self.models.check_final_contract", self.models.check_final_contract)
-        print("candidates[0].bid", candidates[0].bid)
+        #print("self.models.check_final_contract", self.models.check_final_contract)
+        #print("candidates[0].bid", candidates[0].bid)
         if self.models.check_final_contract:
             if candidates[0].bid == "PASS" and len(samples) > 0:
                 # We need to find a sample or two from the bidding
@@ -655,6 +655,7 @@ class BotLead:
     def find_opening_lead(self, auction):
         # Validate input
         # We should check that auction match, that we are on lead
+        t_start = time.time()
         lead_card_indexes, lead_softmax = self.get_opening_lead_candidates(auction)
         accepted_samples, sorted_bidding_score, tricks, p_hcp, p_shp, good_quality = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
         contract = bidding.get_contract(auction)
@@ -721,6 +722,8 @@ class BotLead:
                 sorted_bidding_score[i]
             ))
 
+        if self.verbose:
+            print(' Opening lead found in {0:0.1f} seconds.'.format(time.time() - t_start))
         return CardResp(
             card=Card.from_code(opening_lead52),
             candidates=candidate_cards,
@@ -760,6 +763,7 @@ class BotLead:
         return candidates, lead_softmax
 
     def simulate_outcomes_opening_lead(self, auction, lead_card_indexes):
+        t_start = time.time()
         contract = bidding.get_contract(auction)
 
         decl_i = bidding.get_decl_i(contract)
@@ -787,6 +791,9 @@ class BotLead:
             tricks = self.double_dummy_estimates(lead_card_indexes, contract, accepted_samples)
         else:
             tricks = self.single_dummy_estimates(lead_card_indexes, contract, accepted_samples)
+        
+        if self.verbose:
+            print(f'simulate_outcomes_opening_lead took {time.time() - t_start:0.4}')
 
         return accepted_samples, sorted_scores, tricks, p_hcp, p_shp, good_quality
 
@@ -841,6 +848,7 @@ class BotLead:
         return tricks
 
     def single_dummy_estimates(self, lead_card_indexes, contract, accepted_samples):
+        t_start = time.time()
         n_accepted = accepted_samples.shape[0]
         X_sd = np.zeros((n_accepted, 32 + 5 + 4*32))
 
@@ -882,6 +890,8 @@ class BotLead:
 
             tricks[:, j, 0:1] = expected_tricks_sd(result_array)
             tricks[:, j, 1:2] = p_defeat_contract(contract, result_array)
+        if self.verbose:
+            print(f'single dummy estimates took {time.time() - t_start:0.4}')
         return tricks
 
 class CardPlayer:
@@ -1023,6 +1033,7 @@ class CardPlayer:
 
 
     async def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
+        t_start = time.time()
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
@@ -1052,6 +1063,8 @@ class CardPlayer:
                 pimc_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
                 card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, tricks52, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)
 
+        if self.verbose:
+            print(f'Play card response time: {time.time() - t_start:0.4f}')
         return card_resp
 
     def get_cards_dd_evaluation(self, trick_i, leader_i, current_trick52, players_states, probabilities_list):

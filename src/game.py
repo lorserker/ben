@@ -883,7 +883,7 @@ async def main():
             rdeal = random_deal_board(boardno)
 
             # example of to use a fixed deal
-            rdeal = ("KQJ7.A542.AQJ5.5 853.KJ9.K8.KQ984 64.T73.96432.A32 AT92.Q86.T7.JT76", 'N None')
+            # rdeal = ("KQJ7.A542.AQJ5.5 853.KJ9.K8.KQ984 64.T73.96432.A32 AT92.Q86.T7.JT76", 'N None')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=biddingonly)
@@ -903,12 +903,13 @@ async def main():
             with shelve.open(f"{base_path}/gamedb") as db:
                 deal = driver.to_dict()
                 print(f"Saving Board: {driver.hands} in {base_path}/gamedb")
-                print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 db[uuid.uuid4().hex] = deal
 
         if outputpbn != "":
             with open(outputpbn, "a") as file:
                 file.write(driver.asPBN())
+
+        print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
         if not auto:
             user_input = input("\n Q to quit or any other key for next deal ")
