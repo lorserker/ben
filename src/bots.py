@@ -358,7 +358,7 @@ class BotBid:
 
     def next_bid_np(self, auction):
         if self.verbose:
-            print("next_bid_np", self.models.name)
+            print("next_bid_np", self.models.name, self.models.model_version, self.models.ns)
         if self.models.model_version == 0 or self.models.ns == -1:
             x = self.get_binary(auction, self.models)
             # If API we have no history

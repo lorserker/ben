@@ -155,6 +155,11 @@ class BGADLL:
             print(min_lho, max_lho, min_rho, max_rho, quality)
             print("allready_shown_lho",allready_shown_lho)
             print("allready_shown_rho",allready_shown_rho)
+        
+        # The margin should probably be smaller if the opponents was active during bidding
+        # Or perhaps configurable
+        # It could also be worth counting the hcp divided by opponents
+        # and perhaps no margin on max hcp
         if quality:
             margin = 2
         else:
