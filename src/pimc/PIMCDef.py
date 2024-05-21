@@ -249,7 +249,7 @@ class BGADefDLL:
             return None
 
     # Define a Python function to find a bid
-    async def nextplay(self, player_i, shown_out_suits):
+    def nextplay(self, player_i, shown_out_suits):
 
         from BGADLL import Constraints, Macros, Card as PIMCCard
 
@@ -390,7 +390,7 @@ class BGADefDLL:
                     self.partner_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                     self.declarer_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                     print("Trying without constraints")
-                    card_result = await self.nextplay(player_i, shown_out_suits)
+                    card_result = self.nextplay(player_i, shown_out_suits)
                     print("Done without constraints")
                     return card_result
                 makable = sum(1 for t in output if t >= self.mintricks)
