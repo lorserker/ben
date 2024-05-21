@@ -231,27 +231,6 @@ class BGADLL:
         if not openinglead:
             self.update_constraints(playedBy, real_card)
 
-    async def check_threads_finished(self):
-        start_time = time.time()
-        while time.time() - start_time < self.wait:
-            time.sleep(0.05)
-            if self.pimc.Evaluating == False:
-                if self.verbose:    
-                    print(f"Threads are finished after {time.time() - start_time:.2f}.")
-                    print(f"Playouts: {self.pimc.Playouts}")
-                return
-        if self.verbose:    
-            print(f"Threads are still running after {self.wait} second. Examined {self.pimc.Examined} of {self.pimc.Combinations}")
-        try:
-            self.pimc.EndEvaluate()
-        except Exception as ex:
-            print('Error EndEvaluate:', ex)
-            sys.exit(1)
-        # Allow running threads to finalize
-        time.sleep(0.1)
-        if self.verbose:    
-            print(f"Playouts: {self.pimc.Playouts}")
-
     def find_trump(self, value):
         from BGADLL import Macros
         if value == 4:
@@ -271,7 +250,7 @@ class BGADLL:
             return None
 
     # Define a Python function to find a bid
-    async def nextplay(self, player_i, shown_out_suits):
+    def nextplay(self, player_i, shown_out_suits):
         from BGADLL import Constraints, Macros,  Card as PIMCCard
 
         try:
@@ -363,15 +342,24 @@ class BGADLL:
                 print("Playing singleton:",trump)
             card_result[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
             return card_result
-
+        start_time = time.time()
         try:
             self.pimc.BeginEvaluate(trump)
         except Exception as ex:
             print('Error BeginEvaluate:', ex)
             sys.exit(1)
 
-        await self.check_threads_finished()
-        if self.verbose:
+        try:
+            self.pimc.AwaitEvaluation(int(self.wait * 1000))
+            if self.verbose:    
+                print(f"Threads are finished after {time.time() - start_time:.2f}.")
+        except Exception as ex:
+            print('Error AwaitEvaluation:', ex)
+            sys.exit(1)
+        # Allow running threads to finalize
+        time.sleep(0.1)
+        if self.verbose:    
+            print(f"Playouts: {self.pimc.Playouts}")
             print("Combinations:", self.pimc.Combinations)
             print("Examined:", self.pimc.Examined)
         try:
@@ -397,7 +385,7 @@ class BGADLL:
                     self.lho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                     self.rho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
                     print("Trying without constraints")
-                    card_result = await self.nextplay(player_i, shown_out_suits)
+                    card_result = self.nextplay(player_i, shown_out_suits)
                     print("Done without constraints")
                     return card_result
                 

@@ -1,5 +1,6 @@
 import traceback
 from gevent import monkey
+monkey.patch_all()
 from gevent.pywsgi import WSGIServer
 
 from bots import BotBid, BotLead, CardPlayer
@@ -7,7 +8,6 @@ from bidding import bidding
 from objects import Card, CardResp
 import deck52
 import binary
-monkey.patch_all()
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -38,7 +38,7 @@ def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
     return os.getcwd()
 
-async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, position, verbose):
+def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, position, verbose):
     
     level = int(contract[0])
     is_decl_vuln = [vuln_ns, vuln_ew, vuln_ns, vuln_ew][decl_i]
@@ -132,7 +132,7 @@ async def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract,
                 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
 
-                card_resp = await card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
 
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
@@ -470,7 +470,7 @@ async def frontend():
             cardplayer = 2
         #print("cardplayer:",cardplayer)
         #print(hands)
-        card_resp = await play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
+        card_resp =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
         with shelve.open(f"{base_path}/gameapiplaydb") as db:
@@ -540,4 +540,5 @@ def contract():
 if __name__ == "__main__":
     # Run the Flask app with gevent server
     http_server = WSGIServer((host, port), app)
+    http_server.spawn = 4 #Create 4 Workers
     http_server.serve_forever()

@@ -1032,7 +1032,7 @@ class CardPlayer:
                     self.find_and_update_constraints(players_states, quality,self.player_i)
 
 
-    async def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
+    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
         t_start = time.time()
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
@@ -1047,14 +1047,14 @@ class CardPlayer:
         if not quality and self.verbose:
             print(samples)
         if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
-            pimc_resp_cards = await self.pimc.nextplay(self.player_i, shown_out_suits)
+            pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits)
             if self.verbose:
                 print("PIMC result:",pimc_resp_cards)
             assert pimc_resp_cards is not None, "PIMC result is None"
             card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
         else:
             if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
-                pimc_resp_cards = await self.pimc.nextplay(self.player_i, shown_out_suits)
+                pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits)
                 if self.verbose:
                     print("PIMC result:",pimc_resp_cards)
                 assert pimc_resp_cards is not None, "PIMCDef result is None"
@@ -1285,7 +1285,7 @@ class CardPlayer:
                 print(candidate_cards[i].card, candidate_cards[i].insta_score, candidate_cards[i].expected_tricks_dd, candidate_cards[i].p_make_contract, candidate_cards[i].expected_score_dd, int(candidate_cards[i].expected_tricks_dd * 10) / 10)
 
         if self.models.matchpoint:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_dd, x[1].insta_score, -x[0]), reverse=True)
+            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
         else:
             candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), x[1].expected_score_dd, x[1].insta_score, -x[0]), reverse=True)
 
