@@ -62,7 +62,7 @@ class AsyncBotLead(bots.BotLead):
         return self.find_opening_lead(auction)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
+    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
         return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
     
     
@@ -477,7 +477,7 @@ class Driver:
 
                 card_resp = None
                 while card_resp is None:
-                    card_resp =  card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                    card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
 
                     if (str(card_resp.card).startswith("Conceed")) :
                             self.claimedbydeclarer = False
