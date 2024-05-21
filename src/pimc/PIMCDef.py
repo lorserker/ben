@@ -36,10 +36,12 @@ class BGADefDLL:
 
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
+            print('Error:', ex)
+            print("*****************************************************************************")
             print("Error: Unable to load BGADLL.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
             print("Make sure the dll is not write protected")
-            print('Error:', ex)
+            print("*****************************************************************************")
             sys.exit(1)
             
         self.max_playout = models.pimc_max_playout
@@ -257,7 +259,7 @@ class BGADefDLL:
             self.pimc.Clear()
         except Exception as ex:
             print('Error Clear:', ex)
-            sys.exit(1)
+            #sys.exit(1)
 
         # Declarer
         idx = 3
@@ -336,7 +338,7 @@ class BGADefDLL:
             print("min tricks",self.mintricks)
             print("Declarer",self.declarer_constraints.ToString())
             print("Partner",self.partner_constraints.ToString())
-            sys.exit(1) 
+            #sys.exit(1) 
             
         
         trump = self.find_trump(self.suit)
@@ -355,7 +357,7 @@ class BGADefDLL:
             self.pimc.BeginEvaluate(trump)
         except Exception as ex:
             print('Error BeginEvaluate:', ex)
-            sys.exit(1)
+            #sys.exit(1)
 
         try:
             start_time = time.time()
@@ -364,7 +366,7 @@ class BGADefDLL:
                 print(f"Threads are finished after {time.time() - start_time:.2f}.")
         except Exception as ex:
             print('Error AwaitEvaluation:', ex)
-            sys.exit(1)
+            #sys.exit(1)
 
         try:
             legalMoves = self.pimc.LegalMoves
@@ -409,7 +411,7 @@ class BGADefDLL:
 
         except Exception as ex:
             print('Error legalMoves:', ex)
-            sys.exit(1)
+            #sys.exit(1)
 
         if self.verbose:
             print(card_result)

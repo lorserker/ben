@@ -36,10 +36,12 @@ class BGADLL:
 
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
+            print('Error:', ex)
+            print("*****************************************************************************")
             print("Error: Unable to load BGADLL.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
             print("Make sure the dll is not write protected")
-            print('Error:', ex)
+            print("*****************************************************************************")
             sys.exit(1)
 
         self.max_playout = models.pimc_max_playout
@@ -257,7 +259,7 @@ class BGADLL:
             self.pimc.Clear()
         except Exception as ex:
             print('Error Clear:', ex)
-            sys.exit(1)
+            #sys.exit(1)
         if self.verbose:
             print("player_i", player_i)
             print(self.northhand.ToString(), self.southhand.ToString())
@@ -330,7 +332,7 @@ class BGADLL:
             print(Macros.Player.South if player_i == 3 else Macros.Player.North)
             print("East (RHO)",self.rho_constraints.ToString())
             print("West (LHO)",self.lho_constraints.ToString())
-            sys.exit(1) 
+            #sys.exit(1) 
 
         trump = self.find_trump(self.suit)
         if self.verbose:
@@ -347,7 +349,7 @@ class BGADLL:
             self.pimc.BeginEvaluate(trump)
         except Exception as ex:
             print('Error BeginEvaluate:', ex)
-            sys.exit(1)
+            #sys.exit(1)
 
         try:
             self.pimc.AwaitEvaluation(int(self.wait * 1000))
@@ -355,7 +357,7 @@ class BGADLL:
                 print(f"Threads are finished after {time.time() - start_time:.2f}.")
         except Exception as ex:
             print('Error AwaitEvaluation:', ex)
-            sys.exit(1)
+            #sys.exit(1)
         # Allow running threads to finalize
         time.sleep(0.1)
         if self.verbose:    
@@ -405,7 +407,7 @@ class BGADLL:
 
         except Exception as ex:
             print('Error legalMoves:', ex)
-            sys.exit(1)
+            #sys.exit(1)
 
         if self.verbose:
             print(card_result)
