@@ -1,3 +1,4 @@
+import sys
 import time
 
 import numpy as np
@@ -255,17 +256,19 @@ class Sample:
         if self.verbose:
             print("sample_cards_auction, nsteps=", n_steps)
             print("NS: ", models.ns, "EW: ", models.ew, "Auction: ", auction)
+            print("hand", hand_str)
             print("nesw_i", nesw_i)
             print("bids in model", bids)
-
-        turn = len(auction) % 4
 
         c_hcp, c_shp = self.get_bidding_info(n_steps, auction, nesw_i, hand, vuln, models)        
 
         n_steps = binary.calculate_step_bidding(auction, models)
+
+        # The hand used as input is our hand, but it will be overwritten with the sampled hand for that player
         A_lho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 1) % 4, hand, vuln, models)
         A_pard = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 2) % 4, hand, vuln, models)
         A_rho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 3) % 4, hand, vuln, models)
+        #print("RHO: ", n_steps, auction, (nesw_i + 3) % 4, hand, vuln, models)
             
         lho_pard_rho = self.sample_cards_vec(n_samples, c_hcp[0], c_shp[0], hand.reshape(32), rng)
 
@@ -537,23 +540,41 @@ class Sample:
             print("auction", auction)
             print("nesw_i", nesw_i)
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, sample_hands, vuln, models)
+        #print("???: ", n_steps, auction, nesw_i, sample_hands, vuln, models)
+
         X = np.zeros((sample_hands.shape[0], n_steps, A.shape[-1]))
         X[:, :, :] = A
+
+        # if (models.model_version == 0 or models.ns == -1):
+        #     index = 0
+        # else:
+        #     index = 2
+
+        # X[:,:,:2+index] = A[nesw_i,0,:2]
+        # X[:,:,7+index:39+index] = sample_hands.reshape((-1, 1, 32))
+        # X[:,:,39+index:] = A[nesw_i,:,39:]
+        # X[:,:,2+index] = (binary.get_hcp(sample_hands).reshape((-1, 1)) - 10) / 4
+        # X[:,:,3+index:7+index] = (binary.get_shape(sample_hands).reshape((-1, 1, 4)) - 3.25) / 1.75
 
         actual_bids = bidding.get_bid_ids(auction, nesw_i, n_steps)
         sample_bids = models.bidder_model.model_seq(X)
         sample_bids = sample_bids.reshape((sample_hands.shape[0], n_steps, -1))
+
         min_scores = np.ones(sample_hands.shape[0])
 
         # We check the bid for each bidding round
-        sum = 0
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
+                # for j in range(sample_hands.shape[0]):
+                #     if sample_bids[j, i, actual_bids[i]] > 0.1:
+                #         print(bidding.ID2BID[actual_bids[i]], j, hand_to_str(sample_hands[j]), sample_bids[j, i, actual_bids[i]])
                 #print(bidding.ID2BID[actual_bids[i]], min_scores)
                 #min_scores = min_scores + i * sample_bids[:, i, actual_bids[i]]
                 #sum += i
-
+        # for j in range(sample_hands.shape[0]):
+        #     if min_scores[j] > 0.1:
+        #         print(min_scores[j], j, hand_to_str(sample_hands[j]))
         return min_scores
 
     def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, vuln, models, rng):
@@ -561,7 +582,7 @@ class Sample:
         n_samples = self.sample_hands_play
         contract = bidding.get_contract(auction)
         if self.verbose:
-            print(f"Called init_rollout_states {n_samples} - Contract {contract}")
+            print(f"Called init_rollout_states {n_samples} - Contract {contract} - Player {player_i}")
 
 
         leader_i = (player_i - len(current_trick)) % 4
@@ -716,19 +737,30 @@ class Sample:
             #if (player_i + 2) % 4 == h_i:
             h_i_nesw = player_to_nesw_i(h_i, contract)
             bid_scores = self.get_bid_scores(h_i_nesw, dealer, auction, vuln, states[h_i][:, 0, :32], models)
+            # print("bid_scores", h_i, bid_scores)
+            # for i in range(bid_scores.shape[0]):
+            #     if bid_scores[i] > 0.1:
+            #         sample = '%s %s %s %s' % (
+            #             hand_to_str(states[0][i, 0, :32].astype(int)),
+            #             hand_to_str(states[1][i, 0, :32].astype(int)),
+            #             hand_to_str(states[2][i, 0, :32].astype(int)),
+            #             hand_to_str(states[3][i, 0, :32].astype(int)),
+            #         )
+            #         print(i, sample, bid_scores[i])
             min_bid_scores = np.minimum(min_bid_scores, bid_scores)
         
     
         # if trick_i == 7:
         # print("min_bid_scores", min_bid_scores)
-        # for i in range(10):
-        #     sample = '%s %s %s %s' % (
-        #         hand_to_str(states[0][i, 0, :32].astype(int)),
-        #         hand_to_str(states[1][i, 0, :32].astype(int)),
-        #         hand_to_str(states[2][i, 0, :32].astype(int)),
-        #         hand_to_str(states[3][i, 0, :32].astype(int)),
-        #     )
-        #     print(sample, min_bid_scores[i])
+        # for i in range(min_bid_scores.shape[0]):
+        #      if min_bid_scores[i] > 0.1:
+        #         sample = '%s %s %s %s' % (
+        #             hand_to_str(states[0][i, 0, :32].astype(int)),
+        #             hand_to_str(states[1][i, 0, :32].astype(int)),
+        #             hand_to_str(states[2][i, 0, :32].astype(int)),
+        #             hand_to_str(states[3][i, 0, :32].astype(int)),
+        #         )
+        #         print(sample, min_bid_scores[i])
 
         # Perhaps this should be calculated more statistical, as we are just taking the bid with the highest score
         # This need to be updated to euclidian distance or logarithmic
@@ -765,7 +797,7 @@ class Sample:
                 if valid_bidding_samples < self.min_sample_hands_play: 
                     good_quality = False
                     if np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold) == 0:
-                        print(" We just take top three as we really have no idea about what the bidding means")
+                        sys.stderr.write(" We just take top three as we really have no idea about what the bidding means\n")
                         # We just take top three as we really have no idea about what the bidding means
                         bidding_states = [state[:3] for state in bidding_states]
                     else:
@@ -912,6 +944,7 @@ class Sample:
             if self.verbose:
                 print("n_tricks_pred", n_tricks_pred)
                 print(states[p_i][0, :n_tricks_pred, :])
+                
             # Depending on suit or NT we must select the right model
             # 0-3 is for NT 4-7 is for suit
             # When the player is instantiated the right model is selected, but here we get it from the configuration

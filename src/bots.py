@@ -1,3 +1,4 @@
+import math
 import time
 import pprint
 import sys
@@ -777,14 +778,27 @@ class BotLead:
 
         if self.verbose:
             print("Generated samples:", accepted_samples.shape[0], " OK Quality", good_quality)
-            print(f'Now simulate on {self.sample.sample_hands_opening_lead} deals to find opening lead')
+            print(f'Now simulate on {min(accepted_samples.shape[0], self.sample.sample_hands_opening_lead)} deals to find opening lead')
                 
-        # We have more samples, then we want to calculate on
-        # They are sorted according to the bidding trust, but above our threshold, so we pick random
+
+        # We have more samples than we want to calculate on
+        # They are sorted according to the bidding trust, but above our threshold, so we pick based on scores
         if accepted_samples.shape[0] > self.sample.sample_hands_opening_lead:
-            random_indices = self.get_random_generator().permutation(accepted_samples.shape[0])
-            accepted_samples = accepted_samples[random_indices[:self.sample.sample_hands_opening_lead], :, :]
-            sorted_scores = sorted_scores[random_indices[:self.sample.sample_hands_opening_lead]]
+            # Normalize the scores to create a probability distribution
+            scores = sorted_scores[:accepted_samples.shape[0]]
+            probabilities = np.array(scores) / np.sum(scores)
+            
+            # Select indices based on the probability distribution
+            selected_indices = self.get_random_generator().choice(
+                accepted_samples.shape[0], 
+                size=self.sample.sample_hands_opening_lead, 
+                replace=False, 
+                p=probabilities
+            )
+            
+            accepted_samples = accepted_samples[selected_indices, :, :]
+            sorted_scores = sorted_scores[selected_indices]
+    
 
         # For finding the opening lead we should use the opening lead as input
         if self.models.double_dummy:
@@ -917,24 +931,28 @@ class CardPlayer:
         self.n_tricks_taken = 0
         self.verbose = verbose
         self.level = int(contract[0])
-        self.sample_hands_for_review = models.sample_hands_for_review
         self.init_x_play(binary.parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
-        self.bid_accept_play_threshold = sampler.bid_accept_play_threshold
-        self.score_by_tricks_taken = [scoring.score(self.contract, self.is_decl_vuln, n_tricks) for n_tricks in range(14)]
-        from ddsolver import ddsolver
-        self.dd = ddsolver.DDSolver()
-        if (player_i == 1):
-            self.hash_integer  = calculate_seed(public_hand_str)         
-            if self.verbose:
-                print(f"Setting seed {player_i} (Sampling bidding info) from {public_hand_str}: {self.hash_integer}")
-        else:
-            self.hash_integer  = calculate_seed(hand_str)         
-            if self.verbose:
-                print(f"Setting seed {player_i} (Sampling bidding info) from {hand_str}: {self.hash_integer}")
-        self.pimc = pimc
-        # False until it kicks in
-        self.pimc_declaring = False
-        self.pimc_defending = False
+        # If we don't get a hand, the class is just used for recording
+        if hand_str != "...":
+            self.sample_hands_for_review = models.sample_hands_for_review
+            self.bid_accept_play_threshold = sampler.bid_accept_play_threshold
+            self.score_by_tricks_taken = [scoring.score(self.contract, self.is_decl_vuln, n_tricks) for n_tricks in range(14)]
+            from ddsolver import ddsolver
+            self.dd = ddsolver.DDSolver()
+            if (player_i == 1):
+                self.hash_integer  = calculate_seed(public_hand_str)         
+                if self.verbose:
+                    print(f"Setting seed {player_i} (Sampling bidding info) from {public_hand_str}: {self.hash_integer}")
+            else:
+                self.hash_integer  = calculate_seed(hand_str)         
+                if self.verbose:
+                    print(f"Setting seed {player_i} (Sampling bidding info) from {hand_str}: {self.hash_integer}")
+            self.pimc = pimc
+            # False until it kicks in
+            self.pimc_declaring = False
+            self.pimc_defending = False
+        else: 
+            self.pimc = None
     
     def get_random_generator(self):
         return np.random.default_rng(self.hash_integer)

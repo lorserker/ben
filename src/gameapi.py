@@ -2,6 +2,7 @@ import traceback
 from gevent import monkey
 monkey.patch_all()
 from gevent.pywsgi import WSGIServer
+import datetime 
 
 from bots import BotBid, BotLead, CardPlayer
 from bidding import bidding
@@ -273,12 +274,15 @@ parser.add_argument("--host", default="localhost", help="Hostname for appserver"
 parser.add_argument("--config", default=f"{base_path}/config/default_api.conf", help="Filename for configuration")
 parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=8085, help="Port for appserver")
+parser.add_argument("--record", type=bool, default=True, help="Recording of responses")
 
 args = parser.parse_args()
 
 configfile = args.config
 verbose = args.verbose
 port = args.port
+record = args.record
+
 np.set_printoptions(precision=2, suppress=True, linewidth=240)
 
 configuration = conf.load(configfile)
@@ -313,6 +317,11 @@ def home():
 @app.route('/bid')
 def bid():
     try:
+        if request.args.get("dealno"):
+            dealno = request.args.get("dealno")
+            dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
+        else:
+            dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
         if request.args.get("tournament"):
             matchpoint = request.args.get("tournament").lower() == "mp"
             models.matchpoint = matchpoint
@@ -343,8 +352,9 @@ def bid():
         hint_bot = BotBid(vuln, hand, models, sampler, position, dealer_i, verbose)
         bid = hint_bot.bid(auction)
         print("Bidding: ",bid.bid)
-        with shelve.open(f"{base_path}/gameapibiddb") as db:
-                db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
+        if record: 
+            with shelve.open(f"{base_path}/gameapibiddb{dealno}") as db:
+                    db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
         return json.dumps(bid.to_dict())
     except Exception as e:
         print(e)
@@ -363,6 +373,11 @@ def bid():
 @app.route('/lead')
 def lead():
     try:
+        if request.args.get("dealno"):
+            dealno = request.args.get("dealno")
+            dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
+        else:
+            dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
         if request.args.get("tournament"):
             matchpoint = request.args.get("tournament").lower() == "mp"
             models.matchpoint = matchpoint
@@ -388,8 +403,9 @@ def lead():
         #card_resp.who = user
         print("Leading:", card_resp.card.symbol())
         result = card_resp.to_dict()
-        with shelve.open(f"{base_path}/gameapiplaydb") as db:
-                db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "lead":result}
+        if record: 
+            with shelve.open(f"{base_path}/gameapiplaydb{dealno}") as db:
+                    db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "lead":result}
         return json.dumps(result)
     except Exception as e:
         print(e)
@@ -407,8 +423,13 @@ def lead():
 
 
 @app.route('/play')
-async def frontend():
+def play():
     try:
+        if request.args.get("dealno"):
+            dealno = request.args.get("dealno")
+            dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
+        else:
+            dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
         if request.args.get("tournament"):
             matchpoint = request.args.get("tournament").lower() == "mp"
             models.matchpoint = matchpoint
@@ -473,8 +494,9 @@ async def frontend():
         card_resp =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
-        with shelve.open(f"{base_path}/gameapiplaydb") as db:
-                db[uuid.uuid4().hex] =  {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
+        if record: 
+            with shelve.open(f"{base_path}/gameapiplaydb{dealno}") as db:
+                    db[uuid.uuid4().hex] =  {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
         return json.dumps(result)
     except Exception as e:
         print(e)
