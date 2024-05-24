@@ -48,6 +48,7 @@ for _ in range(n_layers):
     )
     cells.append(cell)
 
+
 x_in = tf.placeholder(tf.float32, [1, n_ftrs], name='x_in')
     
 lstm_cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell(cells)
@@ -62,7 +63,7 @@ out_rnn, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 out_card_logit = tf.matmul(tf.reshape(out_rnn, [-1, lstm_size]), softmax_w, name='out_card_logit')
 out_card_target = tf.reshape(seq_out, [-1, n_cards], name='out_card_target')
 
-output, _ = lstm_cell(x_in, seq_in, dtype=tf.float32)
+output, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 
 out_card = tf.nn.softmax(tf.matmul(output, softmax_w), name='out_card')
 

@@ -48,13 +48,6 @@ for _ in range(n_layers):
     )
     cells.append(cell)
 
-state = []
-for i, cell_i in enumerate(cells):
-    s_c = tf.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
-    s_h = tf.placeholder(tf.float32, [1, lstm_size], name='state_h_{}'.format(i))
-    state.append(tf.compat.v1.nn.rnn_cell.LSTMStateTuple(c=s_c, h=s_h))
-state = tuple(state)
-
 x_in = tf.placeholder(tf.float32, [1, n_ftrs], name='x_in')
     
 lstm_cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell(cells)
