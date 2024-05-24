@@ -19,8 +19,9 @@ def binary_data(deal_str, outcome_str, play_str):
     me_i = (declarer_i + 1) % 4
 
     dummy_bin = binary_hand(hands[dummy_i])
+    #print(hands[dummy_i])
     me_bin = binary_hand(hands[me_i])
-    
+    #print(hands[me_i])
     _, on_leads, last_tricks, cards_ins, card_outs = get_play_labels(play_str, d_meta.strain, 0)
     
     dummy_played_cards = set(['>>'])
@@ -47,8 +48,8 @@ def binary_data(deal_str, outcome_str, play_str):
             dummy_bin[get_card_index(cards_in[0])] -= 1
             dummy_played_cards.add(cards_in[0])
         
-        x[0, i, 32:64] = dummy_bin
         x[0, i, 0:32] = me_bin
+        x[0, i, 32:64] = dummy_bin
         
         x[0, i, 64:96] = hot_encode_card(last_trick[0])
         x[0, i, 96:128] = hot_encode_card(last_trick[1])

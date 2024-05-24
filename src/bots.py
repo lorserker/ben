@@ -105,6 +105,10 @@ class BotBid:
                 if self.verbose:
                     print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.3f} Samples: {len(hands_np)}")
                 auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np)
+
+                # This can be optimized as we currently use 3 different models to estimate the number of tricks, but only use one
+                # One idea is to use the models depending on the level of the contract, as Double ummy seems more correct on 
+                # high level contracts
                 if self.models.lead_included:
                     contracts, decl_tricks_softmax = self.expected_tricks_sd(hands_np, auctions_np)
                     for idx, (auction2, (contract, trick)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax))):

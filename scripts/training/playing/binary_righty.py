@@ -143,8 +143,8 @@ def binary_data(deal_str, outcome_str, play_str):
             dummy_bin[get_card_index(cards_in[2])] -= 1
             dummy_played_cards.add(cards_in[2])
         
-        x[0, i, 32:64] = dummy_bin
         x[0, i, 0:32] = me_bin
+        x[0, i, 32:64] = dummy_bin
         
         x[0, i, 64:96] = hot_encode_card(last_trick[0])
         x[0, i, 96:128] = hot_encode_card(last_trick[1])
