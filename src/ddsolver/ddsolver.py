@@ -21,6 +21,51 @@ class DDSolver:
         self.bo = dds.boardsPBN()
         self.solved = dds.solvedBoards()
 
+    def calculatepar(self, hand, vuln):
+        tableDealPBN = dds.ddTableDealPBN()
+        table = dds.ddTableResults()
+        myTable = ctypes.pointer(table)
+
+        line = ctypes.create_string_buffer(80)
+
+        dds.SetMaxThreads(0)
+
+        # Need dealer
+        tableDealPBN.cards = ("N:"+hand).encode('utf-8')
+
+        res = dds.CalcDDtablePBN(tableDealPBN, myTable)
+
+        if res != 1:
+            error_message = dds.get_error_message(res)
+            print(f"Error Code: {res}, Error Message: {error_message}")
+            print(hand.encode('utf-8'))
+            return None
+
+        pres = dds.parResults()
+
+        v = 0
+        if vuln[0]: v = 1
+        if vuln[1]: v = 2
+        if vuln[0] and vuln[1]: v = 3
+        res = dds.Par(myTable, pres, v)
+
+        if res != 1:
+            error_message = dds.get_error_message(res)
+            print(f"Error Code: {res}, Error Message: {error_message}")
+            print(hand.encode('utf-8'))
+            return None
+
+        par = ctypes.pointer(pres)
+
+        print("NS score: {}".format(par.contents.parScore[0].value.decode('utf-8')))
+        print("EW score: {}".format(par.contents.parScore[1].value.decode('utf-8')))
+        #print("NS list : {}".format(par.contents.parContractsString[0].value.decode('utf-8')))
+        #print("EW list : {}\n".format(par.contents.parContractsString[1].value.decode('utf-8')))
+        par = par.contents.parScore[0].value.decode('utf-8')
+        ns_score = par.split()[1]
+        return int(ns_score)
+    
+        
     # Solutions
     #1	Find the maximum number of tricks for the side to play.  Return only one of the optimum cards and its score.
     #2	Find the maximum number of tricks for the side to play.  Return all optimum cards and their scores.

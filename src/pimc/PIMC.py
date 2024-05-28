@@ -371,8 +371,6 @@ class BGADLL:
                 output = self.pimc.Output[card]
                 count = float(len(output))
                 # If we found no playout we need to reevaluate without constraints
-                if self.verbose:
-                    print(card, output, count)
                 if count == 0:
                     print(card)
                     print(self.pimc.LegalMovesToString)

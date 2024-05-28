@@ -2,7 +2,7 @@ import os
 import sys
 import asyncio
 import logging
-
+import compare
 import scoring
 
 # Set logging level to suppress warnings
@@ -122,6 +122,7 @@ class Driver:
             self.vuln_ew = self.deal_data.vuln_ew
         self.trick_winners = []
         self.tricks_taken = 0
+        self.parscore = 0
 
         # Now you can use hash_integer as a seed
         hash_integer = calculate_seed(deal_str)
@@ -272,6 +273,7 @@ class Driver:
             else:
                 pbn_str += f'[Score "EW {scoring.score(self.contract, self.vuln_ew, self.tricks_taken)}"]\n'
 
+        pbn_str += f'[ParScore "{self.parscore}"]\n'
         pbn_str += f'[Auction "{dealer}"]\n'
         for i, b in enumerate(self.bid_responses, start=1):
             pbn_str += (b.bid)
@@ -810,6 +812,7 @@ async def main():
     parser.add_argument("--playonly", type=bool, default=False, help="Just play, no bidding")
     parser.add_argument("--biddingonly", type=bool, default=False, help="Just bidding, no play")
     parser.add_argument("--outputpbn", default="", help="Save each board to this PBN file")
+    parser.add_argument("--paronly", default=0, type=int, help="only record deals with this IMP difference from par")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
     parser.add_argument("--seed", type=int, help="Seed for random")
 
@@ -822,6 +825,7 @@ async def main():
     biddingonly = args.biddingonly
     seed = args.seed
     outputpbn = args.outputpbn
+    paronly = args.paronly
     boards = []
 
     if args.boards:
@@ -899,17 +903,34 @@ async def main():
         t_start = time.time()
         await driver.run()
 
+
+        from ddsolver import ddsolver
+        
+        par_score = ddsolver.DDSolver().calculatepar(driver.deal_str, [driver.vuln_ns, driver.vuln_ew])
+        score = 0
+        imps = 0
+        if driver.contract != None:
+            if (driver.contract[-1] == "N" or driver.contract[-1] =="S"):
+                score = scoring.score(driver.contract, driver.vuln_ns, driver.tricks_taken)
+            if (driver.contract[-1] == "E" or driver.contract[-1] =="W"):
+                score = -scoring.score(driver.contract, driver.vuln_ew, driver.tricks_taken)
+
+            imps = abs(compare.get_imps(score, par_score))
+            print("Score: " + driver.contract + " " + str(score) + " Par: " + str(par_score) + " " + str(imps))
+        driver.parscore = par_score
+        print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+
         if not biddingonly:
-            with shelve.open(f"{base_path}/gamedb") as db:
-                deal = driver.to_dict()
-                print(f"Saving Board: {driver.hands} in {base_path}/gamedb")
-                db[uuid.uuid4().hex] = deal
+            if paronly <= imps:
+                with shelve.open(f"{base_path}/gamedb") as db:
+                    deal = driver.to_dict()
+                    print(f"Saving Board: {driver.hands} in {base_path}/gamedb")
+                    db[uuid.uuid4().hex] = deal
 
         if outputpbn != "":
-            with open(outputpbn, "a") as file:
-                file.write(driver.asPBN())
-
-        print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+            if paronly <= imps:
+                with open(outputpbn, "a") as file:
+                    file.write(driver.asPBN())
 
         if not auto:
             user_input = input("\n Q to quit or any other key for next deal ")

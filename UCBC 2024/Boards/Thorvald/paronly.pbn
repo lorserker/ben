@@ -1,0 +1,5013 @@
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:K6532.98543.5.K9 A98.AQ62.T8.AQJT T74.T.KQJ432.864 QJ.KJ7.A976.7532"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "5C"]
+[Result "12"]
+[Score "EW 420"]
+[Auction "E"]
+1N PASS 2S PASS
+4C PASS 5C PASS
+PASS PASS 
+[Play "S"]
+HT HJ H3 H2 
+C4 C2 C9 CQ 
+DJ DA D5 DT 
+C8 C3 CK CA 
+C6 C5 S5 CJ 
+D2 H7 H4 HA 
+DQ D6 S2 D8 
+S7 SQ SK SA 
+D3 HK H9 H6 
+D4 D7 S3 CT 
+S4 D9 H8 HQ 
+ST SJ S6 S8 
+DK C7 H5 S9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "N:KJT983.J2.Q43.A3 A54.Q63.T8.QT842 Q7.AK4.AJ7652.K7 62.T9875.K9.J965"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "6S"]
+[Result "11"]
+[Score "NS -50"]
+[Auction "W"]
+PASS 1S PASS 2D
+PASS 2S PASS 3D
+PASS 3S PASS 4N
+PASS 5H PASS 6S
+PASS PASS PASS 
+[Play "E"]
+H6 HA H5 H2 
+C2 C7 C5 CA 
+C8 CK C6 C3 
+SA SQ S2 SK 
+S4 S7 S6 S8 
+S5 D2 H7 SJ 
+C4 D5 C9 S9 
+CT D6 HT ST 
+D8 H4 CJ S3 
+DT DA D9 D3 
+H3 D7 DK DQ 
+HQ HK H9 HJ 
+CQ DJ H8 D4 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:J9.AQ93.Q7432.J9 QT8654.4..AKT732 A32.J865.965.864 K7.KT72.AKJT8.Q5"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6S"]
+[Result "11"]
+[Score "EW -100"]
+[Auction "N"]
+PASS 2S PASS 2N
+PASS 3C PASS 4S
+PASS 6S PASS PASS
+PASS 
+[Play "S"]
+H5 HK HA H4 
+H6 H2 HQ S4 
+C4 C5 C9 CA 
+S2 SK S9 S5 
+D5 DA D2 C2 
+D9 DK D3 C3 
+SA S7 SJ SQ 
+C8 CQ CJ C7 
+H8 H7 H3 S6 
+S3 D8 D4 ST 
+D6 HT D7 S8 
+C6 DT H9 CK 
+HJ DJ DQ CT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:KQ94.T98.A4.AJT9 87.742.K975.KQ74 AT5.AKQJ6.J62.82 J632.53.QT83.653"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "6H"]
+[Result "13"]
+[Score "NS 1460"]
+[Auction "S"]
+1N PASS 2C PASS
+3C PASS 4N PASS
+5C PASS 5D PASS
+5N PASS 6H PASS
+PASS PASS 
+[Play "E"]
+CK C2 C5 CA 
+H2 HA H3 H8 
+H4 HK H5 H9 
+H7 H6 C3 HT 
+S8 SA S2 S4 
+D9 HQ S3 D4 
+S7 S5 S6 SK 
+C4 ST SJ SQ 
+D5 C8 D8 S9 
+C7 D2 C6 C9 
+CQ HJ D3 CJ 
+D7 D6 DT DA 
+DK DJ DQ CT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:5.KQ986.63.AKJ85 K9732.7.KJT87.Q9 J.AJT432.A9.T642 AQT864.5.Q542.73"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6H"]
+[Result "12"]
+[Score "NS 1430"]
+[Auction "W"]
+2S 3S PASS 4N
+PASS 5S X 6H
+PASS PASS PASS 
+[Play "W"]
+SA S5 S2 SJ 
+D4 D3 DK DA 
+H5 HK H7 H2 
+S4 H6 S3 H3 
+S6 H9 S7 H4 
+C3 H8 D7 HT 
+C7 CA C9 C2 
+D2 CK CQ C4 
+D5 C5 D8 CT 
+S8 CJ S9 C6 
+DQ C8 DJ D9 
+SQ D6 DT HJ 
+ST HQ SK HA 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:K7.A762.83.JT976 A986542.8.96.Q82 .QT543.AKT.AK543 QJT3.KJ9.QJ7542."]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "5H"]
+[Result "11"]
+[Score "NS 650"]
+[Auction "W"]
+1D PASS 1S 2H
+2S 2N 3S 4H
+PASS PASS 4S 5H
+PASS PASS PASS 
+[Play "W"]
+SQ SK SA H3 
+H9 HA H8 H4 
+HJ H6 S4 HT 
+HK H2 S5 H5 
+SJ S7 S2 HQ 
+D4 C6 C2 CA 
+D2 D3 D6 DA 
+D5 D8 D9 DK 
+DJ H7 S9 DT 
+D7 CJ C8 C3 
+S3 C7 CQ CK 
+ST CT S8 C4 
+DQ C9 S6 C5 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:J9.Q9832.K765.K7 QT743..A93.T9432 K862.K7654.QJ4.6 A5.AJT.T82.AQJ85"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "5C"]
+[Result "11"]
+[Score "EW 600"]
+[Auction "N"]
+PASS PASS PASS 1N
+PASS 2H X XX
+PASS 2N PASS 3C
+3H 5C PASS PASS
+PASS 
+[Play "N"]
+H2 D3 HK HA 
+HQ C2 H4 HJ 
+CK C3 C6 CQ 
+D6 DA D4 D2 
+C7 C4 H5 CA 
+H3 D9 H6 HT 
+S9 S3 S2 SA 
+SJ SQ SK S5 
+D5 C9 DQ D8 
+D7 S4 S6 C5 
+DK CT DJ DT 
+H9 S7 S8 CJ 
+H8 ST H7 C8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:T6.75.AJT8642.T9 42.AQJ964.K3.KQ4 KQ97.T83.95.AJ83 AJ853.K2.Q7.7652"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "4H"]
+[Result "10"]
+[Score "EW 620"]
+[Auction "W"]
+PASS 3D 3H PASS
+3S PASS 4H PASS
+PASS PASS 
+[Play "S"]
+D9 D7 DA DK 
+CA C5 CT CK 
+D5 DQ DJ D3 
+H3 HK H5 H4 
+H8 H2 H7 HA 
+HT S3 DT HQ 
+S9 S5 C9 HJ 
+C3 S8 D2 H9 
+CJ C2 S6 CQ 
+C8 C6 D8 C4 
+SK SA ST S2 
+S7 C7 D4 S4 
+SQ SJ D6 H6 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "N:AKQ54.QJ8.AT.AKT 83.T976.J952.Q96 T97.A542.K874.83 J62.K3.Q63.J7542"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4S"]
+[Result "12"]
+[Score "NS 480"]
+[Auction "W"]
+PASS 2C PASS 2N
+PASS 3S PASS 4S
+PASS PASS PASS 
+[Play "E"]
+HT H4 HK H8 
+H6 H2 H3 HJ 
+S8 S7 S2 SA 
+C6 C3 C4 CA 
+D2 D4 D3 DA 
+C9 C8 C2 CK 
+S3 S9 S6 SK 
+CQ ST SJ SQ 
+D5 D7 C5 S4 
+D9 D8 C7 S5 
+H9 H5 CJ HQ 
+DJ DK D6 DT 
+H7 HA DQ CT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:98.J96.KT92.A862 QJ54.73.AQJ74.K3 K762.T52.5.QT974 AT3.AKQ84.863.J5"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "5D"]
+[Result "11"]
+[Score "EW 600"]
+[Auction "W"]
+1H PASS 2D PASS
+2N PASS 3S PASS
+5D PASS PASS PASS
+[Play "S"]
+CT C5 CA C3 
+C4 CJ C2 CK 
+H2 HA H6 H3 
+D5 D3 D2 DJ 
+H5 HK H9 H7 
+S6 D6 D9 DA 
+S2 ST S9 S4 
+HT D8 DK D4 
+C7 H4 C6 D7 
+S7 S3 DT DQ 
+SK SA S8 S5 
+C9 HQ HJ SJ 
+CQ H8 C8 SQ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:K952.KT.AJ763.52 A763.AQ62.Q2.AJ4 QJ.874.T4.Q98763 T84.J953.K985.KT"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "1N"]
+[Result "9"]
+[Score "EW 150"]
+[Auction "E"]
+1N PASS PASS PASS
+[Play "S"]
+C7 CT C2 C4 
+H4 H3 HT HQ 
+D4 D5 DA DQ 
+SJ S4 S2 S3 
+C3 CK C5 CJ 
+H8 HJ HK HA 
+SQ S8 S5 SA 
+H7 H9 D3 H2 
+C6 ST SK S6 
+DT D8 S9 S7 
+CQ DK D6 D2 
+C8 H5 D7 H6 
+C9 D9 DJ CA 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:Q7642.KQ9.AT54.Q JT53.T62.93.J943 A.AJ8.KQJ872.K86 K98.7543.6.AT752"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6D"]
+[Result "12"]
+[Score "NS 1370"]
+[Auction "S"]
+1D PASS 1S PASS
+3D PASS 4N PASS
+5C PASS 6D PASS
+PASS PASS 
+[Play "W"]
+CA CQ C3 C6 
+H7 H9 HT HJ 
+D6 DA D3 D2 
+C5 D4 D9 DK 
+C2 D5 C9 C8 
+H3 DT S3 D7 
+S9 S2 ST SA 
+H4 HK H2 H8 
+S8 S4 S5 DJ 
+H5 S6 H6 DQ 
+CT S7 C4 CK 
+C7 SQ CJ D8 
+SK HQ SJ HA 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:T42.7432.KQ954.2 AQ86.AJT.62.J765 KJ9753.K96.3.KT4 .Q85.AJT87.AQ983"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6C"]
+[Result "10"]
+[Score "EW -200"]
+[Auction "N"]
+PASS 1C 2S 4N
+PASS 5H PASS 6C
+PASS PASS PASS 
+[Play "S"]
+D3 DA D4 D2 
+HK H5 H2 HJ 
+H6 H8 H3 HT 
+S3 HQ S2 SA 
+H9 D7 H4 HA 
+CT CQ C2 C5 
+C4 CA D5 C6 
+S5 D8 D9 D6 
+S7 DT DK C7 
+S9 C3 S4 S6 
+CK DJ DQ CJ 
+SJ C8 ST SQ 
+SK C9 H7 S8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:J4.T853.T542.873 K2.AJ7.A83.KQJ64 853.KQ94.Q7.AT52 AQT976.62.KJ96.9"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "6SX"]
+[Result "12"]
+[Score "EW 1660"]
+[Auction "E"]
+1C PASS 1S PASS
+2N PASS 6S PASS
+PASS X PASS PASS
+PASS 
+[Play "N"]
+D5 D3 DQ DK 
+S4 SK S3 S6 
+SJ S2 S8 SA 
+H3 H7 S5 SQ 
+C3 HJ H9 ST 
+C7 CK CA C9 
+H5 HA HK H2 
+C8 CQ C2 H6 
+D2 CJ C5 D6 
+D4 C4 CT S7 
+DT D8 H4 S9 
+HT DA D7 D9 
+H8 C6 HQ DJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:T85.852.T962.942 KQJ9.AJT63.AQ3.6 7642.KQ7.J85.K75 A3.94.K74.AQJT83"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "12"]
+[Score "EW 490"]
+[Auction "N"]
+PASS 1H PASS 2C
+PASS 2S PASS 3C
+PASS 3N PASS PASS
+PASS 
+[Play "S"]
+DJ D4 D2 DA 
+C5 CT C2 C6 
+S6 SA S5 S9 
+C7 CA C9 H3 
+CK CQ C4 H6 
+HK H4 H8 HA 
+S4 S3 S8 SK 
+S2 H9 ST SQ 
+S7 C3 D6 SJ 
+D8 D7 DT DQ 
+D5 DK D9 D3 
+H7 CJ H2 HT 
+HQ C8 H5 HJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:QT982.873.T97.52 AJ.AT5.J65.AKJ73 75.KQJ96.Q83.Q94 K643.42.AK42.T86"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "8"]
+[Score "EW -100"]
+[Auction "S"]
+PASS PASS PASS 1C
+1H X 2H PASS
+PASS X PASS 3N
+PASS PASS PASS 
+[Play "S"]
+HK H2 H3 H5 
+HQ H4 H8 HA 
+D3 DA D7 D5 
+S5 S3 SQ SA 
+S7 S4 S2 SJ 
+C4 C6 C2 CA 
+D8 DK DT D6 
+H6 SK S8 C3 
+CQ CT C5 C7 
+DQ D2 D9 DJ 
+HJ S6 H7 HT 
+H9 D4 ST CJ 
+C9 C8 S9 CK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:AKQ8.654.AK.KJT3 J65.K9.QJ6432.Q6 T9.AJT72.T5.A852 7432.Q83.987.974"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4H"]
+[Result "12"]
+[Score "NS 480"]
+[Auction "S"]
+PASS PASS 2N PASS
+3D PASS 3H PASS
+3N PASS 4H PASS
+PASS PASS 
+[Play "E"]
+DQ D5 D7 DA 
+H9 HJ HQ H4 
+S5 S9 S7 SA 
+HK HA H3 H5 
+D2 HT H8 H6 
+D3 H2 S2 DK 
+D4 H7 S3 C3 
+S6 ST S4 SK 
+SJ C2 C4 SQ 
+D6 DT D9 S8 
+CQ CA C9 CJ 
+C6 C5 C7 CK 
+DJ C8 D8 CT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:.84.KQT9832.T764 7542.J52.4.A8532 A986.AQ93.A65.Q9 KQJT3.KT76.J7.KJ"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "5DX"]
+[Result "11"]
+[Score "NS 750"]
+[Auction "W"]
+1S 3D 3S 5D
+X PASS PASS PASS
+[Play "E"]
+S7 SA S3 H4 
+S2 S6 ST D2 
+H2 HA H6 H8 
+H5 H3 HK D8 
+C2 CQ CK C4 
+CA C9 CJ C6 
+C8 DA H7 C7 
+D4 D5 D7 DK 
+C3 D6 DJ DQ 
+C5 S8 HT CT 
+S4 H9 SJ DT 
+S5 S9 SK D9 
+HJ HQ SQ D3 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:K864.762.AQ2.QJ5 Q.AKJ9854.K863.K AJT5.Q3.J94.AT76 9732.T.T75.98432"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4S"]
+[Result "9"]
+[Score "NS -100"]
+[Auction "N"]
+1C 1H X PASS
+2S 3H 4S PASS
+PASS PASS 
+[Play "E"]
+HK H3 HT H6 
+HA HQ D5 H2 
+HJ ST D7 H7 
+DK D4 DT DQ 
+D3 DJ S2 D2 
+CK CA C4 CQ 
+SQ SA S3 S4 
+H4 S5 S9 SK 
+H5 SJ S7 S6 
+D6 D9 C2 DA 
+H8 C6 C9 CJ 
+H9 CT C8 C5 
+D8 C7 C3 S8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQ2.98.QT92.9832 8.KQJT764.4.AK65 AJT95.32.J8765.T 7643.A5.AK3.QJ74"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "4H"]
+[Result "13"]
+[Score "EW 510"]
+[Auction "N"]
+PASS 1H PASS 2C
+PASS 4H PASS PASS
+PASS 
+[Play "S"]
+CT C4 C2 CA 
+H2 HA H9 H6 
+H3 H5 H8 HK 
+D5 DA DT D4 
+D6 DK D2 S8 
+D8 D3 DQ H4 
+S5 CQ C3 C5 
+SJ S3 SQ HT 
+D7 CJ C9 C6 
+ST S4 S2 HJ 
+DJ S6 C8 HQ 
+S9 C7 D9 CK 
+SA S7 SK H7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:AJ7542.6.KT96.53 9.JT7.QJ8754.A82 QT8.AK9543..KQT9 K63.Q82.A32.J764"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4S"]
+[Result "10"]
+[Score "NS 420"]
+[Auction "W"]
+PASS 2S PASS 2N
+PASS 3D PASS 4S
+PASS PASS PASS 
+[Play "E"]
+DQ S8 D2 D6 
+CA CK C6 C3 
+D4 ST D3 D9 
+C8 CQ C4 C5 
+C2 CT CJ S2 
+H7 HA H2 H6 
+HJ HK H8 DT 
+S9 C9 C7 DK 
+HT H9 HQ S4 
+DJ SQ S3 SA 
+D5 H3 S6 S7 
+D7 H4 SK S5 
+D8 H5 DA SJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AKQJ83.K42..JT82 T94.765.A943.K93 76.QT3.KQ65.A754 52.AJ98.JT872.Q6"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "5S"]
+[Result "9"]
+[Score "NS -200"]
+[Auction "N"]
+1S PASS 1N PASS
+2S PASS 4S PASS
+5D PASS 5S PASS
+PASS PASS 
+[Play "E"]
+ST S6 S2 SJ 
+S4 S7 S5 SA 
+S9 D5 D2 SK 
+D3 D6 H9 SQ 
+H5 H3 H8 HK 
+H6 HQ HA H2 
+H7 HT HJ H4 
+DA DQ D8 C2 
+D9 DK DJ C8 
+C3 CA C6 CT 
+C9 C4 CQ CJ 
+D4 C5 DT S3 
+CK C7 D7 S8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:QJ6.J65.K932.652 A53.T98432.J64.9 984.AKQ7.85.J874 KT72..AQT7.AKQT3"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "4H"]
+[Result "8"]
+[Score "EW -200"]
+[Auction "W"]
+1C PASS 1H PASS
+2S PASS 3H PASS
+4C PASS 4H PASS
+PASS PASS 
+[Play "S"]
+D8 DA D2 D4 
+C4 CA C5 C9 
+C7 CK C2 D6 
+C8 CQ C6 DJ 
+D5 DQ DK H2 
+S4 SK S6 S3 
+H7 DT D9 S5 
+CJ CT SQ H3 
+HQ S2 H5 HT 
+S9 S7 SJ SA 
+HA D7 H6 H4 
+S8 ST HJ H8 
+HK C3 D3 H9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:JT54.74.K76.KT43 Q962.AKJT6.AJ.97 K3.Q953.QT94.862 A87.82.8532.AQJ5"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "3N"]
+[Result "9"]
+[Score "EW 600"]
+[Auction "W"]
+PASS PASS 1H PASS
+2N PASS 3N PASS
+PASS PASS 
+[Play "N"]
+S4 S2 SK SA 
+H4 HA H3 H2 
+H7 HK H5 H8 
+S5 HJ HQ S7 
+DK DA D4 D2 
+C3 HT H9 C5 
+CK C7 C2 CQ 
+C4 C9 C8 CJ 
+CT S6 C6 CA 
+SJ SQ S3 S8 
+D6 H6 D9 D3 
+D7 DJ DQ D5 
+ST S9 DT D8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:53.KQ5.KJ954.J53 A9.J87642.762.T7 KT872.A9.AQ.AK64 QJ64.T3.T83.Q982"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "3N"]
+[Result "11"]
+[Score "NS 460"]
+[Auction "E"]
+PASS 1S PASS 1N
+PASS 3C PASS 3N
+PASS PASS PASS 
+[Play "E"]
+H6 HA H3 H5 
+D6 DA D8 D4 
+D2 DQ DT DK 
+D7 S2 D3 DJ 
+H2 S7 S4 D9 
+H4 C4 C9 D5 
+C7 CA C8 C3 
+HJ H9 HT HK 
+H7 S8 S6 HQ 
+SA ST SQ S3 
+H8 C6 C2 S5 
+CT CK CQ C5 
+S9 SK SJ CJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:KJT9.KT65.54.QT8 A2.972.AKQ987.53 Q7654.84.JT62.96 83.AQJ3.3.AKJ742"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "7"]
+[Score "EW -100"]
+[Auction "W"]
+1C PASS 1D PASS
+1H PASS 3N PASS
+PASS PASS 
+[Play "S"]
+S5 S8 SK SA 
+H8 HA H5 H2 
+C9 CA C8 C3 
+D2 D3 D4 DA 
+D6 S3 D5 DK 
+DJ H3 H6 DQ 
+C6 CK CT C5 
+H4 CJ CQ S2 
+S4 HJ HK H7 
+S6 C2 SJ D7 
+S7 C4 S9 H9 
+SQ C7 ST D8 
+DT HQ HT D9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:Q54.T7642.Q953.J JT97.KJ.T7.AQ862 862.9853.KJ62.43 AK3.AQ.A84.KT975"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "6N"]
+[Result "11"]
+[Score "EW -100"]
+[Auction "N"]
+PASS 1C PASS 2C
+PASS 3C PASS 4N
+PASS 5D PASS 5H
+PASS 5N PASS 6D
+PASS 6H PASS 6N
+PASS PASS PASS 
+[Play "N"]
+H4 HJ H3 HQ 
+CJ CA C3 C5 
+H6 C2 C4 CK 
+H2 C8 S2 C7 
+S4 SJ S6 SA 
+H7 C6 S8 CT 
+S5 S7 H9 SK 
+SQ S9 D2 S3 
+HT HK H8 HA 
+D9 CQ D6 C9 
+D3 ST H5 D4 
+D5 D7 DJ DA 
+DQ DT DK D8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:JT.AT8.6432.AJT5 4.K75432.QT8.986 AKQ653.Q.AK9.K42 9872.J96.J75.Q73"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6S"]
+[Result "11"]
+[Score "NS -50"]
+[Auction "W"]
+PASS PASS 2H X
+PASS 3C PASS 4S
+PASS 4N PASS 5C
+PASS 5D PASS 6C
+PASS 6S PASS PASS
+PASS 
+[Play "W"]
+S2 ST S4 S5 
+S7 SJ H2 S3 
+D5 D2 D8 DA 
+S9 D3 H3 SA 
+S8 D4 H4 SK 
+H6 D6 C6 SQ 
+D7 H8 DT DK 
+H9 HT C9 S6 
+HJ HA H5 HQ 
+C3 CJ C8 CK 
+C7 CA H7 C2 
+CQ CT HK C4 
+DJ C5 DQ D9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:Q95.KQT86.AKQ6.9 KT82.752.J852.A8 73.AJ943.T94.J53 AJ64..73.KQT7642"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4H"]
+[Result "11"]
+[Score "NS 450"]
+[Auction "E"]
+PASS PASS 3C 3H
+PASS 4H PASS PASS
+PASS 
+[Play "E"]
+CA C3 C6 C9 
+D5 DT D3 D6 
+H2 H3 C2 HK 
+H5 HJ C4 H6 
+C8 C5 CT H8 
+D2 D4 D7 DA 
+H7 H4 S4 HQ 
+D8 D9 S6 DK 
+DJ S3 CK DQ 
+S8 S7 SJ S5 
+S2 CJ CQ HT 
+ST H9 SA S9 
+SK HA C7 SQ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:AQ7.94.KJ72.9863 T832.Q5.AT93.AT2 54.T87632.654.K4 KJ96.AKJ.Q8.QJ75"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "4S"]
+[Result "9"]
+[Score "EW -100"]
+[Auction "W"]
+1N PASS 2C PASS
+2S PASS 4S PASS
+PASS PASS 
+[Play "N"]
+H4 HQ H6 HJ 
+SQ S2 S4 S9 
+H9 H5 H2 HA 
+DK DA D4 DQ 
+DJ D3 D5 D8 
+D2 D9 D6 C5 
+D7 DT S5 SJ 
+C9 C2 HT HK 
+C3 CT CK CQ 
+C8 S3 H3 S6 
+SA S8 C4 SK 
+C6 CA H8 C7 
+S7 ST H7 CJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:K863.K5.853.K754 Q.AQJT93.T96.AJT A94.842.K742.Q82 JT752.76.AQJ.963"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "2H"]
+[Result "11"]
+[Score "EW 200"]
+[Auction "W"]
+PASS PASS 1H PASS
+1S PASS 2H PASS
+PASS PASS 
+[Play "S"]
+C2 C6 CK CA 
+D2 DQ D3 D6 
+H2 H6 H5 H9 
+D4 DJ D8 DT 
+H8 H7 HK HA 
+H4 S2 S3 HQ 
+DK DA D5 D9 
+SA S5 S6 SQ 
+D7 S7 C4 HT 
+CQ C3 C5 CT 
+C8 C9 C7 CJ 
+S9 ST S8 HJ 
+S4 SJ SK H3 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:T7642.A6.J9872.T J3.K84.K3.AKQ632 Q.JT752.T54.J987 AK985.Q93.AQ6.54"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "6N"]
+[Result "10"]
+[Score "EW -100"]
+[Auction "E"]
+1C PASS 1S PASS
+3C PASS 4N PASS
+5S PASS 6N PASS
+PASS PASS 
+[Play "N"]
+HA H4 H2 H3 
+H6 H8 HT HQ 
+CT CA C7 C4 
+D2 CQ CJ C5 
+S6 CK C9 S5 
+D7 DK D4 D6 
+S4 SJ SQ SA 
+D9 D3 D5 DA 
+D8 C2 DT DQ 
+S2 HK H5 H9 
+S7 S3 HJ SK 
+ST C3 C8 S8 
+DJ C6 H7 S9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQT2.T65.K95.Q86 AJ65.Q83.A4.AKJ2 9.A42.QJ8762.T54 8743.KJ97.T3.973"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "3H"]
+[Result "8"]
+[Score "EW -50"]
+[Auction "N"]
+PASS 1C 2D PASS
+3D X PASS 3H
+PASS PASS PASS 
+[Play "N"]
+D5 DA D6 D3 
+C6 CA C4 C3 
+H5 H3 H2 HJ 
+C8 CJ C5 C7 
+DK D4 DJ DT 
+D9 H8 DQ C9 
+H6 HQ HA H7 
+HT S5 D8 H9 
+CQ CK CT S3 
+S2 SA S9 S4 
+ST C2 H4 HK 
+SK S6 D2 S7 
+SQ SJ D7 S8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:862.T74.K87.9873 AQT5.KJ962.A.AJ5 74.AQ53.Q94.QT62 KJ93.8.JT6532.K4"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "6S"]
+[Result "12"]
+[Score "EW 980"]
+[Auction "E"]
+1H PASS 1S PASS
+4D PASS 4H PASS
+4N PASS 5D PASS
+6S PASS PASS PASS
+[Play "N"]
+C3 C5 CT CK 
+C7 CA C2 C4 
+C9 CJ CQ S9 
+H4 HK HA H8 
+S2 S5 S4 S3 
+H7 H2 HQ SJ 
+D7 DA D4 D2 
+HT HJ H3 D3 
+S8 SA S7 SK 
+S6 SQ H5 D5 
+D8 H6 D9 D6 
+C8 ST C6 DT 
+DK H9 DQ DJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:K95.KT98432.5.94 Q42.AJ5.KJ6.T765 AJT863.6.A2.KQ83 7.Q7.QT98743.AJ2"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4H"]
+[Result "9"]
+[Score "NS -100"]
+[Auction "N"]
+3H PASS 4H PASS
+PASS PASS 
+[Play "E"]
+D6 DA D3 D5 
+HJ H6 H7 HT 
+DK D2 D4 H2 
+C5 CK C2 C4 
+S2 S3 S7 SK 
+C6 CQ CA C9 
+C7 C3 CJ H3 
+HA S6 HQ HK 
+CT C8 DT H4 
+H5 S8 D9 H9 
+S4 SA DQ S5 
+SQ SJ D8 S9 
+DJ ST D7 H8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:T8.973.T643.KJT4 AQJ954.K42.Q85.3 7632.QT8.K.Q8765 K.AJ65.AJ972.A92"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "6D"]
+[Result "9"]
+[Score "EW -150"]
+[Auction "W"]
+1D PASS 1S PASS
+2H PASS 3C PASS
+3D PASS 4N PASS
+5C PASS 6D PASS
+PASS PASS 
+[Play "N"]
+CJ C3 C5 CA 
+S8 SA S6 SK 
+ST S4 S2 D2 
+D3 DQ DK D7 
+H3 S5 S3 D9 
+C4 D5 C8 C2 
+D4 D8 C6 DA 
+H7 HK H8 H5 
+DT SQ S7 C9 
+CK H2 C7 DJ 
+H9 H4 HT HA 
+D6 S9 HQ HJ 
+CT SJ CQ H6 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:Q42.983.KJ65.874 AJT75.4.A84.AK63 K983.KJ.T32.J952 6.AQT7652.Q97.QT"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "4H"]
+[Result "10"]
+[Score "EW 620"]
+[Auction "W"]
+3H PASS 4H PASS
+PASS PASS 
+[Play "N"]
+D6 D8 DT DQ 
+S2 SA S3 S6 
+S4 S5 SK H5 
+C4 CA C2 CT 
+SQ SJ S9 D7 
+C8 CK C5 CQ 
+D5 DA D2 D9 
+C7 C3 CJ H2 
+H3 H4 HK HQ 
+H9 C6 C9 H6 
+DK D4 D3 H7 
+H8 S7 HJ HA 
+DJ ST S8 HT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:.95.J9652.AKQJ52 74.KJ763.Q3.T976 9652.AQ82.A84.43 AKQJT83.T4.KT7.8"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "2N"]
+[Result "6"]
+[Score "NS -200"]
+[Auction "N"]
+1C PASS 1H 1S
+2C PASS 2N PASS
+PASS PASS 
+[Play "W"]
+SK H5 S4 S5 
+SQ D5 S7 S2 
+SA D2 H6 S6 
+SJ D6 C6 S9 
+ST D9 H3 D4 
+S8 DJ C7 D8 
+S3 H9 CT H2 
+DT C2 DQ DA 
+C8 CA C9 C3 
+D7 CK H7 C4 
+H4 CQ D3 H8 
+HT CJ HJ HQ 
+DK C5 HK HA 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:AJT52.85.A542.84 K87.4.Q87.JT9632 Q943.KQJ7.KJ9.A7 6.AT9632.T63.KQ5"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4S"]
+[Result "9"]
+[Score "NS -100"]
+[Auction "S"]
+1N 2C X 3C
+PASS PASS 3S PASS
+4C PASS 4S PASS
+PASS PASS 
+[Play "E"]
+H4 HK HA H5 
+S7 H7 H2 H8 
+C3 CA C5 C4 
+S8 SQ S6 SA 
+D7 DK D3 D2 
+SK HQ H3 C8 
+C2 C7 CQ S2 
+C6 S3 HT SJ 
+CJ S9 D6 S5 
+CT HJ H9 D4 
+D8 D9 DT DA 
+DQ DJ H6 D5 
+C9 S4 CK ST 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:T86.K7.KQ763.QT3 5.T8652.AJ54.J62 743.J3.T82.A8754 AKQJ92.AQ94.9.K9"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "1S"]
+[Result "11"]
+[Score "EW 200"]
+[Auction "W"]
+1S PASS PASS PASS
+[Play "N"]
+DK DA D2 D9 
+HK H5 H3 HQ 
+H7 H2 HJ HA 
+S8 S5 S3 SA 
+ST D4 S4 SK 
+S6 C2 S7 SQ 
+D6 C6 C4 SJ 
+D3 HT C8 H9 
+D7 D5 DT S2 
+C3 CJ C5 S9 
+CQ H6 C7 H4 
+CT H8 CA C9 
+DQ DJ D8 CK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:6.Q7652.K64.AT54 AQT752.4.AQJ3.98 KJ4.KT8.T8752.J6 983.AJ93.9.KQ732"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "4S"]
+[Result "9"]
+[Score "EW -100"]
+[Auction "N"]
+PASS 1S PASS 1N
+PASS 2S PASS 4S
+PASS PASS PASS 
+[Play "S"]
+CJ CK CA C8 
+SK S3 S6 SQ 
+H8 HA H5 H4 
+D2 D9 D4 DA 
+D5 S8 D6 D3 
+HT H3 H6 S2 
+C6 CQ C4 C9 
+SJ C2 C5 S5 
+S4 S9 H2 S7 
+DT C3 CT ST 
+D7 C7 DK DQ 
+HK H9 H7 SA 
+D8 HJ HQ DJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:AT6.AKJT86.J32.Q K853.7.KQ8654.A2 Q972.9532.AT9.86 J4.Q4.7.KJT97543"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4HX"]
+[Result "10"]
+[Score "NS 590"]
+[Auction "E"]
+1D PASS 1N 2H
+3D 4H X PASS
+PASS PASS 
+[Play "E"]
+DK DA D7 D2 
+H7 H2 H4 HJ 
+D4 H3 HQ HA 
+D5 H5 C3 HK 
+SK S2 S4 S6 
+DQ D9 C4 D3 
+CA C6 C5 CQ 
+C2 C8 CK H6 
+D8 DT CJ DJ 
+S3 H9 C9 HT 
+S5 S7 SJ SA 
+S8 S9 CT ST 
+D6 SQ C7 H8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "N:KQ4.4.A75432.T72 98.9832.J86.9843 AT6.AKT7.QT.AKQJ J7532.QJ65.K9.65"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "6D"]
+[Result "11"]
+[Score "NS -50"]
+[Auction "W"]
+PASS 2D PASS 2N
+PASS 3N PASS 6D
+PASS PASS PASS 
+[Play "E"]
+H2 HA H5 H4 
+C3 CA C5 C2 
+H3 H7 HJ D2 
+S9 S6 S2 SQ 
+S8 ST S3 SK 
+D8 DQ DK D3 
+D6 SA S5 S4 
+C4 CK C6 C7 
+DJ DT D9 DA 
+H9 HT H6 D4 
+C9 CQ SJ D5 
+C8 CJ S7 D7 
+H8 HK HQ CT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:T86.98632.J74.75 542.AKT.AKT65.AQ KQJ97.J4.Q3.T962 A3.Q75.982.KJ843"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6N"]
+[Result "8"]
+[Score "EW -400"]
+[Auction "E"]
+2N PASS 4N PASS
+6N PASS PASS PASS
+[Play "S"]
+SK SA S8 S4 
+DQ D9 D4 D5 
+SQ S3 ST S2 
+SJ D2 S6 S5 
+S9 H5 H2 D6 
+S7 C3 C5 DT 
+H4 HQ H9 HT 
+C2 C4 C7 CA 
+C6 C8 H8 CQ 
+HJ H7 H3 HA 
+D3 D8 H6 HK 
+CT CJ DJ DA 
+C9 CK D7 DK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:3.Q842.KQ97.J963 QT974.JT5.82.QT4 A.AK76.AJ43.A872 KJ8652.93.T65.K5"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6H"]
+[Result "11"]
+[Score "NS -100"]
+[Auction "N"]
+PASS PASS 1D 2S
+X 3S 4N PASS
+5C PASS 6H PASS
+PASS PASS 
+[Play "W"]
+D5 DK D8 D3 
+S5 S3 SQ SA 
+H3 HQ H5 H6 
+H9 H2 HJ HA 
+S2 H4 HT HK 
+D6 DQ D2 D4 
+DT D7 S4 DA 
+S8 D9 S7 DJ 
+CK C3 C4 C2 
+SK H8 ST C7 
+C5 C6 CT CA 
+S6 C9 S9 H7 
+SJ CJ CQ C8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:AJ652.9752.Q9.72 KT873.A8.AKJ8.T5 Q4.Q6.762.QJ9643 9.KJT43.T543.AK8"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "12"]
+[Score "EW 490"]
+[Auction "E"]
+1N PASS 2D PASS
+2H PASS 3D PASS
+3S PASS 3N PASS
+PASS PASS 
+[Play "S"]
+CQ CA C2 C5 
+D6 D3 D9 DA 
+H6 H3 H5 HA 
+HQ HK H2 H8 
+C3 HJ H9 S3 
+C4 HT H7 S7 
+C6 H4 S2 S8 
+D2 D4 DQ DK 
+D7 DT S5 D8 
+S4 D5 S6 DJ 
+CJ CK C7 CT 
+SQ S9 SA ST 
+C9 C8 SJ SK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AQT6.AK52.963.J7 9875.76.J82.8432 KJ32.Q84.KT75.KT 4.JT93.AQ4.AQ965"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "4S"]
+[Result "8"]
+[Score "NS -200"]
+[ParScore "-200"]
+[Auction "N"]
+1D PASS 1S X
+2S PASS 4S PASS
+PASS PASS 
+[Play "W"]
+HJ H2 H6 HQ 
+S4 SA S5 S2 
+C5 SQ S7 SJ 
+C6 ST S9 S3 
+DQ D3 D8 DT 
+DA D6 D2 D5 
+HT HA H7 H4 
+C9 S6 S8 SK 
+H3 HK C2 H8 
+CA C7 C3 CK 
+H9 H5 C8 CT 
+CQ CJ C4 D7 
+D4 D9 DJ DK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:KQ.K854.T643.JT6 J9876.976.J.8742 542.AT.Q5.AKQ953 AT3.QJ32.AK9872."]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "5C"]
+[Result "10"]
+[Score "NS -100"]
+[ParScore "400"]
+[Auction "E"]
+PASS 1C 1D 1H
+PASS 3C 3D 5C
+PASS PASS PASS 
+[Play "W"]
+DK D3 DJ D5 
+D2 D4 C2 DQ 
+SA SQ S7 S4 
+DA D6 S6 C3 
+D7 CJ C4 C5 
+H2 C6 C8 CA 
+S3 SK S8 S2 
+D8 CT C7 C9 
+D9 DT H6 S5 
+H3 H4 H7 HA 
+HJ HK H9 HT 
+HQ H5 S9 CQ 
+ST H8 SJ CK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:873.652.J9.AKJ82 T9.AT3.AKQ742.T5 AKQJ6542.98.8.43 .KQJ74.T653.Q976"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "4S"]
+[Result "10"]
+[Score "NS 620"]
+[ParScore "-100"]
+[Auction "E"]
+1D 4S PASS PASS
+PASS 
+[Play "W"]
+HK H5 H3 H9 
+D5 D9 DQ D8 
+H4 H2 HA H8 
+HQ H6 HT SJ 
+C9 S3 S9 SA 
+D3 S8 ST SK 
+C6 S7 D2 S2 
+DT DJ DK SQ 
+C7 CA C5 C3 
+CQ CK CT C4 
+D6 C8 D4 S4 
+HJ C2 D7 S5 
+H7 CJ DA S6 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:762.K865.J7.AKJ9 Q3.A43.QT86.T854 J984.QJT7.52.Q76 AKT5.92.AK943.32"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "3D"]
+[Result "10"]
+[Score "EW 130"]
+[ParScore "-600"]
+[Auction "N"]
+1C PASS 1H X
+2H PASS PASS 3D
+PASS PASS PASS 
+[Play "N"]
+CK C4 C6 C2 
+CA C5 C7 C3 
+C9 C8 CQ D3 
+D7 D6 D2 DA 
+DJ D8 D5 DK 
+H5 DQ H7 D4 
+CJ CT HQ D9 
+S2 SQ S4 S5 
+S6 DT HT H2 
+S7 S3 S9 SA 
+H6 H3 S8 SK 
+H8 HA HJ H9 
+HK H4 SJ ST 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:T9632.94.KJ5.632 AJ85.5.732.AQJ94 KQ7.KQJT82.T84.K 4.A763.AQ96.T875"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3C"]
+[Result "11"]
+[Score "EW 150"]
+[ParScore "-1100"]
+[Auction "S"]
+1H PASS PASS 2C
+2H 3C PASS PASS
+PASS 
+[Play "S"]
+HK HA H4 H5 
+S7 S4 ST SA 
+SQ C5 S2 S5 
+H2 H3 H9 C4 
+SK C7 S3 S8 
+CK CT C2 C9 
+HQ H6 S9 CJ 
+H8 C8 C3 CA 
+D4 H7 C6 CQ 
+HT D6 S6 SJ 
+D8 D9 DJ D2 
+DT DQ D5 D3 
+HJ DA DK D7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:A7.T963.AKQ96.52 T862.AK54.53.KQ4 Q93.Q7.T8742.963 KJ54.J82.J.AJT87"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "4C"]
+[Result "11"]
+[Score "EW 150"]
+[ParScore "-650"]
+[Auction "S"]
+PASS PASS 1D X
+2D 3C 3D PASS
+PASS 4C PASS PASS
+PASS 
+[Play "N"]
+DA D3 D2 DJ 
+SA S2 S3 S4 
+S7 S6 SQ SK 
+C2 CK C3 C7 
+C5 C4 C6 CA 
+D6 CQ C9 C8 
+D9 D5 D4 CT 
+DQ H4 DT CJ 
+H3 HA H7 H2 
+H6 ST S9 S5 
+DK S8 D8 SJ 
+H9 HK HQ H8 
+HT H5 D7 HJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:AT64.984.74.JT86 J852.AT3.A9.K975 KQ97.KQ.Q863.Q32 3.J7652.KJT52.A4"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "1N"]
+[Result "7"]
+[Score "EW 90"]
+[ParScore "-650"]
+[Auction "E"]
+1C PASS 1H PASS
+1S PASS 1N PASS
+PASS PASS 
+[Play "N"]
+C6 CK C2 C4 
+D4 DA D3 D2 
+D7 D9 D6 DT 
+S4 C5 D8 DK 
+S6 C7 DQ DJ 
+ST S2 SK S3 
+C8 C9 CQ CA 
+H4 H3 S7 D5 
+H9 HA HK H2 
+H8 HT HQ H5 
+SA S5 SQ H6 
+CJ S8 C3 H7 
+CT SJ S9 HJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:KJ984.4.QJ962.K7 QT32.T982.K4.AT5 A7.AKQJ63.T87.J6 65.75.A53.Q98432"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "3N"]
+[Result "5"]
+[Score "NS -400"]
+[ParScore "400"]
+[Auction "S"]
+1H PASS 1S PASS
+3H PASS 3S PASS
+3N PASS PASS PASS
+[Play "W"]
+C4 CK CA C6 
+CQ C7 CT CJ 
+C9 D2 C5 D7 
+C8 D6 S2 D8 
+C2 S4 HT DT 
+C3 S8 S3 H3 
+DA D9 D4 H6 
+D3 DJ DK HJ 
+H5 H4 H2 HA 
+H7 S9 H9 HK 
+S5 DQ H8 HQ 
+S6 SJ SQ SA 
+D5 SK ST S7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:A7.K85.A874.Q742 QJ432.932.9653.8 KT98.AQ6.Q2.A653 65.JT74.KJT.KJT9"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "3N"]
+[Result "8"]
+[Score "NS -100"]
+[ParScore "400"]
+[Auction "E"]
+PASS 1N PASS 2S
+PASS 3C PASS 3N
+PASS PASS PASS 
+[Play "W"]
+HJ H5 H2 HA 
+H4 HK H3 H6 
+C9 C2 C8 C5 
+H7 H8 H9 HQ 
+CJ C7 S2 CA 
+CK C4 S3 C3 
+HT D4 D5 S8 
+CT CQ D3 C6 
+S5 SA S4 S9 
+S6 S7 SJ SK 
+DJ D7 SQ ST 
+DK DA D9 DQ 
+DT D8 D6 D2 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:K3.4.842.Q975432 T9876.T9752.KQ3. J42.AKJ.976.JT86 AQ5.Q863.AJT5.AK"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "4S"]
+[Result "8"]
+[Score "EW -100"]
+[ParScore "-430"]
+[Auction "N"]
+PASS PASS PASS 2N
+PASS 3H PASS 3S
+PASS 4H PASS 4S
+PASS PASS PASS 
+[Play "N"]
+H4 H2 HK H3 
+C2 H5 HA H6 
+S3 H7 HJ HQ 
+D2 DK D6 D5 
+SK S6 S2 SQ 
+D8 DQ D9 DT 
+C3 S7 S4 SA 
+C4 D3 C6 CA 
+C9 H9 CJ CK 
+C5 S8 SJ S5 
+D4 HT D7 DA 
+C7 S9 CT H8 
+CQ ST C8 DJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:9872.A53.J964.A5 3.QJT97.Q832.J86 J54.864.5.KQ9743 AKQT6.K2.AKT7.T2"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "10"]
+[Score "EW 630"]
+[ParScore "-140"]
+[Auction "N"]
+PASS PASS PASS 1S
+PASS 1N PASS 3D
+PASS 3H PASS 3N
+PASS PASS PASS 
+[Play "S"]
+CK C2 CA C6 
+CQ CT C5 C8 
+C9 S6 H3 CJ 
+D5 DA D4 D2 
+C3 D7 D9 DQ 
+S4 SA S9 S3 
+S5 SK S8 H7 
+H4 HK HA H9 
+H8 H2 H5 HQ 
+H6 ST S2 HJ 
+C4 DT S7 HT 
+C7 DK D6 D3 
+SJ SQ DJ D8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:KQ93.KJ8.J2.KQ74 AT.T72.AQT975.T3 876.Q9654.K8.AJ9 J542.A3.643.8652"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3CX"]
+[Result "5"]
+[Score "EW -800"]
+[ParScore "140"]
+[Auction "W"]
+PASS 1N 2C X
+2S X PASS PASS
+3C X PASS PASS
+PASS 
+[Play "S"]
+CA C5 C4 C3 
+C9 C2 CQ CT 
+S6 S4 SK SA 
+S7 S2 SQ ST 
+DK D3 DJ DQ 
+S8 SJ S3 H2 
+CJ C8 CK H7 
+H4 S5 S9 D5 
+D8 D4 D2 DA 
+H5 D6 C7 DT 
+H9 HA HK HT 
+HQ C6 H8 D9 
+H6 H3 HJ D7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:KJT74.T6.985.A85 2.K42.AK64.QJT43 98653.73.J2.K976 AQ.AQJ985.QT73.2"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "6H"]
+[Result "12"]
+[Score "EW 1430"]
+[ParScore "-980"]
+[Auction "E"]
+1C PASS 2H PASS
+3H PASS 4H PASS
+4N PASS 5S X
+6H PASS PASS PASS
+[Play "N"]
+CA C3 C6 C2 
+C5 CQ CK H5 
+H6 H2 H3 HA 
+HT HK H7 H8 
+S4 H4 S5 HQ 
+D5 DA D2 D3 
+C8 CJ C9 H9 
+D9 DK DJ D7 
+S7 CT C7 SQ 
+D8 D4 S3 DQ 
+SJ D6 S6 DT 
+SK S2 S9 HJ 
+ST C4 S8 SA 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AKQ.AK62.A2.AJ64 8643.Q853.Q65.87 52.T74.JT97.KQ95 JT97.J9.K843.T32"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4N"]
+[Result "11"]
+[Score "NS 460"]
+[ParScore "920"]
+[Auction "N"]
+3N PASS 4N PASS
+PASS PASS 
+[Play "E"]
+S3 S2 S9 SA 
+C8 C5 C2 CA 
+C7 CK C3 CJ 
+DQ DJ D3 D2 
+S4 S5 ST SK 
+H3 H4 H9 HA 
+D5 D7 D8 DA 
+H8 CQ CT C4 
+D6 D9 DK H2 
+S8 H7 S7 SQ 
+S6 C9 D4 C6 
+H5 DT HJ H6 
+HQ HT SJ HK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:72.KQJT863.A.T74 T6.952.J52.QJ632 AKQJ54.4.KT984.8 983.A7.Q763.AK95"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4H"]
+[Result "9"]
+[Score "NS -100"]
+[ParScore "420"]
+[Auction "S"]
+1S PASS 1N PASS
+2S PASS 4H PASS
+PASS PASS 
+[Play "E"]
+CQ C8 CK C4 
+H2 H4 HA H3 
+CJ D4 C5 CT 
+C2 S4 CA C7 
+C3 D8 C9 HT 
+H5 S5 H7 HK 
+H9 D9 D6 HQ 
+S6 SA S3 S2 
+D2 DT DQ DA 
+ST SJ S9 S7 
+C6 SK S8 HJ 
+D5 SQ D3 H6 
+DJ DK D7 H8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:QT84.K63.86.QJ83 A65.9.KJ73.AKT54 J932.Q74.T42.976 K7.AJT852.AQ95.2"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "6D"]
+[Result "12"]
+[Score "EW 1370"]
+[ParScore "-2140"]
+[Auction "S"]
+PASS 1H PASS 2C
+PASS 2D PASS 4N
+PASS 5S PASS 6D
+PASS PASS PASS 
+[Play "N"]
+S4 SA S2 S7 
+H3 H9 H4 HA 
+HK DJ H7 HJ 
+C8 CA C6 C2 
+C3 CK C9 H2 
+D6 D3 D2 DQ 
+H6 C4 HQ HT 
+CQ C5 C7 D9 
+D8 DK D4 D5 
+S8 D7 DT DA 
+CJ S5 S9 H8 
+ST S6 SJ H5 
+SQ CT S3 SK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:A4.AJ62.642.9764 K9862.Q93.AKQ9.J Q753.754.8753.A3 JT.KT8.JT.KQT852"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "2S"]
+[Result "9"]
+[Score "EW 140"]
+[ParScore "-600"]
+[Auction "S"]
+PASS PASS PASS 1S
+PASS 1N PASS 2D
+PASS 2S PASS PASS
+PASS 
+[Play "S"]
+CA C2 C6 CJ 
+H4 H8 HJ HQ 
+D3 DJ D2 D9 
+C3 CK C4 H3 
+S3 CQ C7 H9 
+D8 DT D4 DA 
+D5 ST D6 DK 
+H5 HT HA S2 
+D7 SJ SA DQ 
+H7 C5 C9 S8 
+S5 C8 S4 S6 
+S7 CT H2 SK 
+SQ HK H6 S9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:KQ7.9642.QJ4.A62 T98.8.T753.QT953 A643.AQ73.A96.J7 J52.KJT5.K82.K84"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "4H"]
+[Result "9"]
+[Score "NS -100"]
+[ParScore "400"]
+[Auction "N"]
+1C PASS 1H PASS
+2H PASS 4H PASS
+PASS PASS 
+[Play "W"]
+S2 SK S8 S3 
+C4 CA C3 C7 
+H5 H2 H8 HA 
+CK C2 C5 CJ 
+C8 C6 CQ H3 
+S5 SQ ST S4 
+SJ S7 S9 SA 
+HT H4 D3 H7 
+HK H6 D5 HQ 
+HJ H9 D7 D6 
+D2 DQ DT D9 
+D8 D4 C9 DA 
+DK DJ CT S6 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:Q2.Q9876.J986.52 A3.AK432.A43.K96 9865.T5.KT52.J74 KJT74.J.Q7.AQT83"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6N"]
+[Result "13"]
+[Score "EW 1470"]
+[ParScore "-2220"]
+[Auction "N"]
+PASS 1H PASS 1S
+PASS 2N PASS 3S
+PASS 3N PASS 4N
+PASS 6N PASS PASS
+PASS 
+[Play "S"]
+D2 DQ D6 D3 
+C4 C3 C2 CK 
+C7 CA C5 C9 
+S5 S4 SQ SA 
+CJ CQ H6 C6 
+D5 CT H7 H2 
+H5 C8 H9 D4 
+S6 SK S2 S3 
+S9 SJ H8 H3 
+HT HJ HQ HA 
+S8 D7 DJ HK 
+DT S7 D9 DA 
+DK ST D8 H4 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:A8.K.KT7532.8543 K62.AJ652.A.9762 QJ975.9843.J6.KQ T43.QT7.Q984.AJT"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "2H"]
+[Result "9"]
+[Score "EW 140"]
+[ParScore "-620"]
+[Auction "E"]
+1H 1S 2H PASS
+PASS PASS 
+[Play "S"]
+CK CA C3 C6 
+H3 HT HK HA 
+DJ D4 D2 DA 
+H4 H7 D3 HJ 
+CQ CT C4 C2 
+H9 HQ D5 H2 
+D6 DQ DK H5 
+H8 CJ C8 C7 
+SQ S3 SA S2 
+S5 D8 DT H6 
+S7 S4 S8 SK 
+S9 D9 C5 C9 
+SJ ST D7 S6 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:KQ52.965.T942.84 J.43.AQJ7.AKJT76 763.AQ2.K8653.Q5 AT984.KJT87..932"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6C"]
+[Result "12"]
+[Score "EW 1370"]
+[ParScore "-920"]
+[Auction "S"]
+PASS PASS PASS 1C
+1D 1S 3D 4C
+PASS 5D X 5S
+PASS 6C PASS PASS
+PASS 
+[Play "S"]
+S7 SA S2 SJ 
+S3 ST SQ C6 
+D5 H7 D2 DA 
+C5 C2 C8 CA 
+HA H8 H5 H3 
+CQ C3 C4 CK 
+H2 HK H9 H4 
+S6 S9 SK C7 
+D8 C9 D4 D7 
+D3 S8 S5 DJ 
+D6 S4 H6 DQ 
+HQ HJ DT CT 
+DK HT D9 CJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "N:K763.5.762.98743 T4.A9632.AK54.K5 AJ982.874.Q93.J6 Q5.KQJT.JT8.AQT2"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "6H"]
+[Result "11"]
+[Score "EW -50"]
+[ParScore "-450"]
+[Auction "S"]
+PASS 1N PASS 2D
+PASS 2H PASS 3D
+PASS 4H PASS 4N
+PASS 5S PASS 6H
+PASS PASS PASS 
+[Play "N"]
+S3 S4 SA S5 
+SK ST SJ SQ 
+S6 H2 S9 D8 
+H5 H3 H4 HK 
+C3 H6 H8 HT 
+C4 CK C6 C2 
+D6 H9 H7 HQ 
+D2 DA D3 DJ 
+C7 C5 CJ CA 
+D7 DK DQ DT 
+C8 D4 D9 HJ 
+C9 D5 S8 CT 
+S7 HA S2 CQ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:T876.K54.K5.AQJ8 J52.J86.T43.T432 AK943.AQT9.A986. Q.732.QJ72.K9765"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "7S"]
+[Result "12"]
+[Score "NS -50"]
+[ParScore "1510"]
+[Auction "W"]
+PASS 1C PASS 1S
+PASS 2S PASS 5C
+PASS 5H PASS 6C
+PASS 6N PASS 7S
+PASS PASS PASS 
+[Play "W"]
+DQ DK D3 D6 
+SQ S6 S2 SA 
+H2 HK H6 H9 
+C5 S7 S5 SK 
+D2 D5 D4 DA 
+D7 S8 DT D8 
+C6 CA C2 D9 
+C7 CQ C3 S3 
+H3 H4 H8 HA 
+H7 H5 HJ HQ 
+C9 C8 SJ HT 
+CK CJ CT S4 
+DJ ST C4 S9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "N:AT976.T64.86.KQ3 J82.A92.KQ74.986 43.J85.AJT5.J752 KQ5.KQ73.932.AT4"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "9"]
+[Score "EW 600"]
+[ParScore "-120"]
+[Auction "W"]
+1C 1S 1N PASS
+2N PASS 3N PASS
+PASS PASS 
+[Play "S"]
+S3 SK SA S2 
+DA D2 D8 DK 
+S4 SQ S6 S8 
+H5 H3 H4 HA 
+H8 HK H6 H9 
+HJ HQ HT H2 
+C2 H7 S7 C6 
+D5 S5 ST SJ 
+DJ D3 D6 D4 
+DT D9 C3 DQ 
+C5 C4 S9 D7 
+C7 CA CK C8 
+CJ CT CQ C9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "N:952.987.K5.KJ854 KJ83.AQ54.AQ8.92 Q764.JT.J964.QT6 AT.K632.T732.A73"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "4H"]
+[Result "11"]
+[Score "EW 450"]
+[ParScore "-980"]
+[Auction "S"]
+PASS 1D PASS 1H
+PASS 2H PASS 4H
+PASS PASS PASS 
+[Play "S"]
+C6 CA C4 C2 
+HJ H2 H7 HA 
+HT H3 H9 HQ 
+CT HK H8 H4 
+CQ C3 CK C9 
+D4 D2 DK DA 
+D6 D3 D5 DQ 
+S4 SA S2 S3 
+S6 ST S5 SK 
+DJ D7 C8 D8 
+SQ H6 S9 SJ 
+D9 DT C5 S8 
+S7 C7 CJ H5 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:2.AQJ54.T96.JT82 AK65.9.Q75.AK943 JT843.62.42.Q765 Q97.KT873.AKJ83."]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "3N"]
+[Result "10"]
+[Score "EW 430"]
+[ParScore "-1370"]
+[Auction "E"]
+1C PASS 1H PASS
+1S PASS 3N PASS
+PASS PASS 
+[Play "N"]
+DT D5 D2 DA 
+D6 DQ D4 D3 
+C8 CA C5 H3 
+D9 D7 S3 DK 
+H4 C3 H2 DJ 
+H5 C4 H6 D8 
+S2 SA S4 S7 
+HJ H9 C6 H7 
+CJ CK C7 H8 
+C2 S5 S8 SQ 
+HQ SK SJ S9 
+CT C9 CQ HT 
+HA S6 ST HK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:K43.7632.Q6.KQ95 T987.KJT.JT2.AJ4 Q652.AQ8.93.T862 AJ.954.AK8754.73"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "3D"]
+[Result "9"]
+[Score "EW 110"]
+[ParScore "-600"]
+[Auction "S"]
+PASS 1D PASS 1S
+PASS 2D PASS 3D
+PASS PASS PASS 
+[Play "N"]
+CK C4 C2 C3 
+S4 S7 SQ SA 
+D6 D2 D3 DA 
+DQ DT D9 DK 
+C5 CA C8 C7 
+CQ CJ C6 SJ 
+H6 HJ HQ H4 
+H2 HT HA H5 
+S3 S8 S2 D4 
+H3 DJ S5 D5 
+SK ST S6 D7 
+H7 HK H8 H9 
+C9 S9 CT D8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:KJ964.KT87.3.AT8 7532.AQJ.JT76.42 A.542.AK542.K763 QT8.963.Q98.QJ95"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "3N"]
+[Result "7"]
+[Score "NS -200"]
+[ParScore "620"]
+[Auction "W"]
+PASS 1S PASS 2D
+PASS 2H PASS 3C
+PASS 3N PASS PASS
+PASS 
+[Play "E"]
+C2 C6 CJ CA 
+S2 SA ST S4 
+HJ H4 H3 H8 
+C4 C7 CQ C8 
+HQ H2 H6 HT 
+HA H5 H9 H7 
+DJ DA D8 D3 
+D6 DK D9 S6 
+S3 C3 C9 CT 
+S5 D2 S8 SK 
+S7 D4 C5 HK 
+DT D5 SQ SJ 
+D7 CK DQ S9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KJ53.K6.Q92.AKQT 2.QJT9742.T5.643 AT4.A83.K76.J982 Q9876.5.AJ843.75"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "3N"]
+[Result "10"]
+[Score "NS 430"]
+[ParScore "1370"]
+[Auction "N"]
+1C 2H 2N PASS
+3N PASS PASS PASS
+[Play "W"]
+H5 HK H2 H3 
+S6 S3 S2 SA 
+C5 CA C3 C2 
+C7 CK C4 C8 
+D3 CT C6 CJ 
+S9 SJ H4 S4 
+D4 CQ H7 C9 
+DA D2 D5 DK 
+SQ SK HQ ST 
+S8 H6 H9 HA 
+D8 DQ DT D6 
+S7 S5 HJ D7 
+DJ D9 HT H8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:9.853.A9753.JT42 KT87643.942.T2.Q .QJ.KQJ864.AK953 AQJ52.AKT76..876"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "5SX"]
+[Result "12"]
+[Score "EW 1050"]
+[ParScore "-300"]
+[Auction "N"]
+PASS 2S 4N X
+5C PASS PASS 5S
+PASS PASS X PASS
+PASS PASS 
+[Play "S"]
+DK S2 D3 D2 
+C3 S5 S9 SK 
+D4 SQ D5 S3 
+D6 SA C2 ST 
+CK C8 C4 CQ 
+CA C6 CJ S4 
+HJ HA H3 H2 
+C5 C7 CT S8 
+HQ HK H8 H4 
+D8 H6 H5 H9 
+C9 SJ D9 S6 
+DJ HT D7 DT 
+DQ H7 DA S7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AQT87.JT8.54.J64 K93.976.K.AKT732 J64.AK.Q98763.95 52.Q5432.AJT2.Q8"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3C"]
+[Result "9"]
+[Score "EW 110"]
+[ParScore "-600"]
+[Auction "N"]
+PASS 1C 2D PASS
+PASS 3C PASS PASS
+PASS 
+[Play "S"]
+HA H2 H8 H6 
+HK H3 HJ H7 
+SJ S2 SA S3 
+C9 HQ HT H9 
+S4 S5 SQ SK 
+C5 CQ C4 C2 
+D6 C8 C6 CA 
+D3 D2 CJ CK 
+D7 DA D4 DK 
+D9 H4 S7 S9 
+DQ DJ D5 C3 
+D8 H5 ST CT 
+S6 DT S8 C7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:A72.7632.KJT7.QJ KQJ.KT9.AQ64.T63 853.Q854.853.954 T964.AJ.92.AK872"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "12"]
+[Score "EW 690"]
+[ParScore "-1440"]
+[Auction "E"]
+1N PASS 2C PASS
+2D PASS 3C PASS
+3N PASS PASS PASS
+[Play "S"]
+S5 S4 SA SJ 
+D3 D2 DJ DQ 
+S3 S6 S2 SK 
+S8 S9 S7 SQ 
+C4 CA CQ C3 
+H8 ST H6 D4 
+H4 HJ H2 HK 
+C9 CK CJ C6 
+D8 D9 DK DA 
+C5 C2 H3 CT 
+H5 HA H7 H9 
+D5 C7 D7 D6 
+HQ C8 DT HT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:KJT.AKJ752..KT87 Q4.86.KJ8743.964 A973.T43.AQ6.532 8652.Q9.T952.AQJ"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4H"]
+[Result "11"]
+[Score "NS 450"]
+[ParScore "1440"]
+[Auction "E"]
+PASS PASS PASS 1H
+PASS 2C PASS 4D
+PASS 4H PASS PASS
+PASS 
+[Play "E"]
+D7 DQ D2 C7 
+D3 DA D5 C8 
+H6 H3 H9 HA 
+H8 H4 HQ HK 
+D8 HT S5 H2 
+SQ S3 S2 SJ 
+C6 C2 CA CT 
+C4 C3 CQ CK 
+D4 C5 S8 HJ 
+S4 S9 S6 SK 
+C9 SA DT ST 
+DJ D6 D9 H5 
+DK S7 CJ H7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:KQ9.AQJT.652.A85 5.K97543.K7.Q964 8642.6.AJT9.JT72 AJT73.82.Q843.K3"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "1N"]
+[Result "9"]
+[Score "NS 150"]
+[ParScore "600"]
+[Auction "W"]
+PASS 1N PASS PASS
+PASS 
+[Play "E"]
+H5 H6 H8 HT 
+DK DA D3 D5 
+S5 S2 S3 SK 
+D7 D9 DQ D2 
+C4 S4 SA S9 
+H3 S6 SJ SQ 
+H4 DJ D8 D6 
+H9 DT D4 C5 
+C6 CJ CK CA 
+H7 S8 H2 HA 
+CQ C2 C3 C8 
+HK C7 ST HJ 
+C9 CT S7 HQ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:A8.KQJT95.AJ7.A3 QT5.2.Q985.KQT52 K9642..KT642.864 J73.A87643.3.J97"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "3N"]
+[Result "8"]
+[Score "NS -100"]
+[ParScore "620"]
+[Auction "E"]
+PASS PASS 2H X
+PASS 2S PASS 2N
+PASS 3S PASS 3N
+PASS PASS PASS 
+[Play "E"]
+CK C4 C7 C3 
+C2 C6 CJ CA 
+H2 C8 HA HK 
+CQ S2 C9 H5 
+CT S4 H3 D7 
+C5 S6 H4 H9 
+SQ SK S3 S8 
+D5 D2 D3 DA 
+D9 DK H8 DJ 
+ST S9 S7 SA 
+D8 D4 H6 HQ 
+S5 D6 H7 HJ 
+DQ DT SJ HT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:T3.AJT82.T52.932 J96.965.764.AQ74 Q42.KQ73.Q83.JT5 AK875.4.AKJ9.K86"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "4S"]
+[Result "10"]
+[Score "EW 420"]
+[ParScore "-1430"]
+[Auction "S"]
+PASS 1S PASS 2S
+PASS 4H PASS 4S
+PASS PASS PASS 
+[Play "N"]
+HA H5 H3 H4 
+C2 CA C5 C6 
+S3 S6 S2 SA 
+D2 D4 D3 DA 
+C3 C4 CJ CK 
+D5 D6 D8 DK 
+ST S9 S4 SK 
+C9 CQ CT C8 
+H2 C7 H7 D9 
+H8 SJ SQ S5 
+HJ H6 HK S7 
+DT D7 HQ S8 
+HT H9 DQ DJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:KQ5.T84.AQT98.KT J76432.AJ5..Q943 A98.KQ3.J74.AJ62 T.9762.K6532.875"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "3N"]
+[Result "11"]
+[Score "NS 460"]
+[ParScore "990"]
+[Auction "E"]
+PASS 1N PASS 3N
+PASS PASS PASS 
+[Play "W"]
+D3 D8 S6 D4 
+H6 H4 HA H3 
+H2 H8 HJ HK 
+D5 D9 S2 DJ 
+D2 DT S3 D7 
+D6 DA S4 C2 
+ST SK S7 S8 
+C5 S5 SJ SA 
+C8 CK C9 C6 
+H9 HT H5 HQ 
+C7 SQ C3 S9 
+H7 CT C4 CA 
+DK DQ CQ CJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:J85.JT98.QT.J876 7.532.K8642.AT53 K632.AQ764.J95.9 AQT94.K.A73.KQ42"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "5C"]
+[Result "9"]
+[Score "EW -200"]
+[ParScore "-600"]
+[Auction "E"]
+PASS PASS 1S PASS
+1N PASS 3C PASS
+5C PASS PASS PASS
+[Play "N"]
+DQ D2 D5 DA 
+C6 CA C9 C2 
+S5 S7 S2 SA 
+SJ C3 S3 ST 
+HJ H2 HA HK 
+H8 H3 HQ C4 
+S8 C5 S6 SQ 
+DT DK D9 D3 
+HT H5 H4 CQ 
+CJ D4 SK S4 
+C8 CT H6 CK 
+C7 D6 DJ D7 
+H9 D8 H7 S9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:K97.Q862.Q987.J8 532.54.KJT4.AQT2 QT84.AKJT.63.K96 AJ6.973.A52.7543"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "3CX"]
+[Result "9"]
+[Score "EW 470"]
+[ParScore "140"]
+[Auction "W"]
+PASS PASS PASS 1C
+PASS 1H PASS 2H
+PASS PASS X PASS
+3C X PASS PASS
+PASS 
+[Play "N"]
+H2 H4 HK H3 
+H6 H5 HA H7 
+DQ DK D6 D2 
+C8 CA C6 C3 
+D7 D4 D3 DA 
+CJ CQ CK C4 
+S7 S2 S4 SA 
+D8 CT C9 C5 
+D9 DJ S8 D5 
+H8 DT HT S6 
+SK S3 ST SJ 
+S9 S5 SQ C7 
+HQ C2 HJ H9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:Q9.AQT.AQ98.AKQJ KT4.72.KT754.652 76.KJ986543.6.98 AJ8532..J32.T743"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6H"]
+[Result "11"]
+[Score "NS -50"]
+[ParScore "450"]
+[Auction "W"]
+2S X 3S 4H
+PASS 4N PASS 5D
+PASS 6H PASS PASS
+PASS 
+[Play "W"]
+SA S9 S4 S6 
+S2 SQ SK S7 
+D2 DA DK D6 
+C3 HA H2 H3 
+C4 HQ H7 H4 
+C7 HT D4 H5 
+CT CA C2 C8 
+D3 D8 D5 H6 
+S8 D9 C5 HK 
+DJ CK C6 C9 
+SJ CQ DT HJ 
+S3 DQ ST H8 
+S5 CJ D7 H9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:Q854.932.JT73.82 AKJ9.KJT86.2.Q43 T762.Q54.AQ8.JT5 3.A7.K9654.AK976"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "13"]
+[Score "EW 520"]
+[ParScore "-1440"]
+[Auction "S"]
+PASS 1D PASS 1H
+PASS 2C PASS 3N
+PASS PASS PASS 
+[Play "S"]
+S2 S3 SQ SA 
+S6 D4 S4 SK 
+HQ HA H2 HJ 
+C5 C6 C8 CQ 
+CJ CA C2 C3 
+CT CK S8 C4 
+D8 C9 S5 D2 
+H4 C7 D3 S9 
+H5 H7 H3 HK 
+ST D5 H9 SJ 
+DQ D6 D7 HT 
+S7 D9 DJ H8 
+DA DK DT H6 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:Q642.Q7.AJ7532.5 T987.JT6.K6.KT97 AJ.A95432.84.Q83 K53.K8.QT9.AJ642"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "2S"]
+[Result "6"]
+[Score "EW -200"]
+[ParScore "-300"]
+[Auction "W"]
+1C 1D 1S 2H
+X PASS 2S PASS
+PASS PASS 
+[Play "S"]
+D8 D9 DJ DK 
+SA S3 S2 S7 
+D4 DT DA D6 
+SJ DQ D2 H6 
+HA H8 H7 HT 
+H9 HK HQ HJ 
+C3 C2 C5 CK 
+H2 SK S4 S8 
+CQ C4 D3 CT 
+H3 S5 D5 C7 
+C8 CA S6 C9 
+H4 C6 D7 ST 
+H5 CJ SQ S9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:3.A853.AQT86.985 T94.KQ4.9.AQJT73 AK87.T976.KJ74.6 QJ652.J2.532.K42"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "4SX"]
+[Result "9"]
+[Score "EW -100"]
+[ParScore "620"]
+[Auction "S"]
+1D PASS 1H 2C
+2H 2S 3H 3S
+PASS 4S PASS PASS
+X PASS PASS PASS
+[Play "N"]
+DA D9 D4 D2 
+C5 CT C6 C2 
+H3 H4 H6 HJ 
+HA HQ H7 H2 
+S3 S4 SK S2 
+DT ST DK D3 
+H8 HK HT D5 
+D6 S9 SA S5 
+DQ C3 D7 S6 
+C9 C7 S8 SQ 
+C8 CJ S7 SJ 
+H5 CA H9 C4 
+D8 CQ DJ CK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:AK.AK98.QJT93.42 J98532.63.872.87 Q76.QJT5.6.AKJT3 T4.742.AK54.Q965"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6H"]
+[Result "11"]
+[Score "NS -50"]
+[ParScore "1430"]
+[Auction "S"]
+1C PASS 1D PASS
+1H PASS 4N PASS
+5D PASS 6H PASS
+PASS PASS 
+[Play "W"]
+DK D3 D2 D6 
+S4 SA S2 S6 
+H2 HA H3 H5 
+D4 DQ D8 HT 
+ST SK S3 S7 
+D5 DJ D7 HJ 
+H4 H8 SJ SQ 
+C9 C2 C8 CA 
+H7 HK H6 HQ 
+C5 C4 C7 CK 
+CQ H9 S9 CJ 
+DA DT S8 C3 
+C6 D9 S5 CT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:K.853.QJ643.9753 T2.QT962.5.AKJ62 Q87654.74.K82.84 AJ93.AKJ.AT97.QT"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6H"]
+[Result "12"]
+[Score "EW 980"]
+[ParScore "-2210"]
+[Auction "E"]
+1H PASS 2D PASS
+2H PASS 3H PASS
+4H PASS 4N PASS
+5D PASS 5S PASS
+6C PASS 6H PASS
+PASS PASS 
+[Play "S"]
+C8 CT C3 C2 
+D2 DA D3 D5 
+H4 HA H3 H2 
+H7 HK H8 H6 
+S4 HJ H5 H9 
+D8 D7 D4 HT 
+C4 CQ C9 C6 
+DK DT DJ HQ 
+S5 S3 C5 CA 
+S6 S9 C7 CK 
+S7 D9 DQ CJ 
+S8 SA SK S2 
+SQ SJ D6 ST 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:Q73.AJT982.J5.73 AKJ862.K.AKQT6.A T54.Q74.9732.J84 9.653.84.KQT9652"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "6C"]
+[Result "11"]
+[Score "EW -100"]
+[ParScore "-1370"]
+[Auction "W"]
+3C PASS 4N PASS
+5D PASS 6C PASS
+PASS PASS 
+[Play "N"]
+HA HK H4 H5 
+HJ CA H7 H3 
+S3 SA S4 S9 
+S7 SK S5 C5 
+C3 S2 C8 CK 
+C7 S6 C4 CQ 
+D5 DA D2 D4 
+DJ DK D3 D8 
+H2 DQ D9 H6 
+H8 DT D7 C2 
+HT S8 CJ CT 
+SQ SJ ST C6 
+H9 D6 HQ C9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:QJ85.54.J2.T9642 KT74.A7.AKT854.7 A93.K83.973.KJ85 62.QJT962.Q6.AQ3"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "5H"]
+[Result "10"]
+[Score "EW -100"]
+[ParScore "-630"]
+[Auction "E"]
+1D PASS 1H PASS
+1S PASS 3H PASS
+4N PASS 5D PASS
+5H PASS PASS PASS
+[Play "N"]
+SQ S4 S9 S2 
+S5 ST SA S6 
+D2 D4 D3 DQ 
+H4 H7 HK HQ 
+DJ DA D7 D6 
+SJ SK S3 C3 
+C2 C7 CK CA 
+C4 S7 C8 CQ 
+H5 HA H3 H2 
+C6 DK D9 H9 
+S8 D5 H8 HJ 
+CT DT CJ HT 
+C9 D8 C5 H6 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:K42.Q854.T9.8642 A76.AK32.A3.QT75 Q9.JT976.J754.J9 JT853..KQ862.AK3"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6S"]
+[Result "12"]
+[Score "EW 1430"]
+[ParScore "-990"]
+[Auction "N"]
+PASS 1N PASS 2H
+PASS 2S PASS 3D
+PASS 4S PASS 5H
+PASS 6C PASS 6S
+PASS PASS PASS 
+[Play "S"]
+CJ C3 C2 CQ 
+H6 CK H4 HA 
+H7 D2 H5 HK 
+H9 S5 H8 H2 
+D4 D6 DT DA 
+HJ S3 HQ H3 
+C9 CA C4 C5 
+D5 DK D9 D3 
+D7 DQ S2 S6 
+HT D8 C8 CT 
+SQ S8 C6 C7 
+DJ ST SK SA 
+S9 SJ S4 S7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:AT3.A983.A.Q9876 97652.J75.865.K4 KJ84.KQ4.Q74.J52 Q.T62.KJT932.AT3"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "3D"]
+[Result "7"]
+[Score "EW -100"]
+[ParScore "620"]
+[Auction "W"]
+2D X 3D PASS
+PASS PASS 
+[Play "N"]
+DA D5 D4 D2 
+C7 C4 CJ CA 
+C6 CK C2 C3 
+H3 D8 D7 DK 
+CQ D6 C5 CT 
+S3 S2 SK SQ 
+H8 H5 HK H2 
+H9 H7 HQ H6 
+HA HJ H4 HT 
+SA S9 S4 D9 
+C8 S5 DQ DJ 
+ST S6 S8 DT 
+C9 S7 SJ D3 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:A63.9.AK3.AT7632 KQT987.2.J974.K5 .KJT7654.Q865.J9 J542.AQ83.T2.Q84"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "4HX"]
+[Result "11"]
+[Score "NS 690"]
+[ParScore "100"]
+[Auction "E"]
+2S PASS 3S 4C
+PASS 4H X PASS
+PASS PASS 
+[Play "W"]
+S5 SA ST C9 
+HQ H9 H2 H4 
+S2 S3 SQ H5 
+HA C2 S7 HK 
+D2 D3 DJ DQ 
+H3 C3 S8 HJ 
+H8 S6 SK HT 
+C4 CA C5 CJ 
+C8 C6 CK H6 
+DT DA D4 D5 
+CQ C7 D7 H7 
+S4 DK D9 D6 
+SJ CT S9 D8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:J965.A.AQ9732.K4 QT2.QT543.4.QT63 7.KJ62.KJT65.A82 AK843.987.8.J975"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6D"]
+[Result "12"]
+[Score "NS 1370"]
+[ParScore "920"]
+[Auction "S"]
+1D 1S 2S PASS
+4N PASS 5S PASS
+6D PASS PASS PASS
+[Play "W"]
+SK S5 S2 S7 
+SA S6 ST D5 
+D8 DQ D4 D6 
+S3 D2 H3 DT 
+H7 HA H4 H2 
+C5 D3 C3 DK 
+H9 D7 H5 H6 
+S8 S9 SQ DJ 
+C7 CK C6 C2 
+H8 D9 HT C8 
+S4 DA CT HJ 
+CJ C4 CQ CA 
+C9 SJ HQ HK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:Q93.AJ872.Q72.J9 J64.T965.43.QT85 AT75.KQ.AJT.K632 K82.43.K9865.A74"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "3N"]
+[Result "7"]
+[Score "NS -100"]
+[ParScore "420"]
+[Auction "E"]
+PASS 1N PASS 2D
+PASS 2H PASS 3N
+PASS PASS PASS 
+[Play "W"]
+S8 S9 SJ SA 
+SK S3 S4 S7 
+S2 SQ S6 S5 
+H3 H2 H5 HK 
+D5 C9 D3 ST 
+H4 HA H6 HQ 
+D6 HJ HT C2 
+DK D2 D4 DT 
+D9 DQ C8 DJ 
+CA CJ CQ CK 
+C4 D7 CT C3 
+C7 H7 H9 C6 
+D8 H8 C5 DA 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:AJT97.J5.JT5.972 652.KQ.K984.AK83 8.A97432.Q3.JT65 KQ43.T86.A762.Q4"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "7"]
+[Score "EW -200"]
+[ParScore "-400"]
+[Auction "E"]
+1N PASS 2C PASS
+2D PASS 3N PASS
+PASS PASS 
+[Play "S"]
+S8 SK SA S5 
+H2 SQ SJ S2 
+C5 CQ C2 C3 
+CJ C4 C7 CA 
+C6 S3 C9 CK 
+D3 DA D5 D9 
+DQ D2 DJ DK 
+HA H6 H5 HK 
+CT S4 HJ C8 
+H9 H8 S9 HQ 
+H3 D6 DT D4 
+H4 HT ST S6 
+H7 D7 S7 D8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AJT2.QJ9864.7.J6 K43.3.AKJ82.KQ97 96.KT75.Q965.AT2 Q875.A2.T43.8543"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4HX"]
+[Result "8"]
+[Score "NS -300"]
+[ParScore "140"]
+[Auction "N"]
+PASS 1D PASS 1S
+2H X PASS 3C
+PASS 4C 4H X
+PASS PASS PASS 
+[Play "E"]
+DK D5 D3 D7 
+CK CA C3 C6 
+H3 H5 H2 H4 
+D2 H7 HA H6 
+SK S6 S5 S2 
+CQ C2 C8 CJ 
+C7 CT C4 HJ 
+D8 HT D4 H9 
+S3 S9 S7 SA 
+S4 D6 SQ ST 
+DJ D9 DT HQ 
+C9 DQ S8 SJ 
+DA HK C5 H8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:.KT9742.92.AJ653 J3.A853.A8643.Q4 9762..QJ75.KT987 AKQT854.QJ6.KT.2"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "4S"]
+[Result "11"]
+[Score "EW 650"]
+[ParScore "-200"]
+[Auction "E"]
+PASS PASS 1S 2S
+PASS 2N 3S PASS
+4H PASS 4S PASS
+PASS PASS 
+[Play "N"]
+D9 D3 DJ DK 
+C5 SJ S6 S4 
+H2 S3 S7 SA 
+H4 C4 S9 SK 
+C3 CQ S2 SQ 
+D2 H3 C7 ST 
+C6 DA D5 DT 
+H7 D4 D7 S5 
+HK HA CT HQ 
+CA D8 DQ S8 
+HT H5 C8 HJ 
+CJ D6 CK C2 
+H9 H8 C9 H6 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:J7.J643.53.A8732 T8652.K.A864.K64 Q3.T92.QJ92.JT95 AK94.AQ875.KT7.Q"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6S"]
+[Result "12"]
+[Score "EW 1430"]
+[ParScore "-980"]
+[Auction "S"]
+PASS 1H PASS 1S
+PASS 4C PASS 4N
+PASS 5C PASS 6S
+PASS PASS PASS 
+[Play "S"]
+DQ D7 D3 DA 
+H2 H5 H3 HK 
+S3 SA S7 S5 
+SQ SK SJ S2 
+C5 S4 C2 ST 
+D2 DK D5 D4 
+HT HA H4 D6 
+H9 HQ H6 D8 
+D9 H7 HJ S8 
+C9 CQ CA C4 
+CJ S9 C8 C6 
+CT H8 C3 S6 
+DJ DT C7 CK 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:KQ75.AKQ76.6.A92 3.T98532.Q832.43 T8642.J.AKJ9.Q87 AJ9.4.T754.KJT65"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6S"]
+[Result "11"]
+[Score "NS -100"]
+[ParScore "990"]
+[Auction "N"]
+1H PASS 1S PASS
+4D PASS 4H PASS
+4N PASS 5D PASS
+6S PASS PASS PASS
+[Play "W"]
+H4 H6 HT HJ 
+S9 SK S3 S2 
+SJ HA H2 C7 
+CK CA C3 C8 
+SA S5 H3 ST 
+CJ C2 C4 CQ 
+D4 D6 D8 DA 
+D5 S7 D2 D9 
+C5 SQ H9 S4 
+C6 HK H5 DJ 
+CT C9 D3 S6 
+DT H7 DQ DK 
+D7 HQ H8 S8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:JT93.AKT7.98743. 2.J3.AJT.KQT9543 87654.94.KQ65.76 AKQ.Q8652.2.AJ82"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6C"]
+[Result "13"]
+[Score "EW 1390"]
+[ParScore "-660"]
+[Auction "N"]
+PASS 1C PASS 2H
+PASS 3C PASS 3D
+PASS 4N PASS 5H
+PASS 6C PASS PASS
+PASS 
+[Play "S"]
+DK D2 D3 DA 
+C6 CA S3 C3 
+S4 SA SJ S2 
+S8 SK ST H3 
+C7 C2 H7 CK 
+DQ C8 D4 DT 
+S5 SQ S9 HJ 
+H9 H2 HT C4 
+D5 CJ D7 DJ 
+H4 H5 HK C5 
+S6 H6 D9 CQ 
+S7 H8 D8 CT 
+D6 HQ HA C9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:93.J8642.QJ72.T9 KQT65.93.983.AQ5 J84.AKQT7.K654.3 A72.5.AT.KJ87642"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "5C"]
+[Result "13"]
+[Score "EW 440"]
+[ParScore "-1100"]
+[Auction "S"]
+1H 2C 4H 5C
+PASS PASS PASS 
+[Play "N"]
+DQ D3 D4 DA 
+CT CQ C3 C6 
+C9 CA H7 C2 
+S3 S5 S4 SA 
+S9 SK S8 S2 
+H4 SQ SJ S7 
+H2 C5 HT C4 
+H8 ST D5 H5 
+H6 S6 D6 DT 
+HJ H9 HQ CJ 
+D2 D8 HA CK 
+D7 D9 HK C8 
+DJ H3 DK C7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:A6.J95.K52.AK743 KQJ84.A732.63.52 T752.84.AQJT98.9 93.KQT6.74.QJT86"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "3D"]
+[Result "11"]
+[Score "NS 150"]
+[ParScore "600"]
+[Auction "E"]
+PASS PASS PASS 1N
+2D X 2H PASS
+PASS 3D PASS PASS
+PASS 
+[Play "W"]
+CQ CA C2 C9 
+S3 SA S4 S2 
+C6 CK C5 H4 
+S9 S6 SJ S5 
+D4 D2 D3 D8 
+D7 DK S8 S7 
+CJ C3 H2 D9 
+H6 D5 SK ST 
+CT C4 H3 DT 
+HT H5 D6 DA 
+C8 C7 H7 DQ 
+HK HJ HA H8 
+HQ H9 SQ DJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:53.AQ.J93.AT9542 K74.KJ95.K74.QJ3 QT6.73.AQ8652.87 AJ982.T8642.T.K6"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "4HX"]
+[Result "9"]
+[Score "EW -200"]
+[ParScore "-300"]
+[Auction "W"]
+PASS 1C X 2D
+4H PASS PASS X
+PASS PASS PASS 
+[Play "N"]
+CA C3 C7 C6 
+S5 S4 SQ SA 
+C2 CJ C8 CK 
+S3 SK S6 S2 
+CT CQ H3 H4 
+HA H5 H7 H2 
+D3 DK DA DT 
+HQ S7 ST SJ 
+DJ D4 DQ H6 
+C9 H9 D8 H8 
+D9 D7 D2 HT 
+C4 HJ D5 S8 
+C5 HK D6 S9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:KJ6.Q2.J3.KJT762 952.98763.Q75.93 AQT7.J5.AKT2.AQ4 843.AKT4.9864.85"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6C"]
+[Result "11"]
+[Score "NS -50"]
+[ParScore "450"]
+[Auction "W"]
+PASS PASS PASS 2N
+PASS 4N PASS 5C
+PASS 6C PASS PASS
+PASS 
+[Play "W"]
+HK H2 H6 H5 
+HA HQ H3 HJ 
+H4 C6 H9 D2 
+C8 C2 C3 CA 
+C5 CK C9 C4 
+D9 CJ S2 CQ 
+S3 SK S5 S7 
+D4 CT D5 DT 
+D6 D3 D7 DA 
+S8 S6 S9 ST 
+S4 SJ H8 SQ 
+D8 DJ DQ DK 
+HT C7 H7 SA 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:JT84.A98742.6.82 95.J5.AQJT74.JT3 A72.K63.98.AKQ75 KQ63.QT.K532.964"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "4H"]
+[Result "11"]
+[Score "NS 650"]
+[ParScore "1430"]
+[Auction "S"]
+1N PASS 2D X
+2H 3D 4H PASS
+PASS PASS 
+[Play "W"]
+D2 D6 DA D8 
+SQ S4 S5 S2 
+C4 C2 CT CA 
+HT HA H5 H3 
+HQ H2 HJ HK 
+D3 H9 D4 H6 
+C9 C8 C3 CK 
+C6 S8 CJ CQ 
+D5 H4 DQ D9 
+S3 H8 S9 S7 
+S6 SJ DJ SA 
+DK ST DT C5 
+SK H7 D7 C7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:AQ832.AQT65.AKT. J954.K3.53.AJ954 K76.J874.QJ86.T3 T.92.9742.KQ8762"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "5CX"]
+[Result "9"]
+[Score "EW -500"]
+[ParScore "980"]
+[Auction "E"]
+PASS PASS PASS 1S
+PASS 2S PASS 4C
+X PASS 5C X
+PASS PASS PASS 
+[Play "N"]
+DA D3 D6 D2 
+HA H3 H4 H2 
+DK D5 D8 D4 
+SA S4 S6 ST 
+S2 S5 SK C2 
+S3 CA C3 C6 
+S8 C4 CT CK 
+H5 CJ H8 C7 
+SQ S9 S7 C8 
+H6 HK HJ H9 
+DT SJ H7 CQ 
+HT C9 DQ D7 
+HQ C5 DJ D9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:KQ.Q74.43.KQ7654 T9762.3.A72.J982 85.AK62.QJ65.AT3 AJ43.JT985.KT98."]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "3N"]
+[Result "7"]
+[Score "NS -200"]
+[ParScore "430"]
+[Auction "S"]
+1D 1H 2C PASS
+2H PASS 3N PASS
+PASS PASS 
+[Play "E"]
+S6 S5 SA SQ 
+S2 S8 S3 SK 
+C9 CA H5 C4 
+H3 H2 H8 HQ 
+D2 HA HJ H4 
+S7 HK HT H7 
+C2 CT DT CK 
+C8 C3 D8 CQ 
+DA D5 D9 D3 
+CJ D6 S4 C5 
+ST H6 SJ D4 
+D7 DJ H9 C6 
+S9 DQ DK C7 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:A72.K95432.AJ.AJ Q985.T6.K87.7532 JT643.AQ.2.KQT86 K.J87.QT96543.94"]
+[Scoring "IMP"]
+[Declarer "S"]
+[Contract "6S"]
+[Result "11"]
+[Score "NS -50"]
+[ParScore "2220"]
+[Auction "E"]
+PASS 1S PASS 2H
+PASS 3C PASS 3S
+PASS 4C PASS 4H
+PASS 4N PASS 5C
+PASS 6S PASS PASS
+PASS 
+[Play "W"]
+C9 CJ C2 C6 
+D3 DA D7 D2 
+D4 DJ DK S3 
+H7 H2 H6 HQ 
+C4 CA C5 C8 
+SK S2 S5 SJ 
+DQ H3 D8 S4 
+DT SA S9 S6 
+H8 H4 HT HA 
+D5 H5 C3 CK 
+D6 S7 C7 CQ 
+HJ HK S8 ST 
+D9 H9 SQ CT 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:K3.J954.KQJ54.T6 Q974.K.T973.KQ43 JT6.A32.862.J985 A852.QT876.A.A72"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "2S"]
+[Result "10"]
+[Score "EW 170"]
+[ParScore "-620"]
+[Auction "E"]
+PASS PASS 1H PASS
+1S PASS 2S PASS
+PASS PASS 
+[Play "S"]
+SJ S2 SK S4 
+ST SA S3 S7 
+HA H6 H4 HK 
+S6 S5 D4 S9 
+C9 CA C6 C3 
+H2 HQ H5 D3 
+H3 H7 H9 SQ 
+D2 DA D5 D7 
+C5 H8 HJ D9 
+CJ C2 CT CK 
+D8 S8 DK DT 
+D6 HT DJ C4 
+C8 C7 DQ CQ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:JT732.Q.T87.A963 K9.J983.AQ54.K85 854.T764.J2.QJ74 AQ6.AK52.K963.T2"]
+[Scoring "IMP"]
+[Declarer "W"]
+[Contract "4H"]
+[Result "11"]
+[Score "EW 650"]
+[ParScore "-1440"]
+[Auction "W"]
+1N PASS 2C PASS
+2H PASS 4H PASS
+PASS PASS 
+[Play "N"]
+SJ S9 S4 SQ 
+S2 SK S8 S6 
+HQ H9 H4 HA 
+C3 H3 H6 HK 
+D7 D4 D2 DK 
+ST D5 S5 SA 
+C6 CK C4 C2 
+C9 C5 CJ CT 
+CA C8 C7 H2 
+D8 HJ H7 H5 
+DT DA DJ D3 
+S3 DQ HT D6 
+S7 H8 CQ D9 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:QJ432.AKJ3.53.Q7 K6.87.QJ742.8642 A95.T2.K86.AKJT5 T87.Q9654.AT9.93"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "4S"]
+[Result "11"]
+[Score "NS 450"]
+[ParScore "990"]
+[Auction "W"]
+PASS 1S PASS 2C
+PASS 2H PASS 2S
+PASS 3H PASS 3S
+PASS 4S PASS PASS
+PASS 
+[Play "E"]
+H8 HT HQ HA 
+SK SA S7 SQ 
+C8 C5 C9 CQ 
+S6 S5 S8 SJ 
+C4 CA C3 C7 
+C2 CK ST D3 
+D2 D6 DA D5 
+H7 H2 H4 HK 
+D4 S9 H5 S2 
+D7 DK DT H3 
+DQ D8 D9 S3 
+C6 CT H9 S4 
+DJ CJ H6 HJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:KJ54.9532.QT4.K9 AQ93.KT6.AJ7.Q65 T7.J74.95.J87432 862.AQ8.K8632.AT"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "3N"]
+[Result "12"]
+[Score "EW 690"]
+[ParScore "-1440"]
+[Auction "N"]
+PASS 1N PASS 3N
+PASS PASS PASS 
+[Play "S"]
+C4 CT CK C5 
+S7 S2 S4 SQ 
+H4 HQ H2 H6 
+CJ CA C9 C6 
+D9 D2 DQ DA 
+D5 D3 D4 DJ 
+C8 S6 H3 CQ 
+H7 H8 H9 HK 
+HJ HA H5 HT 
+C2 DK DT D7 
+C3 D8 S5 S3 
+C7 D6 SJ S9 
+ST S8 SK SA 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "N:96.QT98764.Q.Q85 83.AK32.A986.AJ6 K752.J.T753.K742 AQJT4.5.KJ42.T93"]
+[Scoring "IMP"]
+[Declarer "E"]
+[Contract "6D"]
+[Result "10"]
+[Score "EW -100"]
+[ParScore "-980"]
+[Auction "S"]
+PASS 1S PASS 2D
+PASS 3D PASS 4C
+PASS 4N PASS 5C
+PASS 6D PASS PASS
+PASS 
+[Play "S"]
+HJ H5 H6 HA 
+D5 DJ H4 HK 
+D3 DK DQ D6 
+D7 D2 S6 DA 
+S5 ST S9 S3 
+C2 C3 C5 CA 
+S2 SA HQ S8 
+S7 SQ H7 D8 
+C4 D4 H8 H2 
+SK SJ HT D9 
+DT C9 H9 H3 
+C7 CT CQ C6 
+CK S4 C8 CJ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:J8743.A8.AKJ862. KQ96.J962.Q9.J97 A52.5.T7.AKQ6532 T.KQT743.543.T84"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "5S"]
+[Result "10"]
+[Score "NS -100"]
+[ParScore "2220"]
+[Auction "N"]
+1D PASS 2C PASS
+2D PASS 3C PASS
+4S PASS 4N PASS
+5H PASS 5S PASS
+PASS PASS 
+[Play "E"]
+H2 H5 HQ HA 
+S6 SA ST S3 
+C7 CA C4 D2 
+C9 CK C8 D6 
+CJ CQ CT H8 
+D9 D7 D3 DA 
+DQ DT D4 DK 
+S9 S2 H3 S4 
+SK S5 H4 S7 
+SQ C2 H7 S8 
+H6 C3 HK SJ 
+H9 C5 D5 DJ 
+HJ C6 HT D8 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+% PBN 2.1
+% EXPORT
+[Event ""]
+[Site ""]
+[Date "2024-05-27"]
+[Board "None"]
+[West "BEN"]
+[North "BEN"]
+[East "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:KQ85.KQ85.J2.KQ4 J.72.A975.JT8532 AT974.AJT4.T.A97 632.963.KQ8643.6"]
+[Scoring "IMP"]
+[Declarer "N"]
+[Contract "6H"]
+[Result "12"]
+[Score "NS 1430"]
+[ParScore "980"]
+[Auction "N"]
+1N PASS 2C PASS
+2H PASS 4D PASS
+4H PASS 4N PASS
+5D PASS 6H PASS
+PASS PASS 
+[Play "E"]
+CJ C7 C6 CK 
+H2 HA H3 H5 
+H7 H4 H6 HK 
+C2 HJ H9 H8 
+SJ S4 S2 SK 
+C3 SA S3 S5 
+D5 S7 S6 SQ 
+C5 ST D3 S8 
+D9 S9 D4 D2 
+D7 DT DQ DJ 
+DA C9 DK HQ 
+CT CA D8 C4 
+C8 HT D6 CQ 
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+

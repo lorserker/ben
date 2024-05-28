@@ -884,9 +884,9 @@ class Sample:
             lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :32], opening_lead, dealer)
             while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
                 # We are RHO and trust partners lead
-                print("Reducing threshold")
+                #print("Reducing threshold")
                 lead_accept_threshold *= 0.5
-                print(lead_accept_threshold)
+                #print(lead_accept_threshold)
 
             # If we did not find 2 samples we ignore the test for opening lead
             if np.sum(lead_scores >= lead_accept_threshold) > 1:
