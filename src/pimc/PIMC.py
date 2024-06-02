@@ -337,7 +337,8 @@ class BGADLL:
         trump = self.find_trump(self.suit)
         if self.verbose:
             print("Trump:",trump)
-
+            print("mintricks",self.mintricks)
+            
         card_result = {}
         if self.autoplay and card != None:
             if self.verbose:
@@ -397,7 +398,7 @@ class BGADLL:
 
                 # Second element is the score. We need to calculate it
                 score = sum(self.score_by_tricks_taken[t + self.tricks_taken] for t in output) / count if count > 0 else 0
-                msg = f"{self.rho_constraints.ToString()} - {self.lho_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+                msg = f"LHO: {self.lho_constraints.ToString()} - RHO: {self.rho_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
 
                 card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
                 if self.verbose:

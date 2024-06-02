@@ -710,36 +710,36 @@
                                 html += '</div>'
                             }
                             else {
-                                // RHO
+                                // LHO
                                 if (player == 0) {
-                                    html += '<div>West: ' + data['hcp'][0] + ' hcp, shape: '
-                                } 
-                                if (player == 1) {
-                                    html += '<div>North: ' + data['hcp'][0] + ' hcp, shape: '
-                                } 
-                                if (player == 2) {
                                     html += '<div>East: ' + data['hcp'][0] + ' hcp, shape: '
                                 } 
-                                if (player == 3) {
+                                if (player == 1) {
                                     html += '<div>South: ' + data['hcp'][0] + ' hcp, shape: '
+                                } 
+                                if (player == 2) {
+                                    html += '<div>West: ' + data['hcp'][0] + ' hcp, shape: '
+                                } 
+                                if (player == 3) {
+                                    html += '<div>North: ' + data['hcp'][0] + ' hcp, shape: '
                                 } 
                                 
                                 for (let i = 0; i < 4; i++) {
                                     html += shape[i] + " "
                                 }
                                 html += '</div>'
-                                // LHO
+                                // RHO
                                 if (player == 0) {
-                                    html += '<div>East: ' + data['hcp'][1] + ' hcp, shape: '
-                                } 
-                                if (player == 1) {
-                                    html += '<div>South: ' + data['hcp'][1] + ' hcp, shape: '
-                                } 
-                                if (player == 2) {
                                     html += '<div>West: ' + data['hcp'][1] + ' hcp, shape: '
                                 } 
-                                if (player == 3) {
+                                if (player == 1) {
                                     html += '<div>North: ' + data['hcp'][1] + ' hcp, shape: '
+                                } 
+                                if (player == 2) {
+                                    html += '<div>East: ' + data['hcp'][1] + ' hcp, shape: '
+                                } 
+                                if (player == 3) {
+                                    html += '<div>South: ' + data['hcp'][1] + ' hcp, shape: '
                                 } 
                                 for (let i = 0; i < 4; i++) {
                                     html += shape[i + 4] + " "
