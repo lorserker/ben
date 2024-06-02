@@ -444,7 +444,7 @@ class PlayInfo {
                             html += '</div>'
                         }
                         else {
-                            // LHO
+                            // RHO
                             if (this.player == 0) {
                                 html += '<div>West: ' + this.data['hcp'][0] + ' hcp, shape: '
                             }
@@ -462,7 +462,7 @@ class PlayInfo {
                                 html += shape[i] + " "
                             }
                             html += '</div>'
-                            // RHO
+                            // LHO
                             if (this.player == 0) {
                                 html += '<div>East: ' + this.data['hcp'][1] + ' hcp, shape: '
                             }

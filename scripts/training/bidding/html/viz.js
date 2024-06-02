@@ -446,16 +446,16 @@ class PlayInfo {
                         else {
                             // RHO
                             if (this.player == 0) {
-                                html += '<div>East: ' + this.data['hcp'][0] + ' hcp, shape: '
-                            }
-                            if (this.player == 1) {
-                                html += '<div>South: ' + this.data['hcp'][0] + ' hcp, shape: '
-                            }
-                            if (this.player == 2) {
                                 html += '<div>West: ' + this.data['hcp'][0] + ' hcp, shape: '
                             }
-                            if (this.player == 3) {
+                            if (this.player == 1) {
                                 html += '<div>North: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            }
+                            if (this.player == 2) {
+                                html += '<div>East: ' + this.data['hcp'][0] + ' hcp, shape: '
+                            }
+                            if (this.player == 3) {
+                                html += '<div>South: ' + this.data['hcp'][0] + ' hcp, shape: '
                             }
 
                             for (let i = 0; i < 4; i++) {
@@ -464,16 +464,16 @@ class PlayInfo {
                             html += '</div>'
                             // LHO
                             if (this.player == 0) {
-                                html += '<div>West: ' + this.data['hcp'][1] + ' hcp, shape: '
-                            }
-                            if (this.player == 1) {
-                                html += '<div>North: ' + this.data['hcp'][1] + ' hcp, shape: '
-                            }
-                            if (this.player == 2) {
                                 html += '<div>East: ' + this.data['hcp'][1] + ' hcp, shape: '
                             }
-                            if (this.player == 3) {
+                            if (this.player == 1) {
                                 html += '<div>South: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            }
+                            if (this.player == 2) {
+                                html += '<div>West: ' + this.data['hcp'][1] + ' hcp, shape: '
+                            }
+                            if (this.player == 3) {
+                                html += '<div>North: ' + this.data['hcp'][1] + ' hcp, shape: '
                             }
                             for (let i = 0; i < 4; i++) {
                                 html += shape[i + 4] + " "

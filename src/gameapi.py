@@ -140,7 +140,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                 if verbose:
                     pprint.pprint(card_resp.to_dict(), width=200)
                 
-                return card_resp
+                return card_resp, player_i
 
             card52 = Card.from_symbol(play[card_i]).code()
             #print(play[card_i], card52, card_i, player_i, cardplayer_i)
@@ -491,9 +491,10 @@ def play():
             cardplayer = 2
         #print("cardplayer:",cardplayer)
         #print(hands)
-        card_resp =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
+        card_resp, player_i =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
+        result["player"] = player_i
         if record: 
             with shelve.open(f"{base_path}/gameapiplaydb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}

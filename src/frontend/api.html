@@ -621,7 +621,11 @@
 
         }
 
-        function displayPlay(data, player, declarer) {
+        function displayPlay(data, player, declarer, actual_hand) {
+            if (actual_hand == 1) {
+                // We lead from dummy
+                player = (player + 2) % 4
+            }
             let html = "<h3>Play</h3><br> " + data["card"] + " selected by " + data["who"] + "<br/><br/>"
 
             if ("candidates" in data && data.candidates.length > 0) {
@@ -710,36 +714,36 @@
                                 html += '</div>'
                             }
                             else {
-                                // LHO
+                                // RHO
                                 if (player == 0) {
-                                    html += '<div>East: ' + data['hcp'][0] + ' hcp, shape: '
-                                } 
-                                if (player == 1) {
-                                    html += '<div>South: ' + data['hcp'][0] + ' hcp, shape: '
-                                } 
-                                if (player == 2) {
                                     html += '<div>West: ' + data['hcp'][0] + ' hcp, shape: '
                                 } 
-                                if (player == 3) {
+                                if (player == 1) {
                                     html += '<div>North: ' + data['hcp'][0] + ' hcp, shape: '
+                                } 
+                                if (player == 2) {
+                                    html += '<div>East: ' + data['hcp'][0] + ' hcp, shape: '
+                                } 
+                                if (player == 3) {
+                                    html += '<div>Southth: ' + data['hcp'][0] + ' hcp, shape: '
                                 } 
                                 
                                 for (let i = 0; i < 4; i++) {
                                     html += shape[i] + " "
                                 }
                                 html += '</div>'
-                                // RHO
+                                // LHO
                                 if (player == 0) {
-                                    html += '<div>West: ' + data['hcp'][1] + ' hcp, shape: '
-                                } 
-                                if (player == 1) {
-                                    html += '<div>North: ' + data['hcp'][1] + ' hcp, shape: '
-                                } 
-                                if (player == 2) {
                                     html += '<div>East: ' + data['hcp'][1] + ' hcp, shape: '
                                 } 
-                                if (player == 3) {
+                                if (player == 1) {
                                     html += '<div>South: ' + data['hcp'][1] + ' hcp, shape: '
+                                } 
+                                if (player == 2) {
+                                    html += '<div>West: ' + data['hcp'][1] + ' hcp, shape: '
+                                } 
+                                if (player == 3) {
+                                    html += '<div>North: ' + data['hcp'][1] + ' hcp, shape: '
                                 } 
                                 for (let i = 0; i < 4; i++) {
                                     html += shape[i + 4] + " "
@@ -895,7 +899,7 @@
                 if ((action == 'play') || (action == 'lead')) {
                     const declarer = findDeclarer(bidding)
                     document.getElementById('result').innerText = `BEN Suggest: ${data.card}`;
-                    displayPlay(data, player, declarer);
+                    displayPlay(data, player, declarer, data["player"]);
                 }
             } catch (error) {
                 document.querySelector("#loader").style.visibility = "hidden";
