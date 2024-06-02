@@ -751,16 +751,16 @@ class Sample:
         
     
         # if trick_i == 7:
-        print("min_bid_scores", min_bid_scores)
-        for i in range(max(min_bid_scores.shape[0], 100)):
-             if min_bid_scores[i] > 0.04:
-                sample = '%s %s %s %s' % (
-                    hand_to_str(states[0][i, 0, :32].astype(int)),
-                    hand_to_str(states[1][i, 0, :32].astype(int)),
-                    hand_to_str(states[2][i, 0, :32].astype(int)),
-                    hand_to_str(states[3][i, 0, :32].astype(int)),
-                )
-                print(sample, min_bid_scores[i])
+        # print("min_bid_scores", min_bid_scores)
+        # for i in range(min(min_bid_scores.shape[0], 100)):
+        #      if min_bid_scores[i] > 0.04:
+        #         sample = '%s %s %s %s' % (
+        #             hand_to_str(states[0][i, 0, :32].astype(int)),
+        #             hand_to_str(states[1][i, 0, :32].astype(int)),
+        #             hand_to_str(states[2][i, 0, :32].astype(int)),
+        #             hand_to_str(states[3][i, 0, :32].astype(int)),
+        #         )
+        #         print(sample, min_bid_scores[i])
 
         # Perhaps this should be calculated more statistical, as we are just taking the bid with the highest score
         # This need to be updated to euclidian distance or logarithmic
