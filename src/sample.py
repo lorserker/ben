@@ -276,7 +276,7 @@ class Sample:
         n_samples = lho_pard_rho.shape[0]
 
         if self.verbose:
-            print(f"n_samples {n_samples} matching bidding info")
+            print(f"n_samples {n_samples} from bidding info")
             print("n_steps", n_steps)
         if (models.model_version == 0 or models.ns == -1):
             index = 0
@@ -321,11 +321,18 @@ class Sample:
         for i in range(n_steps):
             if lho_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores_lho = np.minimum(min_scores_lho, lho_sample_bids[:, i, lho_actual_bids[i]])
+                #print(lho_actual_bids[i])
+                if (lho_actual_bids[i] == 31):
+                    for j in range(n_samples):
+                        if (lho_sample_bids[j, i, lho_actual_bids[i]] >0.3):
+                            print(hand_to_str(lho_pard_rho[j, 0:1, :]))
+                            print(lho_sample_bids[j, i, lho_actual_bids[i]])
+                
             if pard_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores_partner = np.minimum(min_scores_partner, pard_sample_bids[:, i, pard_actual_bids[i]])
             if rho_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores_rho = np.minimum(min_scores_rho, rho_sample_bids[:, i, rho_actual_bids[i]])
-
+        
         if self.use_distance:
             # Initialize an array to store distances
             distances = np.zeros(n_samples)

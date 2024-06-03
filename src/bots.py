@@ -10,6 +10,7 @@ import scoring
 
 from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 from bidding import bidding
+from collections import defaultdict
 
 import carding
 from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed, get_play_status
@@ -243,17 +244,71 @@ class BotBid:
 
         #print("self.models.check_final_contract", self.models.check_final_contract)
         #print("candidates[0].bid", candidates[0].bid)
-        if self.models.check_final_contract:
-            if candidates[0].bid == "PASS" and len(samples) > 0:
+        if len(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
+            # We will avoid rescuing if we have a score of 500 or more
+            if candidates[0].bid == "PASS" and len(samples) > 0 and candidates[0].expected_score < 500:
                 # We need to find a sample or two from the bidding
-                print(samples[0].split(" ")[0])
-                X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[0].split(" ")[0])
-                contract_id, doubled, tricks = self.models.contract_model.model[0](X)
-                contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
-                result = {"contract": contract,
-                        "tricks": tricks}
-                print(result)
+                alternatives = {}
+                current_contract = bidding.get_contract(auction)[0:2]
+                if self.verbose:
+                    print("current_contract", current_contract)
+                for i in range(len(samples)):
+                    if self.verbose:
+                        print(samples[i].split(" ")[(self.seat + 2) % 4])
+                    X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
+                    contract_id, doubled, tricks = self.models.contract_model.model[0](X)
+                    contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
+                    if current_contract == contract:
+                        if self.verbose:
+                            print("Contract bid, stopping rescue")
+                        break
+                          
+                    # if the contract is in candidates we assume previous calculations are right and we stop
+                    for c in candidates:
+                        if c.bid == contract:
+                            if self.verbose:
+                                print("Contract found in candidates, stopping rescue")
+                            break
+                    # Skip invalid bids
+                    if bidding.can_bid(contract, auction):
+                        result = {"contract": contract, "tricks": tricks}
+                        score = scoring.score(contract, self.vuln, tricks)
+                        if self.verbose:
+                            print(result, score)
+                        if contract not in alternatives:
+                            alternatives[contract] = []
+                        alternatives[contract].append({"score": score, "tricks": tricks})
 
+                if len(alternatives) > 0:
+                    # Initialize dictionaries to store counts and total scores
+                    contract_counts = defaultdict(int)
+                    contract_total_scores = defaultdict(int)
+
+                    # Iterate through the alternatives dictionary to populate counts and total scores
+                    for contract, entries in alternatives.items():
+                        for entry in entries:
+                            score = entry["score"]
+                            
+                            contract_counts[contract] += 1
+                            contract_total_scores[contract] += score
+
+                    # Calculate the average scores
+                    contract_average_scores = {contract: contract_total_scores[contract] / contract_counts[contract]
+                                            for contract in contract_counts}
+
+                    # Print the results
+                    if self.verbose:
+                        print("Contract Counts:", dict(contract_counts))
+                        print("Contract Average Scores:", contract_average_scores)
+                    # Find the contract with the highest count
+                    max_count_contract = max(contract_counts, key=contract_counts.get)
+                    # Unless we gain 300 we will not override BEN
+                    if contract_average_scores[max_count_contract] > candidates[0].expected_score + 250:
+                        candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
+                                                    expected_score=contract_average_scores[max_count_contract], adjust=0)
+                        candidates.insert(0, candidatebid)
+                        who = "Rescue"
+                        print(f"Rescuing {current_contract} {max_count_contract}")
         # We return the bid with the highest expected score or highest adjusted score 
 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality)

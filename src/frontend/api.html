@@ -472,6 +472,7 @@
                 if (tokenKey && !tokens[0].startsWith("[")) {
                     if (tokenKey === 'Auction') {
                         line = line.replace(/Pass/g,"P").trim()
+                        line = line.replace(/PASS/g,"P").trim()
                         line = line.replace(/NT/g,"N")
                         line = line.replace(/ =\d+=/, '');
                         line = line.replace(/\s/g,"-")
