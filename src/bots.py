@@ -257,11 +257,12 @@ class BotBid:
                         print(samples[i].split(" ")[(self.seat + 2) % 4])
                     X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
                     contract_id, doubled, tricks = self.models.contract_model.model[0](X)
-                    contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
+                    contract = bidding.ID2BID[contract_id] 
+                    # If game bid in major do not bid 5 of that major 
                     if current_contract == contract:
                         if self.verbose:
                             print("Contract bid, stopping rescue")
-                            alternatives = {}
+                        alternatives = {}
                         break
                           
                     # if the contract is in candidates we assume previous calculations are right and we stop
@@ -269,12 +270,12 @@ class BotBid:
                         if c.bid == contract:
                             if self.verbose:
                                 print("Contract found in candidates, stopping rescue")
-                                alternatives = {}
+                            alternatives = {}
                             break
                     # Skip invalid bids
                     if bidding.can_bid(contract, auction):
                         result = {"contract": contract, "tricks": tricks}
-                        score = scoring.score(contract, self.vuln, tricks)
+                        score = scoring.score(contract + ("X" if doubled else ""), self.vuln, tricks)
                         if self.verbose:
                             print(result, score)
                         if contract not in alternatives:
