@@ -252,12 +252,19 @@ class BotBid:
                 current_contract = bidding.get_contract(auction)[0:2]
                 if self.verbose:
                     print("current_contract", current_contract)
+                break_outer = False
                 for i in range(len(samples)):
                     if self.verbose:
                         print(samples[i].split(" ")[(self.seat + 2) % 4])
                     X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
                     contract_id, doubled, tricks = self.models.contract_model.model[0](X)
                     contract = bidding.ID2BID[contract_id] 
+                    while not bidding.can_bid(contract, auction):
+                        contract_id += 5
+                        contract = bidding.ID2BID[contract_id] 
+                        
+                    if self.verbose: 
+                        print(contract, doubled, tricks)
                     # If game bid in major do not bid 5 of that major 
                     if current_contract == contract:
                         if self.verbose:
@@ -271,7 +278,11 @@ class BotBid:
                             if self.verbose:
                                 print("Contract found in candidates, stopping rescue")
                             alternatives = {}
+                            break_outer = True
                             break
+
+                    if break_outer:
+                        break
                     # Skip invalid bids
                     if bidding.can_bid(contract, auction):
                         result = {"contract": contract, "tricks": tricks}
@@ -281,6 +292,7 @@ class BotBid:
                         if contract not in alternatives:
                             alternatives[contract] = []
                         alternatives[contract].append({"score": score, "tricks": tricks})
+                        
 
                 if len(alternatives) > 0:
                     # Initialize dictionaries to store counts and total scores
@@ -311,7 +323,7 @@ class BotBid:
                                                     expected_score=contract_average_scores[max_count_contract], adjust=0)
                         candidates.insert(0, candidatebid)
                         who = "Rescue"
-                        print(f"Rescuing {current_contract} {max_count_contract}")
+                        print(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]}")
         # We return the bid with the highest expected score or highest adjusted score 
 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality)

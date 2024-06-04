@@ -144,7 +144,7 @@ def select_right_card(hand52, opening_lead, rng, contract, models):
             card_index = 13 - 1 - np.nonzero(np.flip(hand52.reshape((4, 13))[opening_suit]))[0][0]
             return card_index + 13 * opening_suit
 
-        if models.lead_from_pips_nt == "135":
+        if models.lead_from_pips_suit == "135":
             if suit_length < 3:
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
             else:
