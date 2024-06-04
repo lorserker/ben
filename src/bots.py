@@ -261,6 +261,7 @@ class BotBid:
                     if current_contract == contract:
                         if self.verbose:
                             print("Contract bid, stopping rescue")
+                            alternatives = {}
                         break
                           
                     # if the contract is in candidates we assume previous calculations are right and we stop
@@ -268,6 +269,7 @@ class BotBid:
                         if c.bid == contract:
                             if self.verbose:
                                 print("Contract found in candidates, stopping rescue")
+                                alternatives = {}
                             break
                     # Skip invalid bids
                     if bidding.can_bid(contract, auction):
