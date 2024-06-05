@@ -246,7 +246,7 @@ class BotBid:
         #print("candidates[0].bid", candidates[0].bid)
         if len(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
             # We will avoid rescuing if we have a score of 500 or more
-            if candidates[0].bid == "PASS" and len(samples) > 0 and candidates[0].expected_score < 500:
+            if candidates[0].bid == "PASS" and len(samples) > 0 and candidates[0].expected_score < 300 and good_quality:
                 # We need to find a sample or two from the bidding
                 alternatives = {}
                 current_contract = bidding.get_contract(auction)[0:2]
