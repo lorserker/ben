@@ -245,15 +245,15 @@ class BotBid:
         #print("self.models.check_final_contract", self.models.check_final_contract)
         #print("candidates[0].bid", candidates[0].bid)
         if len(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
-            # We will avoid rescuing if we have a score of 500 or more
-            if candidates[0].bid == "PASS" and len(samples) > 0 and candidates[0].expected_score < 300 and good_quality:
+            # We will avoid rescuing if we have a score of max_estimated_score or more
+            if candidates[0].bid == "PASS" and len(samples) > 0 and candidates[0].expected_score < self.models.max_estimated_score and good_quality:
                 # We need to find a sample or two from the bidding
                 alternatives = {}
                 current_contract = bidding.get_contract(auction)[0:2]
                 if self.verbose:
                     print("current_contract", current_contract)
                 break_outer = False
-                for i in range(len(samples)):
+                for i in range(min(len(samples), self.models.max_samples_checked)):
                     if self.verbose:
                         print(samples[i].split(" ")[(self.seat + 2) % 4])
                     X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
@@ -286,6 +286,10 @@ class BotBid:
                     # Skip invalid bids
                     if bidding.can_bid(contract, auction):
                         result = {"contract": contract, "tricks": tricks}
+                        level = int(contract[0])
+                        # Consider autodouble any contract going down
+                        if tricks >= level + 6:
+                            doubled = False
                         score = scoring.score(contract + ("X" if doubled else ""), self.vuln, tricks)
                         if self.verbose:
                             print(result, score)
@@ -318,7 +322,7 @@ class BotBid:
                     # Find the contract with the highest count
                     max_count_contract = max(contract_counts, key=contract_counts.get)
                     # Unless we gain 300 we will not override BEN
-                    if contract_average_scores[max_count_contract] > candidates[0].expected_score + 250:
+                    if contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward:
                         candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
                                                     expected_score=contract_average_scores[max_count_contract], adjust=0)
                         candidates.insert(0, candidatebid)
@@ -379,14 +383,12 @@ class BotBid:
         passout = False
         if no_bids > 3 and auction[-2:] == ['PASS', 'PASS']:
             # this is the final pass, so we wil have a second opinion
-            min_candidates = 2
+            min_candidates = self.models.min_passout_candidates
             passout = True
             # If we are doubled trust the bidding model
             # This is not good if we are doubled in a splinter
             # If we are doubled in pass out situation, never raise the suit
             
-            # if auction[-3:] == ['X', 'PASS', 'PASS']:
-            #    min_candidates = 2
         else:    
             if no_bids > self.eval_after_bid_count and auction[-2] != "PASS":
                 min_candidates = 2
