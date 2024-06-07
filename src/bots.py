@@ -297,8 +297,8 @@ class BotBid:
                             alternatives[contract] = []
                         alternatives[contract].append({"score": score, "tricks": tricks})
                         
-
-                if len(alternatives) > 0:
+                # Only if at least 75 of the samples suggest bidding check the score for the rescue bid
+                if len(alternatives) > 0.75 * min(len(samples), self.models.max_samples_checked):
                     # Initialize dictionaries to store counts and total scores
                     contract_counts = defaultdict(int)
                     contract_total_scores = defaultdict(int)

@@ -322,11 +322,11 @@ class Sample:
             if lho_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores_lho = np.minimum(min_scores_lho, lho_sample_bids[:, i, lho_actual_bids[i]])
                 #print(lho_actual_bids[i])
-                if (lho_actual_bids[i] == 31):
-                    for j in range(n_samples):
-                        if (lho_sample_bids[j, i, lho_actual_bids[i]] >0.3):
-                            print(hand_to_str(lho_pard_rho[j, 0:1, :]))
-                            print(lho_sample_bids[j, i, lho_actual_bids[i]])
+                # if (lho_actual_bids[i] == 31):
+                #     for j in range(n_samples):
+                #         if (lho_sample_bids[j, i, lho_actual_bids[i]] >0.3):
+                #             print(hand_to_str(lho_pard_rho[j, 0:1, :]))
+                #             print(lho_sample_bids[j, i, lho_actual_bids[i]])
                 
             if pard_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores_partner = np.minimum(min_scores_partner, pard_sample_bids[:, i, pard_actual_bids[i]])
