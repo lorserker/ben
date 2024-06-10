@@ -357,6 +357,11 @@ body {
     background-color: yellowgreen;
 }
 
+#bidding-box .alert {
+    background-color: blue;
+    color: white;
+}
+
 #bidding-box .double {
     background-color: red;
 }

@@ -294,21 +294,21 @@ class Sample:
         X_lho[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 0, :]).reshape((-1, 1)) - 10) / 4
         X_lho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 0, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         lho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 1) % 4, n_steps)
-        lho_sample_bids = models.bidder_model.model_seq(X_lho).reshape((n_samples, n_steps, -1))
+        lho_sample_bids = models.bidder_model.model_seq(X_lho)[0].reshape((n_samples, n_steps, -1))
 
         X_pard[:, :, :] = A_pard
         X_pard[:, :, 7+index:39+index] = lho_pard_rho[:, 1:2, :]
         X_pard[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 1, :]).reshape((-1, 1)) - 10) / 4
         X_pard[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         pard_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 2) % 4, n_steps)
-        pard_sample_bids = models.bidder_model.model_seq(X_pard).reshape((n_samples, n_steps, -1))
+        pard_sample_bids = models.bidder_model.model_seq(X_pard)[0].reshape((n_samples, n_steps, -1))
 
         X_rho[:, :, :] = A_rho
         X_rho[:, :, 7+index:39+index] = lho_pard_rho[:, 2:, :]
         X_rho[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 2, :]).reshape((-1, 1)) - 10) / 4
         X_rho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 2, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         rho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 3) % 4, n_steps)
-        rho_sample_bids = models.bidder_model.model_seq(X_rho).reshape((n_samples, n_steps, -1))
+        rho_sample_bids = models.bidder_model.model_seq(X_rho)[0].reshape((n_samples, n_steps, -1))
 
         # Consider having scores for partner and opponents
         # Current implementation should be updated due to long sequences is difficult to match
@@ -564,7 +564,7 @@ class Sample:
         # X[:,:,3+index:7+index] = (binary.get_shape(sample_hands).reshape((-1, 1, 4)) - 3.25) / 1.75
 
         actual_bids = bidding.get_bid_ids(auction, nesw_i, n_steps)
-        sample_bids = models.bidder_model.model_seq(X)
+        sample_bids = models.bidder_model.model_seq(X)[0]
         sample_bids = sample_bids.reshape((sample_hands.shape[0], n_steps, -1))
 
         min_scores = np.ones(sample_hands.shape[0])

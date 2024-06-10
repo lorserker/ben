@@ -76,11 +76,11 @@ class HumanBid:
         self.vuln = vuln
         self.name = name
 
-    async def async_bid(self, auction):
+    async def async_bid(self, auction, alert=None):
         self.render_auction_hand(auction)
         print('\n')
         bid = input('enter bid: ').strip().upper()
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None)
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
 
     def render_auction_hand(self, auction):
         clear_screen()
@@ -111,7 +111,7 @@ class HumanBidSocket:
         self.socket = socket
         self.name = name
 
-    async def async_bid(self, auction):
+    async def async_bid(self, auction, alert=None):
         await self.socket.send(json.dumps({
             'message': 'get_bid_input',
             'auction': auction,
@@ -121,7 +121,7 @@ class HumanBidSocket:
 
         bid = await self.socket.recv()
 
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = self.name, quality=None)
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = self.name, quality=None, alert=alert)
     
 
 class HumanLead:

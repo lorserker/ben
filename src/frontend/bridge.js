@@ -347,6 +347,7 @@ class Deal {
         } else {
             html += '<div class="redouble invalid">XX</div>'
         }
+        html += '<div class="alert">Alert</div>'
         html += '<div class="hint">Hint</div>'
         html += '</div>'
 

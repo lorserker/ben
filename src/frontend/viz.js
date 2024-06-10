@@ -511,7 +511,11 @@ class Auction {
         }
 
         for (const element of bids) {
-            this.paddedBids.push(element['bid'])
+            if (element['alert'] == 'True') {
+                this.paddedBids.push(element['bid']+"*")
+            } else {
+                this.paddedBids.push(element['bid'])
+            }
         }
         this.auctionString = ''
         for (const element of bids) {
@@ -550,7 +554,10 @@ class Auction {
             '': '',
             'PASS': 'p',
             'X': 'X',
-            'XX': 'XX'
+            'XX': 'XX',
+            'PASS*': 'p*',
+            'X*': 'X*',
+            'XX*': 'XX*'
         }
 
         if (bid in calls) {
@@ -559,6 +566,10 @@ class Auction {
 
         let level = bid[0]
         let symbol = bid[1]
+        let alert = ""
+        if (bid.length > 2) {
+            alert = bid[2]
+        }
 
         let symbolFormat = {
             'N': 'NT',
@@ -568,7 +579,7 @@ class Auction {
             'C': '<span>&clubs;</span>'
         }
 
-        return level + symbolFormat[symbol]
+        return level + symbolFormat[symbol] + alert
     }
 
 }

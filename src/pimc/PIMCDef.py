@@ -321,6 +321,7 @@ class BGADefDLL:
             print("min tricks",self.mintricks)
             print("Declarer",self.declarer_constraints.ToString())
             print("Partner",self.partner_constraints.ToString())
+            print("Autoplay",self.autoplay)
 
         try:
             card = self.pimc.SetupEvaluation([self.dummyhand, self.defendinghand], self.opposHand, self.playedHand, [self.declarer_constraints,
@@ -347,12 +348,15 @@ class BGADefDLL:
             print("mintricks",self.mintricks)
 
         card_result = {}
-        if self.autoplay and card != None:
-            if self.verbose:
-                print("Playing singleton:",trump)
-            card_result[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
-            return card_result            
-
+        if self.autoplay:
+            legalMoves = self.pimc.LegalMoves
+            if len(legalMoves) == 1:
+                card = legalMoves[0]
+                if self.verbose:
+                    print("Playing singleton:",card)
+                card_result[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
+                return card_result
+            
         start_time = time.time()
         try:
             self.pimc.BeginEvaluate(trump)

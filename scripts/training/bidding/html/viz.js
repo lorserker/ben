@@ -517,7 +517,11 @@ class Auction {
         }
 
         for (const element of bids) {
-            this.paddedBids.push(element['bid'])
+            if (element['alert'] == 'True') {
+                this.paddedBids.push(element['bid']+"*")
+            } else {
+                this.paddedBids.push(element['bid'])
+            }
         }
         this.auctionString = ''
         for (const element of bids) {

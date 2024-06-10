@@ -54,7 +54,7 @@ def random_deal_board(number=None):
 
 
 class AsyncBotBid(bots.BotBid):
-    async def async_bid(self, auction):
+    async def async_bid(self, auction, alert=None):
         return self.bid(auction)
 
 class AsyncBotLead(bots.BotLead):
@@ -761,31 +761,42 @@ class Driver:
         auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
+        alert = False
 
         while not bidding.auction_over(auction):
-            bid_resp = await players[player_i].async_bid(auction)
-            if bid_resp.bid == "Hint":
-                bid_resp = await hint_bots[player_i].async_bid(auction)
+            bid_resp = await players[player_i].async_bid(auction, alert)
+            if bid_resp.bid == "Alert": 
+                alert = not alert
                 await self.channel.send(json.dumps({
-                    'message': 'hint',
-                    'bids': bid_resp.to_dict()
+                    'message': 'alert',
+                    'alert': str(alert)
                 }))
-
                 await asyncio.sleep(0.1)
-            else :
-                self.bid_responses.append(bid_resp)
+            else:
+                if bid_resp.bid == "Hint":
+                    bid_resp = await hint_bots[player_i].async_bid(auction)
+                    await self.channel.send(json.dumps({
+                        'message': 'hint',
+                        'bids': bid_resp.to_dict()
+                    }))
 
-                auction.append(bid_resp.bid)
+                    await asyncio.sleep(0.1)
+                else :
+                    self.bid_responses.append(bid_resp)
 
-                await self.channel.send(json.dumps({
-                    'message': 'bid_made',
-                    'auction': auction
-                }))
+                    auction.append(bid_resp.bid)
 
-                player_i = (player_i + 1) % 4
-                # give time to client to redraw
-                await asyncio.sleep(0.1)
-            
+                    await self.channel.send(json.dumps({
+                        'message': 'bid_made',
+                        'auction': auction,
+                        'alert': str(alert)
+                    }))
+
+                    player_i = (player_i + 1) % 4
+                    # give time to client to redraw
+                    await asyncio.sleep(0.1)
+                    alert = False
+                
         return auction
 
 def random_deal_source():
@@ -887,7 +898,7 @@ async def main():
             rdeal = random_deal_board(boardno)
 
             # example of to use a fixed deal
-            # rdeal = ("KQJ7.A542.AQJ5.5 853.KJ9.K8.KQ984 64.T73.96432.A32 AT92.Q86.T7.JT76", 'N None')
+            rdeal = ('T7.KJT.AQT2.AQT4 KQJ952.Q972.K.87 84.A654.J9.KJ632 A63.83.876543.95', 'S E-W')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=biddingonly)

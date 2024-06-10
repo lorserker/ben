@@ -168,14 +168,14 @@ class TMClient:
                     pprint.pprint(bid_resp.samples, width=80)
                 auction.append(bid_resp.bid)
                 self.bid_responses.append(bid_resp)
-                await self.send_own_bid(bid_resp.bid)
+                await self.send_own_bid(bid_resp.bid, bid_resp.alert)
             else:
                 # just wait for the other player's bid
                 bid = await self.receive_bid_for(player_i)
                 if (player_i + 2) % 4 == self.player_i:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = 'Partner', quality=None)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = 'Partner', quality=None, alert=None)
                 else:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None, alert=None)
                 self.bid_responses.append(bid_resp)
                 auction.append(bid)
 
@@ -552,7 +552,7 @@ class TMClient:
         msg_card = f'{seat} plays {card_symbol[::-1]}'
         await self.send_message(msg_card)
 
-    async def send_own_bid(self, bid):
+    async def send_own_bid(self, bid, alert):
         bid = bid.replace('N', 'NT')
         msg_bid = f'{SEATS[self.player_i]} bids {bid}'
         if bid == 'PASS':
@@ -561,7 +561,8 @@ class TMClient:
             msg_bid = f'{SEATS[self.player_i]} doubles'
         elif bid == 'XX':
             msg_bid = f'{SEATS[self.player_i]} redoubles'
-        
+        if alert:
+            msg_bid += ' Alert.'
         await self.send_message(msg_bid)
 
     async def receive_card_play_for(self, player_i, trick_i):

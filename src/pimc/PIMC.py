@@ -266,6 +266,7 @@ class BGADLL:
             print(self.opposHand.ToString(), self.playedHand.ListAsString())
             print("Voids:", shown_out_suits)
             print(Macros.Player.South if player_i == 3 else Macros.Player.North)
+            print("Autoplay",self.autoplay)
 
 # for suit_index, constraints in zip([0, 1, 2, 3], [self.lho_constraints, self.rho_constraints]):
 #     for suit in range(4):
@@ -321,7 +322,7 @@ class BGADLL:
             print("West (LHO)",self.lho_constraints.ToString())
 
         try:
-            card = self.pimc.SetupEvaluation([self.northhand, self.southhand], self.opposHand, self.playedHand, [self.rho_constraints,
+            self.pimc.SetupEvaluation([self.northhand, self.southhand], self.opposHand, self.playedHand, [self.rho_constraints,
                                   self.lho_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North, self.max_playout, self.autoplay)
         except Exception as ex:        
             print('Error:', ex)
@@ -340,11 +341,15 @@ class BGADLL:
             print("mintricks",self.mintricks)
             
         card_result = {}
-        if self.autoplay and card != None:
-            if self.verbose:
-                print("Playing singleton:",trump)
-            card_result[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
-            return card_result
+        if self.autoplay:
+            legalMoves = self.pimc.LegalMoves
+            if len(legalMoves) == 1:
+                card = legalMoves[0]
+                if self.verbose:
+                    print("Playing singleton:",card)
+                card_result[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
+                return card_result
+
         start_time = time.time()
         try:
             self.pimc.BeginEvaluate(trump)

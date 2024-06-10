@@ -163,7 +163,7 @@
         }
 
         var deal
-
+        let alertbid = false
         function getTrickCardSlots() {
             return [
                 document.querySelector('.trick-north'),
@@ -255,7 +255,7 @@
                 return
             }
             ws.send(event.target.textContent)
-            deal.expectBidInput = event.target.textContent != "Hint"
+            deal.expectBidInput = (event.target.textContent != "Hint")
         }
 
         function bidSuitClick(event) {
@@ -381,13 +381,14 @@
                     .forEach(c => c.addEventListener('click', claimTricks))
                 document.querySelectorAll('#conceed')
                     .forEach(c => c.addEventListener('click', conceed))
-
+                alertbid = false
             } else if (data.message == "bid_made") {
                 deal.auction = data.auction
                 deal.renderAuction(document.querySelector('#auction-container'))
                 deal.turn = (deal.turn + 1) % 4
                 setTurn(deal.turn)
                 updateTable(deal)
+                alertbid = false
             } else if (data.message == "get_bid_input") {
                 deal.auction = data.auction
                 deal.canDouble = data.can_double
@@ -401,7 +402,7 @@
                     el.addEventListener("click", biddingLevelClick))
                 document.querySelectorAll('#bidding-suits div').forEach(el =>
                     el.addEventListener("click", bidSuitClick))
-            } else if (data.message == "hint") {
+                } else if (data.message == "hint") {
                 console.log(data)
                 let msg = "BEN suggest: " + data.bids.bid + "\n"
                 msg += "BEN considered: \n"
@@ -410,6 +411,14 @@
                     msg += element.insta_score+ "\n"
                 }
                 alert(msg)
+            } else if (data.message == "alert") {
+                alertbid = (data.alert == "True")
+                console.log(data)
+                if (alertbid) {
+                    alert("Your bid will be alerted")
+                } else {
+                    alert("Your bid will NOT be alerted")
+                }
             } else if (data.message == "auction_end") {
                 deal.auction = data.auction
                 deal.declarer = data.declarer

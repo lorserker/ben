@@ -8,38 +8,18 @@ import numpy as np
 from bidding.binary import DealData
 np.set_printoptions(precision=2, suppress=True, linewidth=220)
 
-LEVELS = [1, 2, 3, 4, 5, 6, 7]
-
-SUITS = ['C', 'D', 'H', 'S', 'N']
-SUIT_RANK = {suit: i for i, suit in enumerate(SUITS)}
-
-BID2ID = {
-    'PAD_START': 0,
-    'PAD_END': 1,
-    'PASS': 2,
-    'X': 3,
-    'XX': 4,
-}
-
-SUITBID2ID = {bid: (i+5) for (i, bid) in enumerate(
-    ['{}{}'.format(level, suit) for level in LEVELS for suit in SUITS])}
-
-BID2ID.update(SUITBID2ID)
-
-ID2BID = {bid: i for i, bid in BID2ID.items()}
-
 def load_deals(fin):
     deal_str = ''
 
     for line_number, line in enumerate(fin):
         # For now we remove alerts until we have an useable implementation
-        line = line.strip().replace("*",'')
+        # line = line.strip().replace("*",'')
         if line_number % 2 == 0:
             deal_str = line
         else:
             yield DealData.from_deal_auction_string(deal_str, line, "", ns, ew, 32)
 
-def create_binary(data_it, n, out_dir, ns, ew, alternating, bids):
+def create_binary(data_it, n, out_dir, ns, ew, alternating, bids, alert_supported = False):
     if ns == 0 or ew == 0:
         rows_pr_hand = 2
     else:
@@ -48,7 +28,10 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating, bids):
         x = np.zeros((rows_pr_hand * n, 8, 39 + bids * 40), dtype=np.float16)
     else:
         x = np.zeros((rows_pr_hand * n, 8, 41 + bids * 40), dtype=np.float16)
-    y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.uint8)
+    if alert_supported:
+        y = np.zeros((rows_pr_hand * n, 8, 41), dtype=np.uint8)
+    else:
+        y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.uint8)
 
     HCP = np.zeros((rows_pr_hand * n, 8, 3), dtype=np.float16)
     SHAPE = np.zeros((rows_pr_hand * n, 8, 12), dtype=np.float16)
@@ -60,9 +43,9 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating, bids):
             sys.stderr.flush()
         v = 0
         if alternating and (i % 2) == 1:
-            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, bids, n_steps = 8)
+            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, bids, n_steps = 8, alert_supported = alert_supported)
         else:
-            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, bids, n_steps = 8)
+            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, bids, n_steps = 8, alert_supported = alert_supported)
         if ns == 0:
             # with system = 0 we discard the hand
             x[k:k+1] = x_part[1]
@@ -112,8 +95,8 @@ def to_numeric(value, default=0):
 
 if __name__ == '__main__':
 
-    if len(sys.argv) < 2:
-        print("Usage: python bidding_binary.py inputfile outputdirectory NS=<x> EW=<y> alternate=True version=2")
+    if len(sys.argv) < 3:
+        print("Usage: python bidding_binary.py inputfile outputdirectory NS=<x> EW=<y> alternate=True version=2 alert_supported=True")
         print("NS and EW are optional. If set to -1 no information about system is included in the model.")
         print("If set to 0 the hands from that side will not be used for training.")
         print("The input file is the BEN-format (1 line with hands, and next line with the bidding).")
@@ -127,8 +110,8 @@ if __name__ == '__main__':
     ew = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), -1)
     alternating = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alternate")), False)
     version = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("version")), "2")
-
-    sys.stderr.write(f"NS={ns}, EW={ew}, Alternating={alternating}, Version={version}\n")
+    alert_supported = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alert_supported")), False)
+    sys.stderr.write(f"NS={ns}, EW={ew}, Alternating={alternating}, Version={version}, alert_supported={alert_supported}\n")
     ns = to_numeric(ns)
     ew = to_numeric(ew)
 
@@ -145,5 +128,5 @@ if __name__ == '__main__':
                 sys.exit()
 
         data_it = load_deals(lines)
-        create_binary(data_it, n, outdir, ns, ew, alternating, 4 if version == "2" else 3)
+        create_binary(data_it, n, outdir, ns, ew, alternating, 4 if version == "2" else 3, alert_supported=alert_supported)
 

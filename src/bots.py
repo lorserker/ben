@@ -324,13 +324,13 @@ class BotBid:
                     # Unless we gain 300 we will not override BEN
                     if contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward:
                         candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
-                                                    expected_score=contract_average_scores[max_count_contract], adjust=0)
+                                                    expected_score=contract_average_scores[max_count_contract], adjust=0, alert = False)
                         candidates.insert(0, candidatebid)
                         who = "Rescue"
                         print(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]}")
         # We return the bid with the highest expected score or highest adjusted score 
 
-        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality)
+        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality, alert = candidates[0].alert)
     
     def do_rollout(self, auction, candidates, max_candidate_score):
         if candidates[0].insta_score > max_candidate_score:
@@ -350,10 +350,14 @@ class BotBid:
         return True
 
     def get_bid_candidates(self, auction):
-        bid_softmax = self.next_bid_np(auction)[0]
+        bid_softmax, alerts = self.next_bid_np(auction)
+    
         if self.verbose:
             index_highest = np.argmax(bid_softmax)
-            print(f"bid {bidding.ID2BID[index_highest]} value {bid_softmax[index_highest]:.4f} is recommended by NN")
+            if self.models.alert_supported and alerts[0] > 0.5:
+                print(f"bid {bidding.ID2BID[index_highest]} value {bid_softmax[index_highest]:.4f} is recommended by NN with alert")
+            else:
+                print(f"bid {bidding.ID2BID[index_highest]} value {bid_softmax[index_highest]:.4f} is recommended by NN")
 
         candidates = []
 
@@ -362,8 +366,12 @@ class BotBid:
             while True:
                 # We have to loop to avoid returning an invalid bid
                 bid_i = np.argmax(bid_softmax)
+                if self.models.alert_supported:
+                    alert = alerts[0]  > 0.5
+                else:
+                    alert = None
                 if bidding.can_bid(bidding.ID2BID[bid_i], auction):
-                    candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
+                    candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i], alert=alert))
                     break
                 else:
                     # Only report it if above threshold
@@ -411,7 +419,11 @@ class BotBid:
                 if len(candidates) >= min_candidates:
                     break
             if bidding.can_bid(bidding.ID2BID[bid_i], auction):
-                candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i]))
+                if self.models.alert_supported:
+                    alert = alerts[0]  > 0.5
+                else:
+                    alert = None
+                candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i], alert = alert))
             else:
                 # Seems to be an error in the training that needs to be solved
                 # Only report it if above threshold
@@ -434,6 +446,7 @@ class BotBid:
         return candidates, passout
 
     def next_bid_np(self, auction):
+        alerts = None
         if self.verbose:
             print("next_bid_np", self.models.name, self.models.model_version, self.models.ns)
         if self.models.model_version == 0 or self.models.ns == -1:
@@ -441,7 +454,10 @@ class BotBid:
             # If API we have no history
             if self.models.model_version == 2:
                 bid_np = self.models.bidder_model.model_seq(x)
-                bid_np = bid_np[-1:]
+                if self.models.alert_supported:
+                    alerts = bid_np[1][-1:][0]                   
+                bid_np = bid_np[0][-1:][0]
+
             else:
                 x = x[:,-1,:]
                 bid_np, next_state = self.models.bidder_model.model(x, self.state)
@@ -450,7 +466,7 @@ class BotBid:
             x = self.get_binary(auction, self.models)
             bid_np = self.models.bidder_model.model_seq(x)
             bid_np = bid_np[-1:]
-        return bid_np
+        return bid_np, alerts
     
     def sample_hands_for_auction(self, auction_so_far, turn_to_bid):
         # The longer the aution the more hands we might need to sample
@@ -511,7 +527,7 @@ class BotBid:
             #auction = bidding.get_auction_as_list(auction_np[2])
             #print(n_steps_vals, turn_i, bid_i, auction)
             X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models)
-            y_bid_np = self.models.bidder_model.model_seq(X)
+            y_bid_np = self.models.bidder_model.model_seq(X)[0]
             #print(y_bid_np)
             x_bid_np = y_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
             bid_np = x_bid_np[:,-1,:]

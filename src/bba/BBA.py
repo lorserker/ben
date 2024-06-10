@@ -36,7 +36,7 @@ class BBABotBid:
     conventions_list = {
         "1D opening with 4 cards": False,
         "1D opening with 5 cards": False,
-        "1m opening allows 5M": False,
+        "1m opening allows 5M": True,
         "1m opening allows 5M strong": True,
         "1M-3M blocking": False,
         "1M-3M inviting": True,
@@ -44,27 +44,30 @@ class BBABotBid:
         "5NT pick a slam": True,
         "Bergen": False,
         "Blackwood 0123": False,
-        "Blackwood 0314": False,
-        "Blackwood 1430": True,
+        "Blackwood 0314": True,
+        "Blackwood 1430": False,
         "BROMAD": False,
         "Canape style": False,
-        "Cappelletti": False,
-        "Checkback": True,
+        "Cappelletti": True,
+        "Checkback": False,
         "Crosswood 0123": False,
         "Crosswood 0314": False,
         "Crosswood 1430": False,
         "Cue bid": True,
+        "DEPO": False,
+        "DOPI": False,
         "Drury": True,
         "Exclusion": False,
         "Extended acceptance after NT": False,
         "Fit showing jumps": True,
-        "Forcing 1NT": False,
-        "Fourth suit": True,
+        "Forcing 1NT": True,
+        "Fourth suit": False,
+        "Fourth suit game force": True,
         "French 2D": False,
-        "Gambling": True,
+        "Gambling": False,
         "Gazzilli": False,
         "Gerber": True,
-        "Gerber only for 1NT and 2NT openings": True,
+        "Gerber only for 1NT and 2NT openings": False,
         "Ghestem": False,
         "Inverted minors": True,
         "Jacoby 2NT": True,
@@ -72,6 +75,8 @@ class BBABotBid:
         "Kickback 0123": False,
         "Kickback 0314": False,
         "Kickback 1430": False,
+        "King ask by 5NT": True,
+        "King ask by available bid": False,
         "Leaping Michaels": False,
         "Lebensohl after 1NT": True,
         "Lebensohl after 1m": False,
@@ -79,23 +84,26 @@ class BBABotBid:
         "Maximal Doubles": True,
         "Michaels Cuebid": True,
         "Mini Splinter": False,
-        "Minor Suit Stayman after 1NT": False,
+        "Minor Suit Slam Try after 2NT": False,
+        "Minor Suit Stayman after 1NT": True,
         "Minor Suit Stayman after 2NT": True,
         "Minor Suit Transfers after 1NT": True,
         "Minor Suit Transfers after 2NT": False,
         "Mixed raise": True,
         "Multi": False,
-        "Multi-Landy": True,
-        "Namyats": True,
+        "Multi-Landy": False,
+        "Namyats": False,
+        "New Minor Forcing": True,
         "Ogust": True,
         "Polish two suiters": False,
+        "Puppet Stayman after 2NT": False,
         "Quantitative 4NT": True,
         "Raptor 1NT": False,
         "Responsive double": True,
         "Reverse Bergen": False,
         "Reverse drury": False,
         "Reverse style": False,
-        "ROPI DOPI": True,
+        "ROPI": True,
         "Rubensohl after 1NT": False,
         "Rubensohl after 1m": False,
         "Rubensohl after double": False,
@@ -105,6 +113,7 @@ class BBABotBid:
         "Soloway Jump Shifts": True,
         "Soloway Jump Shifts Extended": False,
         "Splinter": True,
+        "Strength Lawrence structure": False,
         "Support 1NT": True,
         "Support double redouble": True,
         "Two suit takeout double": True,
@@ -112,7 +121,7 @@ class BBABotBid:
         "Two Way New Minor Forcing": False,
         "Unusual 1NT": True,
         "Unusual 2NT": True,
-        "Unusual 4NT": True,
+        "Unusual 4NT": False,
         "Weak Jump Shifts": False,
         "Western cue bid": False,
         "Weak natural 2D": True,
@@ -148,8 +157,8 @@ class BBABotBid:
         self.player.set_system_type(self.C_WE,int(ew_system))
 
         # This is what we play
-        print("System NS:", self.player.system_name(0), ns_system)
-        print("System EW:", self.player.system_name(1), ew_system)
+        print("System NS:", self.player.system_name(0))
+        print("System EW:", self.player.system_name(1))
 
          # Iterate through the conventions array and set conventions for a player at a specific position
         for convention, selected in self.conventions_list.items():
@@ -178,8 +187,41 @@ class BBABotBid:
     #2 - WJ;
     #3 - PC,
 
-    async def async_bid(self, auction):
+    async def async_bid(self, auction, alert=None):
         return self.bid(auction)
+
+    def explain(self, auction):
+        #print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)
+        #self.player.new_hand(self.position, self.hand_str, self.dealer, self.vuln)
+
+        for k in range(len(auction)):
+            bidid = bidding.BID2ID[auction[k]]
+            if bidid < 2:
+                continue
+            if bidid < 5:
+                bidid = bidid - 2
+            #print("set_bid",(k % 4, bidid))
+            self.player.set_bid(k % 4, bidid)
+            lastbid = bidid
+
+        # Interpret the potential bid
+        self.player.interpret_bid(lastbid)
+        # Get information from Player(position) about the interpreted player
+        meaning = self.player.get_info_meaning(self.C_INTERPRETED)
+        if not meaning: meaning = ""
+        info = self.player.get_info_feature(self.C_INTERPRETED)
+        minhcp = info[102]
+        maxhcp = info[103]
+        alert = info[144] == 1
+        if minhcp > 0:
+            if maxhcp < 37:
+                meaning += f" ({minhcp}-{maxhcp} hcp)"
+            else:
+                meaning += f" ({minhcp}+ hcp)"
+        elif maxhcp < 37:
+            meaning += f" ({maxhcp}- hcp)"
+        #print(f"Bid: {auction[-1]}={meaning} {'*' if alert else ''}")
+        return f"Bid: {auction[-1]}={meaning} {'*' if alert else ''}"
 
     # Define a Python function to find a bid
     def bid(self, auction):
@@ -193,11 +235,11 @@ class BBABotBid:
                 continue
             if bidid < 5:
                 bidid = bidid - 2
-            print("set_bid",(k % 4, bidid))
+            #print("set_bid",(k % 4, bidid))
             self.player.set_bid(k % 4, bidid)
 
 
-        print("get_bid()")
+        #print("get_bid()")
         new_bid = self.player.get_bid()
 
         # Interpret the potential bid
@@ -210,6 +252,7 @@ class BBABotBid:
         info = self.player.get_info_feature(self.C_INTERPRETED)
         minhcp = info[102]
         maxhcp = info[103]
+        alert = info[144] == 1
         if minhcp > 0:
             if maxhcp < 37:
                 meaning += f" {minhcp}-{maxhcp} hcp"
@@ -219,5 +262,5 @@ class BBABotBid:
             meaning += f" {maxhcp}- hcp"
 
         print(f"Bid: {bidding.ID2BID[new_bid]}={meaning}")
-        return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA", quality=None)
+        return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA", quality=None, alert = alert)
 

@@ -165,21 +165,23 @@ class CardResp:
 
 class CandidateBid:
 
-    def __init__(self, bid, insta_score, expected_score=None, adjust=None):
+    def __init__(self, bid, insta_score, expected_score=None, adjust=None, alert = None):
         self.bid = bid
         self.insta_score = None if insta_score is None else float(insta_score)
         self.expected_score = None if expected_score is None else float(expected_score)
         self.adjust = None if adjust is None else float(adjust)
+        self.alert = alert
 
     def __str__(self):
         bid_str = self.bid.ljust(4) if self.bid is not None else "    "
         insta_score_str = f"{self.insta_score:.4f}" if self.insta_score is not None else "---"
         expected_score_str = f"{self.expected_score:5.2f}" if self.expected_score is not None else "---"
         adjust_str = f"{self.adjust:4.0f}" if self.adjust is not None else "---"
-        return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, adjust={adjust_str})"
+        alert_str = "alertable" if self.alert else "  "
+        return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, adjust={adjust_str}, alert={alert_str})"
 
     def with_expected_score(self, expected_score, adjust):
-        return CandidateBid(self.bid, self.insta_score, expected_score, adjust)
+        return CandidateBid(self.bid, self.insta_score, expected_score, adjust, self.alert)
 
     def to_dict(self):
         result = {
@@ -194,13 +196,16 @@ class CandidateBid:
         
         if self.adjust is not None:
             result['adjustment'] = round(self.adjust)
-        
+
+        if self.alert is not None:
+            result['alert'] = str(self.alert)
+
         return result
 
 
 class BidResp:
 
-    def __init__(self, bid, candidates, samples, shape, hcp, who, quality):
+    def __init__(self, bid, candidates, samples, shape, hcp, who, quality, alert):
         self.bid = bid
         self.candidates = candidates
         self.samples = samples
@@ -208,6 +213,7 @@ class BidResp:
         self.hcp = hcp
         self.who = who
         self.quality = quality
+        self.alert = alert
     
     def convert_to_floats(self, array):
         return [round(float(value), 1) if float(value) != int(value) else int(value) for value in array]
@@ -242,6 +248,9 @@ class BidResp:
             result['hcp'] = hcp_values
         if shape_values and shape_values != -1:
             result['shape'] = shape_values
+
+        if self.alert is not None:
+            result['alert'] = str(self.alert)
 
         return result
 

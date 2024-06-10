@@ -28,7 +28,8 @@ class Models:
                  adjust_min2_by,
                  use_suitc,
                  check_final_contract,
-                 max_samples_checked
+                 max_samples_checked,
+                 alert_supported
                  ):
         self.name = name
         self.model_version = model_version
@@ -92,6 +93,7 @@ class Models:
         self.use_suitc = use_suitc
         self.check_final_contract = check_final_contract
         self.max_samples_checked = max_samples_checked
+        self.alert_supported = alert_supported
 
 
     @classmethod
@@ -101,6 +103,7 @@ class Models:
         name = conf.get('models', 'name', fallback="BEN")
         model_version = conf.getint('models', 'model_version', fallback=2)
         api = conf.getboolean('models', 'api', fallback=False)
+        alert_supported = conf.getboolean('bidding', 'alert_supported', fallback=False)
         search_threshold = float(conf['bidding']['search_threshold'])
         no_search_threshold = conf.getfloat('bidding', 'no_search_threshold', fallback=1)
         eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=24)
@@ -111,6 +114,7 @@ class Models:
         check_final_contract = conf.getboolean('bidding', 'check_final_contract', fallback=False)
         max_samples_checked = conf.getint('bidding', 'max_samples_checked', fallback=10)
         use_probability = conf.getboolean('bidding', 'use_probability', fallback=False)
+        alert_supported = conf.getboolean('bidding', 'alert_supported', fallback=False)
         sample_hands_for_review = conf.getint('sampling', 'sample_hands_for_review', fallback=200)
         lead_threshold = float(conf['lead']['lead_threshold'])
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
@@ -149,12 +153,8 @@ class Models:
         opening_lead_included = conf.getboolean('cardplay', 'opening_lead_included', fallback=False)
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'claim', fallback=False)
         use_suitc = conf.getboolean('cardplay', 'use_suitc', fallback=False)
-        if use_bba == True:
-            bba_ns = float(conf['models']['bba_ns'])
-            bba_ew = float(conf['models']['bba_ew'])
-        else:
-            bba_ns = -1
-            bba_ew = -1
+        bba_ns = float(conf['models']['bba_ns'])
+        bba_ew = float(conf['models']['bba_ew'])
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
         if model_version == 0:
             ns = -1
@@ -164,7 +164,10 @@ class Models:
         else:
             ns = float(conf['models']['ns'])
             ew = float(conf['models']['ew'])
-            from nn.bidderv2 import Bidder
+            if alert_supported:
+                from nn.bidderv3 import Bidder
+            else:
+                from nn.bidderv2 import Bidder
             bidder_model = Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder']))
 
         return cls(
@@ -210,6 +213,7 @@ class Models:
             double_dummy_eval=double_dummy_eval,
             opening_lead_included=opening_lead_included,
             use_probability=use_probability,
+            alert_supported=alert_supported,
             matchpoint=matchpoint,
             pimc_use_declaring=pimc_use_declaring,
             pimc_use_defending=pimc_use_defending,

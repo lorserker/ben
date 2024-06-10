@@ -127,6 +127,8 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
             if card_i >= len(play):
                 assert (player_i == position or (player_i == 1 and position == 3)), f"Cardplay order is not correct {play} {player_i} {position}"
                 play_status = get_play_status(card_players[player_i].hand52,current_trick52)
+                if verbose:
+                    print("play_status", play_status)
 
                 rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
                 assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
@@ -529,6 +531,35 @@ def get_binary_contract(position, vuln, hand_str, dummy_str):
     ), axis=1)
     X = ftrs
     return X
+
+@app.route('/explain')
+def explain():
+    from bba.BBA import BBABotBid
+    # First we extract the hands and seat
+    seat = request.args.get("seat")
+    # Then vulnerability
+    v = request.args.get("vul")
+    vuln = []
+    vuln.append('@v' in v)
+    vuln.append('@V' in v)
+    # And finally we deduct our position
+    position_i = dealer_enum[seat]
+    dealer = request.args.get("dealer")
+    dealer_i = dealer_enum[dealer]
+    if verbose:
+        print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
+    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "", vuln, dealer_i)
+    ctx = request.args.get("ctx")
+    # Split the string into chunks of every second character
+    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+
+    auction = create_auction(bids, dealer_i)
+
+    explanation = bot.explain(auction)
+    
+    result = {"explanation": explanation} # explaination
+
+    return json.dumps(result)
 
 @app.route('/contract')
 def contract():

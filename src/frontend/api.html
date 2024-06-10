@@ -73,7 +73,8 @@
                     
         <button onclick="callAPI('bid')">Ask BEN for bid</button>&nbsp;&nbsp;
         <button onclick="callAPI('play')">Ask BEN for play</button><br><br>
-        <button onclick="callAPI('contract')">Ask BEN for contract</button><br><br>
+        <button onclick="callAPI('contract')">Ask BEN for contract</button>&nbsp;&nbsp;
+        <button onclick="callAPI('explain')">Explain last bid</button><br><br>
         <div id="result"></div><br><br>
         <div id="info"></div><br><br>
         <div><a href="/home">Home</a></div>
@@ -426,8 +427,6 @@
                     if (declarer) {
                         const dummy = ("NESW".indexOf(currentBlock.value) + 2) % 4
                         document.getElementById('dummyInput').value = hands[dummy]
-                    } else {
-                        alert("No declarer in input")
                     }
 
                 } 
@@ -577,8 +576,12 @@
 
         let bids = 0;
         function displayBid(data) {
+            let alert = "";
+            if (data.alert == "True") {
+                alert = "*";
+            }
             let html = `
-                <p class="bid"><strong>Bid:</strong> ${data.bid} ${data.who ? ' by ' + data.who : ''}</p>
+                <p class="bid"><strong>Bid:</strong> ${data.bid}${alert} ${data.who ? ' by ' + data.who : ''}</p>
                 `;
             if (data.candidates && data.candidates.length > 0)
                 html += `
@@ -896,6 +899,9 @@
                 }
                 if (action == 'contract') {
                     document.getElementById('result').innerText = `BEN Suggest: ${data.contract} with ${data.tricks} tricks`;
+                }
+                if (action == 'explain') {
+                    document.getElementById('result').innerText = `Mening: ${data.explanation}`;
                 }
                 if ((action == 'play') || (action == 'lead')) {
                     const declarer = findDeclarer(bidding)

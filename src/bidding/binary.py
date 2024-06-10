@@ -104,12 +104,16 @@ class DealData(object):
 
         return X, y
     
-    def get_binary_hcp_shape(self, ns, ew, bids, n_steps=8):
+    def get_binary_hcp_shape(self, ns, ew, bids, n_steps=8, alert_supported=False):
         if ns == -1:
             X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + bids * 40), dtype=np.float16)
         else: 
             X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + bids * 40), dtype=np.float16)
-        y = np.zeros((4, n_steps, 40), dtype=np.float16)
+
+        if alert_supported:
+            y = np.zeros((4, n_steps, 41), dtype=np.float16)
+        else:
+            y = np.zeros((4, n_steps, 40), dtype=np.float16)
         HCP = np.zeros((4, n_steps, 3), dtype=np.float16)
         SHAPE = np.zeros((4, n_steps, 12), dtype=np.float16)
         
@@ -159,7 +163,7 @@ class DealData(object):
             ), axis=1)
 
             X[hand_ix, t, :] = ftrs
-            y[hand_ix, t, :] = bidding.encode_bid(target_bid)
+            y[hand_ix, t, :] = bidding.encode_bid(target_bid, alert_supported)
 
             HCP[hand_ix, t, 0] = self.hcp[(hand_ix - 3) % 4][0]
             HCP[hand_ix, t, 1] = self.hcp[(hand_ix - 2) % 4][0]
