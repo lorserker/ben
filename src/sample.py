@@ -222,7 +222,7 @@ class Sample:
 
         accepted = np.sum(accept)
         if self.verbose:
-            print(f'sample_cards_vec took {time.time() - t_start:0.4} Deals: {accepted}')
+            print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals: {accepted}')
 
         # If we have filtered to many away just return all samples - performance            
         if accepted >= n_samples / 2:
@@ -886,7 +886,7 @@ class Sample:
                 # We are RHO and trust partners lead
                 lead_accept_threshold = self.lead_accept_threshold + self.lead_accept_threshold_partner_trust
                 if self.verbose:
-                    print(f"RHO and trust partners lead {lead_accept_threshold}")
+                    print(f"RHO and trust partners lead: {lead_accept_threshold:0.3f}")
             else: 
                 # How much trust that opponents would have lead the actual card from the hand sampled
                 lead_accept_threshold = self.lead_accept_threshold
@@ -952,10 +952,6 @@ class Sample:
                 n_tricks_pred = trick_i + len(card_played_current_trick)
             else:
                 n_tricks_pred = trick_i + len(card_played_current_trick)
-
-            if self.verbose:
-                print("n_tricks_pred", n_tricks_pred)
-                print(states[p_i][0, :n_tricks_pred, :])
                 
             # Depending on suit or NT we must select the right model
             # 0-3 is for NT 4-7 is for suit
@@ -965,8 +961,7 @@ class Sample:
             # The opening lead is validated elsewhere, so we just change the score to 1 for all samples
             if p_i == 0 and models.opening_lead_included:
                 card_scores[:, 0] = 1
-            if self.verbose:
-                print("card_scores", card_scores)
+
             min_scores = np.minimum(min_scores, np.min(card_scores, axis=1))
             
         # Trust in the play until now

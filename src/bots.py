@@ -708,7 +708,7 @@ class BotBid:
             decl_tricks_softmax[i,13 - first_item[0]] = 1
 
         if self.verbose:
-            print(f'dds took {time.time() - t_start:.3f}')
+            print(f'dds took: {(time.time() - t_start):0.4f}')
         return contracts, decl_tricks_softmax
         
 
@@ -899,7 +899,7 @@ class BotLead:
             tricks = self.single_dummy_estimates(lead_card_indexes, contract, accepted_samples)
         
         if self.verbose:
-            print(f'simulate_outcomes_opening_lead took {time.time() - t_start:0.4}')
+            print(f'simulate_outcomes_opening_lead took {(time.time() - t_start):0.4f}')
 
         return accepted_samples, sorted_scores, tricks, p_hcp, p_shp, good_quality
 
@@ -950,7 +950,7 @@ class BotLead:
                 tricks[i, j, 0] = first_item[0] 
                 tricks[i, j, 1] = 1 if (13 - first_item[0]) >= tricks_needed else 0
             if self.verbose:
-                print(f'dds took {time.time() - t_start:0.4}')
+                print(f'dds took: {(time.time() - t_start):0.4f}')
         return tricks
 
     def single_dummy_estimates(self, lead_card_indexes, contract, accepted_samples):
@@ -997,7 +997,7 @@ class BotLead:
             tricks[:, j, 0:1] = expected_tricks_sd(result_array)
             tricks[:, j, 1:2] = p_defeat_contract(contract, result_array)
         if self.verbose:
-            print(f'single dummy estimates took {time.time() - t_start:0.4}')
+            print(f'single dummy estimates took {(time.time() - t_start):0.4f}')
         return tricks
 
 class CardPlayer:
@@ -1272,16 +1272,17 @@ class CardPlayer:
             else:
                 card_ev = self.get_card_ev(dd_solved)
         if self.verbose:
-            print("card_ev:", card_ev)
-
+            print("card_ev:")
+            for card, ev in card_ev.items():
+                print(f"{card}: {ev:.3f}")
         card_result = {}
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key], making[key])
             if self.verbose:
-                print(deck52.decode_card(key), card_tricks[key], card_ev[key], making[key])
+                print(f'{deck52.decode_card(key)} {card_tricks[key]:0.2f} {card_ev[key]:5.0f} {making[key]:0.2f}')
 
         if self.verbose:
-            print(f'dds took {time.time() - t_start:0.4}')
+            print(f'dds took: {(time.time() - t_start):0.4f}')
 
         return card_result
     
@@ -1372,7 +1373,8 @@ class CardPlayer:
 
         card_nn = {c:s for c, s in zip(card_options, card_scores)}
         if self.verbose:
-            print(card_nn)
+            for card, ev in card_nn.items():
+                print(f"{card}: {ev:.3f}")
 
         candidate_cards = []
         
@@ -1430,7 +1432,8 @@ class CardPlayer:
 
         card_nn = {c:s for c, s in zip(card_options, card_scores)}
         if self.verbose:
-            print(card_nn)
+            for card, ev in card_nn.items():
+                print(f"{card}: {ev:.3f}")
 
         candidate_cards = []
         

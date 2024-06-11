@@ -38,6 +38,7 @@
         <div id="parsedData" style="display: hidden"></div>
 
         <input type="checkbox" id="matchpoint" data-default="false"><label for="matchpoint">Matchpoint</label><br>
+        <input type="checkbox" id="explain" data-default="false"><label for="explain">Explain bid</label><br>
     
         <label for="dealerInput">Dealer:</label>
         <select id="dealerInput">
@@ -576,12 +577,16 @@
 
         let bids = 0;
         function displayBid(data) {
-            let alert = "";
+            let alerted = "";
             if (data.alert == "True") {
-                alert = "*";
+                alerted = "*";
+            }
+            let explanation = "";
+            if (data.explanation) {
+                explanation = ` (${data.explanation})`;
             }
             let html = `
-                <p class="bid"><strong>Bid:</strong> ${data.bid}${alert} ${data.who ? ' by ' + data.who : ''}</p>
+                <p class="bid"><strong>Bid:</strong> ${data.bid}${alerted} ${explanation} ${data.who ? ' by ' + data.who : ''}</p>
                 `;
             if (data.candidates && data.candidates.length > 0)
                 html += `
@@ -805,7 +810,7 @@
             document.querySelector("#loader").style.visibility = "visible"; 
             let validationerror = false;
             let hand = document.getElementById('handInput').value.toUpperCase();
-            if (!validateHand(hand)) {
+            if (!validateHand(hand) && (action != "explain")) {
                 alert("Invalid hand input. Please enter four suits delimited by .");
                 validationerror = true;
             }
@@ -856,12 +861,13 @@
             const player = "NESW".indexOf(seat)
             const vul = document.getElementById('vulInput').value;
             const mp = document.getElementById('matchpoint').checked;
-            const matchpoint = mp  ?  "mp" : "";
+            const explain = document.getElementById('explain').checked;
+            const matchpoint = mp  ?  "mp" : "imp";
             // Get the current hostname and protocol
             const hostname = window.location.hostname;
             const protocol = window.location.protocol;
 
-            const url = `${protocol}//${hostname}:8085/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&dummy=${dummy}&played=${played}&tournament=${matchpoint}`;
+            const url = `${protocol}//${hostname}:8085/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&dummy=${dummy}&played=${played}&tournament=${matchpoint}&explain=${explain}`;
 
             try {           
                 const response = await fetch(url, {

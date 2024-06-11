@@ -372,3 +372,17 @@ def get_shape_for_lead(auction, hand, vuln, contract, models):
     b[:3] = p_hcp.reshape((-1, n_steps, 3))[:, -1, :].reshape(3)
     b[3:] = p_shp.reshape((-1, n_steps, 12))[:, -1, :].reshape(12)
     return b.reshape((1, -1))
+
+def calculate_median(data):
+    sorted_data = sorted(data)
+    n = len(sorted_data)
+    mid = n // 2
+
+    if n % 2 == 0:
+        # If even, average the two middle numbers
+        median = (sorted_data[mid - 1] + sorted_data[mid]) / 2.0
+    else:
+        # If odd, take the middle number
+        median = sorted_data[mid]
+
+    return median

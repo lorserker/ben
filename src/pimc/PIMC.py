@@ -1,14 +1,10 @@
-from typing import List, Iterable
-from enum import Enum
-import asyncio
 import clr
-import ctypes
 import sys
 import os
 import math
 from objects import Card
 import time
-from binary import get_hcp
+from binary import get_hcp, calculate_median
 import scoring
 
 from bidding import bidding
@@ -400,14 +396,15 @@ class BGADLL:
                 if math.isnan(probability):
                     probability = 0
                 tricks = sum(t for t in output) / count if count > 0 else 0
+                median = calculate_median(output)
 
                 # Second element is the score. We need to calculate it
                 score = sum(self.score_by_tricks_taken[t + self.tricks_taken] for t in output) / count if count > 0 else 0
-                msg = f"LHO: {self.lho_constraints.ToString()} - RHO: {self.rho_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+                msg = f"LHO: {self.lho_constraints.ToString()} - RHO: {self.rho_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts} median: {median:.1f}"
 
                 card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
                 if self.verbose:
-                    print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f}")
+                    print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f} {median:.1f}")
 
         except Exception as ex:
             print('Error legalMoves:', ex)

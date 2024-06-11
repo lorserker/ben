@@ -327,6 +327,10 @@ def bid():
         if request.args.get("tournament"):
             matchpoint = request.args.get("tournament").lower() == "mp"
             models.matchpoint = matchpoint
+        if request.args.get("explain"):
+            explain = request.args.get("explain").lower() == "true"
+        else:
+            explain = False
         # First we extract our hand
         hand = request.args.get("hand").replace('_','.')
         seat = request.args.get("seat")
@@ -340,7 +344,7 @@ def bid():
         # And finally the bidding, where we deduct dealer and our position
         dealer = request.args.get("dealer")
         dealer_i = dealer_enum[dealer]
-        position = dealer_enum[seat]
+        position_i = dealer_enum[seat]
         ctx = request.args.get("ctx")
         # Split the string into chunks of every second character
         bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
@@ -351,13 +355,25 @@ def bid():
             print("Dealer: ",dealer)
             print("Seat: ",seat)
             print("Auction: ",auction)
-        hint_bot = BotBid(vuln, hand, models, sampler, position, dealer_i, verbose)
+        if models.use_bba:
+            from bba.BBA import BBABotBid
+            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+        else:
+            hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
         bid = hint_bot.bid(auction)
         print("Bidding: ",bid.bid)
+        result = bid.to_dict()
+        if explain:
+            from bba.BBA import BBABotBid
+            print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
+            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+            auction.append(bid.bid)
+            result["explanation"] = bot.explain(auction)
+            print("explanation: ",result["explanation"])
         if record: 
             with shelve.open(f"{base_path}/gameapibiddb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
-        return json.dumps(bid.to_dict())
+        return json.dumps(result)
     except Exception as e:
         print(e)
         traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
@@ -548,7 +564,7 @@ def explain():
     dealer_i = dealer_enum[dealer]
     if verbose:
         print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "", vuln, dealer_i)
+    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
     ctx = request.args.get("ctx")
     # Split the string into chunks of every second character
     bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]

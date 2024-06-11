@@ -191,19 +191,29 @@ class BBABotBid:
         return self.bid(auction)
 
     def explain(self, auction):
-        #print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)
-        #self.player.new_hand(self.position, self.hand_str, self.dealer, self.vuln)
+        print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)
+        self.player.new_hand(self.position, self.hand_str, self.dealer, self.vuln)
 
-        for k in range(len(auction)):
+        for k in range(len(auction)-1):
             bidid = bidding.BID2ID[auction[k]]
             if bidid < 2:
                 continue
             if bidid < 5:
                 bidid = bidid - 2
-            #print("set_bid",(k % 4, bidid))
-            self.player.set_bid(k % 4, bidid)
-            lastbid = bidid
+            #print("set_bid",((k) % 4, bidid))
+            self.player.set_bid((k) % 4, bidid)
 
+        #new_bid = self.player.get_bid()
+        #print("get_bid",new_bid)
+
+        #self.player.interpret_bid(new_bid)
+        # Get information from Player(position) about the interpreted player
+        #meaning = self.player.get_info_meaning(self.C_INTERPRETED)
+        #print("interpret_bid",meaning)
+        lastbid = bidding.BID2ID[auction[-1]]
+        if lastbid < 5:
+            lastbid = lastbid - 2
+        #print("interpret_bid",lastbid)
         # Interpret the potential bid
         self.player.interpret_bid(lastbid)
         # Get information from Player(position) about the interpreted player
@@ -212,6 +222,7 @@ class BBABotBid:
         info = self.player.get_info_feature(self.C_INTERPRETED)
         minhcp = info[102]
         maxhcp = info[103]
+        forcing = info[112]
         alert = info[144] == 1
         if minhcp > 0:
             if maxhcp < 37:
@@ -243,6 +254,7 @@ class BBABotBid:
         new_bid = self.player.get_bid()
 
         # Interpret the potential bid
+        #print("interpret_bid",new_bid)
         self.player.interpret_bid(new_bid)
         if new_bid < 5:
             new_bid += 2

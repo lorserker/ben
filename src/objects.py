@@ -89,7 +89,7 @@ class CandidateCard:
         self.msg = msg
 
     def __str__(self):
-        return f"CandidateCard(card={self.card}, insta_score={self.insta_score:0.4}, " \
+        return f"CandidateCard(card={self.card}, insta_score={self.insta_score:0.4f}, " \
                f"exp_tricks_sd={self.expected_tricks_sd}, exp_tricks_dd={self.expected_tricks_dd}, " \
                f"p_make_contract={self.p_make_contract}, exp_score_sd={self.expected_score_sd}, " \
                f"exp_score_dd={self.expected_score_dd}), msg={self.msg}"
