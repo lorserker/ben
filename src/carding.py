@@ -29,7 +29,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
     if len(candidate_cards) == 1:
         return candidate_cards[0].card, who
     
-    if player_i == 3:
+    if player_i == 3 and not models.use_suitc:
         # For declarer pick a random card, when touching honors and NN is equal (Will not happen in practice)
         #print("First card for declarer", candidate_cards[0].card)
         #print(hand_str)
@@ -55,12 +55,15 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
     #print("current_count", current_count)
     #print("tricks52",tricks52)
-    if player_i  == 1:
+    if player_i  == 1 or player_i == 3:
         if original_count == current_count and models.use_suitc:
             # For dummy just take lowest card. Could be stressing opponents by taking highest of touching cards.
             #print("First card for dummy", candidate_cards[0].card)
             suits_north = dummy_str.split('.')
             suits_south = suits
+            suits_west = ""
+            suits_east = ""
+            suits_westeast = "KT6"
             #print(interesting_suit)
             #print(suits_north[interesting_suit])
             #print(suits_south[interesting_suit])
@@ -70,9 +73,9 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             url = "https://ccaserver.esmarkkappel.dk/api/MobileCCA/Get?action=4&param={"
             url += '"North":' + '"' + suits_north[interesting_suit] + '",'
             url += '"South":' + '"' + suits_south[interesting_suit] + '",'
-            url += '"WestEast":' + '"' + suits_south[interesting_suit] + '",'
-            url += '"West":' + '"' + suits_south[interesting_suit] + '",'
-            url += '"East":' + '"' + suits_south[interesting_suit] + '",'
+            url += '"WestEast":' + '"' + suits_westeast + '",'
+            url += '"West":' + '"' + suits_west + '",'
+            url += '"East":' + '"' + suits_east + '",'
             url += '"VacantPlacesWest":13,'
             url += '"VacantPlacesEast":13,'
             url += '"MinCardsWest":0,'
@@ -85,14 +88,14 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             url += '"OnLead":"south",'
             url += '"LeadCard":"",'
             url += '"FreeLeadsNorth":13,'
-            url += '"FreeLeadsSouth":0'
+            url += '"FreeLeadsSouth":3'
             url += "}"
             print(url)
             #https://ccaserver.esmarkkappel.dk/api/MobileCCA/Get?action=4&param={%22North%22:%22AJT985%22,%22South%22:%22Q743%22,%22WestEast%22:%22K62%22,%22West%22:%22%22,%22East%22:%22%22,%22VacantPlacesWest%22:13,%22VacantPlacesEast%22:13,%22MinCardsWest%22:0,%22MinCardsEast%22:0,%22NoOfRuffsNorth%22:0,%22NoOfRuffsSouth%22:0,%22NoOfRuffsWest%22:0,%22NoOfRuffsEast%22:0,%22LimitNoOfTricks%22:13,%22OnLead%22:%22south%22,%22LeadCard%22:%22%22,%22FreeLeadsNorth%22:13,%22FreeLeadsSouth%22:0}
             #https://ccaserver.esmarkkappel.dk/api/MobileCCA/Get?action=4&param={"North":"AJT985","South":"Q743","WestEast":"K62","West":"","East":"","VacantPlacesWest":13,"VacantPlacesEast":13,"MinCardsWest":0,"MinCardsEast":0,"NoOfRuffsNorth":0,"NoOfRuffsSouth":0,"NoOfRuffsWest":0,"NoOfRuffsEast":0,"LimitNoOfTricks":13,"OnLead":"south","LeadCard":"","FreeLeadsNorth":13,"FreeLeadsSouth":0}
             if play_status == "Lead":
 
-                with urlopen('https://ccaserver.esmarkkappel.dk/api/MobileCCA/Get?action=4&param={"North":"AJT985","South":"Q743","WestEast":"K62","West":"","East":"","VacantPlacesWest":13,"VacantPlacesEast":13,"MinCardsWest":0,"MinCardsEast":0,"NoOfRuffsNorth":0,"NoOfRuffsSouth":0,"NoOfRuffsWest":0,"NoOfRuffsEast":0,"LimitNoOfTricks":13,"OnLead":"south","LeadCard":"","FreeLeadsNorth":13,"FreeLeadsSouth":0}') as response:
+                with urlopen(url) as response:
                     body = response.read()
                     response_dict = json.loads(body)
                     card = response_dict["GetAnalysisResult"]["SuitCAnalysis"]["OptimumPlays"][0]["GameTree"]["T"][-1]

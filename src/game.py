@@ -886,6 +886,13 @@ async def main():
             from nn.models import Models
 
     models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
+    print("Config:", configfile)
+    print("System:", models.name)
+    print("Model:", models.bidder_model.model_path)
+    if models.matchpoint:
+        print("Matchpoint mode on")
+    else:
+        print("Playing IMPS mode")
 
     driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), seed, verbose)
 

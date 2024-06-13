@@ -1263,7 +1263,7 @@ class CardPlayer:
 
         if self.models.use_probability:
             if self.models.matchpoint:
-                card_ev = self.get_card_ev_mp(dd_solved, probabilities_list)
+                card_ev = self.get_card_ev_mp_probability(dd_solved, probabilities_list)
             else:
                 card_ev = self.get_card_ev_probability(dd_solved, probabilities_list)
         else:
@@ -1318,7 +1318,7 @@ class CardPlayer:
 
         return card_ev
     
-    def get_card_ev_mp(self, dd_solved, probabilities_list):
+    def get_card_ev_mp_probability(self, dd_solved, probabilities_list):
         card_ev = {}
         for card, future_tricks in dd_solved.items():
             ev_sum = 0
@@ -1495,6 +1495,7 @@ class CardPlayer:
                     who = "Make"
                 candidate_cards = [card for _, card in candidate_cards]
 
+        # Select the right card
         right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who)
         best_card_resp = CardResp(
             card=right_card,

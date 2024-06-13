@@ -303,7 +303,14 @@ except KeyError:
 models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
 sampler = Sample.from_conf(configuration, verbose)
 
-print('models loaded')
+print("Config:", configfile)
+print("System:", models.name)
+print("Model:", models.bidder_model.model_path)
+if models.matchpoint:
+    print("Matchpoint mode on")
+else:
+    print("Playing IMPS mode")
+
 
 host = args.host
 print(f'http://{host}:{port}/')

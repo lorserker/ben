@@ -760,6 +760,7 @@ async def main():
     parser.add_argument("--seat", required=True, help="Where to sit (North, East, South or West)")
     parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--biddingonly", type=bool, default=False, help="Only bid, no play")
+    parser.add_argument("--matchpoint", type=bool, default=None, help="Playing match point")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()
@@ -769,7 +770,7 @@ async def main():
     name = args.name
     seat = args.seat
     configfile = args.config
-
+    matchpoint = args.matchpoint
     verbose = args.verbose
     biddingonly = args.biddingonly
 
@@ -789,6 +790,15 @@ async def main():
             from nn.models import Models
 
     models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
+    print("Config:", configfile)
+    print("System:", models.name)
+    print("Model:", models.bidder_model.model_path)
+    if matchpoint:
+        models.matchpoint = True
+    if models.matchpoint:
+        print("Matchpoint mode on")
+    else:
+        print("Playing IMPS mode")
 
     client = TMClient(name, seat, models, Sample.from_conf(configuration, verbose), verbose)
     print(f"Connecting to {host}:{port}")

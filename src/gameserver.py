@@ -108,7 +108,13 @@ models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src","
 
 # Override any configuration of claim, as it is included in the UI
 models.claim = True
-print('models loaded')
+print("Config:", configfile)
+print("System:", models.name)
+print("Model:", models.bidder_model.model_path)
+if models.matchpoint:
+    print("Matchpoint mode on")
+else:
+    print("Playing IMPS mode")
 
 
 def worker(driver):
