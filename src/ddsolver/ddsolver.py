@@ -43,10 +43,13 @@ class DDSolver:
 
         pres = dds.parResults()
 
+        # vulnerable 
+        # 0: None 1: Both 2: NS 3: EW 
         v = 0
-        if vuln[0]: v = 1
-        if vuln[1]: v = 2
-        if vuln[0] and vuln[1]: v = 3
+        if vuln[0]: v = 2
+        if vuln[1]: v = 3
+        if vuln[0] and vuln[1]: v = 1
+
         res = dds.Par(myTable, pres, v)
 
         if res != 1:
@@ -59,8 +62,8 @@ class DDSolver:
 
         print("NS score: {}".format(par.contents.parScore[0].value.decode('utf-8')))
         print("EW score: {}".format(par.contents.parScore[1].value.decode('utf-8')))
-        #print("NS list : {}".format(par.contents.parContractsString[0].value.decode('utf-8')))
-        #print("EW list : {}\n".format(par.contents.parContractsString[1].value.decode('utf-8')))
+        print("NS list : {}".format(par.contents.parContractsString[0].value.decode('utf-8')))
+        print("EW list : {}\n".format(par.contents.parContractsString[1].value.decode('utf-8')))
         par = par.contents.parScore[0].value.decode('utf-8')
         ns_score = par.split()[1]
         return int(ns_score)

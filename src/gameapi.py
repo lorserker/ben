@@ -305,7 +305,10 @@ sampler = Sample.from_conf(configuration, verbose)
 
 print("Config:", configfile)
 print("System:", models.name)
-print("Model:", models.bidder_model.model_path)
+if models.use_bba:
+    print("Using BBA for bidding")
+else:
+    print("Model:", models.bidder_model.model_path)
 if models.matchpoint:
     print("Matchpoint mode on")
 else:

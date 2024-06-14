@@ -792,7 +792,10 @@ async def main():
     models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
     print("Config:", configfile)
     print("System:", models.name)
-    print("Model:", models.bidder_model.model_path)
+    if models.use_bba:
+        print("Using BBA for bidding")
+    else:
+        print("Model:", models.bidder_model.model_path)
     if matchpoint:
         models.matchpoint = True
     if models.matchpoint:

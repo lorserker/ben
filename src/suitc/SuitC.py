@@ -26,8 +26,7 @@ class SuitCLib:
                                             POINTER(c_wchar_p), POINTER(c_int),
                                             POINTER(c_wchar_p), POINTER(c_int)]
             self.suitc.call_suitc.restype = c_int
-            self.suitc.call_suitc1.argtypes = [POINTER(c_wchar_p), c_int]
-            self.suitc.call_suitc1.restype = c_int
+            self.verbose = verbose
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
             print('Error:', ex)
@@ -39,9 +38,11 @@ class SuitCLib:
             sys.exit(1)
         self.verbose = verbose
     
-    def calculate(self):
-        input_str = "-wv9 -ev8 K3 2 AQJT987654"
+    def calculate(self, input_str):
+        input_str = "-Ls " + input_str
         input_length = len(input_str)
+        #if self.verbose:
+        print("Input: " + input_str)
         
         # Convert input string to a wide char buffer
         input_buffer = create_unicode_buffer(input_str + '\0')  # Ensure null termination
@@ -49,29 +50,29 @@ class SuitCLib:
         # Create a pointer to the buffer
         input_buffer_ptr = ctypes.pointer(c_wchar_p(input_buffer.value))
         
-        print(f"Input Buffer Address (Python): {ctypes.addressof(input_buffer)}")
-        print(input_buffer_ptr)
-
-        print("_________________________________________________________________________________________")
-        result = self.suitc.call_suitc1(input_buffer_ptr, input_length)
-        print("Result call_suitc1:", result)
-
         # Create an output buffer
         output_length = 32768
         output_buffer = create_unicode_buffer(output_length)
 
-        # Create a pointer to the output buffer
-        output_buffer_ptr = ctypes.pointer(c_wchar_p(output_buffer.value))
         # Create a variable to hold the output buffer size
         output_size = ctypes.c_int()
-                # Create an output buffer
+
+        # Create details buffer
         details_length = 32768
         details_buffer = create_unicode_buffer(details_length)
         # Create a variable to hold the output buffer size
         details_size = ctypes.c_int()
 
-        # Create a pointer to the output buffer
-        details_buffer_ptr = ctypes.pointer(c_wchar_p(details_buffer.value))
-        print("_________________________________________________________________________________________")
+        # Pointers to the output and details buffers
+        # Create pointers to the output and details buffers
+        output_buffer_ptr = c_wchar_p(ctypes.addressof(output_buffer))
+        details_buffer_ptr = c_wchar_p(ctypes.addressof(details_buffer))
+
         result = self.suitc.call_suitc(input_buffer_ptr, input_length, output_buffer_ptr,  byref(output_size), details_buffer_ptr,  byref(details_size))
-        print("Result call_suitc:", result)
+        if result != 0:
+            print("Error: " + result)
+            sys.exit(1)
+        if self.verbose:
+            print(output_buffer.value)
+            print(details_buffer.value)
+        return output_buffer.value

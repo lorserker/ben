@@ -87,21 +87,20 @@ class BotBid:
         candidates, passout = self.get_bid_candidates(auction)
         good_quality = None
 
+        if self.verbose:
+            print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
+        hands_np, sorted_score, p_hcp, p_shp, good_quality = self.sample_hands_for_auction(auction, self.seat)
+        samples = []
+        for i in range(hands_np.shape[0]):
+            samples.append('%s %s %s %s %.5f' % (
+                hand_to_str(hands_np[i,0,:]),
+                hand_to_str(hands_np[i,1,:]),
+                hand_to_str(hands_np[i,2,:]),
+                hand_to_str(hands_np[i,3,:]),
+                sorted_score[i]
+            ))
         if self.do_rollout(auction, candidates, self.max_candidate_score):
             ev_candidates = []
-            # To save time, this is moved to the do_rollout section, as samples are only for display if no rollout
-            if self.verbose:
-                print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
-            hands_np, sorted_score, p_hcp, p_shp, good_quality = self.sample_hands_for_auction(auction, self.seat)
-            samples = []
-            for i in range(hands_np.shape[0]):
-                samples.append('%s %s %s %s %.5f' % (
-                    hand_to_str(hands_np[i,0,:]),
-                    hand_to_str(hands_np[i,1,:]),
-                    hand_to_str(hands_np[i,2,:]),
-                    hand_to_str(hands_np[i,3,:]),
-                    sorted_score[i]
-                ))
             for candidate in candidates:
                 if self.verbose:
                     print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.3f} Samples: {len(hands_np)}")
@@ -150,6 +149,10 @@ class BotBid:
                             else:
                                 samples[idx] += " \n " + auc
 
+                decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
+                if self.verbose:
+                    print("tricks", np.mean(decoded_tricks))
+                expected_tricks = np.mean(decoded_tricks)
     
                 # We need to find a way to use how good the samples are
                 ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
@@ -231,22 +234,34 @@ class BotBid:
                     print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.3f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
         else:
             who = "NN"
-            # Perhaps we should sample some hands to get information about how BEN sees the bidding until now
-            # For now we just pick up the bidding info
-            samples = []
             n_steps = binary.calculate_step_bidding_info(auction, self.models)
             p_hcp, p_shp = self.sample.get_bidding_info(n_steps, auction, self.seat, self.hand32, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
+            # initialize auction vector
+            auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
+            for i, bid in enumerate(auction):
+                auction_np[:,i] = bidding.BID2ID[bid]
+
+            contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np, auction_np)
+            decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
+            if self.verbose:
+                print("tricks", np.mean(decoded_tricks))
+            expected_tricks = np.mean(decoded_tricks)
+            # We need to find a way to use how good the samples are
+            ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
+            expected_score = np.mean(ev)
+            candidates[0] = candidates[0].with_expected_score(expected_score, 0)
+
 
         if self.verbose:
             print(candidates[0].bid, " selected")
 
         #print("self.models.check_final_contract", self.models.check_final_contract)
-        #print("candidates[0].bid", candidates[0].bid)
+        #print("candidates[0].bid", candidates[0].bid, candidates[0].expected_score, len(samples), good_quality, (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score))
         if len(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
             # We will avoid rescuing if we have a score of max_estimated_score or more
-            if candidates[0].bid == "PASS" and len(samples) > 0 and candidates[0].expected_score < self.models.max_estimated_score and good_quality:
+            if candidates[0].bid == "PASS" and len(samples) > 0 and (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score) and good_quality:
                 # We need to find a sample or two from the bidding
                 alternatives = {}
                 current_contract = bidding.get_contract(auction)[0:2]
@@ -259,13 +274,29 @@ class BotBid:
                     X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
                     contract_id, doubled, tricks = self.models.contract_model.model[0](X)
                     contract = bidding.ID2BID[contract_id] 
-                    while not bidding.can_bid(contract, auction):
+                    while not bidding.can_bid(contract, auction) and contract_id <= 35:
                         contract_id += 5
                         contract = bidding.ID2BID[contract_id] 
                         
                     if self.verbose: 
                         print(contract, doubled, tricks)
                     # If game bid in major do not bid 5 of that major 
+                    if current_contract == "4H" and contract == "5H":
+                        if self.verbose:
+                            print("Stopping rescue, just one level higher")
+                        alternatives = {}
+                        break
+                    if current_contract == "4S" and contract == "5S":
+                        if self.verbose:
+                            print("Stopping rescue, just one level higher")
+                        alternatives = {}
+                        break
+                    if current_contract == "3N" and (contract == "4N" or contract == "5N"):
+                        if self.verbose:
+                            print("Stopping rescue, just one level higher")
+                        alternatives = {}
+                        break
+                    # If 3N don't bid 4N
                     if current_contract == contract:
                         if self.verbose:
                             print("Contract bid, stopping rescue")
@@ -298,10 +329,13 @@ class BotBid:
                         alternatives[contract].append({"score": score, "tricks": tricks})
                         
                 # Only if at least 75 of the samples suggest bidding check the score for the rescue bid
-                if len(alternatives) > 0.75 * min(len(samples), self.models.max_samples_checked):
+                # print(len(alternatives), min(len(samples), self.models.max_samples_checked))
+                total_entries = sum(len(entries) for entries in alternatives.values())
+                if total_entries > 0.75 * min(len(samples), self.models.max_samples_checked):
                     # Initialize dictionaries to store counts and total scores
                     contract_counts = defaultdict(int)
                     contract_total_scores = defaultdict(int)
+                    contract_total_tricks = defaultdict(int)
 
                     # Iterate through the alternatives dictionary to populate counts and total scores
                     for contract, entries in alternatives.items():
@@ -310,24 +344,28 @@ class BotBid:
                             
                             contract_counts[contract] += 1
                             contract_total_scores[contract] += score
+                            contract_total_tricks[contract] += entry["tricks"]
 
                     # Calculate the average scores
                     contract_average_scores = {contract: contract_total_scores[contract] / contract_counts[contract]
+                                            for contract in contract_counts}
+                    contract_average_tricks = {contract: contract_total_tricks[contract] / contract_counts[contract]
                                             for contract in contract_counts}
 
                     # Print the results
                     if self.verbose:
                         print("Contract Counts:", dict(contract_counts))
                         print("Contract Average Scores:", contract_average_scores)
+                        print("Contract Average tricks:", contract_average_tricks)
                     # Find the contract with the highest count
                     max_count_contract = max(contract_counts, key=contract_counts.get)
-                    # Unless we gain 300 we will not override BEN
-                    if contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward:
+                    # Unless we gain 300 or we expect 4 tricks more we will not override BEN
+                    if (contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
                         candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
                                                     expected_score=contract_average_scores[max_count_contract], adjust=0, alert = False)
                         candidates.insert(0, candidatebid)
                         who = "Rescue"
-                        print(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]}")
+                        print(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}")
         # We return the bid with the highest expected score or highest adjusted score 
 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality, alert = candidates[0].alert)
@@ -399,7 +437,7 @@ class BotBid:
             
         else:    
             if no_bids > self.eval_after_bid_count and auction[-2] != "PASS":
-                min_candidates = 2
+                min_candidates = self.models.min_passout_candidates
             else:
                 min_candidates = 1
 
@@ -1405,7 +1443,7 @@ class CardPlayer:
 
         who = "PIMC-MP" if self.models.matchpoint else "PIMC" 
 
-        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who)
+        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who, self.verbose)
         best_card_resp = CardResp(
             card=right_card,
             candidates=candidate_cards,
@@ -1496,7 +1534,7 @@ class CardPlayer:
                 candidate_cards = [card for _, card in candidate_cards]
 
         # Select the right card
-        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who)
+        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who, self.verbose)
         best_card_resp = CardResp(
             card=right_card,
             candidates=candidate_cards,

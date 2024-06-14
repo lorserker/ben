@@ -10,15 +10,15 @@ tf.disable_v2_behavior()
 from batcher import Batcher
 
 if len(sys.argv) < 2:
-    print("Usage: python bidding_nn.py inputdirectory")
+    print("Usage: python bidding_nn_alert.py inputdirectory")
     sys.exit(1)
 
 bin_dir = sys.argv[1]
 print(sys.argv)
 
 batch_size = 64
-display_step = 1000
-epochs = 5
+display_step = 10000
+epochs = 50
 learning_rate = 0.0005
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
@@ -39,10 +39,7 @@ else:
     if n_ftrs == 199:
         model_path = 'model/bidding_V2'
     else:
-        if n_ftrs == 161:
-            model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding'
-        else:
-            model_path = 'model/bidding'
+        print("Older versions not supported")
 
 print("Size input hand:         ", n_ftrs)
 print("Examples for training:   ", n_examples)
@@ -52,7 +49,7 @@ print("Iterations               ", n_iterations)
 print("Model path:              ", model_path)
 print("Learning rate:           ", learning_rate)
 
-lstm_size = 128
+lstm_size = 256
 n_layers = 3
 
 keep_prob = tf.compat.v1.placeholder(tf.float32, name='keep_prob')
@@ -64,13 +61,6 @@ for _ in range(n_layers):
         output_keep_prob=keep_prob
     )
     cells.append(cell)
-if n_ftrs < 180:
-    state = []
-    for i, cell_i in enumerate(cells):
-        s_c = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_c_{}'.format(i))
-        s_h = tf.compat.v1.placeholder(tf.float32, [1, lstm_size], name='state_h_{}'.format(i))
-        state.append(tf.compat.v1.nn.rnn_cell.LSTMStateTuple(c=s_c, h=s_h))
-    state = tuple(state)
 
 x_in = tf.compat.v1.placeholder(tf.float32, [1, n_ftrs], name='x_in')
     
@@ -91,13 +81,7 @@ out_alert_logit = tf.matmul(tf.reshape(out_rnn, [-1, lstm_size]), softmax_w_aler
 out_bid_target = tf.reshape(seq_out_bid, [-1, n_bids], name='out_bid_target')
 out_alert_target = tf.reshape(seq_out_alert, [-1, 1], name='out_alert_target')
 
-if n_ftrs < 180:
-    output, next_state = lstm_cell(x_in, state)
-    for i, next_i in enumerate(next_state):
-        tf.identity(next_i.c, name='next_c_{}'.format(i))
-        tf.identity(next_i.h, name='next_h_{}'.format(i))
-else:
-    output, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
+output, _ = tf.nn.dynamic_rnn(lstm_cell, seq_in, dtype=tf.float32)
 
 out_bid = tf.nn.softmax(out_bid_logit, name='out_bid')
 out_alert = tf.nn.sigmoid(out_alert_logit, name='out_alert')
