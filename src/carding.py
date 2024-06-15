@@ -87,8 +87,11 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             response_dict = json.loads(card)
             plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
             if len(plays) > 0:
-                #print("plays", len(plays))
-                card = plays[0]["GameTree"]["T"]
+                if len(plays[0]["GameTree"]) > 0:
+                    card = plays[0]["GameTree"]["T"]
+                else:
+                    print("SuitC found no gametree")
+                    return candidate_cards[0].card, who
                 #print("card", card)
             else:
                 print("SuitC found no plays")

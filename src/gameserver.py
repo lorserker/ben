@@ -214,7 +214,10 @@ async def handler(websocket, path, board_no, seed):
 
 async def main():
     print("Listening on port: ",port)
-    start_server = websockets.serve(functools.partial(handler, board_no=board_no, seed=seed), "0.0.0.0", port)
+    start_server = websockets.serve(functools.partial(handler, board_no=board_no, seed=seed), "0.0.0.0", port, 
+        ping_timeout=60,  # 60 seconds timeout for pings
+        close_timeout=60  # 60 seconds timeout for closing the connection
+        )
     try:
         await start_server
     except Exception as e:
