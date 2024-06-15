@@ -25,8 +25,15 @@ def find_nth_occurrence(arr, target, nth):
 
 
 def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, play_status, who, verbose):
-    #print("select_right_card_for_play")
+    if verbose:
+        print("select_right_card_for_play")
     if len(candidate_cards) == 1:
+        return candidate_cards[0].card, who
+    
+    if verbose:
+        print(candidate_cards[0])
+    # If the first card is better then don't evaluate
+    if candidate_cards[0].p_make_contract > candidate_cards[1].p_make_contract + 0.1:
         return candidate_cards[0].card, who
     
     if player_i == 3 and not models.use_suitc:
@@ -101,19 +108,20 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             else:
                 card = card[-1]
             suit_str = "SHDC"[interesting_suit]
-            print("SuitC playing:","SHDC"[interesting_suit], card)
+            print(f"SuitC playing: {suit_str}{card}")
+            # Only play the card from SuitC if it was a candidate
             for candidate_card in candidate_cards:
                 if candidate_card.card.symbol() == f"{suit_str}{card}":
-
-                    return candidate_card.card, "SuitC"
+                    # Only play SuitC if not losing to much DD
+                    if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.1:
+                        return candidate_card.card, "SuitC"
                     
         return candidate_cards[0].card, who
     
-    
-    #print(candidate_cards[0].card)
-    #print(candidate_cards[0].card.code())
     if original_count == current_count:
-        if candidate_cards[0].card.code() % 13 >= 7 and len(current_trick) == 0:
+        # If we are on lead, and playing the suit the first time, follow our lead agreements.
+        # We should probably look at first card in each tricks52
+        if candidate_cards[0].card.code() % 13 >= 7 and play_status == "Lead":
             hand52 = binary.parse_hand_f(52)(hand_str)
             # if we havent't lead from that suit then lead as opening lead, but only for pips
             card = select_right_card(hand52, deck52.card52to32(candidate_cards[0].card.code()), rng, contract, models)    

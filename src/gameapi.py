@@ -425,6 +425,12 @@ def lead():
         # Split the string into chunks of every second character
         bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
         auction = create_auction(bids, dealer_i)
+        contract = bidding.get_contract(auction)
+        decl_i = bidding.get_decl_i(contract)
+        if "NESW"[(decl_i + 1) % 4] != seat:
+            result = {"message":"Not this player to lead"}
+            return json.dumps(result)
+
         hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, verbose)
         card_resp = hint_bot.find_opening_lead(auction)
         user = request.args.get("user")
