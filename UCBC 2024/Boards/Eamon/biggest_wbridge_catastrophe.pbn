@@ -1,0 +1,37 @@
+[Event "Random"]
+[Site ""]
+[Date "2024.06.11"]
+[Board "149"]
+[West "WBridge5"]
+[North "jackosnosearchthresh"]
+[East "WBridge5"]
+[South "jackosnosearchthresh"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:K76.A84.Q53.AKT6 AQT832.K2.AK876. 954.QJT65.J.QJ85 J.973.T942.97432"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "5CXX"]
+[Result "4"]
+[Auction "N"]
+1NT       X         2D        Pass      
+2H        3D        3H        Pass      
+Pass      4S        Pass      5C        
+X         Pass      Pass      XX        
+Pass      Pass      Pass      
+[Play "N"]
+HA H2 H5 H3 
+H4 HK H6 H7 
+S6 SA S4 SJ 
+D3 DA DJ D2 
+SK SQ S5 H9 
+H8 D6 HT C3 
+D5 DK C5 D4 
+C6 S2 HQ C4 
+DQ D7 S9 DT 
+S7 S8 CJ D9 
+CT D8 HJ C7 
+CK S3 C8 C2 
+CA ST CQ C9 
+[BidSystemNS "Standard American Yellow Card Thorvald"]
+[BidSystemEW "Standard American Yellow Card Thorvald"]

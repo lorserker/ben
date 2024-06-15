@@ -238,20 +238,21 @@ class BotBid:
             p_hcp, p_shp = self.sample.get_bidding_info(n_steps, auction, self.seat, self.hand32, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
-            # initialize auction vector
-            auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
-            for i, bid in enumerate(auction):
-                auction_np[:,i] = bidding.BID2ID[bid]
+            if len(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
+                # initialize auction vector
+                auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
+                for i, bid in enumerate(auction):
+                    auction_np[:,i] = bidding.BID2ID[bid]
 
-            contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np, auction_np)
-            decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
-            if self.verbose:
-                print("tricks", np.mean(decoded_tricks))
-            expected_tricks = np.mean(decoded_tricks)
-            # We need to find a way to use how good the samples are
-            ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
-            expected_score = np.mean(ev)
-            candidates[0] = candidates[0].with_expected_score(expected_score, 0)
+                contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np, auction_np)
+                decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
+                if self.verbose:
+                    print("tricks", np.mean(decoded_tricks))
+                expected_tricks = np.mean(decoded_tricks)
+                # We need to find a way to use how good the samples are
+                ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
+                expected_score = np.mean(ev)
+                candidates[0] = candidates[0].with_expected_score(expected_score, 0)
 
 
         if self.verbose:
@@ -372,18 +373,23 @@ class BotBid:
     
     def do_rollout(self, auction, candidates, max_candidate_score):
         if candidates[0].insta_score > max_candidate_score:
-           return False
+            if self.verbose:
+                print(f"A candidate above threshold {max_candidate_score}, so no need for rolling out the bidding")
+            return False
         
         # Perhaps we should have another threshold for Double and Redouble as when that is suggested by NN, it is probably well defined
 
         # Just one candidate, so no need for rolling out the bidding
         if len(candidates) == 1:
-            #print("Just one candidate, so no need for rolling out the bidding")
+            if self.verbose:
+                print("Just one candidate, so no need for rolling out the bidding")
             return False
         
-        # Do try to simulate if first to bid
+        # Do not try to simulate if opening
         if bidding.get_contract(auction) == None:
-            return False
+            if self.verbose:
+                print("Only simulate opening bid if enabled in configuration")
+            return self.models.eval_opening_bid
 
         return True
 
@@ -436,7 +442,8 @@ class BotBid:
             # If we are doubled in pass out situation, never raise the suit
             
         else:    
-            if no_bids > self.eval_after_bid_count and auction[-2] != "PASS":
+            # Perhaps this only should be checked if we are active in the bidding
+            if (no_bids > self.eval_after_bid_count) and (self.eval_after_bid_count > 0):
                 min_candidates = self.models.min_passout_candidates
             else:
                 min_candidates = 1

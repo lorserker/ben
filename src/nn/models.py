@@ -12,7 +12,7 @@ from nn.contract import Contract
 
 class Models:
 
-    def __init__(self, name, model_version, api, bidder_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, 
+    def __init__(self, name, model_version, api, bidder_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,
                  min_passout_candidates, min_rescue_reward, max_estimated_score,
                  lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, lead_included, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_eval, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playout, pimc_autoplaysingleton, pimc_max_threads, pimc_trust_NN,
                  use_adjustment,
@@ -46,6 +46,7 @@ class Models:
         self._search_threshold = search_threshold
         self._no_search_threshold = no_search_threshold
         self.eval_after_bid_count = eval_after_bid_count
+        self.eval_opening_bid = eval_opening_bid
         self.min_passout_candidates = min_passout_candidates
         self.min_rescue_reward = min_rescue_reward
         self.max_estimated_score = max_estimated_score
@@ -107,6 +108,7 @@ class Models:
         search_threshold = float(conf['bidding']['search_threshold'])
         no_search_threshold = conf.getfloat('bidding', 'no_search_threshold', fallback=1)
         eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=24)
+        eval_opening_bid = conf.getboolean('bidding', 'eval_opening_bid', fallback=False)
         min_passout_candidates = conf.getint('bidding', 'min_passout_candidates', fallback=2)
         min_rescue_reward = conf.getint('bidding', 'min_rescue_reward', fallback=250)
         max_estimated_score = conf.getint('bidding', 'max_estimated_score', fallback=300)
@@ -153,8 +155,8 @@ class Models:
         opening_lead_included = conf.getboolean('cardplay', 'opening_lead_included', fallback=False)
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'claim', fallback=False)
         use_suitc = conf.getboolean('cardplay', 'use_suitc', fallback=False)
-        bba_ns = float(conf['models']['bba_ns'])
-        bba_ew = float(conf['models']['bba_ew'])
+        bba_ns = conf.getfloat('models', 'bba_ns', fallback=-1)
+        bba_ew = conf.getfloat('models', 'bba_ew', fallback=-1)
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
         if model_version == 0:
             ns = -1
@@ -192,6 +194,7 @@ class Models:
             lead_threshold=lead_threshold,
             no_search_threshold=no_search_threshold,
             eval_after_bid_count=eval_after_bid_count,
+            eval_opening_bid=eval_opening_bid,
             min_passout_candidates = min_passout_candidates,
             min_rescue_reward = min_rescue_reward,
             max_estimated_score = max_estimated_score,
