@@ -58,7 +58,7 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, exclude_samples, verbose):
+    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, exclude_samples, no_biddingqualitycheck_after_bid_count, verbose):
         self.lead_accept_threshold_partner_trust = lead_accept_threshold_partner_trust
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
@@ -78,6 +78,7 @@ class Sample:
         self.use_bidding_info = use_biddinginfo
         self.use_distance = use_distance
         self.exclude_samples = exclude_samples
+        self.no_biddingqualitycheck_after_bid_count = no_biddingqualitycheck_after_bid_count
         self.verbose = verbose
 
 
@@ -103,7 +104,8 @@ class Sample:
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
-        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, exclude_samples, verbose)
+        no_biddingquality_after_bid_count = conf.getint('bidding', 'no_biddingquality_after_bid_count', fallback=12)
+        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, exclude_samples, no_biddingquality_after_bid_count, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -377,14 +379,14 @@ class Sample:
         # It could be an idea to add an extra sampling in a later version
         if len(accepted_samples) < self._min_sample_hands_auction:
             if self.use_distance:
-                good_quality = len(sorted_samples[sorted_scores >= self.bid_accept_threshold_bidding]) > 2
+                good_quality = len(sorted_samples[sorted_scores >= self.bid_accept_threshold_bidding]) > 2 or n_steps*4 > self.no_biddingqualitycheck_after_bid_count
                 if self.verbose:
                     print(f"Only found {len(sorted_samples[sorted_scores >= self.bid_accept_threshold_bidding])} {self._min_sample_hands_auction}")
             else:
                 if self.verbose:
                     print(f"Only found {len(accepted_samples)} {self._min_sample_hands_auction}")
                 # If we found 2 boards with OK bidding we accept the quality
-                good_quality = len(accepted_samples) > 2
+                good_quality = len(accepted_samples) > 2 or n_steps*4 > self.no_biddingqualitycheck_after_bid_count
             accepted_samples = sorted_samples[:self._min_sample_hands_auction]
 
         sorted_scores = sorted_scores[:len(accepted_samples)]
@@ -826,9 +828,9 @@ class Sample:
             print(f"Returning {min(bidding_states[0].shape[0],n_samples)}")
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
         
-        probability_of_occurence = convert_to_probability(sorted_min_bid_scores)
+        probability_of_occurence = convert_to_probability(sorted_min_bid_scores[:min(bidding_states[0].shape[0],n_samples)])
 
-        return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores, c_hcp, c_shp, good_quality, probability_of_occurence
+        return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores[:min(bidding_states[0].shape[0],n_samples)], c_hcp, c_shp, good_quality, probability_of_occurence
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models):
         n_steps = binary.calculate_step_bidding_info(auction, models)

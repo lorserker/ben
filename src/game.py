@@ -595,7 +595,7 @@ class Driver:
             for card_player in card_players:
                 # initialize last trick
                 if self.verbose:
-                    print("Initialize last trick")
+                    print(f"Initialize last trick {card_player.player_i}")
                 for i, card32 in enumerate(current_trick):
                     card_player.x_play[:, trick_i + 1, 64 + i * 32 + card32] = 1
                     
@@ -789,7 +789,7 @@ class Driver:
                     await self.channel.send(json.dumps({
                         'message': 'bid_made',
                         'auction': auction,
-                        'alert': str(alert)
+                        'alert': str(alert or bid_resp.alert)
                     }))
 
                     player_i = (player_i + 1) % 4

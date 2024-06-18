@@ -275,7 +275,7 @@ class BotBid:
                     X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
                     contract_id, doubled, tricks = self.models.contract_model.model[0](X)
                     contract = bidding.ID2BID[contract_id] 
-                    while not bidding.can_bid(contract, auction) and contract_id <= 35:
+                    while not bidding.can_bid(contract, auction) and contract_id < 35:
                         contract_id += 5
                         contract = bidding.ID2BID[contract_id] 
                         
@@ -362,11 +362,30 @@ class BotBid:
                     max_count_contract = max(contract_counts, key=contract_counts.get)
                     # Unless we gain 300 or we expect 4 tricks more we will not override BEN
                     if (contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
-                        candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
-                                                    expected_score=contract_average_scores[max_count_contract], adjust=0, alert = False)
-                        candidates.insert(0, candidatebid)
-                        who = "Rescue"
-                        print(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}")
+                        # Now we have found a possible resuce bid, so we need to check the samples with that contract
+                        new_auction = auction.copy()
+                        new_auction.append(max_count_contract)
+                        auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
+                        for i, bid in enumerate(new_auction):
+                            auction_np[:,i] = bidding.BID2ID[bid]
+
+                        # Simulate the hands
+                        contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np[:min(len(samples), self.models.max_samples_checked)], auction_np)
+                        decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
+                        if self.verbose:
+                            print("tricks", np.mean(decoded_tricks))
+                        expected_tricks = np.mean(decoded_tricks)
+                        # We need to find a way to use how good the samples are
+                        ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
+                        expected_score = np.mean(ev)
+                        print("expected_score", expected_score)
+                        if (expected_score > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
+
+                            candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
+                                                        expected_score=contract_average_scores[max_count_contract], adjust=0, alert = False)
+                            candidates.insert(0, candidatebid)
+                            who = "Rescue"
+                            print(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}")
         # We return the bid with the highest expected score or highest adjusted score 
 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality, alert = candidates[0].alert)
@@ -482,8 +501,13 @@ class BotBid:
             # set the score for the bid just processed to zero so it is out of the loop
             bid_softmax[bid_i] = 0
 
-        # Consider adding an option for PASS, as a possible bid, even if it is not suggested by the nn
-        #candidates.append(CandidateBid(bid=bidding.ID2BID[2], insta_score=0.5))
+        # Adding an PASS, as a possible bid, even if it is not suggested by the nn
+        if self.models.eval_pass_after_bid_count > 0 and no_bids > self.models.eval_pass_after_bid_count:
+            for candidate in candidates:
+                if candidate.bid == 'PASS':
+                    break
+            else:
+                candidates.append(CandidateBid(bid=bidding.ID2BID[2], insta_score=0.1, alert = None))
 
         if self.verbose:
             print("\n".join(str(bid) for bid in candidates))
@@ -1066,6 +1090,11 @@ class CardPlayer:
         self.contract = contract
         self.is_decl_vuln = is_decl_vuln
         self.n_tricks_taken = 0
+        if self.strain_i > 0 and ((player_i == 1) or (player_i == 3)):
+            #print(self.strain_i)
+            #print(binary.get_shape_array(self.hand52))
+            self.missing_trump = 13 - binary.get_shape_array(self.hand52)[self.strain_i-1] - binary.get_shape_array(self.public52)[self.strain_i-1]
+
         self.verbose = verbose
         self.level = int(contract[0])
         self.init_x_play(binary.parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
@@ -1101,10 +1130,13 @@ class CardPlayer:
         self.x_play[:,0,292] = level
         self.x_play[:,0,293+strain_i] = 1
 
-    def set_real_card_played(self, card, playedBy, openinglead=False):
+    def set_real_card_played(self, card52, played_by, openinglead=False):
+        if (played_by == 0 or played_by == 2) and (self.player_i == 1 or self.player_i == 3):
+            if (card52 // 13) + 1 == self.strain_i:
+                self.missing_trump -= 1
         # Dummy has no PIMC
         if self.pimc and self.player_i != 1:
-            self.pimc.set_card_played(card, playedBy, openinglead)
+            self.pimc.set_card_played(card52, played_by, openinglead)
 
     def set_card_played(self, trick_i, leader_i, i, card):
         played_to_the_trick_already = (i - leader_i) % 4 > (self.player_i - leader_i) % 4
@@ -1186,18 +1218,34 @@ class CardPlayer:
                         print("Defending", self.pimc_declaring, self.player_i, trick_i)
                     self.find_and_update_constraints(players_states, quality,self.player_i)
 
+    def merge_candidate_cards(self, card_dd1, card_dd2):
+        merged_cards = {}
 
+        for card, (e_tricks, e_score, e_make, msg) in card_dd1.items():
+            card521 = card.code()
+            for card52, (e_tricks, e_score, e_make) in card_dd2.items():
+                if int(card52) == int(card521):  
+                    old_e_tricks, old_e_score, old_e_make, old_msg = card_dd1[card]
+                    new_e_tricks = (old_e_tricks + e_tricks) / 2.0 if old_e_tricks is not None and e_tricks is not None else None
+                    new_e_score = (old_e_score + e_score) / 2.0 if old_e_score is not None and e_score is not None else None
+                    new_e_make = (old_e_make + e_make) / 2.0 if old_e_make is not None and e_make is not None else None
+                    new_msg = "BEN DD and PIMC " + (old_msg or '')
+                    merged_cards[card] = (new_e_tricks, new_e_score, new_e_make, new_msg)
+
+        return merged_cards
+    
     def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
         t_start = time.time()
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
-            samples.append('%s %s %s %s %.5f' % (
+            samples.append('%s %s %s %s %.5f %.5f ' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),
                 hand_to_str(players_states[1][i,0,:32].astype(int)),
                 hand_to_str(players_states[2][i,0,:32].astype(int)),
                 hand_to_str(players_states[3][i,0,:32].astype(int)),
-                bidding_scores[i]
+                bidding_scores[i],
+                probability_of_occurence[i]
             ))
         if not quality and self.verbose:
             print(samples)
@@ -1206,7 +1254,14 @@ class CardPlayer:
             if self.verbose:
                 print("PIMC result:",pimc_resp_cards)
             assert pimc_resp_cards is not None, "PIMC result is None"
-            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
+            if self.models.pimc_ben_dd:
+                #print(pimc_resp_cards)
+                dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
+                #print(dd_resp_cards)
+                merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards)
+            else:
+                merged_card_resp = pimc_resp_cards
+            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status)            
         else:
             if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
                 pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits)
@@ -1214,9 +1269,10 @@ class CardPlayer:
                     print("PIMC result:",pimc_resp_cards)
                 assert pimc_resp_cards is not None, "PIMCDef result is None"
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
+                
             else:
-                pimc_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
-                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, tricks52, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)
+                dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
+                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status)
 
         if self.verbose:
             print(f'Play card response time: {time.time() - t_start:0.4f}')
@@ -1319,7 +1375,7 @@ class CardPlayer:
         if self.verbose:
             print("card_ev:")
             for card, ev in card_ev.items():
-                print(f"{card}: {ev:.3f}")
+                print(f"{card}: {ev:.0f}")
         card_result = {}
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key], making[key])
@@ -1372,7 +1428,6 @@ class CardPlayer:
                     continue
                 ev_sum += ft * proba * 100
             card_ev[card] = ev_sum
-
         return card_ev
     
     def get_card_ev_mp(self, dd_solved):
@@ -1420,6 +1475,16 @@ class CardPlayer:
         if self.verbose:
             for card, ev in card_nn.items():
                 print(f"{card}: {ev:.3f}")
+        
+        trump_adjust = 0
+        # Only in suit contract and if we are on lead and we are declaring
+        if self.strain_i != 0 and play_status == "Lead" and (self.player_i == 1 or self.player_i == 3):
+            # Any outstanding trump?
+            if self.models.draw_trump_reward > 0 and self.missing_trump > 0:
+                trump_adjust = self.models.draw_trump_reward
+            # Just to be sure we want to show opps rhat have no trump
+            if self.models.draw_trump_penalty > 0 and self.missing_trump == 0:
+                trump_adjust = -self.models.draw_trump_penalty
 
         candidate_cards = []
         
@@ -1431,9 +1496,9 @@ class CardPlayer:
                 candidate_cards.insert(0,CandidateCard(
                     card=card52,
                     insta_score=round(insta_score,2),
-                    expected_tricks_dd=e_tricks,
+                    expected_tricks_dd=e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),
                     p_make_contract=e_make,
-                    expected_score_dd=e_score,
+                    expected_score_dd=round(e_score,0),
                     msg=msg
                 ))
 
@@ -1489,14 +1554,14 @@ class CardPlayer:
             card32 = deck52.card52to32(card52)
             card=Card.from_code(card52)
             insta_score = round(card_nn.get(card32, 0),2)
-            # For now we want lowest card first - in deck it is from A->2 so highes value is lowest card
+            # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
                 candidate_cards.insert(0, CandidateCard(
                     card=card,
                     insta_score=insta_score,
                     expected_tricks_dd=e_tricks,
                     p_make_contract=e_make,
-                    expected_score_dd=e_score
+                    expected_score_dd=round(e_score,0),
                 ))
             else:
                 candidate_cards.append(CandidateCard(
@@ -1504,7 +1569,7 @@ class CardPlayer:
                     insta_score=insta_score,
                     expected_tricks_dd=e_tricks,
                     p_make_contract=e_make,
-                    expected_score_dd=e_score
+                    expected_score_dd=round(e_score,0),
                 ))
             current_card = card52
             current_insta_score = insta_score
@@ -1516,28 +1581,37 @@ class CardPlayer:
         # If we have bad quality of samples we should probably just use the neural network
         if valid_bidding_samples >= 0:
             if self.models.matchpoint:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_dd, round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+                #for i in range(len(candidate_cards)):
+                #    print(candidate_cards[i].card, candidate_cards[i].insta_score, int(candidate_cards[i].expected_tricks_dd* 10) / 10, candidate_cards[i].p_make_contract, candidate_cards[i].expected_score_dd, int(candidate_cards[i].expected_tricks_dd * 10) / 10)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
                 who = "NN-MP"
+                #print("Who", who)
             else:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, round(x[1].expected_score_dd, 0), round(x[1].insta_score, 2), -x[0]), reverse=True)
                 who = "NN-Make"
+                #print("Who", who)
             candidate_cards = [card for _, card in candidate_cards]
+            # for i in range(len(candidate_cards)):
+            #     print(candidate_cards[i].card, candidate_cards[i].insta_score, int(candidate_cards[i].expected_tricks_dd* 10) / 10, round(5*candidate_cards[i].p_make_contract,1), round(candidate_cards[i].expected_score_dd,0))
         else:
             if self.models.use_biddingquality_in_eval:
                 candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 2), round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
                 candidate_cards = [card for _, card in candidate_cards]
-                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
-                candidate_cards2 = [card for _, card in candidate_cards]
+                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
+                candidate_cards2 = [card for _, card in candidate_cards2]
                 if candidate_cards[0].expected_score_dd < 0 and candidate_cards2[0].expected_score_dd:
                     candidate_cards = candidate_cards2
                 who = "DD"
+                print("Who", who)
             else:
                 if self.models.matchpoint:
-                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 1), round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
+                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), -x[0]), reverse=True)
                     who = "MP-Make"
+                    #print("Who", who)
                 else:
                     candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
                     who = "Make"
+                    #print("Who", who)
                 candidate_cards = [card for _, card in candidate_cards]
 
         # Select the right card

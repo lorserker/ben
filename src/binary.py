@@ -137,6 +137,14 @@ def parse_hand_f(n_cards):
 def get_shape(hand):
     return np.sum(hand.reshape((hand.shape[0], 4, -1)), axis=2)
 
+def get_shape_array(hand):
+    if len(hand) != 52:
+        raise ValueError("The input array must have exactly 52 elements.")
+    np_array = np.array(hand)
+    reshaped_array = np_array.reshape(4, 13)
+    counts = np.sum(reshaped_array, axis=1)
+    
+    return counts.tolist()
 
 def get_hcp(hand):
     x = hand.reshape((hand.shape[0], 4, -1))

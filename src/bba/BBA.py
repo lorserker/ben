@@ -191,7 +191,7 @@ class BBABotBid:
         return self.bid(auction)
 
     def explain(self, auction):
-        print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)
+        #print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)
         self.player.new_hand(self.position, self.hand_str, self.dealer, self.vuln)
 
         for k in range(len(auction)-1):
