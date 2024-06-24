@@ -33,7 +33,9 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
     if verbose:
         print(candidate_cards[0])
     # If the first card is better then don't evaluate
-    if candidate_cards[0].p_make_contract > candidate_cards[1].p_make_contract + 0.1:
+    if candidate_cards[0].p_make_contract > candidate_cards[1].p_make_contract + 0.05:
+        return candidate_cards[0].card, who
+    if candidate_cards[0].expected_tricks_dd > candidate_cards[1].expected_tricks_dd + 0.5:
         return candidate_cards[0].card, who
     
     if player_i == 3 and not models.use_suitc:
@@ -115,8 +117,9 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                 for candidate_card in candidate_cards:
                     if candidate_card.card.symbol() == f"{suit_str}{card}":
                         # Only play SuitC if not losing to much DD
-                        if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.1:
-                            return candidate_card.card, "SuitC"
+                        if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
+                            if candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.5:
+                                return candidate_card.card, "SuitC"
                         
             return candidate_cards[0].card, who
     

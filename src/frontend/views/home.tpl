@@ -124,7 +124,7 @@
 </div>
 
 <div class="container">
-  <h2>Seatings</h2>
+  <h2>Settings</h2>
 
   <div class="content">
     <div class="inner-div">
@@ -135,6 +135,8 @@
     <input type="checkbox" id="E" data-default="false"><label for="E">East</label>
     <input type="checkbox" id="S" data-default="true"><label for="S">South</label>
     <input type="checkbox" id="W" data-default="false"><label for="W">West</label><br>
+    <input type="checkbox" id="M" data-default="false"><label for="matchpoint">Matchpoint</label><br>
+
     </div>
     <div class="inner-div">
     Other options: <br>
@@ -259,6 +261,7 @@
       localStorage.setItem('serverValue', serverdropdown.value);
     });
 
+
 // Get reference to the checkboxes and forms
 const checkbox1 = document.getElementById('N');
 const checkbox2 = document.getElementById('E');
@@ -269,6 +272,7 @@ const checkbox6 = document.getElementById('A');
 const checkbox7 = document.getElementById('C');
 const checkbox8 = document.getElementById('R');
 const checkbox9 = document.getElementById('V');
+const checkbox10 = document.getElementById('M');
 
 // Function to save checkbox state in localStorage
 function saveCheckboxState(checkboxId, checked) {
@@ -315,7 +319,7 @@ function includeCheckboxValues(event) {
 
     if (selectedForm) {
         const formData = new FormData(selectedForm);
-        const checkboxes = [checkbox1, checkbox2, checkbox3, checkbox4, checkbox5, checkbox6, checkbox7, checkbox8, checkbox9];
+        const checkboxes = [checkbox1, checkbox2, checkbox3, checkbox4, checkbox5, checkbox6, checkbox7, checkbox8, checkbox9, checkbox10];
         checkboxes.forEach(checkbox => {
             if (checkbox.checked) {
                 formData.append(checkbox.id, checkbox.value);

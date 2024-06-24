@@ -216,7 +216,7 @@ class BotBid:
                 if not self.models.use_adjustment:
                     adjust = 0
 
-                ev_c = candidate.with_expected_score(np.mean(ev), adjust)
+                ev_c = candidate.with_expected_score(np.mean(ev), expected_tricks, adjust)
                 if self.verbose:
                     print(ev_c)
                 ev_candidates.append(ev_c)
@@ -230,8 +230,8 @@ class BotBid:
             who = "Simulation"
             # Print candidates with their relevant information
             if self.verbose:
-                for idx, candidate in enumerate(candidates, start=1):
-                    print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.3f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
+                for idx, candidate in enumerate(candidates):
+                    print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.3f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Expected Tricks: {str(round(candidate.expected_tricks,1)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
         else:
             who = "NN"
             n_steps = binary.calculate_step_bidding_info(auction, self.models)
@@ -252,7 +252,7 @@ class BotBid:
                 # We need to find a way to use how good the samples are
                 ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
                 expected_score = np.mean(ev)
-                candidates[0] = candidates[0].with_expected_score(expected_score, 0)
+                candidates[0] = candidates[0].with_expected_score(expected_score, expected_tricks, 0)
 
 
         if self.verbose:
@@ -260,7 +260,7 @@ class BotBid:
 
         #print("self.models.check_final_contract", self.models.check_final_contract)
         #print("candidates[0].bid", candidates[0].bid, candidates[0].expected_score, len(samples), good_quality, (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score))
-        if len(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
+        if len(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS") and (auction[-1] == "PASS"):
             # We will avoid rescuing if we have a score of max_estimated_score or more
             if candidates[0].bid == "PASS" and len(samples) > 0 and (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score) and good_quality:
                 # We need to find a sample or two from the bidding
@@ -348,9 +348,9 @@ class BotBid:
                             contract_total_tricks[contract] += entry["tricks"]
 
                     # Calculate the average scores
-                    contract_average_scores = {contract: contract_total_scores[contract] / contract_counts[contract]
+                    contract_average_scores = {contract: round(contract_total_scores[contract] / contract_counts[contract])
                                             for contract in contract_counts}
-                    contract_average_tricks = {contract: contract_total_tricks[contract] / contract_counts[contract]
+                    contract_average_tricks = {contract: round(contract_total_tricks[contract] / contract_counts[contract],2)
                                             for contract in contract_counts}
 
                     # Print the results
@@ -378,14 +378,15 @@ class BotBid:
                         # We need to find a way to use how good the samples are
                         ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
                         expected_score = np.mean(ev)
-                        print("expected_score", expected_score)
+                        if self.verbose:
+                            print("expected_score", expected_score)
                         if (expected_score > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
 
                             candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
-                                                        expected_score=contract_average_scores[max_count_contract], adjust=0, alert = False)
+                                                        expected_score=contract_average_scores[max_count_contract], expected_tricks=expected_tricks, adjust=0, alert = False)
                             candidates.insert(0, candidatebid)
                             who = "Rescue"
-                            print(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}")
+                            sys.stderr.write(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}\n")
         # We return the bid with the highest expected score or highest adjusted score 
 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality, alert = candidates[0].alert)
@@ -661,8 +662,8 @@ class BotBid:
             # All pass doens't really fit, and is always 0 - we ignore it for now
             if contract is None:
                 contracts.append("PASS")
-                strains[i] = None
-                declarers[i] = None
+                strains[i] = -1
+                declarers[i] = -1
             else:
                 contracts.append(contract)
                 strains[i] = 'NSHDC'.index(contract[1])
@@ -1496,7 +1497,7 @@ class CardPlayer:
                 candidate_cards.insert(0,CandidateCard(
                     card=card52,
                     insta_score=round(insta_score,2),
-                    expected_tricks_dd=e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),
+                    expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),2),
                     p_make_contract=e_make,
                     expected_score_dd=round(e_score,0),
                     msg=msg
@@ -1504,7 +1505,7 @@ class CardPlayer:
 
         if self.verbose:
             for i in range(len(candidate_cards)):
-                print(candidate_cards[i].card, candidate_cards[i].insta_score, candidate_cards[i].expected_tricks_dd, candidate_cards[i].p_make_contract, candidate_cards[i].expected_score_dd, int(candidate_cards[i].expected_tricks_dd * 10) / 10)
+                print(candidate_cards[i].card, candidate_cards[i].insta_score, candidate_cards[i].expected_tricks_dd, round(5*candidate_cards[i].p_make_contract, 1), candidate_cards[i].expected_score_dd, int(candidate_cards[i].expected_tricks_dd * 10) / 10)
 
         if self.models.matchpoint:
             candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)

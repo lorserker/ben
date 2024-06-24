@@ -165,23 +165,26 @@ class CardResp:
 
 class CandidateBid:
 
-    def __init__(self, bid, insta_score, expected_score=None, adjust=None, alert = None):
+    def __init__(self, bid, insta_score, expected_score=None, expected_tricks=None, adjust=None, alert = None):
         self.bid = bid
         self.insta_score = None if insta_score is None else float(insta_score)
         self.expected_score = None if expected_score is None else float(expected_score)
+        self.expected_tricks = None if expected_tricks is None else float(expected_tricks)
         self.adjust = None if adjust is None else float(adjust)
         self.alert = alert
 
     def __str__(self):
         bid_str = self.bid.ljust(4) if self.bid is not None else "    "
         insta_score_str = f"{self.insta_score:.4f}" if self.insta_score is not None else "---"
-        expected_score_str = f"{self.expected_score:5.2f}" if self.expected_score is not None else "---"
+        expected_score_str = f"{self.expected_score:5.0f}" if self.expected_score is not None else "---"
+        expected_tricks = f"{self.expected_tricks:5.2f}" if self.expected_tricks is not None else "---"
         adjust_str = f"{self.adjust:4.0f}" if self.adjust is not None else "---"
         alert_str = "alertable" if self.alert else "  "
-        return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, adjust={adjust_str}, alert={alert_str})"
+        return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, expected_tricks={expected_tricks}, adjust={adjust_str}, alert={alert_str})"
 
-    def with_expected_score(self, expected_score, adjust):
-        return CandidateBid(self.bid, self.insta_score, expected_score, adjust, self.alert)
+    def with_expected_score(self, expected_score, expected_tricks, adjust):
+        #print("Updating candidate bid",expected_score, expected_tricks, adjust)
+        return CandidateBid(self.bid, self.insta_score, expected_score, expected_tricks, adjust, self.alert)
 
     def to_dict(self):
         result = {
@@ -193,6 +196,9 @@ class CandidateBid:
 
         if self.expected_score is not None:
             result['expected_score'] = round(self.expected_score)
+
+        if self.expected_tricks is not None:
+            result['expected_tricks'] = round(self.expected_tricks,1)
         
         if self.adjust is not None:
             result['adjustment'] = round(self.adjust)

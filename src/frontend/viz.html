@@ -218,6 +218,7 @@
                                                     <li>
                                                         Bid: ${candidate.call.replace("PASS","P").padStart(2, ' ')},
                                                         ${candidate.expected_score !== undefined ? `Expected score: ${candidate.expected_score},` : ''}
+                                                        ${candidate.expected_tricks !== undefined ? `Expected tricks: ${candidate.expected_tricks},` : ''}
                                                         ${candidate.insta_score !== undefined ? `NN Score: ${candidate.insta_score},` : ''}
                                                         ${candidate.adjustment !== undefined ? `Adjusted: ${candidate.adjustment}` : ''}
                                                     </li>                               

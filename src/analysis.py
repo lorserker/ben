@@ -38,7 +38,7 @@ class CardByCard:
 
         while bid_i < len(self.padded_auction):
             bid_resp = bidder_bots[player_i].bid(self.padded_auction[:bid_i])
-            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples, bid_resp.hcp, bid_resp.shape, "Analysis", bid_resp.quality))
+            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples, bid_resp.hcp, bid_resp.shape, "Analysis", bid_resp.quality, bid_resp.alert))
             type(self).bid_eval(self.padded_auction[bid_i], bid_resp)
             bid_i += 1
             player_i = (player_i + 1) % 4
@@ -63,7 +63,7 @@ class CardByCard:
         qualifier = 'OK'
         best_tricks = card_resp.candidates[0].expected_tricks_dd
         for candidate in card_resp.candidates:
-            if candidate.card.symbol() == card:
+            if candidate.card.symbol() == card and candidate.expected_tricks_dd != None:
                 if best_tricks - candidate.expected_tricks_dd > 0.1:
                     qualifier = f'? losing: {best_tricks - candidate.expected_tricks_dd:.2f}'
                 if best_tricks - candidate.expected_tricks_dd > 0.6:
@@ -142,7 +142,7 @@ class CardByCard:
                 if isinstance(card_players[player_i], bots.CardPlayer):
                     play_status = get_play_status(card_players[player_i].hand52,current_trick52)
 
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, self.vuln, self.models, card_players[player_i].rng)
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
                 card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)

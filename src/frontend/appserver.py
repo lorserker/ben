@@ -316,6 +316,7 @@ def index():
     cont = request.forms.get('C')
     rotate = request.forms.get('R')
     visible = request.forms.get('V')
+    matchpoint = request.forms.get('M')
     player = ""
     if north: player += "&N=x"
     if east: player += "&E=x"
@@ -328,6 +329,7 @@ def index():
     if cont: player += "&C=x"
     if rotate: player += "&R=x"
     if visible: player += "&V=x"
+    if matchpoint: player += "&M=x"
     dealtext = request.forms.get('dealtext')
     if dealtext:
         dealer = request.forms.get('dealer')

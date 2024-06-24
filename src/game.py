@@ -908,7 +908,7 @@ async def main():
             rdeal = random_deal_board(boardno)
 
             # example of to use a fixed deal
-            rdeal = ('T7.KJT.AQT2.AQT4 KQJ952.Q972.K.87 84.A654.J9.KJ632 A63.83.876543.95', 'S E-W')
+            # rdeal = ('QJ972.54.KQ7.AT8 KT53.KT9.JT93.72 6.Q863.A85.Q6543 A84.AJ72.642.KJ9', 'S N-S')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=biddingonly)

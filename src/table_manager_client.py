@@ -662,6 +662,7 @@ class TMClient:
         match = re.search(rx_dealer_vuln, deal_line_1)
 
         if deal_line_2 is None or deal_line_2 == "":
+            print("Deal not received", deal_line_2)
             raise ValueError("Deal not received")
         
         hand_str = TMClient.parse_hand(deal_line_2)

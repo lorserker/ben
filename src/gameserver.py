@@ -148,6 +148,11 @@ async def handler(websocket, path, board_no, seed):
     if name: driver.name = name
     R = query_params.get('R', [None])[0]
     if R: driver.rotate = True
+    M = query_params.get('M', [None])[0]
+    if M: 
+        models.matchpoint = True
+    else:
+         models.matchpoint = False
     P = query_params.get('P', [None])[0]
     if P == "5":
         play_only = True
