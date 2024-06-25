@@ -128,10 +128,10 @@ def decode_board(encoded_str_deal):
 
     board_extension = int(encoded_str_deal[0], 16)
     number = int(encoded_str_deal[1], 16)
-    dealer = number // 4
+    dealer_i = number // 4
     vulnerable = number % 4
-    deal_no = board_extension * 16 + board[dealer][vulnerable]
-    encryption_byte = board[dealer][vulnerable]
+    deal_no = board_extension * 16 + board[dealer_i][vulnerable]
+    encryption_byte = board[dealer_i][vulnerable]
 
     card_index = 2
     for j in range(1, 14):
@@ -149,8 +149,8 @@ def decode_board(encoded_str_deal):
         for i in range(4):
             k = lbloki[i]
             hand[k].suit[i] += str_card
-    dealer = "NESW"[dealer]
-    vulnerable = ['None', 'N-S', 'E-W', 'Both'][vulnerable]
+    dealer = "NESW"[dealer_i]
+    vulnerable = ['None', 'E-W', 'N-S', 'Both'][vulnerable]
     return hand, dealer, vulnerable, deal_no
 
 def parse_lin(lin):
@@ -172,7 +172,7 @@ def parse_lin(lin):
     hd_west = re.search(rx_hand, lin_hands[1].upper()).groupdict()
     hd_north = re.search(rx_hand, lin_hands[2].upper()).groupdict()
 
-    if lin_hands[3]:
+    if len(lin_hands) == 4:
         hd_east = re.search(rx_hand, lin_hands[3].upper()).groupdict()
     else:
         def seen_cards(suit):
@@ -379,21 +379,23 @@ def index():
 
     deallin = request.forms.get('deallin')
     if deallin:
-        query_params = deallin.split('?')
-        deallinparsed = parse_qs(query_params[-1])
+        if "?" in deallin:
+            query_params = deallin.split('?')
+            deallin = parse_qs(query_params[-1])
+            deallin = deallin.get('lin', [None])[0]
+        else:
+            if "lin=" in deallin:
+                deallin = deallin.split("lin=")[-1]
+        print("Input: ", deallin)
+        dealer, vulnerable, deal, board_no = parse_lin(deallin)
         try:
-            lin = deallinparsed["lin"]
-            dealer, vulnerable, deal, board_no = parse_lin(lin[0])
-        except KeyError:
-            try:
-                # no lin= in input, so we try to parse the string
-                dealer, vulnerable, deal, board_no = parse_lin(deallin)
-            except Exception as e:
-                error_message = f'Error parsing LIN-input. {e}'
-                print(error_message)
-                print(deallin)
-                encoded_error_message = quote(error_message)
-                redirect(f'/error?message={encoded_error_message}')
+            dealer, vulnerable, deal, board_no = parse_lin(deallin)
+        except Exception as e:
+            error_message = f'Error parsing LIN-input. {e}'
+            print(error_message)
+            print(deallin)
+            encoded_error_message = quote(error_message)
+            redirect(f'/error?message={encoded_error_message}')
 
         deal = " ".join(deal)
         print(deal)
