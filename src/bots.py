@@ -87,18 +87,20 @@ class BotBid:
         candidates, passout = self.get_bid_candidates(auction)
         good_quality = None
 
-        if self.verbose:
-            print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
-        hands_np, sorted_score, p_hcp, p_shp, good_quality = self.sample_hands_for_auction(auction, self.seat)
         samples = []
-        for i in range(hands_np.shape[0]):
-            samples.append('%s %s %s %s %.5f' % (
-                hand_to_str(hands_np[i,0,:]),
-                hand_to_str(hands_np[i,1,:]),
-                hand_to_str(hands_np[i,2,:]),
-                hand_to_str(hands_np[i,3,:]),
-                sorted_score[i]
-            ))
+        # If no seach we will not generate any samples
+        if not self.sample.no_samples_when_no_search or self.min_candidate_score != -1:
+            if self.verbose:
+                print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
+            hands_np, sorted_score, p_hcp, p_shp, good_quality = self.sample_hands_for_auction(auction, self.seat)
+            for i in range(hands_np.shape[0]):
+                samples.append('%s %s %s %s %.5f' % (
+                    hand_to_str(hands_np[i,0,:]),
+                    hand_to_str(hands_np[i,1,:]),
+                    hand_to_str(hands_np[i,2,:]),
+                    hand_to_str(hands_np[i,3,:]),
+                    sorted_score[i]
+                ))
         if self.do_rollout(auction, candidates, self.max_candidate_score):
             ev_candidates = []
             for candidate in candidates:

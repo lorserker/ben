@@ -58,7 +58,7 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, exclude_samples, no_biddingqualitycheck_after_bid_count, verbose):
+    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, verbose):
         self.lead_accept_threshold_partner_trust = lead_accept_threshold_partner_trust
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
@@ -77,6 +77,7 @@ class Sample:
         self.sample_boards_for_play = sample_boards_for_play
         self.use_bidding_info = use_biddinginfo
         self.use_distance = use_distance
+        self.no_samples_when_no_search = no_samples_when_no_search
         self.exclude_samples = exclude_samples
         self.no_biddingqualitycheck_after_bid_count = no_biddingqualitycheck_after_bid_count
         self.verbose = verbose
@@ -104,8 +105,9 @@ class Sample:
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
+        no_samples_when_no_search = conf.getboolean('sampling', 'no_samples_when_no_search', fallback=False)
         no_biddingquality_after_bid_count = conf.getint('bidding', 'no_biddingquality_after_bid_count', fallback=12)
-        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, exclude_samples, no_biddingquality_after_bid_count, verbose)
+        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingquality_after_bid_count, verbose)
 
     @property
     def sample_hands_auction(self):
