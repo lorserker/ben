@@ -102,6 +102,7 @@ class TMClient:
 
         await self.play(auction, opening_lead52)
 
+        await self.receive_line()
         
     async def connect(self, host, port):
         try:
@@ -633,16 +634,12 @@ class TMClient:
         await self.send_message(f'{self.seat} ready to start.')
 
     async def receive_deal(self):
-        await self.receive_line()
-
-        await self.send_message(f'{self.seat} ready for deal.')
         np.random.seed(42)
-
 
         #If we are restarting a match we will receive 
         # 'Board number 1. Dealer North. Neither vulnerable. \r\n'
         deal_line_1 = await self.receive_line()
-        if deal_line_1 == "Start of Board":
+        if deal_line_1.lower() == "start of board":
             await self.send_message(f'{self.seat} ready for deal.')
             deal_line_1 = await self.receive_line()
 
