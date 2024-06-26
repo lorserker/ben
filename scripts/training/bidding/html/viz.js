@@ -352,7 +352,7 @@ class PlayInfo {
             return
         element.innerHTML = ""
 
-        let html = "<h3>Play</h3><br> " + this.data["card"] + " selected by " + this.data["who"] + "<br/><br/>"
+        let html = "<h3>Play</h3><br> " + this.data["card"] +  (data.who !== undefined ? " selected by " + this.data["who"]: "")  + "<br/><br/>"
 
         if ("candidates" in this.data && this.data.candidates.length > 0) {
             html += '<h3>Candidates</h3>'

@@ -88,6 +88,7 @@
           <span>&clubs;</span>
       </div>
   </div>
+  <div id="model"></div>
 
   <div id="auction"></div>
   <div id="boardno"></div>
@@ -154,6 +155,9 @@
                                 if (deal.data.feedback) {
                                     document.querySelector('#feedback').innerHTML = deal.data.feedback
                                 }
+                                if (deal.data.model) {
+                                    document.querySelector('#model').innerHTML = deal.data.model
+                                }
                                 document.getElementById("boardno").innerHTML=deal.board_number()
                                 let auction = new Auction(log['dealer'], log['bids'])
                                 auction.render(document.getElementById("auction"))
@@ -208,7 +212,7 @@
                                 let i = 0
                                 log['bids'].forEach(data => {
                                     document.querySelector('#info').innerHTML += `
-                                        <p class="bid"><strong>Bid:</strong> ${data.bid}${data.alert=="True"? "*":""} ${data.who ? ' by ' + data.who : ''}</p>
+                                        <p class="bid"><strong>Bid:</strong> ${data.bid}${data.alert=="True"? "*":""} ${data.who !== undefined? ' by ' + data.who : ''}</p>
                                         `;
                                     if (data.candidates && data.candidates.length > 0)
                                         document.querySelector('#info').innerHTML += `

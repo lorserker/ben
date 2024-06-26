@@ -1,3 +1,4 @@
+import traceback
 import clr
 import sys
 import os
@@ -28,7 +29,7 @@ class BGADefDLL:
         try:
            # Load the .NET assembly and import the types and classes from the assembly
             clr.AddReference(BGADLL_PATH)
-            from BGADLL import PIMCDef, Hand, Constraints, Extensions
+            from BGADLL import PIMCDef, Hand, Constraints, Extensions, Play
 
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
@@ -49,7 +50,8 @@ class BGADefDLL:
         self.dummyhand = Extensions.Parse(northhand)
         self.defendinghand = Extensions.Parse(southhand)
         self.opposHand = self.full_deck.Except(self.dummyhand.Union(self.defendinghand))
-        self.playedHand = Hand()
+        self.current_trick = Play()
+        self.previous_tricks = Play()
         # Constraint are Clubs, Diamonds ending with hcp
         self.partner_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
         self.declarer_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
@@ -72,9 +74,9 @@ class BGADefDLL:
         return hcp_values.get(rank, 0)
 
     def reset_trick(self):
-        from BGADLL import Hand
-        
-        self.playedHand = Hand()
+        from BGADLL import Play
+        self.previous_tricks.AddRange(self.current_trick)
+        self.current_trick = Play()
 
     def update_trick_needed(self):
         self.mintricks += -1
@@ -216,9 +218,10 @@ class BGADefDLL:
         real_card = Card.from_code(card52)
         if self.verbose:
             print(f"Setting card {real_card} played by {playedBy} for PIMCDef")
+
         card = real_card.symbol_reversed()
         from BGADLL import Card as PIMCCard
-        self.playedHand.Add(PIMCCard(card))
+        self.current_trick.Add(PIMCCard(card))
         self.opposHand.Remove(PIMCCard(card))
         if playedBy == 1:
             self.dummyhand.Remove(PIMCCard(card))
@@ -248,7 +251,6 @@ class BGADefDLL:
 
     # Define a Python function to find a bid
     def nextplay(self, player_i, shown_out_suits):
-
         from BGADLL import Constraints, Macros, Card as PIMCCard
 
         try:
@@ -308,7 +310,7 @@ class BGADefDLL:
         if self.verbose:
             print("player_i", player_i)
             print(self.dummyhand.ToString(), self.defendinghand.ToString())
-            print(self.opposHand.ToString(), self.playedHand.ListAsString())
+            print(self.opposHand.ToString(), self.current_trick.ListAsString())
             print("Voids:", shown_out_suits)
             print(Macros.Player.West if player_i == 0 else Macros.Player.East)
             print("self.player_i",self.player_i)
@@ -318,15 +320,17 @@ class BGADefDLL:
             print("Declarer",self.declarer_constraints.ToString())
             print("Partner",self.partner_constraints.ToString())
             print("Autoplay",self.autoplay)
+            print("Current trick",self.current_trick.ListAsString())
+            print("Previous tricks",self.previous_tricks.ListAsString())
 
         try:
-            card = self.pimc.SetupEvaluation([self.dummyhand, self.defendinghand], self.opposHand, self.playedHand, [self.declarer_constraints,
+            card = self.pimc.SetupEvaluation([self.dummyhand, self.defendinghand], self.opposHand, self.current_trick, self.previous_tricks, [self.declarer_constraints,
                                   self.partner_constraints], Macros.Player.East if player_i == 2 else Macros.Player.West, self.max_playout, self.autoplay, self.player_i == 2)
         except Exception as ex:        
             print('Error:', ex)
             print("player_i", player_i)
             print(self.dummyhand.ToString(), self.defendinghand.ToString())
-            print(self.opposHand.ToString(), self.playedHand.ListAsString())
+            print(self.opposHand.ToString(), self.current_trick.ListAsString())
             print("Voids:", shown_out_suits)
             print(Macros.Player.West if player_i == 0 else Macros.Player.East)
             print("self.player_i",self.player_i)
@@ -335,8 +339,9 @@ class BGADefDLL:
             print("min tricks",self.mintricks)
             print("Declarer",self.declarer_constraints.ToString())
             print("Partner",self.partner_constraints.ToString())
+            print("Current trick",self.current_trick.ListAsString())
+            print("Previous tricks",self.previous_tricks.ListAsString())
             #sys.exit(1) 
-            
         
         trump = self.find_trump(self.suit)
         if self.verbose:
@@ -368,6 +373,12 @@ class BGADefDLL:
         except Exception as ex:
             print('Error AwaitEvaluation:', ex)
             #sys.exit(1)
+        # Allow running threads to finalize
+        time.sleep(0.1)
+        if self.verbose:    
+            print(f"Playouts: {self.pimc.Playouts}")
+            print("Combinations:", self.pimc.Combinations)
+            print("Examined:", self.pimc.Examined)
 
         try:
             legalMoves = self.pimc.LegalMoves
@@ -377,12 +388,12 @@ class BGADefDLL:
                 count = float(len(output))
                 # If we found no playout we need to reevaluate without constraints
                 if count == 0:
-                    print(card)
+                    print("Trying without constraints")
                     print(self.pimc.LegalMovesToString)
                     print("Combinations:", self.pimc.Combinations)
                     print("Examined:", self.pimc.Examined)
                     print(self.dummyhand.ToString(), self.defendinghand.ToString())
-                    print(self.opposHand.ToString(), self.playedHand.ListAsString())
+                    print(self.opposHand.ToString(), self.current_trick.ListAsString())
                     print("min tricks",self.mintricks)
                     print("Voids",shown_out_suits)
                     print(Macros.Player.West if player_i == 0 else Macros.Player.East)
@@ -391,13 +402,15 @@ class BGADefDLL:
                     print("Declarer", self.declarer_constraints.ToString())
                     print("Partner", self.partner_constraints.ToString())
                     print("Trump:",trump)
-                    if self.declarer_constraints.MaxHCP == 40:
+                    if self.declarer_constraints.MaxHCP == 99:
                         print("Loop calling PIMC")
                         sys.exit(1)
-                    self.partner_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 40)
-                    self.declarer_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 40)
-                    print("Trying without constraints")
+                    self.partner_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 99)
+                    self.declarer_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 99)
                     card_result = self.nextplay(player_i, shown_out_suits)
+                    # Reset max HCP so next call will work
+                    self.partner_constraints.MaxHCP = 37
+                    self.declarer_constraints.MaxHCP = 37
                     print("Done without constraints")
                     return card_result
                 makable = sum(1 for t in output if t >= self.mintricks)
@@ -414,9 +427,12 @@ class BGADefDLL:
                 if self.verbose:
                     print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f} {median:.1f}")
 
-        except Exception as ex:
-            print('Error legalMoves:', ex)
-            #sys.exit(1)
+        except Exception as e:
+            print('Error legalMoves:', e)
+            traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+            traceback_lines = "".join(traceback_str).splitlines()
+            print(traceback_lines)  # This will print the last section starting with "File"
+            sys.exit(1)
 
         if self.verbose:
             print(card_result)

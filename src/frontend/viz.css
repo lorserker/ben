@@ -24,7 +24,7 @@
 #east {
     position: absolute;
     top: 200px;
-    left: 370px;
+    left: 380px;
     width: 180px;
     height: 150px;
 }
@@ -41,6 +41,14 @@
     position: absolute;
     top: 370px;
     left: 10px;
+    width: 180px;
+    height: 150px;
+}
+
+#model {
+    position: absolute;
+    top: 370px;
+    left: 380px;
     width: 180px;
     height: 150px;
 }

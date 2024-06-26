@@ -314,7 +314,8 @@ class Driver:
             'rotated': self.rotate,
             'play_only': self.play_only,
             'bidding_only': self.bidding_only,
-            'human': self.human
+            'human': self.human,
+            'model': self.models.name
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i

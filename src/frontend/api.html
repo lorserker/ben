@@ -586,7 +586,7 @@
                 explanation = ` (${data.explanation})`;
             }
             let html = `
-                <p class="bid"><strong>Bid:</strong> ${data.bid}${alerted} ${explanation} ${data.who ? ' by ' + data.who : ''}</p>
+                <p class="bid"><strong>Bid:</strong> ${data.bid}${alerted} ${explanation} ${data.who !== undefined ? ' by ' + data.who : ''}</p>
                 `;
             if (data.candidates && data.candidates.length > 0)
                 html += `
@@ -636,7 +636,7 @@
                 // We lead from dummy
                 player = (player + 2) % 4
             }
-            let html = "<h3>Play</h3><br> " + data["card"] + " selected by " + data["who"] + "<br/><br/>"
+            let html = "<h3>Play</h3><br> " + data["card"] +  (data.who !== undefined ? " selected by " + this.data["who"]: "")  + "<br/><br/>"
 
             if ("candidates" in data && data.candidates.length > 0) {
                 html += '<h3>Candidates</h3>'

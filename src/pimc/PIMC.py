@@ -29,7 +29,7 @@ class BGADLL:
         try:
            # Load the .NET assembly and import the types and classes from the assembly
             clr.AddReference(BGADLL_PATH)
-            from BGADLL import PIMC, Hand, Constraints, Extensions
+            from BGADLL import PIMC, Hand, Play, Constraints, Extensions, Card as PIMCCard
 
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
@@ -50,7 +50,9 @@ class BGADLL:
         self.northhand = Extensions.Parse(northhand)
         self.southhand = Extensions.Parse(southhand)
         self.opposHand = self.full_deck.Except(self.northhand.Union(self.southhand))
-        self.playedHand = Hand()
+        self.current_trick = Play()
+        self.previous_tricks = Play()
+
         # Constraint are Clubs, Diamonds ending with hcp
         self.lho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
         self.rho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
@@ -72,9 +74,9 @@ class BGADLL:
         return hcp_values.get(rank, 0)
 
     def reset_trick(self):
-        from BGADLL import Hand
-        
-        self.playedHand = Hand()
+        from BGADLL import Play
+        self.previous_tricks.AddRange(self.current_trick)
+        self.current_trick = Play()
 
     def update_trick_needed(self):
         self.mintricks += -1
@@ -173,6 +175,7 @@ class BGADLL:
             print("West (LHO)",self.lho_constraints.ToString())
 
     def update_constraints(self, playedBy, real_card):
+        from BGADLL import Card as PIMCCard
         hcp = self.calculate_hcp(real_card.rank)
         suit = real_card.suit
         if (playedBy == 2):
@@ -219,7 +222,7 @@ class BGADLL:
             
         card = real_card.symbol_reversed()
         from BGADLL import Card as PIMCCard
-        self.playedHand.Add(PIMCCard(card))
+        self.current_trick.Add(PIMCCard(card))
         self.opposHand.Remove(PIMCCard(card))
 
         if (playedBy == 1):
@@ -250,7 +253,7 @@ class BGADLL:
 
     # Define a Python function to find a bid
     def nextplay(self, player_i, shown_out_suits):
-        from BGADLL import Constraints, Macros,  Card as PIMCCard
+        from BGADLL import Constraints, Macros, Card as PIMCCard
 
         try:
             self.pimc.Clear()
@@ -260,10 +263,13 @@ class BGADLL:
         if self.verbose:
             print("player_i", player_i)
             print(self.northhand.ToString(), self.southhand.ToString())
-            print(self.opposHand.ToString(), self.playedHand.ListAsString())
+            print(self.opposHand.ToString(), self.current_trick.ListAsString())
             print("Voids:", shown_out_suits)
             print(Macros.Player.South if player_i == 3 else Macros.Player.North)
+            print("min tricks",self.mintricks)
             print("Autoplay",self.autoplay)
+            print("Current trick",self.current_trick.ListAsString())
+            print("Previous tricks",self.previous_tricks.ListAsString())
 
 # for suit_index, constraints in zip([0, 1, 2, 3], [self.lho_constraints, self.rho_constraints]):
 #     for suit in range(4):
@@ -319,17 +325,19 @@ class BGADLL:
             print("West (LHO)",self.lho_constraints.ToString())
 
         try:
-            self.pimc.SetupEvaluation([self.northhand, self.southhand], self.opposHand, self.playedHand, [self.rho_constraints,
+            self.pimc.SetupEvaluation([self.northhand, self.southhand], self.opposHand, self.current_trick, self.previous_tricks, [self.rho_constraints,
                                   self.lho_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North, self.max_playout, self.autoplay)
         except Exception as ex:        
             print('Error:', ex)
             print("player_i", player_i)
             print(self.northhand.ToString(), self.southhand.ToString())
-            print(self.opposHand.ToString(), self.playedHand.ListAsString())
+            print(self.opposHand.ToString(), self.current_trick.ListAsString())
             print("Voids:", shown_out_suits)
             print(Macros.Player.South if player_i == 3 else Macros.Player.North)
             print("East (RHO)",self.rho_constraints.ToString())
             print("West (LHO)",self.lho_constraints.ToString())
+            print("Current trick",self.current_trick.ListAsString())
+            print("Previous tricks",self.previous_tricks.ListAsString())
             #sys.exit(1) 
 
         trump = self.find_trump(self.suit)
@@ -355,6 +363,7 @@ class BGADLL:
             #sys.exit(1)
 
         try:
+            start_time = time.time()
             self.pimc.AwaitEvaluation(int(self.wait * 1000))
             if self.verbose:    
                 print(f"Threads are finished after {time.time() - start_time:.2f}.")
@@ -367,6 +376,7 @@ class BGADLL:
             print(f"Playouts: {self.pimc.Playouts}")
             print("Combinations:", self.pimc.Combinations)
             print("Examined:", self.pimc.Examined)
+
         try:
             legalMoves = self.pimc.LegalMoves
             for card in legalMoves:
@@ -384,12 +394,14 @@ class BGADLL:
                     print("Combinations:", self.pimc.Combinations)
                     print("Examined:", self.pimc.Examined)
                     print(self.northhand.ToString(), self.southhand.ToString())
-                    print(self.opposHand.ToString(), self.playedHand.ListAsString())
+                    print(self.opposHand.ToString(), self.current_trick.ListAsString())
                     print("min tricks",self.mintricks)
                     print("Voids",shown_out_suits)
                     print("East (RHO)", self.rho_constraints.ToString())
                     print("West (LHO)", self.lho_constraints.ToString())
                     print("Trump:",trump)
+                    print("Current trick",self.current_trick.ListAsString())
+                    print("Previous tricks",self.previous_tricks.ListAsString())
                     if self.lho_constraints.MaxHCP == 99:
                         print("Loop calling PIMC")
                         sys.exit(1)

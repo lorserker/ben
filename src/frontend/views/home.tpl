@@ -47,6 +47,8 @@
             <option value="1">SAYC</option>
             <option value="2">SAYC-WBridge5</option>
             <option value="3">Jackos (muppet)</option>
+            <option value="4">BBA 2/1 (GIB)</option>
+            <option value="5">Default.conf</option>
         </select><br>
         </div>
     </div>
