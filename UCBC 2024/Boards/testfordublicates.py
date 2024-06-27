@@ -17,7 +17,7 @@ def find_duplicate_lines(filename):
     return duplicate_lines
 
 # Example usage:
-filename = 'input-2024-06-13.bba'  # Replace 'your_file.txt' with the path to your file
+filename = 'input.bba'  # Replace 'your_file.txt' with the path to your file
 duplicates = find_duplicate_lines(filename)
 print("Duplicate lines found:")
 for line in duplicates:

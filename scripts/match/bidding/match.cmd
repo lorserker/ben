@@ -15,6 +15,8 @@ type ".\%model1%\leads2.json" | python score.py > .\%model1%\results2.json
 
 python ..\..\..\src\compare.py .\%model1%\results1.json .\%model1%\results2.json > .\%model1%\compare.json 
 
+copy ..\..\..\demo\viz.css .\%model1%\html\viz.css
+
 type ".\%model1%\compare.json" | python printmatch.py >.\%model1%\match.txt
 
 type ".\%model1%\compare.json" | python printmatchashtml.py >.\%model1%\html\match.html
