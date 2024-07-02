@@ -294,17 +294,18 @@ class BotBid:
                             print("Stopping rescue, just one level higher")
                         alternatives = {}
                         break
+                    # If 3N don't bid 4N
                     if current_contract == "3N" and (contract == "4N" or contract == "5N"):
                         if self.verbose:
                             print("Stopping rescue, just one level higher")
                         alternatives = {}
                         break
-                    # If 3N don't bid 4N
                     if current_contract == contract:
                         if self.verbose:
                             print("Contract bid, stopping rescue")
                         alternatives = {}
                         break
+                    
                           
                     # if the contract is in candidates we assume previous calculations are right and we stop
                     for c in candidates:
@@ -365,6 +366,8 @@ class BotBid:
                     # Unless we gain 300 or we expect 4 tricks more we will not override BEN
                     if (contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
                         # Now we have found a possible resuce bid, so we need to check the samples with that contract
+                        if self.verbose:
+                            print("Evaluating", max_count_contract)
                         new_auction = auction.copy()
                         new_auction.append(max_count_contract)
                         auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
@@ -378,8 +381,15 @@ class BotBid:
                             print("tricks", np.mean(decoded_tricks))
                         expected_tricks = np.mean(decoded_tricks)
                         # We need to find a way to use how good the samples are
+                        # Assume we are doubled if going down
+
                         ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
+                        evd= self.expected_score_doubled(len(auction) % 4, contracts, decl_tricks_softmax)
                         expected_score = np.mean(ev)
+                        expected_score_doubled = np.mean(ev)
+                        # Take the lowest score of the two
+                        if expected_score_doubled < expected_score:
+                            expected_score = expected_score_doubled
                         if self.verbose:
                             print("expected_score", expected_score)
                         if (expected_score > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
@@ -417,6 +427,8 @@ class BotBid:
 
     def get_bid_candidates(self, auction):
         bid_softmax, alerts = self.next_bid_np(auction)
+
+        print(bid_softmax, alerts)
     
         if self.verbose:
             index_highest = np.argmax(bid_softmax)
@@ -525,10 +537,7 @@ class BotBid:
             x = self.get_binary(auction, self.models)
             # If API we have no history
             if self.models.model_version == 2:
-                bid_np = self.models.bidder_model.model_seq(x)
-                if self.models.alert_supported:
-                    alerts = bid_np[1][-1:][0]                   
-                bid_np = bid_np[0][-1:][0]
+                bid_np, alerts = self.models.bidder_model.model_seq(x)
 
             else:
                 x = x[:,-1,:]
@@ -790,6 +799,21 @@ class BotBid:
         for i, contract in enumerate(contracts):
             if contract != "pass":
                 scores_by_trick[i] = scoring.contract_scores_by_trick(contract, tuple(self.vuln))
+                decl_i = 'NESW'.index(contract[-1])
+                if (turn_to_bid + decl_i) % 2 == 1:
+                    # the other side is playing the contract
+                    scores_by_trick[i,:] *= -1
+            else:
+                scores_by_trick[i] = 0
+        return np.sum(decl_tricks_softmax * scores_by_trick, axis=1)
+
+    def expected_score_doubled(self, turn_to_bid, contracts, decl_tricks_softmax):
+        n_samples = len(contracts)
+        scores_by_trick = np.zeros((n_samples, 14))
+        for i, contract in enumerate(contracts):
+            if contract != "pass":
+                #print("Contract",contract[:2]+"X"+contract[-1])
+                scores_by_trick[i] = scoring.contract_scores_by_trick(contract[:2]+"X"+contract[-1], tuple(self.vuln))
                 decl_i = 'NESW'.index(contract[-1])
                 if (turn_to_bid + decl_i) % 2 == 1:
                     # the other side is playing the contract

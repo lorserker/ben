@@ -1137,8 +1137,3 @@
 [Declarer "?"]
 [Contract "?"]
 [Result "?"]
-
-Generated 10000000 hands
-Produced 76 hands
-Initial random seed 1701186051
-Time needed   28.000 sec

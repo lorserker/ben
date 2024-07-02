@@ -813,14 +813,12 @@ async def main():
 
     # Get the path to the config file
     config_path = get_execution_path()
-    
-    base_path = os.getenv('BEN_HOME') or config_path
 
     parser = argparse.ArgumentParser(description="Game server")
     parser.add_argument("--boards", default="", help="Filename for configuration")
     parser.add_argument("--auto", type=bool, default=False, help="Continue without user confirmation. If a file is provided it will stop at end of file")
     parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
-    parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
+    parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--playonly", type=bool, default=False, help="Just play, no bidding")
     parser.add_argument("--biddingonly", type=bool, default=False, help="Just bidding, no play")
     parser.add_argument("--outputpbn", default="", help="Save each board to this PBN file")
@@ -886,7 +884,7 @@ async def main():
             # Default to version 1. of Tensorflow
             from nn.models import Models
 
-    models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
+    models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
     print("Config:", configfile)
     print("System:", models.name)
     if models.use_bba:
@@ -944,9 +942,9 @@ async def main():
 
         if not biddingonly:
             if paronly <= imps:
-                with shelve.open(f"{base_path}/gamedb") as db:
+                with shelve.open(f"{config_path}/gamedb") as db:
                     deal = driver.to_dict()
-                    print(f"Saving Board: {driver.hands} in {base_path}/gamedb")
+                    print(f"Saving Board: {driver.hands} in {config_path}/gamedb")
                     db[uuid.uuid4().hex] = deal
 
         if outputpbn != "":

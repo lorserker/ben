@@ -1,6 +1,6 @@
 % PBN 2.0
 % Import
-[Event Random Deal #]
+[Event "Random Deal"]
 [Date  "1-Dec-2023"]
 [Board "1"]
 [Dealer "N"]
@@ -39,7 +39,7 @@ h8 ST hq CT
 
 % PBN 2.0
 % Import
-[Event Random Deal #]
+[Event "Random Deal"]
 [Date  "1-Dec-2023"]
 [Board "1"]
 [Dealer "E"]
@@ -77,7 +77,7 @@ st SQ hj HK
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "2"]
 [Dealer "E"]
@@ -117,7 +117,7 @@ SJ s4 CJ s7
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "2"]
 [Dealer "S"]
@@ -154,7 +154,7 @@ da D8 d5 DQ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "3"]
 [Dealer "S"]
@@ -193,7 +193,7 @@ CT s8 HT d2
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "3"]
 [Dealer "W"]
@@ -229,7 +229,7 @@ sq S8 ht DK
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "4"]
 [Dealer "W"]
@@ -266,7 +266,7 @@ HQ h8 CJ dq
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "4"]
 [Dealer "N"]
@@ -303,7 +303,7 @@ ct H7 s3 SA
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "5"]
 [Dealer "N"]
@@ -341,7 +341,7 @@ SQ sj DK d9
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "5"]
 [Dealer "E"]
@@ -378,7 +378,7 @@ sq SK st DJ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "6"]
 [Dealer "E"]
@@ -416,7 +416,7 @@ st D7 dt S3
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "6"]
 [Dealer "S"]
@@ -455,7 +455,7 @@ H9 s7 ST h7
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "7"]
 [Dealer "S"]
@@ -493,7 +493,7 @@ S4 ct CA sq
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "7"]
 [Dealer "W"]
@@ -529,7 +529,7 @@ s6 CT dq SQ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "8"]
 [Dealer "W"]
@@ -566,7 +566,7 @@ ST sa SJ s7
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "8"]
 [Dealer "N"]
@@ -602,7 +602,7 @@ d8 DQ da D9
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "9"]
 [Dealer "N"]
@@ -646,7 +646,7 @@ H8 sq DQ s4
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "9"]
 [Dealer "E"]
@@ -683,7 +683,7 @@ dj HT hq S3
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "10"]
 [Dealer "E"]
@@ -721,7 +721,7 @@ DQ st D8 da
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "10"]
 [Dealer "S"]
@@ -758,7 +758,7 @@ dq SK d8 D5
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "11"]
 [Dealer "S"]
@@ -796,7 +796,7 @@ sk D8 sq ST
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "11"]
 [Dealer "W"]
@@ -833,7 +833,7 @@ C9 st CJ dq
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "12"]
 [Dealer "W"]
@@ -872,7 +872,7 @@ sk S9 st S3
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "12"]
 [Dealer "N"]
@@ -910,7 +910,7 @@ SQ h9 DJ d7
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "13"]
 [Dealer "N"]
@@ -949,7 +949,7 @@ HQ sa C8 h7
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "13"]
 [Dealer "E"]
@@ -987,7 +987,7 @@ ck CJ cq CA
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "14"]
 [Dealer "E"]
@@ -1025,7 +1025,7 @@ h6 S6 ca SQ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "14"]
 [Dealer "S"]
@@ -1065,7 +1065,7 @@ HT hk H8 s7
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "15"]
 [Dealer "S"]
@@ -1106,7 +1106,7 @@ HQ dk D3 d6
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "15"]
 [Dealer "W"]
@@ -1144,7 +1144,7 @@ S6 st S8 s9
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "16"]
 [Dealer "W"]
@@ -1183,7 +1183,7 @@ s7 CT dt DJ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "16"]
 [Dealer "N"]
@@ -1223,7 +1223,7 @@ HQ ha HK h8
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "17"]
 [Dealer "N"]
@@ -1261,7 +1261,7 @@ CQ s7 HT dj
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "17"]
 [Dealer "E"]
@@ -1299,7 +1299,7 @@ h8 CK sk SJ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "18"]
 [Dealer "E"]
@@ -1340,7 +1340,7 @@ HJ hq CT dj
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "18"]
 [Dealer "S"]
@@ -1379,7 +1379,7 @@ DK s9 DT s2
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "19"]
 [Dealer "S"]
@@ -1416,7 +1416,7 @@ ht C9 d5 SK
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "19"]
 [Dealer "W"]
@@ -1453,7 +1453,7 @@ HK h6 H7 s6
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "20"]
 [Dealer "W"]
@@ -1491,7 +1491,7 @@ hq HJ ck CQ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "20"]
 [Dealer "N"]
@@ -1528,7 +1528,7 @@ HQ hj HK s9
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "21"]
 [Dealer "N"]
@@ -1566,7 +1566,7 @@ HQ ht CQ d4
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "21"]
 [Dealer "E"]
@@ -1604,7 +1604,7 @@ hq HJ s9 D6
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "22"]
 [Dealer "E"]
@@ -1643,7 +1643,7 @@ ht H7 ck S8
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "22"]
 [Dealer "S"]
@@ -1681,7 +1681,7 @@ s8 HT c8 CK
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "23"]
 [Dealer "S"]
@@ -1721,7 +1721,7 @@ sq CK sj DA
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "23"]
 [Dealer "W"]
@@ -1759,7 +1759,7 @@ SK d8 C8 st
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "24"]
 [Dealer "W"]
@@ -1797,7 +1797,7 @@ h9 DA dk D8
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "24"]
 [Dealer "N"]
@@ -1833,7 +1833,7 @@ DT dq DK s8
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "25"]
 [Dealer "N"]
@@ -1874,7 +1874,7 @@ ht HQ h8 D5
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "25"]
 [Dealer "E"]
@@ -1912,7 +1912,7 @@ HT ct H8 s4
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "26"]
 [Dealer "E"]
@@ -1952,7 +1952,7 @@ cq S6 cj DQ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "26"]
 [Dealer "S"]
@@ -1990,7 +1990,7 @@ CK d6 CQ da
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "27"]
 [Dealer "S"]
@@ -2027,7 +2027,7 @@ sq SJ s2 S9
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "27"]
 [Dealer "W"]
@@ -2064,7 +2064,7 @@ HJ s8 CJ h8
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "28"]
 [Dealer "W"]
@@ -2102,7 +2102,7 @@ dk SJ s6 DQ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "28"]
 [Dealer "N"]
@@ -2139,7 +2139,7 @@ HQ ht HJ ck
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "29"]
 [Dealer "N"]
@@ -2176,7 +2176,7 @@ h9 HJ hq S8
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "29"]
 [Dealer "E"]
@@ -2217,7 +2217,7 @@ CK hj CJ s8
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "30"]
 [Dealer "E"]
@@ -2254,7 +2254,7 @@ ct CK dk S9
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "30"]
 [Dealer "S"]
@@ -2291,7 +2291,7 @@ s9 CJ c9 D7
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "31"]
 [Dealer "S"]
@@ -2330,7 +2330,7 @@ CT sj DT h9
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "31"]
 [Dealer "W"]
@@ -2368,7 +2368,7 @@ dj H9 ht C9
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "32"]
 [Dealer "W"]
@@ -2406,7 +2406,7 @@ DA dj HQ h8
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "32"]
 [Dealer "N"]
@@ -2442,7 +2442,7 @@ s8 SQ d5 DJ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "33"]
 [Dealer "N"]
@@ -2480,7 +2480,7 @@ hj CA s9 CQ
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "33"]
 [Dealer "E"]
@@ -2517,7 +2517,7 @@ HK h9 HQ h5
 
 % PBN 2.0
 % Import
-[Event Random]
+[Event "Random"]
 [Date  "1-Dec-2023"]
 [Board "34"]
 [Dealer "E"]

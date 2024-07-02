@@ -80,6 +80,7 @@ class TMClient:
 
         self.contract = bidding.get_contract(auction)
         if  self.contract is None:
+            await self.receive_line()
             return
 
         # level = int(self.contract[0])
@@ -596,7 +597,7 @@ class TMClient:
         return card_resp_parts[-1][::-1].upper()
 
     async def receive_bid_for(self, player_i):
-        msg_ready = f"{SEATS[self.player_i]} ready for {SEATS[player_i]}'s bid."
+        msg_ready = f"{SEATS[self.player_i]} ready for {SEATS[player_i]}'s bid"
         await self.send_message(msg_ready)
         
         bid_resp = await self.receive_line()
@@ -622,7 +623,7 @@ class TMClient:
         if self.player_i == dummy_i:
             return self.hand_str
         else:
-            msg_ready = f'{self.seat} ready for dummy.'
+            msg_ready = f'{self.seat} ready for dummy'
             await self.send_message(msg_ready)
             line = await self.receive_line()
             if (line == "Start of board"):
@@ -631,7 +632,7 @@ class TMClient:
             return TMClient.parse_hand(line)
 
     async def send_ready(self):
-        await self.send_message(f'{self.seat} ready to start.')
+        await self.send_message(f'{self.seat} ready to start')
 
     async def receive_deal(self):
         np.random.seed(42)
@@ -639,8 +640,8 @@ class TMClient:
         #If we are restarting a match we will receive 
         # 'Board number 1. Dealer North. Neither vulnerable. \r\n'
         deal_line_1 = await self.receive_line()
-        if deal_line_1.lower() == "start of board":
-            await self.send_message(f'{self.seat} ready for deal.')
+        while deal_line_1.lower() == "start of board":
+            await self.send_message(f'{self.seat} ready for deal')
             deal_line_1 = await self.receive_line()
 
         pattern = r'Board number (\d+)\.'
@@ -650,7 +651,7 @@ class TMClient:
         if match:
             self.board_number = match.group(1)
 
-        await self.send_message(f'{self.seat} ready for cards.')
+        await self.send_message(f'{self.seat} ready for cards')
         # "South's cards : S K J 9 3. H K 7 6. D A J. C A Q 8 7. \r\n"
         # "North's cards : S 9 3. H -. D J 7 5. C A T 9 8 6 4 3 2."
         deal_line_2 = await self.receive_line()
@@ -707,7 +708,9 @@ class TMClient:
             msg = message.decode().replace('\r', '').replace('\n', '')
             print(f'{msg.ljust(60)} ...received.')
             if (msg == "End of session"):
-                sys.exit()
+                # Stop the event loop to terminate the application
+                self._is_connected = False
+                asyncio.get_event_loop().stop()
             return msg
         except ConnectionAbortedError as ex:
             print(f'Match terminated: {str(ex)}')    
@@ -748,15 +751,13 @@ async def main():
     
     # Get the path to the config file
     config_path = get_execution_path()
-    
-    base_path = os.getenv('BEN_HOME') or config_path
 
     parser = argparse.ArgumentParser(description="Table manager interface")
     parser.add_argument("--host", type=validate_ip, default="127.0.0.1", help="IP for Table Manager")
     parser.add_argument("--port", type=int, default=2000, help="Port for Table Manager")
     parser.add_argument("--name", required=True, help="Name in Table Manager")
     parser.add_argument("--seat", required=True, help="Where to sit (North, East, South or West)")
-    parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
+    parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--biddingonly", type=bool, default=False, help="Only bid, no play")
     parser.add_argument("--matchpoint", type=bool, default=None, help="Playing match point")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
@@ -787,7 +788,7 @@ async def main():
             # Default to version 1. of Tensorflow
             from nn.models import Models
 
-    models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
+    models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
     print("Config:", configfile)
     print("System:", models.name)
     if models.use_bba:
@@ -809,7 +810,7 @@ async def main():
     if client.is_connected:
         await client.send_ready()
 
-    shelf_filename = f"{base_path}/{seat}-{name}"
+    shelf_filename = f"{config_path}/{seat}-{name}"
 
     while client.is_connected:
         t_start = time.time()

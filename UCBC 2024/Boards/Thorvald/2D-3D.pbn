@@ -388,11 +388,6 @@ P P P
 [Dealer "S"]
 [Vulnerable "EW"]
 [Deal "N:KJ.T987.J84.AT32 A842.AQJ54.A5.95 93..KQ9763.K8764 QT765.K632.T2.QJ"]
-[Auction "S"]
-2D P 3D 3H 
-P 4D* X XX* 
-P 4H P P 
-P 
 [Declarer "?"]
 [Result "?"]
 
@@ -481,11 +476,6 @@ P P
 [Dealer "E"]
 [Vulnerable "Both"]
 [Deal "N:JT8.AJ743.K4.AJ4 KQ5..JT9763.K975 A642.962.A2.QT82 973.KQT85.Q85.63"]
-[Auction "E"]
-2D P 3D 3H 
-P 4D* X XX* 
-P 4H P P 
-P 
 [Declarer "?"]
 [Result "?"]
 

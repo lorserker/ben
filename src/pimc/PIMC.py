@@ -49,6 +49,8 @@ class BGADLL:
         self.full_deck = Extensions.Parse("AKQJT98765432.AKQJT98765432.AKQJT98765432.AKQJT98765432")
         self.northhand = Extensions.Parse(northhand)
         self.southhand = Extensions.Parse(southhand)
+        self.easthand = Hand()
+        self.westhand = Hand()
         self.opposHand = self.full_deck.Except(self.northhand.Union(self.southhand))
         self.current_trick = Play()
         self.previous_tricks = Play()
@@ -218,13 +220,17 @@ class BGADLL:
     def set_card_played(self, card52, playedBy, openinglead):
         real_card = Card.from_code(card52)
         if self.verbose:
-            print(f"Setting card {real_card} played by {playedBy}  for PIMC")
+            print(f"Setting card {real_card} played by {playedBy} for PIMC")
             
         card = real_card.symbol_reversed()
         from BGADLL import Card as PIMCCard
         self.current_trick.Add(PIMCCard(card))
         self.opposHand.Remove(PIMCCard(card))
 
+        if (playedBy == 0):
+            self.westhand.Add(PIMCCard(card))
+        if (playedBy == 2):
+            self.easthand.Add(PIMCCard(card))
         if (playedBy == 1):
             self.northhand.Remove(PIMCCard(card))
         if (playedBy == 3):
@@ -325,6 +331,7 @@ class BGADLL:
             print("West (LHO)",self.lho_constraints.ToString())
 
         try:
+            #, self.easthand, self.westhand
             self.pimc.SetupEvaluation([self.northhand, self.southhand], self.opposHand, self.current_trick, self.previous_tricks, [self.rho_constraints,
                                   self.lho_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North, self.max_playout, self.autoplay)
         except Exception as ex:        

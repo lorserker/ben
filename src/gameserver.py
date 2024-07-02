@@ -38,13 +38,11 @@ board_no.append(0)
 
 # Get the path to the config file
 config_path = get_execution_path()
-    
-base_path = os.getenv('BEN_HOME') or config_path
 
 parser = argparse.ArgumentParser(description="Game server")
 parser.add_argument("--boards", default="", help="Filename for boards")
 parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
-parser.add_argument("--config", default=f"{base_path}/config/default.conf", help="Filename for configuration")
+parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
 parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=4443, help="Port for appserver")
 parser.add_argument("--auto", type=bool, default=False, help="BEN bids and plays all 4 hands")
@@ -104,7 +102,7 @@ except KeyError:
         # Default to version 1. of Tensorflow
         from nn.models import Models
 
-models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
+models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 
 # Override any configuration of claim, as it is included in the UI
 models.claim = True

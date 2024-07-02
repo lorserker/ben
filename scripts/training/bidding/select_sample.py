@@ -28,14 +28,17 @@ def save_objects_to_file(selected_objects, filename):
 
 # Main function
 def main():
-    if len(sys.argv) != 2:
-        print("Usage: python select_sample.py input_filename")
+    if len(sys.argv) < 2:
+        print("Usage: python select_sample.py input_filename count")
         return
         
     # File containing 100000 lines
     input_filename = sys.argv[1]
     # Number of objects to select
     num_selected_objects = 1000
+    if len(sys.argv) > 2:
+        num_selected_objects = int(sys.argv[2])
+
     # New file to save selected objects
     output_filename = f'sampling_{num_selected_objects}.ben'
 

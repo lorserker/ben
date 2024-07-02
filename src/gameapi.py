@@ -269,11 +269,9 @@ board_no.append(0)
 # Get the path to the config file
 config_path = get_execution_path()
     
-base_path = os.getenv('BEN_HOME') or config_path
-
 parser = argparse.ArgumentParser(description="Game API")
 parser.add_argument("--host", default="localhost", help="Hostname for appserver")
-parser.add_argument("--config", default=f"{base_path}/config/default_api.conf", help="Filename for configuration")
+parser.add_argument("--config", default=f"{config_path}/config/default_api.conf", help="Filename for configuration")
 parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=8085, help="Port for appserver")
 parser.add_argument("--record", type=bool, default=True, help="Recording of responses")
@@ -300,7 +298,7 @@ except KeyError:
         # Default to version 1. of Tensorflow
         from nn.models import Models
 
-models = Models.from_conf(configuration, base_path.replace(os.path.sep + "src",""))
+models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 sampler = Sample.from_conf(configuration, verbose)
 
 print("Config:", configfile)
@@ -381,7 +379,7 @@ def bid():
             result["explanation"] = bot.explain(auction)
             print("explanation: ",result["explanation"])
         if record: 
-            with shelve.open(f"{base_path}/gameapibiddb{dealno}") as db:
+            with shelve.open(f"{config_path}/gameapibiddb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
         return json.dumps(result)
     except Exception as e:
@@ -438,7 +436,7 @@ def lead():
         print("Leading:", card_resp.card.symbol())
         result = card_resp.to_dict()
         if record: 
-            with shelve.open(f"{base_path}/gameapiplaydb{dealno}") as db:
+            with shelve.open(f"{config_path}/gameapiplaydb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "lead":result}
         return json.dumps(result)
     except Exception as e:
@@ -530,7 +528,7 @@ def play():
         result = card_resp.to_dict()
         result["player"] = player_i
         if record: 
-            with shelve.open(f"{base_path}/gameapiplaydb{dealno}") as db:
+            with shelve.open(f"{config_path}/gameapiplaydb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
         return json.dumps(result)
     except Exception as e:

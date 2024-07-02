@@ -2,19 +2,28 @@ import sys
 sys.path.append('../../../src')
 
 import datetime
+import time
 import os.path
 import numpy as np
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
+os.environ["OMP_NUM_THREADS"] = str(os.cpu_count())
+os.environ["MKL_NUM_THREADS"] = str(os.cpu_count())
+print("os.cpu_count()",os.cpu_count())
+
 from batcher import Batcher
 
 if len(sys.argv) < 2:
-    print("Usage: python bidding_nn_alert.py inputdirectory")
+    print("Usage: python bidding_nn_alert.py inputdirectory system")
     sys.exit(1)
 
 bin_dir = sys.argv[1]
 print(sys.argv)
+
+system = "bidding"
+if len(sys.argv) > 2:
+    system = sys.argv[2]
 
 batch_size = 64
 display_step = 10000
@@ -34,10 +43,10 @@ n_bids = bids.shape[2]
 
 # If NS/EW cc included update name of model
 if n_ftrs == 201:
-    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding_V2'
+    model_path = f'model/{datetime.datetime.now().strftime("%Y-%m-%d")}-NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding_V2'
 else:
     if n_ftrs == 199:
-        model_path = 'model/bidding_V2'
+        model_path = f'model/{datetime.datetime.now().strftime("%Y-%m-%d")}_{system}_V2'
     else:
         print("Older versions not supported")
 
@@ -102,6 +111,7 @@ with tf.compat.v1.Session() as sess:
 
     x_cost, y_cost_bid, y_cost_alert = cost_batch.next_batch([X_train, bids, alerts])
 
+    t_start = time.time()
     for i in range(n_iterations):
         x_batch, y_batch_bid, y_batch_alert = batch.next_batch([X_train, bids, alerts])
         if (i != 0) and i % display_step == 0:
@@ -109,6 +119,9 @@ with tf.compat.v1.Session() as sess:
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"), i, c_train))
             sys.stdout.flush()
             saver.save(sess, model_path, global_step=i)
+            print(f"{display_step} interations: {(time.time() - t_start):0.4f}")        
+            t_start = time.time()
         sess.run(train_step, feed_dict={seq_in: x_batch, seq_out_bid: y_batch_bid, seq_out_alert: y_batch_alert, keep_prob: 0.8})
 
     saver.save(sess, model_path, global_step=n_iterations)
+    print(f"{display_step} interations: {(time.time() - t_start):0.4f}")        

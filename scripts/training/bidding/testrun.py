@@ -1,5 +1,5 @@
 import sys
-sys.path.append('D:/github/ben/src')
+sys.path.append('../../../src')
 import argparse
 import logging
 import os

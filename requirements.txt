@@ -9,10 +9,12 @@ tqdm
 
 websockets
 
-tensorflow>=2.0
+tensorflow==2.13
 grpcio-tools
 
 bottle
 gevent
 pythonnet
 bottle_session
+flask
+flask_cors
