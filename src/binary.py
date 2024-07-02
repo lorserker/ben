@@ -167,7 +167,7 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
     assert (hand.shape[1] == 32)
 
     n_samples = hand.shape[0]
-    bids = 4 if models.model_version == 2 else 3
+    bids = 4 if models.model_version >= 2 else 3
     # Do not add 2 cells for biddingsystem, we will add the at the end of the function
     X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + bids*40), dtype=np.float16)
 
@@ -246,7 +246,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
     assert (hand.shape[1] == 32)
 
     n_samples = hand.shape[0]
-    bids = 4 if models.model_version == 2 else 3
+    bids = 4 if models.model_version >= 2 else 3
     # Do not add 2 cells for biddingsystem, we will add the at the end of the function
     X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + bids*40), dtype=np.float16)
 

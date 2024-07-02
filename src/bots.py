@@ -428,7 +428,7 @@ class BotBid:
     def get_bid_candidates(self, auction):
         bid_softmax, alerts = self.next_bid_np(auction)
 
-        print(bid_softmax, alerts)
+        #print(bid_softmax, alerts)
     
         if self.verbose:
             index_highest = np.argmax(bid_softmax)
@@ -448,11 +448,14 @@ class BotBid:
                     alert = alerts[0]  > 0.5
                 else:
                     alert = None
+                print("bid_i",bid_i)
                 if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                     candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i], alert=alert))
                     break
                 else:
                     # Only report it if above threshold
+                    print(bid_softmax)
+                    
                     if bid_softmax[bid_i] >= self.min_candidate_score:
                         # Seems to be an error in the training that needs to be solved
                         sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
@@ -536,13 +539,19 @@ class BotBid:
         if self.models.model_version == 0 or self.models.ns == -1:
             x = self.get_binary(auction, self.models)
             # If API we have no history
-            if self.models.model_version == 2:
+            if self.models.model_version == 3:
                 bid_np, alerts = self.models.bidder_model.model_seq(x)
-
             else:
-                x = x[:,-1,:]
-                bid_np, next_state = self.models.bidder_model.model(x, self.state)
-                self.state = next_state
+                if self.models.model_version == 2:
+                    bid_np = self.models.bidder_model.model_seq(x)
+                    if self.models.alert_supported:
+                        alerts = bid_np[1][-1:][0]                   
+                    bid_np = bid_np[0][-1:][0]
+
+                else:
+                    x = x[:,-1,:]
+                    bid_np, next_state = self.models.bidder_model.model(x, self.state)
+                    self.state = next_state
         else:
             x = self.get_binary(auction, self.models)
             bid_np = self.models.bidder_model.model_seq(x)

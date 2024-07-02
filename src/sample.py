@@ -256,7 +256,7 @@ class Sample:
     def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, n_samples, rng, models):
         hand = binary.parse_hand_f(32)(hand_str)
         n_steps = binary.calculate_step_bidding_info(auction, models)
-        bids = 4 if models.model_version == 2 else 3
+        bids = 4 if models.model_version >= 2 else 3
         if self.verbose:
             print("sample_cards_auction, nsteps=", n_steps)
             print("NS: ", models.ns, "EW: ", models.ew, "Auction: ", auction)
