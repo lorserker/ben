@@ -562,6 +562,47 @@ def get_binary_contract(position, vuln, hand_str, dummy_str):
     X = ftrs
     return X
 
+
+@app.route('/cuebid', methods=['POST'])
+def cuebid():
+    data = request.get_json()
+    if not data:
+        return jsonify({"error": "Invalid or missing JSON"}), 400
+    #{"dealer":"N","auction":["1H","Pass"],"vuln":"EW","hand":"95.T982.A5.AKJ85","sysNS":"GAVIN_ADVANCED","sysEW":"DEFAULT","conventions":[]}}}
+    dealer = data["dealer"]
+    auction_input= data["auction"]
+    vuln_input = data["vuln"]
+    hand = data["hand"]
+    #{ "bid": "3H", "partnerBidAlert": "4-5!S", "partnerBidAlertArtificial": false, "alert": "3-5!H 1+!C\\nSlam Try\\nForcing one", "artificial": false}
+    dealer_i = dealer_enum[dealer]
+    position_i = (dealer_i + len(auction_input)) % 4
+    auction = ['PAD_START'] * dealer_i + [bid.upper() for bid in auction_input]
+
+    print("Auction:",auction)
+
+    vuln_ns = vuln_input == 'NS' or vuln_input == 'ALL'
+    vuln_ew = vuln_input == 'EW' or vuln_input == 'ALL'
+
+    vuln = [vuln_ns, vuln_ew]
+
+    if models.use_bba:
+        from bba.BBA import BBABotBid
+        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+    else:
+        hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
+    bid = hint_bot.bid(auction)
+    print("Bidding: ",bid.bid)
+    result = bid.to_dict()
+    if explain:
+        from bba.BBA import BBABotBid
+        print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
+        bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+        auction.append(bid.bid)
+        result["explanation"] = bot.explain(auction)
+        print("explanation: ",result["explanation"])
+    result = {"bid": bid.bid, "alert": bot.explain(auction), "artifical" : bid.alert}
+    return json.dumps(result),200
+
 @app.route('/explain')
 def explain():
     from bba.BBA import BBABotBid
