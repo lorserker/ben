@@ -74,13 +74,13 @@ def board_dealer_vuln(number):
 
 
 def card32to52(c32):
-    suit = c32 // 8
-    rank = c32 % 8
+    suit = int(c32 // 8)
+    rank = int(c32 % 8)
     return suit * 13 + rank
 
 def card52to32(c52):
-    suit = c52 // 13
-    rank = c52 % 13
+    suit = int(c52 // 13)
+    rank = int(c52 % 13)
     return suit * 8 + min(7, rank)
 
 
@@ -102,7 +102,7 @@ def hand32to52str(hand32):
     card_string = '.'.join(suits)
     return card_string
 
-def convert_cards(card_string, opening_lead, hand_str):
+def convert_cards(card_string, opening_lead, hand_str, seat):
     updated_card_string = card_string
     pips = [[True for _ in range(6)] for _ in range(4)]
     if opening_lead % 13 >= 7:
@@ -119,14 +119,15 @@ def convert_cards(card_string, opening_lead, hand_str):
             pips[suit][card-2] = False
     # This should be random assignment of the pips
     hands = updated_card_string.split(' ')
-    for k in range(4):
-        suits = hands[k].split(".")
-        for j in range(4):
-            for l in reversed(range(6)):
+    # We want to replace pips the same way even if the deal has been rotated
+    for k in range(seat, seat+4):
+        suits = hands[k % 4].split(".")
+        for l in reversed(range(6)):
+            for j in range(4):
                 if pips[j][l] and "x" in suits[j]: 
                     suits[j] = suits[j].replace("x",str(l+2),1) 
                     pips[j][l] = False
-        hands[k] = ".".join(suits)
+        hands[k % 4] = ".".join(suits)
 
     updated_card_string = " ".join(hands)
     assert 'x' not in updated_card_string, "All pips not replaced"

@@ -401,7 +401,7 @@ class BotBid:
                             sys.stderr.write(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}\n")
         # We return the bid with the highest expected score or highest adjusted score 
 
-        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality, alert = candidates[0].alert)
+        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality, alert = bool(candidates[0].alert))
     
     def do_rollout(self, auction, candidates, max_candidate_score):
         if candidates[0].insta_score > max_candidate_score:
@@ -448,13 +448,14 @@ class BotBid:
                     alert = alerts[0]  > 0.5
                 else:
                     alert = None
-                print("bid_i",bid_i)
+                #print("bid_i",bid_i)
+                #print(bid_softmax)
                 if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                     candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i], alert=alert))
                     break
                 else:
                     # Only report it if above threshold
-                    print(bid_softmax)
+                    #print(bid_softmax)
                     
                     if bid_softmax[bid_i] >= self.min_candidate_score:
                         # Seems to be an error in the training that needs to be solved
@@ -464,11 +465,8 @@ class BotBid:
                 bid_softmax[bid_i] = 0
             return candidates, False
         
-        # Find the last index of 'PAD_START'
-        pad_start_index = len(auction) - 1 - auction[::-1].index('PAD_START') if 'PAD_START' in auction else -1
 
-        # Calculate the count of elements after the last 'PAD_START'
-        no_bids  = len(auction) - pad_start_index - 1
+        no_bids  = binary.get_number_of_bids(auction) 
         passout = False
         if no_bids > 3 and auction[-2:] == ['PASS', 'PASS']:
             # this is the final pass, so we wil have a second opinion
@@ -561,9 +559,9 @@ class BotBid:
     def sample_hands_for_auction(self, auction_so_far, turn_to_bid):
         # The longer the aution the more hands we might need to sample
         sample_boards_for_auction = self.sample.sample_boards_for_auction
-        if len(auction_so_far) > 12:
+        if binary.get_number_of_bids(auction_so_far) > 10:
             sample_boards_for_auction *= 2
-        if len(auction_so_far) > 24:
+        if binary.get_number_of_bids(auction_so_far) > 20:
             sample_boards_for_auction *= 4
         # Reset randomizer
         self.rng = np.random.default_rng(self.hash_integer)
@@ -789,7 +787,7 @@ class BotBid:
             # We need to rotate to find the right to lead
             # Perhaps we should use our actual hand (so the pips are correct)
             hands_pbn = ['N:' + ' '.join(deck52.hand32to52str(hand) for hand in hands_np[i])]
-            hands_pbn[0] = deck52.convert_cards(hands_pbn[0],0, hand_str)
+            hands_pbn[0] = deck52.convert_cards(hands_pbn[0],0, hand_str, self.seat)
             # We need to find the leader
             dd_solved = self.dd.solve(strains[i], (declarers[i] + 1) % 4, [], hands_pbn, 1)
             # Only use 1st element from the result
@@ -865,7 +863,7 @@ class BotLead:
             tricks_int = tricks[:,i,0].astype(int)
             score = np.mean(scores_by_trick [tricks_int])
             candidate_cards.append(CandidateCard(
-                card=Card.from_code(card_i, xcards=True),
+                card=Card.from_code(int(card_i), xcards=True),
                 insta_score=lead_softmax[0,card_i],
                 expected_tricks_sd=np.mean(tricks[:,i,0]),
                 p_make_contract=np.mean(tricks[:,i,1]),
@@ -904,7 +902,7 @@ class BotLead:
         if opening_lead % 8 == 7:
             contract = bidding.get_contract(auction)
             # Implement human carding here
-            opening_lead52 = carding.select_right_card(self.hand52, opening_lead, self.get_random_generator(), contract, self.models)
+            opening_lead52 = carding.select_right_card(self.hand52, opening_lead, self.get_random_generator(), contract, self.models, self.verbose)
         else:
             opening_lead52 = deck52.card32to52(opening_lead)
 
@@ -954,7 +952,7 @@ class BotLead:
             if score < self.models.lead_threshold and len(candidates) >= self.models.min_opening_leads:
                 break
             if self.verbose:
-                print(f"{Card.from_code(c, xcards=True)} {score:.3f}")
+                print(f"{Card.from_code(int(c), xcards=True)} {score:.3f}")
             candidates.append(c)
             lead_softmax_copy[0][c] = 0
 
@@ -1029,7 +1027,7 @@ class BotLead:
                 pips_mask = np.array([0,0,0,0,0,0,0,1,1,1,1,1,1])
                 lefty_led_pips = self.hand52.reshape((4, 13))[lead_card_i // 8] * pips_mask
                 # Perhaps use human carding, but it is only for estimation
-                opening_lead52 = (lead_card_i // 8) * 13 + self.get_random_generator().choice(np.nonzero(lefty_led_pips)[0])
+                opening_lead52 = int((lead_card_i // 8) * 13 + self.get_random_generator().choice(np.nonzero(lefty_led_pips)[0]))
             else:
                 opening_lead52 = deck52.card32to52(lead_card_i)
             # Create PBN for hand
@@ -1045,7 +1043,7 @@ class BotLead:
             t_start = time.time()
             for i in range(n_accepted):
                 hands_pbn = ['N:' + hand_str + ' ' + ' '.join(deck52.hand32to52str(hand) for hand in accepted_samples[i])]
-                hands_pbn[0] = deck52.convert_cards(hands_pbn[0],opening_lead52, hand_str)
+                hands_pbn[0] = deck52.convert_cards(hands_pbn[0],opening_lead52, hand_str, self.seat)
                 # lead is relative to the order in the PBN-file, so West is 0 here
                 onlead = 0
                 dd_solved = self.dd.solve(strain_i, onlead, [opening_lead52], hands_pbn, 3)
@@ -1526,7 +1524,6 @@ class CardPlayer:
         
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
             card32 = deck52.card52to32(deck52.encode_card(str(card52)))
-
             insta_score=card_nn.get(card32, 0)
             if insta_score >= self.models.pimc_trust_NN:
                 candidate_cards.insert(0,CandidateCard(
@@ -1534,7 +1531,7 @@ class CardPlayer:
                     insta_score=round(insta_score,2),
                     expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),2),
                     p_make_contract=e_make,
-                    expected_score_dd=round(e_score,0),
+                    expected_score_dd=round(e_score,0)+ (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),
                     msg=msg
                 ))
 

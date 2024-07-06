@@ -22,16 +22,48 @@ def find_nth_occurrence(arr, target, nth):
         idx += 1
 
     raise ValueError(f"Could not find the {nth}-th occurrence of '{target}' within the array.")
+def find_last_occurrence(arr, target):
+    counter = len(arr) -1
+
+    while  counter >= 0:
+        if arr[counter] != target:
+            counter -= 1
+        else:
+            return counter
+
+    raise ValueError(f"Could not find the last occurrence of '{target}' within the array.")
 
 
 def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, play_status, who, verbose):
     if verbose:
-        print("select_right_card_for_play")
+        print(f"select_right_card_for_play fo for player {player_i} {hand_str}")
     if len(candidate_cards) == 1:
         return candidate_cards[0].card, who
     
     if verbose:
         print(candidate_cards[0])
+
+    if play_status == "Discard":
+        # As we dont give count, just discard smallest if dummy
+        # consider other rules in trump
+        if player_i == 1:
+            #print("play from dummy")
+            if candidate_cards[0].card.code() % 13 >= 7:
+                # we need to remove already played cards
+                hand52 = binary.parse_hand_f(52)(hand_str)
+                for trick in tricks52:
+                    for card in trick:
+                        if hand52[0][card] == 1:
+                            hand52[0][card] = 0
+
+                card_index = find_last_occurrence(hand52.reshape((4, 13))[candidate_cards[0].card.suit],1)
+                card_index = card_index + 13 * candidate_cards[0].card.suit
+                return Card.from_code(card_index), who
+            
+        if player_i == 3:
+            # Currently no specific rule for declarer
+            pass
+
     # If the first card is better then don't evaluate
     if candidate_cards[0].p_make_contract > candidate_cards[1].p_make_contract + 0.05:
         return candidate_cards[0].card, who
@@ -128,16 +160,27 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
         # We should probably look at first card in each tricks52
         #print("First card for dummy", candidate_cards[0].card)
         if candidate_cards[0].card.code() % 13 >= 7 and play_status == "Lead":
-            hand52 = binary.parse_hand_f(52)(hand_str)
             # if we havent't lead from that suit then lead as opening lead, but only for pips
-            card = select_right_card(hand52, deck52.card52to32(candidate_cards[0].card.code()), rng, contract, models)    
-            #print("card", card)
+            # If dummy and leading a pip, just lead lowest
+            hand52 = binary.parse_hand_f(52)(hand_str)
+            if player_i == 1:
+                print("Lead lowest pip")
+                card_index = find_last_occurrence(hand52.reshape((4, 13))[candidate_cards[0].card.suit],1)
+                card_index = card_index + 13 * candidate_cards[0].card.suit
+                return Card.from_code(card_index), who
+
+            card = select_right_card(hand52, deck52.card52to32(candidate_cards[0].card.code()), rng, contract, models, verbose)    
+            if verbose:
+                print("card selected", card)
             return Card.from_code(card), who
-    
+    if verbose:
+        print("No rules found, playint top of list", candidate_cards[0].card)
     return candidate_cards[0].card, who
 
 
-def select_right_card(hand52, opening_lead, rng, contract, models):
+def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
+    if verbose:
+        print("Select the right card")
     opening_suit = opening_lead // 8
     suit_length = np.sum(hand52.reshape((4, 13))[opening_suit])
     if contract[1] == "N":
@@ -181,6 +224,7 @@ def select_right_card(hand52, opening_lead, rng, contract, models):
 
     else:
         opening_lead52 = deck52.card32to52(opening_lead)
+
     return opening_lead52
 
         

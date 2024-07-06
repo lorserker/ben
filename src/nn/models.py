@@ -181,11 +181,8 @@ class Models:
         else:
             ns = float(conf['models']['ns'])
             ew = float(conf['models']['ew'])
-            if alert_supported:
-                from nn.bidderv3 import Bidder
-            else:
-                from nn.bidderv2 import Bidder
-            bidder_model = Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder']))
+            from nn.bidderv2 import Bidder
+            bidder_model = Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder']),alert_supported=alert_supported)
 
         return cls(
             name=name,

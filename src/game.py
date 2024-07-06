@@ -463,6 +463,8 @@ class Driver:
                     continue
 
                 play_status = get_play_status(card_players[player_i].hand52,current_trick52)
+                if self.verbose:
+                    print('play status', play_status)
 
                 if isinstance(card_players[player_i], bots.CardPlayer):
                     rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
@@ -665,7 +667,7 @@ class Driver:
             else:
                 who = "NN"
 
-            card52 = np.nonzero(card_players[player_i].hand52)[0][0]
+            card52 = int(np.nonzero(card_players[player_i].hand52)[0][0])
             card32 = card52to32(card52)
 
             card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1, quality=None, who=who)

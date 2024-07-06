@@ -31,3 +31,10 @@ pip install pythonnet
 #In the compilation process of DDS you may have to install the libboost-thread dependency by running the command 
 
 # sudo apt install libboost-thread-dev
+
+# You might also need to install jq if you want to run the automated matches in scripts/match/bidding. 
+
+https://jqlang.github.io/jq/download/
+
+
+Using chocolatey to install is recommended on windows.

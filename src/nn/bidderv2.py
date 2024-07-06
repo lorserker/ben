@@ -4,7 +4,8 @@ tf.disable_v2_behavior()
 
 class Bidder:
     
-    def __init__(self, name, model_path):
+    def __init__(self, name, model_path, alert_supported):
+        self.alert_supported = alert_supported
         self.name = name
         self.model_path = model_path
         self.graph = tf.Graph()
@@ -31,6 +32,9 @@ class Bidder:
 
         # Get output logits
         bids = tf.nn.softmax(graph.get_tensor_by_name('out_bid_logit:0'))
+        if self.alert_supported:
+            alert_logits  = graph.get_tensor_by_name('out_alert_logit:0')
+            alert = tf.nn.sigmoid(alert_logits)  # Apply sigmoid to convert logits to probabilities
 
         def pred_fun_seq(x):
             result = None
@@ -39,10 +43,10 @@ class Bidder:
                     keep_prob: p_keep,
                     seq_in: x,
                 }
-                result = self.sess.run([bids], feed_dict=feed_dict)
-                #print(x.shape)  # assuming 'result' is a list of outputs
-                #print(result[0].shape)  # assuming 'result' is a list of outputs
-                #print(result[1].shape)  # print shape of 'alert' tensor
+                if self.alert_supported:
+                    result = self.sess.run([bids, alert], feed_dict=feed_dict)
+                else:
+                    result = self.sess.run([bids], feed_dict=feed_dict)
                 
                 return result
 

@@ -577,6 +577,7 @@ def cuebid():
     dealer_i = dealer_enum[dealer]
     position_i = (dealer_i + len(auction_input)) % 4
     auction = ['PAD_START'] * dealer_i + [bid.upper() for bid in auction_input]
+    auction = [bid.replace('--', "PASS").replace('Db', 'X').replace('Rd', 'XX').replace("NT","N") for bid in auction]
 
     print("Auction:",auction)
 
@@ -600,7 +601,7 @@ def cuebid():
         auction.append(bid.bid)
         result["explanation"] = bot.explain(auction)
         print("explanation: ",result["explanation"])
-    result = {"bid": bid.bid, "alert": bot.explain(auction), "artifical" : bid.alert}
+    result = {"bid": bid.bid.replace("PASS","Pass"), "alert": bot.explain(auction), "artificial" : bid.alert}
     return json.dumps(result),200
 
 @app.route('/explain')

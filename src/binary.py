@@ -197,21 +197,25 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
             #print("Me", bidding.ID2BID[my_bid[0]])
         else:
             my_bid = bidding.BID2ID['PAD_START']
+            #print("Padding ME")
         if bid_i - 3 >= 0:
             lho_bid = auction[:, bid_i - 3]
             #print("LHO", bidding.ID2BID[lho_bid[0]])
         else:
             lho_bid = bidding.BID2ID['PAD_START']
+            #print("Padding LHO")
         if bid_i - 2 >= 0:
             partner_bid = auction[:, bid_i - 2]
             #print("PAR", bidding.ID2BID[partner_bid[0]])
         else:
             partner_bid = bidding.BID2ID['PAD_START']
+            #print("Padding PAR")
         if bid_i - 1 >= 0:
             rho_bid = auction[:, bid_i - 1]
             #print("RHO", bidding.ID2BID[rho_bid[0]])
         else:
             rho_bid = bidding.BID2ID['PAD_START']
+            #print("Padding RHO")
         if bids == 4:
             X[s_all, step_i, 39+my_bid] = 1
             X[s_all, step_i, (39+40)+lho_bid] = 1
@@ -226,7 +230,7 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
         bid_i += 4
 
     # Insert bidding system, -1 means no system
-    if (models.model_version == 0 or models.ns == -1):
+    if (models.model_version == 0 or (models.ns == -1 and models.model_version < 3)):
         #print("Skipping bidding system")
         return X
 
@@ -330,9 +334,22 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
         
     return X_padded
 
+def get_number_of_bids(auction):
+    bids = 0
+    for bid in auction:
+        if bid == 'PAD_START':
+            continue
+        if bid == 'PAD_END':
+            continue
+        bids += 1
+    return bids
+
 def calculate_step_bidding_info(auction, models):
     # This is number of levels to get from the neural network. 
-    n_steps = 1 + len(auction) // 4
+    bids = get_number_of_bids(auction)
+    if bids == 0:
+        return 1
+    n_steps = 1 + (bids - 1) // 4
     return n_steps
 
 def calculate_step_bidding(auction, models):

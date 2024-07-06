@@ -122,8 +122,8 @@ class TMClient:
 
             print(f"Server not responding {str(e)}")
             self._is_connected = False
-            asyncio.get_event_loop().stop()
-            return
+            sys.exit()
+
 
         print('connected')
 
@@ -480,7 +480,7 @@ class TMClient:
             #If we are declarer and it is dummy to lead we must send "direction for dummy"
             if player_i == 1 and cardplayer_i == 3 or player_i == cardplayer_i and player_i != 1:
                 # we are on play
-                card52 = np.nonzero(card_players[player_i].hand52)[0][0]
+                card52 = int(np.nonzero(card_players[player_i].hand52)[0][0])
                 card52_symbol = Card.from_code(card52).symbol()
 
                 cr = CardResp(
@@ -640,6 +640,7 @@ class TMClient:
         #If we are restarting a match we will receive 
         # 'Board number 1. Dealer North. Neither vulnerable. \r\n'
         deal_line_1 = await self.receive_line()
+
         while deal_line_1.lower() == "start of board":
             await self.send_message(f'{self.seat} ready for deal')
             deal_line_1 = await self.receive_line()
@@ -699,7 +700,7 @@ class TMClient:
             # Close the connection (in case it's not already closed)
             self._is_connected = False
             # Stop the event loop to terminate the application
-            asyncio.get_event_loop().stop()
+            sys.exit()
 
     async def receive_line(self) -> str:
         try:
@@ -710,14 +711,14 @@ class TMClient:
             if (msg == "End of session"):
                 # Stop the event loop to terminate the application
                 self._is_connected = False
-                asyncio.get_event_loop().stop()
+                sys.exit(0)
             return msg
         except ConnectionAbortedError as ex:
             print(f'Match terminated: {str(ex)}')    
             # Close the connection (in case it's not already closed)
             self._is_connected = False
             # Stop the event loop to terminate the application
-            asyncio.get_event_loop().stop()
+            sys.exit(0)
 
 def validate_ip(ip_str):
     try:
@@ -853,5 +854,6 @@ if __name__ == "__main__":
         if file_traceback:
             print(file_traceback)  # This will print the last section starting with "File"
     finally:
+        loop.run_until_complete(loop.shutdown_asyncgens())
         loop.close()
 

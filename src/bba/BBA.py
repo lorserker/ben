@@ -232,7 +232,7 @@ class BBABotBid:
         elif maxhcp < 37:
             meaning += f" ({maxhcp}- hcp)"
         #print(f"Bid: {auction[-1]}={meaning} {'*' if alert else ''}")
-        return f"Bid: {auction[-1]}={meaning} {'*' if alert else ''}"
+        return f"{meaning}"
 
     # Define a Python function to find a bid
     def bid(self, auction):
