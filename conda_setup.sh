@@ -17,6 +17,8 @@ pip install "tensorflow==2.13"
 pip install grpcio-tools
 
 pip install bottle
+pip install flask
+pip install flask_cors
 pip install gevent
 pip install pythonnet
 

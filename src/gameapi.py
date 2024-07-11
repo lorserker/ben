@@ -6,7 +6,7 @@ import datetime
 
 from bots import BotBid, BotLead, CardPlayer
 from bidding import bidding
-from objects import Card, CardResp
+from objects import Card
 import deck52
 import binary
 
@@ -23,6 +23,12 @@ logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+# Configure absl logging to suppress logs
+import absl.logging
+# Suppress Abseil logs
+absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
+absl.logging.set_verbosity(absl.logging.FATAL)
+absl.logging.set_stderrthreshold(absl.logging.FATAL)
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
 

@@ -3,11 +3,12 @@ import os.path
 
 from configparser import ConfigParser
 
-from nn.player_tf2 import BatchPlayer, BatchPlayerLefty
+from nn.player_tf2 import BatchPlayer
 from nn.bid_info_tf2 import BidInfo
 from nn.leader_tf2 import Leader
 from nn.lead_singledummy_tf2 import LeadSingleDummy
-from nn.contract import Contract
+from nn.contract_tf2 import Contract
+from nn.bidder_tf2 import Bidder
 
 
 class Models:
@@ -175,26 +176,31 @@ class Models:
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
         ns = float(conf['models']['ns'])
         ew = float(conf['models']['ew'])
-        from nn.bidder_tf2 import Bidder
         bidder_model = Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder']))
+        contract_model=Contract(os.path.join(base_path, conf['contract']['contract']))
+        binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info']))
+        lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit']))
+        lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt']))
+        sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy']))
+        sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['no_lead_single_dummy']))
+
+        player_models=[
+            BatchPlayer(name, os.path.join(base_path, conf['cardplay'][name])) for name in player_names
+        ]
 
         return cls(
             name=name,
             model_version=model_version,
             api=api,
             bidder_model=bidder_model,
-            contract_model=Contract(os.path.join(base_path, conf['contract']['contract'])),
-            binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info'])),
-            lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit'])),
-            lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt'])),
-            sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy'])),
-            sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['no_lead_single_dummy'])),
+            contract_model=contract_model,
+            binfo_model=binfo_model,
+            lead_suit_model=lead_suit_model,
+            lead_nt_model=lead_nt_model,
+            sd_model=sd_model,
+            sd_model_no_lead=sd_model_no_lead,
 
-            player_models=[
-                BatchPlayerLefty(name, os.path.join(base_path, conf['cardplay'][name])) if 'lefty' in name and opening_lead_included == False else
-                BatchPlayer(name, os.path.join(base_path, conf['cardplay'][name]))
-                for name in player_names
-            ],
+            player_models=player_models,
 
             search_threshold=search_threshold,
             lead_threshold=lead_threshold,

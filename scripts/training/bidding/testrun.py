@@ -5,9 +5,11 @@ import logging
 import os
 import conf
 import scoring
+import compare
 import datetime
 import time
 from ddsolver.ddsolver import DDSolver
+from colorama import Fore, Back, Style, init
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -21,6 +23,11 @@ from sample import Sample
 from bots import BotBid
 
 DD = DDSolver(dds_mode=1)
+
+def get_par(hands, vulnerable):
+    hands_pbn = 'N:' + ' '.join(hands)    
+    par_score = DD.calculatepar(hands_pbn, vulnerable, False)
+    return par_score
 
 def get_dd_score(hands, contract, is_vulnerable):
     if contract is None:
@@ -65,7 +72,7 @@ def main():
     verbose = args.verbose
     alternate = args.alternate
 
-    np.set_printoptions(precision=2, suppress=True, linewidth=220)
+    np.set_printoptions(precision=2, suppress=True, linewidth=1200,threshold=np.inf)
 
     config = conf.load(config_path)
    
@@ -85,8 +92,10 @@ def main():
 
 
     models = Models.from_conf(config,"..\..\..")
+    print("Models loaded")
     sampler = Sample.from_conf(config,"..\..\..")
 
+    print("Configuration loaded")
     with open(filename, 'r') as input_file:
 
         lines = input_file.readlines()
@@ -99,6 +108,7 @@ def main():
         same = 0
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Loaded {n} deals\n')
         for i in range(n):
+            print(Fore.BLUE, end='')
             print("Board: ",i+1)
             if alternate and i % 2 == 1:
                 continue
@@ -123,6 +133,9 @@ def main():
                 else:
                     auction.append("??")
                     break
+            par_score = get_par(hands, [vuln_ns, vuln_ew])
+            print(Fore.WHITE, end='')
+            print(" ".join(parts[:2]), " ".join(hands), "PAR=", par_score)
             auction_str = " ".join(auction).replace('PAD_START ', '')
             trained_bidding = " ".join(parts[2:]).replace('P',"PASS")
             if (trained_bidding != auction_str):
@@ -140,7 +153,6 @@ def main():
                     dd_score_before= get_dd_score(hands, contract, vuln)
                 else:
                     dd_score_before = 0
-                print(" ".join(parts[:2]), " ".join(hands))
                 contract = bidding.get_contract(auction)
                 if not contract == None:
                     vuln = False
@@ -152,16 +164,20 @@ def main():
                     dd_score_now = get_dd_score(hands, contract, vuln)
                 else:
                     dd_score_now = 0
-                print(" ".join(parts[2:]), dd_score_before)
-                print(auction_str.replace('PASS','P'), dd_score_now)
                 if dd_score_before == dd_score_now:
+                    print(Fore.CYAN, end='')
                     same += 1
                 else:
                     if dd_score_now > dd_score_before:
+                        print(Fore.YELLOW, end='')
                         better += 1
                     else:
+                        print(Fore.RED, end='')
                         worse += 1
+                print(" ".join(parts[2:]), dd_score_before)
+                print(auction_str.replace('PASS','P'), dd_score_now)
             else: 
+                print(Fore.GREEN, end='')
                 contract = bidding.get_contract(auction)
                 if not contract == None:
                     declarer = contract[:-1]
@@ -169,17 +185,20 @@ def main():
                         vuln = vuln_ns
                     else :
                         vuln = vuln_ew
-                    vuln = False
+                    
                     dd_score_now = get_dd_score(hands, contract, vuln)
                 else:
                     dd_score_now = 0
-                print(" ".join(parts[:2]), " ".join(hands))
-                print(auction_str, dd_score_now)
-                print(auction_str, dd_score_now)
+                #print(" ".join(parts[:2]), " ".join(hands))
+                print(auction_str.replace('PASS','P'), dd_score_now)
                 matching += 1
+        print(Fore.GREEN)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Matched {matching} deals\n')
+        print(Fore.YELLOW)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} better {better} deals\n')
+        print(Fore.RED)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} worse {worse} deals\n')
+        print(Fore.CYAN)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} same score {same} deals\n')
         # Record the end time
         end_time = time.time()
@@ -187,9 +206,14 @@ def main():
         # Calculate the elapsed time in seconds
         execution_time = end_time - start_time
 
+        print(Fore.WHITE)
         # Display the result
         print(f"Execution time: {execution_time:.2f} seconds")
                 
 
 if __name__ == '__main__':
-    main()
+    try:
+        main()
+    finally:
+        print(Fore.RESET)
+

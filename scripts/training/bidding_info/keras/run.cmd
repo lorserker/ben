@@ -1,0 +1,1 @@
+python binfo_nn_keras.py ..\..\bidding\bidding_bin GIB-Info

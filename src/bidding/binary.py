@@ -183,7 +183,7 @@ class DealData(object):
 
     def get_binary_contract(self):
         X = np.zeros(2 + 2 * self.n_cards, dtype=np.float16)
-        y = np.zeros(2 + 53, dtype=np.float16)
+        
         parscore = self.par.split(" ")
 
         contract = parscore[0]
@@ -199,12 +199,12 @@ class DealData(object):
             self.hands[(hand_ix + 2) % 4],
         ), axis=1)
         X = ftrs
-        y[0] = len(contract) > 2 and contract[2] == "X"
+        u = len(contract) > 2 and contract[2] == "X"
         tricks_one_hot = np.zeros((1, 14), dtype=np.float32)
         tricks_one_hot[0, int(parscore[2])] = 1
-        y[1:15] = tricks_one_hot
-        y[15:] = bidding.encode_bid(contract[0:2])
-        return X, y
+        z = tricks_one_hot
+        y = bidding.encode_bid(contract[0:2])
+        return X, y, u, z
 
 def get_card_index(card, n_cards):
     assert(n_cards % 4 == 0)

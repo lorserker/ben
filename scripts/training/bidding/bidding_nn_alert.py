@@ -63,14 +63,17 @@ n_layers = 3
 
 keep_prob = tf.compat.v1.placeholder(tf.float32, name='keep_prob')
 
-cells = []
-for _ in range(n_layers):
-    cell = tf.compat.v1.nn.rnn_cell.DropoutWrapper(
-        tf.nn.rnn_cell.BasicLSTMCell(lstm_size),
-        output_keep_prob=keep_prob
-    )
-    cells.append(cell)
-
+try:
+    cells = []
+    for _ in range(n_layers):
+        cell = tf.compat.v1.nn.rnn_cell.DropoutWrapper(
+            tf.nn.rnn_cell.BasicLSTMCell(lstm_size),
+            output_keep_prob=keep_prob
+        )
+        cells.append(cell)
+except:
+    print("Requires TF 2.15 or lower")
+    sys.exit()
 x_in = tf.compat.v1.placeholder(tf.float32, [1, n_ftrs], name='x_in')
     
 lstm_cell = tf.compat.v1.nn.rnn_cell.MultiRNNCell(cells)

@@ -475,7 +475,7 @@
                         line = line.replace(/PASS/g,"P").trim()
                         line = line.replace(/NT/g,"N")
                         line = line.replace(/ =\d+=/, '');
-                        line = line.replace(/\s/g,"-")
+                        line = line.replace(/\s+/g,"-")
                         if (document.getElementById('biddingInput').value) {
                             document.getElementById('biddingInput').value += '-' + line;
                         } else {

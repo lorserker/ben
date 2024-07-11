@@ -282,7 +282,7 @@ class Sample:
         if self.verbose:
             print(f"n_samples {n_samples} from bidding info")
             print("n_steps", n_steps)
-        if (models.model_version == 0 or models.ns == -1):
+        if (models.model_version == 0 or (models.ns == -1 and models.model_version < 3)):
             index = 0
         else:
             index = 2
@@ -556,7 +556,7 @@ class Sample:
         X = np.zeros((sample_hands.shape[0], n_steps, A.shape[-1]))
         X[:, :, :] = A
 
-        # if (models.model_version == 0 or models.ns == -1):
+        # if (models.model_version == 0 or (models.ns == -1 and models.model_version < 3)):
         #     index = 0
         # else:
         #     index = 2

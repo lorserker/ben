@@ -16,9 +16,6 @@ class Leader:
         model = self.load_model()
 
         def pred_fun(x, b):
-            x = np.array(x)  # Ensure that input data is in the right format
-            b = np.array(b)
             result = model.predict([x, b],verbose=0)
-            result_with_softmax = tf.nn.softmax(result, axis=-1).numpy()  # Apply softmax activation
-            return result_with_softmax
+            return result
         return pred_fun

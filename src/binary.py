@@ -321,7 +321,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
         bid_i += 4
 
     # Insert bidding system, -1 means no system
-    if (models.model_version == 0 or models.ns == -1):
+    if (models.model_version == 0 or (models.ns == -1 and models.model_version < 3)):
         return X
     # Better to add these at the beginning of this function
     padding_width = ((0, 0), (0, 0), (1, 0))
@@ -349,7 +349,7 @@ def calculate_step_bidding_info(auction, models):
     bids = get_number_of_bids(auction)
     if bids == 0:
         return 1
-    n_steps = 1 + (bids - 1) // 4
+    n_steps = 1 + (bids) // 4
     return n_steps
 
 def calculate_step_bidding(auction, models):

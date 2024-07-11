@@ -8,6 +8,13 @@ logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
+# Configure absl logging to suppress logs
+import absl.logging
+# Suppress Abseil logs
+absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
+absl.logging.set_verbosity(absl.logging.FATAL)
+absl.logging.set_stderrthreshold(absl.logging.FATAL)
+
 import shelve
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
@@ -664,6 +671,9 @@ class TMClient:
             print("Deal not received", deal_line_2)
             raise ValueError("Deal not received")
         
+        if deal_line_2 == "Start of board":
+            # Restart so we get the hand next
+            deal_line_2 = await self.receive_line()
         hand_str = TMClient.parse_hand(deal_line_2)
 
         dealer_i = 'NESW'.index(match.groupdict()['dealer'][0])
@@ -677,6 +687,7 @@ class TMClient:
     @staticmethod
     def parse_hand(s):
         # Translate hand from Tablemanager format to PBN
+        print("Parse hand",s)
         try:
             hand = s[s.index(':') + 1 : s.rindex('.')] \
                 .replace(' ', '').replace('-', '').replace('S', '').replace('H', '').replace('D', '').replace('C', '')

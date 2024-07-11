@@ -97,3 +97,6 @@ src/v0.8.0*
 models/muppet/512/bidding_V2-1100000*
 gameapibiddb*
 scripts/training/**/logs/
+scripts/training/bidding/sampling*.ben
+**/*.keras
+!models/TF2models/*.keras

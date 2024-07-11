@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
@@ -18,38 +19,12 @@ class BatchPlayer:
     def init_model(self):
         model = self.load_model()
         def pred_fun(x):
-            # Keres expect all 11 rows in the sequence as input
-            if x.shape[1] != 11:
-                # We have only 11 tricks in the neural network, but is trying to find a card for trick 12
-                if x.shape[1] > 11:
-                    x = x[:, :11, :]
-                # Keres expect all 11 rows in the sequence as input
-                y = np.zeros((1, 11, 298))
-                y[:, :x.shape[1], :] = x
-            else:
-                y = x
 
-            card_logit = model.predict(y,verbose=0)
-            
-            result = self.reshape_card_logit(card_logit[: ,:x.shape[1],:], x)
-
-            # I need to figure out, why this sometimes is a tensor and other times just a numpy array
-            if not isinstance(result, np.ndarray):
-                result = result.numpy()
-            return result
+            card_logit = model.predict(x,verbose=0)
+            return card_logit
 
         return pred_fun
-
-    def reshape_card_logit(self, card_logit, x):
-        # In Keras the result is returned as a softmax
-        return card_logit[: ,:x.shape[1],:]
 
     def next_cards_softmax(self, x):
         result = self.model(x)[:,-1,:]
         return result
-
-class BatchPlayerLefty(BatchPlayer):        
-
-    def reshape_card_logit(self, card_logit, x):
-        # In Keras the result is returned as a softmax
-        return card_logit[: ,:x.shape[1]-1,:]

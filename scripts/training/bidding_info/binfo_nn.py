@@ -15,6 +15,28 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
 
+# Limit the number of CPU threads used
+os.environ["OMP_NUM_THREADS"] = "32"
+os.environ["MKL_NUM_THREADS"] = "32"
+print("os.cpu_count()", os.cpu_count())
+
+# Set TensorFlow to only allocate as much GPU memory as needed
+physical_devices = tf.config.list_physical_devices('GPU')
+print("physical_devices", physical_devices)
+if physical_devices:
+    try:
+        for device in physical_devices:
+            tf.config.experimental.set_memory_growth(device, True)
+        tf.config.set_visible_devices(physical_devices, 'GPU')
+        print("Using GPU: ", physical_devices)
+    except RuntimeError as e:
+        print(e)
+else:
+    # Ensure TensorFlow uses only CPU
+    tf.config.set_visible_devices([], 'GPU')
+    print("Using CPU only")
+
+
 from batcher import Batcher
 
 if len(sys.argv) < 2:

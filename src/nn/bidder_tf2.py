@@ -21,7 +21,7 @@ class Bidder:
         model = self.load_model()
         def pred_fun_seq( x):
             bids, alerts = self.model.predict(x, verbose=0)
-            return bids[0][x.shape[1]-1], alerts[0][x.shape[1]-1]
+            return bids, alerts
 
 
         return pred_fun_seq

@@ -534,12 +534,14 @@ class BotBid:
         alerts = None
         if self.verbose:
             print("next_bid_np", self.models.name, self.models.model_version, self.models.ns)
-        if self.models.model_version == 0 or self.models.ns == -1:
-            x = self.get_binary(auction, self.models)
-            # If API we have no history
-            if self.models.model_version == 3:
-                bid_np, alerts = self.models.bidder_model.model_seq(x)
-            else:
+        x = self.get_binary(auction, self.models)
+        if self.models.model_version == 3:
+            bid_np, alerts = self.models.bidder_model.model_seq(x)
+            bid_np = bid_np[0][-1:][0]
+            alerts = alerts[0][-1:][0]
+        else:
+            if self.models.model_version == 0 or self.models.ns == -1:
+                # If API we have no history
                 if self.models.model_version == 2:
                     bid_np = self.models.bidder_model.model_seq(x)
                     if self.models.alert_supported:
@@ -550,10 +552,9 @@ class BotBid:
                     x = x[:,-1,:]
                     bid_np, next_state = self.models.bidder_model.model(x, self.state)
                     self.state = next_state
-        else:
-            x = self.get_binary(auction, self.models)
-            bid_np = self.models.bidder_model.model_seq(x)
-            bid_np = bid_np[-1:]
+            else:
+                bid_np = self.models.bidder_model.model_seq(x)
+                bid_np = bid_np[-1:]
         return bid_np, alerts
     
     def sample_hands_for_auction(self, auction_so_far, turn_to_bid):

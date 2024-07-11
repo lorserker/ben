@@ -21,7 +21,7 @@ class DDSolver:
         self.bo = dds.boardsPBN()
         self.solved = dds.solvedBoards()
 
-    def calculatepar(self, hand, vuln):
+    def calculatepar(self, hand, vuln, print_result=True):
         tableDealPBN = dds.ddTableDealPBN()
         table = dds.ddTableResults()
         myTable = ctypes.pointer(table)
@@ -60,10 +60,11 @@ class DDSolver:
 
         par = ctypes.pointer(pres)
 
-        print("NS score: {}".format(par.contents.parScore[0].value.decode('utf-8')))
-        print("EW score: {}".format(par.contents.parScore[1].value.decode('utf-8')))
-        print("NS list : {}".format(par.contents.parContractsString[0].value.decode('utf-8')))
-        print("EW list : {}\n".format(par.contents.parContractsString[1].value.decode('utf-8')))
+        if print_result:
+            print("NS score: {}".format(par.contents.parScore[0].value.decode('utf-8')))
+            print("EW score: {}".format(par.contents.parScore[1].value.decode('utf-8')))
+            print("NS list : {}".format(par.contents.parContractsString[0].value.decode('utf-8')))
+            print("EW list : {}\n".format(par.contents.parContractsString[1].value.decode('utf-8')))
         par = par.contents.parScore[0].value.decode('utf-8')
         ns_score = par.split()[1]
         return int(ns_score)

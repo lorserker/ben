@@ -10,3 +10,4 @@ start python gameserver.py --config "..\UCBC 2024\Conf\UCBC2024src.conf" --port 
 start python gameserver.py --config config\muppet.conf --port 4443
 start python gameserver.py --config config\BBA-2over1.conf --port 4444
 start python gameserver.py --config config\default.conf --port 4445
+start python gameserver.py --config config\jacksayc.conf --port 4446

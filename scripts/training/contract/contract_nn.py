@@ -24,6 +24,8 @@ learning_rate = 0.0001
 
 X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 y_train = np.load(os.path.join(bin_dir, 'y.npy'))
+z_train = np.load(os.path.join(bin_dir, 'z.npy'))
+u_train = np.load(os.path.join(bin_dir, 'u.npy'))
 
 n_examples = y_train.shape[0]
 n_ftrs = X_train.shape[1]
@@ -97,9 +99,9 @@ with tf.Session(graph=graph) as sess:
     for epoch in range(epochs):
         for i in range(len(X_train)):
             x = X_train[i]
-            b1 = y_train[i][0]
-            b2 = y_train[i][1:15]
-            o = y_train[i][15:]
+            b1 = z_train[i]
+            b2 = u_train[i]
+            o = y_train[i]
             feed_dict = {X: x.reshape((1, n_ftrs)),
                          labels_bool1: b1.reshape((1, 1)),
                          labels_tricks: b2.reshape((1, 14)),
