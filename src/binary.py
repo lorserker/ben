@@ -344,7 +344,7 @@ def get_number_of_bids(auction):
         bids += 1
     return bids
 
-def calculate_step_bidding_info(auction, models):
+def calculate_step_bidding_info(auction):
     # This is number of levels to get from the neural network. 
     bids = get_number_of_bids(auction)
     if bids == 0:
@@ -352,7 +352,7 @@ def calculate_step_bidding_info(auction, models):
     n_steps = 1 + (bids) // 4
     return n_steps
 
-def calculate_step_bidding(auction, models):
+def calculate_step_bidding(auction):
     # This is number of levels to get from the neural network. 
     if len(auction) == 0:
         return 1
@@ -388,7 +388,7 @@ def get_shape_for_lead(auction, hand, vuln, contract, models):
     b = np.zeros(15)
     decl_index = bidding.get_decl_i(contract)
     lead_index = (decl_index + 1) % 4
-    n_steps = calculate_step_bidding_info(auction, models)
+    n_steps = calculate_step_bidding_info(auction)
 
     A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, models)
 

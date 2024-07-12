@@ -12,7 +12,7 @@ from nn.contract import Contract
 
 class Models:
 
-    def __init__(self, name, model_version, api, bidder_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
+    def __init__(self, name, model_version, api, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
                  min_passout_candidates, min_rescue_reward, max_estimated_score,
                  lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, lead_included, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_eval, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playout, pimc_autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd,
                  use_adjustment,
@@ -38,6 +38,7 @@ class Models:
         self.model_version = model_version
         self.api = api
         self.bidder_model = bidder_model
+        self.opponent_model = opponent_model
         self.contract_model = contract_model
         self.binfo_model = binfo_model
         self.lead_suit_model = lead_suit_model
@@ -178,30 +179,43 @@ class Models:
             ew = -1
             from nn.bidder import Bidder
             bidder_model = Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder']))
+            if conf.has_section('bidding') and conf.get('bidding', 'opponent', fallback=None) not in ('none', None):
+                opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['opponent']))
+            else:
+                opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['bidder']))
         else:
             ns = float(conf['models']['ns'])
             ew = float(conf['models']['ew'])
             from nn.bidderv2 import Bidder
             bidder_model = Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder']),alert_supported=alert_supported)
+            if conf.has_section('bidding') and conf.get('bidding', 'opponent', fallback=None) not in ('none', None):
+                opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['opponent']),alert_supported=alert_supported)
+            else:
+                opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['bidder']),alert_supported=alert_supported)
+        contract_model=Contract(os.path.join(base_path, conf['contract']['contract']))
+        binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info']))
+        lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit']))
+        lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt']))
+        sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy']))
+        sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['no_lead_single_dummy']))
+
+        player_models=[
+            BatchPlayer(name, os.path.join(base_path, conf['cardplay'][name])) for name in player_names
+        ]
 
         return cls(
             name=name,
             model_version=model_version,
             api=api,
             bidder_model=bidder_model,
-            contract_model=Contract(os.path.join(base_path, conf['contract']['contract'])),
-            binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info'])),
-            lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit'])),
-            lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt'])),
-            sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy'])),
-            sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['no_lead_single_dummy'])),
-
-            player_models=[
-                BatchPlayerLefty(name, os.path.join(base_path, conf['cardplay'][name])) if 'lefty' in name and opening_lead_included == False else
-                BatchPlayer(name, os.path.join(base_path, conf['cardplay'][name]))
-                for name in player_names
-            ],
-
+            opponent_model=opponent_model,
+            contract_model=contract_model,
+            binfo_model=binfo_model,
+            lead_suit_model=lead_suit_model,
+            lead_nt_model=lead_nt_model,
+            sd_model=sd_model,
+            sd_model_no_lead=sd_model_no_lead,
+            player_models=player_models,
             search_threshold=search_threshold,
             lead_threshold=lead_threshold,
             no_search_threshold=no_search_threshold,

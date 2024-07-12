@@ -89,18 +89,24 @@ class CandidateCard:
         self.msg = msg
 
     def __str__(self):
+        insta_score = f"{self.insta_score:.4f}" if self.insta_score is not None else None
+        exp_tricks_sd = f"{self.expected_tricks_sd:.2f}" if self.expected_tricks_sd is not None else None
+        exp_tricks_dd = f"{self.expected_tricks_dd:.4f}" if self.expected_tricks_dd is not None else None
+        p_make_contract = f"{self.p_make_contract:.4f}" if self.p_make_contract is not None else None
+        exp_score_sd = f"{self.expected_score_sd:.1f}" if self.expected_score_sd is not None else None
+        exp_score_dd = f"{self.expected_score_dd:.2f}" if self.expected_score_dd is not None else None
 
         return (
             f"CandidateCard("
             f"card={self.card}, "
-            f"insta_score={self.insta_score:0.4f if self.insta_score is not None else None}, "
-            f"exp_tricks_sd={self.expected_tricks_sd:0.2f if self.expected_tricks_sd is not None else None}, "
-            f"exp_tricks_dd={self.expected_tricks_dd:2.4f if self.expected_tricks_dd is not None else None}, "
-            f"p_make_contract={self.p_make_contract:0.4f if self.p_make_contract is not None else None}, "
-            f"exp_score_sd={self.expected_score_sd:0.1f if self.expected_score_sd is not None else None}, "
-            f"exp_score_dd={self.expected_score_dd:0.2f if self.expected_score_dd is not None else None}), "
+            f"insta_score={insta_score}, "
+            f"exp_tricks_sd={exp_tricks_sd}, "
+            f"exp_tricks_dd={exp_tricks_dd}, "
+            f"p_make_contract={p_make_contract}, "
+            f"exp_score_sd={exp_score_sd}, "
+            f"exp_score_dd={exp_score_dd}), "
             f"msg={self.msg}"
-    )
+        )
 
     def to_dict(self):
         result = {

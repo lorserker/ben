@@ -255,7 +255,7 @@ class Sample:
         
     def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, n_samples, rng, models):
         hand = binary.parse_hand_f(32)(hand_str)
-        n_steps = binary.calculate_step_bidding_info(auction, models)
+        n_steps = binary.calculate_step_bidding_info(auction)
         bids = 4 if models.model_version >= 2 else 3
         if self.verbose:
             print("sample_cards_auction, nsteps=", n_steps)
@@ -266,7 +266,7 @@ class Sample:
 
         c_hcp, c_shp = self.get_bidding_info(n_steps, auction, nesw_i, hand, vuln, models)        
 
-        n_steps = binary.calculate_step_bidding(auction, models)
+        n_steps = binary.calculate_step_bidding(auction)
 
         # The hand used as input is our hand, but it will be overwritten with the sampled hand for that player
         A_lho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 1) % 4, hand, vuln, models)
@@ -298,7 +298,7 @@ class Sample:
         X_lho[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 0, :]).reshape((-1, 1)) - 10) / 4
         X_lho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 0, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         lho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 1) % 4, n_steps)
-        lho_sample_bids = models.bidder_model.model_seq(X_lho)[0].reshape((n_samples, n_steps, -1))
+        lho_sample_bids = models.opponent_model.model_seq(X_lho)[0].reshape((n_samples, n_steps, -1))
 
         X_pard[:, :, :] = A_pard
         X_pard[:, :, 7+index:39+index] = lho_pard_rho[:, 1:2, :]
@@ -312,7 +312,7 @@ class Sample:
         X_rho[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 2, :]).reshape((-1, 1)) - 10) / 4
         X_rho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 2, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         rho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 3) % 4, n_steps)
-        rho_sample_bids = models.bidder_model.model_seq(X_rho)[0].reshape((n_samples, n_steps, -1))
+        rho_sample_bids = models.opponent_model.model_seq(X_rho)[0].reshape((n_samples, n_steps, -1))
 
         # Consider having scores for partner and opponents
         # Current implementation should be updated due to long sequences is difficult to match
@@ -400,7 +400,7 @@ class Sample:
         n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2])
         #if self.verbose:
         #print("shuffle_cards_bidding_info cards to sample: ", n_cards_to_receive)
-        n_steps = binary.calculate_step_bidding_info(auction, models)
+        n_steps = binary.calculate_step_bidding_info(auction)
 
         A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models)
 
@@ -525,7 +525,7 @@ class Sample:
 
         b = np.zeros((hand.shape[0], 15))
 
-        n_steps = binary.calculate_step_bidding_info(auction, models)
+        n_steps = binary.calculate_step_bidding_info(auction)
 
         binfo_model = models.binfo_model
 
@@ -543,8 +543,8 @@ class Sample:
 
         return lead_softmax[:, opening_lead_card]
 
-    def get_bid_scores(self, nesw_i, dealer, auction, vuln, sample_hands, models):
-        n_steps = binary.calculate_step_bidding(auction, models)
+    def get_bid_scores(self, nesw_i, partner, auction, vuln, sample_hands, models):
+        n_steps = binary.calculate_step_bidding(auction)
         if self.verbose:
             print("sample hand", hand_to_str(sample_hands[0]))
             print("n_step", n_steps)
@@ -568,7 +568,10 @@ class Sample:
         # X[:,:,3+index:7+index] = (binary.get_shape(sample_hands).reshape((-1, 1, 4)) - 3.25) / 1.75
 
         actual_bids = bidding.get_bid_ids(auction, nesw_i, n_steps)
-        sample_bids = models.bidder_model.model_seq(X)[0]
+        if partner:
+            sample_bids = models.bidder_model.model_seq(X)[0]
+        else:
+            sample_bids = models.opponent_model.model_seq(X)[0]
         sample_bids = sample_bids.reshape((sample_hands.shape[0], n_steps, -1))
 
         min_scores = np.ones(sample_hands.shape[0])
@@ -747,7 +750,8 @@ class Sample:
         for h_i in [hidden_1_i, hidden_2_i]:
             #if (player_i + 2) % 4 == h_i:
             h_i_nesw = player_to_nesw_i(h_i, contract)
-            bid_scores = self.get_bid_scores(h_i_nesw, dealer, auction, vuln, states[h_i][:, 0, :32], models)
+            partner = player_i == (h_i + 2) % 4
+            bid_scores = self.get_bid_scores(h_i_nesw, partner, auction, vuln, states[h_i][:, 0, :32], models)
             # print("bid_scores", h_i, bid_scores)
             # for i in range(bid_scores.shape[0]):
             #     if bid_scores[i] > 0.1:
@@ -835,7 +839,7 @@ class Sample:
         return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores[:min(bidding_states[0].shape[0],n_samples)], c_hcp, c_shp, good_quality, probability_of_occurence
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models):
-        n_steps = binary.calculate_step_bidding_info(auction, models)
+        n_steps = binary.calculate_step_bidding_info(auction)
 
         A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models)
 

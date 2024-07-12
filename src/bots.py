@@ -236,7 +236,7 @@ class BotBid:
                     print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.3f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Expected Tricks: {str(round(candidate.expected_tricks,1)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
         else:
             who = "NN"
-            n_steps = binary.calculate_step_bidding_info(auction, self.models)
+            n_steps = binary.calculate_step_bidding_info(auction)
             p_hcp, p_shp = self.sample.get_bidding_info(n_steps, auction, self.seat, self.hand32, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]

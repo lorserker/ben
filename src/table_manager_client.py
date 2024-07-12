@@ -807,6 +807,7 @@ async def main():
         print("Using BBA for bidding")
     else:
         print("Model:", models.bidder_model.model_path)
+        print("Opponent:", models.opponent_model.model_path)
     if matchpoint:
         models.matchpoint = True
     if models.matchpoint:
