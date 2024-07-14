@@ -233,7 +233,7 @@ class BotBid:
             # Print candidates with their relevant information
             if self.verbose:
                 for idx, candidate in enumerate(candidates):
-                    print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.3f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Expected Tricks: {str(round(candidate.expected_tricks,1)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
+                    print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.3f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Expected Tricks??: {str(round(candidate.expected_tricks,1)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
         else:
             who = "NN"
             n_steps = binary.calculate_step_bidding_info(auction)

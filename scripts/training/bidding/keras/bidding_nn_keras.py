@@ -2,14 +2,20 @@ import sys
 import datetime
 import os
 import numpy as np
+import logging
 import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers, callbacks, initializers
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import load_model
-#import keras_tuner as kt
+import time
+import psutil
 
 # Set logging level to suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_NUMA_ENABLED'] = '0'
+
+# Redirect standard output and error
+logging.getLogger('tensorflow').disabled = True
 
 # Limit the number of CPU threads used
 os.environ["OMP_NUM_THREADS"] = "32"
@@ -18,7 +24,6 @@ print("os.cpu_count()", os.cpu_count())
 # TensorFlow thread settings
 tf.config.threading.set_intra_op_parallelism_threads(32)
 tf.config.threading.set_inter_op_parallelism_threads(32)
-
 
 # Set TensorFlow to only allocate as much GPU memory as needed
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -50,7 +55,6 @@ system = "bidding"
 if len(sys.argv) > 2:
     system = sys.argv[2]
 
-
 # Load training data
 X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
 y_train = np.load(os.path.join(bin_dir, 'y.npy'), mmap_mode='r')
@@ -63,7 +67,7 @@ n_bids = y_train.shape[2]
 n_alerts = z_train.shape[2]
 
 batch_size = 128  
-buffer_size = 20000
+buffer_size = 12800
 epochs = 25  
 learning_rate = 0.0005
 keep = 0.8
@@ -90,6 +94,7 @@ print("steps_per_epoch          ", steps_per_epoch)
 print("-------------------------")
 print("Learning rate:           ", learning_rate)
 print("Keep:                    ", keep)
+
 
 lstm_size = 256
 n_layers = 3
@@ -135,7 +140,7 @@ def build_model(input_shape, lstm_size, n_layers, n_bids, n_alerts):
         lambda: data_generator(X_train, y_train, z_train),
         output_signature=output_signature
     )
-    
+
     train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE).repeat()
     return model, train_dataset
 
@@ -164,7 +169,15 @@ if not epochs > 0:
     sys.exit(0)
 
 initial_epoch += 1
+
 # Define callbacks
+class ResourceMonitor(tf.keras.callbacks.Callback):
+    def on_epoch_end(self, epoch, logs=None):
+        print(f"Epoch {epoch + 1}: CPU usage: {psutil.cpu_percent()}%")
+        print(f"Epoch {epoch + 1}: Memory usage: {psutil.virtual_memory().percent}%")
+
+# Include this callback in the fit method
+monitor = ResourceMonitor()
 
 class CustomModelCheckpoint(Callback):
     def __init__(self, save_path, initial_epoch=0, **kwargs):
@@ -174,8 +187,11 @@ class CustomModelCheckpoint(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         save_path = self.save_path.format(epoch=epoch + self.initial_epoch)
+        print()
+        print(f"Saving model to {save_path}")
         self.model.save(save_path)
-        print(f"Model saved to {save_path}")
+        print(f'Epoch took {(time.time() - t_start):0.4f}')
+        t_start = time.time()
 
 # Define the custom checkpoint callback
 custom_checkpoint_callback = CustomModelCheckpoint(
@@ -186,9 +202,11 @@ custom_checkpoint_callback = CustomModelCheckpoint(
 early_stopping_callback = callbacks.EarlyStopping(monitor='loss', patience=10, verbose=1)
 
 print("Training started")
+t_start = time.time()
+
 # Training the model
 model.fit(train_dataset, epochs=epochs, steps_per_epoch=steps_per_epoch,
-          callbacks=[custom_checkpoint_callback, early_stopping_callback])
+          callbacks=[custom_checkpoint_callback, early_stopping_callback, monitor])
 
 # Save the final model with the last epoch number
 final_epoch = initial_epoch + epochs -1

@@ -308,6 +308,11 @@ except KeyError:
 models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 sampler = Sample.from_conf(configuration, verbose)
 
+log_file_path = os.path.join(config_path, 'logs')
+if not os.path.exists(log_file_path):
+    os.makedirs(log_file_path)
+    print(f"Directory '{log_file_path}' created.")
+
 print("Config:", configfile)
 print("System:", models.name)
 if models.use_bba:
@@ -334,61 +339,75 @@ def home():
 
 @app.route('/bid')
 def bid():
-    if request.args.get("dealno"):
-        dealno = request.args.get("dealno")
-        dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
-    else:
-        dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
-    if request.args.get("tournament"):
-        matchpoint = request.args.get("tournament").lower() == "mp"
-        models.matchpoint = matchpoint
-    if request.args.get("explain"):
-        explain = request.args.get("explain").lower() == "true"
-    else:
-        explain = False
-    # First we extract our hand
-    hand = request.args.get("hand").replace('_','.')
-    seat = request.args.get("seat")
-    #print(hand)
-    # Then vulnerability
-    v = request.args.get("vul")
-    #print(v)
-    vuln = []
-    vuln.append('@v' in v)
-    vuln.append('@V' in v)
-    # And finally the bidding, where we deduct dealer and our position
-    dealer = request.args.get("dealer")
-    dealer_i = dealer_enum[dealer]
-    position_i = dealer_enum[seat]
-    ctx = request.args.get("ctx")
-    # Split the string into chunks of every second character
-    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
-    auction = create_auction(bids, dealer_i)
-    if verbose:
-        print("Hand: ",hand)
-        print("Vuln: ",vuln)
-        print("Dealer: ",dealer)
-        print("Seat: ",seat)
-        print("Auction: ",auction)
-    if models.use_bba:
-        from bba.BBA import BBABotBid
-        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
-    else:
-        hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
-    bid = hint_bot.bid(auction)
-    print("Bidding: ",bid.bid)
-    result = bid.to_dict()
-    if explain:
-        from bba.BBA import BBABotBid
-        print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-        bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
-        auction.append(bid.bid)
-        result["explanation"] = bot.explain(auction)
-        print("explanation: ",result["explanation"])
-    if record: 
-        with shelve.open(f"{config_path}/gameapibiddb{dealno}") as db:
-                db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
-    return json.dumps(result)
+    try:
+        if request.args.get("dealno"):
+            dealno = request.args.get("dealno")
+            dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
+        else:
+            dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
+        if request.args.get("tournament"):
+            matchpoint = request.args.get("tournament").lower() == "mp"
+            models.matchpoint = matchpoint
+        if request.args.get("explain"):
+            explain = request.args.get("explain").lower() == "true"
+        else:
+            explain = False
+        # First we extract our hand
+        hand = request.args.get("hand").replace('_','.')
+        seat = request.args.get("seat")
+        #print(hand)
+        # Then vulnerability
+        v = request.args.get("vul")
+        #print(v)
+        vuln = []
+        vuln.append('@v' in v)
+        vuln.append('@V' in v)
+        # And finally the bidding, where we deduct dealer and our position
+        dealer = request.args.get("dealer")
+        dealer_i = dealer_enum[dealer]
+        position_i = dealer_enum[seat]
+        ctx = request.args.get("ctx")
+        # Split the string into chunks of every second character
+        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+        auction = create_auction(bids, dealer_i)
+        if verbose:
+            print("Hand: ",hand)
+            print("Vuln: ",vuln)
+            print("Dealer: ",dealer)
+            print("Seat: ",seat)
+            print("Auction: ",auction)
+        if models.use_bba:
+            from bba.BBA import BBABotBid
+            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+        else:
+            hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
+        bid = hint_bot.bid(auction)
+        print("Bidding: ",bid.bid)
+        result = bid.to_dict()
+        if explain:
+            from bba.BBA import BBABotBid
+            print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
+            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+            auction.append(bid.bid)
+            result["explanation"] = bot.explain(auction)
+            print("explanation: ",result["explanation"])
+        if record: 
+            with shelve.open(f"{log_file_path}/gameapibiddb{dealno}") as db:
+                    db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
+        return json.dumps(result)
+    except Exception as e:
+        print(e)
+        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+        traceback_lines = "".join(traceback_str).splitlines()
+        file_traceback = None
+        for line in reversed(traceback_lines):
+            if line.startswith("  File"):
+                file_traceback = line
+                break
+        if file_traceback:
+            print(file_traceback)  # This will print the last section starting with "File"
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error    
     
 @app.route('/lead')
 def lead():
@@ -430,7 +449,7 @@ def lead():
         print("Leading:", card_resp.card.symbol())
         result = card_resp.to_dict()
         if record: 
-            with shelve.open(f"{config_path}/gameapiplaydb{dealno}") as db:
+            with shelve.open(f"{log_file_path}/gameapiplaydb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "lead":result}
         return json.dumps(result)
     except Exception as e:
@@ -522,7 +541,7 @@ def play():
         result = card_resp.to_dict()
         result["player"] = player_i
         if record: 
-            with shelve.open(f"{config_path}/gameapiplaydb{dealno}") as db:
+            with shelve.open(f"{log_file_path}/gameapiplaydb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
         return json.dumps(result)
     except Exception as e:
