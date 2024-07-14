@@ -175,8 +175,9 @@ class CustomModelCheckpoint(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         save_path = self.save_path.format(epoch=epoch + self.initial_epoch)
+        print()
+        print(f"Saving model to {save_path}")
         self.model.save(save_path)
-        print(f"Model saved to {save_path}")
 
 # Define the custom checkpoint callback
 custom_checkpoint_callback = CustomModelCheckpoint(
