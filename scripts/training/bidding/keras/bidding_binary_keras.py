@@ -11,15 +11,15 @@ from bidding import bidding
 from bidding.binary import DealData
 np.set_printoptions(precision=2, suppress=True, linewidth=300,threshold=np.inf)
 
-def get_binary_hcp_shape(self, ns, ew, n_steps=8):
-    X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + 4 * 40), dtype=np.float16)
+def get_binary_hcp_shape(deal, ns, ew, n_steps=8):
+    X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + deal.n_cards + 4 * 40), dtype=np.float16)
 
     y = np.zeros((4, n_steps, 40), dtype=np.float16)
     z = np.zeros((4, n_steps, 1), dtype=np.float16)
     HCP = np.zeros((4, n_steps, 3), dtype=np.float16)
     SHAPE = np.zeros((4, n_steps, 12), dtype=np.float16)
     
-    padded_auction = self.auction + (['PAD_END'] * 4 * n_steps)
+    padded_auction = deal.auction + (['PAD_END'] * 4 * n_steps)
 
     times_seen = [0, 0, 0, 0]
 
@@ -33,11 +33,11 @@ def get_binary_hcp_shape(self, ns, ew, n_steps=8):
 
         t = times_seen[hand_ix]
     
-        v_we = self.vuln_ns if hand_ix % 2 == 0 else self.vuln_ew
-        v_them = self.vuln_ew if hand_ix % 2 == 0 else self.vuln_ns
-        vuln = np.array([[v_we, v_them]], dtype=np.float32)
-        hcp = self.hcp[hand_ix]
-        shape = self.shapes[hand_ix]
+        v_we = deal.vuln_ns if hand_ix % 2 == 0 else deal.vuln_ew
+        v_them = deal.vuln_ew if hand_ix % 2 == 0 else deal.vuln_ns
+        vuln = np.array([[v_we, v_them]], dtype=np.float16)
+        hcp = deal.hcp[hand_ix]
+        shape = deal.shapes[hand_ix]
         
         my_bid = padded_auction[i - 4] if i - 4 >= 0 else 'PAD_START'
         lho_bid = padded_auction[i - 3] if i - 3 >= 0 else 'PAD_START'
@@ -50,7 +50,7 @@ def get_binary_hcp_shape(self, ns, ew, n_steps=8):
             vuln,
             hcp,
             shape,
-            self.hands[hand_ix],
+            deal.hands[hand_ix],
             bidding.encode_bid(my_bid),
             bidding.encode_bid(lho_bid),
             bidding.encode_bid(partner_bid),
@@ -61,13 +61,14 @@ def get_binary_hcp_shape(self, ns, ew, n_steps=8):
         y[hand_ix, t, :] = bidding.encode_bid(target_bid, False)
         z[hand_ix, t, :] = alert = "*" in target_bid
 
-        HCP[hand_ix, t, 0] = self.hcp[(hand_ix - 3) % 4][0]
-        HCP[hand_ix, t, 1] = self.hcp[(hand_ix - 2) % 4][0]
-        HCP[hand_ix, t, 2] = self.hcp[(hand_ix - 1) % 4][0]
+        HCP[hand_ix, t, 0] = deal.hcp[(hand_ix - 3) % 4][0,0]
+        HCP[hand_ix, t, 1] = deal.hcp[(hand_ix - 2) % 4][0,0]
+        HCP[hand_ix, t, 2] = deal.hcp[(hand_ix - 1) % 4][0,0]
 
-        SHAPE[hand_ix, t, 0:4] = self.shapes[(hand_ix - 3) % 4][0]
-        SHAPE[hand_ix, t, 4:8] = self.shapes[(hand_ix - 2) % 4][0]
-        SHAPE[hand_ix, t, 8:12] = self.shapes[(hand_ix - 1) % 4][0]
+        SHAPE[hand_ix, t, 0:4] = deal.shapes[(hand_ix - 3) % 4][0]
+        SHAPE[hand_ix, t, 4:8] = deal.shapes[(hand_ix - 2) % 4][0]
+        SHAPE[hand_ix, t, 8:12] = deal.shapes[(hand_ix - 1) % 4][0]
+
 
         times_seen[hand_ix] += 1
         i += 1
@@ -122,6 +123,8 @@ def create_binary(data_it, ns, ew, alternating, x, y, z, HCP, SHAPE, k):
 
 
     for i, deal_data in enumerate(data_it):
+        if i == 0:
+            print(deal_data)
         if (i+1) % 100000 == 0:
             sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} {i+1}\n')
             sys.stderr.flush()
@@ -129,39 +132,12 @@ def create_binary(data_it, ns, ew, alternating, x, y, z, HCP, SHAPE, k):
             x_part, y_part, hcp_part, shape_part, alert_part = get_binary_hcp_shape(deal_data, ew, ns)
         else:
             x_part, y_part, hcp_part, shape_part, alert_part = get_binary_hcp_shape(deal_data, ns, ew)
-        if ns == 0:
-            # with system = 0 we discard the hand
-            x[k:k+1] = x_part[1]
-            y[k:k+1] = y_part[1]
-            z[k:k+1] = alert_part[1]
-            HCP[k:k+1] = hcp_part[1]
-            SHAPE[k:k+1] = shape_part[1]
-            x[k+1:k+2] = x_part[3]
-            y[k+1:k+2] = y_part[3]
-            z[k+1:k+2] = alert_part[3]
-            HCP[k+1:k+2] = hcp_part[3]
-            SHAPE[k+1:k+2] = shape_part[3]
-            k += 2
-        elif ew == 0:
-            # with system = 0 we discard the hand
-            x[k:k+1] = x_part[0]
-            y[k:k+1] = y_part[0]
-            z[k:k+1] = alert_part[0]
-            HCP[k:k+1] = hcp_part[0]
-            SHAPE[k:k+1] = shape_part[0]
-            x[k+1:k+2] = x_part[2]
-            y[k+1:k+2] = y_part[2]
-            z[k+1:k+2] = alert_part[2]
-            HCP[k+1:k+2] = hcp_part[2]
-            SHAPE[k+1:k+2] = shape_part[2]
-            k += 2
-        else:
-            x[k:k+4] = x_part
-            y[k:k+4] = y_part
-            z[k:k+4] = alert_part
-            HCP[k:k+4] = hcp_part
-            SHAPE[k:k+4] = shape_part
-            k += 4
+        x[k:k+4] = x_part
+        y[k:k+4] = y_part
+        z[k:k+4] = alert_part
+        HCP[k:k+4] = hcp_part
+        SHAPE[k:k+4] = shape_part
+        k += 4
 
     return x, y, z, HCP, SHAPE, k
 
@@ -212,7 +188,7 @@ if __name__ == '__main__':
     version = 3
     alert_supported = True
     max_occurrences = 10
-    max_filler_occurrences = 2
+    max_filler_occurrences = 1
     sys.stderr.write(f"NS={ns}, EW={ew}, Alternating={alternating}, Version={version}, alert_supported={alert_supported}, outdir={out_dir},  max_occurrences={max_occurrences}, max_filler_occurrences={max_filler_occurrences}\n")
     ns = to_numeric(ns)
     ew = to_numeric(ew)
@@ -225,6 +201,7 @@ if __name__ == '__main__':
 
     with open(infnm1, 'r') as file:
 
+        print(f"Loading {infnm1}")
         lines = file.readlines()
         # Remove comments at the beginning of the file
         lines = [line for line in lines if not line.strip().startswith('#')]
@@ -257,6 +234,7 @@ if __name__ == '__main__':
     if infnm2:
         with open(infnm2, 'r') as file:
 
+            print(f"Loading {infnm2}")
             lines = file.readlines()
             # Remove comments at the beginning of the file
             lines = [line for line in lines if not line.strip().startswith('#')]

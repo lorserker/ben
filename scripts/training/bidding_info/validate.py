@@ -3,13 +3,13 @@ import os
 import numpy as np
 
 if len(sys.argv) < 2:
-    print("Usage: python binfo_nn.py inputdirectory ")
+    print("Usage: python validate.py inputdirectory ")
     sys.exit(1)
 
 bin_dir = sys.argv[1]
-X_train = np.load(os.path.join(bin_dir, 'X.npy'))
-HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'))
-SHAPE_train = np.load(os.path.join(bin_dir, 'SHAPE.npy'))
+X_train = np.load(os.path.join(bin_dir, 'X.npy'), mmap_mode='r')
+HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'), mmap_mode='r')
+SHAPE_train = np.load(os.path.join(bin_dir, 'SHAPE.npy'), mmap_mode='r')
 
 #x = np.zeros((rows_pr_hand * n, 8, 161), dtype=np.float16)
 

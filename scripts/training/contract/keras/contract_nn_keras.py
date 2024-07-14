@@ -10,8 +10,6 @@ from tensorflow.keras.models import load_model
 # Set logging level to suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-# Enable eager execution
-tf.config.run_functions_eagerly(True)
 
 # Limit the number of CPU threads used
 os.environ["OMP_NUM_THREADS"] = "32"
@@ -54,10 +52,10 @@ if len(sys.argv) > 2:
 
 
 # Load training data
-X_train = np.load(os.path.join(bin_dir, 'x.npy'))
-y_train = np.load(os.path.join(bin_dir, 'y.npy'))
-z_train = np.load(os.path.join(bin_dir, 'z.npy'))
-u_train = np.load(os.path.join(bin_dir, 'u.npy'))
+X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
+y_train = np.load(os.path.join(bin_dir, 'y.npy'), mmap_mode='r')
+z_train = np.load(os.path.join(bin_dir, 'z.npy'), mmap_mode='r')
+u_train = np.load(os.path.join(bin_dir, 'u.npy'), mmap_mode='r')
 
 n_examples = X_train.shape[0]
 n_contract = y_train.shape[1]
@@ -85,6 +83,11 @@ print("Size output doubled:     ", output_dim_bool1)
 print("Size output tricks:      ", output_dim_tricks)
 print("Size output contract:    ", output_dim_contract)
 print("-------------------------")
+print("dtype X_train:           ", X_train.dtype)
+print("dtype y_train:           ", y_train.dtype)
+print("dtype z_train:           ", z_train.dtype)
+print("dtype u_train:           ", u_train.dtype)
+print("-------------------------")
 print("Batch size:              ", batch_size)
 print("buffer_size:             ", buffer_size)
 print("steps_per_epoch          ", steps_per_epoch)
@@ -96,10 +99,10 @@ lstm_size = 256
 n_layers = 3
 
 # Build the model
-@tf.function
+
 def build_model(input_shape, lstm_size, n_layers):
     print("input_shape",input_shape)
-    inputs = tf.keras.Input(shape=input_shape)
+    inputs = tf.keras.Input(shape=input_shape, dtype=tf.float16)
     x = layers.Dense(lstm_size, activation='tanh', kernel_initializer='truncated_normal')(inputs)
     x = layers.Dense(64, activation='tanh', kernel_initializer='truncated_normal')(x)
     
@@ -128,11 +131,11 @@ def build_model(input_shape, lstm_size, n_layers):
             yield (xi, {'contract_output': yi, 'bool1_output': zi, 'tricks_output': ui})
 
     output_signature = (
-        tf.TensorSpec(shape=(n_ftrs,), dtype=tf.float32),
+        tf.TensorSpec(shape=(n_ftrs,), dtype=X_train.dtype),
         {
-            'contract_output': tf.TensorSpec(shape=(output_dim_contract,), dtype=tf.float32),
-            'bool1_output': tf.TensorSpec(shape=(1,), dtype=tf.float32),
-            'tricks_output': tf.TensorSpec(shape=(output_dim_tricks,), dtype=tf.float32)
+            'contract_output': tf.TensorSpec(shape=(output_dim_contract,), dtype=y_train.dtype),
+            'bool1_output': tf.TensorSpec(shape=(1,), dtype=z_train.dtype),
+            'tricks_output': tf.TensorSpec(shape=(output_dim_tricks,), dtype=u_train.dtype)
         }
     )
 
@@ -142,7 +145,7 @@ def build_model(input_shape, lstm_size, n_layers):
         output_signature=output_signature
     )
     
-    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE).repeat()
     return model, train_dataset
 
 print("Building model")

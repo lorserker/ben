@@ -66,7 +66,7 @@ class DealData(object):
         
             v_we = self.vuln_ns if hand_ix % 2 == 0 else self.vuln_ew
             v_them = self.vuln_ew if hand_ix % 2 == 0 else self.vuln_ns
-            vuln = np.array([[v_we, v_them]], dtype=np.float32)
+            vuln = np.array([[v_we, v_them]], dtype=np.float16)
             hcp = self.hcp[hand_ix]
             shape = self.shapes[hand_ix]
             
@@ -133,7 +133,7 @@ class DealData(object):
         
             v_we = self.vuln_ns if hand_ix % 2 == 0 else self.vuln_ew
             v_them = self.vuln_ew if hand_ix % 2 == 0 else self.vuln_ns
-            vuln = np.array([[v_we, v_them]], dtype=np.float32)
+            vuln = np.array([[v_we, v_them]], dtype=np.float16)
             hcp = self.hcp[hand_ix]
             shape = self.shapes[hand_ix]
             
@@ -165,9 +165,9 @@ class DealData(object):
             X[hand_ix, t, :] = ftrs
             y[hand_ix, t, :] = bidding.encode_bid(target_bid, alert_supported)
 
-            HCP[hand_ix, t, 0] = self.hcp[(hand_ix - 3) % 4][0]
-            HCP[hand_ix, t, 1] = self.hcp[(hand_ix - 2) % 4][0]
-            HCP[hand_ix, t, 2] = self.hcp[(hand_ix - 1) % 4][0]
+            HCP[hand_ix, t, 0] = self.hcp[(hand_ix - 3) % 4][0,0]
+            HCP[hand_ix, t, 1] = self.hcp[(hand_ix - 2) % 4][0,0]
+            HCP[hand_ix, t, 2] = self.hcp[(hand_ix - 1) % 4][0,0]
 
             SHAPE[hand_ix, t, 0:4] = self.shapes[(hand_ix - 3) % 4][0]
             SHAPE[hand_ix, t, 4:8] = self.shapes[(hand_ix - 2) % 4][0]
@@ -191,7 +191,7 @@ class DealData(object):
         
         v_we = self.vuln_ns if hand_ix % 2 == 0 else self.vuln_ew
         v_them = self.vuln_ew if hand_ix % 2 == 0 else self.vuln_ns
-        vuln = np.array([[v_we, v_them]], dtype=np.float32)
+        vuln = np.array([[v_we, v_them]], dtype=np.float16)
         
         ftrs = np.concatenate((
             vuln,
@@ -200,7 +200,7 @@ class DealData(object):
         ), axis=1)
         X = ftrs
         u = len(contract) > 2 and contract[2] == "X"
-        tricks_one_hot = np.zeros((1, 14), dtype=np.float32)
+        tricks_one_hot = np.zeros((1, 14), dtype=np.float16)
         tricks_one_hot[0, int(parscore[2])] = 1
         z = tricks_one_hot
         y = bidding.encode_bid(contract[0:2])

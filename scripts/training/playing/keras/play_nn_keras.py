@@ -11,8 +11,6 @@ from tensorflow.data import Dataset
 # Set logging level to suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-# Enable eager execution
-tf.config.run_functions_eagerly(True)
 
 # Limit the number of CPU threads used
 os.environ["OMP_NUM_THREADS"] = "32"
@@ -53,8 +51,8 @@ hand = "bidding"
 if len(sys.argv) > 2:
     hand = sys.argv[2]
 
-X_train = np.load(os.path.join(bin_dir, f'x_{hand}.npy'))
-y_train = np.load(os.path.join(bin_dir, f'y_{hand}.npy'))
+X_train = np.load(os.path.join(bin_dir, f'x_{hand}.npy'), mmap_mode='r')
+y_train = np.load(os.path.join(bin_dir, f'y_{hand}.npy'), mmap_mode='r')
 
 n_examples = X_train.shape[0]
 n_sequence = X_train.shape[1]
@@ -78,6 +76,9 @@ print("-------------------------")
 print("Size input hands:        ", n_ftrs)
 print("Size output card  :      ", n_card)
 print("-------------------------")
+print("dtype X_train:           ", X_train.dtype)
+print("dtype y_train:           ", y_train.dtype)
+print("-------------------------")
 print("Batch size:              ", batch_size)
 print("buffer_size:             ", buffer_size)
 print("steps_per_epoch          ", steps_per_epoch)
@@ -89,14 +90,15 @@ n_hidden_units = 512
 n_layers = 3
 
 # Build the model
-@tf.function
+
 def build_model(input_shape, n_hidden_units, n_tricks):
-    inputs = tf.keras.Input(shape=input_shape)
+    inputs = tf.keras.Input(shape=input_shape, dtype=tf.float16)
     x = inputs
     for _ in range(n_layers):
         x = layers.Dense(n_hidden_units, activation='relu', kernel_initializer=tf.keras.initializers.glorot_uniform(seed=1337))(x)
         x = layers.Dropout(1 - keep)(x)
-    card_out = layers.Dense(n_tricks, activation='softmax', name="card")(x)
+    card_logits = layers.Dense(n_tricks, name='card_logits')(x)
+    card_out = layers.Softmax(name='card')(card_logits)
     model = models.Model(inputs=inputs, outputs=card_out)
 
     model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate), 

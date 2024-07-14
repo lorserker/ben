@@ -59,7 +59,6 @@ src/**/*.dat
 scripts/training/**/*BEN99*
 
 scripts/training/data/*BBA*.zip
-scripts/training/bidding/stats*.txt
 scripts/training/data/5 mill deals with bidding.zip
 fly.io
 scripts/training/bidding/auctions.txt
@@ -100,3 +99,5 @@ scripts/training/**/logs/
 scripts/training/bidding/sampling*.ben
 **/*.keras
 !models/TF2models/*.keras
+stats.txt
+scripts/training/bidding/keras/stats.txt

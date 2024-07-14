@@ -2,6 +2,7 @@ import sys
 import datetime
 import os
 import numpy as np
+import logging
 import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers, callbacks, initializers
 from tensorflow.keras.callbacks import Callback
@@ -9,9 +10,10 @@ from tensorflow.keras.models import load_model
 
 # Set logging level to suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_NUMA_ENABLED'] = '0'
 
-# Enable eager execution
-tf.config.run_functions_eagerly(True)
+# Redirect standard output and error
+logging.getLogger('tensorflow').disabled = True
 
 # Limit the number of CPU threads used
 os.environ["OMP_NUM_THREADS"] = "32"
@@ -49,9 +51,9 @@ if len(sys.argv) > 2:
     system = sys.argv[2]
 
 # Load training data
-X_train = np.load(os.path.join(bin_dir, 'X.npy'))
-HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'))
-SHAPE_train = np.load(os.path.join(bin_dir, 'SHAPE.npy'))
+X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
+HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'), mmap_mode='r')
+SHAPE_train = np.load(os.path.join(bin_dir, 'SHAPE.npy'), mmap_mode='r')
 
 n_examples = X_train.shape[0]
 n_sequence = X_train.shape[1]
@@ -59,8 +61,8 @@ n_ftrs = X_train.shape[2]
 n_dim_hcp = HCP_train.shape[2]
 n_dim_shape = SHAPE_train.shape[2]
 
-batch_size = 64  
-buffer_size =  10000
+batch_size = 256  
+buffer_size =  25600
 epochs = 25  
 learning_rate = 0.0005
 keep = 0.8
@@ -77,6 +79,10 @@ print("Number of Sequences:     ", n_sequence)
 print("Size output hcp:         ", n_dim_hcp)
 print("Size output shape:       ", n_dim_shape)
 print("-------------------------")
+print("dtype X_train:           ", X_train.dtype)
+print("dtype HCP_train:         ", HCP_train.dtype)
+print("dtype SHAPE_train:       ", SHAPE_train.dtype)
+print("-------------------------")
 print("Batch size:              ", batch_size)
 print("buffer_size:             ", buffer_size)
 print("steps_per_epoch          ", steps_per_epoch)
@@ -89,9 +95,9 @@ lstm_size = 128
 n_layers = 3
 
 # Build the model
-@tf.function
+
 def build_model(input_shape, lstm_size, n_layers, n_dim_hcp, n_dim_shape):
-    inputs = tf.keras.Input(shape=input_shape)
+    inputs = tf.keras.Input(shape=input_shape, dtype=tf.float16)
     x = inputs
 
     for _ in range(n_layers):
@@ -131,7 +137,7 @@ def build_model(input_shape, lstm_size, n_layers, n_dim_hcp, n_dim_shape):
         output_signature=output_signature
     )
 
-    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE).repeat()
     return model, train_dataset
 
 print("Building model")

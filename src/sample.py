@@ -263,6 +263,7 @@ class Sample:
             print("hand", hand_str)
             print("nesw_i", nesw_i)
             print("bids in model", bids)
+            print("n_samples", n_samples)
 
         c_hcp, c_shp = self.get_bidding_info(n_steps, auction, nesw_i, hand, vuln, models)        
 
@@ -289,9 +290,9 @@ class Sample:
 
         size = 39 + index + bids*40
 
-        X_lho = np.zeros((n_samples, n_steps, size))
-        X_pard = np.zeros((n_samples, n_steps, size))
-        X_rho = np.zeros((n_samples, n_steps, size))
+        X_lho = np.zeros((n_samples, n_steps, size), dtype=np.float16)
+        X_pard = np.zeros((n_samples, n_steps, size), dtype=np.float16)
+        X_rho = np.zeros((n_samples, n_steps, size), dtype=np.float16)
 
         X_lho[:, :, :] = A_lho
         X_lho[:, :, 7+index:39+index] = lho_pard_rho[:, 0:1, :]
@@ -299,6 +300,8 @@ class Sample:
         X_lho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 0, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         lho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 1) % 4, n_steps)
         lho_sample_bids = models.opponent_model.model_seq(X_lho)[0].reshape((n_samples, n_steps, -1))
+        if self.verbose:
+            print("Fetched LHO bidding")
 
         X_pard[:, :, :] = A_pard
         X_pard[:, :, 7+index:39+index] = lho_pard_rho[:, 1:2, :]
@@ -306,6 +309,8 @@ class Sample:
         X_pard[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         pard_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 2) % 4, n_steps)
         pard_sample_bids = models.bidder_model.model_seq(X_pard)[0].reshape((n_samples, n_steps, -1))
+        if self.verbose:
+            print("Fetched partner bidding")
 
         X_rho[:, :, :] = A_rho
         X_rho[:, :, 7+index:39+index] = lho_pard_rho[:, 2:, :]
@@ -313,6 +318,8 @@ class Sample:
         X_rho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 2, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
         rho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 3) % 4, n_steps)
         rho_sample_bids = models.opponent_model.model_seq(X_rho)[0].reshape((n_samples, n_steps, -1))
+        if self.verbose:
+            print("Fetched RHO bidding")
 
         # Consider having scores for partner and opponents
         # Current implementation should be updated due to long sequences is difficult to match
@@ -339,7 +346,7 @@ class Sample:
         
         if self.use_distance:
             # Initialize an array to store distances
-            distances = np.zeros(n_samples)
+            distances = np.zeros(n_samples, dtype=np.float16)
             # Calculate the Euclidean distance for each index
             for i in range(n_samples):
                 # Calculate absolute differences
@@ -507,7 +514,7 @@ class Sample:
         doubled = int('X' in contract)
         redbld = int('XX' in contract)
 
-        x = np.zeros((hand.shape[0], 42))
+        x = np.zeros((hand.shape[0], 42), dtype=np.float16)
         x[:, 0] = level
         x[:, 1 + strain] = 1
         x[:, 6] = doubled
@@ -523,7 +530,7 @@ class Sample:
         x[:, 9] = vuln_them
         x[:, 10:] = hand
 
-        b = np.zeros((hand.shape[0], 15))
+        b = np.zeros((hand.shape[0], 15), dtype=np.float16)
 
         n_steps = binary.calculate_step_bidding_info(auction)
 
@@ -553,7 +560,7 @@ class Sample:
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, sample_hands, vuln, models)
         #print("???: ", n_steps, auction, nesw_i, sample_hands, vuln, models)
 
-        X = np.zeros((sample_hands.shape[0], n_steps, A.shape[-1]))
+        X = np.zeros((sample_hands.shape[0], n_steps, A.shape[-1]), dtype=np.float16)
         X[:, :, :] = A
 
         # if (models.model_version == 0 or (models.ns == -1 and models.model_version < 3)):

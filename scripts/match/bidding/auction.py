@@ -88,7 +88,8 @@ if __name__ == '__main__':
 
     try:
         if configuration_ns["models"]['tf_version'] == "2":
-            sys.stderr.write("Loading version 2\n")
+            sys.stderr.write("Loading tensorflow 2.X\n")
+            print("Loading tensorflow 2.X")
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow
@@ -97,8 +98,8 @@ if __name__ == '__main__':
             # Default to version 1. of Tensorflow
             from nn.models import Models
 
-    models_ns = Models.from_conf(configuration_ns,"..\..\..")
-    models_ew = Models.from_conf(configuration_ew,"..\..\..")
+    models_ns = Models.from_conf(configuration_ns,"../../..")
+    models_ew = Models.from_conf(configuration_ew,"../../..")
 
 # Get the path to the config file
     config_path = get_execution_path()

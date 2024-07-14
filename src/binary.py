@@ -171,7 +171,7 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
     # Do not add 2 cells for biddingsystem, we will add the at the end of the function
     X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + bids*40), dtype=np.float16)
 
-    vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float32)
+    vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float16)
     shp = (get_shape(hand) - 3.25) / 1.75
     hcp = (get_hcp(hand) - 10) / 4
 
@@ -254,7 +254,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
     # Do not add 2 cells for biddingsystem, we will add the at the end of the function
     X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + bids*40), dtype=np.float16)
 
-    vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float32)
+    vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float16)
     shp = (get_shape(hand) - 3.25) / 1.75
     hcp = (get_hcp(hand) - 10) / 4
 

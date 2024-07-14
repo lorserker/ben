@@ -48,7 +48,7 @@ def main():
    
     try:
         if (config["models"]['tf_version'] == "2"):
-            print("Loading version 2")
+            sys.stderr.write("Loading tensorflow 2.X\n")
             from nn.bidder_tf2 import Bidder
             from nn.models_tf2 import Models
         else: 
@@ -61,7 +61,7 @@ def main():
             from nn.models import Models
 
 
-    models = Models.from_conf(config,"..\..\..")
+    models = Models.from_conf(config,"../../..")
 
     for bid in range(5,40):
         p_hcp, p_shp = get_info_for_opening("AJT85.AKT.K63.K8",bidding.ID2BID[bid], models)

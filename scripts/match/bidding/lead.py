@@ -69,7 +69,7 @@ if __name__ == '__main__':
             # Default to version 1. of Tensorflow
             from nn.models import Models
 
-    models = Models.from_conf(configuration,"..\..\..")
+    models = Models.from_conf(configuration,"../../..")
     sampler = Sample.from_conf(configuration)
     for line in sys.stdin:
         obj = json.loads(line)

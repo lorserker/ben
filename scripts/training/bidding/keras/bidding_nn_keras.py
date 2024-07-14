@@ -6,12 +6,10 @@ import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers, callbacks, initializers
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import load_model
+#import keras_tuner as kt
 
 # Set logging level to suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-
-# Enable eager execution
-tf.config.run_functions_eagerly(True)
 
 # Limit the number of CPU threads used
 os.environ["OMP_NUM_THREADS"] = "32"
@@ -54,9 +52,9 @@ if len(sys.argv) > 2:
 
 
 # Load training data
-X_train = np.load(os.path.join(bin_dir, 'x.npy'))
-y_train = np.load(os.path.join(bin_dir, 'y.npy'))
-z_train = np.load(os.path.join(bin_dir, 'z.npy'))
+X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
+y_train = np.load(os.path.join(bin_dir, 'y.npy'), mmap_mode='r')
+z_train = np.load(os.path.join(bin_dir, 'z.npy'), mmap_mode='r')
 
 n_examples = X_train.shape[0]
 n_sequence = X_train.shape[1]
@@ -65,7 +63,7 @@ n_bids = y_train.shape[2]
 n_alerts = z_train.shape[2]
 
 batch_size = 128  
-buffer_size = 10000
+buffer_size = 20000
 epochs = 25  
 learning_rate = 0.0005
 keep = 0.8
@@ -82,6 +80,10 @@ print("Number of Sequences:     ", n_sequence)
 print("Size output bid:         ", n_bids)
 print("Size output alert:       ", n_alerts)
 print("-------------------------")
+print("dtype X_train:           ", X_train.dtype)
+print("dtype y_train:           ", y_train.dtype)
+print("dtype z_train:           ", z_train.dtype)
+print("-------------------------")
 print("Batch size:              ", batch_size)
 print("buffer_size:             ", buffer_size)
 print("steps_per_epoch          ", steps_per_epoch)
@@ -93,9 +95,9 @@ lstm_size = 256
 n_layers = 3
 
 # Build the model
-@tf.function
+
 def build_model(input_shape, lstm_size, n_layers, n_bids, n_alerts):
-    inputs = tf.keras.Input(shape=input_shape)
+    inputs = tf.keras.Input(shape=input_shape, dtype=tf.float16)
     x = inputs
 
     for _ in range(n_layers):
@@ -134,7 +136,7 @@ def build_model(input_shape, lstm_size, n_layers, n_bids, n_alerts):
         output_signature=output_signature
     )
     
-    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE).repeat()
     return model, train_dataset
 
 print("Building model")

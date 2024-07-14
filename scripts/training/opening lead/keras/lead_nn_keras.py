@@ -11,9 +11,6 @@ from tensorflow.data import Dataset
 # Set logging level to suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-# Enable eager execution
-tf.config.run_functions_eagerly(True)
-
 # Limit the number of CPU threads used
 os.environ["OMP_NUM_THREADS"] = "32"
 os.environ["MKL_NUM_THREADS"] = "32"
@@ -53,9 +50,9 @@ system = "bidding"
 if len(sys.argv) > 2:
     system = sys.argv[2]
 
-X_train = np.load(os.path.join(bin_dir, 'x.npy'))
-B_train = np.load(os.path.join(bin_dir, 'B.npy'))
-y_train = np.load(os.path.join(bin_dir, 'y.npy'))
+X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
+B_train = np.load(os.path.join(bin_dir, 'B.npy'), mmap_mode='r')
+y_train = np.load(os.path.join(bin_dir, 'y.npy'), mmap_mode='r')
 
 n_examples = X_train.shape[0]
 n_sequence = X_train.shape[1]
@@ -82,6 +79,10 @@ print("Size input bidding:      ", n_bi)
 print("Number of Sequences:     ", n_sequence)
 print("Size output card:        ", n_cards)
 print("-------------------------")
+print("dtype X_train:           ", X_train.dtype)
+print("dtype y_train:           ", y_train.dtype)
+print("dtype B_train:           ", B_train.dtype)
+print("-------------------------")
 print("Batch size:              ", batch_size)
 print("buffer_size:             ", buffer_size)
 print("steps_per_epoch          ", steps_per_epoch)
@@ -93,10 +94,10 @@ n_hidden_units = 512
 n_layers = 3
 
 # Build the model
-@tf.function
+
 def build_model(input_shape, n_bi, n_hidden_units, n_cards):
-    X_input = layers.Input(shape=(input_shape,), name='X_input')
-    B_input = layers.Input(shape=(n_bi,), name='B_input')
+    X_input = layers.Input(shape=(input_shape,), dtype=tf.float16, name='X_input')
+    B_input = layers.Input(shape=(n_bi,), dtype=tf.float16, name='B_input')
     
     x = layers.Concatenate()([X_input, B_input])
     for _ in range(n_layers):
@@ -104,17 +105,19 @@ def build_model(input_shape, n_bi, n_hidden_units, n_cards):
         x = layers.Dense(n_hidden_units, activation='relu', kernel_initializer=tf.keras.initializers.glorot_uniform(seed=1337))(x)
         x = layers.Dropout(1-keep)(x)
     
-    lead_output = layers.Dense(n_cards, activation='softmax')(x)
+    # Define the output layer
+    lead_logit = layers.Dense(n_cards, name='lead_logit')(x)
+    lead_softmax =  layers.Softmax(name='lead_softmax')(lead_logit)
     
-    model = models.Model(inputs=[X_input, B_input], outputs=lead_output)
+    model = models.Model(inputs=[X_input, B_input], outputs=lead_softmax)
 
-    model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate), loss=losses.CategoricalCrossentropy())
+    model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate), loss=losses.CategoricalCrossentropy(), metrics=['accuracy'])
 
     print(model.summary())
 
 # Create datasets
     train_dataset = Dataset.from_tensor_slices(({'X_input': X_train, 'B_input': B_train}, y_train))
-    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE)
+    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE).repeat()
     return model, train_dataset
 
 print("Building model")

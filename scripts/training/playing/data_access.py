@@ -23,7 +23,7 @@ def set_data(X, i, deal_str):
 
 
 def load_deals(fin):
-    X = np.zeros((1, 4, 13, 4))
+    X = np.zeros((1, 4, 13, 4), dtype=np.float16)
     contracts = {}
     deal_str = ''
     for line_number, line in enumerate(fin):
@@ -32,7 +32,7 @@ def load_deals(fin):
             if line_number > 0:
                 yield (X, contracts, deal_str)
                 contracts = {}
-                X = np.zeros((1, 4, 13, 4))
+                X = np.zeros((1, 4, 13, 4), dtype=np.float16)
                 deal_str = ''
             deal_str = line
             set_data(X, 0, deal_str.replace('  ', '\t'))

@@ -884,7 +884,7 @@ async def main():
         
     try:
         if (configuration["models"]['tf_version'] == "2"):
-            print("Loading version 2")
+            sys.stderr.write("Loading tensorflow 2.X\n")
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow

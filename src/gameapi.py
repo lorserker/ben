@@ -1,3 +1,4 @@
+import sys
 import traceback
 from gevent import monkey
 monkey.patch_all()
@@ -295,7 +296,7 @@ configuration = conf.load(configfile)
 
 try:
     if (configuration["models"]['tf_version'] == "2"):
-        print("Loading version 2")
+        sys.stderr.write("Loading tensorflow 2.X\n")
         from nn.models_tf2 import Models
     else: 
         # Default to version 1. of Tensorflow
@@ -333,75 +334,61 @@ def home():
 
 @app.route('/bid')
 def bid():
-    try:
-        if request.args.get("dealno"):
-            dealno = request.args.get("dealno")
-            dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
-        else:
-            dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
-        if request.args.get("tournament"):
-            matchpoint = request.args.get("tournament").lower() == "mp"
-            models.matchpoint = matchpoint
-        if request.args.get("explain"):
-            explain = request.args.get("explain").lower() == "true"
-        else:
-            explain = False
-        # First we extract our hand
-        hand = request.args.get("hand").replace('_','.')
-        seat = request.args.get("seat")
-        #print(hand)
-        # Then vulnerability
-        v = request.args.get("vul")
-        #print(v)
-        vuln = []
-        vuln.append('@v' in v)
-        vuln.append('@V' in v)
-        # And finally the bidding, where we deduct dealer and our position
-        dealer = request.args.get("dealer")
-        dealer_i = dealer_enum[dealer]
-        position_i = dealer_enum[seat]
-        ctx = request.args.get("ctx")
-        # Split the string into chunks of every second character
-        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
-        auction = create_auction(bids, dealer_i)
-        if verbose:
-            print("Hand: ",hand)
-            print("Vuln: ",vuln)
-            print("Dealer: ",dealer)
-            print("Seat: ",seat)
-            print("Auction: ",auction)
-        if models.use_bba:
-            from bba.BBA import BBABotBid
-            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
-        else:
-            hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
-        bid = hint_bot.bid(auction)
-        print("Bidding: ",bid.bid)
-        result = bid.to_dict()
-        if explain:
-            from bba.BBA import BBABotBid
-            print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
-            auction.append(bid.bid)
-            result["explanation"] = bot.explain(auction)
-            print("explanation: ",result["explanation"])
-        if record: 
-            with shelve.open(f"{config_path}/gameapibiddb{dealno}") as db:
-                    db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
-        return json.dumps(result)
-    except Exception as e:
-        print(e)
-        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
-        traceback_lines = "".join(traceback_str).splitlines()
-        file_traceback = None
-        for line in reversed(traceback_lines):
-            if line.startswith("  File"):
-                file_traceback = line
-                break
-        if file_traceback:
-            print(file_traceback)  # This will print the last section starting with "File"
-        error_message = "An error occurred: {}".format(str(e))
-        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
+    if request.args.get("dealno"):
+        dealno = request.args.get("dealno")
+        dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
+    else:
+        dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
+    if request.args.get("tournament"):
+        matchpoint = request.args.get("tournament").lower() == "mp"
+        models.matchpoint = matchpoint
+    if request.args.get("explain"):
+        explain = request.args.get("explain").lower() == "true"
+    else:
+        explain = False
+    # First we extract our hand
+    hand = request.args.get("hand").replace('_','.')
+    seat = request.args.get("seat")
+    #print(hand)
+    # Then vulnerability
+    v = request.args.get("vul")
+    #print(v)
+    vuln = []
+    vuln.append('@v' in v)
+    vuln.append('@V' in v)
+    # And finally the bidding, where we deduct dealer and our position
+    dealer = request.args.get("dealer")
+    dealer_i = dealer_enum[dealer]
+    position_i = dealer_enum[seat]
+    ctx = request.args.get("ctx")
+    # Split the string into chunks of every second character
+    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+    auction = create_auction(bids, dealer_i)
+    if verbose:
+        print("Hand: ",hand)
+        print("Vuln: ",vuln)
+        print("Dealer: ",dealer)
+        print("Seat: ",seat)
+        print("Auction: ",auction)
+    if models.use_bba:
+        from bba.BBA import BBABotBid
+        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+    else:
+        hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
+    bid = hint_bot.bid(auction)
+    print("Bidding: ",bid.bid)
+    result = bid.to_dict()
+    if explain:
+        from bba.BBA import BBABotBid
+        print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
+        bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+        auction.append(bid.bid)
+        result["explanation"] = bot.explain(auction)
+        print("explanation: ",result["explanation"])
+    if record: 
+        with shelve.open(f"{config_path}/gameapibiddb{dealno}") as db:
+                db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
+    return json.dumps(result)
     
 @app.route('/lead')
 def lead():
@@ -557,7 +544,7 @@ def get_binary_contract(position, vuln, hand_str, dummy_str):
 
     v_we = vuln[0] if position % 2 == 0 else vuln[1]
     v_them = vuln[1] if position % 2 == 0 else vuln[0]
-    vuln = np.array([[v_we, v_them]], dtype=np.float32)
+    vuln = np.array([[v_we, v_them]], dtype=np.float16)
     
     hand = binary.parse_hand_f(32)(hand_str).reshape(32)
     dummy = binary.parse_hand_f(32)(dummy_str).reshape(32)

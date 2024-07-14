@@ -1,7 +1,6 @@
 from tensorflow.keras.models import load_model
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.preprocessing.sequence import pad_sequences
 
 np.set_printoptions(precision=2, suppress=True, linewidth=300,threshold=np.inf)
 
@@ -51,12 +50,13 @@ def print_input(x, y, z):
             print()
 
 # Load the saved model
-model_path = 'model/GIB_2024-07-06.keras'  # Replace with your actual model path
+model_path = '../../../../models/TF2Models/GIB_2024-07-11-E20.keras'  # Replace with your actual model path
+model_path = 'model/GIB_2024-07-12-E02.keras'
 model = load_model(model_path)
 
-X_train = np.load('./bin/X.npy')
-y_train = np.load('./bin/y.npy')
-z_train = np.load('./bin/z.npy')
+X_train = np.load('./bidding_keras/X.npy')
+y_train = np.load('./bidding_keras/y.npy')
+z_train = np.load('./bidding_keras/z.npy')
 
 print(X_train.shape)
 print(y_train.shape)
@@ -67,49 +67,19 @@ X_train_first_8 = X_train[1:2]
 Y_train_first_8 = y_train[1:2]
 Z_train_first_8 = z_train[1:2]
 
-print("X_train_first_8")
-print(X_train_first_8[:, :8, :])
+#print("X_train_first_8")
+#print(X_train_first_8[:, :8, :])
 
-print("Y_train_first_8")
-print(Y_train_first_8[:, :8, :])
+#print("Y_train_first_8")
+#print(Y_train_first_8[:, :8, :])
 
-print("Z_train_first_8")
-print(Z_train_first_8[:, :8, :])
+#print("Z_train_first_8")
+#print(Z_train_first_8[:, :8, :])
 
-print_input(X_train_first_8[:, :8, :], Y_train_first_8[:, :8, :], Z_train_first_8[:, :8, :] )
+print_input(X_train_first_8[:, :2, :], Y_train_first_8[:, :2, :], Z_train_first_8[:, :2, :] )
 
-print(X_train_first_8.shape)
-predictions = model.predict(X_train_first_8, verbose=0)
+predictions = model.predict(X_train_first_8[:, :2, :], verbose=0)
+print("Input:", X_train_first_8[:, :2, :])
 print(predictions)
 
 print("-------------------------------------------------------")
-
-single_sequence = pad_and_reshape_sequences(X_train_first_8[:, :1, :])
-print(single_sequence.shape)
-predictions = model.predict(single_sequence, verbose=0)
-print(single_sequence)
-print(predictions)
-
-print("-------------------------------------------------------")
-# Pad the input if it has fewer than 8 sequences
-pad_width = ((0, 0), (0, 4 - X_train_first_8[:, :1, :].shape[1]), (0, 0))
-current_input = np.pad(X_train_first_8[:, :1, :], pad_width, mode='constant', constant_values=0.)
-predictions = model.predict(current_input, verbose=0)
-print(current_input)
-print(predictions)
-print("-------------------------------------------------------")
-
-full_sequence = X_train_first_8
-full_sequence[:, 0, :] = (X_train_first_8[:, :1, :])
-full_sequence[:, 1, :] = 0
-full_sequence[:, 2, :] = 0
-full_sequence[:, 3, :] = 0
-full_sequence[:, 4, :] = 0
-full_sequence[:, 5, :] = 0
-full_sequence[:, 6, :] = 0
-full_sequence[:, 7, :] = 0
-print(full_sequence.shape)
-print(full_sequence)
-predictions = model.predict(full_sequence, verbose=0)
-print(predictions)
-

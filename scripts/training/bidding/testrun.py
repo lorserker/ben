@@ -78,7 +78,7 @@ def main():
    
     try:
         if (config["models"]['tf_version'] == "2"):
-            print("Loading version 2")
+            sys.stderr.write("Loading tensorflow 2.X\n")
             from nn.bidder_tf2 import Bidder
             from nn.models_tf2 import Models
         else: 
@@ -91,9 +91,9 @@ def main():
             from nn.models import Models
 
 
-    models = Models.from_conf(config,"..\..\..")
+    models = Models.from_conf(config,"../../..")
     print("Models loaded")
-    sampler = Sample.from_conf(config,"..\..\..")
+    sampler = Sample.from_conf(config,"../../..")
 
     print("Configuration loaded")
     with open(filename, 'r') as input_file:

@@ -70,7 +70,7 @@ class DealData(object):
                 # we only generate data for the opening lead hand
                 v_we = self.vuln_ns if hand_ix % 2 == 0 else self.vuln_ew
                 v_them = self.vuln_ew if hand_ix % 2 == 0 else self.vuln_ns
-                vuln = np.array([[v_we, v_them]], dtype=np.float32)
+                vuln = np.array([[v_we, v_them]], dtype=np.float16)
                 hcp = self.hcp[hand_ix]
                 shape = self.shapes[hand_ix]
                 
@@ -125,7 +125,7 @@ def get_card_index(card, n_cards):
 
 def parse_hand_f(n_cards):
     def f(hand_str):
-        x = np.zeros((1, n_cards))
+        x = np.zeros((1, n_cards), dtype=np.float16)
         suits = hand_str.split('.')
         assert(len(suits) == 4)
         for suit_index in [0, 1, 2, 3]:

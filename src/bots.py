@@ -65,7 +65,7 @@ class BotBid:
 
         v_we = vuln[0] if position % 2 == 0 else vuln[1]
         v_them = vuln[1] if position % 2 == 0 else vuln[0]
-        vuln = np.array([[v_we, v_them]], dtype=np.float32)
+        vuln = np.array([[v_we, v_them]], dtype=np.float16)
         
         hand = binary.parse_hand_f(32)(hand_str).reshape(32)
         dummy = binary.parse_hand_f(32)(dummy_str).reshape(32)
@@ -563,7 +563,7 @@ class BotBid:
         if binary.get_number_of_bids(auction_so_far) > 10:
             sample_boards_for_auction *= 2
         if binary.get_number_of_bids(auction_so_far) > 20:
-            sample_boards_for_auction *= 4
+            sample_boards_for_auction *= 2
         # Reset randomizer
         self.rng = np.random.default_rng(self.hash_integer)
         accepted_samples, sorted_scores, p_hcp, p_shp, good_quality = self.sample.sample_cards_auction(
