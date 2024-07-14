@@ -37,6 +37,7 @@
         <button onclick="parseDataFromClipboard()">Parse data as PBN</button>&nbsp;&nbsp;&nbsp;<button onclick="processLinFile()">Parse data as LIN</button><br><br>
         <div id="parsedData" style="display: hidden"></div>
 
+        <input type="checkbox" id="old_server" data-default="false"><label for="old_server">Old model</label><br>
         <input type="checkbox" id="matchpoint" data-default="false"><label for="matchpoint">Matchpoint</label><br>
         <input type="checkbox" id="explain" data-default="false"><label for="explain">Explain bid</label><br>
     
@@ -867,8 +868,13 @@
             // Get the current hostname and protocol
             const hostname = window.location.hostname;
             const protocol = window.location.protocol;
+            const old_server = document.getElementById('old_server').checked;
+            if (old_server) {
+                const port = 8088
+            }
+            const port = 8085
 
-            const url = `${protocol}//${hostname}:8085/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&dummy=${dummy}&played=${played}&tournament=${matchpoint}&explain=${explain}`;
+            const url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&dummy=${dummy}&played=${played}&tournament=${matchpoint}&explain=${explain}`;
 
             try {           
                 const response = await fetch(url, {
