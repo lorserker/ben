@@ -200,9 +200,10 @@ class Models:
         sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['no_lead_single_dummy']))
 
         player_models=[
-            BatchPlayer(name, os.path.join(base_path, conf['cardplay'][name])) for name in player_names
+            BatchPlayerLefty(name, os.path.join(base_path, conf['cardplay'][name])) if 'lefty' in name and opening_lead_included == False else
+            BatchPlayer(name, os.path.join(base_path, conf['cardplay'][name]))
+            for name in player_names
         ]
-
         return cls(
             name=name,
             model_version=model_version,

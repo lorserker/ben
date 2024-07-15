@@ -680,4 +680,5 @@ if __name__ == "__main__":
     # Run the Flask app with gevent server
     http_server = WSGIServer((host, port), app)
     http_server.spawn = 4 #Create 4 Workers
+    http_server.connection_timeout = 120  # Set timeout to 120 seconds
     http_server.serve_forever()

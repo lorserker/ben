@@ -180,11 +180,19 @@ class CustomModelCheckpoint(Callback):
         super().__init__(**kwargs)
         self.save_path = save_path
         self.initial_epoch = initial_epoch
+        self.t_start = None
+
+    def on_epoch_begin(self, epoch, logs=None):
+        # Start time of the epoch
+        self.t_start = time.time()
 
     def on_epoch_end(self, epoch, logs=None):
         save_path = self.save_path.format(epoch=epoch + self.initial_epoch)
+        print()
+        print(f"Saving model to {save_path}")
         self.model.save(save_path)
-        print(f"Model saved to {save_path}")
+        epoch_duration = time.time() - self.t_start
+        print(f'Epoch took {epoch_duration:0.4f} seconds')
 
 # Define the custom checkpoint callback
 custom_checkpoint_callback = CustomModelCheckpoint(

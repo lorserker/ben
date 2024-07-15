@@ -868,10 +868,10 @@
             const hostname = window.location.hostname;
             const protocol = window.location.protocol;
             const old_server = document.getElementById('old_server').checked;
+            let port = 8085
             if (old_server) {
-                const port = 8088
+                port = 8088
             }
-            const port = 8085
 
             const url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&dummy=${dummy}&played=${played}&tournament=${matchpoint}&explain=${explain}`;
 

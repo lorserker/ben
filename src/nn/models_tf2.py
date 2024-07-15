@@ -167,6 +167,8 @@ class Models:
         adjust_min2_by = conf.getint('adjustments', 'adjust_min2_by', fallback=200)
 
         opening_lead_included = conf.getboolean('cardplay', 'opening_lead_included', fallback=False)
+        if not opening_lead_included:
+            print("opening lead must be included in TF 2.X models for cardplay")
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'claim', fallback=False)
         use_suitc = conf.getboolean('cardplay', 'use_suitc', fallback=False)
         suitc_sidesuit_check = conf.getboolean('cardplay', 'suitc_sidesuit_check', fallback=False)
