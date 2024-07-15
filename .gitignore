@@ -101,3 +101,4 @@ scripts/training/bidding/sampling*.ben
 !models/TF2models/*.keras
 stats.txt
 scripts/training/bidding/keras/stats.txt
+scripts/match/bidding/speed/

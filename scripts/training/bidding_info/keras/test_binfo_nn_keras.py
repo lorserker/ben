@@ -33,7 +33,7 @@ def print_input(x, y, z):
             print()
 
 # Load the saved model
-model_path = 'model/GIB-Info_2024-07-14-E19.keras'  # Replace with your actual model path
+model_path = 'model/GIB-Info_2024-07-15-E25.keras'  # Replace with your actual model path
 model = load_model(model_path)
 
 bin_dir = '../../bidding/keras/bidding_keras'

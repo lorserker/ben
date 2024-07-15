@@ -89,7 +89,6 @@ if __name__ == '__main__':
     try:
         if configuration_ns["models"]['tf_version'] == "2":
             sys.stderr.write("Loading tensorflow 2.X\n")
-            print("Loading tensorflow 2.X")
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow

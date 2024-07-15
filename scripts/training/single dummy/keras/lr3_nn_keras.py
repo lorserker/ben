@@ -191,7 +191,7 @@ model.fit(train_dataset, epochs=epochs, steps_per_epoch=steps_per_epoch,
 
 # Save the final model with the last epoch number
 final_epoch = initial_epoch + epochs -1
-final_model_path = os.path.join(checkpoint_dir, f"{model_name}-E{(epochs):02d}.keras")
+final_model_path = os.path.join(checkpoint_dir, f"{model_name}-E{(epochs + initial_epoch):02d}.keras")
 
 model.save(final_model_path)
 print("Saved model:", final_model_path)
