@@ -13,7 +13,7 @@ from nn.bidder_tf2 import Bidder
 
 class Models:
 
-    def __init__(self, name, model_version, api, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
+    def __init__(self, name, model_version, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
                  min_passout_candidates, min_rescue_reward, max_estimated_score,
                  lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, lead_included, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_eval, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playout, pimc_autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd,
                  use_adjustment,
@@ -37,7 +37,6 @@ class Models:
                  ):
         self.name = name
         self.model_version = model_version
-        self.api = api
         self.bidder_model = bidder_model
         self.opponent_model = opponent_model
         self.contract_model = contract_model
@@ -114,7 +113,6 @@ class Models:
             base_path = os.getenv('BEN_HOME') or '..'
         name = conf.get('models', 'name', fallback="BEN")
         model_version = conf.getint('models', 'model_version', fallback=2)
-        api = conf.getboolean('models', 'api', fallback=False)
         alert_supported = conf.getboolean('bidding', 'alert_supported', fallback=False)
         search_threshold = float(conf['bidding']['search_threshold'])
         no_search_threshold = conf.getfloat('bidding', 'no_search_threshold', fallback=1)
@@ -198,7 +196,6 @@ class Models:
         return cls(
             name=name,
             model_version=model_version,
-            api=api,
             bidder_model=bidder_model,
             opponent_model=opponent_model,
             contract_model=contract_model,

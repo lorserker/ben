@@ -406,6 +406,16 @@ if __name__ == '__main__':
 
     data_it = play_data_iterator(itertools.chain(
         open('../../data/WBC/play.txt'))) 
+    out_dir = './binary'
+
+    # Using data from Jack
+    # data_it = play_data_iterator(itertools.chain(
+    #     open('../../data/jack/BW5C_N.txt'),
+    #     open('../../data/jack/BW5C_S.txt'),
+    #     open('../../data/jack/JOS_N.txt'),
+    #     open('../../data/jack/JOS_S.txt')
+    # ))
+    # out_dir = './binary_jack'
 
     data_it_play = itertools.tee(data_it,9)  # Create a copy of the iterator
     print("Counting deals")
@@ -422,8 +432,6 @@ if __name__ == '__main__':
     print()
     print("{0} total deals".format(n1+n2))
 
-    out_dir = './binary'
-
     print(f"Processing {n1} deals for NT")
 
     print("Declarer")
@@ -433,7 +441,7 @@ if __name__ == '__main__':
     print("Left hand opponent")
     handle_lefty_nt(out_dir, binary_data_lefty, data_it_play[3], n1)
     print("Right hand opponent")
-    handle_righty_nt(out_dir, binary_data_lefty, data_it_play[4], n1)
+    handle_righty_nt(out_dir, binary_data_righty, data_it_play[4], n1)
 
     print(f"Processing {n2} deals for suit")
 
@@ -444,4 +452,4 @@ if __name__ == '__main__':
     print("Left hand opponent")
     handle_lefty_suit(out_dir, binary_data_lefty, data_it_play[7], n2)
     print("Right hand opponent")
-    handle_righty_suit(out_dir, binary_data_lefty, data_it_play[8], n2)
+    handle_righty_suit(out_dir, binary_data_righty, data_it_play[8], n2)

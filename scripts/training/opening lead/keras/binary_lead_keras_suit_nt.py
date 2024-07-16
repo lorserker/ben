@@ -193,12 +193,23 @@ def play_data_iterator(fin):
 
 if __name__ == '__main__':
     n_steps = 8
+    # Consider upgrading this to more actual data
     model = BidInfo("../../data/WBC/binfo-1500000")
-
-    out_dir = './lead_keras_nt'
 
     data_it = play_data_iterator(itertools.chain(
         open('../../data/WBC/play.txt'))) 
+    out_dir = './lead_keras_nt_jack'
+    
+    # Using Jack data
+    # data_it = play_data_iterator(itertools.chain(
+    #     open('../../data/jack/BW5C_N.txt'),
+    #     open('../../data/jack/BW5C_S.txt'),
+    #     open('../../data/jack/JOS_N.txt'),
+    #     open('../../data/jack/JOS_S.txt')
+    # ))
+    # out_dir = './lead_keras_nt_jack'
+    # out_dir = './lead_keras_suit_jack'
+
 
     data_it, data_it_nt, data_it_suit = itertools.tee(data_it,3)  # Create a copy of the iterator
     n1 = 0
