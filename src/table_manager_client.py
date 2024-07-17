@@ -154,8 +154,10 @@ class TMClient:
         # Extracted text from the second set of quotes
         if len(matches) > 1:
             if self.seat == "North" or self.seat == "South":
+                self.partner = matches[0]
                 self.opponents = matches[1]
             else:
+                self.partner = matches[1]
                 self.opponents = matches[0]
 
     async def bidding(self):
@@ -184,7 +186,7 @@ class TMClient:
                 # just wait for the other player's bid
                 bid = await self.receive_bid_for(player_i)
                 if (player_i + 2) % 4 == self.player_i:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = 'Partner', quality=None, alert=None)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.partner, quality=None, alert=None)
                 else:
                     bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None, alert=None)
                 self.bid_responses.append(bid_resp)
@@ -590,7 +592,11 @@ class TMClient:
         card_resp_parts = card_resp.strip().split()
         if self.verbose:
             print("card_resp_parts", card_resp_parts)
-        assert card_resp_parts[0] == SEATS[player_i], f"{card_resp_parts[0]} != {SEATS[player_i]}"
+        assert card_resp_parts[0] == SEATS[player_i], f"Received {card_resp_parts} - was expecting card for {SEATS[player_i]}"
+        if (player_i + 2) % 4 == self.player_i:
+            who = self.partner
+        else:
+            who = self.opponents
 
         cr = CardResp(
             card=Card.from_symbol(card_resp_parts[-1][::-1].upper()),
@@ -599,7 +605,7 @@ class TMClient:
             shape=-1,
             hcp=-1, 
             quality=None,
-            who=self.opponents
+            who=who
         )
         self.card_responses.append(cr)
 
@@ -612,7 +618,7 @@ class TMClient:
         bid_resp = await self.receive_line()
         bid_resp_parts = bid_resp.strip().split()
 
-        assert bid_resp_parts[0] == SEATS[player_i]
+        assert bid_resp_parts[0] == SEATS[player_i], f"Received {bid_resp} - was expecting bid for {SEATS[player_i]} - restart client"
 
         # This is to prevent the client failing, when receiving an alert
         if (bid_resp_parts[1].upper() not in ['PASSES', 'DOUBLES', 'REDOUBLES']):

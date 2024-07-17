@@ -34,7 +34,7 @@
 
         
         <textarea id="importInput" rows="8" cols="70"></textarea>
-        <button onclick="parseDataFromClipboard()">Parse data as PBN</button>&nbsp;&nbsp;&nbsp;<button onclick="processLinFile()">Parse data as LIN</button><br><br>
+        <button onclick="processPbnInput()">Parse data as PBN</button>&nbsp;&nbsp;&nbsp;<button onclick="processLinFile()">Parse data as LIN</button><br><br>
         <div id="parsedData" style="display: hidden"></div>
 
         <input type="checkbox" id="old_server" data-default="false"><label for="old_server">Old model</label><br>
@@ -405,7 +405,7 @@
             }
         }
 
-        function parseDataFromClipboard() {
+        function processPbnInput() {
             const clipboardContent = document.getElementById('importInput').value;
             const lines = clipboardContent.split(/[\r\n]+/u);
             const parsedData = [];
@@ -484,7 +484,7 @@
                         }
                     }
                     if (tokenKey === 'Play') {
-                        document.getElementById('playInput').value += line.replace(/\s+/g, '') + " ";
+                        document.getElementById('playInput').value += (line.replace(/\s+/g, '') + " ").replace("*", "");
                     }
                 } else {
                     tokenKey = ''
@@ -799,7 +799,7 @@
             contract = bidding.substring(bidding.length - 8, bidding.length - 6);
             firstbid = bidding.indexOf(contract[1]);
             const dealer = "NESW".indexOf(document.getElementById('dealerInput').value);
-            declarer = (firstbid + 1) / 2 + dealer - 1
+            declarer = ((firstbid + 1) / 2 + dealer - 1) % 4
             console.log(declarer, contract, firstbid, dealer);
             return declarer
         }

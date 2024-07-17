@@ -9,6 +9,7 @@ from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import load_model
 import time
 import psutil
+import GPUtil
 
 # Set logging level to suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -176,6 +177,15 @@ class ResourceMonitor(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
         print(f"Epoch {epoch + 1}: CPU usage: {psutil.cpu_percent()}%")
         print(f"Epoch {epoch + 1}: Memory usage: {psutil.virtual_memory().percent}%")
+
+        # Get GPU stats
+        gpus = GPUtil.getGPUs()
+        if gpus:
+            for gpu in gpus:
+                print(f"Epoch {epoch + 1}: GPU {gpu.id} usage: {gpu.load * 100}%")
+                print(f"Epoch {epoch + 1}: GPU {gpu.id} memory usage: {gpu.memoryUtil * 100}%")
+        else:
+            print(f"Epoch {epoch + 1}: No GPU detected.")
 
 # Include this callback in the fit method
 monitor = ResourceMonitor()

@@ -370,6 +370,10 @@ def bid():
         # Split the string into chunks of every second character
         bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
         auction = create_auction(bids, dealer_i)
+        if bidding.auction_over(auction):
+            result = {"message":"Bidding is over"}
+            return json.dumps(result)
+
         if verbose:
             print("Hand: ",hand)
             print("Vuln: ",vuln)

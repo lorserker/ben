@@ -72,21 +72,22 @@ def encode_board(hand, dealer, vulnerability, deal):
     return str_Deal.upper()  # Convert the entire string to uppercase for consistency with VBA output
 
 
-def decode_board(encoded_str_Deal):
+
+def decode_board(encoded_str_deal):
     # Initialize the hand
     hand = [TypeHand() for _ in range(4)]
 
-    board_extension = int(encoded_str_Deal[0], 16)
-    number = int(encoded_str_Deal[1], 16)
-    dealer = number // 4
+    board_extension = int(encoded_str_deal[0], 16)
+    number = int(encoded_str_deal[1], 16)
+    dealer_i = number // 4
     vulnerable = number % 4
-    deal = board_extension * 16 + board[dealer][vulnerable]
-    encryption_byte = board[dealer][vulnerable]
+    deal_no = board_extension * 16 + board[dealer_i][vulnerable]
+    encryption_byte = board[dealer_i][vulnerable]
 
     card_index = 2
     for j in range(1, 14):
         str_card = "AKQJT98765432"[j - 1]
-        str_number = encoded_str_Deal[card_index:card_index + 2]
+        str_number = encoded_str_deal[card_index:card_index + 2]
         number = int(str_number, 16)
         number = encryption_byte ^ number
         lbloki = [0] * 4
@@ -99,8 +100,9 @@ def decode_board(encoded_str_Deal):
         for i in range(4):
             k = lbloki[i]
             hand[k].suit[i] += str_card
-
-    return hand, dealer, vulnerable, deal
+    dealer = "NESW"[dealer_i]
+    vulnerable = ['None', 'E-W', 'N-S', 'Both'][vulnerable]
+    return hand, dealer, vulnerable, deal_no
 
 
 hand = [TypeHand() for _ in range(4)]

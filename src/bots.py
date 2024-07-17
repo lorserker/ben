@@ -1273,6 +1273,7 @@ class CardPlayer:
         t_start = time.time()
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
+        print("players_states[0].shape[0]",players_states[0].shape[0])
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
             samples.append('%s %s %s %s %.5f %.5f ' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),

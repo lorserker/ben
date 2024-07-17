@@ -174,7 +174,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                 print("card selected", card)
             return Card.from_code(card), who
     if verbose:
-        print("No rules found, playint top of list", candidate_cards[0].card)
+        print("No lead rules actual, playing top of candidate list", candidate_cards[0].card)
     return candidate_cards[0].card, who
 
 

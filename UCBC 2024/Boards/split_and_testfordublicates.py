@@ -28,6 +28,7 @@ def find_duplicate_lines(filename):
         for line in file:
             line = line.strip()  # Remove leading/trailing whitespace
             if line in lines_seen:
+                print(f"Duplicate line found: {line}")
                 duplicate_lines.append(line)
             else:
                 lines_seen.add(line)

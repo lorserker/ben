@@ -58,7 +58,7 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, verbose):
+    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, verbose):
         self.lead_accept_threshold_partner_trust = lead_accept_threshold_partner_trust
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
@@ -74,6 +74,7 @@ class Sample:
         self.sample_hands_opening_lead = sample_hands_opening_lead
         self.sample_hands_play = sample_hands_play
         self.min_sample_hands_play = min_sample_hands_play
+        self.min_sample_hands_play_bad = min_sample_hands_play_bad
         self.sample_boards_for_play = sample_boards_for_play
         self.use_bidding_info = use_biddinginfo
         self.use_distance = use_distance
@@ -102,12 +103,13 @@ class Sample:
         sample_hands_opening_lead = int(conf['sampling']['sample_hands_opening_lead'])
         sample_hands_play = int(conf['cardplay']['sample_hands_play'])
         min_sample_hands_play = int(conf['cardplay']['min_sample_hands_play'])
+        min_sample_hands_play_bad = conf.getint('cardplay','min_sample_hands_play_bad',fallback=3)
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
         no_samples_when_no_search = conf.getboolean('sampling', 'no_samples_when_no_search', fallback=False)
         no_biddingquality_after_bid_count = conf.getint('bidding', 'no_biddingquality_after_bid_count', fallback=12)
-        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingquality_after_bid_count, verbose)
+        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingquality_after_bid_count, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -822,9 +824,9 @@ class Sample:
                 if valid_bidding_samples < self.min_sample_hands_play: 
                     good_quality = False
                     if np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold) == 0:
-                        sys.stderr.write(" We just take top three as we really have no idea about what the bidding means\n")
+                        sys.stderr.write(" We have no idea about what the bidding means\n")
                         # We just take top three as we really have no idea about what the bidding means
-                        bidding_states = [state[:3] for state in bidding_states]
+                        bidding_states = [state[:self.min_sample_hands_play_bad] for state in bidding_states]
                     else:
                         bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
                         good_quality = True
