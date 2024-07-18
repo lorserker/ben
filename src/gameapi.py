@@ -4,6 +4,7 @@ from gevent import monkey
 monkey.patch_all()
 from gevent.pywsgi import WSGIServer
 import datetime 
+import time
 
 from bots import BotBid, BotLead, CardPlayer
 from bidding import bidding
@@ -340,6 +341,7 @@ def home():
 @app.route('/bid')
 def bid():
     try:
+        t_start = time.time()
         if request.args.get("dealno"):
             dealno = request.args.get("dealno")
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
@@ -398,6 +400,7 @@ def bid():
         if record: 
             with shelve.open(f"{log_file_path}/gameapibiddb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
+        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
         print(e)
@@ -416,6 +419,7 @@ def bid():
 @app.route('/lead')
 def lead():
     try:
+        t_start = time.time()
         if request.args.get("dealno"):
             dealno = request.args.get("dealno")
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
@@ -455,6 +459,7 @@ def lead():
         if record: 
             with shelve.open(f"{log_file_path}/gameapiplaydb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "lead":result}
+        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
         print(e)
@@ -474,6 +479,7 @@ def lead():
 @app.route('/play')
 def play():
     try:
+        t_start = time.time()
         if request.args.get("dealno"):
             dealno = request.args.get("dealno")
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
@@ -547,6 +553,7 @@ def play():
         if record: 
             with shelve.open(f"{log_file_path}/gameapiplaydb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
+        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
         print(e)
@@ -582,6 +589,7 @@ def get_binary_contract(position, vuln, hand_str, dummy_str):
 
 @app.route('/cuebid', methods=['POST'])
 def cuebid():
+    t_start = time.time()
     data = request.get_json()
     if not data:
         return jsonify({"error": "Invalid or missing JSON"}), 400
@@ -619,10 +627,12 @@ def cuebid():
         result["explanation"] = bot.explain(auction)
         print("explanation: ",result["explanation"])
     result = {"bid": bid.bid.replace("PASS","Pass"), "alert": bot.explain(auction), "artificial" : bid.alert}
+    print(f'Request took {(time.time() - t_start):0.2f} seconds')       
     return json.dumps(result),200
 
 @app.route('/explain')
 def explain():
+    t_start = time.time()
     from bba.BBA import BBABotBid
     # First we extract the hands and seat
     seat = request.args.get("seat")
@@ -647,11 +657,13 @@ def explain():
     explanation = bot.explain(auction)
     
     result = {"explanation": explanation} # explaination
+    print(f'Request took {(time.time() - t_start):0.2f} seconds')       
 
     return json.dumps(result)
 
 @app.route('/contract')
 def contract():
+    t_start = time.time()
     # First we extract the hands and seat
     hand_str = request.args.get("hand").replace('_','.')
     dummy_str = request.args.get("dummy").replace('_','.')
@@ -676,7 +688,7 @@ def contract():
     # New call to get top 3 contracts
     top_k_indices_oh, top_k_probs_oh = models.contract_model.model[2](X, k=3)
     print(top_k_indices_oh, top_k_probs_oh)
-       
+    print(f'Request took {(time.time() - t_start):0.2f} seconds')       
     return json.dumps(result)    
 
 
