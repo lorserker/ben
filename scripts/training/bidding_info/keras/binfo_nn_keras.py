@@ -69,7 +69,7 @@ n_dim_shape = SHAPE_train.shape[2]
 
 batch_size = 256  
 buffer_size =  25600
-epochs = 25  
+epochs = 50  
 learning_rate = 0.0005
 keep = 0.8
 steps_per_epoch = n_examples // batch_size
@@ -183,7 +183,7 @@ class ResourceMonitor(tf.keras.callbacks.Callback):
         if gpus:
             for gpu in gpus:
                 print(f"Epoch {epoch + 1}: GPU {gpu.id} usage: {gpu.load * 100}%")
-                print(f"Epoch {epoch + 1}: GPU {gpu.id} memory usage: {gpu.memoryUtil * 100}%")
+                print(f"Epoch {epoch + 1}: GPU {gpu.id} memory usage: {round(gpu.memoryUtil*100,1)}%")
         else:
             print(f"Epoch {epoch + 1}: No GPU detected.")
 

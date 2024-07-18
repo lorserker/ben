@@ -4,9 +4,9 @@ cd ..
 start "App Server -Local :8081" python appserver.py --port 8081
 timeout /t 2 /nobreak >nul
 start "TF2 Api :80" python gameapi.py --config config\default_TF2.conf --port 80 --host 0.0.0.0
-timeout /t 2 /nobreak >nul
+timeout /t 5 /nobreak >nul
 start "TF2 Api :8085" python gameapi.py --config config\default_TF2.conf --host 0.0.0.0
-timeout /t 2 /nobreak >nul
+timeout /t 5 /nobreak >nul
 start "Old Api :8088" python gameapi.py --host 0.0.0.0 --config config\default_Api.conf --port 8088
 timeout /t 2 /nobreak >nul
 start "2/1" python gameserver.py --config config\default_api.conf --port 4440

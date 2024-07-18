@@ -25,3 +25,7 @@ Common principle is that the input is converted to binary, and then model traini
 If you upgrade to Tensorflow 2.16+ you will still be able to run the old models, but training will require the new models.
 
 Keras should be at least version 3.4.1
+
+Before training you must install
+
+- pip install GPUtil
