@@ -78,11 +78,13 @@ def generate_html_card(suit, cards):
     return html
 
 def generate_html_deal(line, board_number, bidding, bidding2):
+    print(line)
     print(f"Generating board {board_number}")
     parts = line.split()
     dealer = parts[0]
     vuln= parts[1]
-    cards = parts[2:]
+    cards = parts[2:6]
+    par = parts[6:]
     vulnerable = C_NONE
     if vuln == "All" : vulnerable = C_BOTH
     if vuln == "All" : vulnerable = C_NS
@@ -141,6 +143,8 @@ def generate_html_deal(line, board_number, bidding, bidding2):
                 {generate_html_card('<span class="font-red">&hearts;</span>', cards[2].split('.')[1])}
                 {generate_html_card('<span class="font-red">&diams;</span>', cards[2].split('.')[2])}
                 {generate_html_card('&clubs;', cards[2].split('.')[3])}
+            <br>
+            {par[0]}{par[1]}
             </div>
         </div>
         <!--

@@ -61,6 +61,7 @@ def main():
     parser.add_argument("filename", help="Path to the input filename containing hands and dealer information")
     parser.add_argument("--alternate", type=bool, default=False, help="Skip the closed room board")
     parser.add_argument("--verbose", type=bool, default=False, help="Print extra information")
+    parser.add_argument("--nocolor", type=bool, default=False, help="Remove color from output")
     args = parser.parse_args()
 
     config_path = args.config_path
@@ -71,6 +72,7 @@ def main():
         sys.exit()
     verbose = args.verbose
     alternate = args.alternate
+    color = not args.nocolor
 
     np.set_printoptions(precision=2, suppress=True, linewidth=1200,threshold=np.inf)
 
@@ -92,10 +94,10 @@ def main():
 
 
     models = Models.from_conf(config,"../../..")
-    print("Models loaded")
+    sys.stderr.write("Models loaded\n")
     sampler = Sample.from_conf(config,"../../..")
 
-    print("Configuration loaded")
+    sys.stderr.write("Configuration loaded\n")
     with open(filename, 'r') as input_file:
 
         lines = input_file.readlines()
@@ -108,7 +110,7 @@ def main():
         same = 0
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Loaded {n} deals\n')
         for i in range(n):
-            print(Fore.BLUE, end='')
+            if color: print(Fore.BLUE, end='')
             print("Board: ",i+1)
             if alternate and i % 2 == 1:
                 continue
@@ -134,7 +136,7 @@ def main():
                     auction.append("??")
                     break
             par_score = get_par(hands, [vuln_ns, vuln_ew])
-            print(Fore.WHITE, end='')
+            if color: print(Fore.WHITE, end='')
             print(" ".join(parts[:2]), " ".join(hands), "PAR=", par_score)
             auction_str = " ".join(auction).replace('PAD_START ', '')
             trained_bidding = " ".join(parts[2:]).replace('P',"PASS")
@@ -165,19 +167,19 @@ def main():
                 else:
                     dd_score_now = 0
                 if dd_score_before == dd_score_now:
-                    print(Fore.CYAN, end='')
+                    if color: print(Fore.CYAN, end='')
                     same += 1
                 else:
                     if dd_score_now > dd_score_before:
-                        print(Fore.YELLOW, end='')
+                        if color: print(Fore.YELLOW, end='')
                         better += 1
                     else:
-                        print(Fore.RED, end='')
+                        if color: print(Fore.RED, end='')
                         worse += 1
                 print(" ".join(parts[2:]), dd_score_before)
                 print(auction_str.replace('PASS','P'), dd_score_now)
             else: 
-                print(Fore.GREEN, end='')
+                if color: print(Fore.GREEN, end='')
                 contract = bidding.get_contract(auction)
                 if not contract == None:
                     declarer = contract[:-1]
@@ -191,14 +193,16 @@ def main():
                     dd_score_now = 0
                 #print(" ".join(parts[:2]), " ".join(hands))
                 print(auction_str.replace('PASS','P'), dd_score_now)
+                if not color:
+                    print(auction_str.replace('PASS','P'), dd_score_now)
                 matching += 1
-        print(Fore.GREEN)
+        if color: print(Fore.GREEN)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Matched {matching} deals\n')
-        print(Fore.YELLOW)
+        if color: print(Fore.YELLOW)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} better {better} deals\n')
-        print(Fore.RED)
+        if color: print(Fore.RED)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} worse {worse} deals\n')
-        print(Fore.CYAN)
+        if color: print(Fore.CYAN)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} same score {same} deals\n')
         # Record the end time
         end_time = time.time()
@@ -206,14 +210,12 @@ def main():
         # Calculate the elapsed time in seconds
         execution_time = end_time - start_time
 
-        print(Fore.WHITE)
+        if color: print(Fore.WHITE)
         # Display the result
-        print(f"Execution time: {execution_time:.2f} seconds")
-                
+        sys.stderr.write(f"Execution time: {execution_time:.2f} seconds\n")
+        if color: print(Fore.RESET)
+                        
 
 if __name__ == '__main__':
-    try:
-        main()
-    finally:
-        print(Fore.RESET)
+    main()
 

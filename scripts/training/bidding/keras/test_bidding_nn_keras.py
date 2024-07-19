@@ -50,7 +50,7 @@ def print_input(x, y, z):
             print()
 
 # Load the saved model
-model_path = '../../../../models/TF2Models/GIB_2024-07-13-E04.keras'  # Replace with your actual model path
+model_path = '../../../../models/TF2Models/GIB_2024-07-19-E100.keras'  # Replace with your actual model path
 model_path = 'model/GIB_2024-07-12-E02.keras'
 model = load_model(model_path)
 
