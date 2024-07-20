@@ -346,9 +346,9 @@ class TMClient:
                     if (self.verbose):
                         for idx, candidate in enumerate(card_resp.candidates, start=1):
                             if candidate.expected_tricks_sd:
-                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_sd)).ljust(5)} Tricks (SD) {candidate.expected_tricks_sd:.2f} #Insta_score {candidate.insta_score:.3f}")
+                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_sd)).ljust(5)} Tricks (SD) {candidate.expected_tricks_sd:.3f} #Insta_score {candidate.insta_score:.3f}")
                             if candidate.expected_tricks_dd:
-                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_dd)).ljust(5)} Tricks (DD) {candidate.expected_tricks_dd:.2f} #Insta_score {candidate.insta_score:.3f}")
+                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_dd)).ljust(5)} Tricks (DD) {candidate.expected_tricks_dd:.3f} #Insta_score {candidate.insta_score:.3f}")
                         for idx, sample in enumerate(card_resp.samples, start=1):                  
                             print(f"{sample}")
 

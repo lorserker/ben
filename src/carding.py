@@ -36,7 +36,7 @@ def find_last_occurrence(arr, target):
 
 def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, play_status, who, verbose):
     if verbose:
-        print(f"select_right_card_for_play fo for player {player_i} {hand_str}")
+        print(f"select_right_card_for_play for player {player_i} {hand_str}")
     if len(candidate_cards) == 1:
         return candidate_cards[0].card, who
     
@@ -116,6 +116,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     if c in suits_north:
                         continue
                     if c in suits_south:
+                        suits_south = suits_south.replace(c, '') #remove c
                         continue
                     if c in discards:
                         continue

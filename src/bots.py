@@ -1416,7 +1416,7 @@ class CardPlayer:
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key], making[key])
             if self.verbose:
-                print(f'{deck52.decode_card(key)} {card_tricks[key]:0.2f} {card_ev[key]:5.0f} {making[key]:0.2f}')
+                print(f'{deck52.decode_card(key)} {card_tricks[key]:0.3f} {card_ev[key]:5.0f} {making[key]:0.2f}')
 
         if self.verbose:
             print(f'dds took: {(time.time() - t_start):0.4f}')
@@ -1531,7 +1531,7 @@ class CardPlayer:
                 candidate_cards.insert(0,CandidateCard(
                     card=card52,
                     insta_score=round(insta_score,2),
-                    expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),2),
+                    expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
                     p_make_contract=e_make,
                     expected_score_dd=round(e_score,0)+ (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),
                     msg=msg
@@ -1622,7 +1622,7 @@ class CardPlayer:
                 who = "NN-MP"
                 #print("Who", who)
             else:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, round(x[1].expected_score_dd, 0), round(x[1].insta_score, 2), -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 1000) / 1000, round(x[1].expected_score_dd, 0), round(x[1].insta_score, 2), -x[0]), reverse=True)
                 who = "NN-Make"
                 #print("Who", who)
             candidate_cards = [card for _, card in candidate_cards]
@@ -1630,9 +1630,9 @@ class CardPlayer:
             #     print(candidate_cards[i].card, candidate_cards[i].insta_score, int(candidate_cards[i].expected_tricks_dd* 10) / 10, round(5*candidate_cards[i].p_make_contract,1), round(candidate_cards[i].expected_score_dd,0))
         else:
             if self.models.use_biddingquality_in_eval:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 2), round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 2), round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 1900) / 1900, -x[0]), reverse=True)
                 candidate_cards = [card for _, card in candidate_cards]
-                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
+                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 1090) / 1090, -x[0]), reverse=True)
                 candidate_cards2 = [card for _, card in candidate_cards2]
                 if candidate_cards[0].expected_score_dd < 0 and candidate_cards2[0].expected_score_dd:
                     candidate_cards = candidate_cards2
@@ -1644,7 +1644,7 @@ class CardPlayer:
                     who = "MP-Make"
                     #print("Who", who)
                 else:
-                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 10) / 10, -x[0]), reverse=True)
+                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 2), int(x[1].expected_tricks_dd * 1009) / 1090, -x[0]), reverse=True)
                     who = "Make"
                     #print("Who", who)
                 candidate_cards = [card for _, card in candidate_cards]

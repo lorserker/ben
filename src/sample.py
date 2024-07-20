@@ -559,6 +559,7 @@ class Sample:
             print("n_step", n_steps)
             print("auction", auction)
             print("nesw_i", nesw_i)
+
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, sample_hands, vuln, models)
         #print("???: ", n_steps, auction, nesw_i, sample_hands, vuln, models)
 
@@ -798,8 +799,8 @@ class Sample:
         # print("sorted_min_bid_scores",sorted_min_bid_scores)
         # Sort second dimension within each array in states based on min_bid_scores
         bidding_states = [state[sorted_indices] for state in states]
-        assert states[0].shape[0] > 0, "No samples after bidding"
-       
+        assert bidding_states[0].shape[0] > 0, "No samples after bidding"
+
         # Count how many samples we found matching the bidding
         valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
         if self.verbose:
@@ -881,8 +882,8 @@ class Sample:
 
         for i in range(2):
             for j in range(4):
-                if np.round(c_shp[i, j] < 2):
-                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) <= np.round(c_shp[i, j]) + 1
+                if np.round(c_shp[i, j] < 1.5):
+                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) <= np.round(c_shp[i, j]) + 2
                 if np.round(c_shp[i, j] >= 5):
                     accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
                 if np.round(c_shp[i, j] >= 6):
