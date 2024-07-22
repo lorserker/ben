@@ -125,7 +125,7 @@ class BotBid:
                     _, decl_tricks_softmax2 = self.expected_tricks_sd(hands_np, auctions_np)
                     contracts, decl_tricks_softmax3 = self.expected_tricks_sd_no_lead(hands_np, auctions_np)
                     if self.models.double_dummy_eval:
-                        contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np, auctions_np)
+                        contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np, auctions_np, self.hand_str)
                         for idx, (auction2, (contract, trick1, trick2, trick3)) in enumerate(zip(auctions_np, zip(contracts, decl_tricks_softmax, decl_tricks_softmax3, decl_tricks_softmax2))):
                             auc = bidding.get_auction_as_string(auction2)
                             if contract.lower() != "pass":
@@ -240,13 +240,13 @@ class BotBid:
             p_hcp, p_shp = self.sample.get_bidding_info(n_steps, auction, self.seat, self.hand32, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
-            if len(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
+            if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
                 # initialize auction vector
                 auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
                 for i, bid in enumerate(auction):
                     auction_np[:,i] = bidding.BID2ID[bid]
 
-                contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np, auction_np)
+                contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np, auction_np, self.hand_str)
                 decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
                 if self.verbose:
                     print("tricks", np.mean(decoded_tricks))
@@ -262,7 +262,7 @@ class BotBid:
 
         #print("self.models.check_final_contract", self.models.check_final_contract)
         #print("candidates[0].bid", candidates[0].bid, candidates[0].expected_score, len(samples), good_quality, (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score))
-        if len(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS") and (auction[-1] == "PASS"):
+        if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS") and (auction[-1] == "PASS"):
             # We will avoid rescuing if we have a score of max_estimated_score or more
             if candidates[0].bid == "PASS" and len(samples) > 0 and (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score) and good_quality:
                 # We need to find a sample or two from the bidding
@@ -375,7 +375,7 @@ class BotBid:
                             auction_np[:,i] = bidding.BID2ID[bid]
 
                         # Simulate the hands
-                        contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np[:min(len(samples), self.models.max_samples_checked)], auction_np)
+                        contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np[:min(len(samples), self.models.max_samples_checked)], auction_np, self.hand_str)
                         decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
                         if self.verbose:
                             print("tricks", np.mean(decoded_tricks))
@@ -759,7 +759,7 @@ class BotBid:
         decl_tricks_softmax = self.models.sd_model_no_lead.model(X_sd)
         return contracts, decl_tricks_softmax
 
-    def expected_tricks_dd(self, hands_np, auctions_np):
+    def expected_tricks_dd(self, hands_np, auctions_np, hand_str):
         from ddsolver import ddsolver
         self.dd = ddsolver.DDSolver()
         n_samples = hands_np.shape[0]
@@ -784,10 +784,9 @@ class BotBid:
                 declarers[i] = 'NESW'.index(contract[-1])
 
             # Create PBN for hand
-            hand_str = ""
             # We need to rotate to find the right to lead
             # Perhaps we should use our actual hand (so the pips are correct)
-            hands_pbn = ['N:' + ' '.join(deck52.hand32to52str(hand) for hand in hands_np[i])]
+            hands_pbn = ['N:' + ' '.join(deck52.hand32to52str(hand) if j != self.seat else hand_str for j, hand in enumerate(hands_np[i]))]
             hands_pbn[0] = deck52.convert_cards(hands_pbn[0],0, hand_str, self.get_random_generator())
             # We need to find the leader
             dd_solved = self.dd.solve(strains[i], (declarers[i] + 1) % 4, [], hands_pbn, 1)

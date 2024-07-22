@@ -117,12 +117,10 @@ def convert_cards(card_string, opening_lead, hand_str, rng):
         card = int(hand_str[k])
         if card < 8:
             pips[suit][card-2] = False
-    # This should be random assignment of the pips
-    hands = updated_card_string.split(' ')
-    # We want to replace pips the same way even if the deal has been rotated
-    # Our hand is always the first hand
 
-    for k in range(1, 4):
+    hands = updated_card_string.split(' ')
+
+    for k in range(0, 4):
         suits = hands[k % 4].split(".")
         for j in range(4):
             numbers = list(range(6))
@@ -134,7 +132,7 @@ def convert_cards(card_string, opening_lead, hand_str, rng):
         hands[k % 4] = ".".join(suits)
 
     updated_card_string = " ".join(hands)
-    assert 'x' not in updated_card_string, "All pips not replaced"
+    assert 'x' not in updated_card_string, f"All pips not replaced {updated_card_string}"
     return updated_card_string
 
 def get_trick_winner_i(trick, strain_i):
