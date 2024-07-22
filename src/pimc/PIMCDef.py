@@ -40,7 +40,8 @@ class BGADefDLL:
             print("Make sure the dll is not write protected")
             print("*****************************************************************************")
             sys.exit(1)
-            
+
+        self.models = models            
         self.max_playout = models.pimc_max_playout
         self.wait = models.pimc_wait
         self.autoplay = models.pimc_autoplaysingleton
@@ -49,6 +50,8 @@ class BGADefDLL:
         self.full_deck = Extensions.Parse("AKQJT98765432.AKQJT98765432.AKQJT98765432.AKQJT98765432")
         self.dummyhand = Extensions.Parse(northhand)
         self.defendinghand = Extensions.Parse(southhand)
+        self.declarerhand = Hand()
+        self.partnerhand = Hand()
         self.opposHand = self.full_deck.Except(self.dummyhand.Union(self.defendinghand))
         self.current_trick = Play()
         self.previous_tricks = Play()
@@ -227,6 +230,13 @@ class BGADefDLL:
             self.dummyhand.Remove(PIMCCard(card))
         if playedBy == self.player_i:
             self.defendinghand.Remove(PIMCCard(card))
+        if (playedBy == 0 and self.player_i == 2):
+            self.partnerhand.Add(PIMCCard(card))
+        if (playedBy == 2 and self.player_i == 0):
+            self.partnerhand.Add(PIMCCard(card))
+        if (playedBy == 3):
+            self.declarerhand.Add(PIMCCard(card))
+
         # We will update constraints with samples after the opening lead
         if not openinglead:
             self.update_constraints(playedBy, real_card)
@@ -258,6 +268,24 @@ class BGADefDLL:
         except Exception as ex:
             print('Error Clear:', ex)
             #sys.exit(1)
+
+        if player_i != self.player_i:
+            raise Exception("player_i must be equal to self.player_i")
+        
+        if self.verbose:
+            print("player_i", self.player_i)
+            print(self.dummyhand.ToString(), self.defendinghand.ToString())
+            print(self.opposHand.ToString(), self.current_trick.ListAsString())
+            print("Voids:", shown_out_suits)
+            print(Macros.Player.West if player_i == 0 else Macros.Player.East)
+            print("Over dummy", self.player_i == 2)
+            print("Tricks taken", self.tricks_taken)
+            print("min tricks",self.mintricks)
+            print("Declarer",self.declarer_constraints.ToString())
+            print("Partner",self.partner_constraints.ToString())
+            print("Autoplay",self.autoplay)
+            print("Current trick",self.current_trick.ListAsString())
+            print("Previous tricks",self.previous_tricks.ListAsString())
 
         # Declarer
         idx = 3
@@ -307,24 +335,13 @@ class BGADefDLL:
             self.declarer_constraints.MinClubs = 0
             self.declarer_constraints.MaxClubs = 13
 
-        if self.verbose:
-            print("player_i", player_i)
-            print(self.dummyhand.ToString(), self.defendinghand.ToString())
-            print(self.opposHand.ToString(), self.current_trick.ListAsString())
-            print("Voids:", shown_out_suits)
-            print(Macros.Player.West if player_i == 0 else Macros.Player.East)
-            print("self.player_i",self.player_i)
-            print("Over dummy", self.player_i == 2)
-            print("Tricks taken", self.tricks_taken)
-            print("min tricks",self.mintricks)
-            print("Declarer",self.declarer_constraints.ToString())
-            print("Partner",self.partner_constraints.ToString())
-            print("Autoplay",self.autoplay)
-            print("Current trick",self.current_trick.ListAsString())
-            print("Previous tricks",self.previous_tricks.ListAsString())
+        if self.models.pimc_apriori_probability:
+            hands = [self.dummyhand, self.defendinghand, self.declarerhand, self.partnerhand]
+        else:
+            hands = [self.dummyhand, self.defendinghand]
 
         try:
-            card = self.pimc.SetupEvaluation([self.dummyhand, self.defendinghand], self.opposHand, self.current_trick, self.previous_tricks, [self.declarer_constraints,
+            card = self.pimc.SetupEvaluation(hands, self.opposHand, self.current_trick, self.previous_tricks, [self.declarer_constraints,
                                   self.partner_constraints], Macros.Player.East if player_i == 2 else Macros.Player.West, self.max_playout, self.autoplay, self.player_i == 2)
         except Exception as ex:        
             print('Error:', ex)
@@ -341,7 +358,8 @@ class BGADefDLL:
             print("Partner",self.partner_constraints.ToString())
             print("Current trick",self.current_trick.ListAsString())
             print("Previous tricks",self.previous_tricks.ListAsString())
-            #sys.exit(1) 
+            print("Other hands",self.declarerhand.ToString(), self.partnerhand.ToString())
+            sys.exit(1) 
         
         trump = self.find_trump(self.suit)
         if self.verbose:
@@ -402,6 +420,7 @@ class BGADefDLL:
                     print("Declarer", self.declarer_constraints.ToString())
                     print("Partner", self.partner_constraints.ToString())
                     print("Trump:",trump)
+                    print("Other hands",self.declarerhand.ToString(), self.partnerhand.ToString())
                     if self.declarer_constraints.MaxHCP == 99:
                         print("Loop calling PIMC")
                         sys.exit(1)

@@ -41,6 +41,7 @@ class BGADLL:
             print("*****************************************************************************")
             sys.exit(1)
 
+        self.models = models
         self.max_playout = models.pimc_max_playout
         self.wait = models.pimc_wait
         self.autoplay = models.pimc_autoplaysingleton
@@ -63,6 +64,7 @@ class BGADLL:
         self.contract = contract
         self.tricks_taken = 0
         self.score_by_tricks_taken = [scoring.score(self.contract, is_decl_vuln, n_tricks) for n_tricks in range(14)]
+
         self.constraints_updated = False
         self.verbose = verbose
 
@@ -177,7 +179,6 @@ class BGADLL:
             print("West (LHO)",self.lho_constraints.ToString())
 
     def update_constraints(self, playedBy, real_card):
-        from BGADLL import Card as PIMCCard
         hcp = self.calculate_hcp(real_card.rank)
         suit = real_card.suit
         if (playedBy == 2):
@@ -266,16 +267,21 @@ class BGADLL:
         except Exception as ex:
             print('Error Clear:', ex)
             #sys.exit(1)
+        
         if self.verbose:
             print("player_i", player_i)
             print(self.northhand.ToString(), self.southhand.ToString())
             print(self.opposHand.ToString(), self.current_trick.ListAsString())
             print("Voids:", shown_out_suits)
             print(Macros.Player.South if player_i == 3 else Macros.Player.North)
+            print("Tricks taken", self.tricks_taken)
             print("min tricks",self.mintricks)
+            print("East (RHO)",self.rho_constraints.ToString())
+            print("West (LHO)",self.lho_constraints.ToString())
             print("Autoplay",self.autoplay)
             print("Current trick",self.current_trick.ListAsString())
             print("Previous tricks",self.previous_tricks.ListAsString())
+            print("Other hands",self.easthand.ToString(), self.westhand.ToString())
 
 # for suit_index, constraints in zip([0, 1, 2, 3], [self.lho_constraints, self.rho_constraints]):
 #     for suit in range(4):
@@ -326,13 +332,15 @@ class BGADLL:
             self.lho_constraints.MinClubs = 0
             self.lho_constraints.MaxClubs = 13
 
-        if self.verbose:
-            print("East (RHO)",self.rho_constraints.ToString())
-            print("West (LHO)",self.lho_constraints.ToString())
+
+        if self.models.pimc_apriori_probability:
+            hands = [self.northhand, self.southhand, self.easthand, self.westhand]
+        else:
+            hands = [self.northhand, self.southhand]
 
         try:
-            #, self.easthand, self.westhand
-            self.pimc.SetupEvaluation([self.northhand, self.southhand], self.opposHand, self.current_trick, self.previous_tricks, [self.rho_constraints,
+            
+            self.pimc.SetupEvaluation(hands, self.opposHand, self.current_trick, self.previous_tricks, [self.rho_constraints,
                                   self.lho_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North, self.max_playout, self.autoplay)
         except Exception as ex:        
             print('Error:', ex)
@@ -341,11 +349,13 @@ class BGADLL:
             print(self.opposHand.ToString(), self.current_trick.ListAsString())
             print("Voids:", shown_out_suits)
             print(Macros.Player.South if player_i == 3 else Macros.Player.North)
+            print("Tricks taken", self.tricks_taken)
+            print("min tricks",self.mintricks)
             print("East (RHO)",self.rho_constraints.ToString())
             print("West (LHO)",self.lho_constraints.ToString())
             print("Current trick",self.current_trick.ListAsString())
             print("Previous tricks",self.previous_tricks.ListAsString())
-            #sys.exit(1) 
+            sys.exit(1) 
 
         trump = self.find_trump(self.suit)
         if self.verbose:

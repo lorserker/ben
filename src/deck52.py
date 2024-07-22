@@ -102,7 +102,7 @@ def hand32to52str(hand32):
     card_string = '.'.join(suits)
     return card_string
 
-def convert_cards(card_string, opening_lead, hand_str, seat):
+def convert_cards(card_string, opening_lead, hand_str, rng):
     updated_card_string = card_string
     pips = [[True for _ in range(6)] for _ in range(4)]
     if opening_lead % 13 >= 7:
@@ -120,10 +120,14 @@ def convert_cards(card_string, opening_lead, hand_str, seat):
     # This should be random assignment of the pips
     hands = updated_card_string.split(' ')
     # We want to replace pips the same way even if the deal has been rotated
-    for k in range(seat, seat+4):
+    # Our hand is always the first hand
+
+    for k in range(1, 4):
         suits = hands[k % 4].split(".")
-        for l in reversed(range(6)):
-            for j in range(4):
+        for j in range(4):
+            numbers = list(range(6))
+            rng.shuffle(numbers)
+            for l in numbers:
                 if pips[j][l] and "x" in suits[j]: 
                     suits[j] = suits[j].replace("x",str(l+2),1) 
                     pips[j][l] = False

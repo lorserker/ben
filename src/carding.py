@@ -112,11 +112,13 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                 #suits_west = ""
                 #suits_east = ""
                 suits_westeast = ""
+                if verbose: 
+                    print(f"SuitC: {suits_north} {suits_south} {suits_westeast}")
+                    print("discards", discards)
                 for c in RANKS:
                     if c in suits_north:
                         continue
                     if c in suits_south:
-                        suits_south = suits_south.replace(c, '') #remove c
                         continue
                     if c in discards:
                         continue
@@ -124,8 +126,11 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
                 from suitc.SuitC import SuitCLib
                 suitc = SuitCLib(False)
+                if verbose: 
+                    print(f"SuitC: {suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
 
-                card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south} {suits_westeast}")
+
+                card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
                 
                 response_dict = json.loads(card)
                 optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]

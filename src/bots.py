@@ -788,7 +788,7 @@ class BotBid:
             # We need to rotate to find the right to lead
             # Perhaps we should use our actual hand (so the pips are correct)
             hands_pbn = ['N:' + ' '.join(deck52.hand32to52str(hand) for hand in hands_np[i])]
-            hands_pbn[0] = deck52.convert_cards(hands_pbn[0],0, hand_str, self.seat)
+            hands_pbn[0] = deck52.convert_cards(hands_pbn[0],0, hand_str, self.get_random_generator())
             # We need to find the leader
             dd_solved = self.dd.solve(strains[i], (declarers[i] + 1) % 4, [], hands_pbn, 1)
             # Only use 1st element from the result
@@ -1044,7 +1044,7 @@ class BotLead:
             t_start = time.time()
             for i in range(n_accepted):
                 hands_pbn = ['N:' + hand_str + ' ' + ' '.join(deck52.hand32to52str(hand) for hand in accepted_samples[i])]
-                hands_pbn[0] = deck52.convert_cards(hands_pbn[0],opening_lead52, hand_str, self.seat)
+                hands_pbn[0] = deck52.convert_cards(hands_pbn[0],opening_lead52, hand_str, self.get_random_generator())
                 # lead is relative to the order in the PBN-file, so West is 0 here
                 onlead = 0
                 dd_solved = self.dd.solve(strain_i, onlead, [opening_lead52], hands_pbn, 3)
