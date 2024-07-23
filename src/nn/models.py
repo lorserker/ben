@@ -152,7 +152,7 @@ class Models:
         pimc_max_threads = conf.getint('pimc', 'pimc_max_threads', fallback=-1)
         pimc_trust_NN = conf.getfloat('pimc', 'pimc_trust_NN', fallback=0)
         pimc_ben_dd = conf.getboolean('pimc', 'pimc_ben_dd', fallback=False)
-        pimc_apriori_probability = conf.getfloat('pimc', 'pimc_apriori_probability', fallback=0)
+        pimc_apriori_probability = conf.getboolean('pimc', 'pimc_apriori_probability', fallback=False)
         use_adjustment = conf.getboolean('adjustments', 'use_adjustment', fallback=True)
         adjust_NN = conf.getint('adjustments', 'adjust_NN', fallback=50)
         adjust_NN_Few_Samples = conf.getint('adjustments', 'adjust_NN_Few_Samples', fallback=500)
