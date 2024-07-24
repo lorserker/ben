@@ -51,6 +51,7 @@
             <option value="5">Default.conf</option>
             <option value="6">Jack SAYC</option>
             <option value="7">GIB - TF2</option>
+            <option value="8">Jackos - TF2</option>
         </select><br>
         </div>
     </div>
