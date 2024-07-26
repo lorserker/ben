@@ -42,7 +42,7 @@ from bidding.binary import DealData
 from objects import CardResp, Card, BidResp
 from claim import Claimer
 from pbn2ben import load
-from util import calculate_seed, get_play_status
+from util import calculate_seed, get_play_status, get_singleton
 from pimc.PIMC import BGADLL
 from pimc.PIMCDef import BGADefDLL
 
@@ -473,72 +473,85 @@ class Driver:
                 if self.verbose:
                     print('play status', play_status)
 
-                if isinstance(card_players[player_i], bots.CardPlayer):
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
-                    assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
-                    card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
-                else: 
-                    rollout_states = []
-                    bidding_scores = []
-                    c_hcp = -1
-                    c_shp = -1
-                    good_quality = None
-                    probability_of_occurence = []
-                    
-                await asyncio.sleep(0.01)
+                if play_status == "Forced":
+                    card = get_singleton(card_players[player_i].hand52,current_trick52)
+                    card_resp = CardResp(
+                        card=Card.from_code(card),
+                        candidates=[],
+                        samples=[],
+                        shape=-1,
+                        hcp=-1, 
+                        quality=None,
+                        who="Forced"
+                    )
+                else:    
 
-                card_resp = None
-                while card_resp is None:
-                    card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
-
-                    if (str(card_resp.card).startswith("Conceed")) :
-                            self.claimedbydeclarer = False
-                            self.claimed = 0
-                            self.conceed = True
-                            self.trick_winners = trick_won_by
-                            print(f"Contract: {self.contract} Accepted conceed")
-                            return
-
-                    if (str(card_resp.card).startswith("Claim")) :
-                        tricks_claimed = int(re.search(r'\d+', card_resp.card).group()) if re.search(r'\d+', card_resp.card) else None
+                    if isinstance(card_players[player_i], bots.CardPlayer):
+                        rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
+                        card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
+                    else: 
+                        rollout_states = []
+                        bidding_scores = []
+                        c_hcp = -1
+                        c_shp = -1
+                        good_quality = None
+                        probability_of_occurence = []
                         
-                        self.canclaim = claimer.claim(
-                            strain_i=strain_i,
-                            player_i=player_i,
-                            hands52=[card_player.hand52 for card_player in card_players],
-                            n_samples=50
-                        )
-                        if (tricks_claimed <= self.canclaim):
-                            # player_i is relative to declarer
-                            print(f"Claimed {tricks_claimed} can claim {self.canclaim} {player_i} {decl_i}")
-                            self.claimedbydeclarer = (player_i == 3) or (player_i == 1)
-                            self.claimed = tricks_claimed
+                    await asyncio.sleep(0.01)
 
-                            # Trick winners until claim is saved
-                            self.trick_winners = trick_won_by
-                            # Print contract and result
-                            if self.claimedbydeclarer:
-                                print(f"Contract: {self.contract} Accepted declarers claim of {tricks_claimed} tricks")
+                    card_resp = None
+                    while card_resp is None:
+                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+
+                        if (str(card_resp.card).startswith("Conceed")) :
+                                self.claimedbydeclarer = False
+                                self.claimed = 0
+                                self.conceed = True
+                                self.trick_winners = trick_won_by
+                                print(f"Contract: {self.contract} Accepted conceed")
+                                return
+
+                        if (str(card_resp.card).startswith("Claim")) :
+                            tricks_claimed = int(re.search(r'\d+', card_resp.card).group()) if re.search(r'\d+', card_resp.card) else None
+                            
+                            self.canclaim = claimer.claim(
+                                strain_i=strain_i,
+                                player_i=player_i,
+                                hands52=[card_player.hand52 for card_player in card_players],
+                                n_samples=50
+                            )
+                            if (tricks_claimed <= self.canclaim):
+                                # player_i is relative to declarer
+                                print(f"Claimed {tricks_claimed} can claim {self.canclaim} {player_i} {decl_i}")
+                                self.claimedbydeclarer = (player_i == 3) or (player_i == 1)
+                                self.claimed = tricks_claimed
+
+                                # Trick winners until claim is saved
+                                self.trick_winners = trick_won_by
+                                # Print contract and result
+                                if self.claimedbydeclarer:
+                                    print(f"Contract: {self.contract} Accepted declarers claim of {tricks_claimed} tricks")
+                                else:
+                                    print(f"Contract: {self.contract} Accepted opponents claim of {tricks_claimed} tricks")
+                                return
                             else:
-                                print(f"Contract: {self.contract} Accepted opponents claim of {tricks_claimed} tricks")
-                            return
-                        else:
-                            if self.claimedbydeclarer:
-                                print(f"Declarer claimed {tricks_claimed} tricks - rejected {self.canclaim}")
-                            else:
-                                print(f"Opponents claimed {tricks_claimed} tricks - rejected {self.canclaim}")
-                            await self.channel.send(json.dumps({
-                                'message': 'claim_rejected',
-                            }))
-                            card_resp = None
+                                if self.claimedbydeclarer:
+                                    print(f"Declarer claimed {tricks_claimed} tricks - rejected {self.canclaim}")
+                                else:
+                                    print(f"Opponents claimed {tricks_claimed} tricks - rejected {self.canclaim}")
+                                await self.channel.send(json.dumps({
+                                    'message': 'claim_rejected',
+                                }))
+                                card_resp = None
 
 
-                card_resp.hcp = c_hcp
-                card_resp.shape = c_shp
-                if self.verbose:
-                    pprint.pprint(card_resp.to_dict(), width=200)
-                
-                await asyncio.sleep(0.01)
+                    card_resp.hcp = c_hcp
+                    card_resp.shape = c_shp
+                    if self.verbose:
+                        pprint.pprint(card_resp.to_dict(), width=200)
+                    
+                    await asyncio.sleep(0.01)
 
                 self.card_responses.append(card_resp)
 

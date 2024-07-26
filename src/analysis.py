@@ -5,7 +5,7 @@ import deck52
 from bidding import bidding
 from sample import Sample
 from objects import BidResp, Card, CardResp
-from util import get_play_status
+from util import get_play_status, get_singleton
 class CardByCard:
 
     def __init__(self, dealer, vuln, hands, auction, play, models, sampler, verbose):
@@ -142,12 +142,24 @@ class CardByCard:
                 if isinstance(card_players[player_i], bots.CardPlayer):
                     play_status = get_play_status(card_players[player_i].hand52,current_trick52)
 
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
+                    if play_status == "Forced":
+                        card = get_singleton(card_players[player_i].hand52,current_trick52)
+                        card_resp = CardResp(
+                            card=Card.from_code(card),
+                            candidates=[],
+                            samples=[],
+                            shape=-1,
+                            hcp=-1, 
+                            quality=None,
+                            who="Forced"
+                        )
+                    else:    
+                        rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
 
-                card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
-                card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
-                card_resp.hcp = c_hcp
-                card_resp.shape = c_shp
+                        card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
+                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                        card_resp.hcp = c_hcp
+                        card_resp.shape = c_shp
 
                 self.card_responses.append(card_resp)
                 self.cards[self.play[card_i]] = card_resp

@@ -49,6 +49,9 @@ def bid_hand(hands, dealer, vuln, models_ns_ew, samplers, verbose):
 
     bid_responses = []
     while not bidding.auction_over(auction):
+        if verbose:
+            print("_________________________________")
+            print("Turn", "NESW"[turn_i], hands[turn_i])
         bid_resp = bidder_bots[turn_i].bid(auction)
         bid_responses.append(bid_resp)
         auction.append(bid_resp.bid)
@@ -74,8 +77,10 @@ if __name__ == '__main__':
     parser.add_argument('--bidderEW', type=str)
     parser.add_argument('--set', type=str)
     parser.add_argument('--db', type=str)
+    parser.add_argument("--verbose", type=bool, default=False, help="Print extra information")
 
     args = parser.parse_args()
+    verbose = args.verbose
 
     sys.stderr.write(f'NS = {args.bidderNS}\n')
     sys.stderr.write(f'EW = {args.bidderEW}\n')    
@@ -119,7 +124,7 @@ if __name__ == '__main__':
         hands = parts[2:]
 
         sys.stderr.write(f'Bidding board {index + 1}\n')
-        auction, bid_responses = bid_hand(hands, dealer, vuln, [models_ns, models_ew], [Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)],False)
+        auction, bid_responses = bid_hand(hands, dealer, vuln, [models_ns, models_ew], [Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)],verbose)
 
         record = {
             'board' : index + 1,

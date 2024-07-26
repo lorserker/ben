@@ -13,7 +13,7 @@ from bidding import bidding
 from collections import defaultdict
 
 import carding
-from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed, get_play_status
+from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed
 
 
 class BotBid:
@@ -108,8 +108,9 @@ class BotBid:
                     print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.3f} Samples: {len(hands_np)}")
                 auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np)
 
+                t_start = time.time()
                 # This can be optimized as we currently use 3 different models to estimate the number of tricks, but only use one
-                # One idea is to use the models depending on the level of the contract, as Double ummy seems more correct on 
+                # One idea is to use the models depending on the level of the contract, as Double dummy seems more correct on 
                 # high level contracts
                 if self.models.lead_included:
                     contracts, decl_tricks_softmax = self.expected_tricks_sd(hands_np, auctions_np)
@@ -234,6 +235,8 @@ class BotBid:
             if self.verbose:
                 for idx, candidate in enumerate(candidates):
                     print(f"{idx}: {candidate.bid.ljust(4)} Insta_score: {candidate.insta_score:.3f} Expected Score: {str(int(candidate.expected_score)).ljust(5)} Expected Tricks??: {str(round(candidate.expected_tricks,1)).ljust(5)} Adjustment:{str(int(candidate.adjust)).ljust(5)}")
+            if self.verbose:
+                print(f"Estimating took {(time.time() - t_start):0.4f} seconds")
         else:
             who = "NN"
             n_steps = binary.calculate_step_bidding_info(auction)
@@ -264,6 +267,7 @@ class BotBid:
         #print("candidates[0].bid", candidates[0].bid, candidates[0].expected_score, len(samples), good_quality, (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score))
         if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS") and (auction[-1] == "PASS"):
             # We will avoid rescuing if we have a score of max_estimated_score or more
+            t_start = time.time()
             if candidates[0].bid == "PASS" and len(samples) > 0 and (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score) and good_quality:
                 # We need to find a sample or two from the bidding
                 alternatives = {}
@@ -399,6 +403,9 @@ class BotBid:
                             candidates.insert(0, candidatebid)
                             who = "Rescue"
                             sys.stderr.write(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}\n")
+            if self.verbose:
+                print(f"Rescue bid calculation took {(time.time() - t_start):0.4f} seconds")
+
         # We return the bid with the highest expected score or highest adjusted score 
 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality, alert = bool(candidates[0].alert))
@@ -533,7 +540,7 @@ class BotBid:
     def next_bid_np(self, auction):
         alerts = None
         if self.verbose:
-            print("next_bid_np", self.models.name, self.models.model_version, self.models.ns)
+            print("next_bid_np. Model:", self.models.name, self.models.model_version, "NS=", self.models.ns)
         x = self.get_binary(auction, self.models)
         if self.models.model_version == 3:
             bid_np, alerts = self.models.bidder_model.model_seq(x)
@@ -615,6 +622,7 @@ class BotBid:
         while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
             #auction = bidding.get_auction_as_list(auction_np[2])
             #print(n_steps_vals, turn_i, bid_i, auction)
+            #print("bidding_rollout - n_steps_vals: ", n_steps_vals, " turn_i: ", turn_i, " bid_i: ", bid_i, " auction: ", auction)
             X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models)
             y_bid_np = self.models.bidder_model.model_seq(X)[0]
             #print(y_bid_np)
@@ -630,7 +638,6 @@ class BotBid:
                     auction = bidding.get_auction_as_list(auction_np[i])
                     if not bidding.auction_over(auction):
                         bid = np.argmax(bid_np[i])
-
                         # if Pass returned after the bidding really is over
                         if (bid == 2 and bidding.auction_over(auction)):
                             sys.stderr.write(str(auction))
@@ -639,15 +646,16 @@ class BotBid:
                         # Pass is always allowed
                         if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
                             invalid_bids = True
-                            sys.stderr.write(str(auction))
-                            sys.stderr.write(f" Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                            sys.stderr.write(f"{auction}\n")
+                            print(hand_to_str(hands_np[i,turn_i,:]))
+                            sys.stderr.write(f"Hand {self.hand_str} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                            print(bid_np[i])
                             bid_np[i][bid] = 0
+                            cc
 
                         assert bid_i <= 60, f'Auction to long {bid_i} {auction} {auction_np[i]}'
                     else:
                         bid_np[i][1] = 1
-                if invalid_bids: 
-                    continue
 
             bid_i += 1
             #print("Adding", bidding.ID2BID[np.argmax(bid_np, axis=1)])

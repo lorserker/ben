@@ -166,3 +166,10 @@ def get_play_status(hand, current_trick):
         return "Forced"
     else:
         return "Follow"
+
+def get_singleton(hand, current_trick):
+    suits = np.array(hand).reshape((4, -1))
+    suitlead = current_trick[0] // 13
+    card = np.argmax(suits[suitlead])
+    card52 = card + 13 * suitlead
+    return card52

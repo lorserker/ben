@@ -32,7 +32,7 @@ import conf
 import datetime
 import pprint
 from objects import Card, CardResp, BidResp
-from util import get_play_status
+from util import get_play_status, get_singleton
 
 from deck52 import card52to32, decode_card, get_trick_winner_i, hand_to_str
 from bidding import bidding
@@ -333,24 +333,37 @@ class TMClient:
                     print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
                 if (player_i == cardplayer_i and player_i != 1) or (player_i == 1 and cardplayer_i == 3):
-                    play_status = get_play_status(card_players[player_i].hand52,current_trick52)
+                    play_status, card_resp = get_play_status(card_players[player_i].hand52,current_trick52)
 
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
-                    card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
-                    card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
-                    card_resp.hcp = c_hcp
-                    card_resp.shape = c_shp
+                    if play_status == "Forced":
+                        card = get_singleton(card_players[player_i].hand52,current_trick52)
+                        card_resp = CardResp(
+                            card=Card.from_code(card),
+                            candidates=[],
+                            samples=[],
+                            shape=-1,
+                            hcp=-1, 
+                            quality=None,
+                            who="Forced"
+                        )
+                    else:    
+                        rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
+                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                        card_resp.hcp = c_hcp
+                        card_resp.shape = c_shp
 
-                    self.card_responses.append(card_resp)
+                        self.card_responses.append(card_resp)
 
-                    if (self.verbose):
-                        for idx, candidate in enumerate(card_resp.candidates, start=1):
-                            if candidate.expected_tricks_sd:
-                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_sd)).ljust(5)} Tricks (SD) {candidate.expected_tricks_sd:.3f} #Insta_score {candidate.insta_score:.3f}")
-                            if candidate.expected_tricks_dd:
-                                print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_dd)).ljust(5)} Tricks (DD) {candidate.expected_tricks_dd:.3f} #Insta_score {candidate.insta_score:.3f}")
-                        for idx, sample in enumerate(card_resp.samples, start=1):                  
-                            print(f"{sample}")
+                        if (self.verbose):
+                            for idx, candidate in enumerate(card_resp.candidates, start=1):
+                                if candidate.expected_tricks_sd:
+                                    print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_sd)).ljust(5)} Tricks (SD) {candidate.expected_tricks_sd:.3f} #Insta_score {candidate.insta_score:.3f}")
+                                if candidate.expected_tricks_dd:
+                                    print(f"{candidate.card} Expected Score: {str(int(candidate.expected_score_dd)).ljust(5)} Tricks (DD) {candidate.expected_tricks_dd:.3f} #Insta_score {candidate.insta_score:.3f}")
+                            for idx, sample in enumerate(card_resp.samples, start=1):                  
+                                print(f"{sample}")
+
 
                     card52 = card_resp.card.code()
                     

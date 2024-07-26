@@ -44,7 +44,7 @@ class BGADefDLL:
         self.models = models            
         self.max_playout = models.pimc_max_playout
         self.wait = models.pimc_wait
-        self.autoplay = models.pimc_autoplaysingleton
+        self.autoplay = models.autoplaysingleton
         self.pimc = PIMCDef(models.pimc_max_threads)
         self.pimc.Clear()
         self.full_deck = Extensions.Parse("AKQJT98765432.AKQJT98765432.AKQJT98765432.AKQJT98765432")

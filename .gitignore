@@ -102,3 +102,4 @@ scripts/training/bidding/sampling*.ben
 stats.txt
 scripts/training/bidding/keras/stats.txt
 scripts/match/bidding/speed/
+scripts/training/bidding/bad.*

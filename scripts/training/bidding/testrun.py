@@ -146,7 +146,7 @@ def main():
                 contract = bidding.get_contract(trained_auction)
                 if not contract == None:
                     vuln = False
-                    declarer = contract[:-1]
+                    declarer = contract[-1]
                     if declarer == "N" or declarer == "S":
                         vuln = vuln_ns
                     else :
