@@ -333,7 +333,7 @@ class TMClient:
                     print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
                 if (player_i == cardplayer_i and player_i != 1) or (player_i == 1 and cardplayer_i == 3):
-                    play_status, card_resp = get_play_status(card_players[player_i].hand52,current_trick52)
+                    play_status = get_play_status(card_players[player_i].hand52,current_trick52)
 
                     if play_status == "Forced":
                         card = get_singleton(card_players[player_i].hand52,current_trick52)
