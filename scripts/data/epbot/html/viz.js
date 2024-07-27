@@ -382,7 +382,7 @@ class PlayInfo {
                     html += '<td>e(score)dd=' + Math.round(candidate['expected_score_dd'] * 100) / 100 + '</td>'
                 }
                 if ("insta_score" in candidate) {
-                    html += '<td>iscore=' + Math.round(candidate['insta_score'] * 100) / 100 + '</td>'
+                    html += '<td>iscore=' + Math.round(candidate['insta_score'] * 1000) / 1000 + '</td>'
                 }
                 if ("p_make_contract" in candidate) {
                     html += '<td>e(make/set)=' + Math.round(candidate['p_make_contract'] * 100) / 100 + '</td>'

@@ -42,7 +42,7 @@ class BGADLL:
             sys.exit(1)
 
         self.models = models
-        self.max_playout = models.pimc_max_playout
+        self.max_playout = models.pimc_max_playouts
         self.wait = models.pimc_wait
         self.autoplay = models.autoplaysingleton
         self.pimc = PIMC(models.pimc_max_threads)
@@ -344,6 +344,7 @@ class BGADLL:
                                   self.lho_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North, self.max_playout, self.autoplay)
         except Exception as ex:        
             print('Error:', ex)
+            print("max_playout",self.max_playout)
             print("player_i", player_i)
             print(self.northhand.ToString(), self.southhand.ToString())
             print(self.opposHand.ToString(), self.current_trick.ListAsString())
@@ -390,6 +391,7 @@ class BGADLL:
         # Allow running threads to finalize
         time.sleep(0.1)
         if self.verbose:    
+            print("max_playout",self.max_playout)
             print(f"Playouts: {self.pimc.Playouts}")
             print("Combinations:", self.pimc.Combinations)
             print("Examined:", self.pimc.Examined)
@@ -406,6 +408,7 @@ class BGADLL:
                 if count == 0:
 
                     print(card)
+                    print("max_playout",self.max_playout)
                     print(self.pimc.LegalMovesToString)
                     print(f"Playouts: {self.pimc.Playouts}")
                     print("Combinations:", self.pimc.Combinations)

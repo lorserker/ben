@@ -42,7 +42,7 @@ class BGADefDLL:
             sys.exit(1)
 
         self.models = models            
-        self.max_playout = models.pimc_max_playout
+        self.max_playout = models.pimc_max_playouts
         self.wait = models.pimc_wait
         self.autoplay = models.autoplaysingleton
         self.pimc = PIMCDef(models.pimc_max_threads)
