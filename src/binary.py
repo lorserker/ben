@@ -164,12 +164,12 @@ def get_hcp(hand):
 
 def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
     assert (len(hand.shape) == 2)
-    assert (hand.shape[1] == 32)
+    assert (hand.shape[1] == models.n_cards_bidding)
 
     n_samples = hand.shape[0]
     bids = 4 if models.model_version >= 2 else 3
     # Do not add 2 cells for biddingsystem, we will add the at the end of the function
-    X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + bids*40), dtype=np.float16)
+    X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + models.n_cards_bidding + bids*40), dtype=np.float16)
 
     vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float16)
     shp = (get_shape(hand) - 3.25) / 1.75
@@ -187,7 +187,7 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
     X[:, :, :2] = vuln_us_them
     X[:, :, 2:3] = hcp.reshape((n_samples, 1, 1))
     X[:, :, 3:7] = shp.reshape((n_samples, 1, 4))
-    X[:, :, 7:39] = hand.reshape((n_samples, 1, 32))
+    X[:, :, 7:7+models.n_cards_bidding] = hand.reshape((n_samples, 1, models.n_cards_bidding))
 
     step_i = 0
     s_all = np.arange(n_samples, dtype=np.int32)
@@ -217,14 +217,14 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
             rho_bid = bidding.BID2ID['PAD_START']
             #print("Padding RHO")
         if bids == 4:
-            X[s_all, step_i, 39+my_bid] = 1
-            X[s_all, step_i, (39+40)+lho_bid] = 1
-            X[s_all, step_i, (39+2*40)+partner_bid] = 1
-            X[s_all, step_i, (39+3*40)+rho_bid] = 1
+            X[s_all, step_i, 7+models.n_cards_bidding+my_bid] = 1
+            X[s_all, step_i, (7+models.n_cards_bidding+40)+lho_bid] = 1
+            X[s_all, step_i, (7+models.n_cards_bidding+2*40)+partner_bid] = 1
+            X[s_all, step_i, (7+models.n_cards_bidding+3*40)+rho_bid] = 1
         else:
-            X[s_all, step_i, 39+lho_bid] = 1
-            X[s_all, step_i, (39+40)+partner_bid] = 1
-            X[s_all, step_i, (39+2*40)+rho_bid] = 1
+            X[s_all, step_i, 7+models.n_cards_bidding+lho_bid] = 1
+            X[s_all, step_i, (7+models.n_cards_bidding+40)+partner_bid] = 1
+            X[s_all, step_i, (7+models.n_cards_bidding+2*40)+rho_bid] = 1
 
         step_i += 1
         bid_i += 4
@@ -245,14 +245,14 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
 
     return X_padded
 
-def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, models):
+def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, models, n_cards):
     assert (len(hand.shape) == 2)
-    assert (hand.shape[1] == 32)
+    assert (hand.shape[1] == n_cards)
 
     n_samples = hand.shape[0]
     bids = 4 if models.model_version >= 2 else 3
     # Do not add 2 cells for biddingsystem, we will add the at the end of the function
-    X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + 32 + bids*40), dtype=np.float16)
+    X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + n_cards + bids*40), dtype=np.float16)
 
     vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float16)
     shp = (get_shape(hand) - 3.25) / 1.75
@@ -277,7 +277,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
     X[:, :, :2] = vuln_us_them
     X[:, :, 2:3] = hcp.reshape((n_samples, 1, 1))
     X[:, :, 3:7] = shp.reshape((n_samples, 1, 4))
-    X[:, :, 7:39] = hand.reshape((n_samples, 1, 32))
+    X[:, :, 7:7+n_cards] = hand.reshape((n_samples, 1, n_cards))
 
     step_i = 0
     s_all = np.arange(n_samples, dtype=np.int32)
@@ -308,14 +308,14 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
             rho_bid = bidding.BID2ID['PAD_START']
             #print("RHO", bidding.ID2BID[rho_bid])
         if bids == 4:
-            X[s_all, step_i, 39+my_bid] = 1
-            X[s_all, step_i, (39+40)+lho_bid] = 1
-            X[s_all, step_i, (39+2*40)+partner_bid] = 1
-            X[s_all, step_i, (39+3*40)+rho_bid] = 1
+            X[s_all, step_i, 7+n_cards+my_bid] = 1
+            X[s_all, step_i, (7+n_cards+40)+lho_bid] = 1
+            X[s_all, step_i, (7+n_cards+2*40)+partner_bid] = 1
+            X[s_all, step_i, (7+n_cards+3*40)+rho_bid] = 1
         else:
-            X[s_all, step_i, 39+lho_bid] = 1
-            X[s_all, step_i, (39+40)+partner_bid] = 1
-            X[s_all, step_i, (39+2*40)+rho_bid] = 1
+            X[s_all, step_i, 7+n_cards+lho_bid] = 1
+            X[s_all, step_i, (7+n_cards+40)+partner_bid] = 1
+            X[s_all, step_i, (7+n_cards+2*40)+rho_bid] = 1
 
         step_i += 1
         bid_i += 4
@@ -359,7 +359,7 @@ def calculate_step_bidding(auction):
     n_steps = 1 + (len(auction) - 1) // 4
     return n_steps
 
-def get_auction_binary_for_lead(auction, hand, vuln, dealer, models):
+def get_auction_binary_for_lead(auction, handbidding, handplay, vuln, dealer, models):
     contract = bidding.get_contract(auction)
 
     level = int(contract[0])
@@ -373,7 +373,7 @@ def get_auction_binary_for_lead(auction, hand, vuln, dealer, models):
     vuln_us = vuln[lead_index % 2]
     vuln_them = vuln[decl_index % 2]
 
-    x = np.zeros(42)
+    x = np.zeros(10+models.n_cards_play)
 
     x[0] = level
     x[1 + strain] = 1
@@ -381,16 +381,16 @@ def get_auction_binary_for_lead(auction, hand, vuln, dealer, models):
     x[7] = redbld
     x[8] = vuln_us
     x[9] = vuln_them
-    x[10:] = hand.reshape(32)
-    return x.reshape((1, -1)), get_shape_for_lead(auction, hand, vuln, contract, models)
+    x[10:] = handplay.reshape(models.n_cards_play)
+    return x.reshape((1, -1)), get_shape_for_lead(auction, handbidding, vuln, contract, models, models.n_cards_bidding)
 
-def get_shape_for_lead(auction, hand, vuln, contract, models):
+def get_shape_for_lead(auction, hand, vuln, contract, models, n_cards):
     b = np.zeros(15)
     decl_index = bidding.get_decl_i(contract)
     lead_index = (decl_index + 1) % 4
     n_steps = calculate_step_bidding_info(auction)
 
-    A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, models)
+    A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, models, models.n_cards_bidding)
 
     p_hcp, p_shp = models.binfo_model.model(A)
 

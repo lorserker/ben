@@ -273,6 +273,7 @@ class Driver:
         if self.contract is None:
             pbn_str += '[Contract ""]\n'
         else:
+            # Remove declarer from contract
             pbn_str += f'[Contract "{self.contract[:-1]}"]\n'
             pbn_str += f'[Result "{self.tricks_taken}"]\n'
             if (self.contract[-1] == "N" or self.contract[-1] =="S"):

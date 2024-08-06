@@ -15,8 +15,9 @@ from nn.bid_info import BidInfo
 
 class DealData(object):
 
-    def __init__(self, meta, dealer, vuln_ns, vuln_ew, hands, auction, lead_card_str):
+    def __init__(self, meta, dealer, vuln_ns, vuln_ew, hands, auction, lead_card_str, n_cards=32):
         self.meta = meta
+        self.n_cards = n_cards
         self.dealer = dealer
         self.vuln_ns = vuln_ns
         self.vuln_ew = vuln_ew
@@ -47,7 +48,7 @@ class DealData(object):
 
 
     def get_binary(self, n_steps=8):
-        A = np.zeros((1, n_steps, 2 + 1 + 4 + 32 + 3 * 40), dtype=np.float16)
+        A = np.zeros((1, n_steps, 2 + 1 + 4 + self.n_cards + 3 * 40), dtype=np.float16)
         X = np.zeros((1, 1 + 5 + 1 + 1 + 1 + 1 + 32), dtype=np.float16)
         y = np.zeros((1, 32), dtype=np.float16)
 

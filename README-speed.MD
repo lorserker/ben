@@ -21,13 +21,13 @@ In the original BEN a neural network, trained on data from Jack, was used to est
 Double dummy seems to give the best result but is more time consuming.
 A major difference between the two neural networks are that the original needs the opening lead to give an estimate, so this parameter is used to define which net is used
 
-# Include opening lead, when making single dummy estimates
-lead_included = False
+# use the following estimator, sde, dde or both
+estimator = dde
 
 If you want the slower Double dummy then this need to be activated
 
 # Use double dummy when estimating tricks during bidding - to slow if 200 samples
-double_dummy_eval = True
+double_dummy_calculator = True
 
 Now the speed for bidding is about 10-15 sec pr board or about 1-2 sec pr. bid on average
 The calculation of speed is based on this parameter:

@@ -39,7 +39,7 @@ class SuitCLib:
         self.verbose = verbose
     
     def calculate(self, input_str):
-        input_str = "-Ls " + input_str
+        input_str = "-Ls -c100 " + input_str
         input_length = len(input_str)
         #if self.verbose:
         print("Input: " + input_str)

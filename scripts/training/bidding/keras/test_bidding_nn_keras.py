@@ -4,33 +4,20 @@ import tensorflow as tf
 
 np.set_printoptions(precision=2, suppress=True, linewidth=300,threshold=np.inf)
 
-def pad_and_reshape_sequences(sequences):
-    print("sequences.shape", sequences.shape)
-    # Flatten the sequences
-    flat_sequences = sequences.reshape(sequences.shape[0], -1)
-
-    # Determine the maximum length for padding
-    maxlen = 1 * 201
-
-    # Create an array of zeros for padding
-    padded_sequences = np.zeros((flat_sequences.shape[0], maxlen)) 
-
-    # Copy the original sequences into the padded array
-    for i, seq in enumerate(flat_sequences):
-        padded_sequences[i, :len(seq)] = seq
-
-    # Reshape the padded sequences back to the 3D shape
-    padded_sequences_3d = padded_sequences.reshape(sequences.shape[0], 1, 201)
-    
-    return padded_sequences_3d
+n_cards = 32
+pips = 7
+symbols = 'AKQJT98x'
+n_cards = 24
+pips = 9
+symbols = 'AKQJTx'
 
 def hand_to_str(hand):
-    x = hand.reshape((4, 8))
-    symbols = 'AKQJT98x'
+    print(hand)
+    x = hand.reshape((4, n_cards // 4))
     suits = []
     for i in range(4):
         s = ''
-        for j in range(8):
+        for j in range( n_cards // 4):
             if x[i,j] > 0:
                 s += symbols[j] * int(x[i,j])
         suits.append(s)
@@ -39,9 +26,9 @@ def hand_to_str(hand):
 def print_input(x, y, z):
     for i in range(x.shape[0]):
         for j in range(x.shape[1]):
-            print(hand_to_str(x[i,j,9:41]),end=" ")
+            print(hand_to_str(x[i,j,9:9+n_cards]),end=" ")
             for k in range(4):
-                print(np.argmax(x[i,j,41+k*40:81+k*40]),end=" ")
+                print(np.argmax(x[i,j,9 + n_cards + k*40:81+k*40]),end=" ")
 
             print("predict ",end="")                
             print(np.argmax(y[i,j]),end="")
@@ -51,12 +38,12 @@ def print_input(x, y, z):
 
 # Load the saved model
 model_path = '../../../../models/TF2Models/GIB_2024-07-19-E100.keras'  # Replace with your actual model path
-model_path = 'model/GIB_2024-07-12-E02.keras'
+model_path = 'model/21GFShort_2024-07-27-E13.keras'
 model = load_model(model_path)
 
-X_train = np.load('./bidding_keras/X.npy')
-y_train = np.load('./bidding_keras/y.npy')
-z_train = np.load('./bidding_keras/z.npy')
+X_train = np.load('./24cards/X.npy')
+y_train = np.load('./24cards/y.npy')
+z_train = np.load('./24cards/z.npy')
 
 print(X_train.shape)
 print(y_train.shape)

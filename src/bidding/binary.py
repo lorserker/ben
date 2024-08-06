@@ -28,7 +28,7 @@ class DealData(object):
 
 
     def __str__(self):
-        return f"DealData: n_cards={self.n_cards}, NS={self.ns}, EW={self.ew}, dealer={self.dealer}, vuln_ns={self.vuln_ns}, vuln_ew={self.vuln_ew}, hands={self.hands}, shapes={self.shapes}, hcp={self.hcp}, auction={self.auction}"
+        return f"DealData: n_cards={self.n_cards}, NS={self.ns}, EW={self.ew}, dealer={self.dealer}, vuln_ns={self.vuln_ns}, vuln_ew={self.vuln_ew},\n hands={self.hands},\n shapes={self.shapes},\n hcp={self.hcp},\n auction={self.auction}"
 
 
     @classmethod

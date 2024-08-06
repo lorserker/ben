@@ -7,13 +7,13 @@ from typing import NamedTuple, List
 from bidding import bidding
 from binary import get_cards_from_binary_hand, get_binary_hand_from_cards
 
-def hand_to_str(hand):
-    x = hand.reshape((4, 8))
+def hand_to_str(hand, n_cards=32):
+    x = hand.reshape((4, n_cards // 4))
     symbols = 'AKQJT98x'
     suits = []
     for i in range(4):
         s = ''
-        for j in range(8):
+        for j in range(n_cards // 4):
             if x[i,j] > 0:
                 s += symbols[j] * int(x[i,j])
         suits.append(s)

@@ -87,7 +87,6 @@ def card52to32(c52):
 def hand32to52str(hand32):
     x = hand32.reshape((4, 8))
     symbols = 'AKQJT98x'
-    full_symbols = 'AKQJT98765432'
     suits = []
     for i in range(4):
         s = ''
@@ -102,10 +101,25 @@ def hand32to52str(hand32):
     card_string = '.'.join(suits)
     return card_string
 
-def convert_cards(card_string, opening_lead, hand_str, rng):
+def handxxto52str(handxx, n_cards=32):
+    x = handxx.reshape((4, n_cards // 4))
+    full_symbols = 'AKQJT98765432'
+    suits = []
+    for i in range(4):
+        s = ''
+        for j in range((n_cards // 4) - 1):
+            if x[i, j] > 0:
+                s += full_symbols[j]
+        s += 'x' * int(x[i, (n_cards // 4) - 1])
+        suits.append(s)
+    card_string = '.'.join(suits)
+    return card_string
+
+def convert_cards(card_string, opening_lead, hand_str, rng, n_cards=32):
     updated_card_string = card_string
-    pips = [[True for _ in range(6)] for _ in range(4)]
-    if opening_lead % 13 >= 7:
+    pips_in_suit = 13 - (n_cards // 4) + 1
+    pips = [[True for _ in range(pips_in_suit)] for _ in range(4)]
+    if opening_lead % 13 >= 13 - pips_in_suit :
         pips[opening_lead // 13][12 - (opening_lead % 13)] = False
     suit = 0
     for k in range(len(hand_str)):
@@ -115,7 +129,7 @@ def convert_cards(card_string, opening_lead, hand_str, rng):
         if not hand_str[k].isdigit():
             continue
         card = int(hand_str[k])
-        if card < 8:
+        if card < pips_in_suit + 2:
             pips[suit][card-2] = False
 
     hands = updated_card_string.split(' ')
@@ -123,7 +137,7 @@ def convert_cards(card_string, opening_lead, hand_str, rng):
     for k in range(0, 4):
         suits = hands[k % 4].split(".")
         for j in range(4):
-            numbers = list(range(6))
+            numbers = list(range(pips_in_suit))
             rng.shuffle(numbers)
             for l in numbers:
                 if pips[j][l] and "x" in suits[j]: 

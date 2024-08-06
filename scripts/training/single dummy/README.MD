@@ -9,6 +9,6 @@ There is two different models. One trained by Lorand based on Jack data, and nee
 In the configuration the value of lead_included defines the net to be used:
 
 [eval]  
-lead_single_dummy = UCBC 2024/Models/lr3-1000000  
-no_lead_single_dummy = UCBC 2024/Models/single_dummy-32768000  
-lead_included = False
+single_dummy_estimator = UCBC 2024/Models/lr3-1000000  
+double_dummy_estimator = UCBC 2024/Models/single_dummy-32768000  
+estimator = dde

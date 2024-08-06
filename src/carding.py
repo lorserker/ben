@@ -96,7 +96,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     break
                 else:
                     discards += c
-    if contract[1] == "N" or models.suitc_sidesuit_check or interesting_suit == contract[1]:
+    if contract[1] == "N" or models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]:
         if (player_i  == 1 or player_i == 3) and play_status == "Lead":
             # We only use SuitC the first time the suit is played - should probably look at first card in each tricks52
             if original_count == current_count and models.use_suitc:

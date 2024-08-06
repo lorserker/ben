@@ -79,7 +79,7 @@ def get_binary_hcp_shape(deal, ns, ew, n_steps=8):
     return X, y, HCP, SHAPE, z
 
 
-def load_deals(fin):
+def load_deals(fin, n_cards=32):
     deal_str = ''
 
     for line_number, line in enumerate(fin):
@@ -88,11 +88,11 @@ def load_deals(fin):
         if line_number % 2 == 0:
             deal_str = line
         else:
-            yield DealData.from_deal_auction_string(deal_str, line, "", ns, ew, 32)
+            yield DealData.from_deal_auction_string(deal_str, line, "", ns, ew, n_cards)
 
-def create_arrays(n):
+def create_arrays(n, n_cards=32):
     rows_pr_hand = 4
-    x = np.zeros((rows_pr_hand * n, 8, 41 + 4 * 40), dtype=np.float16)
+    x = np.zeros((rows_pr_hand * n, 8, 2 + 2 + 1 + 4 + n_cards + 4 * 40), dtype=np.float16)
     y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.uint8)
     z = np.zeros((rows_pr_hand * n, 8, 1), dtype=np.uint8)
 
@@ -121,7 +121,7 @@ def count_deals(data_it, max_occurrences, auctions, key_counts, deals, alert_sup
 
 def create_binary(data_it, ns, ew, alternating, x, y, z, HCP, SHAPE, k):
 
-
+    sys.stderr.write(f'Creating binary data for {len(data_it)} deals\n')
     for i, deal_data in enumerate(data_it):
         if i == 0:
             print(deal_data)
@@ -169,9 +169,10 @@ def to_numeric(value, default=0):
 if __name__ == '__main__':
 
     if len(sys.argv) < 4:
-        print("Usage: python bidding_binary_keras.py inputfile inputfile2 outputdirectory NS=<x> EW=<y> alternate=True")
+        print("Usage: python bidding_binary_keras.py inputfile inputfile2 outputdirectory NS=<x> EW=<y> alternate=True n_cards=32")
         print("The input file is the BEN-format (First line with hands, and next line with the bidding).")
         print("alternate is signaling, that the input file has both open and closed room, so NS/EW will be alternated")
+        print("n_cards is the number of cards in the deck")
         sys.exit(1)
 
     infnm1 = sys.argv[1] # file where the data is
@@ -184,14 +185,16 @@ if __name__ == '__main__':
     # Extract NS and EW values from command-line arguments if provided
     ns = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), 0)
     ew = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), 0)
+    n_cards = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("n_cards=")), 32)
     alternating = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alternate")), False)
     version = 3
     alert_supported = True
     max_occurrences = 10
     max_filler_occurrences = 1
-    sys.stderr.write(f"NS={ns}, EW={ew}, Alternating={alternating}, Version={version}, alert_supported={alert_supported}, outdir={out_dir},  max_occurrences={max_occurrences}, max_filler_occurrences={max_filler_occurrences}\n")
+    sys.stderr.write(f"n_cards= {n_cards}, NS={ns}, EW={ew}, Alternating={alternating}, Version={version}, alert_supported={alert_supported}, outdir={out_dir},  max_occurrences={max_occurrences}, max_filler_occurrences={max_filler_occurrences}\n")
     ns = to_numeric(ns)
     ew = to_numeric(ew)
+    n_cards = to_numeric(n_cards, 32)
 
     
     # Count the occurrences of each line
@@ -215,7 +218,7 @@ if __name__ == '__main__':
             if user_input.lower() == "n":
                 sys.exit()
 
-        data_it = load_deals(lines)
+        data_it = load_deals(lines, n_cards)
         filtered_deals, auctions, key_counts = count_deals(data_it, max_occurrences, auctions, key_counts, [], alert_supported=alert_supported )
 
     # Create a new Counter to count all occurrences without limit
@@ -239,7 +242,7 @@ if __name__ == '__main__':
             # Remove comments at the beginning of the file
             lines = [line for line in lines if not line.strip().startswith('#')]
             sys.stderr.write(f"Loading {len(lines) // 2} deals for fillers\n")
-            data_it = load_deals(lines)
+            data_it = load_deals(lines, n_cards)
             filtered_deals, auctions, key_counts = count_deals(data_it, max_filler_occurrences, auctions, key_counts, filtered_deals, alert_supported=alert_supported)
 
             # Create a new Counter to count all occurrences without limit
@@ -291,7 +294,7 @@ if __name__ == '__main__':
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} After add missing vuln {len(sorted_filtered_deals)}\n')
 
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Creating arrays with deals\n')
-    x, y, z, HCP, SHAPE = create_arrays(len(sorted_filtered_deals))
+    x, y, z, HCP, SHAPE = create_arrays(len(sorted_filtered_deals), n_cards)
     x, y, z, HCP, SHAPE, k = create_binary(sorted_filtered_deals, ns, ew, alternating, x, y, z, HCP, SHAPE,  k)
 
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} created {k} hands\n')

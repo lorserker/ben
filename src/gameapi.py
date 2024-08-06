@@ -19,6 +19,7 @@ import os
 import logging
 import uuid
 import shelve
+import logging
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -346,6 +347,25 @@ print(f'http://{host}:{port}/')
 app = Flask(__name__)
 CORS(app) 
 
+# Set up logging
+logging.basicConfig(filename='logs/app.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+
+logger = logging.getLogger(__name__)
+@app.before_request
+def log_request_info():
+    logger.info(f"Request: {request.method} {request.url}")
+    #logger.info(f"Headers: {request.headers}")
+    #logger.info(f"Body: {request.get_data()}")
+
+
+@app.after_request
+def log_response_info(response):
+    #logger.info(f"Response status: {response.status}")
+    #logger.info(f"Response headers: {response.headers}")
+    logger.info(f"Response body: {response.get_data()}")
+    return response
+
+
 @app.route('/')
 def home():
     html = '<h1><a href="/">Play Now</a></h1>\n'
@@ -604,6 +624,8 @@ def get_binary_contract(position, vuln, hand_str, dummy_str):
 def cuebid():
     t_start = time.time()
     data = request.get_json()
+    # log request to log file
+
     if not data:
         return jsonify({"error": "Invalid or missing JSON"}), 400
     #{"dealer":"N","auction":["1H","Pass"],"vuln":"EW","hand":"95.T982.A5.AKJ85","sysNS":"GAVIN_ADVANCED","sysEW":"DEFAULT","conventions":[]}}}

@@ -12,9 +12,9 @@ from nn.contract import Contract
 
 class Models:
 
-    def __init__(self, name, model_version, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
+    def __init__(self, name, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
                  min_passout_candidates, min_rescue_reward, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, lead_included, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_eval, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd, pimc_apriori_probability,
+                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd, pimc_apriori_probability,
                  use_adjustment,
                  adjust_NN,
                  adjust_NN_Few_Samples,
@@ -36,6 +36,8 @@ class Models:
                  ):
         self.name = name
         self.model_version = model_version
+        self.n_cards_bidding = n_cards_bidding
+        self.n_cards_play = n_cards_play
         self.bidder_model = bidder_model
         self.opponent_model = opponent_model
         self.contract_model = contract_model
@@ -61,7 +63,7 @@ class Models:
         self.bba_ns = bba_ns
         self.bba_ew = bba_ew
         self.use_bba = use_bba
-        self.lead_included = lead_included
+        self.estimator = estimator
         self.claim = claim
         self.double_dummy = double_dummy
         self.lead_from_pips_nt = lead_from_pips_nt
@@ -70,7 +72,7 @@ class Models:
         self.sample_hands_for_review = sample_hands_for_review
         self.use_biddingquality = use_biddingquality
         self.use_biddingquality_in_eval = use_biddingquality_in_eval
-        self.double_dummy_eval = double_dummy_eval
+        self.double_dummy_calculator = double_dummy_calculator
         self.opening_lead_included = opening_lead_included
         self.pimc_use_declaring = pimc_use_declaring
         self.pimc_use_defending = pimc_use_defending
@@ -113,6 +115,8 @@ class Models:
             base_path = os.getenv('BEN_HOME') or '..'
         name = conf.get('models', 'name', fallback="BEN")
         model_version = conf.getint('models', 'model_version', fallback=2)
+        n_cards_bidding = conf.getint('models', 'n_cards_bidding', fallback=32)
+        n_cards_play = conf.getint('models', 'n_cards_play', fallback=32)
         alert_supported = conf.getboolean('bidding', 'alert_supported', fallback=False)
         search_threshold = float(conf['bidding']['search_threshold'])
         no_search_threshold = conf.getfloat('bidding', 'no_search_threshold', fallback=1)
@@ -137,8 +141,8 @@ class Models:
         lead_from_pips_suit = conf.get('lead', 'lead_from_pips_suit', fallback="random")
         use_bba = conf.getboolean('models', 'use_bba', fallback=False)
         matchpoint = conf.getboolean('models', 'matchpoint', fallback=False)
-        lead_included = conf.getboolean('eval', 'lead_included', fallback=True)
-        double_dummy_eval = conf.getboolean('eval', 'double_dummy_eval', fallback=False)
+        estimator = conf.get('eval', 'estimator', fallback="sde")
+        double_dummy_calculator = conf.getboolean('eval', 'double_dummy_calculator', fallback=False)
         claim = conf.getboolean('cardplay', 'claim', fallback=True)
         pimc_use_declaring = conf.getboolean('pimc', 'pimc_use_declaring', fallback=False)
         pimc_use_defending = conf.getboolean('pimc', 'pimc_use_defending', fallback=False)
@@ -196,8 +200,8 @@ class Models:
         binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info']))
         lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit']))
         lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt']))
-        sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['lead_single_dummy']))
-        sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['no_lead_single_dummy']))
+        sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['single_dummy_estimator']))
+        sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['double_dummy_estimator']))
 
         player_models=[
             BatchPlayerLefty(name, os.path.join(base_path, conf['cardplay'][name])) if 'lefty' in name and opening_lead_included == False else
@@ -208,6 +212,8 @@ class Models:
             name=name,
             model_version=model_version,
             bidder_model=bidder_model,
+            n_cards_bidding=n_cards_bidding,
+            n_cards_play=n_cards_play,
             opponent_model=opponent_model,
             contract_model=contract_model,
             binfo_model=binfo_model,
@@ -232,7 +238,7 @@ class Models:
             bba_ns=bba_ns,
             bba_ew=bba_ew,
             use_bba=use_bba,
-            lead_included=lead_included,
+            estimator=estimator,
             claim=claim,
             double_dummy=double_dummy,
             lead_from_pips_nt=lead_from_pips_nt,
@@ -241,7 +247,7 @@ class Models:
             sample_hands_for_review=sample_hands_for_review,
             use_biddingquality=use_biddingquality,
             use_biddingquality_in_eval=use_biddingquality_in_eval,
-            double_dummy_eval=double_dummy_eval,
+            double_dummy_calculator=double_dummy_calculator,
             opening_lead_included=opening_lead_included,
             use_probability=use_probability,
             alert_supported=alert_supported,

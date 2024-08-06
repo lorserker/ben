@@ -76,6 +76,9 @@ steps_per_epoch = n_examples // batch_size
 
 model_name = f'{system}_{datetime.datetime.now().strftime("%Y-%m-%d")}'
 
+lstm_size = 128
+n_layers = 3
+
 print("-------------------------")
 print("Examples for training:   ", n_examples)
 print("Model path:              ", model_name )
@@ -95,10 +98,10 @@ print("steps_per_epoch          ", steps_per_epoch)
 print("-------------------------")
 print("Learning rate:           ", learning_rate)
 print("Keep:                    ", keep)
+print("-------------------------")
+print("lstm_size:               ", lstm_size)
+print("n_layers:                ", n_layers)
 
-
-lstm_size = 256
-n_layers = 3
 
 # Build the model
 

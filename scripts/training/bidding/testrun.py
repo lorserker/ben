@@ -158,7 +158,7 @@ def main():
                 contract = bidding.get_contract(auction)
                 if not contract == None:
                     vuln = False
-                    declarer = contract[:-1]
+                    declarer = contract[-1]
                     if declarer == "N" or declarer == "S":
                         vuln = vuln_ns
                     else :
@@ -182,7 +182,7 @@ def main():
                 if color: print(Fore.GREEN, end='')
                 contract = bidding.get_contract(auction)
                 if not contract == None:
-                    declarer = contract[:-1]
+                    declarer = contract[-1]
                     if declarer == "N" or declarer == "S":
                         vuln = vuln_ns
                     else :
