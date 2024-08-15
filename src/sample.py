@@ -568,7 +568,7 @@ class Sample:
             h1_h2[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
             # we update stats from bidding_info so lower odds to get next honor card
             # Above we use hcp / 1.2, but here it is fixed to 3
-            r_hcp[s_all_r[can_receive_cards], receivers[can_receive_cards]] -= 3 * c
+            r_hcp[s_all_r[can_receive_cards], receivers[can_receive_cards]] -= 3 * hcp_reduction_factor
             r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= shp_reduction_factor
             js[s_all_r[can_receive_cards]] += 1
 

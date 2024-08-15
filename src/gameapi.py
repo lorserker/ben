@@ -621,7 +621,7 @@ def get_binary_contract(position, vuln, hand_str, dummy_str):
 
 
 @app.route('/cuebidscores', methods=['POST'])
-def cuebid():
+def cuebidscores():
     t_start = time.time()
     data = request.get_json()
     # log request to log file
