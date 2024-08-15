@@ -237,7 +237,7 @@ class BotBid:
             p_hcp, p_shp = self.sample.get_bidding_info(n_steps, auction, self.seat, self.hand32, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
-            if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
+            if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS") and not self.sample.no_samples_when_no_search:
                 # initialize auction vector
                 auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
                 for i, bid in enumerate(auction):
@@ -692,7 +692,7 @@ class BotBid:
             
                 hand_on_lead = hands_np[i:i+1, (declarers[i] + 1) % 4, :]
             
-                X_ftrs[i,:], B_ftrs[i,:] = binary.get_auction_binary_for_lead(sample_auction, hand_on_lead, self.vuln, self.dealer, self.models)
+                X_ftrs[i,:], B_ftrs[i,:] = binary.get_auction_binary_for_lead(sample_auction, hand_on_lead, hand_on_lead, self.vuln, self.dealer, self.models)
         
         # We have a problem as we need to select different model based on the contract
         # if contract[1] == "N":

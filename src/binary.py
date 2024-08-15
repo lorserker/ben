@@ -161,6 +161,10 @@ def get_hcp(hand):
 
     return np.sum(points, axis=(1, 2))
 
+def get_hcp_suit(suit):
+    points = 4 * suit[0] + 3 * suit[1] + 2 * suit[2] + suit[3]
+
+    return points
 
 def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
     assert (len(hand.shape) == 2)

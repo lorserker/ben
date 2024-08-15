@@ -59,7 +59,7 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, verbose):
+    def __init__(self, lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, hcp_reduction_factor, shp_reduction_factor,verbose):
         self.lead_accept_threshold_partner_trust = lead_accept_threshold_partner_trust
         self.lead_accept_threshold = lead_accept_threshold
         self.bidding_threshold_sampling = bidding_threshold_sampling
@@ -82,6 +82,8 @@ class Sample:
         self.no_samples_when_no_search = no_samples_when_no_search
         self.exclude_samples = exclude_samples
         self.no_biddingqualitycheck_after_bid_count = no_biddingqualitycheck_after_bid_count
+        self.hcp_reduction_factor = hcp_reduction_factor
+        self.shp_reduction_factor = shp_reduction_factor
         self.verbose = verbose
 
 
@@ -110,7 +112,9 @@ class Sample:
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
         no_samples_when_no_search = conf.getboolean('sampling', 'no_samples_when_no_search', fallback=False)
         no_biddingquality_after_bid_count = conf.getint('bidding', 'no_biddingquality_after_bid_count', fallback=12)
-        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingquality_after_bid_count, verbose)
+        hcp_reduction_factor = conf.getfloat('sampling', 'hcp_reduction_factor', fallback=0.9)
+        shp_reduction_factor = conf.getfloat('sampling', 'shp_reduction_factor', fallback=0.5)
+        return cls(lead_accept_threshold, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -169,6 +173,18 @@ class Sample:
         lho_pard_rho = np.zeros((n_samples, 3, n_cards), dtype=int)
         cards_received = np.zeros((n_samples, 3), dtype=int)
 
+        # calculate missing hcp
+        missing_hcp = 40 - binary.get_hcp(np.array([my_hand]))[0]
+
+        if self.verbose:
+            print("missing_hcp:", missing_hcp)
+
+        if missing_hcp > 0:
+            hcp_reduction_factor = self.hcp_reduction_factor * np.sum(r_hcp) / missing_hcp
+        else:
+            hcp_reduction_factor = 0
+            
+
         # print(ak_out_i)
         # all AK's in the same hand
         if (ak_out_i.shape[1] != 0):
@@ -188,8 +204,8 @@ class Sample:
 
             cards_received[s_all[can_receive_cards], receivers[can_receive_cards]] += 1
             lho_pard_rho[s_all[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
-            r_hcp[s_all[can_receive_cards], receivers[can_receive_cards]] -= 3
-            r_shp[s_all[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // cards_in_suit] -= 0.5
+            r_hcp[s_all[can_receive_cards], receivers[can_receive_cards]] -= 3 * hcp_reduction_factor
+            r_shp[s_all[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // cards_in_suit] -= self.shp_reduction_factor
             js[can_receive_cards] += 1
 
         # distribute small cards
@@ -208,7 +224,7 @@ class Sample:
 
             cards_received[s_all_r[can_receive_cards], receivers[can_receive_cards]] += 1
             lho_pard_rho[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
-            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // cards_in_suit] -= 0.5
+            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // cards_in_suit] -= self.shp_reduction_factor
             js[s_all_r[can_receive_cards]] += 1
 
             # This loop_counter stops the handgeneration, and might be implemented to stop instead of using time to get last cards distributed
@@ -420,9 +436,15 @@ class Sample:
         return accepted_samples, sorted_scores, c_hcp[0], c_shp[0], good_quality
 
     # shuffle the cards between the 2 hidden hands
-    def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, vuln, known_nesw, h_1_nesw, h_2_nesw, visible_cards, hidden_cards, cards_played, shown_out_suits, rng, models):
+    def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, public_hand_str,vuln, known_nesw, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
+        missing_hcp = 40 - (binary.get_hcp(hand)[0] + binary.get_hcp(binary.parse_hand_f(models.n_cards_bidding)(public_hand_str))[0])
+
+        if self.verbose:
+            print("missing_hcp:", missing_hcp)
+
         n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2])
+
         #if self.verbose:
         #print("shuffle_cards_bidding_info cards to sample: ", n_cards_to_receive)
         n_steps = binary.calculate_step_bidding_info(auction)
@@ -437,21 +459,66 @@ class Sample:
         def f_trans_hcp(x): return 4 * x + 10
         def f_trans_shp(x): return 1.75 * x + 3.25
 
+        #print("p_hcp: ", p_hcp, "p_shp: ", p_shp)
+
         p_hcp = f_trans_hcp(p_hcp[0, [(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1]])
         p_shp = f_trans_shp(p_shp[0].reshape((3, 4))[[(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1], :])
+
+        #print("p_hcp: ", p_hcp, "p_shp: ", p_shp)
 
         h1_h2 = np.zeros((n_samples, 2, 32), dtype=int)
         cards_received = np.zeros((n_samples, 2), dtype=int)
 
         card_hcp = [4, 3, 2, 1, 0, 0, 0, 0] * 4
 
+        # we get an average hcp and distribution from bidding info
+        # this average is used to distribute the cards
+        # so the final hands are close to stats
+        # we need to count the hcp missing and compare it to stats
+
+        if missing_hcp > 0:
+            hcp_reduction_factor = self.hcp_reduction_factor * np.sum(p_hcp) / missing_hcp
+        else:
+            hcp_reduction_factor = 0
+            
+        shp_reduction_factor = self.shp_reduction_factor
+
+        if self.verbose:
+            print("hcp_reduction_factor",hcp_reduction_factor, "shp_reduction_factor" ,shp_reduction_factor)
+
         # acknowledge all played cards
         for i, cards in enumerate(cards_played):
             for c in cards:
-                p_hcp[i] -= card_hcp[c] / 1.2
+                p_hcp[i] -= card_hcp[c] * hcp_reduction_factor
                 suit = c // 8
-                p_shp[i, suit] -= 0.5
+                p_shp[i, suit] -= shp_reduction_factor
 
+        if len(current_trick) == 1:
+            # RHO played a card
+            i = 0
+            p_hcp[i] -= card_hcp[current_trick[0]] * hcp_reduction_factor
+            suit = current_trick[0] // 8
+            p_shp[i, suit] -= shp_reduction_factor
+        if len(current_trick) == 2:
+            # RHO played second card
+            i = 0
+            p_hcp[i] -= card_hcp[current_trick[1]] * hcp_reduction_factor
+            suit = current_trick[1] // 8
+            p_shp[i, suit] -= shp_reduction_factor
+        if len(current_trick) == 3:
+            # LHO played first card
+            i = 1
+            p_hcp[i] -= card_hcp[current_trick[0]] * hcp_reduction_factor
+            suit = current_trick[0] // 8
+            p_shp[i, suit] -= shp_reduction_factor
+            # RHO played third card
+            i = 0
+            p_hcp[i] -= card_hcp[current_trick[2]] * hcp_reduction_factor
+            suit = current_trick[2] // 8
+            p_shp[i, suit] -= shp_reduction_factor
+
+        #print("p_hcp: ", p_hcp, "p_shp: ", p_shp)
+    
         # distribute all cards of suits which are known to have shown out
         cards_shownout_suits = []
         for i, suits in enumerate(shown_out_suits):
@@ -460,14 +527,15 @@ class Sample:
                     other_hand_i = (i + 1) % 2
                     h1_h2[:, other_hand_i, card] += 1
                     cards_received[:, other_hand_i] += 1
-                    p_hcp[other_hand_i] -= card_hcp[card] / 1.2
-                    p_shp[other_hand_i, suit] -= 0.5
+                    p_hcp[other_hand_i] -= card_hcp[card] * hcp_reduction_factor
+                    # As we know it is a void, then this will have no effect
+                    p_shp[other_hand_i, suit] -= shp_reduction_factor
                     cards_shownout_suits.append(card)
 
         hidden_cards = [c for c in hidden_cards if c not in cards_shownout_suits]
         ak_cards = [c for c in hidden_cards if c in {0, 1, 8, 9, 16, 17, 24, 25}]
         small_cards = [c for c in hidden_cards if c not in {0, 1, 8, 9, 16, 17, 24, 25}]
-
+        
         ak_out_i = np.zeros((n_samples, len(ak_cards)), dtype=int)
         ak_out_i[:, :] = np.array(ak_cards)
         ak_out_i = np.vectorize(lambda x: rng.permutation(np.copy(x)), signature='(n)->(n)')(ak_out_i)
@@ -483,7 +551,9 @@ class Sample:
         n_max_cards = np.zeros((n_samples, 2), dtype=int) + n_cards_to_receive
 
         js = np.zeros(n_samples, dtype=int)
+        # Distribute AK
         while True:
+            #print("ak_out_i", ak_out_i)
             s_all_r = s_all[js < ak_out_i.shape[1]]
             if len(s_all_r) == 0:
                 break
@@ -496,8 +566,10 @@ class Sample:
 
             cards_received[s_all_r[can_receive_cards], receivers[can_receive_cards]] += 1
             h1_h2[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
-            r_hcp[s_all_r[can_receive_cards], receivers[can_receive_cards]] -= 3
-            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= 0.5
+            # we update stats from bidding_info so lower odds to get next honor card
+            # Above we use hcp / 1.2, but here it is fixed to 3
+            r_hcp[s_all_r[can_receive_cards], receivers[can_receive_cards]] -= 3 * c
+            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= shp_reduction_factor
             js[s_all_r[can_receive_cards]] += 1
 
         js = np.zeros(n_samples, dtype=int)
@@ -514,7 +586,7 @@ class Sample:
 
             cards_received[s_all_r[can_receive_cards], receivers[can_receive_cards]] += 1
             h1_h2[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
-            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= 0.5
+            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= shp_reduction_factor
             js[s_all_r[can_receive_cards]] += 1
 
         assert np.sum(h1_h2) == n_samples * np.sum(n_cards_to_receive)
@@ -636,7 +708,7 @@ class Sample:
         #         print(min_scores[j], j, hand_to_str(sample_hands[j]))
         return min_scores
 
-    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, vuln, models, rng):
+    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, public_hand_str,vuln, models, rng):
         hand_bidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_samples = self.sample_hands_play
         contract = bidding.get_contract(auction)
@@ -654,6 +726,7 @@ class Sample:
             public_hand_i = 3 if player_i == 1 else 1
             public_hand = card_players[public_hand_i].x_play[0, trick_i, :32]
             vis_cur_trick_nonpub = [c for i, c in enumerate(current_trick) if (leader_i + i) % 4 != public_hand_i]
+            
             visible_cards = np.concatenate(
                 [binary.get_cards_from_binary_hand(card_players[player_i].x_play[0, trick_i, :32]), binary.get_cards_from_binary_hand(public_hand)] +
                 [np.array(vis_cur_trick_nonpub)] +
@@ -663,9 +736,7 @@ class Sample:
             hidden_cards_no = len(hidden_cards)
             
             assert hidden_cards_no <= 26, hidden_cards_no
-            # In some situations we know about cards on the hidden hand, when the other hand has shown out.
-            # Currently we still sample and the discard if we hit a not valid sample.
-            # It should be possible to improve
+
             known_nesw = player_to_nesw_i(player_i, contract)
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
             h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
@@ -679,11 +750,12 @@ class Sample:
                 sample_boards_for_play,
                 auction,
                 hand_str,
+                public_hand_str,
                 vuln,
                 known_nesw,
                 h_1_nesw,
                 h_2_nesw,
-                visible_cards,
+                current_trick,
                 hidden_cards,
                 [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
                 [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],

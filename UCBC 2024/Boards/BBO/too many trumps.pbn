@@ -1,0 +1,35 @@
+[Event "Random]"]
+[Site ""]
+[Date "2024.07.26"]
+[Board "59"]
+[West "WBridge5"]
+[North "jackos51246d"]
+[East "WBridge5"]
+[South "jackos51246d"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:KQ932.KQ9.QJ.987 T75.A2.A854.A432 AJ8.J873.K3.KJT6 64.T654.T9762.Q5"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "9"]
+[Auction "S"]
+1S        Pass      2C        Pass      
+2NT       Pass      4S        Pass      
+Pass      Pass      
+[Play "W"]
+HA H3 H6 HQ 
+H2 H7 HT HK 
+S5 SA S6 S2 
+S7 SJ S4 S3 
+ST S8 D2 SK 
+D5 C6 D6 SQ 
+D8 D3 D7 DQ 
+D4 HJ H4 H9 
+C2 H8 H5 DJ 
+DA DK D9 S9 
+C3 CJ CQ C7 
+C4 CT DT C8 
+CA CK C5 C9 
+[BidSystemNS "JACKBALI"]
+[BidSystemEW "JACKBALI"]

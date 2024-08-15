@@ -104,3 +104,4 @@ scripts/training/bidding/keras/stats.txt
 scripts/match/bidding/speed/
 scripts/training/bidding/bad.*
 src/logs/app.log
+src/input.ben

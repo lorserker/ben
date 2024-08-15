@@ -59,7 +59,7 @@ def get_binary_hcp_shape(deal, ns, ew, n_steps=8):
 
         X[hand_ix, t, :] = ftrs
         y[hand_ix, t, :] = bidding.encode_bid(target_bid, False)
-        z[hand_ix, t, :] = alert = "*" in target_bid
+        z[hand_ix, t, :] = 1 if "*" in target_bid else 0
 
         HCP[hand_ix, t, 0] = deal.hcp[(hand_ix - 3) % 4][0,0]
         HCP[hand_ix, t, 1] = deal.hcp[(hand_ix - 2) % 4][0,0]
@@ -111,22 +111,23 @@ def count_deals(data_it, max_occurrences, auctions, key_counts, deals, alert_sup
         if deal_data.vuln_ns and not deal_data.vuln_ew: v = 1
         if not deal_data.vuln_ns and deal_data.vuln_ew: v = 2
         if deal_data.vuln_ns and deal_data.vuln_ew: v = 3
-        auction = f"{ew}-{ns} {' '.join(deal_data.auction).replace('PASS','P').replace('PAD_START','-')}  {v} "
+        auction = f"{ew}-{ns} {' '.join([x.replace('PASS', 'P') for x in deal_data.auction if x != 'PAD_START'])} {v}"
+        #if "P P P P" in auction:
+        #    print(auction, deal_data.auction)
         if key_counts[auction] < max_occurrences:
             auctions.append(auction)
             key_counts[auction] += 1
             deals.append(deal_data)
-    
     return deals, auctions, key_counts
 
 def create_binary(data_it, ns, ew, alternating, x, y, z, HCP, SHAPE, k):
 
     sys.stderr.write(f'Creating binary data for {len(data_it)} deals\n')
     for i, deal_data in enumerate(data_it):
-        if i == 0:
-            print(deal_data)
+        #if i == 0:
+        #    print(deal_data, deal_data.auction)
         if (i+1) % 100000 == 0:
-            sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} {i+1}\n')
+            sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} {i+1} {deal_data.auction}\n')
             sys.stderr.flush()
         if alternating and (i % 2) == 1:
             x_part, y_part, hcp_part, shape_part, alert_part = get_binary_hcp_shape(deal_data, ew, ns)
@@ -189,9 +190,9 @@ if __name__ == '__main__':
     alternating = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alternate")), False)
     version = 3
     alert_supported = True
-    max_occurrences = 10
+    max_occurrences = 20
     max_filler_occurrences = 1
-    sys.stderr.write(f"n_cards= {n_cards}, NS={ns}, EW={ew}, Alternating={alternating}, Version={version}, alert_supported={alert_supported}, outdir={out_dir},  max_occurrences={max_occurrences}, max_filler_occurrences={max_filler_occurrences}\n")
+    sys.stderr.write(f"n_cards={n_cards}, NS={ns}, EW={ew}, Alternating={alternating}, Version={version}, alert_supported={alert_supported}, outdir={out_dir},  max_occurrences={max_occurrences}, max_filler_occurrences={max_filler_occurrences}\n")
     ns = to_numeric(ns)
     ew = to_numeric(ew)
     n_cards = to_numeric(n_cards, 32)
@@ -232,7 +233,7 @@ if __name__ == '__main__':
     sys.stderr.write(f"Found {count} bidding sequences.\n" )
     sys.stderr.write(f"Filtered_deals {len(filtered_deals)}\n")
     sys.stderr.write(f"Removed {len(lines) // 2 - len(filtered_deals)} deals where the same bidding was seen more than {max_occurrences} times.\n")
-
+    
     # The second training dataset is random deals, and we just use the bidding sequences we don't allready have
     if infnm2:
         with open(infnm2, 'r') as file:
@@ -263,15 +264,22 @@ if __name__ == '__main__':
     # Create a set to keep track of processed auctions
     processed_auctions = set()
     for board in sorted_filtered_deals:
-        auction = ' '.join(board.auction).replace('PASS','P').replace('PAD_START','-')
+        auction = ' '.join([x.replace('PASS', 'P') for x in board.auction if x != 'PAD_START'])
         combinations_dict[auction].append((board.vuln_ns, board.vuln_ew))
 
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Combinations {len(combinations_dict)}\n')
 
+    sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Before add missing vuln {len(sorted_filtered_deals)}\n')
     i = 0
+    sorted_filtered_deals = sorted(sorted_filtered_deals, key=lambda x: (x.auction))
+
+    # Print all unique keys sorted
+    #for board in sorted_filtered_deals:
+    #    print(f"{board.vuln_ns} {board.vuln_ew} {' '.join([x.replace('PASS', 'P') for x in board.auction if x != 'PAD_START'])}")
+    
     for board in sorted_filtered_deals:
         missing_combinations = []
-        auction = ' '.join(board.auction).replace('PASS','P').replace('PAD_START','-')
+        auction = ' '.join([x.replace('PASS', 'P') for x in board.auction if x != 'PAD_START'])
         if auction in processed_auctions:
             continue  # Skip if the auction has already been processed
         
@@ -288,12 +296,16 @@ if __name__ == '__main__':
                 sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} {i+1}\n')
                 sys.stderr.flush()
             i += 1
+            #print(f"Adding {new_board.vuln_ns} {new_board.vuln_ew} {new_board.auction}")
             sorted_filtered_deals.append(new_board)
         processed_auctions.add(auction)
 
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} After add missing vuln {len(sorted_filtered_deals)}\n')
 
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Creating arrays with deals\n')
+
+    sorted_filtered_deals = sorted(sorted_filtered_deals, key=lambda x: (x.auction))
+
     x, y, z, HCP, SHAPE = create_arrays(len(sorted_filtered_deals), n_cards)
     x, y, z, HCP, SHAPE, k = create_binary(sorted_filtered_deals, ns, ew, alternating, x, y, z, HCP, SHAPE,  k)
 
@@ -308,7 +320,7 @@ if __name__ == '__main__':
 
     sys.stderr.write(f"Saved to {out_dir}")
     # Get unique keys and sort them
-    unique_sorted_keys = sorted(set(auctions))
+    unique_sorted_keys = sorted(set({auction[4:-1] for auction in auctions}))
 
     # Print all unique keys sorted
     for key in unique_sorted_keys:

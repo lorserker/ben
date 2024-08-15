@@ -4,7 +4,7 @@ import os
 import numpy as np
 import logging
 import tensorflow as tf
-from tensorflow.keras import layers, models, optimizers, callbacks, initializers
+from tensorflow.keras import layers, models, optimizers, callbacks, initializers, metrics
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import load_model
 import time
@@ -61,22 +61,27 @@ X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
 y_train = np.load(os.path.join(bin_dir, 'y.npy'), mmap_mode='r')
 z_train = np.load(os.path.join(bin_dir, 'z.npy'), mmap_mode='r')
 
+#X_train = X_train[:,0:2,:]
+#y_train = y_train[:,0:2,:]
+#z_train = z_train[:,0:2,:]
 n_examples = X_train.shape[0]
 n_sequence = X_train.shape[1]
 n_ftrs = X_train.shape[2]
 n_bids = y_train.shape[2]
 n_alerts = z_train.shape[2]
 
-batch_size = 128  
+batch_size = 64  
 buffer_size = 12800
 epochs = 100  
 learning_rate = 0.0005
 keep = 0.8
 steps_per_epoch = n_examples // batch_size
+# If no improvement in validation loss after 3 epochs, stop training
+patience = 3
 
 model_name = f'{system}_{datetime.datetime.now().strftime("%Y-%m-%d")}'
 
-lstm_size = 128
+lstm_size = 256
 n_layers = 3
 
 print("-------------------------")
@@ -95,6 +100,7 @@ print("-------------------------")
 print("Batch size:              ", batch_size)
 print("buffer_size:             ", buffer_size)
 print("steps_per_epoch          ", steps_per_epoch)
+print("patience                 ", patience)
 print("-------------------------")
 print("Learning rate:           ", learning_rate)
 print("Keep:                    ", keep)
@@ -105,6 +111,26 @@ print("n_layers:                ", n_layers)
 
 # Build the model
 
+@tf.keras.utils.register_keras_serializable()
+def masked_categorical_crossentropy(y_true, y_pred):
+    # Create a mask where the second element (index 1) is not 1 (i.e., not missing)
+    mask = tf.not_equal(tf.argmax(y_true, axis=-1), 1)
+    
+    # Flatten the mask to apply it
+    mask = tf.reshape(mask, [-1])
+    
+    # Flatten predictions and true values
+    y_true_flat = tf.reshape(y_true, [-1, tf.shape(y_true)[-1]])
+    y_pred_flat = tf.reshape(y_pred, [-1, tf.shape(y_pred)[-1]])
+    
+    # Apply mask
+    y_true_masked = tf.boolean_mask(y_true_flat, mask)
+    y_pred_masked = tf.boolean_mask(y_pred_flat, mask)
+    
+    # Compute the categorical crossentropy loss on non-missing data
+    return tf.keras.losses.categorical_crossentropy(y_true_masked, y_pred_masked)
+
+
 def build_model(input_shape, lstm_size, n_layers, n_bids, n_alerts):
     inputs = tf.keras.Input(shape=input_shape, dtype=tf.float16)
     x = inputs
@@ -112,7 +138,7 @@ def build_model(input_shape, lstm_size, n_layers, n_bids, n_alerts):
     for _ in range(n_layers):
         x = layers.LSTM(lstm_size, return_sequences=True,  kernel_initializer=initializers.GlorotUniform(seed=1337))(x)
         x = layers.Dropout(1-keep)(x)
-        x = layers.BatchNormalization()(x)
+        #x = layers.BatchNormalization()(x)
 
     bid_outputs = layers.TimeDistributed(layers.Dense(n_bids, activation='softmax'), name='bid_output')(x)
     alert_outputs = layers.TimeDistributed(layers.Dense(n_alerts, activation='sigmoid'), name='alert_output')(x)
@@ -120,8 +146,10 @@ def build_model(input_shape, lstm_size, n_layers, n_bids, n_alerts):
     model = models.Model(inputs=inputs, outputs=[bid_outputs, alert_outputs])
 
     model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate),
-                loss={'bid_output': 'categorical_crossentropy', 'alert_output': 'binary_crossentropy'},
-                metrics={'bid_output': 'accuracy', 'alert_output': 'accuracy'})
+                loss={'bid_output': masked_categorical_crossentropy, 
+                      'alert_output': 'binary_crossentropy'},
+                metrics={'bid_output': 'accuracy', 
+                         'alert_output': 'accuracy'})
 
     print(model.summary())
 
@@ -216,7 +244,7 @@ custom_checkpoint_callback = CustomModelCheckpoint(
     initial_epoch=initial_epoch
 )
 
-early_stopping_callback = callbacks.EarlyStopping(monitor='loss', patience=10, verbose=1)
+early_stopping_callback = callbacks.EarlyStopping(monitor='loss', patience=patience, verbose=1)
 
 print("Training started")
 t_start = time.time()

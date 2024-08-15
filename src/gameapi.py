@@ -152,7 +152,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                     )
                 else:    
 
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
+                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
                     assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                     
                     card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
@@ -618,6 +618,17 @@ def get_binary_contract(position, vuln, hand_str, dummy_str):
     ), axis=1)
     X = ftrs
     return X
+
+
+@app.route('/cuebidscores', methods=['POST'])
+def cuebid():
+    t_start = time.time()
+    data = request.get_json()
+    # log request to log file
+    print(data)
+    result = {}
+    print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+    return json.dumps(result),200
 
 
 @app.route('/cuebid', methods=['POST'])

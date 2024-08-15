@@ -488,7 +488,7 @@ class Driver:
                 else:    
 
                     if isinstance(card_players[player_i], bots.CardPlayer):
-                        rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
                     else: 

@@ -192,7 +192,8 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
     if contract[1] == "N":
         if models.lead_from_pips_nt == "attitude" and suit_length > 1:
             # Need to check for honor in the suit
-            if suit_length < 4:
+            hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
+            if suit_length < 4 or hcp_in_suit < 2:
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
             else:
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, suit_length)
@@ -200,7 +201,9 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
         
         if models.lead_from_pips_nt == "24" and suit_length > 1:
             # From touching honors lead the highest
-            if suit_length < 4:
+            # From bad suit lead 2nd highest
+            hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
+            if suit_length < 4 or hcp_in_suit < 2:
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
             else:
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)
