@@ -178,11 +178,11 @@ class Models:
         suitc_sidesuit_check = conf.getboolean('cardplay', 'suitc_sidesuit_check', fallback=False)
         draw_trump_reward = conf.getfloat('cardplay', 'draw_trump_reward', fallback=0.25)
         draw_trump_penalty = conf.getfloat('cardplay', 'draw_trump_penalty', fallback=0.25)
-        bba_ns = conf.getfloat('models', 'bba_ns', fallback=-1)
-        bba_ew = conf.getfloat('models', 'bba_ew', fallback=-1)
+        bba_ns = conf.getint('models', 'bba_ns', fallback=-1)
+        bba_ew = conf.getint('models', 'bba_ew', fallback=-1)
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
-        ns = float(conf['models']['ns'])
-        ew = float(conf['models']['ew'])
+        ns = int(conf['models']['ns'])
+        ew = int(conf['models']['ew'])
         bidder_model = Bidder('bidder', os.path.join(base_path, conf['bidding']['bidder']))
         if conf.has_section('bidding') and conf.get('bidding', 'opponent', fallback=None) not in ('none', None):
             opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['opponent']))

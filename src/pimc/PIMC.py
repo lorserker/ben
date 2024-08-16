@@ -378,7 +378,7 @@ class BGADLL:
             self.pimc.BeginEvaluate(trump)
         except Exception as ex:
             print('Error BeginEvaluate:', ex)
-            #sys.exit(1)
+            sys.exit(1)
 
         try:
             start_time = time.time()
@@ -387,7 +387,7 @@ class BGADLL:
                 print(f"Threads are finished after {time.time() - start_time:.2f}.")
         except Exception as ex:
             print('Error AwaitEvaluation:', ex)
-            #sys.exit(1)
+            sys.exit(1)
         # Allow running threads to finalize
         time.sleep(0.1)
         if self.verbose:    

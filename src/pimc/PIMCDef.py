@@ -267,7 +267,7 @@ class BGADefDLL:
             self.pimc.Clear()
         except Exception as ex:
             print('Error Clear:', ex)
-            #sys.exit(1)
+            sys.exit(1)
 
         if player_i != self.player_i:
             raise Exception("player_i must be equal to self.player_i")
@@ -381,7 +381,7 @@ class BGADefDLL:
             self.pimc.BeginEvaluate(trump)
         except Exception as ex:
             print('Error BeginEvaluate:', ex)
-            #sys.exit(1)
+            sys.exit(1)
 
         try:
             start_time = time.time()
@@ -390,7 +390,7 @@ class BGADefDLL:
                 print(f"Threads are finished after {time.time() - start_time:.2f}.")
         except Exception as ex:
             print('Error AwaitEvaluation:', ex)
-            #sys.exit(1)
+            sys.exit(1)
         # Allow running threads to finalize
         time.sleep(0.1)
         if self.verbose:    

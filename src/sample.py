@@ -296,7 +296,6 @@ class Sample:
             print("NS: ", models.ns, "EW: ", models.ew, "Auction: ", auction)
             print("hand", hand_str)
             print("nesw_i", nesw_i)
-            print("bids in model", bids)
             print("n_samples", n_samples)
 
         c_hcp, c_shp = self.get_bidding_info(n_steps, auction, nesw_i, hand, vuln, models)        
@@ -332,6 +331,8 @@ class Sample:
         X_lho[:, :, 7+index:7+models.n_cards_bidding+index] = lho_pard_rho[:, 0:1, :]
         X_lho[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 0, :]).reshape((-1, 1)) - 10) / 4
         X_lho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 0, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
+        if self.verbose:
+            print("get_bid_ids", n_steps, auction, (nesw_i + 2) % 4)
         lho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 1) % 4, n_steps)
         lho_sample_bids = models.opponent_model.model_seq(X_lho)[0].reshape((n_samples, n_steps, -1))
         if self.verbose:
@@ -341,6 +342,8 @@ class Sample:
         X_pard[:, :, 7+index:7+models.n_cards_bidding+index] = lho_pard_rho[:, 1:2, :]
         X_pard[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 1, :]).reshape((-1, 1)) - 10) / 4
         X_pard[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
+        if self.verbose:
+            print("get_bid_ids", n_steps, auction, (nesw_i + 2) % 4)
         pard_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 2) % 4, n_steps)
         pard_sample_bids = models.bidder_model.model_seq(X_pard)[0].reshape((n_samples, n_steps, -1))
         if self.verbose:
@@ -350,6 +353,8 @@ class Sample:
         X_rho[:, :, 7+index:7+models.n_cards_bidding+index] = lho_pard_rho[:, 2:, :]
         X_rho[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 2, :]).reshape((-1, 1)) - 10) / 4
         X_rho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 2, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
+        if self.verbose:
+            print("get_bid_ids", n_steps, auction, (nesw_i + 2) % 4)
         rho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 3) % 4, n_steps)
         rho_sample_bids = models.opponent_model.model_seq(X_rho)[0].reshape((n_samples, n_steps, -1))
         if self.verbose:

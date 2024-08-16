@@ -268,11 +268,12 @@ class Driver:
             pbn_str += '[Vulnerable "None"]\n'
         pbn_str += f'[Deal "N:{self.deal_str}"]\n'
         pbn_str += '[Scoring "IMP"]\n'
-        declarer = self.contract[-1]
-        pbn_str += f'[Declarer "{declarer}"]\n'
         if self.contract is None:
             pbn_str += '[Contract ""]\n'
+            pbn_str += f'[Declarer ""]\n'
         else:
+            declarer = self.contract[-1]
+            pbn_str += f'[Declarer "{declarer}"]\n'
             # Remove declarer from contract
             pbn_str += f'[Contract "{self.contract[:-1]}"]\n'
             pbn_str += f'[Result "{self.tricks_taken}"]\n'
@@ -292,13 +293,17 @@ class Driver:
         # Add an additional line break if the total number of bids is not divisible by 4
         if i % 4 != 0:
             pbn_str += "\n"
-        declarer_i = "NESW".index(declarer)
-        leader = "NESW"[(declarer_i + 1) % 4]            
-        pbn_str += f'[Play "{leader}"]\n'
-        for i in range(13):
-            for j in range(4):
-                pbn_str += Card.from_code(self.card_play[j][i]).symbol() + " "
-            pbn_str += "\n"
+        if self.contract is not None:
+            declarer_i = "NESW".index(declarer)
+            leader = "NESW"[(declarer_i + 1) % 4]            
+            pbn_str += f'[Play "{leader}"]\n'
+            for i in range(13):
+                for j in range(4):
+                    pbn_str += Card.from_code(self.card_play[j][i]).symbol() + " "
+                pbn_str += "\n"
+        else:
+            pbn_str += f'[Play ""]\n'
+
         pbn_str += '[HomeTeam ""]\n'
         pbn_str += '[VisitTeam ""]\n'
         pbn_str += '[ScoreIMP ""]\n'

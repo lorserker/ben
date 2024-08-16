@@ -6,6 +6,8 @@ import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers, callbacks, initializers, losses
 from tensorflow.keras.callbacks import Callback
 from tensorflow.keras.models import load_model
+import time
+
 
 # Set logging level to suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -67,12 +69,15 @@ output_dim_contract = y_train.shape[1]
 
 batch_size = 128  
 buffer_size = 10000
-epochs = 20  
+epochs = 50  
 learning_rate = 0.0005
 keep = 0.8
 steps_per_epoch = n_examples // batch_size
 
 model_name = f'{system}_{datetime.datetime.now().strftime("%Y-%m-%d")}'
+
+# If no improvement in validation loss after 3 epochs, stop training
+patience = 3
 
 print("-------------------------")
 print("Examples for training:   ", n_examples)
@@ -91,6 +96,7 @@ print("-------------------------")
 print("Batch size:              ", batch_size)
 print("buffer_size:             ", buffer_size)
 print("steps_per_epoch          ", steps_per_epoch)
+print("patience                 ", patience)
 print("-------------------------")
 print("Learning rate:           ", learning_rate)
 print("Keep:                    ", keep)
@@ -200,7 +206,7 @@ custom_checkpoint_callback = CustomModelCheckpoint(
     initial_epoch=initial_epoch
 )
 
-early_stopping_callback = callbacks.EarlyStopping(monitor='loss', patience=10, verbose=1)
+early_stopping_callback = callbacks.EarlyStopping(monitor='loss', patience=patience, verbose=1)
 
 print("Training started")
 # Training the model

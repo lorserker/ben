@@ -128,6 +128,7 @@ def main():
         wrongs["3D"] = 0
         wrongs["4D"] = 0
         wrongs["5D"] = 0
+        auctions = []
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Loaded {n} deals\n')
         for i in range(n):
             if color: print(Fore.BLUE, end='')
@@ -138,7 +139,7 @@ def main():
             parts = lines[i*2+1].strip().replace("  "," ").split()
             #if not ( parts[2:][0] == '2S'):
             #    continue
-            print("Board: ",i+1)
+            #print("Board: ",i+1)
             dealer_i = 'NESW'.index(parts[0])
             vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
             vuln_ns, vuln_ew = vuln[parts[1]]
@@ -161,7 +162,11 @@ def main():
             if (trained_bidding != auction_str):
                 if candidates[0].bid != "PASS":
                     if color: print(Fore.RED, end='')
-                print(get_hcp(hands[dealer_i]),  hands[dealer_i], parts[2:3][0] , candidates[0].bid,candidates[0].insta_score)
+                else:
+                    if candidates[0].insta_score < 0.8:
+                        if color: print(Fore.CYAN, end='')
+                #print(f"{parts[2:3][0]:4} {get_hcp(hands[dealer_i]):2.0f} {hands[dealer_i]} {candidates[0].bid:4} {candidates[0].insta_score:.3f} {vuln}")
+                auctions.append(f"{parts[2:3][0]:4} {get_hcp(hands[dealer_i]):2.0f} {hands[dealer_i]} {candidates[0].bid:4} {candidates[0].insta_score:.3f} {"VULN" if vuln[parts[1]][dealer_i % 2] else "NO"}")
                 different += 1
                 key = parts[2:3][0]
                 if candidates[0].bid != "PASS":
@@ -185,8 +190,14 @@ def main():
                     wrongs.update({parts[2:3][0]: 0})
                 continue
 
-            print(rights, wrongs)
+            #print(rights, wrongs)
 
+        unique_sorted_keys = sorted(set(auctions))
+
+        #print(auctions)
+        # Print all unique keys sorted
+        for key in unique_sorted_keys:
+            print(key)
         if color: print(Fore.GREEN)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Matched {matching} deals\n')
         print(rights)

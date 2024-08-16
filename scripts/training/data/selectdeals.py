@@ -1,3 +1,6 @@
+from collections import Counter
+
+
 def is_valid_bid(line):
     line = line.replace(" ", "")
     try:
@@ -30,11 +33,18 @@ with open('GIB-Thorvald-2024-08-09.ben', 'r') as file:
     lines = list(file)
     opening = 0
     passing = 0
+    openingbids = Counter()
     for board_number, (line1, line2) in enumerate(zip(lines[::2], lines[1::2]), start=1):
         hands = line1.split()
         bids = line2.split()
         dealer = direction_to_index[bids[0]]
         hcp = get_hcp(hands[dealer])
+        key = f"{bids[2]}_{hcp}"
+        #print(key)
+        if hcp == 0 and bids[2] != "P":
+            print(hands)
+        openingbids[key] += 1
+        continue
         # We only want hcp in range 6-11
         if hcp < 6:
             continue
@@ -63,4 +73,9 @@ with open('GIB-Thorvald-2024-08-09.ben', 'r') as file:
             print(line2, end="")
 
 
-    #print(opening, passing)
+    # Sorting the Counter by keys
+    sorted_by_key = sorted(openingbids.items())
+
+    # Printing the sorted items
+    for key, value in sorted_by_key:
+        print(f'{key}: {value}')

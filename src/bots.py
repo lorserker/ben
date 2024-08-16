@@ -259,7 +259,7 @@ class BotBid:
 
         #print("self.models.check_final_contract", self.models.check_final_contract)
         #print("candidates[0].bid", candidates[0].bid, candidates[0].expected_score, len(samples), good_quality, (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score))
-        if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS") and (auction[-1] == "PASS"):
+        if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS") and (auction[-1] == "PASS") and not self.sample.no_samples_when_no_search:
             # We will avoid rescuing if we have a score of max_estimated_score or more
             t_start = time.time()
             if candidates[0].bid == "PASS" and len(samples) > 0 and (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score) and good_quality:
@@ -267,7 +267,7 @@ class BotBid:
                 alternatives = {}
                 current_contract = bidding.get_contract(auction)[0:2]
                 if self.verbose:
-                    print("current_contract", current_contract)
+                    print("check_final_contract, current_contract", current_contract)
                 break_outer = False
                 for i in range(min(len(samples), self.models.max_samples_checked)):
                     if self.verbose:
@@ -362,6 +362,12 @@ class BotBid:
                     # Find the contract with the highest count
                     max_count_contract = max(contract_counts, key=contract_counts.get)
                     # Unless we gain 300 or we expect 4 tricks more we will not override BEN
+                    print("___________________________________________________________________")
+                    print(contract_average_scores[max_count_contract])
+                    print(candidates[0].expected_score)
+                    print(self.models.min_rescue_reward) 
+                    print(contract_average_tricks[max_count_contract] , expected_tricks )
+                    print("___________________________________________________________________")
                     if (contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
                         # Now we have found a possible resuce bid, so we need to check the samples with that contract
                         if self.verbose:
@@ -534,7 +540,7 @@ class BotBid:
     def next_bid_np(self, auction):
         alerts = None
         if self.verbose:
-            print("next_bid_np. Model:", self.models.name, self.models.model_version, "NS=", self.models.ns)
+            print("next_bid_np Model:", self.models.name, "Version:", self.models.model_version, "NS=", self.models.ns)
         x = self.get_binary(auction, self.models)
         if self.models.model_version == 3:
             bid_np, alerts = self.models.bidder_model.model_seq(x)
