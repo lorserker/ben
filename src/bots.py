@@ -362,12 +362,6 @@ class BotBid:
                     # Find the contract with the highest count
                     max_count_contract = max(contract_counts, key=contract_counts.get)
                     # Unless we gain 300 or we expect 4 tricks more we will not override BEN
-                    print("___________________________________________________________________")
-                    print(contract_average_scores[max_count_contract])
-                    print(candidates[0].expected_score)
-                    print(self.models.min_rescue_reward) 
-                    print(contract_average_tricks[max_count_contract] , expected_tricks )
-                    print("___________________________________________________________________")
                     if (contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
                         # Now we have found a possible resuce bid, so we need to check the samples with that contract
                         if self.verbose:

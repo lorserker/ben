@@ -624,6 +624,17 @@ def get_binary_contract(position, vuln, hand_str, dummy_str):
 def cuebidscores():
     t_start = time.time()
     data = request.get_json()
+    # Create a filename with the current date
+    date_str = time.strftime("%Y-%m-%d")  # Format: YYYY-MM-DD
+    filename = f'logs/cuebidscores_{date_str}.log'
+    
+    # Ensure the logs directory exists
+    os.makedirs(os.path.dirname(filename), exist_ok=True)
+    
+    # Write or append data to the file
+    with open(filename, 'a') as file:
+        file.write(json.dumps(data) + '\n')
+    
     # log request to log file
     print(data)
     result = {}
