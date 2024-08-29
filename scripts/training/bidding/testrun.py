@@ -198,10 +198,10 @@ def main():
                 matching += 1
         if color: print(Fore.GREEN)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Matched {matching} deals\n')
-        if color: print(Fore.YELLOW)
-        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} better {better} deals\n')
+        #if color: print(Fore.YELLOW)
+        #sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} different {better+worse} deals\n')
         if color: print(Fore.RED)
-        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} worse {worse} deals\n')
+        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} different {worse+worse} deals\n')
         if color: print(Fore.CYAN)
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} same score {same} deals\n')
         # Record the end time

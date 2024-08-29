@@ -47,7 +47,7 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating, bids):
         x = np.zeros((rows_pr_hand * n, 8, 159), dtype=np.float16)
     else:
         x = np.zeros((rows_pr_hand * n, 8, 161), dtype=np.float16)
-    y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.float16)
+    y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.uint8)
     HCP = np.zeros((rows_pr_hand * n, 8, 3), dtype=np.float16)
     SHAPE = np.zeros((rows_pr_hand * n, 8, 12), dtype=np.float16)
     print("Creating binary data")

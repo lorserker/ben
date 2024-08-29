@@ -156,7 +156,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     if candidate_card.card.symbol() == f"{suit_str}{card}":
                         # Only play SuitC if not losing to much DD
                         if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
-                            if candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.5:
+                            if candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.1:
                                 return candidate_card.card, "SuitC"
                         
             return candidate_cards[0].card, who

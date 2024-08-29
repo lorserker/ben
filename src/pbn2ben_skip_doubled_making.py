@@ -16,6 +16,8 @@ def load(fin):
     skip = False
     skipped = 0
     dealer, vulnerable = None, None
+    board_found = False
+    bbacode = ""
     for line in fin:
         if line.startswith("% PBN") or line == "\n":
             if dealer != None:
@@ -30,16 +32,22 @@ def load(fin):
                 auction_lines = []
                 dealer= None
                 skip = False
+                board_found = False
+                bbacode = ""
+        if line.startswith('% ') and board_found:
+            bbacode = line[2:-1]
         if line.startswith('[Dealer'):
             dealer = extract_value(line)
+        if line.startswith('[Board'):
+            board_found = True
         if line.startswith('[Score'):
             score = extract_value(line)[2:]
             if contract != "" and contract[-1] == "X":
                 if (declarer == "N" or declarer == "S") and int(score) > 0:
-                    print(declarer, contract, result, score)
+                    print(bbacode, declarer, contract, result, score)
                     skip = True
                 if (declarer == "E" or declarer == "W") and int(score) < 0:
-                    print(declarer, contract, result, score)
+                    print(bbacode, declarer, contract, result, score)
                     skip = True
         if line.startswith('[Contract'):
             contract = extract_value(line)
@@ -87,7 +95,7 @@ def extract_value(s: str) -> str:
 
 if __name__ == '__main__':
     if len(sys.argv) < 2:
-        print("Usage: python pbn2ben.py input_file.pbn")
+        print("Usage: python pbn2ben_skip_doubled_making.py input_file.pbn")
         sys.exit(1)
     
     input_file = sys.argv[1]

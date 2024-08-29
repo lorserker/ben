@@ -4,9 +4,14 @@ sys.path.append('../../../src')
 import datetime
 import os.path
 import numpy as np
+import time
 
 import tensorflow.compat.v1 as tf
 tf.disable_v2_behavior()
+
+os.environ["OMP_NUM_THREADS"] = str(os.cpu_count())
+os.environ["MKL_NUM_THREADS"] = str(os.cpu_count())
+print("os.cpu_count()",os.cpu_count())
 
 from batcher import Batcher
 
@@ -39,40 +44,77 @@ if len(sys.argv) < 2:
 bin_dir = sys.argv[1]
 print(sys.argv)
 
-batch_size = 64
-display_step = 10000
-epochs = 50
-learning_rate = 0.0005
+system = "bidding"
+if len(sys.argv) > 2:
+    system = sys.argv[2]
 
-X_train = np.load(os.path.join(bin_dir, 'x.npy'))
-y_train = np.load(os.path.join(bin_dir, 'y.npy'))
+# Load training data
+X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
+y_train = np.load(os.path.join(bin_dir, 'y.npy'), mmap_mode='r')
+z_train = np.load(os.path.join(bin_dir, 'z.npy'), mmap_mode='r')
 
-n_examples = y_train.shape[0]
+n_examples = X_train.shape[0]
+n_sequence = X_train.shape[1]
 n_ftrs = X_train.shape[2]
 n_bids = y_train.shape[2]
+n_alerts = z_train.shape[2]
+
+batch_size = 64
+display_step = 10000
+epochs = 10
+learning_rate = 0.0005
+keep = 0.8
 
 # If NS/EW cc included update name of model
 if n_ftrs == 201:
-    model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding_V2'
+    model_name = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding_V2'
 else:
     if n_ftrs == 199:
-        model_path = 'model/bidding_V2'
+        model_name = 'model/bidding_V2'
     else:
         if n_ftrs == 161:
-            model_path = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding'
+            model_name = f'model/NS{int(X_train[0,0][0])}EW{int(X_train[0,0][1])}-bidding_V1'
         else:
-            model_path = 'model/bidding'
+            model_name = 'model/bidding_V0'
 
-print("Size input hand:         ", n_ftrs)
-print("Examples for training:   ", n_examples)
-print("Batch size:              ", batch_size)
+lstm_size = 128
+n_layers = 3
+n_cards = 32
+patience = "N/A"
+steps_per_epoch = n_examples // batch_size
+buffer_size = "N/A"
+
 n_iterations = round(((n_examples / batch_size) * epochs) / 1000) * 1000
 print("Iterations               ", n_iterations)
-print("Model path:              ", model_path)
-print("Learning rate:           ", learning_rate)
 
-lstm_size = 256
-n_layers = 3
+print("-------------------------")
+print("Examples for training:   ", n_examples)
+print("Model path:              ", model_name )
+print("-------------------------")
+print("Size input hand:         ", n_ftrs)
+print("Number of Cards:         ", n_cards)
+print("Number of Sequences:     ", n_sequence)
+print("Size output bid:         ", n_bids)
+print("Size output alert:       ", "N/A")
+print("-------------------------")
+print("dtype X_train:           ", X_train.dtype)
+print("dtype y_train:           ", y_train.dtype)
+print("dtype z_train:           ", "N/A")
+print("-------------------------")
+print("Batch size:              ", batch_size)
+print("buffer_size:             ", buffer_size)
+print("steps_per_epoch          ", steps_per_epoch)
+print("patience                 ", patience)
+print("-------------------------")
+print("Learning rate:           ", learning_rate)
+print("Keep:                    ", keep)
+print("-------------------------")
+print("lstm_size:               ", lstm_size)
+print("n_layers:                ", n_layers)
+
+seed_value = 42
+np.random.seed(seed_value)
+tf.random.set_random_seed(seed_value)
 
 keep_prob = tf.compat.v1.placeholder(tf.float32, name='keep_prob')
 
@@ -128,13 +170,18 @@ with tf.compat.v1.Session() as sess:
 
     x_cost, y_cost = cost_batch.next_batch([X_train, y_train])
 
+    t_start = time.time()
     for i in range(n_iterations):
         x_batch, y_batch = batch.next_batch([X_train, y_train])
         if (i != 0) and i % display_step == 0:
             c_train = sess.run(cost, feed_dict={seq_in: x_cost, seq_out: y_cost, keep_prob: 1.0})
             print('{} {}. c_train={}'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S"),i, c_train))
             sys.stdout.flush()
-            saver.save(sess, model_path, global_step=i)
-        sess.run(train_step, feed_dict={seq_in: x_batch, seq_out: y_batch, keep_prob: 0.8})
+            saver.save(sess, model_name, global_step=i)
+            print(f"{display_step} interations: {(time.time() - t_start):0.4f}")        
+            t_start = time.time()
+        sess.run(train_step, feed_dict={seq_in: x_batch, seq_out: y_batch, keep_prob: keep})
 
-    saver.save(sess, model_path, global_step=n_iterations)
+    saver.save(sess, model_name, global_step=n_iterations)
+    print(f"{display_step} interations: {(time.time() - t_start):0.2f} seconds")        
+    print(model_name)

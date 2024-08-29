@@ -37,25 +37,25 @@ def print_input(x, y, z):
             print()
 
 # Load the saved model
-model_path = '../../../../models/TF2Models/GIB_2024-07-19-E100.keras'  # Replace with your actual model path
-model_path = 'model/21GFShort_2024-07-27-E13.keras'
+model_path = '../../../../models/TF2Models/GIBOpening_2024-08-17-E100.keras'  # Replace with your actual model path
+model_path = 'model/GIBOpening2D_2024-08-18-E35.keras'
 model = load_model(model_path)
 
-X_train = np.load('./24cards/X.npy')
-y_train = np.load('./24cards/y.npy')
-z_train = np.load('./24cards/z.npy')
+X_train = np.load('./2D/X.npy')
+y_train = np.load('./2D/y.npy')
+z_train = np.load('./2D/z.npy')
 
 print(X_train.shape)
 print(y_train.shape)
 print(z_train.shape)
 
 # Take the first 8 elements from each array
-X_train_first_8 = X_train[1:2]
-Y_train_first_8 = y_train[1:2]
-Z_train_first_8 = z_train[1:2]
+X_train_first_8 = X_train[0:1]
+Y_train_first_8 = y_train[0:1]
+Z_train_first_8 = z_train[0:1]
 
-#print("X_train_first_8")
-#print(X_train_first_8[:, :8, :])
+print("X_train_first_8")
+print(X_train_first_8[:, :8, :])
 
 #print("Y_train_first_8")
 #print(Y_train_first_8[:, :8, :])
@@ -63,10 +63,10 @@ Z_train_first_8 = z_train[1:2]
 #print("Z_train_first_8")
 #print(Z_train_first_8[:, :8, :])
 
-print_input(X_train_first_8[:, :2, :], Y_train_first_8[:, :2, :], Z_train_first_8[:, :2, :] )
+print_input(X_train_first_8[:, :1, :], Y_train_first_8[:, :1, :], Z_train_first_8[:, :1, :] )
 
-predictions = model.predict(X_train_first_8[:, :2, :], verbose=0)
-print("Input:", X_train_first_8[:, :2, :])
+predictions = model.predict(X_train_first_8[:, :1, :], verbose=0)
+#print("Input:", X_train_first_8[:, :2, :])
 print(predictions)
 
 print("-------------------------------------------------------")

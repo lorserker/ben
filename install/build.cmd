@@ -2,8 +2,8 @@
 pyinstaller "..\src\appserver.py" --onefile --path=..\src --add-data "..\src\frontend;frontend"
 pyinstaller "..\src\frontend\appserver.py" --onefile --path=..\src --add-data "..\src\frontend;."  --add-data "..\src\frontend\views;views"
 
-pyinstaller "..\src\pbn2ben.py" --onefile --path=..\src 
-pyinstaller "..\src\pbn2bba.py" --onefile --path=..\src 
+python -m PyInstaller "..\src\pbn2ben.py" --onefile --path=..\src 
+python -m PyInstaller "..\src\pbn2bba.py" --onefile --path=..\src 
 
 pyinstaller "..\src\game.py" --onefile --path=..\src --add-binary "..\bin\dds.dll;."  --add-binary "..\bin\BGADLL.dll;." --add-binary "..\bin\libbcalcdds.dll;."
 pyinstaller "..\src\gameserver.py" --onefile --path=..\src --add-binary "..\bin\dds.dll;."  --add-binary "..\bin\BGADLL.dll;." --add-binary "..\bin\libbcalcdds.dll;."

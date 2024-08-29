@@ -18,7 +18,6 @@ absl.logging.set_stderrthreshold(absl.logging.FATAL)
 import shelve
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
-# Enable eager execution
 
 import ipaddress
 import argparse
@@ -353,8 +352,6 @@ class TMClient:
                         card_resp.hcp = c_hcp
                         card_resp.shape = c_shp
 
-                        self.card_responses.append(card_resp)
-
                         if (self.verbose):
                             for idx, candidate in enumerate(card_resp.candidates, start=1):
                                 if candidate.expected_tricks_sd:
@@ -364,6 +361,7 @@ class TMClient:
                             for idx, sample in enumerate(card_resp.samples, start=1):                  
                                 print(f"{sample}")
 
+                    self.card_responses.append(card_resp)
 
                     card52 = card_resp.card.code()
                     

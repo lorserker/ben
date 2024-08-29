@@ -110,24 +110,9 @@ def main():
         lines = [line.strip().replace("*",'') for line in lines if not line.strip().startswith('#')]        
         n = len(lines) // 2
         matching = 0
-        better = 0
-        worse = 0
-        same = 0
         different = 0
         rights = {}
-        rights["P"] = 0
-        rights["1D"] = 0
-        rights["2D"] = 0
-        rights["3D"] = 0
-        rights["4D"] = 0
-        rights["5D"] = 0
         wrongs = {}
-        wrongs["P"] = 0
-        wrongs["1D"] = 0
-        wrongs["2D"] = 0
-        wrongs["3D"] = 0
-        wrongs["4D"] = 0
-        wrongs["5D"] = 0
         auctions = []
         sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Loaded {n} deals\n')
         for i in range(n):
@@ -137,7 +122,7 @@ def main():
             parts = lines[i*2].strip().split()
             hands = parts[:]
             parts = lines[i*2+1].strip().replace("  "," ").split()
-            #if not ( parts[2:][0] == '2S'):
+            #if not ( parts[2:][0] != 'P'):
             #    continue
             #print("Board: ",i+1)
             dealer_i = 'NESW'.index(parts[0])
@@ -156,7 +141,7 @@ def main():
                 turn_i = (turn_i + 1) % 4  # next player's turn
 
             if color: print(Fore.WHITE, end='')
-            #print(" ".join(parts[:2]), " ".join(hands), "PAR=", par_score)
+            #print(" ".join(parts[:2]), " ".join(hands))
             auction_str = " ".join(auction).replace('PAD_START ', '')
             trained_bidding = " ".join(parts[2:3]).replace('P',"PASS")
             if (trained_bidding != auction_str):
@@ -166,7 +151,7 @@ def main():
                     if candidates[0].insta_score < 0.8:
                         if color: print(Fore.CYAN, end='')
                 #print(f"{parts[2:3][0]:4} {get_hcp(hands[dealer_i]):2.0f} {hands[dealer_i]} {candidates[0].bid:4} {candidates[0].insta_score:.3f} {vuln}")
-                auctions.append(f"{parts[2:3][0]:4} {get_hcp(hands[dealer_i]):2.0f} {hands[dealer_i]} {candidates[0].bid:4} {candidates[0].insta_score:.3f} {"VULN" if vuln[parts[1]][dealer_i % 2] else "NO"}")
+                auctions.append(f'{parts[2:3][0]:4} {get_hcp(hands[dealer_i]):2.0f} {hands[dealer_i]} {candidates[0].bid:4} {candidates[0].insta_score:.3f} {"VULN" if vuln[parts[1]][dealer_i % 2] else "NO"} {i+1}')
                 different += 1
                 key = parts[2:3][0]
                 if candidates[0].bid != "PASS":

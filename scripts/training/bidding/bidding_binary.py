@@ -28,11 +28,9 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating, bids, alert_supporte
         x = np.zeros((rows_pr_hand * n, 8, 39 + bids * 40), dtype=np.float16)
     else:
         x = np.zeros((rows_pr_hand * n, 8, 41 + bids * 40), dtype=np.float16)
-    if alert_supported:
-        y = np.zeros((rows_pr_hand * n, 8, 41), dtype=np.uint8)
-    else:
-        y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.uint8)
+    y = np.zeros((rows_pr_hand * n, 8, 40), dtype=np.uint8)
 
+    z = np.zeros((rows_pr_hand * n, 8, 1), dtype=np.uint8)
     HCP = np.zeros((rows_pr_hand * n, 8, 3), dtype=np.float16)
     SHAPE = np.zeros((rows_pr_hand * n, 8, 12), dtype=np.float16)
     k = 0
@@ -43,17 +41,19 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating, bids, alert_supporte
             sys.stderr.flush()
         v = 0
         if alternating and (i % 2) == 1:
-            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ew, ns, bids, n_steps = 8, alert_supported = alert_supported)
+            x_part, y_part, hcp_part, shape_part, alert_part = deal_data.get_binary_hcp_shape(ew, ns, bids, n_steps = 8, alert_supported = alert_supported)
         else:
-            x_part, y_part, hcp_part, shape_part = deal_data.get_binary_hcp_shape(ns, ew, bids, n_steps = 8, alert_supported = alert_supported)
+            x_part, y_part, hcp_part, shape_part, alert_part = deal_data.get_binary_hcp_shape(ns, ew, bids, n_steps = 8, alert_supported = alert_supported)
         if ns == 0:
             # with system = 0 we discard the hand
             x[k:k+1] = x_part[1]
             y[k:k+1] = y_part[1]
+            z[k:k+1] = alert_part[1]
             HCP[k:k+1] = hcp_part[1]
             SHAPE[k:k+1] = shape_part[1]
             x[k+1:k+2] = x_part[3]
             y[k+1:k+2] = y_part[3]
+            z[k+1:k+2] = alert_part[3]
             HCP[k+1:k+2] = hcp_part[3]
             SHAPE[k+1:k+2] = shape_part[3]
             k += 2
@@ -61,10 +61,12 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating, bids, alert_supporte
             # with system = 0 we discard the hand
             x[k:k+1] = x_part[0]
             y[k:k+1] = y_part[0]
+            z[k:k+1] = alert_part[0]
             HCP[k:k+1] = hcp_part[0]
             SHAPE[k:k+1] = shape_part[0]
             x[k+1:k+2] = x_part[2]
             y[k+1:k+2] = y_part[2]
+            z[k+1:k+2] = alert_part[2]
             HCP[k+1:k+2] = hcp_part[2]
             SHAPE[k+1:k+2] = shape_part[2]
             k += 2
@@ -73,10 +75,12 @@ def create_binary(data_it, n, out_dir, ns, ew, alternating, bids, alert_supporte
             y[k:k+4] = y_part
             HCP[k:k+4] = hcp_part
             SHAPE[k:k+4] = shape_part
+            z[k:k+4] = alert_part
             k += 4
 
     np.save(os.path.join(out_dir, 'x.npy'), x)
     np.save(os.path.join(out_dir, 'y.npy'), y)
+    np.save(os.path.join(out_dir, 'z.npy'), z)
     np.save(os.path.join(out_dir, 'HCP.npy'), HCP)
     np.save(os.path.join(out_dir, 'SHAPE.npy'), SHAPE)
 
@@ -109,11 +113,12 @@ if __name__ == '__main__':
     ns = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), -1)
     ew = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), -1)
     alternating = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alternate")), False)
-    version = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("version")), "2")
+    version = next((extract_value(arg) for arg in sys.argv[2:] if arg.startswith("version")), "2")
     alert_supported = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alert_supported")), False)
     sys.stderr.write(f"NS={ns}, EW={ew}, Alternating={alternating}, Version={version}, alert_supported={alert_supported}\n")
     ns = to_numeric(ns)
     ew = to_numeric(ew)
+    version = to_numeric(version)
 
     with open(infnm, 'r') as file:
 
@@ -128,5 +133,5 @@ if __name__ == '__main__':
                 sys.exit()
 
         data_it = load_deals(lines)
-        create_binary(data_it, n, outdir, ns, ew, alternating, 4 if version == "2" else 3, alert_supported=alert_supported)
+        create_binary(data_it, n, outdir, ns, ew, alternating, 4 if version > 1 else 3, alert_supported=alert_supported)
 

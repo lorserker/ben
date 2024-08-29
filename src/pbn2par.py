@@ -38,6 +38,15 @@ def load(fin):
                 tricks = int(par_contract[0]) + 6
             else:
                 tricks = int(parts[2]) + int(par_contract[0]) + 6
+        if line.startswith('[OptimumScore '):
+            optimum_result = extract_value(line)
+            parts = re.match(r'(\S{2,3})\s*([NEWS]{1,2})(\D?\d)?', optimum_result).groups()
+            par_contract = parts[0].replace('NT', 'N')
+            side = parts[1]
+            if parts[2] is None:
+                tricks = int(par_contract[0]) + 6
+            else:
+                tricks = int(parts[2]) + int(par_contract[0]) + 6
         if line.startswith('[ParScore'):
             optimum_result = extract_value(line)
             parts = optimum_result.split('.')

@@ -1,5 +1,6 @@
 import sys
 import re
+import time
 from collections import deque
 from typing import NamedTuple
 
@@ -197,12 +198,16 @@ if __name__ == '__main__':
         with open(input_file, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
             lines = file.readlines()
         
-        with open('input.bba', 'w', encoding='utf-8') as file:  # Open the output file with UTF-8 encoding
+        # Create a filename with the current date
+        date_str = time.strftime("%Y-%m-%d")  # Format: YYYY-MM-DD
+        filename = f'input_{date_str}.bba'
+
+        with open(filename, 'w', encoding='utf-8') as file:  # Open the output file with UTF-8 encoding
             boards = load(lines)
             for board in boards:
                 file.write(board + "\n")
 
-            print("File input.bba generated")
+            print(f"File {filename} generated: {len(boards)} boards")
     except Exception as ex:
         print('Error:', ex)
         raise ex

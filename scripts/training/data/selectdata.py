@@ -14,14 +14,13 @@ def is_valid_bid(line):
 direction_to_index = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 
 # Read the file and validate bid for each board
-with open('SAYC-Version 7918.ben', 'r') as file:
+with open('GIB-Thorvald-2024-08-09.ben', 'r') as file:
     lines = list(file)
     for board_number, (line1, line2) in enumerate(zip(lines[::2], lines[1::2]), start=1):
-        if (is_valid_bid(line2)):
-            hands = line1.split()
-            bids = line2.split()
-            bid_no = bids.index("4H")
+        hands = line1.split()
+        bids = line2.split()
+        if "P" not in bids[2]:
             dealer = direction_to_index[bids[0]]
-            hand_no = (bid_no-2 + dealer) % 4
-            print(bids)
-            print(hands[hand_no], hands)
+            if dealer == 0:
+                print(line1, end="")
+                print(line2, end="")

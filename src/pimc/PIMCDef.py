@@ -272,20 +272,6 @@ class BGADefDLL:
         if player_i != self.player_i:
             raise Exception("player_i must be equal to self.player_i")
         
-        if self.verbose:
-            print("player_i", self.player_i)
-            print(self.dummyhand.ToString(), self.defendinghand.ToString())
-            print(self.opposHand.ToString(), self.current_trick.ListAsString())
-            print("Voids:", shown_out_suits)
-            print(Macros.Player.West if player_i == 0 else Macros.Player.East)
-            print("Over dummy", self.player_i == 2)
-            print("Tricks taken", self.tricks_taken)
-            print("min tricks",self.mintricks)
-            print("Declarer",self.declarer_constraints.ToString())
-            print("Partner",self.partner_constraints.ToString())
-            print("Autoplay",self.autoplay)
-            print("Current trick",self.current_trick.ListAsString())
-            print("Previous tricks",self.previous_tricks.ListAsString())
 
         # Declarer
         idx = 3
@@ -339,6 +325,21 @@ class BGADefDLL:
             hands = [self.dummyhand, self.defendinghand, self.declarerhand, self.partnerhand]
         else:
             hands = [self.dummyhand, self.defendinghand]
+
+        if self.verbose:
+            print("player_i", self.player_i)
+            print(self.dummyhand.ToString(), self.defendinghand.ToString())
+            print(self.opposHand.ToString(), self.current_trick.ListAsString())
+            print("Voids:", shown_out_suits)
+            print(Macros.Player.West if player_i == 0 else Macros.Player.East)
+            print("Over dummy", self.player_i == 2)
+            print("Tricks taken", self.tricks_taken)
+            print("min tricks",self.mintricks)
+            print("Declarer",self.declarer_constraints.ToString())
+            print("Partner",self.partner_constraints.ToString())
+            print("Autoplay",self.autoplay)
+            print("Current trick",self.current_trick.ListAsString())
+            print("Previous tricks",self.previous_tricks.ListAsString())
 
         try:
             card = self.pimc.SetupEvaluation(hands, self.opposHand, self.current_trick, self.previous_tricks, [self.declarer_constraints,

@@ -92,7 +92,7 @@ UCBC 2024/Boards/Thorvald/BBA - 25.05.2024 14.08.ben
 UCBC 2024/Boards/Thorvald/issues.bba
 src/SuitC.pbn
 src/Suic.Pbn
-src/v0.8.0*
+src/v0.8.*
 models/muppet/512/bidding_V2-1100000*
 gameapibiddb*
 scripts/training/**/logs/
@@ -105,3 +105,6 @@ scripts/match/bidding/speed/
 scripts/training/bidding/bad.*
 src/logs/app.log
 src/input.ben
+UCBC 2024/Boards/*.ben
+UCBC 2024/Boards/*.pbn
+scripts/training/bidding/Old versions/

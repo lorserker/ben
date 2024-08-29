@@ -32,14 +32,26 @@ class DealData(object):
 
 
     @classmethod
-    def from_deal_auction_string(cls, deal_str, auction_str, par, ns, ew, n_cards=52):
+    def from_deal_auction_string(cls, deal_str, auction_str, par, ns, ew, n_cards=32, rotate=False):
         dealer = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
         vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
         hands = list(map(parse_hand_f(n_cards), deal_str.strip().split()))
         auction_parts = auction_str.strip().replace('P', 'PASS').split()
         dealer_ix = dealer[auction_parts[0]]
-        vuln_ns, vuln_ew = vuln[auction_parts[1]]
-        auction = (['PAD_START'] * dealer_ix) + auction_parts[2:]
+        if rotate:
+            if dealer_ix == 1 or dealer_ix == 3:
+                vuln_ew, vuln_ns = vuln[auction_parts[1]]
+            else:
+                vuln_ns, vuln_ew = vuln[auction_parts[1]]
+            hands =  hands[dealer_ix:] + hands[:dealer_ix]
+            deal = deal_str.strip().split()
+            deal = deal[dealer_ix:] + deal[:dealer_ix] 
+            deal_str = ' '.join(deal)
+            dealer_ix = 0
+            auction = auction_parts[2:]
+        else:
+            vuln_ns, vuln_ew = vuln[auction_parts[1]]
+            auction = (['PAD_START'] * dealer_ix) + auction_parts[2:]
         return cls(dealer_ix, vuln_ns, vuln_ew, hands, auction, par, ns, ew, deal_str, auction_str, n_cards)
 
     def get_binary(self, ns, ew, bids, n_steps=8):
@@ -47,7 +59,7 @@ class DealData(object):
             X = np.zeros((4, n_steps, 2 + 1 + 4 + self.n_cards + bids * 40), dtype=np.float16)
         else: 
             X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + bids * 40), dtype=np.float16)
-        y = np.zeros((4, n_steps, 40), dtype=np.float16)
+        y = np.zeros((4, n_steps, 40), dtype=np.uint8)
 
         padded_auction = self.auction + (['PAD_END'] * 4 * n_steps)
 
@@ -110,10 +122,8 @@ class DealData(object):
         else: 
             X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + self.n_cards + bids * 40), dtype=np.float16)
 
-        if alert_supported:
-            y = np.zeros((4, n_steps, 41), dtype=np.float16)
-        else:
-            y = np.zeros((4, n_steps, 40), dtype=np.float16)
+        y = np.zeros((4, n_steps, 40), dtype=np.uint8)
+        z = np.zeros((4, n_steps, 1), dtype=np.uint8)
         HCP = np.zeros((4, n_steps, 3), dtype=np.float16)
         SHAPE = np.zeros((4, n_steps, 12), dtype=np.float16)
         
@@ -164,6 +174,7 @@ class DealData(object):
 
             X[hand_ix, t, :] = ftrs
             y[hand_ix, t, :] = bidding.encode_bid(target_bid, alert_supported)
+            z[hand_ix, t, :] = 1 if "*" in target_bid else 0
 
             HCP[hand_ix, t, 0] = self.hcp[(hand_ix - 3) % 4][0,0]
             HCP[hand_ix, t, 1] = self.hcp[(hand_ix - 2) % 4][0,0]
@@ -179,7 +190,7 @@ class DealData(object):
         for n in times_seen:
             assert n == n_steps
 
-        return X, y, HCP, SHAPE
+        return X, y, HCP, SHAPE, z
 
     def get_binary_contract(self):
         X = np.zeros(2 + 2 * self.n_cards, dtype=np.float16)

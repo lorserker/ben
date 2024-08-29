@@ -971,9 +971,9 @@ async def main():
 
         if not biddingonly:
             if paronly <= imps:
-                with shelve.open(f"{config_path}/gamedb") as db:
+                with shelve.open(f"{config_path}/paronlydb") as db:
                     deal = driver.to_dict()
-                    print(f"Saving Board: {driver.hands} in {config_path}/gamedb")
+                    print(f"Saving Board: {driver.hands} in {config_path}/paronlydb")
                     db[uuid.uuid4().hex] = deal
 
         if outputpbn != "":

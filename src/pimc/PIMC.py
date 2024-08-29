@@ -268,21 +268,6 @@ class BGADLL:
             print('Error Clear:', ex)
             #sys.exit(1)
         
-        if self.verbose:
-            print("player_i", player_i)
-            print(self.northhand.ToString(), self.southhand.ToString())
-            print(self.opposHand.ToString(), self.current_trick.ListAsString())
-            print("Voids:", shown_out_suits)
-            print(Macros.Player.South if player_i == 3 else Macros.Player.North)
-            print("Tricks taken", self.tricks_taken)
-            print("min tricks",self.mintricks)
-            print("East (RHO)",self.rho_constraints.ToString())
-            print("West (LHO)",self.lho_constraints.ToString())
-            print("Autoplay",self.autoplay)
-            print("Current trick",self.current_trick.ListAsString())
-            print("Previous tricks",self.previous_tricks.ListAsString())
-            print("Other hands",self.easthand.ToString(), self.westhand.ToString())
-
 # for suit_index, constraints in zip([0, 1, 2, 3], [self.lho_constraints, self.rho_constraints]):
 #     for suit in range(4):
 #         if suit in shown_out_suits[suit_index]:
@@ -337,6 +322,21 @@ class BGADLL:
             hands = [self.northhand, self.southhand, self.easthand, self.westhand]
         else:
             hands = [self.northhand, self.southhand]
+
+        if self.verbose:
+            print("player_i", player_i)
+            print(self.northhand.ToString(), self.southhand.ToString())
+            print(self.opposHand.ToString(), self.current_trick.ListAsString())
+            print("Voids:", shown_out_suits)
+            print(Macros.Player.South if player_i == 3 else Macros.Player.North)
+            print("Tricks taken", self.tricks_taken)
+            print("min tricks",self.mintricks)
+            print("East (RHO)",self.rho_constraints.ToString())
+            print("West (LHO)",self.lho_constraints.ToString())
+            print("Autoplay",self.autoplay)
+            print("Current trick",self.current_trick.ListAsString())
+            print("Previous tricks",self.previous_tricks.ListAsString())
+            print("Other hands",self.easthand.ToString(), self.westhand.ToString())
 
         try:
             

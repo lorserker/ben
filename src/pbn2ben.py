@@ -48,7 +48,7 @@ def load(fin):
                 # Remove extra spaces
                 line = re.sub(r'\s+', ' ', line)
                 # update alerts
-                line = re.sub(r'=\d{1,2}=', '*', line)
+                line = re.sub(r' =\d{1,2}=', '*', line)
                 auction_lines.append(line)  
 
         else:

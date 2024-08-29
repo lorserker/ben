@@ -101,6 +101,7 @@ class BotBid:
                     hand_to_str(hands_np[i,3,:],self.models.n_cards_bidding),
                     sorted_score[i]
                 ))
+
         if self.do_rollout(auction, candidates, self.max_candidate_score):
             ev_candidates = []
             for candidate in candidates:
@@ -255,7 +256,7 @@ class BotBid:
 
 
         if self.verbose:
-            print(candidates[0].bid, " selected")
+            print(candidates[0].bid, "selected")
 
         #print("self.models.check_final_contract", self.models.check_final_contract)
         #print("candidates[0].bid", candidates[0].bid, candidates[0].expected_score, len(samples), good_quality, (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score))
@@ -461,6 +462,7 @@ class BotBid:
                     if bid_softmax[bid_i] >= self.min_candidate_score:
                         # Seems to be an error in the training that needs to be solved
                         sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
+                        
                         #assert(bid_i > 1)
                 # set the score for the bid just processed to zero so it is out of the loop
                 bid_softmax[bid_i] = 0
@@ -534,28 +536,35 @@ class BotBid:
     def next_bid_np(self, auction):
         alerts = None
         if self.verbose:
-            print("next_bid_np Model:", self.models.name, "Version:", self.models.model_version, "NS=", self.models.ns)
+            print("next_bid_np: Model:", self.models.name, "Version:", self.models.model_version, "NS:", self.models.ns, "Alert supported:", self.models.alert_supported)
         x = self.get_binary(auction, self.models)
-        if self.models.model_version == 3:
-            bid_np, alerts = self.models.bidder_model.model_seq(x)
+        if self.models.model_version == 0:
+            if self.models.ns != -1:
+                print("Different models for NS and EW not supported in this version")
+            x = x[:,-1,:]
+            bid_np, next_state = self.models.bidder_model.model(x, self.state)
+            bid_np = bid_np[0]
+            self.state = next_state
+        if self.models.model_version == 1 :
+            bid_np = self.models.bidder_model.model_seq(x)
+            if self.models.alert_supported:
+                alerts = bid_np[1][-1:][0]                   
             bid_np = bid_np[0][-1:][0]
-            alerts = alerts[0][-1:][0]
-        else:
-            if self.models.model_version == 0 or self.models.ns == -1:
-                # If API we have no history
-                if self.models.model_version == 2:
-                    bid_np = self.models.bidder_model.model_seq(x)
-                    if self.models.alert_supported:
-                        alerts = bid_np[1][-1:][0]                   
-                    bid_np = bid_np[0][-1:][0]
-
-                else:
-                    x = x[:,-1,:]
-                    bid_np, next_state = self.models.bidder_model.model(x, self.state)
-                    self.state = next_state
+        if self.models.model_version == 2:
+            bid_np = self.models.bidder_model.model_seq(x)
+            if self.models.alert_supported:
+                alerts = bid_np[1][-1:][0]                   
+            bid_np = bid_np[0][-1:][0]
+        if self.models.model_version == 3:
+            if self.models.alert_supported:
+                bid_np, alerts = self.models.bidder_model.model_seq(x)
+                alerts = alerts[0][-1:][0]
             else:
                 bid_np = self.models.bidder_model.model_seq(x)
-                bid_np = bid_np[-1:]
+                alerts = None
+                bid_np = bid_np[0]
+            bid_np = bid_np[0][-1:][0]
+        assert len(bid_np) == 40, "Wrong Result: " + str(bid_np.shape)
         return bid_np, alerts
     
     def sample_hands_for_auction(self, auction_so_far, turn_to_bid):
@@ -1067,7 +1076,7 @@ class BotLead:
 
         X_sd[:,32 + strain_i] = 1
         # lefty (That is us)
-        X_sd[:,(32 + 5 + 0*32):(32 + 5 + 1*32)] = self.hand32.reshape(32)
+        X_sd[:,(32 + 5 + 0*32):(32 + 5 + 1*32)] = self.handbidding.reshape(32)
         # dummy
         X_sd[:,(32 + 5 + 1*32):(32 + 5 + 2*32)] = accepted_samples[:,0,:].reshape((n_accepted, 32))
         # righty

@@ -1,7 +1,7 @@
 def write_data_to_files(lines_seen, base_filename='input'):
     file_count = 1
     lines_written = 0
-    max_lines_per_file = 100000
+    max_lines_per_file = 200000
     current_filename = f"{base_filename}_{file_count}.bba"
     print(f"Writing to {current_filename}")
     file = open(current_filename, 'w')

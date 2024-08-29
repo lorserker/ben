@@ -51,17 +51,9 @@ def get_auction_as_list(auction):
     return bid_strings
 
 def encode_bid(bid, alert_supported=False):
-    if alert_supported:
-        alert = "*" in bid
-        #Replace any alerts
-        bid = bid.replace("*",'')
-        bid_one_hot = np.zeros((1, 41), dtype=np.float16)
-        bid_one_hot[0, 40] = 1 if alert else 0
-        bid_one_hot[0, BID2ID[bid]] = 1
-    else:
-        bid = bid.replace("*",'')
-        bid_one_hot = np.zeros((1, len(BID2ID)), dtype=np.float16)
-        bid_one_hot[0, BID2ID[bid]] = 1
+    bid = bid.replace("*",'')
+    bid_one_hot = np.zeros((1, len(BID2ID)), dtype=np.float16)
+    bid_one_hot[0, BID2ID[bid]] = 1
     return bid_one_hot
 
 def get_input(lho_bid, partner_bid, rho_bid, hand, v_we, v_them):

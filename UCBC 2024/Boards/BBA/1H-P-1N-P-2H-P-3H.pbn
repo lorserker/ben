@@ -176,36 +176,6 @@ Pass  Pass
 [BidSystemEW "Sayc - Standard American Yellow Card"]
 [BidSystemNS "2/1GF - 2/1 Game Force"]
 
-
-[Event ""]
-[Site ""]
-[Date "2024.08.05"]
-[Board "5"]
-% 49E7A663D3388220EC449E709825
-[North "EPBot1"]
-[East "EPBot2"]
-[South "EPBot3"]
-[West "EPBot4"]
-[Room "Open"]
-[Dealer "S"]
-[Vulnerable "EW"]
-[Deal "N:T82.96.QJ984.AQJ Q64.J53.AK62.K95 K953.AKQ872.T3.2 AJ7.T4.75.T87643"]
-[Declarer "S"]
-[Contract "3H"]
-[Result "10"]
-[Score "NS 170"]
-[Scoring "MP"]
-[Auction "S"]
-1H    Pass  1N =1=    Pass
-2H    Pass  3H    Pass
-Pass  Pass
-[Note "1:forcing 1NT"]
-[Play "W"]
-*
-[BidSystemEW "Sayc - Standard American Yellow Card"]
-[BidSystemNS "2/1GF - 2/1 Game Force"]
-
-
 [Event ""]
 [Site ""]
 [Date "2024.08.05"]
@@ -381,38 +351,6 @@ Pass  Pass
 *
 [BidSystemEW "Sayc - Standard American Yellow Card"]
 [BidSystemNS "2/1GF - 2/1 Game Force"]
-
-
-[Event ""]
-[Site ""]
-[Date "2024.08.05"]
-[Board "12"]
-% 045403F3D62C6C1E169571DD8374
-[North "EPBot1"]
-[East "EPBot2"]
-[South "EPBot3"]
-[West "EPBot4"]
-[Room "Open"]
-[Dealer "E"]
-[Vulnerable "None"]
-[Deal "N:KT87.K3.T984.J87 A952.AJ8764..KQ3 63.T9.AJ762.AT92 QJ4.Q52.KQ53.654"]
-[Declarer "E"]
-[Contract "5H"]
-[Result "10"]
-[Score "NS 50"]
-[Scoring "MP"]
-[Auction "E"]
-1H    Pass  3H =1=    Pass
-5D =2=    X     XX    Pass
-5H    Pass  Pass  Pass
-[Note "1:1M-3M inviting"]
-[Note "2:Exclusion, for !H"]
-[Play "S"]
-*
-[BidSystemEW "Sayc - Standard American Yellow Card"]
-[BidSystemNS "2/1GF - 2/1 Game Force"]
-[OptimumResultTable "Declarer Suit Tricks"]
-E H 10
 
 [Event ""]
 [Site ""]

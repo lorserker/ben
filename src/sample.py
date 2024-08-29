@@ -316,7 +316,7 @@ class Sample:
         if self.verbose:
             print(f"n_samples {n_samples} from bidding info")
             print("n_steps", n_steps)
-        if (models.model_version == 0 or (models.ns == -1 and models.model_version < 3)):
+        if models.model_version == 0 or models.ns == -1 :
             index = 0
         else:
             index = 2
@@ -677,17 +677,6 @@ class Sample:
 
         X = np.zeros((sample_hands.shape[0], n_steps, A.shape[-1]), dtype=np.float16)
         X[:, :, :] = A
-
-        # if (models.model_version == 0 or (models.ns == -1 and models.model_version < 3)):
-        #     index = 0
-        # else:
-        #     index = 2
-
-        # X[:,:,:2+index] = A[nesw_i,0,:2]
-        # X[:,:,7+index:7+models.n_cards_bidding+index] = sample_hands.reshape((-1, 1, 32))
-        # X[:,:,7+models.n_cards_bidding+index:] = A[nesw_i,:,39:]
-        # X[:,:,2+index] = (binary.get_hcp(sample_hands).reshape((-1, 1)) - 10) / 4
-        # X[:,:,3+index:7+index] = (binary.get_shape(sample_hands).reshape((-1, 1, 4)) - 3.25) / 1.75
 
         actual_bids = bidding.get_bid_ids(auction, nesw_i, n_steps)
         if partner:
