@@ -41,7 +41,8 @@ class SuitCLib:
     def calculate(self, input_str):
         # -F5 is combines the effect of -F1 and -F4, -F7 combines all 3 options.
         # -ls2 limits the entries to 2 should be calculated
-        input_str = "-Ls -ls2 -c100 " + input_str
+        # -ls is most important when the hand to lead has length
+        input_str = "-Ls -ls1 -c100 " + input_str
         input_length = len(input_str)
         #if self.verbose:
         print("Input: " + input_str)

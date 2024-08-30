@@ -1504,6 +1504,20 @@ class CardPlayer:
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_this_trick_lead_suit(),
         )
         return x.reshape(-1)
+    
+    def calculate_trump_adjust(self, play_status):
+        trump_adjust = 0
+        # Only in suit contract and if we are on lead and we are declaring
+        if self.strain_i != 0 and play_status == "Lead" and (self.player_i == 1 or self.player_i == 3):
+            # Any outstanding trump?
+            if self.models.draw_trump_reward > 0 and self.missing_trump > 0:
+                trump_adjust = self.models.draw_trump_reward
+            # Just to be sure we wont to show opps that they have no trump
+            if self.models.draw_trump_penalty > 0 and self.missing_trump == 0:
+                trump_adjust = -self.models.draw_trump_penalty
+            if self.verbose:
+                print("Trump adjust", trump_adjust)
+        return trump_adjust
 
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status):
         t_start = time.time()
@@ -1519,23 +1533,13 @@ class CardPlayer:
 
         card_nn = {c:s for c, s in zip(card_options, card_scores)}
         
-        trump_adjust = 0
-        # Only in suit contract and if we are on lead and we are declaring
-        if self.strain_i != 0 and play_status == "Lead" and (self.player_i == 1 or self.player_i == 3):
-            # Any outstanding trump?
-            if self.models.draw_trump_reward > 0 and self.missing_trump > 0:
-                trump_adjust = self.models.draw_trump_reward
-            # Just to be sure we want to show opps rhat have no trump
-            if self.models.draw_trump_penalty > 0 and self.missing_trump == 0:
-                trump_adjust = -self.models.draw_trump_penalty
-            if self.verbose:
-                print("Trump adjust", trump_adjust)
+        trump_adjust = self.calculate_trump_adjust(play_status)
 
         candidate_cards = []
         
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
             card32 = deck52.card52to32(deck52.encode_card(str(card52)))
-            insta_score=card_nn.get(card32, 0)
+            insta_score = self.get_nn_score(card32, deck52.encode_card(str(card52)), card_nn, play_status, tricks52)
             if insta_score >= self.models.pimc_trust_NN:
                 candidate_cards.insert(0,CandidateCard(
                     card=card52,
@@ -1572,6 +1576,22 @@ class CardPlayer:
         )
         return best_card_resp
 
+    def get_nn_score(self, card32, card52, card_nn, play_status, tricks52):
+
+        if play_status == "Lead":
+            if len(tricks52) > 8:
+                #print(card52)
+                higher_cards = card52 % 13
+                for trick in tricks52:
+                    for card in trick:
+                        if card // 13 == card52 // 13:
+                            if card % 13 < card52 % 13:
+                                higher_cards -=1
+                # When playing the last 5 tricks we add priority to winners, and do not trust the neural network
+                if higher_cards == 0:
+                    return 1
+
+        return round(card_nn.get(card32, 0),3)
 
     def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status):
         t_start = time.time()
@@ -1587,6 +1607,8 @@ class CardPlayer:
 
         card_nn = {c:s for c, s in zip(card_options, card_scores)}
 
+        trump_adjust = self.calculate_trump_adjust(play_status)
+
         candidate_cards = []
         
         current_card = 0
@@ -1595,23 +1617,23 @@ class CardPlayer:
         for card52, (e_tricks, e_score, e_make) in card_dd.items():
             card32 = deck52.card52to32(card52)
             card=Card.from_code(card52)
-            insta_score = round(card_nn.get(card32, 0),3)
+            insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
                 candidate_cards.insert(0, CandidateCard(
                     card=card,
                     insta_score=insta_score,
-                    expected_tricks_dd=e_tricks,
+                    expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
                     p_make_contract=e_make,
-                    expected_score_dd=round(e_score,0),
+                    expected_score_dd=round(e_score+ (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0),0)
                 ))
             else:
                 candidate_cards.append(CandidateCard(
                     card=card,
                     insta_score=insta_score,
-                    expected_tricks_dd=e_tricks,
+                    expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
                     p_make_contract=e_make,
-                    expected_score_dd=round(e_score,0),
+                    expected_score_dd=round(e_score+ (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0),0)
                 ))
             current_card = card52
             current_insta_score = insta_score

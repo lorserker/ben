@@ -41,7 +41,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
         return candidate_cards[0].card, who
     
     if verbose:
-        print(candidate_cards[0])
+        for card in candidate_cards:
+            print(card)
 
     if play_status == "Discard":
         # As we dont give count, just discard smallest if dummy
@@ -62,6 +63,10 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             
         if player_i == 3:
             # Currently no specific rule for declarer
+            pass
+
+        if player_i == 0 or player_i == 2:
+            # Currently no specific rule for defenders
             pass
 
     # If the first card is better then don't evaluate
@@ -96,6 +101,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     break
                 else:
                     discards += c
+
     if contract[1] == "N" or models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]:
         if (player_i  == 1 or player_i == 3) and play_status == "Lead":
             # We only use SuitC the first time the suit is played - should probably look at first card in each tricks52
