@@ -17,20 +17,43 @@
 		th,
 		td {
 			text-align: left;
-			padding-left: 8px;
+			padding: 3px;
 		}
 
 		tr.us:nth-child(even) {
-			background-color: #7cbde2
+			background-color: #d4e9d4;
 		}
         tr.them:nth-child(even) {
-			background-color: #e2730c
+			background-color: #f5f5dc;
 		}
 
 		th {
 			background-color: #7c0f65;
 			color: white;
 		}
+
+		td:first-child {
+ 		   text-align: center; /* Center the content of the first cell in each row */
+		}
+        /* Basic styles for the bidding diagram */
+        .biddingdiagram {
+			width: 400px;
+            border-collapse: collapse;
+            margin: 10px;
+            margin-left: 200px;
+        }
+
+        .biddingdiagram th, .biddingdiagram td {
+            border: 1px solid #000;
+			padding: 3px;
+            text-align: center;
+        }
+
+		.spades { color: black; }
+        .hearts { color: red; }
+        .diamonds { color: red; }
+        .clubs { color: green; }
+
 	</style>
 
 	<!--JavaScript-->
@@ -74,19 +97,134 @@
 			// Start to fetch the data by using TagName 
 			for (i = x.length; i >0; i--) {
                 const bValue = x[i-1].getAttribute('b').toUpperCase();
+				if (bValue != "D") {
+					bValueHtml = bValue.replace(/S/g, '<span style="color: blue">&spades;</span>');
+					bValueHtml = bValueHtml.replace(/H/g, '<span style="color: red">&hearts;</span>');
+					bValueHtml = bValueHtml.replace(/D/g, '<span style="color: orange">&diams;</span>');
+					bValueHtml = bValueHtml.replace(/C/g, '<span style="color: green">&clubs;</span>');
+				} else {
+					bValueHtml = bValue;
+				}
                 const mValue = x[i-1].getAttribute('m');
-				table += "<tr class="+ who + "><td><a href=?bid="+  bid.substring(0,bid.length - 1) + bValue + "-*>" + bValue + "</a></td><td>" + mValue + "</td></tr>";
+				mValueHtml = mValue .replace(/!S/g, '<span style="color: blue">&spades;</span>');
+				mValueHtml = mValueHtml.replace(/!H/g, '<span style="color: red">&hearts;</span>');
+				mValueHtml = mValueHtml.replace(/!D/g, '<span style="color: orange">&diams;</span>');
+				mValueHtml = mValueHtml.replace(/!C/g, '<span style="color: green">&clubs;</span>');
+				mValueHtml = replaceSuitsBeforeDoubleDash(mValueHtml);
+				mValueHtml = replaceSuits(mValueHtml);
+				table += "<tr class="+ who + "><td><a href=?bid="+  bid.substring(0,bid.length - 1) + bValue + "-*>" + bValueHtml + "</a></td><td>" + mValueHtml + "</td></tr>";
 			}
 
 			// Print the xml data in table form
 			document.getElementById("id").innerHTML = table;
 		}
+				// Define a mapping of card suits to HTML symbols
+		const suitMapping = {
+			'C': '<span style="color: green">&clubs;</span>', 
+			'D': '<span style="color: orange">&diams;</span>', 
+			'H': '<span style="color: red">&hearts;</span>',
+			'S': '<span style="color: blue">&spades;</span>'
+		};
+
+		// Define a function to replace card codes with HTML symbols
+		function replaceSuits(text) {
+			// Create a regular expression pattern to match card codes
+			const pattern = /\b[1-7][CDHS]\b/g;
+			
+			// Replace function that will use the suitMapping to replace suits
+			return text.replace(pattern, (match) => {
+				const suit = match[1]; // Extract the suit character (C, D, H, S)
+				return match[0] + suitMapping[suit] || match; // Replace with the HTML symbol or leave unchanged
+			});
+		}
+
+		// Define a function to replace suit symbols only before --
+		function replaceSuitsBeforeDoubleDash(text) {
+
+			if (!text.includes('--')) {
+    		    return text; // No replacement needed if '--' is not present
+    		}
+				// Split the text at '--'
+			const [beforeDoubleDash, afterDoubleDash] = text.split('--', 2);
+			
+			// Create a regular expression pattern to match suit symbols alone
+			const pattern = /(?<=\s|\(|^)[1-7]?[CDHS](?=\s|\)|$)/g;
+
+			// Replace suits in the part before '--'
+			const replacedBeforeDoubleDash = beforeDoubleDash.replace(pattern, (match) => {
+				// Extract the suit character (C, D, H, S) based on its position
+				const suit = match.match(/[CDHS]/)[0]; // Match the suit character
+				return suitMapping[suit] || match; // Replace with the HTML symbol or leave unchanged
+			});			
+			// Combine the parts back together
+			return replacedBeforeDoubleDash + (afterDoubleDash ? '--' + afterDoubleDash : '');
+		}		
 	</script>
 </head>
 
 <body onload="loadXMLDoc()">
 
 	<br><br>
+	<h1>GIB Bidding Definitions</h1>
+    <h2>Current bidding: </h2>
+    <table class="biddingdiagram">
+		<tbody id="biddingTable">
+            <tr>
+                <th width="25%">We</th>
+                <th width="25%">They</th>
+                <th width="25%">We</th>
+                <th width="25%">They</th>
+            </tr>
+        </tbody>
+    </table>
+	<br>
+    <script>
+        function formatBid(bid) {
+            return bid.replace(/S/g, '<span class="spades">♠</span>')
+                      .replace(/H/g, '<span class="hearts">♥</span>')
+                      .replace(/D/g, '<span class="diamonds">♦</span>')
+                      .replace(/C/g, '<span class="clubs">♣</span>')
+					  .replace(/\*/g, '?');
+        }
+
+		// Get the query string from the URL
+        const queryString = window.location.search;
+
+        // Create a URLSearchParams object
+        const urlParams = new URLSearchParams(queryString);
+
+        // Get the value of the 'bid' parameter
+        let bidValue = urlParams.get('bid');
+
+        // Replace the last '*' with '?'
+        if (bidValue) {
+
+			const bids = bidValue.split('-');
+
+            // Select the table body
+            const biddingTable = document.getElementById('biddingTable');
+
+            // Create rows dynamically
+            for (let i = 0; i < bids.length; i += 4) {
+                // Create a new row
+                const row = document.createElement('tr');
+
+                // Create and populate cells for this row
+                for (let j = 0; j < 4; j++) {
+                    const cell = document.createElement('td');
+                    if (bids[i + j]) {
+                        cell.innerHTML = formatBid(bids[i + j]);
+                    } else {
+                        cell.innerHTML = '&nbsp;';
+                    }
+                    row.appendChild(cell);
+                }
+
+                // Append the row to the table
+                biddingTable.appendChild(row);
+			}
+		}
+		</script>
 	<table id="id"></table>
 </body>
 
