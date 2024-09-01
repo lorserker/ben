@@ -387,17 +387,24 @@ class Sample:
             # Initialize an array to store distances
             distances = np.zeros(n_samples, dtype=np.float16)
             # Calculate the Euclidean distance for each index
+            # Small distance is good
             for i in range(n_samples):
-                # Calculate absolute differences
                 abs_diff_lho = np.abs(min_scores[i] - min_scores_lho[i])
+                #print(hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), abs_diff_lho)
                 abs_diff_partner = np.abs(min_scores[i] - min_scores_partner[i])
+                #print(hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding), abs_diff_partner)
                 abs_diff_rho = np.abs(min_scores[i] - min_scores_rho[i])
+                #print(hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding), abs_diff_rho)
                 
                 distances[i] = abs_diff_lho + 2 * abs_diff_partner + abs_diff_rho
-                # Increase the distance if any absolute difference is less than 0.001
-                if abs_diff_lho < self.exclude_samples or abs_diff_partner < self.exclude_samples or abs_diff_rho < self.exclude_samples:
+                # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
+                if abs_diff_partner > 1 - self.exclude_samples: 
+                    # we do not want to exclude any samples for the oppponents
+                    #or abs_diff_partner < self.exclude_samples or abs_diff_rho < self.exclude_samples:
                     distances[i] += 1
-                    
+
+                #print(hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), abs_diff_lho, hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding),abs_diff_partner, hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding),abs_diff_rho)
+                  
             # Normalize the total distance to a scale between 0 and 100
             max_distance = 4  # Replace with the maximum possible distance in your context
             scaled_distance_A = ((max_distance - distances) / max_distance)
