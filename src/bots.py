@@ -189,7 +189,7 @@ class BotBid:
                             # Sort the array in ascending order
                             sorted_arr = np.sort(ev)
                             # Determine the number of elements to remove (top 25%)
-                            n_elements_to_remove = len(sorted_arr) // (100 / self.models.adjust_X_remove)
+                            n_elements_to_remove = len(sorted_arr) * self.models.adjust_X_remove // 100
                             # Keep the lowest 75%
                             ev = sorted_arr[:-n_elements_to_remove]
 
