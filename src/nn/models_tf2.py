@@ -96,7 +96,7 @@ class Models:
         self.adjust_NN_Few_Samples = adjust_NN_Few_Samples
         self.adjust_XX = adjust_XX
         self.adjust_X = adjust_X
-        adjust_X_remove = adjust_X_remove
+        self.adjust_X_remove = adjust_X_remove
         self.adjust_passout = adjust_passout
         self.adjust_passout_negative = adjust_passout_negative
         self.adjust_min1 = adjust_min1
