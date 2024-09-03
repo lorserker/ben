@@ -183,11 +183,11 @@ class TMClient:
                 await self.send_own_bid(bid_resp.bid, bid_resp.alert)
             else:
                 # just wait for the other player's bid
-                bid = await self.receive_bid_for(player_i)
+                bid, alert = await self.receive_bid_for(player_i)
                 if (player_i + 2) % 4 == self.player_i:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.partner, quality=None, alert=None)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.partner, quality=None, alert=alert)
                 else:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None, alert=None)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None, alert=alert)
                 self.bid_responses.append(bid_resp)
                 auction.append(bid)
 
@@ -637,11 +637,13 @@ class TMClient:
         else:
             bid = bid_resp_parts[1].upper()
 
+        alert = bid_resp_parts[-1] == "Alert."
+
         return {
             'PASSES': 'PASS',
             'DOUBLES': 'X',
             'REDOUBLES': 'XX'
-        }.get(bid, bid)
+        }.get(bid, bid), alert
 
     async def receive_dummy(self):
         dummy_i = (self.decl_i + 2) % 4

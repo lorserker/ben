@@ -74,8 +74,8 @@ board[C_SOUTH, C_NS] = 15
 board[C_WEST, C_WE] = 16
 
 def is_valid_deal_id(deal_id):
-    # Check if the deal_id is a valid hexadecimal string
-    return bool(re.match('^[0-9a-fA-F]{32}$', deal_id))
+    # Check if the deal_id is a valid hexadecimal string or in the form 'xxx-Open' or 'xxx-Closed'
+    return bool(re.match(r'^([0-9a-fA-F]{32}|[0-9]+-(Open|Closed))$', deal_id))
 
 def hand_as_string(hand):
     s = ""

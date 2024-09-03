@@ -906,7 +906,11 @@
                 }
 
                 if (action == 'bid') {
-                    document.getElementById('result').innerText = `BEN Suggest: ${data.bid}`;
+                    if (data.alert == "True") {
+                        document.getElementById('result').innerText = `BEN Suggest: ${data.bid}*`;
+                    } else {
+                        document.getElementById('result').innerText = `BEN Suggest: ${data.bid}`;
+                    }
                     displayBid(data);
                 }
                 if (action == 'contract') {

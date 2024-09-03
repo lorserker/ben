@@ -21,6 +21,7 @@ class Models:
                  adjust_NN_Few_Samples,
                  adjust_XX,
                  adjust_X,
+                 adjust_X_remove,
                  adjust_passout,
                  adjust_passout_negative,
                  adjust_min1,
@@ -95,6 +96,7 @@ class Models:
         self.adjust_NN_Few_Samples = adjust_NN_Few_Samples
         self.adjust_XX = adjust_XX
         self.adjust_X = adjust_X
+        adjust_X_remove = adjust_X_remove
         self.adjust_passout = adjust_passout
         self.adjust_passout_negative = adjust_passout_negative
         self.adjust_min1 = adjust_min1
@@ -163,6 +165,7 @@ class Models:
         adjust_NN_Few_Samples = conf.getint('adjustments', 'adjust_NN_Few_Samples', fallback=500)
         adjust_XX = conf.getint('adjustments', 'adjust_XX', fallback=100)
         adjust_X = conf.getint('adjustments', 'adjust_X', fallback=100)
+        adjust_X_remove = conf.getint('adjustments', 'adjust_X_remove', fallback=10)
         adjust_passout = conf.getint('adjustments', 'adjust_passout', fallback=-100)
         adjust_passout_negative = conf.getint('adjustments', 'adjust_passout_negative', fallback=3)
         adjust_min1 = conf.getfloat('adjustments', 'adjust_min1', fallback=0.002)
@@ -261,6 +264,7 @@ class Models:
             adjust_NN_Few_Samples=adjust_NN_Few_Samples,
             adjust_XX=adjust_XX,
             adjust_X=adjust_X,
+            adjust_X_remove=adjust_X_remove,
             adjust_passout=adjust_passout,
             adjust_passout_negative=adjust_passout_negative,
             adjust_min1=adjust_min1,

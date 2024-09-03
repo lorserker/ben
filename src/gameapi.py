@@ -17,9 +17,9 @@ from flask_cors import CORS
 import json
 import os
 import logging
+from logging.handlers import TimedRotatingFileHandler
 import uuid
 import shelve
-import logging
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -348,9 +348,32 @@ app = Flask(__name__)
 CORS(app) 
 
 # Set up logging
-logging.basicConfig(filename='logs/app.log', level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
+class PrefixedTimedRotatingFileHandler(TimedRotatingFileHandler):
+    def __init__(self, prefix, when='midnight', interval=1, backupCount=0):
+        self.prefix = prefix
+        filename = self.get_filename()
+        super().__init__(filename, when, interval, backupCount)
+
+    def get_filename(self):
+        date_str = datetime.datetime.now().strftime('%Y-%m-%d')
+        return f"{self.prefix}-{date_str}.log"
+
+    def doRollover(self):
+        self.stream.close()
+        self.baseFilename = self.get_filename()
+        self.mode = 'a'
+        self.stream = self._open()
+
+# Set up logging
+log_handler = PrefixedTimedRotatingFileHandler(prefix='logs/gameapi', when="midnight", interval=1)
+log_handler.setLevel(logging.INFO)
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+log_handler.setFormatter(formatter)
 
 logger = logging.getLogger(__name__)
+logger.addHandler(log_handler)
+logger.setLevel(logging.INFO)
+
 @app.before_request
 def log_request_info():
     logger.info(f"Request: {request.method} {request.url}")
@@ -421,7 +444,7 @@ def bid():
         else:
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
         bid = hint_bot.bid(auction)
-        print("Bidding: ",bid.bid)
+        print("Bidding: ",bid.bid, "Alert" if bid.alert else "")
         result = bid.to_dict()
         if explain:
             from bba.BBA import BBABotBid

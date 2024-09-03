@@ -160,7 +160,6 @@ class BotBid:
 
                 adjust = 0
 
-
                 # If we have really bad scores because we added som extra, reduce the result from those
                 if candidate.insta_score < self.models.adjust_min1:
                     adjust -= self.models.adjust_min1_by
@@ -185,28 +184,45 @@ class BotBid:
                             adjust += self.models.adjust_passout
 
                 # If we are doubling as penalty in the pass out-situation
-                if passout and candidate.bid == "X" and candidate.insta_score < self.min_candidate_score:
-                    # Don't double unless the expected score is positive with a margin
-                    # if they are vulnerable
-                    # We should probably try to detect is they are sacrificing
-                    if self.vuln[(self.seat + 1) % 2]:
-                        if expected_score < 200:
-                            adjust -= 2 * self.models.adjust_X
-                        else:
-                            adjust -= self.models.adjust_X
-                    else:
-                        if expected_score < 100:
-                            adjust -= 2 * self.models.adjust_X
-                        else:
-                            adjust -= self.models.adjust_X
+                    if candidate.bid == "X":
+                        if self.models.adjust_X_remove > 0:
+                            # Sort the array in ascending order
+                            sorted_arr = np.sort(ev)
+                            # Determine the number of elements to remove (top 25%)
+                            n_elements_to_remove = len(sorted_arr) // (100 / self.models.adjust_X_remove)
+                            # Keep the lowest 75%
+                            ev = sorted_arr[:-n_elements_to_remove]
 
-                if candidate.bid == "XX":
-                    # Don't redouble unless the expected score is positive with a margin
-                    # if they are vulnerable
-                    if self.vuln[(self.seat) % 2]:
-                        adjust -= 2 * self.models.adjust_XX
-                    else:
-                        adjust -= self.models.adjust_XX
+                        # Don't double unless the expected score is positive with a margin
+                        # if they are vulnerable
+                        # We should probably try to detect if they are sacrificing
+                        if self.vuln[(self.seat + 1) % 2]:
+                            if expected_score < 200:
+                                adjust -= 2 * self.models.adjust_X
+                            else:
+                                adjust -= self.models.adjust_X
+                        else:
+                            if expected_score < 100:
+                                adjust -= 2 * self.models.adjust_X
+                            else:
+                                adjust -= self.models.adjust_X
+
+                    if candidate.bid == "XX":
+                        # Don't redouble unless the expected score is positive with a margin
+                        # if they are vulnerable
+                        if self.vuln[(self.seat) % 2]:
+                            adjust -= 2 * self.models.adjust_XX
+                        else:
+                            adjust -= self.models.adjust_XX
+                else:
+                    # Just a general adjustment of doubles
+                    if candidate.bid == "X" and candidate.insta_score < 0.5:
+                        adjust -= self.models.adjust_X
+
+                # The problem is that with a low score for X the expected bidding can be very wrong
+                if candidate.bid == "X" and candidate.insta_score < 0.01:
+                        adjust -= 2*self.models.adjust_X
+
 
                 # Consider adding a penalty for jumping to slam
                 # Another options could be to count number of times winning the slam
@@ -266,7 +282,9 @@ class BotBid:
             if candidates[0].bid == "PASS" and len(samples) > 0 and (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score) and good_quality:
                 # We need to find a sample or two from the bidding
                 alternatives = {}
-                current_contract = bidding.get_contract(auction)[0:2]
+                current_contract = bidding.get_contract(auction)
+                isdoubled = current_contract[-1] == "X" 
+                current_contract = current_contract[0:2]
                 if self.verbose:
                     print("check_final_contract, current_contract", current_contract)
                 break_outer = False
@@ -385,7 +403,7 @@ class BotBid:
                         ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
                         evd= self.expected_score_doubled(len(auction) % 4, contracts, decl_tricks_softmax)
                         expected_score = np.mean(ev)
-                        expected_score_doubled = np.mean(ev)
+                        expected_score_doubled = np.mean(evd)
                         # Take the lowest score of the two
                         if expected_score_doubled < expected_score:
                             expected_score = expected_score_doubled

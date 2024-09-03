@@ -235,6 +235,11 @@ class BidResp:
         self.quality = quality
         self.alert = alert
     
+    def __str__(self):
+        bid_str = self.bid.ljust(4) if self.bid is not None else "    "
+        alert_str = "alertable" if self.alert else "  "
+        return f"BidResp(bid={bid_str}, who={self.who}, alert={alert_str})"
+
     def convert_to_floats(self, array):
         return [round(float(value), 1) if float(value) != int(value) else int(value) for value in array]
 
@@ -269,7 +274,7 @@ class BidResp:
         if shape_values and shape_values != -1:
             result['shape'] = shape_values
 
-        if self.alert is not None:
+        if self.alert:
             result['alert'] = str(self.alert)
 
         return result

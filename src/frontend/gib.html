@@ -180,10 +180,15 @@
 	<br>
     <script>
         function formatBid(bid) {
+			if (bid === "D") {
+        		return "X";
+    		}
+    
             return bid.replace(/S/g, '<span class="spades">♠</span>')
                       .replace(/H/g, '<span class="hearts">♥</span>')
                       .replace(/D/g, '<span class="diamonds">♦</span>')
                       .replace(/C/g, '<span class="clubs">♣</span>')
+                      .replace(/R/g, 'XX')
 					  .replace(/\*/g, '?');
         }
 

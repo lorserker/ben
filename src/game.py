@@ -511,7 +511,7 @@ class Driver:
                         card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
 
                         if (str(card_resp.card).startswith("Conceed")) :
-                                self.claimedbydeclarer = False
+                                self.claimedbydeclarer = (player_i == 3) or (player_i == 1)
                                 self.claimed = 0
                                 self.conceed = True
                                 self.trick_winners = trick_won_by
