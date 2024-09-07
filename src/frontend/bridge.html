@@ -263,6 +263,10 @@
             }
             ws.send(event.target.textContent)
             deal.expectBidInput = (event.target.textContent != "Hint")
+            // Start spinner if asking for Hint
+            if (!deal.expectBidInput)
+                document.querySelector("#loader").style.visibility = "visible"; 
+
         }
 
         function bidSuitClick(event) {

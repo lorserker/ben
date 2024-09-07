@@ -17,16 +17,17 @@
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
-
+        formerror = false
         // You can add a message or any other functionality after copying
         alert('Copied to clipboard: ' + text);
         }
     
         function validateForm(name) {
+            formerror = false
             var textareaValue = document.getElementById(name).value.trim();
             if (textareaValue === "") {
                 alert("Please enter some input before submitting.");
-                event.preventDefault()
+                formerror = true
                 return false; // Prevent form submission
             }
             return true; // Allow form submission
@@ -81,7 +82,7 @@
         </select><br>
         <label for="deal">Deal in this format: J2.QJ53.T8754.84 64.K62.Q62.AJT65 KQ985.A.A93.K732 AT73.T9874.KJ.Q9:</label>
         <textarea id="deal" name="dealtext" cols="40"></textarea><br>
-        <button type="submit" class="submit-button" data-form="form1" onclick="return validateForm('deal')">Play from text</button>    
+        <button type="submit" class="submit-button" data-form="form1" onclick="return validateForm(event, 'deal')">Play from text</button>    
     </form>
     </div>
     <br>
@@ -322,7 +323,7 @@ let selectedForm = null;
 function includeCheckboxValues(event) {
     event.preventDefault(); // Prevents the default form submission
 
-    if (selectedForm) {
+    if (selectedForm && !formerror) {
         const formData = new FormData(selectedForm);
         const checkboxes = [checkbox1, checkbox2, checkbox3, checkbox4, checkbox5, checkbox6, checkbox7, checkbox8, checkbox9, checkbox10];
         checkboxes.forEach(checkbox => {
@@ -360,6 +361,7 @@ function includeCheckboxValues(event) {
             // Handle error
         });
         console.log('Form Data:', formData); // For demonstration purposes
+        formerror = false
     };
 }
 

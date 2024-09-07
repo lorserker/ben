@@ -378,14 +378,15 @@ logger.setLevel(logging.INFO)
 def log_request_info():
     logger.info(f"Request: {request.method} {request.url}")
     #logger.info(f"Headers: {request.headers}")
-    #logger.info(f"Body: {request.get_data()}")
+    if request.method == "POST":
+        logger.info(f"Body: {request.get_data()}")
 
 
 @app.after_request
 def log_response_info(response):
     #logger.info(f"Response status: {response.status}")
     #logger.info(f"Response headers: {response.headers}")
-    logger.info(f"Response body: {response.get_data()}")
+    logger.info(f"Response body: {response.status} {response.get_data()}")
     return response
 
 

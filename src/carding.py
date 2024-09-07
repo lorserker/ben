@@ -106,8 +106,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
         if (player_i  == 1 or player_i == 3) and play_status == "Lead":
             # We only use SuitC the first time the suit is played - should probably look at first card in each tricks52
             if original_count == current_count and models.use_suitc:
-                print("SuitC activated")
                 if verbose:
+                    print("SuitC activated")
                     print("discards", discards)
                     print("current_count", current_count)
                     print("tricks52",tricks52)
