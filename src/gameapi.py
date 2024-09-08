@@ -20,6 +20,7 @@ import logging
 from logging.handlers import TimedRotatingFileHandler
 import uuid
 import shelve
+from threading import Lock
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
@@ -347,6 +348,9 @@ print(f'http://{host}:{port}/')
 app = Flask(__name__)
 CORS(app) 
 
+# Initialize the lock
+model_lock_bid = Lock()
+model_lock_play = Lock()
 # Set up logging
 class PrefixedTimedRotatingFileHandler(TimedRotatingFileHandler):
     def __init__(self, prefix, when='midnight', interval=1, backupCount=0):
@@ -444,7 +448,8 @@ def bid():
             hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
         else:
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
-        bid = hint_bot.bid(auction)
+        with model_lock_bid:
+            bid = hint_bot.bid(auction)
         print("Bidding: ",bid.bid, "Alert" if bid.alert else "")
         result = bid.to_dict()
         if explain:
@@ -508,7 +513,8 @@ def lead():
             return json.dumps(result)
 
         hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, verbose)
-        card_resp = hint_bot.find_opening_lead(auction)
+        with model_lock_play:
+            card_resp = hint_bot.find_opening_lead(auction)
         user = request.args.get("user")
         #card_resp.who = user
         print("Leading:", card_resp.card.symbol())
@@ -603,7 +609,8 @@ def play():
             cardplayer = 2
         #print("cardplayer:",cardplayer)
         #print(hands)
-        card_resp, player_i =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
+        with model_lock_play:
+            card_resp, player_i =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
         result["player"] = player_i
@@ -697,7 +704,8 @@ def cuebid():
         hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
     else:
         hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
-    bid = hint_bot.bid(auction)
+    with model_lock_bid:
+        bid = hint_bot.bid(auction)
     print("Bidding: ",bid.bid)
     result = bid.to_dict()
     if explain:
@@ -757,19 +765,20 @@ def contract():
     # And finally we deduct our position
     position_i = dealer_enum[seat]
     X = get_binary_contract(position_i, vuln, hand_str, dummy_str)
-    contract_id, doubled, tricks = models.contract_model.model[0](X)
-    contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
-    result = {"contract": contract,
-              "tricks": tricks}
-    print(result)
-    # New call to get top 3 tricks
-    top_k_indices_tricks, top_k_probs_tricks = models.contract_model.model[1](X)
-    print(top_k_indices_tricks, top_k_probs_tricks)
+    with model_lock_bid:
+        contract_id, doubled, tricks = models.contract_model.model[0](X)
+        contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
+        result = {"contract": contract,
+                "tricks": tricks}
+        print(result)
+        # New call to get top 3 tricks
+        top_k_indices_tricks, top_k_probs_tricks = models.contract_model.model[1](X)
+        print(top_k_indices_tricks, top_k_probs_tricks)
 
-    # New call to get top 3 contracts
-    top_k_indices_oh, top_k_probs_oh = models.contract_model.model[2](X, k=3)
-    print(top_k_indices_oh, top_k_probs_oh)
-    print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        # New call to get top 3 contracts
+        top_k_indices_oh, top_k_probs_oh = models.contract_model.model[2](X, k=3)
+        print(top_k_indices_oh, top_k_probs_oh)
+        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
     return json.dumps(result)    
 
 
