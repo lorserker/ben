@@ -14,7 +14,7 @@ class Models:
 
     def __init__(self, name, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
                  min_passout_candidates, min_rescue_reward, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd, pimc_apriori_probability,
+                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_ben_dd_defending, pimc_apriori_probability,
                  use_adjustment,
                  adjust_NN,
                  adjust_NN_Few_Samples,
@@ -157,7 +157,8 @@ class Models:
         autoplaysingleton = conf.getboolean('pimc', 'autoplaysingleton', fallback=False)
         pimc_max_threads = conf.getint('pimc', 'pimc_max_threads', fallback=-1)
         pimc_trust_NN = conf.getfloat('pimc', 'pimc_trust_NN', fallback=0)
-        pimc_ben_dd = conf.getboolean('pimc', 'pimc_ben_dd', fallback=False)
+        pimc_ben_dd_declaring = conf.getboolean('pimc', 'pimc_ben_dd_declaring', fallback=False)
+        pimc_ben_dd_defending = conf.getboolean('pimc', 'pimc_ben_dd_defending', fallback=False)
         pimc_apriori_probability = conf.getboolean('pimc', 'pimc_apriori_probability', fallback=False)
         use_adjustment = conf.getboolean('adjustments', 'use_adjustment', fallback=True)
         adjust_NN = conf.getint('adjustments', 'adjust_NN', fallback=50)
@@ -266,7 +267,8 @@ class Models:
             autoplaysingleton=autoplaysingleton,
             pimc_max_threads=pimc_max_threads,
             pimc_trust_NN=pimc_trust_NN,
-            pimc_ben_dd=pimc_ben_dd,
+            pimc_ben_dd_declaring=pimc_ben_dd_declaring,
+            pimc_ben_dd_defending=pimc_ben_dd_defending,
             pimc_apriori_probability=pimc_apriori_probability,
             use_adjustment=use_adjustment,
             adjust_NN=adjust_NN,

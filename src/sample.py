@@ -11,6 +11,7 @@ from util import get_all_hidden_cards, calculate_seed, convert_to_probability
 from configparser import ConfigParser
 from util import hand_to_str
 
+np.set_printoptions(precision=2, suppress=True, linewidth=220, threshold=np.inf)
 
 def get_small_out_i(small_out):
     x = small_out.copy()
@@ -176,14 +177,16 @@ class Sample:
         # calculate missing hcp
         missing_hcp = 40 - binary.get_hcp(np.array([my_hand]))[0]
 
-        if self.verbose:
-            print("missing_hcp:", missing_hcp)
 
         if missing_hcp > 0:
-            hcp_reduction_factor = self.hcp_reduction_factor * np.sum(r_hcp) / missing_hcp
+            hcp_reduction_factor = self.hcp_reduction_factor * np.sum(r_hcp[0]) / missing_hcp
         else:
             hcp_reduction_factor = 0
-            
+
+        if self.verbose:
+            print("Missing HCP:", missing_hcp)
+            print("Expected HCP:",r_hcp[0])
+            print("hcp_reduction_factor:", hcp_reduction_factor, self.hcp_reduction_factor)            
 
         # print(ak_out_i)
         # all AK's in the same hand
@@ -299,23 +302,24 @@ class Sample:
             print("n_samples", n_samples)
 
         c_hcp, c_shp = self.get_bidding_info(n_steps, auction, nesw_i, hand, vuln, models)        
+          
+        lho_pard_rho = self.sample_cards_vec(n_samples, c_hcp[0], c_shp[0], hand.reshape(models.n_cards_bidding), rng, models.n_cards_bidding)
+
+        # Consider saving the generated boards, and add the result from previous sampling to this output
+        n_samples = lho_pard_rho.shape[0]
+        if self.verbose:
+            print(f"n_samples {n_samples} from bidding info")
 
         n_steps = binary.calculate_step_bidding(auction)
+        if self.verbose:
+            print("n_steps", n_steps)
 
         # The hand used as input is our hand, but it will be overwritten with the sampled hand for that player
         A_lho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 1) % 4, hand, vuln, models, models.n_cards_bidding)
         A_pard = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 2) % 4, hand, vuln, models, models.n_cards_bidding)
         A_rho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 3) % 4, hand, vuln, models, models.n_cards_bidding)
         #print("RHO: ", n_steps, auction, (nesw_i + 3) % 4, hand, vuln, models)
-            
-        lho_pard_rho = self.sample_cards_vec(n_samples, c_hcp[0], c_shp[0], hand.reshape(models.n_cards_bidding), rng, models.n_cards_bidding)
 
-        # Consider saving the generated boards, and add the result from previous sampling to this output
-        n_samples = lho_pard_rho.shape[0]
-
-        if self.verbose:
-            print(f"n_samples {n_samples} from bidding info")
-            print("n_steps", n_steps)
         if models.model_version == 0 or models.ns == -1 :
             index = 0
         else:
@@ -368,9 +372,14 @@ class Sample:
         min_scores_partner = np.ones(n_samples)
         min_scores_rho = np.ones(n_samples)
 
+        lho_bids = 0
+        pard_bids = 0
+        rho_bids = 0
+
         for i in range(n_steps):
             if lho_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores_lho = np.minimum(min_scores_lho, lho_sample_bids[:, i, lho_actual_bids[i]])
+                lho_bids += 1
                 #print(lho_actual_bids[i])
                 # if (lho_actual_bids[i] == 31):
                 #     for j in range(n_samples):
@@ -380,8 +389,16 @@ class Sample:
                 
             if pard_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores_partner = np.minimum(min_scores_partner, pard_sample_bids[:, i, pard_actual_bids[i]])
+                pard_bids += 1
             if rho_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores_rho = np.minimum(min_scores_rho, rho_sample_bids[:, i, rho_actual_bids[i]])
+                rho_bids += 1
+
+        if self.verbose:
+            print("lho_bids", lho_bids, "pard_bids", pard_bids, "rho_bids", rho_bids)
+
+        #print(min_scores_rho)
+        no_of_bids = lho_bids + pard_bids + rho_bids
         
         if self.use_distance:
             # Initialize an array to store distances
@@ -396,17 +413,19 @@ class Sample:
                 abs_diff_rho = np.abs(min_scores[i] - min_scores_rho[i])
                 #print(hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding), abs_diff_rho)
                 
-                distances[i] = abs_diff_lho + 2 * abs_diff_partner + abs_diff_rho
+                distances[i] = (abs_diff_lho * lho_bids + 2 * abs_diff_partner * pard_bids + abs_diff_rho * rho_bids) / no_of_bids
                 # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
                 if abs_diff_partner > 1 - self.exclude_samples: 
                     # we do not want to exclude any samples for the oppponents
                     #or abs_diff_partner < self.exclude_samples or abs_diff_rho < self.exclude_samples:
-                    distances[i] += 1
-
-                #print(hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), abs_diff_lho, hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding),abs_diff_partner, hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding),abs_diff_rho)
+                    distances[i] += 10
+                #if min_scores_rho[i] >= 0.99:
+                #    print(hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), round(abs_diff_lho,3), hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding),round(abs_diff_partner,3), hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding),round(abs_diff_rho,3)
                   
             # Normalize the total distance to a scale between 0 and 100
-            max_distance = 4  # Replace with the maximum possible distance in your context
+            max_distance = lho_bids + 2 * pard_bids + rho_bids  # Replace with the maximum possible distance in your context
+            if self.verbose:
+                print("Max distance", max_distance)
             scaled_distance_A = ((max_distance - distances) / max_distance)
 
             # Get the indices that would sort min_scores in descending order

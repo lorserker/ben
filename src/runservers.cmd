@@ -6,10 +6,10 @@ start "App Server - Local on port :8081" python appserver.py --port 8081
 timeout /t 2 /nobreak >nul
 rem Used from BBO 
 start "TF2 Api external :80 (BBO)" python gameapi.py --config config\default_TF2_Short.conf --port 80 --host 0.0.0.0
-timeout /t 5 /nobreak >nul
+timeout /t 10 /nobreak >nul
 rem start "TF2 Api internal :8085" python gameapi.py --config config\default_TF2.conf --host 0.0.0.0
 start "TF2 Api internal :8085 (API)" python gameapi.py --config config\default_TF2_Short.conf --host 0.0.0.0
-timeout /t 5 /nobreak >nul
+timeout /t 10 /nobreak >nul
 start "Old Api :8088" python gameapi.py --host 0.0.0.0 --config config\default_Api.conf --port 8088
 timeout /t 2 /nobreak >nul
 start "2/1" python gameserver.py --config config\default_api.conf --port 4440

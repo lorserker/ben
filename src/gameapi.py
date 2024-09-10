@@ -360,7 +360,7 @@ class PrefixedTimedRotatingFileHandler(TimedRotatingFileHandler):
 
     def get_filename(self):
         date_str = datetime.datetime.now().strftime('%Y-%m-%d')
-        return f"{self.prefix}-{date_str}.log"
+        return f"{self.prefix}-{host}-{port}-{date_str}.log"
 
     def doRollover(self):
         self.stream.close()

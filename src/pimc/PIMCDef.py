@@ -102,6 +102,8 @@ class BGADefDLL:
         else:
             margin_declarer = 2
             margin_partner = 2
+        
+        # Perhaps we should use another margin for trump
 
         allready_shown_partner = [0,0,0,0]
         allready_shown_partner[0] = 13 - self.partner_constraints.MaxSpades

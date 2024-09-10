@@ -471,7 +471,7 @@ class TMClient:
                     if isinstance(card_players[3], bots.CardPlayer) and card_players[3].pimc :
                         card_players[3].pimc.update_trick_needed()
 
-            print('{} trick52 {} cards={}. won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
+            print('{} trick {} cards={}. won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
 
             # update cards shown
             for i, card32 in enumerate(current_trick):
@@ -662,12 +662,15 @@ class TMClient:
     async def send_ready(self):
         await self.send_message(f'{self.seat} ready to start')
 
-    async def receive_deal(self):
+    async def receive_deal(self, restart=False):
         np.random.seed(42)
 
         #If we are restarting a match we will receive 
         # 'Board number 1. Dealer North. Neither vulnerable. \r\n'
-        deal_line_1 = await self.receive_line()
+        if restart:
+            deal_line_1 = "start of board"
+        else:
+            deal_line_1 = await self.receive_line()
 
         while deal_line_1.lower() == "start of board":
             await self.send_message(f'{self.seat} ready for deal')
@@ -692,7 +695,7 @@ class TMClient:
             print("Deal not received", deal_line_2)
             raise ValueError("Deal not received")
         
-        if deal_line_2 == "Start of board":
+        if deal_line_2.lower() == "start of board":
             # Restart so we get the hand next
             deal_line_2 = await self.receive_line()
         hand_str = TMClient.parse_hand(deal_line_2)
@@ -708,12 +711,12 @@ class TMClient:
     @staticmethod
     def parse_hand(s):
         # Translate hand from Tablemanager format to PBN
-        print("Parse hand",s)
         try:
             hand = s[s.index(':') + 1 : s.rindex('.')] \
                 .replace(' ', '').replace('-', '').replace('S', '').replace('H', '').replace('D', '').replace('C', '')
             return hand
         except Exception as ex:
+            print("Parse hand",s)
             print(ex)
             print(f"Protocol error. Received {s} - Expected a hand")
 
@@ -848,9 +851,11 @@ async def main():
 
     while client.is_connected:
         t_start = time.time()
-        await client.run(biddingonly)
+        restart =await client.run(biddingonly)
         # The deal just played is saved for later review
         # if bidding only we do not save the deal
+        if restart:
+            continue
         if not biddingonly:
             # If we just played board 1 we assume a new match
             deal = client.to_dict()

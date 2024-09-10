@@ -293,8 +293,12 @@ class BotBid:
                     print("check_final_contract, current_contract", current_contract)
                 break_outer = False
                 for i in range(min(len(samples), self.models.max_samples_checked)):
+                    sample = samples[i].split(" ")
                     if self.verbose:
-                        print(samples[i].split(" ")[(self.seat + 2) % 4])
+                        #print(samples[i].split(" ")[(self.seat + 2) % 4])
+                        print(sample[(self.seat + 2) % 4], sample[4])
+                    if float(sample[4]) < self.sample.bidding_threshold_sampling * 0.9:
+                        continue
                     X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
                     contract_id, doubled, tricks = self.models.contract_model.model[0](X)
                     contract = bidding.ID2BID[contract_id] 
@@ -1322,7 +1326,7 @@ class CardPlayer:
             if self.verbose:
                 print("PIMC result:",pimc_resp_cards)
             assert pimc_resp_cards is not None, "PIMC result is None"
-            if self.models.pimc_ben_dd:
+            if self.models.pimc_ben_dd_declaring:
                 #print(pimc_resp_cards)
                 dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
                 #print(dd_resp_cards)
@@ -1336,7 +1340,14 @@ class CardPlayer:
                 if self.verbose:
                     print("PIMC result:",pimc_resp_cards)
                 assert pimc_resp_cards is not None, "PIMCDef result is None"
-                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, pimc_resp_cards, bidding_scores, quality, samples, play_status)            
+                if self.models.pimc_ben_dd_defending:
+                    #print(pimc_resp_cards)
+                    dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
+                    #print(dd_resp_cards)
+                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards)
+                else:
+                    merged_card_resp = pimc_resp_cards
+                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status)            
                 
             else:
                 dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
