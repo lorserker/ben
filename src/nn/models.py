@@ -88,7 +88,8 @@ class Models:
         self.matchpoint = matchpoint
         self.pimc_max_threads = pimc_max_threads
         self.pimc_trust_NN = pimc_trust_NN
-        self.pimc_ben_dd = pimc_ben_dd
+        self.pimc_ben_dd_declaring = pimc_ben_dd_declaring
+        self.pimc_ben_dd_defending = pimc_ben_dd_defending
         self.pimc_apriori_probability = pimc_apriori_probability
         self.use_adjustment = use_adjustment
         self.adjust_NN = adjust_NN
