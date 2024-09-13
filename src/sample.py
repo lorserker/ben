@@ -413,7 +413,8 @@ class Sample:
                 abs_diff_rho = np.abs(min_scores[i] - min_scores_rho[i])
                 #print(hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding), abs_diff_rho)
                 
-                distances[i] = (abs_diff_lho * lho_bids + 2 * abs_diff_partner * pard_bids + abs_diff_rho * rho_bids) / no_of_bids
+                if no_of_bids > 0:
+                    distances[i] = (abs_diff_lho * lho_bids + 2 * abs_diff_partner * pard_bids + abs_diff_rho * rho_bids) / no_of_bids
                 # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
                 if abs_diff_partner > 1 - self.exclude_samples: 
                     # we do not want to exclude any samples for the oppponents
@@ -422,15 +423,19 @@ class Sample:
                 #if min_scores_rho[i] >= 0.99:
                 #    print(hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), round(abs_diff_lho,3), hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding),round(abs_diff_partner,3), hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding),round(abs_diff_rho,3)
                   
-            # Normalize the total distance to a scale between 0 and 100
-            max_distance = lho_bids + 2 * pard_bids + rho_bids  # Replace with the maximum possible distance in your context
-            if self.verbose:
-                print("Max distance", max_distance)
-            scaled_distance_A = ((max_distance - distances) / max_distance)
+            if no_of_bids > 0:
+                # Normalize the total distance to a scale between 0 and 100
+                max_distance = lho_bids + 2 * pard_bids + rho_bids  # Replace with the maximum possible distance in your context
+                if self.verbose:
+                    print("Max distance", max_distance)
+                scaled_distance_A = ((max_distance - distances) / max_distance)
 
-            # Get the indices that would sort min_scores in descending order
-            sorted_indices = np.argsort(scaled_distance_A)[::-1]
-            sorted_scores = scaled_distance_A[sorted_indices]
+                # Get the indices that would sort min_scores in descending order
+                sorted_indices = np.argsort(scaled_distance_A)[::-1]
+                sorted_scores = scaled_distance_A[sorted_indices]
+            else:
+                sorted_indices = np.argsort(min_scores)[::-1]
+                sorted_scores = min_scores[sorted_indices]
         else:
             min_scores = np.minimum(min_scores_rho, min_scores)
             min_scores = np.minimum(min_scores_partner, min_scores)

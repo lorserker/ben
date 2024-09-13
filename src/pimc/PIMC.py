@@ -455,7 +455,7 @@ class BGADLL:
                 score = sum(self.score_by_tricks_taken[entry.Item1 + self.tricks_taken] * entry.Item2 for entry in output) / total_weight if total_weight > 0 else 0
                 #print("score",score)
 
-                msg = f"LHO: {self.lho_constraints.ToString()} - RHO: {self.rho_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+                msg = f"LHO: {self.lho_constraints.ToString()}|RHO: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
 
                 card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
                 if self.verbose:

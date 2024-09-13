@@ -668,7 +668,9 @@
                         html += '<td>e(make/set)=' + Math.round(candidate['p_make_contract'] * 100) / 100 + '</td>'
                     }
                     if ("msg" in candidate) {
-                        html += '<td title="'+ candidate['msg'] +'">[pimc]</td>'
+                        var escapedMsg = candidate['msg']
+                            .replace(/ /g, '&nbsp;')  // Escape space
+                        html += "<td onmouseover=BENShowPopup(this,'" + escapedMsg + "',0) onmouseout=BENHidePopup()>[calculations]</td>"
                     }
                     html += '</tr>'
                 }
@@ -932,7 +934,53 @@
             }
         }
         document.querySelector("#loader").style.visibility = "hidden";
+        function BENGetXY(obj) {
+            var pt = {x: 0, y: 0};
+            var div = document.getElementById("bccontent");
+            if (div)
+                pt.y = -div.offsetTop;
+
+            while (obj) {
+                pt.x += obj.offsetLeft;
+                pt.y += obj.offsetTop;
+                obj = obj.offsetParent;
+            }
+            return pt;
+        }
+        function BENShowPopup(obj, text, pos) {
+            var div = document.getElementById("BENPopup");
+            text = text.replace(/\&/g,"&amp;");
+            text = text.replace(/\</g,"&lt;");
+            div.innerHTML = text.replace(/\|/g,"<br/>");
+            var pt = BENGetXY(obj);
+            switch (pos) {
+            case 0:		// right
+                div.style.left = pt.x + obj.offsetWidth + 8 + "px";
+                div.style.top = pt.y + "px";
+                break;
+            case 1:		// above
+                div.style.left = pt.x + 8 + "px";
+                div.style.top = pt.y - div.offsetHeight + "px";
+                break;
+            case 2:		// left
+                var x = pt.x - div.offsetWidth;
+                if (x < 0) x = 0;
+                div.style.left = x + "px";
+                div.style.top = pt.y + "px";
+                break;
+            case 3:		// below
+                div.style.left = pt.x + 8 + "px";
+                div.style.top = pt.y + obj.offsetHeight + "px";
+                break;
+            }
+            div.style.visibility = "visible";
+        }
+        function BENHidePopup() {
+            var div = document.getElementById("BENPopup");
+            div.style.visibility = "hidden";
+        }
     </script>
+    <div id=BENPopup style="position: absolute; color: black; background-color: #ffffe1; border: thin solid black; text-align: left; padding-left: 4px; padding-right: 4px; font: small 'Arial', sans-serif; visibility: hidden"></div>
 </body>
 
 </html>

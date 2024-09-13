@@ -12,7 +12,7 @@ start "TF2 Api internal :8085 (API)" python gameapi.py --config config\default_T
 timeout /t 10 /nobreak >nul
 start "Old Api :8088" python gameapi.py --host 0.0.0.0 --config config\default_Api.conf --port 8088
 timeout /t 2 /nobreak >nul
-start "2/1" python gameserver.py --config config\default_api.conf --port 4440
+start "2/1" python gameserver.py --config config\default.conf --port 4440
 timeout /t 2 /nobreak >nul
 start "SAYC" python gameserver.py --config config\SAYC.conf --port 4441
 timeout /t 2 /nobreak >nul

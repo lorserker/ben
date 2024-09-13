@@ -1289,18 +1289,21 @@ class CardPlayer:
                         print("Defending", self.pimc_declaring, self.player_i, trick_i)
                     self.find_and_update_constraints(players_states, quality,self.player_i)
 
-    def merge_candidate_cards(self, card_dd1, card_dd2):
+    def merge_candidate_cards(self, pimc_resp, dd_resp):
         merged_cards = {}
 
-        for card, (e_tricks, e_score, e_make, msg) in card_dd1.items():
+        for card, (e_tricks, e_score, e_make, msg) in pimc_resp.items():
             card521 = card.code()
-            for card52, (e_tricks, e_score, e_make) in card_dd2.items():
+            for card52, (e_tricks, e_score, e_make) in dd_resp.items():
                 if int(card52) == int(card521):  
-                    old_e_tricks, old_e_score, old_e_make, old_msg = card_dd1[card]
-                    new_e_tricks = (old_e_tricks + e_tricks) / 2.0 if old_e_tricks is not None and e_tricks is not None else None
-                    new_e_score = (old_e_score + e_score) / 2.0 if old_e_score is not None and e_score is not None else None
-                    new_e_make = (old_e_make + e_make) / 2.0 if old_e_make is not None and e_make is not None else None
-                    new_msg = "BEN DD and PIMC " + (old_msg or '')
+                    pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card]
+                    new_e_tricks = (pimc_e_tricks + e_tricks) / 2.0 if pimc_e_tricks is not None and e_tricks is not None else None
+                    new_e_score = (pimc_e_score + e_score) / 2.0 if pimc_e_score is not None and e_score is not None else None
+                    new_e_make = (pimc_e_make + e_make) / 2.0 if pimc_e_make is not None and e_make is not None else None
+                    new_msg = "PIMC|" + (pimc_msg or '') 
+                    new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
+                    new_msg += "|BEN DD|" 
+                    new_msg += f"{new_e_tricks:.2f} {new_e_score:.2f} {new_e_make:.2f}"
                     merged_cards[card] = (new_e_tricks, new_e_score, new_e_make, new_msg)
 
         return merged_cards

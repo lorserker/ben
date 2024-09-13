@@ -443,7 +443,7 @@ class BGADefDLL:
                 median = calculate_median(output)
                 # Second element is the score. We need to calculate it
                 score = -sum(self.score_by_tricks_taken[13 - t - self.tricks_taken] for t in output) / count if count > 0 else 0
-                msg = f"Decl: {self.declarer_constraints.ToString()} - Partner: {self.partner_constraints.ToString()} - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts} median: {median:.1f}"
+                msg = f"Decl: {self.declarer_constraints.ToString()}|Partner: {self.partner_constraints.ToString()}| - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
 
                 card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
                 if self.verbose:
