@@ -41,7 +41,7 @@ import argparse
 import conf
 import numpy as np
 from sample import Sample
-from util import get_play_status, get_singleton
+from util import get_play_status, get_singleton, get_possible_cards
 
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 
@@ -151,20 +151,38 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                         quality=None,
                         who="Forced"
                     )
-                else:    
+                    return card_resp, player_i
+                # if play status = follow 
+                # and all out cards are equal value (like JT9)
+                # the play lowest if defending and highest if declaring
+                if play_status == "Follow":
+                    result = get_possible_cards(card_players[player_i].hand52,current_trick52)
+                    if result[0] != -1:
+                        card = result[0] if player_i == 3 else result[1]
+                        card_resp = CardResp(
+                            card=Card.from_code(card),
+                            candidates=[],
+                            samples=[],
+                            shape=-1,
+                            hcp=-1,
+                            quality=None,
+                            who="Follow"
+                        )                        
+                    return card_resp, player_i
 
-                    rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
-                    assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
-                    
-                    card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
-
-                    card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
-
-                    card_resp.hcp = c_hcp
-                    card_resp.shape = c_shp
-                    if verbose:
-                        pprint.pprint(card_resp.to_dict(), width=200)
+                # No obvious play, so we roll out
+                rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
+                assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                 
+                card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
+
+                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+
+                card_resp.hcp = c_hcp
+                card_resp.shape = c_shp
+                if verbose:
+                    pprint.pprint(card_resp.to_dict(), width=200)
+            
                 return card_resp, player_i
 
             card52 = Card.from_symbol(play[card_i]).code()

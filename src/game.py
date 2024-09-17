@@ -42,7 +42,7 @@ from bidding.binary import DealData
 from objects import CardResp, Card, BidResp
 from claim import Claimer
 from pbn2ben import load
-from util import calculate_seed, get_play_status, get_singleton
+from util import calculate_seed, get_play_status, get_singleton, get_possible_cards
 from pimc.PIMC import BGADLL
 from pimc.PIMCDef import BGADefDLL
 
@@ -490,8 +490,25 @@ class Driver:
                         quality=None,
                         who="Forced"
                     )
-                else:    
+                # if play status = follow 
+                # and all out cards are equal value (like JT9)
+                # the play lowest if defending and highest if declaring
+                if play_status == "Follow" and card_resp == None:
+                    result = get_possible_cards(card_players[player_i].hand52,current_trick52)
+                    if result[0] != -1:
+                        card = result[0] if player_i == 3 else result[1]
+                        card_resp = CardResp(
+                            card=Card.from_code(card),
+                            candidates=[],
+                            samples=[],
+                            shape=-1,
+                            hcp=-1,
+                            quality=None,
+                            who="Follow"
+                        )                        
 
+                # if card_resp is None, we have to rollout
+                if card_resp == None:    
                     if isinstance(card_players[player_i], bots.CardPlayer):
                         rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"

@@ -9,7 +9,70 @@ import numpy as np
 from bidding import bidding
 
 from bidding.binary import DealData
+from pathlib import Path
+import re
+
+
 np.set_printoptions(precision=2, suppress=True, linewidth=300,threshold=np.inf)
+
+def load_pbn(fin):
+    lines = []
+    boards = [] 
+    auction_lines = []
+    inside_auction_section = False
+    dealer, vulnerable = None, None
+    for line in fin:
+        if line.startswith("% PBN") or line == "\n":
+            if dealer != None:
+                board = {
+                    'deal': ' '.join(hands_nesw),      
+                    'auction': dealer + " " + vulnerable + " " + ' '.join(auction_lines)
+                }
+                boards.append(board)            
+                auction_lines = []
+                dealer= None
+        if line.startswith('[Dealer'):
+            dealer = extract_value(line)
+        if line.startswith('[Vulnerable'):
+            vuln_str = extract_value(line)
+            vulnerable = {'NS': 'N-S', 'EW': 'E-W', 'All': 'Both'}.get(vuln_str, vuln_str)
+        if line.startswith('[Deal '):
+            hands_pbn = extract_value(line)
+            [seat, hands] = hands_pbn.split(':')
+            hands_nesw = [''] * 4
+            first_i = 'NESW'.index(seat)
+            for hand_i, hand in enumerate(hands.split()):
+                hands_nesw[(first_i + hand_i) % 4] = hand
+        if line.startswith('[Auction'):
+            inside_auction_section = True
+            continue  
+        if inside_auction_section:
+            if line.startswith('[') or line == "\n":  # Check if it's the start of the next tag
+                inside_auction_section = False
+            else:
+                # Convert bids
+                line = line.strip().replace('.','').replace("NT","N").replace("Pass","P").replace("Double","X").replace("Redouble","XX").replace('AP','P P P')
+                # Remove extra spaces
+                line = re.sub(r'\s+', ' ', line)
+                # update alerts
+                line = re.sub(r' =\d{1,2}=', '*', line)
+                auction_lines.append(line)  
+
+        else:
+            continue
+    if dealer != None:
+        board = {
+            'deal': ' '.join(hands_nesw),      
+            'auction': dealer + " " + vulnerable + " " + ' '.join(auction_lines)
+        }
+
+        boards.append(board)      
+    
+    for board in boards:
+        lines.append(board['deal'])
+        lines.append(board['auction'])
+
+    return lines
 
 def get_binary_hcp_shape(deal, ns, ew, n_steps=8):
     X = np.zeros((4, n_steps, 2 + 2 + 1 + 4 + deal.n_cards + 4 * 40), dtype=np.float16)
@@ -152,8 +215,11 @@ def create_binary(data_it, ns, ew, alternating, x, y, z, HCP, SHAPE, k):
     return x, y, z, HCP, SHAPE, k
 
 # Function to extract value from command-line argument
-def extract_value(arg):
+def extract_value_cmd(arg):
     return arg.split('=')[1]
+
+def extract_value(s: str) -> str:
+    return s[s.index('"') + 1 : s.rindex('"')]
 
 def to_numeric(value, default=0):
     try:
@@ -167,11 +233,13 @@ def to_numeric(value, default=0):
 if __name__ == '__main__':
 
     if len(sys.argv) < 4:
-        print("Usage: python bidding_binary_keras.py inputfile inputfile2 outputdirectory NS=<x> EW=<y> alternate=True n_cards=32 rotate=False")
+        print("Usage: python bidding_binary_keras.py inputfile inputfile2 outputdirectory NS=<x> EW=<y> alternate=True n_cards=32 rotate=true alert_supported=True max_occurrences=<z>")
         print("The input file is the BEN-format (First line with hands, and next line with the bidding).")
         print("alternate is signaling, that the input file has both open and closed room, so NS/EW will be alternated")
         print("n_cards is the number of cards in the deck")
         print("Setting rotate to true will rotate all deals, so North is opener")
+        print("Setting alert_supported to true will record alert in the output")
+        print("Setting max_occurrences will limit the number of boards per auction")
         sys.exit(1)
 
     infnm1 = sys.argv[1] # file where the data is
@@ -182,17 +250,18 @@ if __name__ == '__main__':
     out_dir = sys.argv[3]
 
     # Extract NS and EW values from command-line arguments if provided
-    ns = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), 0)
-    ew = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), 0)
-    n_cards = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("n_cards=")), 32)
-    alternating = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("alternate")), False)
-    rotate = next((extract_value(arg) for arg in sys.argv[3:] if arg.startswith("rotate")), False)
+    ns = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), 0)
+    ew = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), 0)
+    n_cards = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("n_cards=")), 32)
+    alternating = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("alternate=")), False)
+    rotate = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("rotate=")), False)
+    max_occurrences = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("max_occurrences=")), 99)
+    alert_supported = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("alert_supported=")), True)
     version = 3
-    alert_supported = True
-    max_occurrences = 100
     add_missing_vulns = False
     max_filler_occurrences = 0
-    sys.stderr.write(f"n_cards={n_cards}, NS={ns}, EW={ew}, Alternating={alternating}, Version={version}, alert_supported={alert_supported}, outdir={out_dir},  max_occurrences={max_occurrences}, max_filler_occurrences={max_filler_occurrences}\n")
+    sys.stderr.write(f"n_cards={n_cards}, NS={ns}, EW={ew}, Alternating={alternating}, Version={version}, alert_supported={alert_supported}, rotate={rotate}, outdir={out_dir},  max_occurrences={max_occurrences}, max_filler_occurrences={max_filler_occurrences}\n")
+    max_occurrences = to_numeric(max_occurrences, 100)
     ns = to_numeric(ns)
     ew = to_numeric(ew)
     n_cards = to_numeric(n_cards, 32)
@@ -203,24 +272,33 @@ if __name__ == '__main__':
     auctions = []
     k = 0
 
-    with open(infnm1, 'r') as file:
+    file_path = Path("example.pbn")
+    file_extension = file_path.suffix
+    if file_extension == ".pbn":
+        with open(infnm1, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
+            pbnlines = file.readlines()
+            lines = load_pbn(pbnlines)
+    else:
+        with open(infnm1, 'r') as file:
 
-        print(f"Loading {infnm1}")
-        lines = file.readlines()
-        # Remove comments at the beginning of the file
-        lines = [line for line in lines if not line.strip().startswith('#')]
-        sys.stderr.write(f"Loading {len(lines) // 2} deals\n")
-        if len(lines) > 2 and lines[0] == lines[2] and not alternating:
-            user_input = input("\n First two boards are identical - did you forget to add alternate=True?")
-            if user_input.lower() == "y":
-                sys.exit()
-        if len(lines) > 2 and lines[0] != lines[2] and alternating:
-            user_input = input("\n First two boards are not identical - did you mean alternate=True?")
-            if user_input.lower() == "n":
-                sys.exit()
+            print(f"Loading {infnm1}")
+            lines = file.readlines()
 
-        data_it = load_deals(lines, n_cards, rotate)
-        filtered_deals, auctions, key_counts = count_deals(data_it, max_occurrences, auctions, key_counts, [])
+            # Remove comments at the beginning of the file
+            lines = [line for line in lines if not line.strip().startswith('#')]
+            sys.stderr.write(f"Loading {len(lines) // 2} deals\n")
+
+    if len(lines) > 2 and lines[0] == lines[2] and not alternating:
+        user_input = input("\n First two boards are identical - did you forget to add alternate=True?")
+        if user_input.lower() == "y":
+            sys.exit()
+    if len(lines) > 2 and lines[0] != lines[2] and alternating:
+        user_input = input("\n First two boards are not identical - did you mean alternate=True?")
+        if user_input.lower() == "n":
+            sys.exit()
+
+    data_it = load_deals(lines, n_cards, rotate)
+    filtered_deals, auctions, key_counts = count_deals(data_it, max_occurrences, auctions, key_counts, [])
 
     # Create a new Counter to count all occurrences without limit
     sys.stderr.write(f"Loaded {len(auctions)} auctions\n")   

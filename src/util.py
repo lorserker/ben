@@ -181,3 +181,28 @@ def get_singleton(hand, current_trick):
     card = np.argmax(suits[suitlead])
     card52 = card + 13 * suitlead
     return card52
+
+def check_sequence(arr, suitlead):
+    # Get the indices where the array has 1's
+    indices_of_ones = np.where(arr == 1)[0]
+
+    if len(indices_of_ones) == 0:
+        return -1, 0  # No 1's in the array
+
+    # Check if the difference between consecutive indices is 1
+    if np.all(np.diff(indices_of_ones) == 1):
+        first_index = indices_of_ones[0]
+        count_of_ones = len(indices_of_ones)
+        high_card =  first_index + 13 * suitlead
+        low_card =  first_index + count_of_ones - 1 + 13 * suitlead
+
+        return high_card, low_card
+    else:
+        return -1, 0  # Not in sequence
+
+def get_possible_cards(hand, current_trick):
+    suits = np.array(hand).reshape((4, -1))
+    suitlead = current_trick[0] // 13
+    cards = suits[suitlead]
+    result = check_sequence(cards, suitlead)
+    return result
