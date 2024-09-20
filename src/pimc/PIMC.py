@@ -479,7 +479,6 @@ class BGADLL:
                 msg = f"Decl: {self.lho_constraints.ToString()}|Partner: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
                 if self.models.matchpoint:
                     card_ev = calculate.calculate_mp_score_probability(results,weights)
-                    print(card_ev)
                 else:
                     real_scores = calculate.calculate_score(results, self.tricks_taken, player_i, self.score_by_tricks_taken)
                     if self.verbose:

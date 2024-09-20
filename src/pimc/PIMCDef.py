@@ -470,7 +470,6 @@ class BGADefDLL:
                 msg = f"Decl: {self.declarer_constraints.ToString()}|Partner: {self.partner_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
                 if self.models.matchpoint:
                     card_ev = calculate.calculate_mp_score(results)
-                    print(card_ev)
                 else:
                     real_scores = calculate.calculate_score(results, self.tricks_taken, self.player_i, self.score_by_tricks_taken)
                     if self.verbose:
