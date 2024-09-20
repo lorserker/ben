@@ -137,7 +137,9 @@ class CardByCard:
                         card_player.set_real_card_played(opening_lead52, 0, True)
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
                     continue
-                
+
+                card52 = None
+                card_resp = None               
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
                     play_status = get_play_status(card_players[player_i].hand52,current_trick52)

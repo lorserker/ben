@@ -718,10 +718,12 @@ class Sample:
 
         min_scores = np.ones(sample_hands.shape[0])
 
+        bids_made = 0
         # We check the bid for each bidding round
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
+                bids_made += 1
                 # for j in range(sample_hands.shape[0]):
                 #     if sample_bids[j, i, actual_bids[i]] > 0.1:
                 #         print(bidding.ID2BID[actual_bids[i]], j, hand_to_str(sample_hands[j]), sample_bids[j, i, actual_bids[i]])
@@ -731,6 +733,7 @@ class Sample:
         # for j in range(sample_hands.shape[0]):
         #     if min_scores[j] > 0.1:
         #         print(min_scores[j], j, hand_to_str(sample_hands[j]))
+        #print("bids made", bids_made)
         return min_scores
 
     def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, public_hand_str,vuln, models, rng):
@@ -855,6 +858,7 @@ class Sample:
                 samples.append(sample)
 
         # Use the unique_indices to filter player_states
+        # If using probability, we should keep the count for each samples
         states = [state[unique_indices] for state in states]
         if self.verbose:
             print(f"Unique states {states[0].shape[0]}")
@@ -862,6 +866,7 @@ class Sample:
         accept, c_hcp, c_shp = self.validate_shape_and_hcp_for_sample(auction, known_nesw, hand_bidding, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models)
 
         if self.use_bidding_info:
+            # If to few examples we ignore the above filtering
             if np.sum(accept) < n_samples:
                 accept = np.ones_like(accept).astype(bool)
 
@@ -896,7 +901,7 @@ class Sample:
             bid_scores = self.get_bid_scores(h_i_nesw, partner, auction, vuln, states[h_i][:, 0, :32], models)
             # print("bid_scores", h_i, bid_scores)
             # for i in range(bid_scores.shape[0]):
-            #     if bid_scores[i] > 0.1:
+            #     if bid_scores[i] > 0.04:
             #         sample = '%s %s %s %s' % (
             #             hand_to_str(states[0][i, 0, :32].astype(int)),
             #             hand_to_str(states[1][i, 0, :32].astype(int)),
@@ -973,7 +978,7 @@ class Sample:
                 sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
 
         if self.verbose:
-            print(f"Returning {min(bidding_states[0].shape[0],n_samples)}")
+            print(f"Returning {min(bidding_states[0].shape[0],n_samples)} {good_quality}")
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
         
         probability_of_occurence = convert_to_probability(sorted_min_bid_scores[:min(bidding_states[0].shape[0],n_samples)])

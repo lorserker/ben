@@ -70,10 +70,19 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             pass
 
     # If the first card is better then don't evaluate
-    if candidate_cards[0].p_make_contract > candidate_cards[1].p_make_contract + 0.05:
-        return candidate_cards[0].card, who
-    if candidate_cards[0].expected_tricks_dd > candidate_cards[1].expected_tricks_dd + 0.5:
-        return candidate_cards[0].card, who
+    if hasattr(candidate_cards[0], 'p_make_contract'):
+        if candidate_cards[0].p_make_contract > candidate_cards[1].p_make_contract + 0.05:
+            return candidate_cards[0].card, who
+    if hasattr(candidate_cards[0], 'expected_tricks_dd'):
+        if candidate_cards[0].expected_tricks_dd > candidate_cards[1].expected_tricks_dd + 0.5:
+            return candidate_cards[0].card, who
+    
+    if hasattr(candidate_cards[0], 'expected_score_mp') and candidate_cards[0].expected_score_mp is not None:
+        if candidate_cards[0].expected_score_mp > candidate_cards[1].expected_score_mp + 5:
+            return candidate_cards[0].card, who
+    if hasattr(candidate_cards[0], 'expected_score_imp') and candidate_cards[0].expected_score_imp is not None:
+        if candidate_cards[0].expected_score_imp > candidate_cards[1].expected_score_imp + 0.2:
+            return candidate_cards[0].card, who
     
     if player_i == 3 and not models.use_suitc:
         # For declarer pick a random card, when touching honors and NN is equal (Will not happen in practice)

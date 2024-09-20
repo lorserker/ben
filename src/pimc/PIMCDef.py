@@ -7,6 +7,7 @@ from objects import Card
 import time
 from binary import get_hcp, calculate_median
 import scoring
+import calculate
 
 from bidding import bidding
 sys.path.append("..")
@@ -403,14 +404,21 @@ class BGADefDLL:
 
         try:
             legalMoves = self.pimc.LegalMoves
+            results = {}
+            e_tricks = {}
+            making = {}
             for card in legalMoves:
                 # Calculate win probability
                 output = self.pimc.Output[card]
                 count = float(len(output))
                 # If we found no playout we need to reevaluate without constraints
                 if count == 0:
+
+                    print(card)
                     print("Trying without constraints")
+                    print("max_playout",self.max_playout)
                     print(self.pimc.LegalMovesToString)
+                    print(f"Playouts: {self.pimc.Playouts}")
                     print("Combinations:", self.pimc.Combinations)
                     print("Examined:", self.pimc.Examined)
                     print(self.dummyhand.ToString(), self.defendinghand.ToString())
@@ -440,14 +448,42 @@ class BGADefDLL:
                 if math.isnan(probability):
                     probability = 0
                 tricks = sum(t for t in output) / count if count > 0 else 0
-                median = calculate_median(output)
-                # Second element is the score. We need to calculate it
-                score = -sum(self.score_by_tricks_taken[13 - t - self.tricks_taken] for t in output) / count if count > 0 else 0
-                msg = f"Decl: {self.declarer_constraints.ToString()}|Partner: {self.partner_constraints.ToString()}| - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+ 
+                if self.models.use_real_imp_or_mp:
+                    # Iterate through the ValueTuple objects
+                    results[card] = []
+                    for entry in output:
+                        tricks = entry  # Access tricks
+                        results[card].append(tricks)
+                    making[card] = probability
+                    e_tricks[card] = tricks
+                else:
 
-                card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
-                if self.verbose:
-                    print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f} {median:.1f}")
+                    # Second element is the score. We need to calculate it
+                    score = -sum(self.score_by_tricks_taken[13 - t - self.tricks_taken] for t in output) / count if count > 0 else 0
+                    msg = f"Decl: {self.declarer_constraints.ToString()}|Partner: {self.partner_constraints.ToString()}| - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+
+                    card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
+                    if self.verbose:
+                        print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f}")
+            if self.models.use_real_imp_or_mp:
+                msg = f"Decl: {self.declarer_constraints.ToString()}|Partner: {self.partner_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+                if self.models.matchpoint:
+                    card_ev = calculate.calculate_mp_score(results)
+                    print(card_ev)
+                else:
+                    real_scores = calculate.calculate_score(results, self.tricks_taken, self.player_i, self.score_by_tricks_taken)
+                    if self.verbose:
+                        print("Real scores")
+                        print(real_scores)
+                    card_ev = calculate.calculate_imp_score(real_scores)
+
+                card_result = {}
+                for key in card_ev.keys():
+                    card_result[Card.from_symbol(str(key)[::-1])] = (round(e_tricks[key], 2), round(card_ev[key],2), making[key], msg)
+                    if self.verbose:
+                        print(f'{key} {e_tricks[key]:0.3f} {card_ev[key]:5.2f} {making[key]:0.2f}')
+                        
 
         except Exception as e:
             print('Error legalMoves:', e)

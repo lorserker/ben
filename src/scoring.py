@@ -78,3 +78,57 @@ def contract_scores_by_trick(contract, vuln):
     for i in range(14):
         scores[i] = score(contract, is_vuln, i)
     return scores
+
+def diff_to_imps(diff):
+    abs_diff = abs(diff)
+    
+    if abs_diff <= 10:
+        return 0
+    elif abs_diff <= 40:
+        return 1
+    elif abs_diff <= 80:
+        return 2
+    elif abs_diff <= 120:
+        return 3
+    elif abs_diff <= 160:
+        return 4
+    elif abs_diff <= 210:
+        return 5
+    elif abs_diff <= 260:
+        return 6
+    elif abs_diff <= 310:
+        return 7
+    elif abs_diff <= 360:
+        return 8
+    elif abs_diff <= 420:
+        return 9
+    elif abs_diff <= 490:
+        return 10
+    elif abs_diff <= 590:
+        return 11
+    elif abs_diff <= 740:
+        return 12
+    elif abs_diff <= 890:
+        return 13
+    elif abs_diff <= 1090:
+        return 14
+    elif abs_diff <= 1290:
+        return 15
+    elif abs_diff <= 1490:
+        return 16
+    elif abs_diff <= 1740:
+        return 17
+    elif abs_diff <= 1990:
+        return 18
+    elif abs_diff <= 2240:
+        return 19
+    elif abs_diff <= 2490:
+        return 20
+    elif abs_diff <= 2990:
+        return 21
+    elif abs_diff <= 3490:
+        return 22
+    elif abs_diff <= 3990:
+        return 23
+    else:
+        return 24

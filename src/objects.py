@@ -1,5 +1,4 @@
 import numpy as np
-import json
 
 class Card:
 
@@ -78,7 +77,7 @@ class Auction:
 
 class CandidateCard:
 
-    def __init__(self, card, insta_score, expected_tricks_sd = None, expected_tricks_dd = None, p_make_contract=None, expected_score_sd=None, expected_score_dd=None, msg=None):
+    def __init__(self, card, insta_score, expected_tricks_sd = None, expected_tricks_dd = None, p_make_contract=None, expected_score_sd=None, expected_score_dd=None, expected_score_mp=None, expected_score_imp=None, msg=None):
         self.card = card
         self.insta_score = None if insta_score is None else float(insta_score)
         self.expected_tricks_sd = None if expected_tricks_sd is None else float(expected_tricks_sd)
@@ -86,28 +85,28 @@ class CandidateCard:
         self.p_make_contract = None if p_make_contract is None else float(p_make_contract)
         self.expected_score_sd = None if expected_score_sd is None else float(expected_score_sd)
         self.expected_score_dd = None if expected_score_dd is None else float(expected_score_dd)
+        self.expected_score_mp = None if expected_score_mp is None else float(expected_score_mp)
+        self.expected_score_imp = None if expected_score_imp is None else float(expected_score_imp)
         self.msg = msg
 
     def __str__(self):
-        insta_score = f"{self.insta_score:.4f}" if self.insta_score is not None else None
-        exp_tricks_sd = f"{self.expected_tricks_sd:.2f}" if self.expected_tricks_sd is not None else None
-        exp_tricks_dd = f"{self.expected_tricks_dd:.4f}" if self.expected_tricks_dd is not None else None
-        p_make_contract = f"{self.p_make_contract:.4f}" if self.p_make_contract is not None else None
-        exp_score_sd = f"{self.expected_score_sd:.1f}" if self.expected_score_sd is not None else None
-        exp_score_dd = f"{self.expected_score_dd:.2f}" if self.expected_score_dd is not None else None
-
-        return (
-            f"CandidateCard("
-            f"card={self.card}, "
-            f"insta_score={insta_score}, "
-            f"exp_tricks_sd={exp_tricks_sd}, "
-            f"exp_tricks_dd={exp_tricks_dd}, "
-            f"p_make_contract={p_make_contract}, "
-            f"exp_score_sd={exp_score_sd}, "
-            f"exp_score_dd={exp_score_dd}), "
-            f"msg={self.msg}"
-        )
-
+        parts = [
+            f"card={self.card}",
+            f"insta_score={self.insta_score:.4f}" if self.insta_score is not None else None,
+            f"exp_tricks_sd={self.expected_tricks_sd:.2f}" if self.expected_tricks_sd is not None else None,
+            f"exp_tricks_dd={self.expected_tricks_dd:.4f}" if self.expected_tricks_dd is not None else None,
+            f"p_make_contract={self.p_make_contract:.4f}" if self.p_make_contract is not None else None,
+            f"exp_score_sd={self.expected_score_sd:.1f}" if self.expected_score_sd is not None else None,
+            f"exp_score_dd={self.expected_score_dd:.2f}" if self.expected_score_dd is not None else None,
+            f"exp_score_mp={self.expected_score_mp:.0f}" if self.expected_score_mp is not None else None,
+            f"exp_score_imp={self.expected_score_imp:.2f}" if self.expected_score_imp is not None else None,
+            f"msg={self.msg}" if self.msg is not None else None
+        ]
+        
+        # Filter out None values
+        filtered_parts = filter(None, parts)
+        
+        return f"CandidateCard({', '.join(filtered_parts)})"
     def to_dict(self):
         result = {
             'card': self.card.symbol(),
@@ -124,6 +123,10 @@ class CandidateCard:
             result['expected_score_sd'] = round(self.expected_score_sd)
         if self.expected_score_dd is not None:
             result['expected_score_dd'] = round(self.expected_score_dd)
+        if self.expected_score_mp is not None:
+            result['expected_score_mp'] = self.expected_score_mp
+        if self.expected_score_imp is not None:
+            result['expected_score_imp'] = self.expected_score_imp
         if self.msg is not None:
             result['msg'] = self.msg
 

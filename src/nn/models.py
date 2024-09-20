@@ -31,6 +31,7 @@ class Models:
                  suitc_sidesuit_check,
                  draw_trump_reward,
                  draw_trump_penalty,
+                 use_real_imp_or_mp,
                  check_final_contract,
                  max_samples_checked,
                  alert_supported
@@ -107,6 +108,7 @@ class Models:
         self.suitc_sidesuit_check = suitc_sidesuit_check
         self.draw_trump_reward=draw_trump_reward
         self.draw_trump_penalty=draw_trump_penalty
+        self.use_real_imp_or_mp = use_real_imp_or_mp
         self.check_final_contract = check_final_contract
         self.max_samples_checked = max_samples_checked
         self.alert_supported = alert_supported
@@ -180,6 +182,7 @@ class Models:
         suitc_sidesuit_check = conf.getboolean('cardplay', 'suitc_sidesuit_check', fallback=False)
         draw_trump_reward = conf.getfloat('cardplay', 'draw_trump_reward', fallback=0.25)
         draw_trump_penalty = conf.getfloat('cardplay', 'draw_trump_penalty', fallback=0.25)
+        use_real_imp_or_mp = conf.getboolean('cardplay', 'use_real_imp_or_mp', fallback=False)
         bba_ns = conf.getint('models', 'bba_ns', fallback=-1)
         bba_ew = conf.getint('models', 'bba_ew', fallback=-1)
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
@@ -287,6 +290,7 @@ class Models:
             suitc_sidesuit_check=suitc_sidesuit_check,
             draw_trump_reward=draw_trump_reward,
             draw_trump_penalty=draw_trump_penalty,
+            use_real_imp_or_mp=use_real_imp_or_mp,
             check_final_contract=check_final_contract,
             max_samples_checked=max_samples_checked
         )

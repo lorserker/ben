@@ -6,6 +6,7 @@ import numpy as np
 
 import binary
 import deck52
+import calculate
 import scoring
 
 from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
@@ -147,7 +148,6 @@ class BotBid:
                         samples[idx] += f" \n {auc} ({average_tricks_str}) "
                     else:
                         samples[idx] += f" \n {auc}"
-
 
                 if self.verbose:
                     print("tricks", np.mean(decoded_tricks))
@@ -806,25 +806,35 @@ class BotBid:
         decl_tricks_softmax = np.zeros((n_samples, 14), dtype=np.int32)
         contracts = []
         t_start = time.time()
-        
+
         for i in range(n_samples):
             sample_auction = [bidding.ID2BID[bid_i] for bid_i in list(auctions_np[i, :]) if bid_i != 1]
             contract = bidding.get_contract(sample_auction)
             # All pass doesn't really fit, and is always 0 - we ignore it for now
             if contract is None:
                 contracts.append("PASS")
-                strains[i] = -1
-                declarers[i] = -1
+                strain = -1
+                declarer = -1
             else:
                 contracts.append(contract)
-                strains[i] = 'NSHDC'.index(contract[1])
-                declarers[i] = 'NESW'.index(contract[-1])
+                strain = 'NSHDC'.index(contract[1])
+                declarer = 'NESW'.index(contract[-1])
+                leader = (declarer + 1) % 4
 
             # Create PBN for hand
-            hands_pbn = ['N:' + ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) if j != self.seat else hand_str for j, hand in enumerate(hands_np[i]))]
-            hands_pbn[0] = deck52.convert_cards(hands_pbn[0],0, hand_str, self.get_random_generator(), self.models.n_cards_bidding)
-            # We need to find the leader
-            dd_solved = self.dd.solve(strains[i], (declarers[i] + 1) % 4, [], hands_pbn, 1)
+            # deck = 'N:' + ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) if j != self.seat else hand_str for j, hand in enumerate(hands_np[i]))
+            # We want to rotate the hands such that the hand_str comes first, and the remaining hands follow in their original order, wrapping around. 
+            deck = 'N:' + ' '.join(
+                hand_str if j == 0 else deck52.handxxto52str(hands_np[i][(j + self.seat) % 4], self.models.n_cards_bidding)
+                for j in range(4)
+            )
+            leader = (leader + 4 - self.seat) % 4
+
+            # Create PBN including pips
+            hands_pbn = [deck52.convert_cards(deck,0, hand_str, self.get_random_generator(), self.models.n_cards_bidding)]
+
+            # It will probably improve perfoemance if all is calculated in one go
+            dd_solved = self.dd.solve(strain, leader, [], hands_pbn, 1)
             # Only use 1st element from the result
             first_key = next(iter(dd_solved))
             first_item = dd_solved[first_key]
@@ -1031,7 +1041,7 @@ class BotLead:
             sorted_scores = sorted_scores[selected_indices]
     
 
-        # For finding the opening lead we should use the opening lead as input
+        # This should probably be changed from tricks to MP or IMP depending on tournament type
         if self.models.double_dummy:
             tricks = self.double_dummy_estimates(lead_card_indexes, contract, accepted_samples)
         else:
@@ -1228,7 +1238,6 @@ class CardPlayer:
 
     def set_own_card_played52(self, card52):
         self.hand52[card52] -= 1
-        #assert self.hand52[card52] >= 0, f"Played a nonexisting card {card52}"
 
     def set_public_card_played52(self, card52):
         self.public52[card52] -= 1
@@ -1298,12 +1307,12 @@ class CardPlayer:
                 if int(card52) == int(card521):  
                     pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card]
                     new_e_tricks = (pimc_e_tricks + e_tricks) / 2.0 if pimc_e_tricks is not None and e_tricks is not None else None
-                    new_e_score = (pimc_e_score + e_score) / 2.0 if pimc_e_score is not None and e_score is not None else None
+                    new_e_score = round((pimc_e_score + e_score) / 2.0,2) if pimc_e_score is not None and e_score is not None else None
                     new_e_make = (pimc_e_make + e_make) / 2.0 if pimc_e_make is not None and e_make is not None else None
                     new_msg = "PIMC|" + (pimc_msg or '') 
                     new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
                     new_msg += "|BEN DD|" 
-                    new_msg += f"{new_e_tricks:.2f} {new_e_score:.2f} {new_e_make:.2f}"
+                    new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
                     merged_cards[card] = (new_e_tricks, new_e_score, new_e_make, new_msg)
 
         return merged_cards
@@ -1324,6 +1333,7 @@ class CardPlayer:
             ))
         if not quality and self.verbose:
             print(samples)
+
         if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
             pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits)
             if self.verbose:
@@ -1430,11 +1440,6 @@ class CardPlayer:
             print("Samples: ",n_samples, " Solving: ",len(hands_pbn), self.strain_i, leader_i, current_trick52)
         dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
 
-        if self.models.use_probability:
-            card_tricks = ddsolver.expected_tricks_dds_probability(dd_solved, probabilities_list)
-        else:
-            card_tricks = ddsolver.expected_tricks_dds(dd_solved)
-
         # if defending the target is another
         level = int(self.contract[0])
         if self.player_i % 2 == 1:
@@ -1442,90 +1447,61 @@ class CardPlayer:
         else:
             tricks_needed = 13 - (level + 6) - self.n_tricks_taken + 1
 
+        # print("Calculated tricks")
+        if self.models.use_probability:
+            card_tricks = ddsolver.expected_tricks_dds_probability(dd_solved, probabilities_list)
+        else:
+            card_tricks = ddsolver.expected_tricks_dds(dd_solved)
+
+        # print(ddsolver.expected_tricks_dds_probability(dd_solved, probabilities_list))
+        # print(ddsolver.expected_tricks_dds(dd_solved))
         making = ddsolver.p_made_target(tricks_needed)(dd_solved)
 
-        if self.models.use_probability:
-            if self.models.matchpoint:
-                card_ev = self.get_card_ev_mp_probability(dd_solved, probabilities_list)
+        if self.models.use_real_imp_or_mp:
+            if self.verbose:
+                print("probabilities")
+                print(probabilities_list)
+                print("DD Result")
+                print(dd_solved)
+            # print("Calculated scores")
+            real_scores = calculate.calculate_score(dd_solved, self.n_tricks_taken, self.player_i, self.score_by_tricks_taken)
+            if self.verbose:
+                print("Real scores")
+                print(real_scores)
+            if self.models.use_probability:
+                if self.models.matchpoint:
+                    card_ev = calculate.calculate_mp_score_probability(dd_solved,probabilities_list)
+                else:
+                    card_ev = calculate.calculate_imp_score_probability(real_scores,probabilities_list)
             else:
-                card_ev = self.get_card_ev_probability(dd_solved, probabilities_list)
+                if self.models.matchpoint:
+                    card_ev = calculate.calculate_mp_score(dd_solved)
+                else:
+                    card_ev = calculate.calculate_imp_score(real_scores)
+
         else:
-            if self.models.matchpoint:
-                card_ev = self.get_card_ev_mp(dd_solved)
+            if self.models.use_probability:
+                if self.models.matchpoint:
+                    card_ev = calculate.get_card_ev_mp_probability(dd_solved, probabilities_list)
+                else:
+                    card_ev = calculate.get_card_ev_probability(dd_solved, probabilities_list, self.n_tricks_taken, self.player_i, self.score_by_tricks_taken)
             else:
-                card_ev = self.get_card_ev(dd_solved)
-        if self.verbose:
-            print("card_ev:")
-            for card, ev in card_ev.items():
-                print(f"{card}: {ev:.0f}")
+                if self.models.matchpoint:
+                    card_ev = calculate.get_card_ev_mp(dd_solved, self.n_tricks_taken, self.player_i)
+                else:
+                    card_ev = calculate.get_card_ev(dd_solved, self.n_tricks_taken, self.player_i, self.score_by_tricks_taken)
+
         card_result = {}
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key], making[key])
             if self.verbose:
-                print(f'{deck52.decode_card(key)} {card_tricks[key]:0.3f} {card_ev[key]:5.0f} {making[key]:0.2f}')
+                print(f'{deck52.decode_card(key)} {card_tricks[key]:0.3f} {card_ev[key]:5.2f} {making[key]:0.2f}')
 
         if self.verbose:
             print(f'dds took: {(time.time() - t_start):0.4f}')
 
         return card_result
     
-    def get_card_ev(self, dd_solved):
-        card_ev = {}
-        sign = 1 if self.player_i % 2 == 1 else -1
-        for card, future_tricks in dd_solved.items():
-            ev_sum = 0
-            for ft in future_tricks:
-                if ft < 0:
-                    continue
-                tot_tricks = self.n_tricks_taken + ft
-                tot_decl_tricks = tot_tricks if self.player_i % 2 == 1 else 13 - tot_tricks
-                ev_sum += sign * self.score_by_tricks_taken[tot_decl_tricks]
-            card_ev[card] = ev_sum / len(future_tricks)
-                
-        return card_ev
-
-    def get_card_ev_probability(self, dd_solved, probabilities_list):
-        card_ev = {}
-        sign = 1 if self.player_i % 2 == 1 else -1
-        for card, future_tricks in dd_solved.items():
-            ev_sum = 0
-            for ft, proba in zip(future_tricks, probabilities_list):
-                if ft < 0:
-                    continue
-                tot_tricks = self.n_tricks_taken + ft
-                tot_decl_tricks = (
-                    tot_tricks if self.player_i % 2 == 1 else 13 - tot_tricks
-                )
-                ev_sum += sign * self.score_by_tricks_taken[tot_decl_tricks] * proba
-            card_ev[card] = ev_sum
-
-        return card_ev
-    
-    def get_card_ev_mp_probability(self, dd_solved, probabilities_list):
-        card_ev = {}
-        for card, future_tricks in dd_solved.items():
-            ev_sum = 0
-            for ft, proba in zip(future_tricks, probabilities_list):
-                if ft < 0:
-                    continue
-                ev_sum += ft * proba * 100
-            card_ev[card] = ev_sum
-        return card_ev
-    
-    def get_card_ev_mp(self, dd_solved):
-        card_ev = {}
-        sign = 1 if self.player_i % 2 == 1 else -1
-        for card, future_tricks in dd_solved.items():
-            ev_sum = 0
-            for ft in future_tricks:
-                if ft < 0:
-                    continue
-                tot_tricks = self.n_tricks_taken + ft
-                tot_decl_tricks = tot_tricks if self.player_i % 2 == 1 else 13 - tot_tricks
-                ev_sum += sign * tot_decl_tricks * 100
-            card_ev[card] = ev_sum / len(future_tricks)
-                
-        return card_ev
     
     def next_card_softmax(self, trick_i):
         if self.verbose:
@@ -1577,19 +1553,35 @@ class CardPlayer:
             card32 = deck52.card52to32(deck52.encode_card(str(card52)))
             insta_score = self.get_nn_score(card32, deck52.encode_card(str(card52)), card_nn, play_status, tricks52)
             if insta_score >= self.models.pimc_trust_NN:
+                expected_score = round(e_score + (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0), 0)
+
                 candidate_cards.insert(0,CandidateCard(
                     card=card52,
                     insta_score=round(insta_score,3),
                     expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
                     p_make_contract=e_make,
-                    expected_score_dd=round(e_score+ (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0),0),
+                    **({
+                        "expected_score_mp": expected_score
+                    } if self.models.matchpoint and self.models.use_real_imp_or_mp else
+                    {
+                        "expected_score_imp": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                    } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
+                    {
+                        "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                    }),
                     msg=msg
                 ))
-        
-        if self.models.matchpoint:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
-        else:
-            candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), x[1].expected_score_dd, x[1].insta_score, -x[0]), reverse=True)
+
+        if self.models.use_real_imp_or_mp:
+            if self.models.matchpoint:
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_mp, x[1].insta_score, -x[0]), reverse=True)
+            else:
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_imp, x[1].insta_score, -x[0]), reverse=True)
+        else:            
+            if self.models.matchpoint:
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
+            else:
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), x[1].expected_score_dd, x[1].insta_score, -x[0]), reverse=True)
 
         candidate_cards = [card for _, card in candidate_cards]
 
@@ -1655,13 +1647,23 @@ class CardPlayer:
             card=Card.from_code(card52)
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
+            expected_score =round(e_score+ (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0),0)
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
                 candidate_cards.insert(0, CandidateCard(
                     card=card,
                     insta_score=insta_score,
                     expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
                     p_make_contract=e_make,
-                    expected_score_dd=round(e_score+ (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0),0)
+                    **({
+                        "expected_score_mp": expected_score
+                    } if self.models.matchpoint and self.models.use_real_imp_or_mp else
+                    {
+                        "expected_score_imp": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                    } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
+                    {
+                        "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                    })
+
                 ))
             else:
                 candidate_cards.append(CandidateCard(
@@ -1669,50 +1671,68 @@ class CardPlayer:
                     insta_score=insta_score,
                     expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
                     p_make_contract=e_make,
-                    expected_score_dd=round(e_score+ (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0),0)
+                    **({
+                        "expected_score_mp": expected_score
+                    } if self.models.matchpoint and self.models.use_real_imp_or_mp else
+                    {
+                        "expected_score_imp": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                    } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
+                    {
+                        "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                    })
                 ))
             current_card = card52
             current_insta_score = insta_score
 
         valid_bidding_samples = np.sum(bidding_scores > self.bid_accept_play_threshold)
-        # Now we will select the card to play
-        # We have 3 factors, and they could all be right, so we remove most of the decimals
-        # We should probably also consider bidding_scores in this 
-        # If we have bad quality of samples we should probably just use the neural network
-        if valid_bidding_samples >= 0:
+        if self.models.use_real_imp_or_mp:
             if self.models.matchpoint:
-                #for i in range(len(candidate_cards)):
-                #    print(candidate_cards[i].card, candidate_cards[i].insta_score, int(candidate_cards[i].expected_tricks_dd* 10) / 10, candidate_cards[i].p_make_contract, candidate_cards[i].expected_score_dd, int(candidate_cards[i].expected_tricks_dd * 10) / 10)
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 3), -x[0]), reverse=True)
-                who = "NN-MP"
-                #print("Who", who)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_mp, x[1].insta_score, -x[0]), reverse=True)
+                who = "MP-calc"
+
             else:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 1000) / 1000, round(x[1].expected_score_dd, 0), round(x[1].insta_score, 3), -x[0]), reverse=True)
-                who = "NN-Make"
-                #print("Who", who)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_imp, x[1].insta_score, -x[0]), reverse=True)
+                who = "IMP-calc"
             candidate_cards = [card for _, card in candidate_cards]
-            # for i in range(len(candidate_cards)):
-            #     print(candidate_cards[i].card, candidate_cards[i].insta_score, int(candidate_cards[i].expected_tricks_dd* 10) / 10, round(5*candidate_cards[i].p_make_contract,1), round(candidate_cards[i].expected_score_dd,0))
-        else:
-            if self.models.use_biddingquality_in_eval:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 3), round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 1900) / 1900, -x[0]), reverse=True)
-                candidate_cards = [card for _, card in candidate_cards]
-                candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(x[1].insta_score, 3), int(x[1].expected_tricks_dd * 1090) / 1090, -x[0]), reverse=True)
-                candidate_cards2 = [card for _, card in candidate_cards2]
-                if candidate_cards[0].expected_score_dd < 0 and candidate_cards2[0].expected_score_dd:
-                    candidate_cards = candidate_cards2
-                who = "DD"
-                print("Who", who)
-            else:
+        else:            
+            # Now we will select the card to play
+            # We have 3 factors, and they could all be right, so we remove most of the decimals
+            # We should probably also consider bidding_scores in this 
+            # If we have bad quality of samples we should probably just use the neural network
+            if valid_bidding_samples >= 0:
                 if self.models.matchpoint:
+                    #for i in range(len(candidate_cards)):
+                    #    print(candidate_cards[i].card, candidate_cards[i].insta_score, int(candidate_cards[i].expected_tricks_dd* 10) / 10, candidate_cards[i].p_make_contract, candidate_cards[i].expected_score_dd, int(candidate_cards[i].expected_tricks_dd * 10) / 10)
                     candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 3), -x[0]), reverse=True)
-                    who = "MP-Make"
+                    who = "NN-MP"
                     #print("Who", who)
                 else:
-                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 3), int(x[1].expected_tricks_dd * 1009) / 1090, -x[0]), reverse=True)
-                    who = "Make"
+                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 1000) / 1000, round(x[1].expected_score_dd, 0), round(x[1].insta_score, 3), -x[0]), reverse=True)
+                    who = "NN-Make"
                     #print("Who", who)
                 candidate_cards = [card for _, card in candidate_cards]
+                # for i in range(len(candidate_cards)):
+                #     print(candidate_cards[i].card, candidate_cards[i].insta_score, int(candidate_cards[i].expected_tricks_dd* 10) / 10, round(5*candidate_cards[i].p_make_contract,1), round(candidate_cards[i].expected_score_dd,0))
+            else:
+                if self.models.use_biddingquality_in_eval:
+                    candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: ( round(x[1].insta_score, 3), round(5*x[1].p_make_contract, 1), int(x[1].expected_tricks_dd * 1900) / 1900, -x[0]), reverse=True)
+                    candidate_cards = [card for _, card in candidate_cards]
+                    candidate_cards2 = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(x[1].insta_score, 3), int(x[1].expected_tricks_dd * 1090) / 1090, -x[0]), reverse=True)
+                    candidate_cards2 = [card for _, card in candidate_cards2]
+                    if candidate_cards[0].expected_score_dd < 0 and candidate_cards2[0].expected_score_dd:
+                        candidate_cards = candidate_cards2
+                    who = "DD"
+                    print("Who", who)
+                else:
+                    if self.models.matchpoint:
+                        candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 3), -x[0]), reverse=True)
+                        who = "MP-Make"
+                        #print("Who", who)
+                    else:
+                        candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 3), int(x[1].expected_tricks_dd * 1009) / 1090, -x[0]), reverse=True)
+                        who = "Make"
+                        #print("Who", who)
+                    candidate_cards = [card for _, card in candidate_cards]
 
         # Select the right card
         right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who, self.verbose)
@@ -1725,55 +1745,5 @@ class CardPlayer:
             quality=quality,
             who = who
         )
-
-        # # Max expected score difference ?
-        # max_expected_score = max(
-        #     [
-        #         float(c.expected_score_dd)
-        #         for c in candidate_cards
-        #         if c.expected_score_dd is not None
-        #     ]
-        # )
-        # card_with_max_expected_score = {c: c.expected_score_dd for c in candidate_cards if c.expected_score_dd == max_expected_score}
-        # if len(card_with_max_expected_score) == 1:
-        #     return best_card_resp
-        # candidate_cards = [c for c in candidate_cards if c in card_with_max_expected_score.keys()]
-
-        # # Don't pick a 8 or 9 when NN difference if you have a small card in the same suit
-        # # Only cards with the same expected score is considered
-        # for c in candidate_cards:
-        #     if c.card.rank in [5, 6]:  # 8 or 9
-        #         for compared_candidate in candidate_cards:
-        #             if (
-        #                 compared_candidate.card.rank >= 7
-        #                 and compared_candidate.card.suit == c.card.suit
-        #             ):
-        #                 if c.insta_score > compared_candidate.insta_score:
-        #                     c.insta_score = compared_candidate.insta_score
-        #                 break  # Below 7, they all have the same insta_score
-
-        # # NN difference ?
-        # max_insta_score = max(
-        #     [float(c.insta_score) for c in candidate_cards if c.insta_score is not None]
-        # )
-        # card_with_max_insta_score = {c: c.insta_score for c in candidate_cards if c.insta_score == max_insta_score and c.expected_score_dd == max_expected_score}
-        # if len(card_with_max_insta_score) == 1:
-        #     return best_card_resp
-
-        # # Play some human carding
-        # hand = PlayerHand.from_pbn(deck52.hand_to_str(self.hand52))
-        # valid_cards = [
-        #     Card_.from_str(c.card.symbol()) for c in card_with_max_insta_score.keys()
-        # ]
-        # return str(
-        #     play_real_card(
-        #         hand,
-        #         valid_cards,
-        #         self.trump,
-        #         self.play_record,
-        #         self.player_direction,
-        #         self.declarer,
-        #     )
-        # )
 
         return best_card_resp

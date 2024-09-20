@@ -457,7 +457,6 @@ class Driver:
         card_play[0].append(opening_lead52)
 
         card_players[0].hand52[opening_lead52] -= 1
-
         for trick_i in range(12):
             if trick_i != 0:
                 print(f"trick {trick_i+1} lead:{leader_i}")
@@ -475,6 +474,8 @@ class Driver:
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
                     continue
 
+                card52 = None
+                card_resp = None
                 play_status = get_play_status(card_players[player_i].hand52,current_trick52)
                 if self.verbose:
                     print('play status', play_status)
@@ -523,7 +524,6 @@ class Driver:
                         
                     await asyncio.sleep(0.01)
 
-                    card_resp = None
                     while card_resp is None:
                         card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
 

@@ -7,7 +7,7 @@ from objects import Card
 import time
 from binary import get_hcp, calculate_median
 import scoring
-
+import calculate
 from bidding import bidding
 sys.path.append("..")
 
@@ -398,6 +398,10 @@ class BGADLL:
 
         try:
             legalMoves = self.pimc.LegalMoves
+            results = {}
+            weights = []
+            e_tricks = {}
+            making = {}
             for card in legalMoves:
                 # Calculate win probability
                 x = self.pimc.Output.GetTricksWithWeights(card)
@@ -408,6 +412,7 @@ class BGADLL:
                 if count == 0:
 
                     print(card)
+                    print("Trying without constraints")
                     print("max_playout",self.max_playout)
                     print(self.pimc.LegalMovesToString)
                     print(f"Playouts: {self.pimc.Playouts}")
@@ -442,24 +447,53 @@ class BGADLL:
                 #print("makable_weight",makable_weight)
                 
                 # Calculate probability
-                probability = makable_weight / total_weight if total_weight > 0 else 0
-                if math.isnan(probability):
-                    probability = 0
+                making_probability = makable_weight / total_weight if total_weight > 0 else 0
+                if math.isnan(making_probability):
+                    making_probability = 0
                 #print("probability",probability)
                 
                 # Calculate average tricks
                 tricks = sum(entry.Item1 * entry.Item2 for entry in output) / total_weight if total_weight > 0 else 0
-                #print("tricks",tricks)
-                            
-                # Second element is the score. We need to calculate it
-                score = sum(self.score_by_tricks_taken[entry.Item1 + self.tricks_taken] * entry.Item2 for entry in output) / total_weight if total_weight > 0 else 0
-                #print("score",score)
+                if self.models.use_real_imp_or_mp:
+                    # Iterate through the ValueTuple objects
+                    results[card] = []
+                    for entry in output:
+                        tricks = entry.Item1  # Access tricks
+                        weight = entry.Item2  # Access weight
+                        results[card].append(tricks)
+                        weights.append(weight)
+                    making[card] = making_probability
+                    e_tricks[card] = tricks
+                else:
+                    # Second element is the score. We need to calculate it
+                    score = sum(self.score_by_tricks_taken[entry.Item1 + self.tricks_taken] * entry.Item2 for entry in output) / total_weight if total_weight > 0 else 0
+                    #print("score",score)
 
-                msg = f"LHO: {self.lho_constraints.ToString()}|RHO: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+                    msg = f"LHO: {self.lho_constraints.ToString()}|RHO: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
 
-                card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(probability, 2), msg)
-                if self.verbose:
-                    print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {probability:.2f}")
+                    card_result[Card.from_symbol(str(card)[::-1])] = (round(tricks, 2), round(score), round(making_probability, 2), msg)
+                    if self.verbose:
+                        print(f"{count} {Card.from_symbol(str(card)[::-1])} {tricks:.2f} {score:.0f} {making_probability:.2f}")
+
+            if self.models.use_real_imp_or_mp:
+                msg = f"Decl: {self.lho_constraints.ToString()}|Partner: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+                if self.models.matchpoint:
+                    card_ev = calculate.calculate_mp_score_probability(results,weights)
+                    print(card_ev)
+                else:
+                    real_scores = calculate.calculate_score(results, self.tricks_taken, player_i, self.score_by_tricks_taken)
+                    if self.verbose:
+                        print("Real scores")
+                        print(real_scores)
+                    card_ev = calculate.calculate_imp_score_probability(real_scores, weights)
+
+                card_result = {}
+                for key in card_ev.keys():
+                    card_result[Card.from_symbol(str(key)[::-1])] = (round(e_tricks[key], 2), round(card_ev[key],2), making[key], msg)
+                    if self.verbose:
+                        print(f'{key} {e_tricks[key]:0.3f} {card_ev[key]:5.2f} {making[key]:0.2f}')
+
+                        
 
         except Exception as e:
             print('Error legalMoves:', e)

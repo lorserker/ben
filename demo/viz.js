@@ -361,6 +361,7 @@ class PlayInfo {
             html += '<p>We have 3 different parameters for selecting the card, and first goal is to make/set the contract (if not matchpoints), then the double dummy score, and finally the score from the neural network. '
             html += 'If the quality of the samples are bad (or the nn suggest a specific card with confidence), then we select the that card. '
             html += 'Also be aware that the data is rounded to nearest even number before comparing.</p>'
+            html += 'OR use MP or IMP calculation instead of tricks.<br><br>'
             html += '<table>'
 
             for (const element of this.data.candidates) {
@@ -385,6 +386,12 @@ class PlayInfo {
                 }
                 if ("expected_score_dd" in candidate) {
                     html += '<td>e(score)dd=' + Math.round(candidate['expected_score_dd'] * 100) / 100 + '</td>'
+                }
+                if ("expected_score_mp" in candidate) {
+                    html += '<td>e(MP)dd=' + Math.round(candidate['expected_score_mp'] * 100) / 100 + '%</td>'
+                }
+                if ("expected_score_imp" in candidate) {
+                    html += '<td>e(IMP)dd=' + candidate['expected_score_imp'] + '</td>'
                 }
                 if ("insta_score" in candidate) {
                     html += '<td>iscore=' + Math.round(candidate['insta_score'] * 1000) / 1000 + '</td>'

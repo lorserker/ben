@@ -168,7 +168,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                             quality=None,
                             who="Follow"
                         )                        
-                    return card_resp, player_i
+                        return card_resp, player_i
 
                 # No obvious play, so we roll out
                 rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
@@ -632,6 +632,8 @@ def play():
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
         result["player"] = player_i
+        result["matchpoint"] = matchpoint
+        result["MP_or_IMP"] = models.use_real_imp_or_mp
         if record: 
             with shelve.open(f"{log_file_path}/gameapiplaydb{dealno}") as db:
                     db[uuid.uuid4().hex] =  {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
