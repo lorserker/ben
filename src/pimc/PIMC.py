@@ -368,9 +368,10 @@ class BGADLL:
             legalMoves = self.pimc.LegalMoves
             if len(legalMoves) == 1:
                 card = legalMoves[0]
+                card52 = Card.from_symbol(str(card)[::-1]).code()
                 if self.verbose:
-                    print("Playing singleton:",card)
-                card_result[Card.from_symbol(str(card)[::-1])] = (-1, -1, -1,"singleton - no calculation")
+                    print("Playing only possible card:",card)
+                card_result[card52] = (-1, -1, -1,"Forced card - no calculation")
                 return card_result
 
         start_time = time.time()
