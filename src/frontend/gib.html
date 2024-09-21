@@ -94,8 +94,19 @@
 			let table =	`<tr><th>Bid</th><th>Description</th></tr>`;
 			let x = xmlDoc.getElementsByTagName("r");
 
+			const bValue = x[0].getAttribute('b').toUpperCase();
+			bValueHtml = bValue;
+            const mValue = x[0].getAttribute('m');
+			mValueHtml = mValue .replace(/!S/g, '<span style="color: blue">&spades;</span>');
+			mValueHtml = mValueHtml.replace(/!H/g, '<span style="color: red">&hearts;</span>');
+			mValueHtml = mValueHtml.replace(/!D/g, '<span style="color: orange">&diams;</span>');
+			mValueHtml = mValueHtml.replace(/!C/g, '<span style="color: green">&clubs;</span>');
+			mValueHtml = replaceSuitsBeforeDoubleDash(mValueHtml);
+			mValueHtml = replaceSuits(mValueHtml);
+			table += "<tr class="+ who + "><td><a href=?bid="+  bid.substring(0,bid.length - 1) + bValue + "-*>" + bValueHtml + "</a></td><td>" + mValueHtml + "</td></tr>";
+
 			// Start to fetch the data by using TagName 
-			for (i = x.length; i >0; i--) {
+			for (i = x.length; i >1; i--) {
                 const bValue = x[i-1].getAttribute('b').toUpperCase();
 				if (bValue != "D") {
 					bValueHtml = bValue.replace(/S/g, '<span style="color: blue">&spades;</span>');
