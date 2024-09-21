@@ -69,7 +69,7 @@ def calculate_imp_score_probability( data, probabilities_list):
         for j in range(num_arrays):
             if i != j:
                 # Compare data[keys[i]] with data[keys[j]] column by column
-                for k in range(len(data[keys[i]])):  # Iterate through each value (column)
+                for k in range(num_plays):  # Iterate through each value (column)
                     diff = data[keys[i]][k] - data[keys[j]][k]
                     imp_score = scoring.diff_to_imps(diff) * probabilities_list[k] * num_plays
                     #if i == 0 and j == 5:
@@ -102,7 +102,7 @@ def calculate_imp_score( data):
         for j in range(num_arrays):
             if i != j:
                 # Compare data[keys[i]] with data[keys[j]] column by column
-                for k in range(len(data[keys[i]])):  # Iterate through each value (column)
+                for k in range(num_plays):  # Iterate through each value (column)
                     diff = data[keys[i]][k] - data[keys[j]][k]
                     imp_score = scoring.diff_to_imps(diff)
                     

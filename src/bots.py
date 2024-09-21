@@ -1301,19 +1301,16 @@ class CardPlayer:
     def merge_candidate_cards(self, pimc_resp, dd_resp):
         merged_cards = {}
 
-        for card, (e_tricks, e_score, e_make, msg) in pimc_resp.items():
-            card521 = card.code()
-            for card52, (e_tricks, e_score, e_make) in dd_resp.items():
-                if int(card52) == int(card521):  
-                    pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card]
-                    new_e_tricks = (pimc_e_tricks + e_tricks) / 2.0 if pimc_e_tricks is not None and e_tricks is not None else None
-                    new_e_score = round((pimc_e_score + e_score) / 2.0,2) if pimc_e_score is not None and e_score is not None else None
-                    new_e_make = (pimc_e_make + e_make) / 2.0 if pimc_e_make is not None and e_make is not None else None
-                    new_msg = "PIMC|" + (pimc_msg or '') 
-                    new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
-                    new_msg += "|BEN DD|" 
-                    new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
-                    merged_cards[card] = (new_e_tricks, new_e_score, new_e_make, new_msg)
+        for card52, (e_tricks, e_score, e_make) in dd_resp.items():
+            pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card52]
+            new_e_tricks = round((pimc_e_tricks + e_tricks) / 2.0,2) if pimc_e_tricks is not None and e_tricks is not None else None
+            new_e_score = round((pimc_e_score + e_score) / 2.0,2) if pimc_e_score is not None and e_score is not None else None
+            new_e_make = round((pimc_e_make + e_make) / 2.0,2) if pimc_e_make is not None and e_make is not None else None
+            new_msg = "PIMC|" + (pimc_msg or '') 
+            new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
+            new_msg += "|BEN DD|" 
+            new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
+            merged_cards[card52] = (new_e_tricks, new_e_score, new_e_make, new_msg)
 
         return merged_cards
     
@@ -1550,13 +1547,13 @@ class CardPlayer:
         candidate_cards = []
         
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
-            card32 = deck52.card52to32(deck52.encode_card(str(card52)))
-            insta_score = self.get_nn_score(card32, deck52.encode_card(str(card52)), card_nn, play_status, tricks52)
+            card32 = deck52.card52to32(card52)
+            insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
             if insta_score >= self.models.pimc_trust_NN:
                 expected_score = round(e_score + (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0), 0)
 
                 candidate_cards.insert(0,CandidateCard(
-                    card=card52,
+                    card=Card.from_code(card52),
                     insta_score=round(insta_score,3),
                     expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
                     p_make_contract=e_make,
@@ -1569,7 +1566,7 @@ class CardPlayer:
                     {
                         "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
                     }),
-                    msg=msg
+                    msg=msg + (f"|trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
                 ))
 
         if self.models.use_real_imp_or_mp:
@@ -1662,8 +1659,8 @@ class CardPlayer:
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
                         "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
-                    })
-
+                    }),
+                    msg= (f"trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
                 ))
             else:
                 candidate_cards.append(CandidateCard(
@@ -1679,7 +1676,8 @@ class CardPlayer:
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
                         "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
-                    })
+                    }),
+                    msg= (f"trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
                 ))
             current_card = card52
             current_insta_score = insta_score
