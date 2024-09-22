@@ -400,9 +400,11 @@ class PlayInfo {
                     html += '<td>e(make/set)=' + Math.round(candidate['p_make_contract'] * 100) / 100 + '</td>'
                 }
                 if ("msg" in candidate) {
-                    var escapedMsg = candidate['msg']
+                    if (candidate['msg'].length > 0) {
+                        var escapedMsg = candidate['msg']
                         .replace(/ /g, '&nbsp;')  // Escape space
-                    html += "<td onmouseover=BENShowPopup(this,'" + escapedMsg + "',0) onmouseout=BENHidePopup()>[calculations]</td>"
+                        html += "<td onmouseover=BENShowPopup(this,'" + escapedMsg + "',0) onmouseout=BENHidePopup()>[calculations]</td>"
+                    }
                 }
                 html += '</tr>'
             }

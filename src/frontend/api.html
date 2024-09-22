@@ -172,8 +172,8 @@
             const dealer = "NESW".indexOf(document.getElementById('dealerInput').value);
             // Deck is based from South
             const player = ("SWNE".indexOf(seat)) % 4
-            var openingsuit = suitchars.indexOf(openinglead[0])
-            var openingcard = cardchars.indexOf(openinglead[1])
+            var openingsuit = suitchars.indexOf(openinglead[0]).toUpperCase()
+            var openingcard = cardchars.indexOf(openinglead[1]).toUpperCase()
             var lefty = deck[openingsuit][openingcard]
             var dummy = (lefty + 1) % 4
             document.getElementById('handInput').value = ''
@@ -675,9 +675,11 @@
                         html += '<td>e(make/set)=' + Math.round(candidate['p_make_contract'] * 100) / 100 + '</td>'
                     }
                     if ("msg" in candidate) {
-                        var escapedMsg = candidate['msg']
+                        if (candidate['msg'].length > 0) {
+                            var escapedMsg = candidate['msg']
                             .replace(/ /g, '&nbsp;')  // Escape space
-                        html += "<td onmouseover=BENShowPopup(this,'" + escapedMsg + "',0) onmouseout=BENHidePopup()>[calculations]</td>"
+                            html += "<td onmouseover=BENShowPopup(this,'" + escapedMsg + "',0) onmouseout=BENHidePopup()>[calculations]</td>"
+                        }
                     }
                     html += '</tr>'
                 }

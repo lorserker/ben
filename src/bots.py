@@ -813,17 +813,17 @@ class BotBid:
             # All pass doesn't really fit, and is always 0 - we ignore it for now
             if contract is None:
                 contracts.append("PASS")
-                strain = -1
-                declarer = -1
-            else:
-                contracts.append(contract)
-                strain = 'NSHDC'.index(contract[1])
-                declarer = 'NESW'.index(contract[-1])
-                leader = (declarer + 1) % 4
+                continue
+
+            contracts.append(contract)
+            strain = 'NSHDC'.index(contract[1])
+            declarer = 'NESW'.index(contract[-1])
+            leader = (declarer + 1) % 4
 
             # Create PBN for hand
             # deck = 'N:' + ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) if j != self.seat else hand_str for j, hand in enumerate(hands_np[i]))
             # We want to rotate the hands such that the hand_str comes first, and the remaining hands follow in their original order, wrapping around. 
+            # This is to ensure that we get the same DD results for a rotateded deal.
             deck = 'N:' + ' '.join(
                 hand_str if j == 0 else deck52.handxxto52str(hands_np[i][(j + self.seat) % 4], self.models.n_cards_bidding)
                 for j in range(4)
@@ -1571,9 +1571,9 @@ class CardPlayer:
 
         if self.models.use_real_imp_or_mp:
             if self.models.matchpoint:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_mp, x[1].insta_score, -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_mp, x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
             else:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_imp, x[1].insta_score, -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_imp, x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
         else:            
             if self.models.matchpoint:
                 candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
@@ -1685,11 +1685,11 @@ class CardPlayer:
         valid_bidding_samples = np.sum(bidding_scores > self.bid_accept_play_threshold)
         if self.models.use_real_imp_or_mp:
             if self.models.matchpoint:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_mp, x[1].insta_score, -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_mp, x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
                 who = "MP-calc"
 
             else:
-                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_imp, x[1].insta_score, -x[0]), reverse=True)
+                candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_imp, x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
                 who = "IMP-calc"
             candidate_cards = [card for _, card in candidate_cards]
         else:            
