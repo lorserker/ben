@@ -172,8 +172,8 @@
             const dealer = "NESW".indexOf(document.getElementById('dealerInput').value);
             // Deck is based from South
             const player = ("SWNE".indexOf(seat)) % 4
-            var openingsuit = suitchars.indexOf(openinglead[0]).toUpperCase()
-            var openingcard = cardchars.indexOf(openinglead[1]).toUpperCase()
+            var openingsuit = suitchars.indexOf(openinglead[0])
+            var openingcard = cardchars.indexOf(openinglead[1])
             var lefty = deck[openingsuit][openingcard]
             var dummy = (lefty + 1) % 4
             document.getElementById('handInput').value = ''
@@ -234,7 +234,7 @@
                     break;
                 case 'PC':
                     if (openinglead == "") {
-                        openinglead = param
+                        openinglead = param.toUpperCase()
                     }
                     document.getElementById('playInput').value += param.replace(/\s+/g, '') + " ";
                     break;
