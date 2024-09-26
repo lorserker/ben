@@ -1026,7 +1026,7 @@ async def main():
 
                     # Match contract or adjusted contract for declarer
                     if score_contract == contract or score_contract == f"{declarer}{contract}":
-                        print("Score", score_value)
+                        print("Score for ", score_contract, score_value, facit_score[board_no[0]-1])
                         this_score = score_value
                         facit_total += score_value
                         break
@@ -1037,7 +1037,8 @@ async def main():
 
                         # Match adjusted contract (with or without declarer)
                         if score_contract in adjusted_contracts or score_contract in [f"{declarer}{adj}" for adj in adjusted_contracts]:
-                            print("Score", score_value)
+                            print("Score for ", score_contract, score_value, facit_score[board_no[0]-1])
+                            this_score = score_value
                             facit_total += score_value
                             break
         

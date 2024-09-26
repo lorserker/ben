@@ -28,8 +28,7 @@ def load(fin):
         if line.startswith('[Dealer'):
             dealer = extract_value(line)
         if line.startswith('[Scoring'):
-            scores.append(line.strip()[:-2].split() [2:])
-            
+            scores.append(line.strip()[:-1].split() [2:])
         if line.startswith('[Vulnerable'):
             vuln_str = extract_value(line)
             vulnerable = {'NS': 'N-S', 'EW': 'E-W', 'All': 'Both'}.get(vuln_str, vuln_str)
