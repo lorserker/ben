@@ -110,12 +110,16 @@ class Driver:
         self.hands = deal_str.split()
         self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, "", self.ns, self.ew,  32)
 
-        auction_part = auction_str.split(' ')
-        if play_only == None and len(auction_part) > 2: play_only = True
-        if play_only:
-            self.auction = self.deal_data.auction
-            self.play_only = play_only
-        self.bidding_only = bidding_only
+        if bidding_only:
+            auction_part = auction_str.split(' ')
+            if play_only == None and len(auction_part) > 2: play_only = True
+            self.fixed_auction = auction_part[2:]
+        else:
+            auction_part = auction_str.split(' ')
+            if play_only == None and len(auction_part) > 2: play_only = True
+            if play_only:
+                self.auction = self.deal_data.auction
+                self.play_only = play_only
         if self.rotate:
             self.dealer_i = (self.deal_data.dealer + 1) % 4
             self.vuln_ns = self.deal_data.vuln_ew
@@ -160,14 +164,19 @@ class Driver:
         self.card_responses = []
 
         if self.play_only:
-            auction = self.auction
-            for bid in auction:
+            for bid in self.auction:
                 if bidding.BID2ID[bid] > 1:
                     self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly", quality=None))
         else:
-            auction = await self.bidding()
+            self.auction = await self.bidding(self.bidding_only, self.fixed_auction)
 
-        self.contract = bidding.get_contract(auction)
+        self.contract = bidding.get_contract(self.auction)
+        self.strain_i = bidding.get_strain_i(self.contract)
+        self.decl_i = bidding.get_decl_i(self.contract)
+
+        if not self.bidding_only == "False":
+            return
+
         if self.contract is None:
             await self.channel.send(json.dumps({
                 'message': 'deal_end',
@@ -176,18 +185,13 @@ class Driver:
             }))
             return
 
-        self.strain_i = bidding.get_strain_i(self.contract)
-        self.decl_i = bidding.get_decl_i(self.contract)
-
         await self.channel.send(json.dumps({
             'message': 'auction_end',
             'declarer': self.decl_i,
-            'auction': auction,
+            'auction': self.auction,
             'strain': self.strain_i
         }))
 
-        if self.bidding_only:
-            return
         
         print("trick 1")
 
@@ -785,7 +789,7 @@ class Driver:
 
         return card_resp
 
-    async def bidding(self):
+    async def bidding(self, bidding_only, bidding_only_auction):
         hands_str = self.deal_str.split()
         
         vuln = [self.vuln_ns, self.vuln_ew]
@@ -808,9 +812,21 @@ class Driver:
 
         player_i = self.dealer_i
         alert = False
+        bid_no = 0
 
         while not bidding.auction_over(auction):
-            bid_resp = await players[player_i].async_bid(auction, alert)
+            if self.bidding_only == "NS" and (player_i == 1 or player_i == 3):
+                #print("bidding_only_auction",bidding_only_auction, bid_no, len(bidding_only_auction))
+                if bidding_only_auction[0] != '' and len(bidding_only_auction) > bid_no:
+                    if bidding.can_bid(bidding_only_auction[bid_no].replace("P","PASS"), auction):
+                        bid_resp = BidResp(bid=bidding_only_auction[bid_no].replace("P","PASS"), candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
+                    else:
+                        bid_resp = BidResp(bid="PASS", candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
+                else:
+                    bid_resp = BidResp(bid="PASS", candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
+                #print(bid_resp)
+            else:
+                bid_resp = await players[player_i].async_bid(auction, alert)
             if bid_resp.bid == "Alert": 
                 alert = not alert
                 await self.channel.send(json.dumps({
@@ -831,12 +847,14 @@ class Driver:
                     self.bid_responses.append(bid_resp)
 
                     auction.append(bid_resp.bid)
+                    bid_no += 1
 
-                    await self.channel.send(json.dumps({
-                        'message': 'bid_made',
-                        'auction': auction,
-                        'alert': str(alert or bid_resp.alert)
-                    }))
+                    if self.bidding_only != "NS":
+                        await self.channel.send(json.dumps({
+                            'message': 'bid_made',
+                            'auction': auction,
+                            'alert': str(alert or bid_resp.alert)
+                        }))
 
                     player_i = (player_i + 1) % 4
                     # give time to client to redraw
@@ -865,9 +883,10 @@ async def main():
     parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
     parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
     parser.add_argument("--playonly", type=bool, default=False, help="Just play, no bidding")
-    parser.add_argument("--biddingonly", type=bool, default=False, help="Just bidding, no play")
+    parser.add_argument("--biddingonly", default="False", help="Just bidding, no play, can be True, NS or EW")
     parser.add_argument("--outputpbn", default="", help="Save each board to this PBN file")
     parser.add_argument("--paronly", default=0, type=int, help="only record deals with this IMP difference from par")
+    parser.add_argument("--facit", default=False, type=bool, help="Calcualte score for the bidding from facit")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
     parser.add_argument("--seed", type=int, help="Seed for random")
 
@@ -881,6 +900,9 @@ async def main():
     seed = args.seed
     outputpbn = args.outputpbn
     paronly = args.paronly
+    facit = args.facit
+    facit_score = None
+    facit_total = 0
     boards = []
 
     if args.boards:
@@ -902,7 +924,7 @@ async def main():
         if file_extension == '.pbn':
             with open(filename, "r") as file:
                 lines = file.readlines()
-                boards = load(lines)
+                boards, facit_score = load(lines)
                 print(f"{len(boards)} boards loaded from file")
             random = False
 
@@ -961,6 +983,7 @@ async def main():
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
             print(f"Board: {board_no[0]+1} {rdeal}")
+            print("auction",auction)
             driver.set_deal(board_no[0] + 1, rdeal, auction, play_only=playonly, bidding_only=biddingonly)
             board_no[0] = (board_no[0] + 1)
 
@@ -971,22 +994,73 @@ async def main():
 
 
         from ddsolver import ddsolver
+
+        if facit:        
+            if facit_score == None:
+                print("No score table provided")
+            else:
+                this_score = None
+                contract = driver.contract[0:-1]
+                declarer = driver.contract[-1]
+                contract_adjustments = {
+                    "1C": ["2C","3C","4C"],
+                    "1D": ["2D","3D","4D"],
+                    "1H": ["2H","3H"],
+                    "1S": ["2S","3S"],
+                    "1N": ["2N"],
+                    "2C": ["3C","4C"],
+                    "2D": ["3D","4D"],
+                    "2H": ["3H"],
+                    "2S": ["3S"],
+                    "3C": ["4C"],
+                    "3D": ["4D"],
+                    "3N": ["4N", "5N"],
+                    "4H": ["5H"],
+                    "4S": ["5S"],
+                }
+                print(driver.hands[0], driver.hands[2], driver.contract, driver.auction)
+                # Loop through facit_score for the current board
+                for i in range(len(facit_score[board_no[0] - 1]) // 2):
+                    score_contract = facit_score[board_no[0] - 1][i * 2]
+                    score_value = int(facit_score[board_no[0] - 1][i * 2 + 1])
+
+                    # Match contract or adjusted contract for declarer
+                    if score_contract == contract or score_contract == f"{declarer}{contract}":
+                        print("Score", score_value)
+                        this_score = score_value
+                        facit_total += score_value
+                        break
+
+                    # Check for adjusted contracts (with or without declarer)
+                    if contract in contract_adjustments:
+                        adjusted_contracts = contract_adjustments[contract]
+
+                        # Match adjusted contract (with or without declarer)
+                        if score_contract in adjusted_contracts or score_contract in [f"{declarer}{adj}" for adj in adjusted_contracts]:
+                            print("Score", score_value)
+                            facit_total += score_value
+                            break
         
-        par_score = ddsolver.DDSolver().calculatepar(driver.deal_str, [driver.vuln_ns, driver.vuln_ew])
-        score = 0
-        imps = 0
-        if driver.contract != None:
-            if (driver.contract[-1] == "N" or driver.contract[-1] =="S"):
-                score = scoring.score(driver.contract, driver.vuln_ns, driver.tricks_taken)
-            if (driver.contract[-1] == "E" or driver.contract[-1] =="W"):
-                score = -scoring.score(driver.contract, driver.vuln_ew, driver.tricks_taken)
+                if this_score is None:
+                    print("No score - Scoring",driver.contract[:-1], facit_score[board_no[0]-1])
+                else:
+                    print("Running score:", facit_total)
+        else:
+            par_score = ddsolver.DDSolver().calculatepar(driver.deal_str, [driver.vuln_ns, driver.vuln_ew])
+            score = 0
+            imps = 0
+            if driver.contract != None:
+                if (driver.contract[-1] == "N" or driver.contract[-1] =="S"):
+                    score = scoring.score(driver.contract, driver.vuln_ns, driver.tricks_taken)
+                if (driver.contract[-1] == "E" or driver.contract[-1] =="W"):
+                    score = -scoring.score(driver.contract, driver.vuln_ew, driver.tricks_taken)
 
-            imps = abs(compare.get_imps(score, par_score))
-            print("Score: " + driver.contract + " " + str(score) + " Par: " + str(par_score) + " " + str(imps))
-        driver.parscore = par_score
-        print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                imps = abs(compare.get_imps(score, par_score))
+                print("Score: " + driver.contract + " " + str(score) + " Par: " + str(par_score) + " " + str(imps))
+            driver.parscore = par_score
+            print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
-        if not biddingonly:
+        if biddingonly == "False":
             if paronly <= imps:
                 with shelve.open(f"{config_path}/paronlydb") as db:
                     deal = driver.to_dict()

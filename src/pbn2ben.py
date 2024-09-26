@@ -11,6 +11,7 @@ class Deal(NamedTuple):
 
 def load(fin):
     boards = [] 
+    scores = []
     auction_lines = []
     inside_auction_section = False
     dealer, vulnerable = None, None
@@ -26,6 +27,9 @@ def load(fin):
                 dealer= None
         if line.startswith('[Dealer'):
             dealer = extract_value(line)
+        if line.startswith('[Scoring'):
+            scores.append(line.strip()[:-2].split() [2:])
+            
         if line.startswith('[Vulnerable'):
             vuln_str = extract_value(line)
             vulnerable = {'NS': 'N-S', 'EW': 'E-W', 'All': 'Both'}.get(vuln_str, vuln_str)
@@ -59,7 +63,7 @@ def load(fin):
             'auction': dealer + " " + vulnerable + " " + ' '.join(auction_lines)
         }
         boards.append(board)      
-    return boards
+    return boards, scores
 
 def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]

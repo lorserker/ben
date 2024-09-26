@@ -87,10 +87,16 @@ class BotBid:
         # When going negative, we would probably like to extend the candidates
         candidates, passout = self.get_bid_candidates(auction)
         good_quality = None
-
+        hands_np = None
         samples = []
-        # If no seach we will not generate any samples
-        if not self.sample.no_samples_when_no_search or self.min_candidate_score != -1:
+
+        # If no search we will not generate any samples if switch of
+        # if only 1 sample we drop sampling, but only if no rescue bidding
+        generate_samples = not self.sample.no_samples_when_no_search and self.min_candidate_score != -1
+        generate_samples = generate_samples or (binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"))
+        generate_samples = generate_samples or len(candidates) > 1
+
+        if generate_samples:
             if self.verbose:
                 print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
             hands_np, sorted_score, p_hcp, p_shp, good_quality = self.sample_hands_for_auction(auction, self.seat)
@@ -258,7 +264,7 @@ class BotBid:
             p_hcp, p_shp = self.sample.get_bidding_info(n_steps, auction, self.seat, self.hand32, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
-            if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS") and not self.sample.no_samples_when_no_search:
+            if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
                 # initialize auction vector
                 auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
                 for i, bid in enumerate(auction):

@@ -696,6 +696,9 @@ def cuebidscores():
 @app.route('/cuebid', methods=['POST'])
 def cuebid():
     t_start = time.time()
+    # Override defaults as cuebids must finish 8 boards within 9 mins
+    sampler.no_samples_when_no_search = True
+    sampler.sample_boards_for_auction = 5000
     data = request.get_json()
     # log request to log file
 
