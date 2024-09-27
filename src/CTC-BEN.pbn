@@ -1,12 +1,16 @@
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "1"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "None"]
@@ -21,36 +25,29 @@ PASS 1S PASS 2S
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-2\s	 10
-
-3\s	 6
-
-1N	 4
-
-4\s	 2
-
-2N	 2
-
-3N	 1
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 10
+  2\s   10\n  3\s    6\n  1N    4\n  4\s    2\n  2N    2\n  3N    1\n
 
+Facit Score:    10\nRunning Score:  10
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "2"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "None"]
@@ -66,34 +63,29 @@ Running Score: 10
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-4\h	 10
-
-5\h	 7
-
-3N	 4
-
-6\c	 3
-
-6\s	 2
+{
 
 
-Facit Score: 0
+Score Table:
 
-Running Score: 10
+  4\h   10\n  5\h    7\n  3N    4\n  6\c    3\n  6\s    2\n
 
+Facit Score:     0\nRunning Score:  10
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "3"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "EW"]
@@ -109,36 +101,29 @@ PASS 4S PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-7\s	 10
-
-7\c	 8
-
-6\s	 5
-
-6\c	 3
-
-6N	 3
-
-5\s	 2
+{
 
 
-Facit Score: 2
+Score Table:
 
-Running Score: 12
+  7\s   10\n  7\c    8\n  6\s    5\n  6\c    3\n  6N    3\n  5\s    2\n
 
+Facit Score:     2\nRunning Score:  12
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "4"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "All"]
@@ -152,28 +137,29 @@ PASS PASS 1S PASS
 4S PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-6\s	 10
-
-5\s	 4
+{
 
 
-Facit Score: 4
+Score Table:
 
-Running Score: 16
+  6\s   10\n  5\s    4\n
 
+Facit Score:     4\nRunning Score:  16
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "5"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "NS"]
@@ -189,32 +175,29 @@ PASS 4S PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-4\s	 9
-
-3\s	 5
-
-2N	 2
-
-3N	 1
+{
 
 
-Facit Score: 9
+Score Table:
 
-Running Score: 25
+  4\s    9\n  3\s    5\n  2N    2\n  3N    1\n
 
+Facit Score:     9\nRunning Score:  25
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "6"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "EW"]
@@ -229,42 +212,29 @@ PASS PASS 1C PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-3\d	 10
-
-4\d	 7
-
-2\s	 6
-
-2N	 6
-
-3\c	 6
-
-5\d	 5
-
-3\s	 3
-
-3N	 3
-
-4\s	 1
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 35
+  3\d   10\n  4\d    7\n  2\s    6\n  2N    6\n  3\c    6\n  5\d    5\n  3\s    3\n  3N    3\n  4\s    1\n
 
+Facit Score:    10\nRunning Score:  35
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "7"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "All"]
@@ -279,32 +249,29 @@ PASS 3D PASS 3N
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-3N	 9
-
-2N	 5
-
-4\d	 4
-
-5\d	 2
+{
 
 
-Facit Score: 9
+Score Table:
 
-Running Score: 44
+  3N    9\n  2N    5\n  4\d    4\n  5\d    2\n
 
+Facit Score:     9\nRunning Score:  44
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "8"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "None"]
@@ -320,36 +287,29 @@ Running Score: 44
 6S PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-\s6N	 10
-
-N6N	 8
-
-6\s	 6
-
-6\c	 4
-
-5N	 3
-
-5\s	 2
+{
 
 
-Facit Score: 6
+Score Table:
 
-Running Score: 50
+ S6N   10\n N6N    8\n  6\s    6\n  6\c    4\n  5N    3\n  5\s    2\n
 
+Facit Score:     6\nRunning Score:  50
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "9"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "EW"]
@@ -365,34 +325,29 @@ PASS 4S PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-6\d	 10
-
-4\s	 6
-
-5\s	 5
-
-6\s	 4
-
-5\d	 2
+{
 
 
-Facit Score: 6
+Score Table:
 
-Running Score: 56
+  6\d   10\n  4\s    6\n  5\s    5\n  6\s    4\n  5\d    2\n
 
+Facit Score:     6\nRunning Score:  56
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "10"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "All"]
@@ -410,32 +365,29 @@ Running Score: 56
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-6\s	 10
-
-6N	 6
-
-5\s	 4
-
-3N	 4
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 66
+  6\s   10\n  6N    6\n  5\s    4\n  3N    4\n
 
+Facit Score:    10\nRunning Score:  66
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "11"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "None"]
@@ -450,36 +402,29 @@ PASS 2H PASS 4S
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-2\s	 10
-
-3\s	 8
-
-1N	 6
-
-2N	 5
-
-4\s	 3
-
-3N	 2
+{
 
 
-Facit Score: 3
+Score Table:
 
-Running Score: 69
+  2\s   10\n  3\s    8\n  1N    6\n  2N    5\n  4\s    3\n  3N    2\n
 
+Facit Score:     3\nRunning Score:  69
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "12"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "NS"]
@@ -494,34 +439,29 @@ Running Score: 69
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-6N	 10
-
-6\h	 6
-
-6\d	 4
-
-5N	 3
-
-5\h	 2
+{
 
 
-Facit Score: 2
+Score Table:
 
-Running Score: 71
+  6N   10\n  6\h    6\n  6\d    4\n  5N    3\n  5\h    2\n
 
+Facit Score:     2\nRunning Score:  71
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "13"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "All"]
@@ -537,38 +477,29 @@ PASS 3N PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-5\d	 10
-
-3\s	 6
-
-4\d	 4
-
-4\s	 4
-
-3N	 4
-
-2N	 3
-
-6\d	 2
+{
 
 
-Facit Score: 4
+Score Table:
 
-Running Score: 75
+  5\d   10\n  3\s    6\n  4\d    4\n  4\s    4\n  3N    4\n  2N    3\n  6\d    2\n
 
+Facit Score:     4\nRunning Score:  75
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "14"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "None"]
@@ -584,38 +515,29 @@ Running Score: 75
 3N PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-\s6N	 10
-
-N6N	 8
-
-6\h	 7
-
-6\c	 6
-
-4N	 4
-
-5\h	 3
-
-5\c	 1
+{
 
 
-Facit Score: 4
+Score Table:
 
-Running Score: 79
+ S6N   10\n N6N    8\n  6\h    7\n  6\c    6\n  4N    4\n  5\h    3\n  5\c    1\n
 
+Facit Score:     4\nRunning Score:  79
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "15"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "NS"]
@@ -631,32 +553,29 @@ PASS 5S PASS 6D
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-6\d	 10
-
-4N	 4
-
-5\d	 2
-
-4\s	 2
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 89
+  6\d   10\n  4N    4\n  5\d    2\n  4\s    2\n
 
+Facit Score:    10\nRunning Score:  89
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "16"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "EW"]
@@ -673,34 +592,29 @@ Running Score: 89
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-4\c	 10
-
-1N	 7
-
-2N	 6
-
-5\c	 4
-
-3N	 3
+{
 
 
-Facit Score: 4
+Score Table:
 
-Running Score: 93
+  4\c   10\n  1N    7\n  2N    6\n  5\c    4\n  3N    3\n
 
+Facit Score:     4\nRunning Score:  93
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "17"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "None"]
@@ -716,30 +630,29 @@ PASS 5D PASS 6H
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-7\h	 10
-
-6\h	 6
-
-5\h	 3
+{
 
 
-Facit Score: 6
+Score Table:
 
-Running Score: 99
+  7\h   10\n  6\h    6\n  5\h    3\n
 
+Facit Score:     6\nRunning Score:  99
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "18"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "NS"]
@@ -754,36 +667,29 @@ Running Score: 99
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-2\d	 9
-
-3\d	 6
-
-3N	 4
-
-2N	 4
-
-2\hP	 4
-
-2\hX	 4
+{
 
 
-Facit Score: 4
+Score Table:
 
-Running Score: 103
+  2\d    9\n  3\d    6\n  3N    4\n  2N    4\n 2\hP    4\n 2\hX    4\n
 
+Facit Score:     4\nRunning Score: 103
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "19"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "EW"]
@@ -798,30 +704,29 @@ PASS 2H PASS 3N
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-5N	 9
-
-6\d	 4
-
-6N	 2
+{
 
 
-Facit Score: 9
+Score Table:
 
-Running Score: 112
+  5N    9\n  6\d    4\n  6N    2\n
 
+Facit Score:     9\nRunning Score: 112
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "20"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "All"]
@@ -835,28 +740,29 @@ Running Score: 112
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-4\s	 10
-
-3\s	 4
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 122
+  4\s   10\n  3\s    4\n
 
+Facit Score:    10\nRunning Score: 122
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "21"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "NS"]
@@ -870,34 +776,29 @@ PASS 1C 3D X
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-W3\dX	 10
-
-W3\d	 7
-
-3\s	 5
-
-4\s	 3
-
-3N	 3
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 132
+W3\dX  10\n W3\d    7\n  3\s    5\n  4\s    3\n  3N    3\n
 
+Facit Score:    10\nRunning Score: 132
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "22"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "EW"]
@@ -912,38 +813,29 @@ Running Score: 132
 3N PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-3N	 10
-
-2N	 6
-
-3\c	 5
-
-4\c	 4
-
-2\h	 4
-
-5\c	 2
-
-3\h	 1
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 142
+  3N   10\n  2N    6\n  3\c    5\n  4\c    4\n  2\h    4\n  5\c    2\n  3\h    1\n
 
+Facit Score:    10\nRunning Score: 142
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "23"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "All"]
@@ -960,36 +852,29 @@ PASS 5S PASS 6H
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-7N	 10
-
-7\s	 7
-
-7\h	 7
-
-6N	 4
-
-6\s	 2
-
-6\h	 2
+{
 
 
-Facit Score: 2
+Score Table:
 
-Running Score: 144
+  7N   10\n  7\s    7\n  7\h    7\n  6N    4\n  6\s    2\n  6\h    2\n
 
+Facit Score:     2\nRunning Score: 144
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "24"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "None"]
@@ -1005,34 +890,29 @@ Running Score: 144
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-6\s	 10
-
-6N	 6
-
-5\s	 5
-
-6\d	 4
-
-5N	 4
+{
 
 
-Facit Score: 4
+Score Table:
 
-Running Score: 148
+  6\s   10\n  6N    6\n  5\s    5\n  6\d    4\n  5N    4\n
 
+Facit Score:     4\nRunning Score: 148
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "25"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "EW"]
@@ -1048,44 +928,29 @@ PASS 3D PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-2\d	 10
-
-3\d	 9
-
-2\s	 8
-
-1N	 7
-
-4\d	 6
-
-3\s	 5
-
-2N	 4
-
-5\d	 3
-
-3N	 2
-
-4\s	 2
+{
 
 
-Facit Score: 9
+Score Table:
 
-Running Score: 157
+  2\d   10\n  3\d    9\n  2\s    8\n  1N    7\n  4\d    6\n  3\s    5\n  2N    4\n  5\d    3\n  3N    2\n  4\s    2\n
 
+Facit Score:     9\nRunning Score: 157
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "26"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "All"]
@@ -1101,32 +966,29 @@ Running Score: 157
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-4\h	 9
-
-5\h	 6
-
-6\d	 2
-
-6\h	 1
+{
 
 
-Facit Score: 9
+Score Table:
 
-Running Score: 166
+  4\h    9\n  5\h    6\n  6\d    2\n  6\h    1\n
 
+Facit Score:     9\nRunning Score: 166
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "27"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "None"]
@@ -1141,40 +1003,29 @@ PASS 2C PASS 3C
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-\s6N	 10
-
-N6N	 7
-
-6\s	 6
-
-6\c	 5
-
-\s3N	 4
-
-N3N	 3
-
-5\s	 3
-
-5\c	 3
+{
 
 
-Facit Score: 0
+Score Table:
 
-Running Score: 166
+ S6N   10\n N6N    7\n  6\s    6\n  6\c    5\n S3N    4\n N3N    3\n  5\s    3\n  5\c    3\n
 
+Facit Score:     0\nRunning Score: 166
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "28"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "NS"]
@@ -1189,42 +1040,29 @@ Running Score: 166
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-5\d	 10
-
-5\c	 9
-
-4\d	 5
-
-4\c	 5
-
-1N	 5
-
-6\d	 3
-
-6\c	 3
-
-2N	 3
-
-3N	 1
+{
 
 
-Facit Score: 5
+Score Table:
 
-Running Score: 171
+  5\d   10\n  5\c    9\n  4\d    5\n  4\c    5\n  1N    5\n  6\d    3\n  6\c    3\n  2N    3\n  3N    1\n
 
+Facit Score:     5\nRunning Score: 171
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "29"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "All"]
@@ -1239,34 +1077,29 @@ PASS 3S PASS 3N
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-4N	 10
-
-4\c	 6
-
-4\h	 4
-
-4\s	 3
-
-5\c	 3
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 181
+  4N   10\n  4\c    6\n  4\h    4\n  4\s    3\n  5\c    3\n
 
+Facit Score:    10\nRunning Score: 181
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "30"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "None"]
@@ -1285,36 +1118,29 @@ PASS PASS 2C PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-7N	 10
-
-7\h	 7
-
-7\s	 7
-
-6N	 5
-
-6\h	 4
-
-6\s	 4
+{
 
 
-Facit Score: 4
+Score Table:
 
-Running Score: 185
+  7N   10\n  7\h    7\n  7\s    7\n  6N    5\n  6\h    4\n  6\s    4\n
 
+Facit Score:     4\nRunning Score: 185
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "31"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "NS"]
@@ -1332,42 +1158,29 @@ PASS 7H PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-7N	 10
-
-7\h	 7
-
-6N	 6
-
-6\h	 5
-
-7\d	 4
-
-6\d	 3
-
-5N	 3
-
-5\h	 2
-
-5\d	 1
+{
 
 
-Facit Score: 7
+Score Table:
 
-Running Score: 192
+  7N   10\n  7\h    7\n  6N    6\n  6\h    5\n  7\d    4\n  6\d    3\n  5N    3\n  5\h    2\n  5\d    1\n
 
+Facit Score:     7\nRunning Score: 192
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "32"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "EW"]
@@ -1384,40 +1197,29 @@ Running Score: 192
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-\s6\d	 10
-
-N6\d	 8
-
-\s3N	 4
-
-4\h	 4
-
-N3N	 3
-
-5\d	 3
-
-6N	 2
-
-6\h	 2
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 202
+ S6\d   10\n N6\d    8\n S3N    4\n  4\h    4\n N3N    3\n  5\d    3\n  6N    2\n  6\h    2\n
 
+Facit Score:    10\nRunning Score: 202
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "33"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "None"]
@@ -1433,34 +1235,29 @@ PASS 4H PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-5\h	 10
-
-5\d	 8
-
-6\h	 4
-
-6\d	 3
-
-4\sP	 1
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 212
+  5\h   10\n  5\d    8\n  6\h    4\n  6\d    3\n 4\sP    1\n
 
+Facit Score:    10\nRunning Score: 212
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "34"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "NS"]
@@ -1476,40 +1273,29 @@ Running Score: 212
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-5N	 9
-
-4\h	 3
-
-4\s	 2
-
-5\d	 2
-
-6N	 1
-
-6\d	 1
-
-6\s	 1
-
-6\h	 1
+{
 
 
-Facit Score: 1
+Score Table:
 
-Running Score: 213
+  5N    9\n  4\h    3\n  4\s    2\n  5\d    2\n  6N    1\n  6\d    1\n  6\s    1\n  6\h    1\n
 
+Facit Score:     1\nRunning Score: 213
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "35"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "EW"]
@@ -1525,40 +1311,29 @@ PASS 5D PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-5\d	 10
-
-4\h	 5
-
-4\d	 4
-
-6\d	 3
-
-3\h	 3
-
-N3N	 3
-
-2N	 2
-
-\s3N	 2
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 223
+  5\d   10\n  4\h    5\n  4\d    4\n  6\d    3\n  3\h    3\n N3N    3\n  2N    2\n S3N    2\n
 
+Facit Score:    10\nRunning Score: 223
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "36"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "All"]
@@ -1574,40 +1349,29 @@ Running Score: 223
 4H PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-3N	 9
-
-4\h	 9
-
-5\h	 7
-
-4N	 7
-
-6N	 3
-
-6\h	 3
-
-6\c	 3
-
-5\c	 2
+{
 
 
-Facit Score: 9
+Score Table:
 
-Running Score: 232
+  3N    9\n  4\h    9\n  5\h    7\n  4N    7\n  6N    3\n  6\h    3\n  6\c    3\n  5\c    2\n
 
+Facit Score:     9\nRunning Score: 232
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "37"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "NS"]
@@ -1623,36 +1387,29 @@ PASS 5H PASS 6H
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-6\h	 10
-
-6N	 8
-
-7N	 4
-
-7\h	 4
-
-5N	 4
-
-5\h	 4
+{
 
 
-Facit Score: 10
+Score Table:
 
-Running Score: 242
+  6\h   10\n  6N    8\n  7N    4\n  7\h    4\n  5N    4\n  5\h    4\n
 
+Facit Score:    10\nRunning Score: 242
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "38"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "EW"]
@@ -1667,48 +1424,29 @@ PASS PASS 1D PASS
 2N PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-3\d	 10
-
-2\h	 8
-
-2\s	 7
-
-4\d	 6
-
-1N	 6
-
-3\h	 5
-
-3\s	 4
-
-2N	 3
-
-5\d	 2
-
-4\h	 2
-
-4\s	 2
-
-3N	 1
+{
 
 
-Facit Score: 3
+Score Table:
 
-Running Score: 245
+  3\d   10\n  2\h    8\n  2\s    7\n  4\d    6\n  1N    6\n  3\h    5\n  3\s    4\n  2N    3\n  5\d    2\n  4\h    2\n  4\s    2\n  3N    1\n
 
+Facit Score:     3\nRunning Score: 245
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "39"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "All"]
@@ -1724,44 +1462,29 @@ PASS 5D PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-3\d	 10
-
-1N	 8
-
-1\s	 7
-
-4\d	 6
-
-2\s	 5
-
-2N	 5
-
-3\c	 5
-
-3\s	 3
-
-5\d	 3
-
-3N	 3
+{
 
 
-Facit Score: 3
+Score Table:
 
-Running Score: 248
+  3\d   10\n  1N    8\n  1\s    7\n  4\d    6\n  2\s    5\n  2N    5\n  3\c    5\n  3\s    3\n  5\d    3\n  3N    3\n
 
+Facit Score:     3\nRunning Score: 248
 }
 
 % PBN 2.1
 % EXPORT
-%PipColors #0000ff,#ff0000,#ffc000,#008000%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7[Event ""]
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:Commentary "Courier New",14,700,0
+[Event ""]
 [Site ""]
 [Date "2024-09-27"]
+[BCFlags "801f"]
 [Board "40"]
-[West "BEN"]
+[West ""]
+[East ""]
 [North "BEN"]
-[East "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "None"]
@@ -1778,20 +1501,13 @@ Running Score: 248
 6S PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{Score Table:
-
-6N	 11
-
-6\s	 9
-
-5N	 3
-
-5\s	 3
+{
 
 
-Facit Score: 9
+Score Table:
 
-Running Score: 257
+  6N   11\n  6\s    9\n  5N    3\n  5\s    3\n
 
+Facit Score:     9\nRunning Score: 257
 }
 

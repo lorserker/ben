@@ -27,7 +27,7 @@ def load(fin):
                 boards.append(board)            
                 if len(scoring_lines) > 0:
                     score = re.sub(r'(?<! )\n(?! )', ' ', ''.join(scoring_lines))
-                    score = score.replace('{','').replace('}','')
+                    score = score.replace('{','').replace('}','').upper()
                     scores.append(score.split())
                 auction_lines = []
                 scoring_lines = []

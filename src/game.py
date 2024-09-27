@@ -258,16 +258,22 @@ class Driver:
         pbn_str = ""
         pbn_str += '% PBN 2.1\n'
         pbn_str += '% EXPORT\n'
-        pbn_str += '%PipColors #0000ff,#ff0000,#ffc000,#008000'
-        pbn_str += '%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7'
+        pbn_str += '%PipColors #0000ff,#ff0000,#ffc000,#008000\n'
+        pbn_str += '%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7\n'
+        pbn_str += '%Font:Commentary "Courier New",14,700,0\n'
 
         pbn_str += '[Event ""]\n'
         pbn_str += '[Site ""]\n'
         pbn_str += f'[Date "{datetime.datetime.now().date().isoformat()}"]\n'
+        pbn_str += '[BCFlags "801f"]\n'
         pbn_str += f'[Board "{self.board_number}"]\n'
-        pbn_str += '[West "BEN"]\n'
+        if self.bidding_only == "NS":
+            pbn_str += '[West ""]\n'
+            pbn_str += '[East ""]\n'
+        else:
+            pbn_str += '[West "BEN"]\n'
+            pbn_str += '[East "BEN"]\n'
         pbn_str += '[North "BEN"]\n'
-        pbn_str += '[East "BEN"]\n'
         pbn_str += '[South "BEN"]\n'
         pbn_str += f'[Dealer "{dealer}"]\n'
         if self.vuln_ns and self.vuln_ew:
@@ -327,15 +333,24 @@ class Driver:
 
         if self.bidding_only == "NS":
             pbn_str += '[Hidden "EW"]\n'
-            pbn_str += '{Score Table:\n\n'
+            pbn_str += '{\n\n\nScore Table:\n\n'
             elements = self.facit_score[self.board_number - 1]
             # Add a newline after every second element
-            score_str = '\n\n'.join(['\t '.join(elements[i:i + 2]) for i in range(0, len(elements), 2)])
+            str = ""
+            for i in range(len(elements)):
+                score_str = elements[i]
+                if (i-1) % 2 == 0:
+                    str += ' ' * (2 - len(score_str)) + score_str
+                    str += '\\n'
+                else:
+                    str += ' ' * (4 - len(score_str))
+                    str += score_str[0] + score_str[1:].replace("S", "\\s").replace("H", "\\h").replace("D", "\\d").replace("C", "\\c")            
+                    str += ' ' * (6 - max(len(score_str),3))
 
             # Replace the suit characters
-            pbn_str += score_str.replace("S", "\\s").replace("H", "\\h").replace("D", "\\d").replace("C", "\\c")            
-            pbn_str += '\n\n\nFacit Score: ' + f"{self.actual_score}" + '\n\n'            
-            pbn_str += 'Running Score: ' + f"{self.facit_total}" + '\n'            
+            pbn_str += str + '\n\n'
+            pbn_str += 'Facit Score:   ' + f"{self.actual_score:>3}" + '\\n'            
+            pbn_str += 'Running Score: ' + f"{self.facit_total:>3}"             
             pbn_str += '\n}\n'
         else:
             pbn_str += '[HomeTeam ""]\n'
