@@ -14,7 +14,9 @@ def load(fin):
     scores = []
     auction_lines = []
     inside_auction_section = False
+    inside_scoring_section = False
     dealer, vulnerable = None, None
+    scoring_lines = []
     for line in fin:
         if line.startswith("% PBN") or line == "\n":
             if dealer != None:
@@ -23,12 +25,19 @@ def load(fin):
                     'auction': dealer + " " + vulnerable + " " + ' '.join(auction_lines)
                 }
                 boards.append(board)            
+                if len(scoring_lines) > 0:
+                    score = re.sub(r'(?<! )\n(?! )', ' ', ''.join(scoring_lines))
+                    score = score.replace('{','').replace('}','')
+                    scores.append(score.split())
                 auction_lines = []
+                scoring_lines = []
                 dealer= None
         if line.startswith('[Dealer'):
             dealer = extract_value(line)
         if line.startswith('[Scoring'):
-            scores.append(line.strip()[:-1].split() [2:])
+            inside_scoring_section = True
+            continue
+            
         if line.startswith('[Vulnerable'):
             vuln_str = extract_value(line)
             vulnerable = {'NS': 'N-S', 'EW': 'E-W', 'All': 'Both'}.get(vuln_str, vuln_str)
@@ -42,6 +51,12 @@ def load(fin):
         if line.startswith('[Auction'):
             inside_auction_section = True
             continue  
+
+        if inside_scoring_section:
+            if line.startswith('[') :  # Check if it's the start of the next tag
+                inside_scoring_section = False
+            else:
+                scoring_lines.append(line)  
         if inside_auction_section:
             if line.startswith('[') or line == "\n":  # Check if it's the start of the next tag
                 inside_auction_section = False
@@ -62,6 +77,10 @@ def load(fin):
             'auction': dealer + " " + vulnerable + " " + ' '.join(auction_lines)
         }
         boards.append(board)      
+        if len(scoring_lines) > 0:
+            score = re.sub(r'(?<! )\n(?! )', ' ', ''.join(scoring_lines))
+            score = score.replace('{','').replace('}','')
+            scores.append(score.split())
     return boards, scores
 
 def extract_value(s: str) -> str:

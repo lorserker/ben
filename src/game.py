@@ -101,6 +101,11 @@ class Driver:
         self.conceed = None
         self.decl_i = None
         self.strain_i = None
+        self.facit_score = None
+        self.facit_total = 0
+        self.actual_score = 0
+        self.card_play = None
+
 
     def set_deal(self, board_number, deal_str, auction_str, play_only = None, bidding_only=False):
         self.play_only = play_only
@@ -253,6 +258,9 @@ class Driver:
         pbn_str = ""
         pbn_str += '% PBN 2.1\n'
         pbn_str += '% EXPORT\n'
+        pbn_str += '%PipColors #0000ff,#ff0000,#ffc000,#008000'
+        pbn_str += '%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7'
+
         pbn_str += '[Event ""]\n'
         pbn_str += '[Site ""]\n'
         pbn_str += f'[Date "{datetime.datetime.now().date().isoformat()}"]\n'
@@ -271,7 +279,6 @@ class Driver:
         if not self.vuln_ns and not self.vuln_ew:
             pbn_str += '[Vulnerable "None"]\n'
         pbn_str += f'[Deal "N:{self.deal_str}"]\n'
-        pbn_str += '[Scoring "IMP"]\n'
         if self.contract is None:
             pbn_str += '[Contract ""]\n'
             pbn_str += f'[Declarer ""]\n'
@@ -280,11 +287,20 @@ class Driver:
             pbn_str += f'[Declarer "{declarer}"]\n'
             # Remove declarer from contract
             pbn_str += f'[Contract "{self.contract[:-1]}"]\n'
+
+        if self.bidding_only == "NS":
+            pbn_str += f'[Scoring "Facit"]\n'
+        else:
             pbn_str += f'[Result "{self.tricks_taken}"]\n'
-            if (self.contract[-1] == "N" or self.contract[-1] =="S"):
-                pbn_str += f'[Score "NS {scoring.score(self.contract, self.vuln_ns, self.tricks_taken)}"]\n'
+            if self.models.matchpoints:
+                pbn_str += '[Scoring "MP"]\n'
             else:
-                pbn_str += f'[Score "EW {scoring.score(self.contract, self.vuln_ew, self.tricks_taken)}"]\n'
+                pbn_str += '[Scoring "IMP"]\n'
+            if self.contract is None:
+                if (self.contract[-1] == "N" or self.contract[-1] =="S"):
+                    pbn_str += f'[Score "NS {scoring.score(self.contract, self.vuln_ns, self.tricks_taken)}"]\n'
+                else:
+                    pbn_str += f'[Score "EW {scoring.score(self.contract, self.vuln_ew, self.tricks_taken)}"]\n'
 
         pbn_str += f'[ParScore "{self.parscore}"]\n'
         pbn_str += f'[Auction "{dealer}"]\n'
@@ -297,7 +313,8 @@ class Driver:
         # Add an additional line break if the total number of bids is not divisible by 4
         if i % 4 != 0:
             pbn_str += "\n"
-        if self.contract is not None:
+
+        if self.contract is not None and self.card_play:
             declarer_i = "NESW".index(declarer)
             leader = "NESW"[(declarer_i + 1) % 4]            
             pbn_str += f'[Play "{leader}"]\n'
@@ -308,10 +325,23 @@ class Driver:
         else:
             pbn_str += f'[Play ""]\n'
 
-        pbn_str += '[HomeTeam ""]\n'
-        pbn_str += '[VisitTeam ""]\n'
-        pbn_str += '[ScoreIMP ""]\n'
-        pbn_str += '[Room ""]\n'
+        if self.bidding_only == "NS":
+            pbn_str += '[Hidden "EW"]\n'
+            pbn_str += '{Score Table:\n\n'
+            elements = self.facit_score[self.board_number - 1]
+            # Add a newline after every second element
+            score_str = '\n\n'.join(['\t '.join(elements[i:i + 2]) for i in range(0, len(elements), 2)])
+
+            # Replace the suit characters
+            pbn_str += score_str.replace("S", "\\s").replace("H", "\\h").replace("D", "\\d").replace("C", "\\c")            
+            pbn_str += '\n\n\nFacit Score: ' + f"{self.actual_score}" + '\n\n'            
+            pbn_str += 'Running Score: ' + f"{self.facit_total}" + '\n'            
+            pbn_str += '\n}\n'
+        else:
+            pbn_str += '[HomeTeam ""]\n'
+            pbn_str += '[VisitTeam ""]\n'
+            pbn_str += '[ScoreIMP ""]\n'
+            pbn_str += '[Room ""]\n'
         pbn_str += '\n'
         return pbn_str
     
@@ -902,7 +932,6 @@ async def main():
     paronly = args.paronly
     facit = args.facit
     facit_score = None
-    facit_total = 0
     boards = []
 
     if args.boards:
@@ -959,13 +988,29 @@ async def main():
     else:
         print("Model:", models.bidder_model.model_path)
         print("Opponent:", models.opponent_model.model_path)
-    if models.matchpoint:
-        print("Matchpoint mode on")
+    if facit:
+            print("Playing Bidding contest")
     else:
-        print("Playing IMPS mode")
+        if models.matchpoint:
+            print("Matchpoint mode on")
+        else:
+            print("Playing IMPS mode")
 
     driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), seed, verbose)
 
+    # If the format is score - contract we swap the columns
+    if facit_score[0][0].isdigit(): 
+        for i in range(len(facit_score)):
+            arr = np.array(facit_score[i])
+            # Reshape the array to 2 columns (you can infer the number of rows automatically)
+            reshaped_arr = arr.reshape(-1, 2)
+
+            # Swap the columns by reversing the order along axis 1
+            swapped_arr = reshaped_arr[:, ::-1]
+
+            # Optionally, reshape back to 1D if needed
+            facit_score[i] = swapped_arr.flatten()            
+    driver.facit_score = facit_score
     while True:
         if random: 
             if boardno:
@@ -995,11 +1040,13 @@ async def main():
 
         from ddsolver import ddsolver
 
+        score = 0
+        imps = 0
         if facit:        
-            if facit_score == None:
+            if driver.facit_score == None:
                 print("No score table provided")
             else:
-                this_score = None
+                driver.actual_score = None
                 contract = driver.contract[0:-1]
                 declarer = driver.contract[-1]
                 contract_adjustments = {
@@ -1020,15 +1067,15 @@ async def main():
                 }
                 print(driver.hands[0], driver.hands[2], driver.contract, driver.auction)
                 # Loop through facit_score for the current board
-                for i in range(len(facit_score[board_no[0] - 1]) // 2):
-                    score_contract = facit_score[board_no[0] - 1][i * 2]
-                    score_value = int(facit_score[board_no[0] - 1][i * 2 + 1])
+                for i in range(len(driver.facit_score[board_no[0] - 1]) // 2):
+                    score_contract = driver.facit_score[board_no[0] - 1][i * 2]
+                    score_value = int(driver.facit_score[board_no[0] - 1][i * 2 + 1])
 
                     # Match contract or adjusted contract for declarer
                     if score_contract == contract or score_contract == f"{declarer}{contract}":
-                        print("Score for ", score_contract, score_value, facit_score[board_no[0]-1])
-                        this_score = score_value
-                        facit_total += score_value
+                        print("Score for ", score_contract, score_value, driver.facit_score[board_no[0]-1])
+                        driver.actual_score = score_value
+                        driver.facit_total += score_value
                         break
 
                     # Check for adjusted contracts (with or without declarer)
@@ -1037,19 +1084,18 @@ async def main():
 
                         # Match adjusted contract (with or without declarer)
                         if score_contract in adjusted_contracts or score_contract in [f"{declarer}{adj}" for adj in adjusted_contracts]:
-                            print("Score for ", score_contract, score_value, facit_score[board_no[0]-1])
-                            this_score = score_value
-                            facit_total += score_value
+                            print("Score for ", score_contract, score_value, driver.facit_score[board_no[0]-1])
+                            driver.actual_score = score_value
+                            driver.facit_total += score_value
                             break
         
-                if this_score is None:
-                    print("No score - Scoring",driver.contract[:-1], facit_score[board_no[0]-1])
+                if driver.actual_score is None:
+                    print("No score - Scoring",driver.contract[:-1], driver.facit_score[board_no[0]-1])
+                    driver.actual_score = 0
                 else:
-                    print("Running score:", facit_total)
+                    print("Running score:", driver.facit_total)
         else:
             par_score = ddsolver.DDSolver().calculatepar(driver.deal_str, [driver.vuln_ns, driver.vuln_ew])
-            score = 0
-            imps = 0
             if driver.contract != None:
                 if (driver.contract[-1] == "N" or driver.contract[-1] =="S"):
                     score = scoring.score(driver.contract, driver.vuln_ns, driver.tricks_taken)

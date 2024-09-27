@@ -51,11 +51,13 @@
 [Dealer "E"]
 [Vulnerable "None"]
 [Deal "E:62.K98743.J53.KQ JT93.J6.KT8.AJ97 Q54.QT5.A762.865 AK87.A2.Q94.T432"]
-[Scoring "Facit" 2S 10 3S 6 1N 4 4S 2 2N 2 3N 1]
+[Scoring "Facit"]
+{ 2S 10 3S 6 1N 4 4S 2 2N 2 3N 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -68,11 +70,13 @@
 [Dealer "S"]
 [Vulnerable "None"]
 [Deal "S:KQT95.A96.9.JT97 743.JT3.A842.Q86 A.K8752.K73.AK32 J862.Q4.QJT65.54"]
-[Scoring "Facit" 4H 10 5H 7 3N 4 6C 3 6S 2]
+[Scoring "Facit"]
+{ 4H 10 5H 7 3N 4 6C 3 6S 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -85,11 +89,13 @@
 [Dealer "W"]
 [Vulnerable "EW"]
 [Deal "W:96.KJT943.AQJ2.2 K4.AQ7.9764.A953 872.85.KT853.T76 AQJT53.62..KQJ84"]
-[Scoring "Facit" 7S 10 7C 8 6S 5 6C 3 6N 3 5S 2]
+[Scoring "Facit"]
+{ 7S 10 7C 8 6S 5 6C 3 6N 3 5S 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -102,11 +108,13 @@
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:K8652.T872.A8.96 T7.QJ6.532.KJ754 AQJ94.K.KQ97.AT8 3.A9543.JT64.Q32"]
-[Scoring "Facit" 6S 10 5S 4]
+[Scoring "Facit"]
+{ 6S 10 5S 4}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -119,11 +127,13 @@
 [Dealer "E"]
 [Vulnerable "NS"]
 [Deal "E:T8.Q5.AJT62.QT62 K752.KJ9.984.A95 A6.T872.75.KJ874 QJ943.A643.KQ3.3"]
-[Scoring "Facit" 4S 9 3S 5 2N 2 3N 1]
+[Scoring "Facit"]
+{ 4S 9 3S 5 2N 2 3N 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -136,11 +146,13 @@
 [Dealer "S"]
 [Vulnerable "EW"]
 [Deal "S:9854.KJT.96432.J A32.Q98654..KT42 K76..AKJT.AQ9853 QJT.A732.Q875.76"]
-[Scoring "Facit" 3D 10 4D 7 2S 6 2N 6 3C 6 5D 5 3S 3 3N 3 4S 1]
+[Scoring "Facit"]
+{ 3D 10 4D 7 2S 6 2N 6 3C 6 5D 5 3S 3 3N 3 4S 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -153,11 +165,13 @@
 [Dealer "W"]
 [Vulnerable "All"]
 [Deal "W:JT43.AT32.65.K65 A6.J9.K87432.AT3 9752.K876.QJ.Q84 KQ8.Q54.AT9.J972"]
-[Scoring "Facit" 3N 9 2N 5 4D 4 5D 2 ]
+[Scoring "Facit"]
+{ 3N 9 2N 5 4D 4 5D 2 }
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -170,11 +184,13 @@
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:KQT65.AT842.9.Q9 843.J3.AT52.8742 A92.K9.KJ7.AKJ53 J7.Q765.Q8643.T6"]
-[Scoring "Facit" S6N 10 N6N 8 6S 6 6C 4 5N 3 5S 2]
+[Scoring "Facit"]
+{ S6N 10 N6N 8 6S 6 6C 4 5N 3 5S 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -187,11 +203,13 @@
 [Dealer "E"]
 [Vulnerable "EW"]
 [Deal "E:J97.AK4.754.Q642 542.T32.KJ98.KJ5 T3.QJ9876.32.T73 AKQ86.5.AQT6.A98"]
-[Scoring "Facit" 6D 10 4S 6 5S 5 6S 4 5D 2]
+[Scoring "Facit"]
+{ 6D 10 4S 6 5S 5 6S 4 5D 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -204,11 +222,13 @@
 [Dealer "S"]
 [Vulnerable "All"]
 [Deal "S:KQ97.873.A542.KT J865.542.J3.J742 AT32.AKQ.97.AQ53 4.JT96.KQT86.986"]
-[Scoring "Facit" 6S 10 6N 6 5S 4 3N 4]
+[Scoring "Facit"]
+{ 6S 10 6N 6 5S 4 3N 4}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -221,11 +241,13 @@
 [Dealer "E"]
 [Vulnerable "None"]
 [Deal "E:KT.QT3.T82.QT963 AQ954.A982.653.2 763.K75.KQJ4.J74 J82.J64.A97.AK85"]
-[Scoring "Facit" 2S 10 3S 8 1N 6 2N 5 4S 3 3N 2]
+[Scoring "Facit"]
+{ 2S 10 3S 8 1N 6 2N 5 4S 3 3N 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -238,11 +260,13 @@
 [Dealer "S"]
 [Vulnerable "NS"]
 [Deal "S:A5.AQT87.J987.K9 QJ874.J65.6.T532 9.K943.AKQT43.Q6 KT632.2.52.AJ874"]
-[Scoring "Facit" 6N 10 6H 6 6D 4 5N 3 5H 2]
+[Scoring "Facit"]
+{ 6N 10 6H 6 6D 4 5N 3 5H 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -255,11 +279,13 @@
 [Dealer "W"]
 [Vulnerable "All"]
 [Deal "W:JT76.K62.43.J954 A982.3.AKQJ8.A86 K5.QJ85.T5.KQT73 Q43.AT974.9762.2"]
-[Scoring "Facit" 5D 10 3S 6 4D 4 4S 4 3N 4 2N 3 6D 2]
+[Scoring "Facit"]
+{ 5D 10 3S 6 4D 4 4S 4 3N 4 2N 3 6D 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -272,11 +298,13 @@
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:J84..A7532.AKJ53 QT9.9653.Q64.972 K63.AKQJT8.8.QT4 A752.742.KJT9.86"]
-[Scoring "Facit" S6N 10 N6N 8 6H 7 6C 6 4N 4 5H 3 5C 1]
+[Scoring "Facit"]
+{ S6N 10 N6N 8 6H 7 6C 6 4N 4 5H 3 5C 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -289,11 +317,13 @@
 [Dealer "E"]
 [Vulnerable "NS"]
 [Deal "E:K86.QJ84.65.Q752 Q.A92.KQ9873.K64 T542.K763.42.J93 AJ973.T5.AJT.AT8"]
-[Scoring "Facit" 6D 10 4N 4 5D 2 4S 2]
+[Scoring "Facit"]
+{ 6D 10 4N 4 5D 2 4S 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -306,11 +336,13 @@
 [Dealer "S"]
 [Vulnerable "EW"]
 [Deal "S:54.85.AK964.K982 QT62.AK973.T5.54 AJ87.T6.J7.AQJT7 K93.QJ42.Q832.63"]
-[Scoring "Facit" 4C 10 1N 7 2N 6 5C 4 3N 3]
+[Scoring "Facit"]
+{ 4C 10 1N 7 2N 6 5C 4 3N 3}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -323,11 +355,13 @@
 [Dealer "W"]
 [Vulnerable "None"]
 [Deal "W:9842.Q3.K765.765 AQ3.JT982.QJT42. 765.5.983.AKT842 KJT.AK764.A.QJ93"]
-[Scoring "Facit" 7H 10 6H 6 5H 3]
+[Scoring "Facit"]
+{ 7H 10 6H 6 5H 3}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -340,11 +374,13 @@
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:KJ.Q84.KQJT4.T82 9852.AKT62.6.A53 AQ73.73.A985.QJ9 T64.J95.732.K764"]
-[Scoring "Facit" 2D 9 3D 6 3N 4 2N 4 2HP 4 2HX 4]
+[Scoring "Facit"]
+{ 2D 9 3D 6 3N 4 2N 4 2HP 4 2HX 4}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -357,11 +393,13 @@
 [Dealer "E"]
 [Vulnerable "EW"]
 [Deal "E:T952.KT4.95.JT84 76.J983.AKQ74.KQ QJ43.Q72.32.9652 AK8.A65.JT86.A73"]
-[Scoring "Facit" 5N 9 6D 4 6N 2]
+[Scoring "Facit"]
+{ 5N 9 6D 4 6N 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -374,11 +412,13 @@
 [Dealer "S"]
 [Vulnerable "All"]
 [Deal "S:JT8432.AT8.Q4.J2 75.Q74.AT975.K75 KQ9.KJ95.J.A9843 A6.632.K8632.QT6"]
-[Scoring "Facit" 4S 10 3S 4]
+[Scoring "Facit"]
+{ 4S 10 3S 4}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -391,13 +431,15 @@
 [Dealer "E"]
 [Vulnerable "NS"]
 [Deal "E:T52.KJ642..KQ983 K64.AQ8.K73.7542 QJ.75.AJT9852.JT A9873.T93.Q64.A6"]
-[Scoring "Facit" W3DX 10 W3D 7 3S 5 4S 3 3N 3]
+[Scoring "Facit"]
+{ W3DX 10 W3D 7 3S 5 4S 3 3N 3}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 [Auction "E"]
-Pass ? 3D
+Pass AC 3D
 
 [Event ""]
 [Site ""]
@@ -410,11 +452,13 @@ Pass ? 3D
 [Dealer "S"]
 [Vulnerable "EW"]
 [Deal "S:KJ.AKJ975.96.QT9 A73.T842.K83.J43 Q654..QJT5.AK762 T982.Q63.A742.85"]
-[Scoring "Facit" 3N 10 2N 6 3C 5 4C 4 2H 4 5C 2 3H 1]
+[Scoring "Facit"]
+{ 3N 10 2N 6 3C 5 4C 4 2H 4 5C 2 3H 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -427,11 +471,13 @@ Pass ? 3D
 [Dealer "W"]
 [Vulnerable "All"]
 [Deal "W:T74.875.T87.K754 AKJ62.Q42.KQ3.A2 83.T3.J96542.QT6 Q95.AKJ96.A.J983"]
-[Scoring "Facit" 7N 10 7S 7 7H 7 6N 4 6S 2 6H 2]
+[Scoring "Facit"]
+{ 7N 10 7S 7 7H 7 6N 4 6S 2 6H 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -444,11 +490,13 @@ Pass ? 3D
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:Q5.AK.KJ82.98753 3.8742.T653.AT64 AKJT6.JT3.AQ7.K2 98742.Q965.94.QJ"]
-[Scoring "Facit" 6S 10 6N 6 5S 5 6D 4 5N 4]
+[Scoring "Facit"]
+{ 6S 10 6N 6 5S 5 6D 4 5N 4}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -461,11 +509,13 @@ Pass ? 3D
 [Dealer "E"]
 [Vulnerable "EW"]
 [Deal "E:A872.AJT4.J4.T74 4.82.QT763.AKJ98 J65.Q9763.K2.632 KQT93.K5.A985.Q5"]
-[Scoring "Facit" 2D 10 3D 9 2S 8 1N 7 4D 6 3S 5 2N 4 5D 3 3N 2 4S 2]
+[Scoring "Facit"]
+{ 2D 10 3D 9 2S 8 1N 7 4D 6 3S 5 2N 4 5D 3 3N 2 4S 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -478,11 +528,13 @@ Pass ? 3D
 [Dealer "S"]
 [Vulnerable "All"]
 [Deal "S:J63.A73.A53.K976 AQT852.J.942.JT2 9.K9864.KQJ76.A4 K74.QT52.T8.Q853"]
-[Scoring "Facit" 4H 9 5H 6 6D 2 6H 1]
+[Scoring "Facit"]
+{ 4H 9 5H 6 6D 2 6H 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -495,11 +547,13 @@ Pass ? 3D
 [Dealer "W"]
 [Vulnerable "None"]
 [Deal "W:Q872.QT6.A985.98 K.AJ43.32.AQJT42 JT64.K852.QJ7.65 A953.97.KT64.K73"]
-[Scoring "Facit" S6N 10 N6N 7 6S 6 6C 5 S3N 4 N3N 3 5S 3 5C 3]
+[Scoring "Facit"]
+{ S6N 10 N6N 7 6S 6 6C 5 S3N 4 N3N 3 5S 3 5C 3}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -512,11 +566,13 @@ Pass ? 3D
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:2.K96.AKT95.AT98 QJT73.QJT.J2.Q53 954.A2.8643.KJ62 AK86.87543.Q7.74"]
-[Scoring "Facit" 5D 10 5C 9 4D 5 4C 5 1N 5 6D 3 6C 3 2N 3 3N 1]
+[Scoring "Facit"]
+{ 5D 10 5C 9 4D 5 4C 5 1N 5 6D 3 6C 3 2N 3 3N 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -529,11 +585,13 @@ Pass ? 3D
 [Dealer "E"]
 [Vulnerable "All"]
 [Deal "E:A75.854.A653.754 KT94.AKQT9.Q2.K8 J86.J762.KT87.93 Q32.3.J94.AQJT62"]
-[Scoring "Facit" 4N 10 4C 6 4H 4 4S 3 5C 3]
+[Scoring "Facit"]
+{ 4N 10 4C 6 4H 4 4S 3 5C 3}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -546,11 +604,13 @@ Pass ? 3D
 [Dealer "S"]
 [Vulnerable "None"]
 [Deal "S:KT875.Q872.42.32 93.T3.Q763.K8764 AQJ.AKJ964.A.AQ9 642.5.KJT985.JT5"]
-[Scoring "Facit" 7N 10 7H 7 7S 7 6N 5 6H 4 6S 4]
+[Scoring "Facit"]
+{ 7N 10 7H 7 7S 7 6N 5 6H 4 6S 4}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -563,11 +623,13 @@ Pass ? 3D
 [Dealer "E"]
 [Vulnerable "NS"]
 [Deal "E:QT865.J8.Q6.JT72 K7.KQ.AJT9854.K5 9432.742.732.643 AJ.AT9653.K.AQ98"]
-[Scoring "Facit"  7N 10 7H 7 6N 6 6H 5 7D 4 6D 3 5N 3 5H 2 5D 1]
+[Scoring "Facit"]
+{ 7N 10 7H 7 6N 6 6H 5 7D 4 6D 3 5N 3 5H 2 5D 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -580,11 +642,13 @@ Pass ? 3D
 [Dealer "S"]
 [Vulnerable "EW"]
 [Deal "S:AT2.A8.A98632.KJ K9853.752.7.A843 4.KJ943.KQJT4.75 QJ76.QT6.5.QT962"]
-[Scoring "Facit" S6D 10 N6D 8 S3N 4 4H 4 N3N 3 5D 3 6N 2 6H 2]
+[Scoring "Facit"]
+{ S6D 10 N6D 8 S3N 4 4H 4 N3N 3 5D 3 6N 2 6H 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -597,11 +661,13 @@ Pass ? 3D
 [Dealer "W"]
 [Vulnerable "None"]
 [Deal "W:KJT943.6.J.AQJT5 7.KT753.A842.K96 A8652.4.T63.8742 Q.AQJ982.KQ975.3"]
-[Scoring "Facit" 5H 10 5D 8 6H 4 6D 3 4SP 1]
+[Scoring "Facit"]
+{ 5H 10 5D 8 6H 4 6D 3 4SP 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -614,11 +680,13 @@ Pass ? 3D
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:8.QJT5.AKJT65.KQ AT42.A932.732.T6 KQ9753.K87.Q4.A8 J6.64.98.J975432"]
-[Scoring "Facit" 5N 9 4H 3 4S 2 5D 2 6N 1 6D 1 6S 1 6H 1]
+[Scoring "Facit"]
+{ 5N 9 4H 3 4S 2 5D 2 6N 1 6D 1 6S 1 6H 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -631,11 +699,13 @@ Pass ? 3D
 [Dealer "E"]
 [Vulnerable "EW"]
 [Deal "E:K984.8653.K.Q974 J.Q72.Q98765.J65 QT65.JT.JT.AT832 A732.AK94.A432.K"]
-[Scoring "Facit" 5D 10 4H 5 4D 4 6D 3 3H 3 N3N 3 2N 2 S3N 2]
+[Scoring "Facit"]
+{ 5D 10 4H 5 4D 4 6D 3 3H 3 N3N 3 2N 2 S3N 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -648,11 +718,13 @@ Pass ? 3D
 [Dealer "S"]
 [Vulnerable "All"]
 [Deal "S:A3.A6543.K63.QT4 98642.872.JT.A32 K5.KJT.AQ2.K9875 QJT7.Q9.98754.J6"]
-[Scoring "Facit" 3N 9 4H 9 5H 7 4N 7 6N 3 6H 3 6C 3 5C 2]
+[Scoring "Facit"]
+{ 3N 9 4H 9 5H 7 4N 7 6N 3 6H 3 6C 3 5C 2}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -665,11 +737,13 @@ Pass ? 3D
 [Dealer "W"]
 [Vulnerable "NS"]
 [Deal "W:JT5.K432.9632.Q2 97.AJT985.KJ5.A7 8642.6.T84.KJ643 AKQ3.Q7.AQ7.T985"]
-[Scoring "Facit" 6H 10 6N 8 7N 4 7H 4 5N 4 5H 4]
+[Scoring "Facit"]
+{ 6H 10 6N 8 7N 4 7H 4 5N 4 5H 4}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -682,11 +756,13 @@ Pass ? 3D
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:K98.QT85.QT9.AT6 A52.962.J72.KQ85 QT74.AJ4.A8543.4 J63.K73.K6.J9732"]
-[Scoring "Facit" 3D 10 2H 8 2S 7 4D 6 1N 6 3H 5 3S 4 2N 3 5D 2 4H 2 4S 2 3N 1]
+[Scoring "Facit"]
+{ 3D 10 2H 8 2S 7 4D 6 1N 6 3H 5 3S 4 2N 3 5D 2 4H 2 4S 2 3N 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -699,11 +775,13 @@ Pass ? 3D
 [Dealer "E"]
 [Vulnerable "All"]
 [Deal "E:KT.AKQ976.KT.965 4.J832.J632.AQ84 98763.T4.987.T73 AQJ52.5.AQ54.KJ2"]
-[Scoring "Facit" 3D 10 1N 8 1S 7 4D 6 2S 5 2N 5 3C 5 3S 3 5D 3 3N 3]
+[Scoring "Facit"]
+{ 3D 10 1N 8 1S 7 4D 6 2S 5 2N 5 3C 5 3S 3 5D 3 3N 3}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
 
 [Event ""]
 [Site ""]
@@ -716,8 +794,10 @@ Pass ? 3D
 [Dealer "S"]
 [Vulnerable "None"]
 [Deal "S:K864.KT82.KQ4.AQ T7.QJ9543.963.84 AQ952.A.J82.K953 J3.76.AT75.JT762"]
-[Scoring "Facit" 6N 11 6S 9 5N 3 5S 3]
+[Scoring "Facit"]
+{ 6N 11 6S 9 5N 3 5S 3}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
+[Hidden "EW"]
