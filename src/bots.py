@@ -682,8 +682,7 @@ class BotBid:
                         if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
                             invalid_bids = True
                             sys.stderr.write(f"{auction}\n")
-                            #print(hand_to_str(hands_np[i,turn_i,:]))
-                            sys.stderr.write(f"Hand {self.hand_str} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                            sys.stderr.write(f"Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
                             #print(bid_np[i])
                             bid_np[i][bid] = 0
                             

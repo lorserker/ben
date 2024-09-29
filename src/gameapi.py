@@ -41,7 +41,7 @@ import argparse
 import conf
 import numpy as np
 from sample import Sample
-from util import get_play_status, get_singleton, get_possible_cards
+from util import get_play_status, get_singleton, get_possible_cards, calculate_seed
 
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 
@@ -386,6 +386,38 @@ class PrefixedTimedRotatingFileHandler(TimedRotatingFileHandler):
         self.mode = 'a'
         self.stream = self._open()
 
+def get_random_generator(hand):
+    hash_integer  = calculate_seed(hand)         
+    return np.random.default_rng(hash_integer)
+
+def replace_x(input_str, rng):
+    # Function to replace 'x' in a section with unique digits
+    def replace_in_section(section):
+        digits_used = set()  # To keep track of used digits in this section
+        result = []
+        
+        for char in section:
+            if char == 'X':
+                # Generate a unique digit not already used in this section
+                digit = None
+                while digit is None or digit in digits_used:
+                    digit = str(rng.integers(0, 9))  # Random digit as string
+                digits_used.add(digit)  # Mark the digit as used
+                result.append(digit)
+            else:
+                result.append(char)
+        
+        return ''.join(result)
+
+    # Split the input into sections by '.'
+    sections = input_str.split('.')
+
+    # Replace 'x' in each section with unique digits
+    replaced_sections = [replace_in_section(section) for section in sections]
+
+    # Join the sections back with '.'
+    return '.'.join(replaced_sections)
+
 # Set up logging
 log_handler = PrefixedTimedRotatingFileHandler(prefix='logs/gameapi', when="midnight", interval=1)
 log_handler.setLevel(logging.INFO)
@@ -435,6 +467,8 @@ def bid():
             explain = False
         # First we extract our hand
         hand = request.args.get("hand").replace('_','.')
+        if 'X' in hand:
+            hand = replace_x(hand,get_random_generator(hand))
         seat = request.args.get("seat")
         #print(hand)
         # Then vulnerability
@@ -778,7 +812,11 @@ def contract():
     t_start = time.time()
     # First we extract the hands and seat
     hand_str = request.args.get("hand").replace('_','.')
+    if 'X' in hand_str:
+        hand_str = replace_x(hand_str,get_random_generator(hand_str))
     dummy_str = request.args.get("dummy").replace('_','.')
+    if 'X' in dummy_str:
+        dummy_str = replace_x(dummy_str,get_random_generator(dummy_str))
     seat = request.args.get("seat")
     # Then vulnerability
     v = request.args.get("vul")

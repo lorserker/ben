@@ -260,11 +260,11 @@ class Driver:
         pbn_str += '% EXPORT\n'
         pbn_str += '%PipColors #0000ff,#ff0000,#ffc000,#008000\n'
         pbn_str += '%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7\n'
-        pbn_str += '%Font:Commentary "Courier New",14,700,0\n'
-
+        pbn_str += '%Font:FixedPitch "Courier New",14,700,0\n'
+        pbn_str += '%Margins 2000,1000,2000,1000'
         pbn_str += '[Event ""]\n'
         pbn_str += '[Site ""]\n'
-        pbn_str += f'[Date "{datetime.datetime.now().date().isoformat()}"]\n'
+        pbn_str += f'[Date "{datetime.datetime.now().date().isoformat().replace('-', '.')}"]\n'
         pbn_str += '[BCFlags "801f"]\n'
         pbn_str += f'[Board "{self.board_number}"]\n'
         if self.bidding_only == "NS":
@@ -343,7 +343,7 @@ class Driver:
                     str += ' ' * (2 - len(score_str)) + score_str
                     str += '\\n'
                 else:
-                    str += ' ' * (4 - len(score_str))
+                    str += ' ' * min((4 - len(score_str)),1)
                     str += score_str[0] + score_str[1:].replace("S", "\\s").replace("H", "\\h").replace("D", "\\d").replace("C", "\\c")            
                     str += ' ' * (6 - max(len(score_str),3))
 
@@ -1079,6 +1079,7 @@ async def main():
                     "3N": ["4N", "5N"],
                     "4H": ["5H"],
                     "4S": ["5S"],
+                    "4N": ["5N"]
                 }
                 print(driver.hands[0], driver.hands[2], driver.contract, driver.auction)
                 # Loop through facit_score for the current board
