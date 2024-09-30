@@ -37,11 +37,11 @@ VULN = {
 }
 
 
-def bid_hand(hands, dealer, vuln, models_ns_ew, samplers, verbose):
+def bid_hand(hands, dealer, vuln, models_ns_ew, samplers, dds, verbose):
 
     dealer_i = 'NESW'.index(dealer)
     
-    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], samplers[i % 2], i, dealer_i, verbose) for i, hand in enumerate(hands)]
+    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], samplers[i % 2], i, dealer_i, dds, verbose) for i, hand in enumerate(hands)]
 
     auction = ['PAD_START'] * dealer_i
     
@@ -102,8 +102,12 @@ if __name__ == '__main__':
             # Default to version 1. of Tensorflow
             from nn.models import Models
 
+
     models_ns = Models.from_conf(configuration_ns,"../../..")
     models_ew = Models.from_conf(configuration_ew,"../../..")
+
+    from ddsolver import ddsolver
+    dds = ddsolver.DDSolver()
 
 # Get the path to the config file
     config_path = get_execution_path()
@@ -124,7 +128,7 @@ if __name__ == '__main__':
         hands = parts[2:]
 
         sys.stderr.write(f'Bidding board {index + 1}\n')
-        auction, bid_responses = bid_hand(hands, dealer, vuln, [models_ns, models_ew], [Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)],verbose)
+        auction, bid_responses = bid_hand(hands, dealer, vuln, [models_ns, models_ew], [Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)], dds, verbose)
 
         record = {
             'board' : index + 1,

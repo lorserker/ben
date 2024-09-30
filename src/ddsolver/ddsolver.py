@@ -17,6 +17,7 @@ class DDSolver:
     # If 2 transport tables ignore trump
  
     def __init__(self, dds_mode=1):
+        print("DDSolver being loaded")
         self.dds_mode = dds_mode
         self.bo = dds.boardsPBN()
         self.solved = dds.solvedBoards()
@@ -27,8 +28,6 @@ class DDSolver:
         myTable = ctypes.pointer(table)
 
         line = ctypes.create_string_buffer(80)
-
-        dds.SetMaxThreads(0)
 
         # Need dealer
         tableDealPBN.cards = ("N:"+hand).encode('utf-8')
@@ -140,14 +139,14 @@ class DDSolver:
         return card_results
 
 
-def expected_tricks_dds(card_results):
-    return {card:round((sum(values)/len(values)),2) for card, values in card_results.items()}
+    def expected_tricks_dds(self, card_results):
+        return {card:round((sum(values)/len(values)),2) for card, values in card_results.items()}
 
-def expected_tricks_dds_probability(card_results, probabilities_list : List[float]):
-    return {card: round(sum([p*res for p, res in zip(probabilities_list, result_list)]),2) for card, result_list in card_results.items()}
+    def expected_tricks_dds_probability(self, card_results, probabilities_list : List[float]):
+        return {card: round(sum([p*res for p, res in zip(probabilities_list, result_list)]),2) for card, result_list in card_results.items()}
 
-def p_made_target(tricks_needed):
+    def p_made_target(self, tricks_needed):
 
-    def fun(card_results):
-        return {card:round(sum(1 for x in values if x >= tricks_needed)/len(values),3) for card, values in card_results.items()}
-    return fun
+        def fun(card_results):
+            return {card:round(sum(1 for x in values if x >= tricks_needed)/len(values),3) for card, values in card_results.items()}
+        return fun

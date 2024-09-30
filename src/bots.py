@@ -19,7 +19,7 @@ from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit
 
 class BotBid:
 
-    def __init__(self, vuln, hand_str, models, sampler, seat, dealer, verbose):
+    def __init__(self, vuln, hand_str, models, sampler, seat, dealer, ddsolver, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand32 = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
@@ -41,6 +41,7 @@ class BotBid:
         self.rng = np.random.default_rng(self.hash_integer)
         if self.models.model_version == 0:
             self.state = models.bidder_model.zero_state
+        self.ddsolver = ddsolver
 
     def get_random_generator(self):
         return self.rng
@@ -802,8 +803,6 @@ class BotBid:
         return contracts, decl_tricks_softmax
 
     def expected_tricks_dd(self, hands_np, auctions_np, hand_str):
-        from ddsolver import ddsolver
-        self.dd = ddsolver.DDSolver()
         n_samples = hands_np.shape[0]
 
         declarers = np.zeros(n_samples, dtype=np.int32)
@@ -839,7 +838,7 @@ class BotBid:
             hands_pbn = [deck52.convert_cards(deck,0, hand_str, self.get_random_generator(), self.models.n_cards_bidding)]
 
             # It will probably improve perfoemance if all is calculated in one go
-            dd_solved = self.dd.solve(strain, leader, [], hands_pbn, 1)
+            dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1)
             # Only use 1st element from the result
             first_key = next(iter(dd_solved))
             first_item = dd_solved[first_key]
@@ -881,7 +880,7 @@ class BotBid:
 
 class BotLead:
 
-    def __init__(self, vuln, hand_str, models, sample, seat, dealer, verbose):
+    def __init__(self, vuln, hand_str, models, sample, seat, dealer, ddsolver, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.handbidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
@@ -895,6 +894,7 @@ class BotLead:
         self.hash_integer  = calculate_seed(hand_str)         
         if self.verbose:
             print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
+        self.dd = ddsolver
 
     def get_random_generator(self):
         return np.random.default_rng(self.hash_integer)
@@ -1058,9 +1058,7 @@ class BotLead:
         return accepted_samples, sorted_scores, tricks, p_hcp, p_shp, good_quality
 
     def double_dummy_estimates(self, lead_card_indexes, contract, accepted_samples):
-        from ddsolver import ddsolver
         #print("double_dummy_estimates",lead_card_indexes)
-        self.dd = ddsolver.DDSolver()
         n_accepted = accepted_samples.shape[0]
         tricks = np.zeros((n_accepted, len(lead_card_indexes), 2))
         strain_i = bidding.get_strain_i(contract)
@@ -1157,7 +1155,7 @@ class BotLead:
 
 class CardPlayer:
 
-    def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, sampler, pimc = None, verbose = False):
+    def __init__(self, models, player_i, hand_str, public_hand_str, contract, is_decl_vuln, sampler, pimc = None, ddsolver = None, verbose = False):
         self.models = models
         self.player_models = models.player_models
         self.strain_i = bidding.get_strain_i(contract)
@@ -1184,13 +1182,12 @@ class CardPlayer:
         self.verbose = verbose
         self.level = int(contract[0])
         self.init_x_play(binary.parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
+        self.dds = ddsolver
         # If we don't get a hand, the class is just used for recording
         if hand_str != "...":
             self.sample_hands_for_review = models.sample_hands_for_review
             self.bid_accept_play_threshold = sampler.bid_accept_play_threshold
             self.score_by_tricks_taken = [scoring.score(self.contract, self.is_decl_vuln, n_tricks) for n_tricks in range(14)]
-            from ddsolver import ddsolver
-            self.dd = ddsolver.DDSolver()
             if (player_i == 1):
                 self.hash_integer  = calculate_seed(public_hand_str)         
                 if self.verbose:
@@ -1373,7 +1370,6 @@ class CardPlayer:
         return card_resp
 
     def get_cards_dd_evaluation(self, trick_i, leader_i, current_trick52, players_states, probabilities_list):
-        from ddsolver import ddsolver
         
         n_samples = players_states[0].shape[0]
         assert n_samples > 0, "No samples for DDSolver"
@@ -1440,7 +1436,7 @@ class CardPlayer:
         t_start = time.time()
         if self.verbose:
             print("Samples: ",n_samples, " Solving: ",len(hands_pbn), self.strain_i, leader_i, current_trick52)
-        dd_solved = self.dd.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
+        dd_solved = self.dds.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
 
         # if defending the target is another
         level = int(self.contract[0])
@@ -1451,13 +1447,11 @@ class CardPlayer:
 
         # print("Calculated tricks")
         if self.models.use_probability:
-            card_tricks = ddsolver.expected_tricks_dds_probability(dd_solved, probabilities_list)
+            card_tricks = self.dds.expected_tricks_dds_probability(dd_solved, probabilities_list)
         else:
-            card_tricks = ddsolver.expected_tricks_dds(dd_solved)
+            card_tricks = self.dds.expected_tricks_dds(dd_solved)
 
-        # print(ddsolver.expected_tricks_dds_probability(dd_solved, probabilities_list))
-        # print(ddsolver.expected_tricks_dds(dd_solved))
-        making = ddsolver.p_made_target(tricks_needed)(dd_solved)
+        making = self.dds.p_made_target(tricks_needed)(dd_solved)
 
         if self.models.use_real_imp_or_mp:
             if self.verbose:

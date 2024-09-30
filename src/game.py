@@ -43,8 +43,6 @@ from objects import CardResp, Card, BidResp
 from claim import Claimer
 from pbn2ben import load
 from util import calculate_seed, get_play_status, get_singleton, get_possible_cards
-from pimc.PIMC import BGADLL
-from pimc.PIMCDef import BGADefDLL
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -75,7 +73,7 @@ class AsyncCardPlayer(bots.CardPlayer):
     
 class Driver:
 
-    def __init__(self, models, factory, sampler, seed, verbose):
+    def __init__(self, models, factory, sampler, seed, ddsolver, verbose):
         self.models = models
         self.sampler = sampler
         self.factory = factory
@@ -105,6 +103,7 @@ class Driver:
         self.facit_total = 0
         self.actual_score = 0
         self.card_play = None
+        self.dds = ddsolver
 
 
     def set_deal(self, board_number, deal_str, auction_str, play_only = None, bidding_only=False):
@@ -179,7 +178,8 @@ class Driver:
         self.strain_i = bidding.get_strain_i(self.contract)
         self.decl_i = bidding.get_decl_i(self.contract)
 
-        if not self.bidding_only == "False":
+        if self.bidding_only != "False":
+            print("Bidding only,  saving result and going to next board")
             return
 
         if self.contract is None:
@@ -200,7 +200,7 @@ class Driver:
         
         print("trick 1")
 
-        opening_lead52 = (await self.opening_lead(auction))
+        opening_lead52 = (await self.opening_lead(self.auction))
 
         if str(opening_lead52.card).startswith("Conceed"):
 
@@ -245,7 +245,7 @@ class Driver:
                 pprint.pprint(card_resp.to_dict(), width=200)
 
         
-        self.card_play = await self.play(self.contract, self.strain_i, self.decl_i, auction, opening_lead52)
+        self.card_play = await self.play(self.contract, self.strain_i, self.decl_i, self.auction, opening_lead52)
 
         await self.channel.send(json.dumps({
             'message': 'deal_end',
@@ -264,7 +264,8 @@ class Driver:
         pbn_str += '%Margins 2000,1000,2000,1000'
         pbn_str += '[Event ""]\n'
         pbn_str += '[Site ""]\n'
-        pbn_str += f'[Date "{datetime.datetime.now().date().isoformat().replace('-', '.')}"]\n'
+        date = datetime.datetime.now().date().isoformat().replace('-', '.')
+        pbn_str += f'[Date "{date}"]\n'
         pbn_str += '[BCFlags "801f"]\n'
         pbn_str += f'[Board "{self.board_number}"]\n'
         if self.bidding_only == "NS":
@@ -298,7 +299,7 @@ class Driver:
             pbn_str += f'[Scoring "Facit"]\n'
         else:
             pbn_str += f'[Result "{self.tricks_taken}"]\n'
-            if self.models.matchpoints:
+            if self.models.matchpoint:
                 pbn_str += '[Scoring "MP"]\n'
             else:
                 pbn_str += '[Scoring "IMP"]\n'
@@ -446,6 +447,7 @@ class Driver:
 
         if self.models.pimc_use_declaring: 
             # No PIMC for dummy, we want declarer to play both hands
+            from pimc.PIMC import BGADLL
             declarer = BGADLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose)
             pimc[1] = declarer
             pimc[3] = declarer
@@ -455,6 +457,7 @@ class Driver:
             pimc[1] = None
             pimc[3] = None
         if self.models.pimc_use_defending:
+            from pimc.PIMCDef import BGADefDLL
             pimc[0] = BGADefDLL(self.models, dummy_hand, lefty_hand, contract, is_decl_vuln, 0, self.verbose)
             pimc[2] = BGADefDLL(self.models, dummy_hand, righty_hand, contract, is_decl_vuln, 2, self.verbose)
             if self.verbose:
@@ -464,10 +467,10 @@ class Driver:
             pimc[2] = None
 
         card_players = [
-            AsyncCardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc[0], self.verbose),
-            AsyncCardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, pimc[1], self.verbose),
-            AsyncCardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc[2], self.verbose),
-            AsyncCardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc[3], self.verbose)
+            AsyncCardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc[0], self.dds, self.verbose),
+            AsyncCardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, pimc[1], self.dds, self.verbose),
+            AsyncCardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc[2], self.dds, self.verbose),
+            AsyncCardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc[3], self.dds, self.verbose)
         ]
 
         # check if user is playing and update card players accordingly
@@ -486,7 +489,7 @@ class Driver:
                 if i == (decl_i + 3) % 4:
                     card_players[2] = self.factory.create_human_cardplayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln)
 
-        claimer = Claimer(self.verbose)
+        claimer = Claimer(self.verbose, self.dds)
 
         player_cards_played = [[] for _ in range(4)]
         shown_out_suits = [set() for _ in range(4)]
@@ -826,6 +829,7 @@ class Driver:
                 self.sampler,
                 (decl_i + 1) % 4,
                 self.dealer_i,
+                self.dds,
                 self.verbose
             )
             card_resp = await bot_lead.async_opening_lead(auction)
@@ -850,7 +854,7 @@ class Driver:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.verbose)
             else:
-                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.verbose)
+                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
                 players.append(bot)
 
         auction = ['PAD_START'] * self.dealer_i
@@ -996,13 +1000,23 @@ async def main():
             from nn.models import Models
 
     models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+    import platform
+    if sys.platform != 'win32':
+        print("Disabling PIMC/BBA/SuitC as platform is not win32")
+        models.pimc_use_declaring = False
+        models.pimc_use_defending = False
+        models.use_bba = False
+        models.use_suitc = False
+        
     print("Config:", configfile)
     print("System:", models.name)
+
     if models.use_bba:
         print("Using BBA for bidding")
     else:
         print("Model:", models.bidder_model.model_path)
         print("Opponent:", models.opponent_model.model_path)
+
     if facit:
             print("Playing Bidding contest")
     else:
@@ -1011,7 +1025,11 @@ async def main():
         else:
             print("Playing IMPS mode")
 
-    driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), seed, verbose)
+    from ddsolver import ddsolver
+    dds = ddsolver.DDSolver()
+
+
+    driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), seed, dds, verbose)
 
     # If the format is score - contract we swap the columns
     if facit_score[0][0].isdigit(): 
@@ -1051,9 +1069,6 @@ async def main():
         driver.human = [False, False, False, False]
         t_start = time.time()
         await driver.run()
-
-
-        from ddsolver import ddsolver
 
         score = 0
         imps = 0
@@ -1111,7 +1126,8 @@ async def main():
                 else:
                     print("Running score:", driver.facit_total)
         else:
-            par_score = ddsolver.DDSolver().calculatepar(driver.deal_str, [driver.vuln_ns, driver.vuln_ew])
+            print("Calculating PAR")
+            par_score = dds.calculatepar(driver.deal_str, [driver.vuln_ns, driver.vuln_ew])
             if driver.contract != None:
                 if (driver.contract[-1] == "N" or driver.contract[-1] =="S"):
                     score = scoring.score(driver.contract, driver.vuln_ns, driver.tricks_taken)

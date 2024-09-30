@@ -90,10 +90,10 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
         pimc[2] = None
 
     card_players = [
-        CardPlayer(models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[0], verbose),
-        CardPlayer(models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, pimc[1], verbose),
-        CardPlayer(models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[2], verbose),
-        CardPlayer(models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[3], verbose)
+        CardPlayer(models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[0], dds, verbose),
+        CardPlayer(models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, pimc[1], dds, verbose),
+        CardPlayer(models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[2], dds, verbose),
+        CardPlayer(models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[3], dds, verbose)
     ]
 
     player_cards_played = [[] for _ in range(4)]
@@ -342,6 +342,15 @@ except KeyError:
 models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 sampler = Sample.from_conf(configuration, verbose)
 
+import platform
+if sys.platform != 'win32':
+    print("Disabling PIMC/BBA/SuitC as platform is not win32")
+    models.pimc_use_declaring = False
+    models.pimc_use_defending = False
+    models.use_bba = False
+ 
+from ddsolver import ddsolver
+dds = ddsolver.DDSolver() 
 log_file_path = os.path.join(config_path, 'logs')
 if not os.path.exists(log_file_path):
     os.makedirs(log_file_path)
@@ -564,7 +573,7 @@ def lead():
             result = {"message":"Not this player to lead"}
             return json.dumps(result)
 
-        hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, verbose)
+        hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, dds, verbose)
         with model_lock_play:
             card_resp = hint_bot.find_opening_lead(auction)
         user = request.args.get("user")

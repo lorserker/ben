@@ -40,7 +40,7 @@ SEATS = ['North', 'East', 'South', 'West']
 
 class TMClient:
 
-    def __init__(self, name, seat, models, sampler, verbose):
+    def __init__(self, name, seat, models, sampler, ddsolver, verbose):
         self.name = name
         self.seat = seat
         self.player_i = SEATS.index(self.seat)
@@ -53,6 +53,7 @@ class TMClient:
         self.deal_str = None
         self.trick_winners = None
         self.opponents = None
+        self.dds = ddsolver
 
     @property
     def is_connected(self):
@@ -212,6 +213,7 @@ class TMClient:
                 self.sampler,
                 on_lead_i,
                 self.dealer_i,
+                self.dds,
                 self.verbose
             )
             card_resp = bot_lead.find_opening_lead(auction)
@@ -285,10 +287,10 @@ class TMClient:
             pimc[2] = None
 
         card_players = [
-            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[0], self.verbose),
-            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, pimc[1], self.verbose),
-            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[2], self.verbose),
-            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[3], self.verbose)
+            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[0], self.dds, self.verbose),
+            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, pimc[1], self.dds, self.verbose),
+            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[2], self.dds, self.verbose),
+            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[3], self.dds, self.verbose)
         ]
 
         player_cards_played = [[] for _ in range(4)]
@@ -855,7 +857,18 @@ async def main():
     else:
         print("Playing IMPS mode")
 
-    client = TMClient(name, seat, models, Sample.from_conf(configuration, verbose), verbose)
+    import platform
+    if sys.platform != 'win32':
+        print("Disabling PIMC/BBA/SuitC as platform is not win32")
+        models.pimc_use_declaring = False
+        models.pimc_use_defending = False
+        models.use_suitc = False
+
+
+    from ddsolver import ddsolver
+    dds = ddsolver.DDSolver()
+
+    client = TMClient(name, seat, models, Sample.from_conf(configuration, verbose), dds, verbose)
     print(f"Connecting to {host}:{port}")
     await client.connect(host, port)
     first = True

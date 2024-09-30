@@ -27,6 +27,7 @@ mac m1/m2/m3  : darwin / arm
 mac container : linux  / aarch64 (not ok yet)
 linux x8      : linux  / x86_64
 """
+# If running some of the analysis you have to set BEN_HOMe to the src directory, or use '../../..'
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':

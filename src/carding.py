@@ -111,70 +111,71 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                 else:
                     discards += c
 
-    if contract[1] == "N" or models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]:
-        if (player_i  == 1 or player_i == 3) and play_status == "Lead":
-            # We only use SuitC the first time the suit is played - should probably look at first card in each tricks52
-            if original_count == current_count and models.use_suitc:
-                if verbose:
-                    print("SuitC activated")
-                    print("discards", discards)
-                    print("current_count", current_count)
-                    print("tricks52",tricks52)
-                # For dummy just take lowest card. Could be stressing opponents by taking highest of touching cards.
-                #print("First card for dummy", candidate_cards[0].card)
-                suits_north = dummy_str.split('.')[interesting_suit]
-                suits_south = suits[interesting_suit]
-                #suits_west = ""
-                #suits_east = ""
-                suits_westeast = ""
-                if verbose: 
-                    print(f"SuitC: {suits_north} {suits_south} {suits_westeast}")
-                    print("discards", discards)
-                for c in RANKS:
-                    if c in suits_north:
-                        continue
-                    if c in suits_south:
-                        continue
-                    if c in discards:
-                        continue
-                    suits_westeast  += c
+    if models.use_suitc:
+        if contract[1] == "N" or models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]:
+            if (player_i  == 1 or player_i == 3) and play_status == "Lead":
+                # We only use SuitC the first time the suit is played - should probably look at first card in each tricks52
+                if original_count == current_count and models.use_suitc:
+                    if verbose:
+                        print("SuitC activated")
+                        print("discards", discards)
+                        print("current_count", current_count)
+                        print("tricks52",tricks52)
+                    # For dummy just take lowest card. Could be stressing opponents by taking highest of touching cards.
+                    #print("First card for dummy", candidate_cards[0].card)
+                    suits_north = dummy_str.split('.')[interesting_suit]
+                    suits_south = suits[interesting_suit]
+                    #suits_west = ""
+                    #suits_east = ""
+                    suits_westeast = ""
+                    if verbose: 
+                        print(f"SuitC: {suits_north} {suits_south} {suits_westeast}")
+                        print("discards", discards)
+                    for c in RANKS:
+                        if c in suits_north:
+                            continue
+                        if c in suits_south:
+                            continue
+                        if c in discards:
+                            continue
+                        suits_westeast  += c
 
-                from suitc.SuitC import SuitCLib
-                suitc = SuitCLib(False)
-                if verbose: 
-                    print(f"SuitC: {suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
+                    from suitc.SuitC import SuitCLib
+                    suitc = SuitCLib(False)
+                    if verbose: 
+                        print(f"SuitC: {suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
 
 
-                card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
-                
-                response_dict = json.loads(card)
-                optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
-                card == "N/A"
-                # We just take the play for MAX as we really don't know how many tricks are needed
-                for play in optimum_plays:
-                    if "MAX" in play["OptimumPlayFor"]:
-                        if len(play["GameTree"]) > 0:
-                            card = play["GameTree"]["T"]
-                        else:
-                            print("SuitC found no gametree")
-                            return candidate_cards[0].card, who
-                        #print("card", card)
-                if card == "N/A":
-                    print("SuitC found no plays")
-                    return candidate_cards[0].card, who
-                else:
-                    card = card[-1]
-                suit_str = "SHDC"[interesting_suit]
-                print(f"SuitC found: {suit_str}{card}")
-                # Only play the card from SuitC if it was a candidate
-                for candidate_card in candidate_cards:
-                    if candidate_card.card.symbol() == f"{suit_str}{card}":
-                        # Only play SuitC if not losing to much DD
-                        if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
-                            if candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.1:
-                                return candidate_card.card, "SuitC"
-                        
-            return candidate_cards[0].card, who
+                    card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
+                    
+                    response_dict = json.loads(card)
+                    optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
+                    card == "N/A"
+                    # We just take the play for MAX as we really don't know how many tricks are needed
+                    for play in optimum_plays:
+                        if "MAX" in play["OptimumPlayFor"]:
+                            if len(play["GameTree"]) > 0:
+                                card = play["GameTree"]["T"]
+                            else:
+                                print("SuitC found no gametree")
+                                return candidate_cards[0].card, who
+                            #print("card", card)
+                    if card == "N/A":
+                        print("SuitC found no plays")
+                        return candidate_cards[0].card, who
+                    else:
+                        card = card[-1]
+                    suit_str = "SHDC"[interesting_suit]
+                    print(f"SuitC found: {suit_str}{card}")
+                    # Only play the card from SuitC if it was a candidate
+                    for candidate_card in candidate_cards:
+                        if candidate_card.card.symbol() == f"{suit_str}{card}":
+                            # Only play SuitC if not losing to much DD
+                            if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
+                                if candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.1:
+                                    return candidate_card.card, "SuitC"
+                            
+                return candidate_cards[0].card, who
     
     if original_count == current_count:
         # If we are on lead, and playing the suit the first time, follow our lead agreements.

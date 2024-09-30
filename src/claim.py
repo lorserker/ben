@@ -6,10 +6,9 @@ import numpy as np
 
 class Claimer:
 
-    def __init__(self, verbose) -> None:
+    def __init__(self, verbose, ddsolver) -> None:
         self.verbose = verbose
-        from ddsolver import ddsolver
-        self.dd = ddsolver.DDSolver()
+        self.dd = ddsolver
 
     def claim(self, strain_i, player_i, hands52, n_samples):
         t_start = time.time()
