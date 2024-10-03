@@ -951,7 +951,7 @@ class Sample:
             if valid_bidding_samples >= self.sample_hands_play: 
                 good_quality = True
                 if self.verbose:
-                    print("Enough samples above threshold: ",valid_bidding_samples)
+                    print("Enough samples above threshold: ",valid_bidding_samples, self.bid_accept_play_threshold)
                 bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
                 # Randomize the samples, as we have to many
                 # SHould be based on likelyness of how well the bidding match
@@ -1036,28 +1036,39 @@ class Sample:
             print("lead_accept_threshold", self.lead_accept_threshold)
         # Only make the test if opening leader (0) is hidden
         # The primary idea is to filter away hands, that lead the Q as it denies the K
-        if (hidden_1_i == 0 or hidden_2_i == 0) and states[0].shape[0] > self.min_sample_hands_play * 2:
-            if (hidden_2_i == 3):
-                # We are RHO and trust partners lead
-                lead_accept_threshold = self.lead_accept_threshold + self.lead_accept_threshold_partner_trust
-                if self.verbose:
-                    print(f"RHO and trust partners lead: {lead_accept_threshold:0.3f}")
-            else: 
-                # How much trust that opponents would have lead the actual card from the hand sampled
-                lead_accept_threshold = self.lead_accept_threshold
-                if states[0].shape[0] <= self.min_sample_hands_play * 2:
-                    return states        
-            opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
-            lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead, dealer)
-            while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
-                # We are RHO and trust partners lead
-                #print("Reducing threshold")
-                lead_accept_threshold *= 0.5
-                #print(lead_accept_threshold)
+        if (hidden_1_i == 0 or hidden_2_i == 0): 
+            if states[0].shape[0] > self.min_sample_hands_play * 2:
+                if (hidden_2_i == 3):
+                    # We are RHO and trust partners lead
+                    lead_accept_threshold = self.lead_accept_threshold + self.lead_accept_threshold_partner_trust
+                    if self.verbose:
+                        print(f"RHO and trust partners lead: {lead_accept_threshold:0.3f}")
+                else: 
+                    # How much trust that opponents would have lead the actual card from the hand sampled
+                    lead_accept_threshold = self.lead_accept_threshold
+                    if states[0].shape[0] <= self.min_sample_hands_play * 2:
+                        return states        
+                opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
+                lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead, dealer)
+                while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
+                    # We are RHO and trust partners lead
+                    #print("Reducing threshold")
+                    lead_accept_threshold *= 0.5
+                    #print(lead_accept_threshold)
 
-            # If we did not find 2 samples we ignore the test for opening lead
-            if np.sum(lead_scores >= lead_accept_threshold) > 1:
-                states = [state[lead_scores > lead_accept_threshold] for state in states]
+                # If we did not find 2 samples we ignore the test for opening lead
+                if np.sum(lead_scores >= lead_accept_threshold) > 1:
+                    states = [state[lead_scores > lead_accept_threshold] for state in states]
+                else:
+                    if self.verbose:
+                        print("Skipping validation of opening as only 1 or less samples")            
+
+            else:
+                if self.verbose:
+                    print("Skipping validation of opening lead due to to few samples")            
+        else:
+            if self.verbose:
+                print("Opening lead not from hidden hand")            
                 
         return states
 

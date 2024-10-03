@@ -342,12 +342,16 @@ except KeyError:
 models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 sampler = Sample.from_conf(configuration, verbose)
 
+# Improve performance until it is supported
+models.claim = False
+
 import platform
 if sys.platform != 'win32':
     print("Disabling PIMC/BBA/SuitC as platform is not win32")
     models.pimc_use_declaring = False
     models.pimc_use_defending = False
     models.use_bba = False
+    models.use_suitc = False
  
 from ddsolver import ddsolver
 dds = ddsolver.DDSolver() 

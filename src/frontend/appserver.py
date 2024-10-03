@@ -386,7 +386,6 @@ def index():
         else:
             if "lin=" in deallin:
                 deallin = deallin.split("lin=")[-1]
-        print("Input: ", deallin)
         dealer, vulnerable, deal, board_no = parse_lin(deallin)
         try:
             dealer, vulnerable, deal, board_no = parse_lin(deallin)

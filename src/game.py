@@ -106,7 +106,7 @@ class Driver:
         self.dds = ddsolver
 
 
-    def set_deal(self, board_number, deal_str, auction_str, play_only = None, bidding_only=False):
+    def set_deal(self, board_number, deal_str, auction_str, play_only = None, bidding_only="False"):
         self.play_only = play_only
         self.bidding_only = bidding_only
         self.board_number = board_number
@@ -114,7 +114,7 @@ class Driver:
         self.hands = deal_str.split()
         self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, "", self.ns, self.ew,  32)
 
-        if bidding_only:
+        if bidding_only != "False":
             auction_part = auction_str.split(' ')
             if play_only == None and len(auction_part) > 2: play_only = True
             self.fixed_auction = auction_part[2:]
@@ -124,6 +124,8 @@ class Driver:
             if play_only:
                 self.auction = self.deal_data.auction
                 self.play_only = play_only
+            self.fixed_auction = None
+                
         if self.rotate:
             self.dealer_i = (self.deal_data.dealer + 1) % 4
             self.vuln_ns = self.deal_data.vuln_ew
@@ -852,7 +854,7 @@ class Driver:
                 players.append(BBABotBid(self.models.bba_ns, self.models.bba_ew, i, hands_str[i], vuln, self.dealer_i))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
-                hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.verbose)
+                hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
             else:
                 bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
                 players.append(bot)

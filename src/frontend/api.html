@@ -33,7 +33,7 @@
         <button onclick="readImportedFile()" id="importBtn" disabled>Import file</button>&nbsp;&nbsp;<input type="file" accept=".txt, .pbn, .lin" id="importFile" onchange="enableImportBtn()"><br><br>
 
         
-        <textarea id="importInput" rows="8" cols="70"></textarea>
+        <textarea id="importInput" rows="10" cols="64"></textarea>
         <button onclick="processPbnInput()">Parse data as PBN</button>&nbsp;&nbsp;&nbsp;<button onclick="processLinFile()">Parse data as LIN</button><br><br>
         <div id="parsedData" style="display: hidden"></div>
 
@@ -58,7 +58,7 @@
         </select><br>
 
         <label for="biddingInput">Bidding:</label>
-        <input type="text" id="biddingInput" size="60" placeholder="Enter bidding (1S-P-2H-P-P-P)" onmouseover="showTooltip(3)" onmouseout="hideTooltip(3)"><br>
+        <input type="text" id="biddingInput" size="64" placeholder="Enter bidding (1S-P-2H-P-P-P)" onmouseover="showTooltip(3)" onmouseout="hideTooltip(3)"><br>
         <small id="tooltip3" style="display: none;">Enter bids separated by hyphens. Allowed bids: 1C, 1D, 1H, 1S, 1N, ..., 7N, X, XX, P</small><br><br>
 
         <label for="handInput">Hand:</label>
@@ -69,7 +69,7 @@
         <small id="tooltip1" style="display: none;">Please enter the hand as four suits separated by '.'</small><br>
             
         <label for="playInput">Play:</label>
-        <textarea id="playInput"   rows="2" cols="70" placeholder="Enter cards (S7H3H6)" required onmouseover="showTooltip(2)" onmouseout="hideTooltip(2)"></textarea><br>
+        <textarea id="playInput"   rows="3" cols="64" placeholder="Enter cards (S7H3H6)" required onmouseover="showTooltip(2)" onmouseout="hideTooltip(2)"></textarea><br>
         <small id="tooltip2" style="display: none;">Please enter all the played cards including cards from BEN</small><br><br>
 
                     

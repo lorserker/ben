@@ -113,6 +113,15 @@ models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src"
 
 # Override any configuration of claim, as it is included in the UI
 models.claim = True
+
+import platform
+if sys.platform != 'win32':
+    print("Disabling PIMC/BBA/SuitC as platform is not win32")
+    models.pimc_use_declaring = False
+    models.pimc_use_defending = False
+    models.use_bba = False
+    models.use_suitc = False
+
 print("Config:", configfile)
 print("System:", models.name)
 if models.use_bba:
@@ -134,7 +143,10 @@ def worker(driver):
 async def handler(websocket, path, board_no, seed):
     print('{} Got websocket connection'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
-    driver = game.Driver(models, human.WebsocketFactory(websocket, verbose), Sample.from_conf(configuration, verbose), seed, verbose)
+    from ddsolver import ddsolver
+    dds = ddsolver.DDSolver()
+
+    driver = game.Driver(models, human.WebsocketFactory(websocket, verbose), Sample.from_conf(configuration, verbose), seed, dds, verbose)
     play_only = False
     driver.human = [False, False, False, False]
     parsed_url = urlparse(path)
