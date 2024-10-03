@@ -1525,6 +1525,14 @@ class CardPlayer:
                 trump_adjust = -self.models.draw_trump_penalty
             if self.verbose:
                 print("Trump adjust", trump_adjust)
+            if self.models.use_real_imp_or_mp:
+                if self.models.matchpoint:
+                    trump_adjust = trump_adjust * 2
+                else:
+                    if (trump_adjust > 0):
+                        trump_adjust = trump_adjust * 2
+                    else:
+                        trump_adjust = trump_adjust / 2
         return trump_adjust
 
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status):
@@ -1567,6 +1575,7 @@ class CardPlayer:
                     }),
                     msg=msg + (f"|trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
                 ))
+
 
         if self.models.use_real_imp_or_mp:
             if self.models.matchpoint:
@@ -1671,7 +1680,7 @@ class CardPlayer:
                         "expected_score_mp": expected_score
                     } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_imp": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                        "expected_score_imp": e_score + (trump_adjust*2 if (card32 // 8) + 1 == self.strain_i else 0)
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
                         "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
