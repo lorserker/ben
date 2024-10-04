@@ -167,7 +167,7 @@ class TMClient:
             from bba.BBA import BBABotBid            
             bot = BBABotBid(self.models.bba_ns, self.models.bba_ew ,self.player_i,self.hand_str,vuln, self.dealer_i)
         else:
-            bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.verbose)
+            bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.dds, self.verbose)
 
         auction = ['PAD_START'] * self.dealer_i
 

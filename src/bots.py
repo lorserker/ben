@@ -1300,7 +1300,7 @@ class CardPlayer:
                         print("Defending", self.pimc_declaring, self.player_i, trick_i)
                     self.find_and_update_constraints(players_states, quality,self.player_i)
 
-    def merge_candidate_cards(self, pimc_resp, dd_resp):
+    def merge_candidate_cards(self, pimc_resp, dd_resp, engine):
         merged_cards = {}
 
         for card52, (e_tricks, e_score, e_make) in dd_resp.items():
@@ -1308,7 +1308,7 @@ class CardPlayer:
             new_e_tricks = round((pimc_e_tricks + e_tricks) / 2.0,2) if pimc_e_tricks is not None and e_tricks is not None else None
             new_e_score = round((pimc_e_score + e_score) / 2.0,2) if pimc_e_score is not None and e_score is not None else None
             new_e_make = round((pimc_e_make + e_make) / 2.0,2) if pimc_e_make is not None and e_make is not None else None
-            new_msg = "PIMC|" + (pimc_msg or '') 
+            new_msg = engine + "|" + (pimc_msg or '') 
             new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
             new_msg += "|BEN DD|" 
             new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
@@ -1342,7 +1342,7 @@ class CardPlayer:
                 #print(pimc_resp_cards)
                 dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
                 #print(dd_resp_cards)
-                merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards)
+                merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC")
             else:
                 merged_card_resp = pimc_resp_cards
             card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status)            
@@ -1356,7 +1356,7 @@ class CardPlayer:
                     #print(pimc_resp_cards)
                     dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
                     #print(dd_resp_cards)
-                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards)
+                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef")
                 else:
                     merged_card_resp = pimc_resp_cards
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status)            
