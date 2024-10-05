@@ -109,3 +109,4 @@ UCBC 2024/Boards/*.ben
 UCBC 2024/Boards/*.pbn
 scripts/training/bidding/Old versions/
 src/logs/
+scripts/training/data/hands_data.pkl

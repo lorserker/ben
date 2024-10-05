@@ -364,7 +364,6 @@ class Sample:
         if self.verbose:
             print("Fetched RHO bidding")
 
-        # Consider having scores for partner and opponents
         # Current implementation should be updated due to long sequences is difficult to match
         
         min_scores = np.ones(n_samples)
@@ -406,29 +405,31 @@ class Sample:
             # Calculate the Euclidean distance for each index
             # Small distance is good
             for i in range(n_samples):
-                abs_diff_lho = np.abs(min_scores[i] - min_scores_lho[i])
+                #print(min_scores_partner[i])
+                abs_diff_lho = 1 - min_scores_lho[i]
                 #print(hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), abs_diff_lho)
-                abs_diff_partner = np.abs(min_scores[i] - min_scores_partner[i])
+                abs_diff_partner = 1 - min_scores_partner[i]
                 #print(hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding), abs_diff_partner)
-                abs_diff_rho = np.abs(min_scores[i] - min_scores_rho[i])
+                abs_diff_rho = 1 - min_scores_rho[i]
                 #print(hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding), abs_diff_rho)
                 
                 if no_of_bids > 0:
-                    distances[i] = (abs_diff_lho * lho_bids + 2 * abs_diff_partner * pard_bids + abs_diff_rho * rho_bids) / no_of_bids
+                    distances[i] = (abs_diff_lho * lho_bids + 2 * abs_diff_partner * pard_bids + abs_diff_rho * rho_bids)
                 # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
                 if abs_diff_partner > 1 - self.exclude_samples: 
                     # we do not want to exclude any samples for the oppponents
                     #or abs_diff_partner < self.exclude_samples or abs_diff_rho < self.exclude_samples:
                     distances[i] += 10
-                #if min_scores_rho[i] >= 0.99:
-                #    print(hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), round(abs_diff_lho,3), hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding),round(abs_diff_partner,3), hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding),round(abs_diff_rho,3)
-                  
+                #if distances[i] < 0.5 :
+                #    print(abs_diff_lho * lho_bids, 2 * abs_diff_partner * pard_bids, abs_diff_rho * rho_bids, no_of_bids)
+                #    print(i, distances[i], hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), round(abs_diff_lho,3), hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding),round(abs_diff_partner,3), hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding),round(abs_diff_rho,3))
             if no_of_bids > 0:
                 # Normalize the total distance to a scale between 0 and 100
                 max_distance = lho_bids + 2 * pard_bids + rho_bids  # Replace with the maximum possible distance in your context
                 if self.verbose:
-                    print("Max distance", max_distance)
+                    print("Max distance", max_distance, lho_bids, pard_bids, rho_bids)
                 scaled_distance_A = ((max_distance - distances) / max_distance)
+                #print("scaled_distance_A", scaled_distance_A)
 
                 # Get the indices that would sort min_scores in descending order
                 sorted_indices = np.argsort(scaled_distance_A)[::-1]
@@ -444,6 +445,9 @@ class Sample:
             sorted_indices = np.argsort(min_scores)[::-1]
             # Extract scores based on the sorted indices
             sorted_scores = min_scores[sorted_indices]
+
+        #print("sorted_indices",sorted_indices)
+        #print("sorted_scores",sorted_scores)
 
         # Reorder the original lho_pard_rho array based on the sorted indices
         sorted_samples = lho_pard_rho[sorted_indices]
@@ -875,6 +879,7 @@ class Sample:
         if self.verbose:
             print(f"States {states[0].shape[0]} before checking opening lead (after shape and hcp)")
 
+        # We should probably test this after validating the bidding, and not before
         # reject samples inconsistent with the opening lead
         # We will only check opening lead if we have a lot of samples, as we can't trust other will follow the same lead rules
         if self.lead_accept_threshold > 0:
@@ -883,6 +888,7 @@ class Sample:
                 print(f"States {states[0].shape[0]} after checking lead")
         assert states[0].shape[0] > 0, "No samples after opening lead"
 
+        # We should probably test this after validating the bidding, and not before
         if self.play_accept_threshold > 0 and trick_i <= 11:
             states = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states, models, contract)
         if self.verbose:

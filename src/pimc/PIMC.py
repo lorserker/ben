@@ -484,7 +484,7 @@ class BGADLL:
             sys.exit(1)
 
         if self.models.use_real_imp_or_mp:
-            msg = f"Decl: {self.lho_constraints.ToString()}|Partner: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+            msg = f"LHO: {self.lho_constraints.ToString()}|RHO: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
             if self.models.matchpoint:
                 card_ev = calculate.calculate_mp_score(results)
             else:

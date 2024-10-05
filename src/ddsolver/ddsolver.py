@@ -75,9 +75,7 @@ class DDSolver:
     #3	Return all cards that can be legally played, with their scores in descending order.
 
     def solve(self, strain_i, leader_i, current_trick, hands_pbn, solutions):
-        print("Solving")
         results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[:dds.MAXNOOFBOARDS], solutions)
-        print("Helping")
         if len(hands_pbn) > dds.MAXNOOFBOARDS:
             i = dds.MAXNOOFBOARDS
             while i < len(hands_pbn):
@@ -112,7 +110,7 @@ class DDSolver:
             # Return all cards that can be legally played, with their scores in descending order.
             self.bo.solutions[handno] = solutions
             self.bo.mode[handno] = self.dds_mode
-        print("Salving all boards")
+
         res = dds.SolveAllBoards(ctypes.pointer(self.bo), ctypes.pointer(self.solved))
         if res != 1:
             error_message = dds.get_error_message(res)

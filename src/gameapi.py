@@ -403,7 +403,7 @@ def get_random_generator(hand):
     hash_integer  = calculate_seed(hand)         
     return np.random.default_rng(hash_integer)
 
-def replace_x(input_str, rng):
+def replace_x(input_str, rng, n_cards):
     # Function to replace 'x' in a section with unique digits
     def replace_in_section(section):
         digits_used = set()  # To keep track of used digits in this section
@@ -414,7 +414,7 @@ def replace_x(input_str, rng):
                 # Generate a unique digit not already used in this section
                 digit = None
                 while digit is None or digit in digits_used:
-                    digit = str(rng.integers(0, 9))  # Random digit as string
+                    digit = str(rng.integers(2, 15 - (n_cards // 4)))  # Random digit as string
                 digits_used.add(digit)  # Mark the digit as used
                 result.append(digit)
             else:
@@ -481,7 +481,7 @@ def bid():
         # First we extract our hand
         hand = request.args.get("hand").replace('_','.')
         if 'X' in hand:
-            hand = replace_x(hand,get_random_generator(hand))
+            hand = replace_x(hand,get_random_generator(hand), models.n_cards_bidding)
         seat = request.args.get("seat")
         #print(hand)
         # Then vulnerability
@@ -826,10 +826,10 @@ def contract():
     # First we extract the hands and seat
     hand_str = request.args.get("hand").replace('_','.')
     if 'X' in hand_str:
-        hand_str = replace_x(hand_str,get_random_generator(hand_str))
+        hand_str = replace_x(hand_str,get_random_generator(hand_str), models.n_cards_bidding)
     dummy_str = request.args.get("dummy").replace('_','.')
     if 'X' in dummy_str:
-        dummy_str = replace_x(dummy_str,get_random_generator(dummy_str))
+        dummy_str = replace_x(dummy_str,get_random_generator(dummy_str), models.n_cards_bidding)
     seat = request.args.get("seat")
     # Then vulnerability
     v = request.args.get("vul")
