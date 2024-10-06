@@ -775,7 +775,7 @@ def cuebid():
         from bba.BBA import BBABotBid
         hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
     else:
-        hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, verbose)
+        hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
     with model_lock_bid:
         bid = hint_bot.bid(auction)
     print("Bidding: ",bid.bid)
