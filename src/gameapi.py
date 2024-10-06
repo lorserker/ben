@@ -26,6 +26,8 @@ from threading import Lock
 logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ["GRPC_VERBOSITY"] = "ERROR"
+os.environ["GLOG_minloglevel"] = "2"
 
 # Configure absl logging to suppress logs
 import absl.logging

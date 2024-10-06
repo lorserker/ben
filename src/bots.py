@@ -42,6 +42,7 @@ class BotBid:
         if self.models.model_version == 0:
             self.state = models.bidder_model.zero_state
         self.ddsolver = ddsolver
+        self.my_bid_no = 1
 
     def get_random_generator(self):
         return self.rng
@@ -78,6 +79,74 @@ class BotBid:
         ), axis=1)
         X = ftrs
         return X
+    
+    def evaluate_rescue_bid(self, auction, passout, samples, candidate_bid, quality, my_bid_no ):
+        # check configuration
+        if self.verbose:
+            print("Checking if we should avaluate rescue bid", self.models.check_final_contract, len(samples))
+            print("Auction",auction, passout)
+            print("Candidate", candidate_bid, quality)
+        if not self.models.check_final_contract:
+            return False
+
+        # We dod not rescue bid before our 3rd bid        
+        if my_bid_no < 3:
+            return False
+
+        # If no samples we can't evaluate rescue bid
+        if len(samples) == 0:
+            return False
+
+        # never rescue on first bid
+        if binary.get_number_of_bids(auction) < 4:
+            return False
+        
+        # we only try to avoid passing in the wrong contract
+        if candidate_bid.bid != "PASS" :
+            return False
+                
+        # If samples of bad quality we do not try to rescue
+        if not quality:
+            return False
+        
+        # RHO bid, so we will not evaluate rescue bid
+        if (auction[-1] != "PASS"):
+            return False
+        
+        # We are in the passout situation
+        if passout:
+            return True
+
+        if candidate_bid.expected_score is None:
+            # We will prepare data for calculating recue bid
+            return True
+
+        # We only evaluate if the score is below a certain value, so if simulation give a score above this we do not try to rescue
+        if candidate_bid.expected_score is None or candidate_bid.expected_score < self.models.max_estimated_score:
+            return True
+
+        return False
+    
+    def get_min_candidate_score(self, bid_no):
+        if isinstance(self.min_candidate_score, list):
+            # Get the element at index i, or the last element if i is out of bounds
+            threshold_value = self.min_candidate_score[bid_no] if bid_no < len(self.min_candidate_score) else self.min_candidate_score[-1]
+        else:
+            # If it's a single float, just use the float value
+            threshold_value = self.min_candidate_score
+
+        return threshold_value
+
+    def get_max_candidate_score(self, bid_no):
+        if isinstance(self.max_candidate_score, list):
+            # Get the element at index i, or the last element if i is out of bounds
+            threshold_value = self.max_candidate_score[bid_no] if bid_no < len(self.max_candidate_score) else self.max_candidate_score[-1]
+        else:
+            # If it's a single float, just use the float value
+            threshold_value = self.max_candidate_score
+
+        return threshold_value
+
 
     def bid(self, auction):
         # Validate input
@@ -86,6 +155,7 @@ class BotBid:
             raise ValueError(error_message)
         # A problem, that we get candidates with a threshold, and then simulates
         # When going negative, we would probably like to extend the candidates
+        my_bid_no = self.get_bid_number_for_player_to_bid(auction)
         candidates, passout = self.get_bid_candidates(auction)
         good_quality = None
         hands_np = None
@@ -93,7 +163,7 @@ class BotBid:
 
         # If no search we will not generate any samples if switch of
         # if only 1 sample we drop sampling, but only if no rescue bidding
-        generate_samples = not self.sample.no_samples_when_no_search and self.min_candidate_score != -1
+        generate_samples = not self.sample.no_samples_when_no_search and self.get_min_candidate_score(self.my_bid_no) != -1
         generate_samples = generate_samples or (binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"))
         generate_samples = generate_samples or len(candidates) > 1
 
@@ -110,7 +180,7 @@ class BotBid:
                     sorted_score[i]
                 ))
 
-        if self.do_rollout(auction, candidates, self.max_candidate_score):
+        if self.do_rollout(auction, candidates, self.get_max_candidate_score(self.my_bid_no)):
             ev_candidates = []
             for candidate in candidates:
                 if self.verbose:
@@ -124,6 +194,8 @@ class BotBid:
                 decl_tricks_softmax2 = None
                 decl_tricks_softmax3 = None
                 
+                # This shoud be changed (or added) to use MP or IMP instead of Tricks and score
+
                 if self.models.double_dummy_calculator:
                     contracts, decl_tricks_softmax1 = self.expected_tricks_dd(hands_np, auctions_np, self.hand_str)
                     ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax1)
@@ -182,7 +254,7 @@ class BotBid:
                     adjust += self.models.adjust_NN*candidate.insta_score
 
                 # These adjustments should probably be configurable
-                if passout and candidate.insta_score < self.min_candidate_score:
+                if passout and candidate.insta_score < self.get_min_candidate_score(self.my_bid_no):
                     # If we are bidding in the passout situation, and are going down, assume we are doubled
                     if bidding.BID2ID[candidate.bid] > 4:
                         if expected_score < 0:
@@ -265,7 +337,7 @@ class BotBid:
             p_hcp, p_shp = self.sample.get_bidding_info(n_steps, auction, self.seat, self.hand32, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
-            if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"):
+            if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], good_quality, self.my_bid_no):    
                 # initialize auction vector
                 auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
                 for i, bid in enumerate(auction):
@@ -285,157 +357,162 @@ class BotBid:
         if self.verbose:
             print(candidates[0].bid, "selected")
 
-        #print("self.models.check_final_contract", self.models.check_final_contract)
-        #print("candidates[0].bid", candidates[0].bid, candidates[0].expected_score, len(samples), good_quality, (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score))
-        if binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS") and (auction[-1] == "PASS") and not self.sample.no_samples_when_no_search:
+        if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], good_quality, self.my_bid_no):    
+
             # We will avoid rescuing if we have a score of max_estimated_score or more
             t_start = time.time()
-            if candidates[0].bid == "PASS" and len(samples) > 0 and (candidates[0].expected_score is None or candidates[0].expected_score < self.models.max_estimated_score) and good_quality:
-                # We need to find a sample or two from the bidding
-                alternatives = {}
-                current_contract = bidding.get_contract(auction)
-                isdoubled = current_contract[-1] == "X" 
-                current_contract = current_contract[0:2]
+            alternatives = {}
+            current_contract = bidding.get_contract(auction)
+            isdoubled = current_contract[-1] == "X" 
+            current_contract = current_contract[0:2]
+            if self.verbose:
+                print("check_final_contract, current_contract", current_contract)
+            break_outer = False
+            for i in range(min(len(samples), self.models.max_samples_checked)):
+                sample = samples[i].split(" ")
                 if self.verbose:
-                    print("check_final_contract, current_contract", current_contract)
-                break_outer = False
-                for i in range(min(len(samples), self.models.max_samples_checked)):
-                    sample = samples[i].split(" ")
-                    if self.verbose:
-                        #print(samples[i].split(" ")[(self.seat + 2) % 4])
-                        print(sample[(self.seat + 2) % 4], sample[4])
-                    if float(sample[4]) < self.sample.bidding_threshold_sampling * 0.9:
-                        continue
-                    X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
-                    contract_id, doubled, tricks = self.models.contract_model.model[0](X)
+                    #print(samples[i].split(" ")[(self.seat + 2) % 4])
+                    print(sample[(self.seat + 2) % 4], sample[4])
+                if float(sample[4]) < self.models.min_bidding_trust_for_sample_when_rescue:
+                    print("Skipping sample due to threshold", self.models.min_bidding_trust_for_sample_when_rescue)
+                    continue
+                X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
+                contract_id, doubled, tricks = self.models.contract_model.model[0](X)
+                contract = bidding.ID2BID[contract_id] 
+                while not bidding.can_bid(contract, auction) and contract_id < 35:
+                    contract_id += 5
                     contract = bidding.ID2BID[contract_id] 
-                    while not bidding.can_bid(contract, auction) and contract_id < 35:
-                        contract_id += 5
-                        contract = bidding.ID2BID[contract_id] 
-                        
-                    if self.verbose: 
-                        print(contract, doubled, tricks)
-                    # If game bid in major do not bid 5 of that major 
-                    if current_contract == "4H" and contract == "5H":
-                        if self.verbose:
-                            print("Stopping rescue, just one level higher")
-                        alternatives = {}
-                        break
-                    if current_contract == "4S" and contract == "5S":
-                        if self.verbose:
-                            print("Stopping rescue, just one level higher")
-                        alternatives = {}
-                        break
-                    # If 3N don't bid 4N
-                    if current_contract == "3N" and (contract == "4N" or contract == "5N"):
-                        if self.verbose:
-                            print("Stopping rescue, just one level higher")
-                        alternatives = {}
-                        break
-                    if current_contract == contract:
-                        if self.verbose:
-                            print("Contract bid, stopping rescue")
-                        alternatives = {}
-                        break
                     
-                          
-                    # if the contract is in candidates we assume previous calculations are right and we stop
-                    for c in candidates:
-                        if c.bid == contract:
-                            if self.verbose:
-                                print("Contract found in candidates, stopping rescue")
-                            alternatives = {}
-                            break_outer = True
-                            break
-
-                    if break_outer:
-                        break
-                    # Skip invalid bids
-                    if bidding.can_bid(contract, auction):
-                        result = {"contract": contract, "tricks": tricks}
-                        level = int(contract[0])
-                        # Consider autodouble any contract going down
-                        if tricks >= level + 6:
-                            doubled = False
-                        score = scoring.score(contract + ("X" if doubled else ""), self.vuln, tricks)
-                        if self.verbose:
-                            print(result, score)
-                        if contract not in alternatives:
-                            alternatives[contract] = []
-                        alternatives[contract].append({"score": score, "tricks": tricks})
-                        
-                # Only if at least 75 of the samples suggest bidding check the score for the rescue bid
-                # print(len(alternatives), min(len(samples), self.models.max_samples_checked))
-                total_entries = sum(len(entries) for entries in alternatives.values())
-                if total_entries > 0.75 * min(len(samples), self.models.max_samples_checked):
-                    # Initialize dictionaries to store counts and total scores
-                    contract_counts = defaultdict(int)
-                    contract_total_scores = defaultdict(int)
-                    contract_total_tricks = defaultdict(int)
-
-                    # Iterate through the alternatives dictionary to populate counts and total scores
-                    for contract, entries in alternatives.items():
-                        for entry in entries:
-                            score = entry["score"]
-                            
-                            contract_counts[contract] += 1
-                            contract_total_scores[contract] += score
-                            contract_total_tricks[contract] += entry["tricks"]
-
-                    # Calculate the average scores
-                    contract_average_scores = {contract: round(contract_total_scores[contract] / contract_counts[contract])
-                                            for contract in contract_counts}
-                    contract_average_tricks = {contract: round(contract_total_tricks[contract] / contract_counts[contract],2)
-                                            for contract in contract_counts}
-
-                    # Print the results
+                if self.verbose: 
+                    print(contract, doubled, tricks)
+                # If game bid in major do not bid 5 of that major 
+                if current_contract == "4H" and contract == "5H":
                     if self.verbose:
-                        print("Contract Counts:", dict(contract_counts))
-                        print("Contract Average Scores:", contract_average_scores)
-                        print("Contract Average tricks:", contract_average_tricks)
-                    # Find the contract with the highest count
-                    max_count_contract = max(contract_counts, key=contract_counts.get)
-                    # Unless we gain 300 or we expect 4 tricks more we will not override BEN
-                    if (contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
-                        # Now we have found a possible resuce bid, so we need to check the samples with that contract
+                        print("Stopping rescue, just one level higher")
+                    alternatives = {}
+                    break
+                if current_contract == "4S" and contract == "5S":
+                    if self.verbose:
+                        print("Stopping rescue, just one level higher")
+                    alternatives = {}
+                    break
+                # If 3N don't bid 4N
+                if current_contract == "3N" and (contract == "4N" or contract == "5N"):
+                    if self.verbose:
+                        print("Stopping rescue, just one level higher")
+                    alternatives = {}
+                    break
+                if current_contract == contract:
+                    if self.verbose:
+                        print("Contract bid, stopping rescue")
+                    alternatives = {}
+                    break
+                
+                        
+                # if the contract is in candidates we assume previous calculations are right and we stop
+                for c in candidates:
+                    if c.bid == contract:
                         if self.verbose:
-                            print("Evaluating", max_count_contract)
-                        new_auction = auction.copy()
-                        new_auction.append(max_count_contract)
-                        auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
-                        for i, bid in enumerate(new_auction):
-                            auction_np[:,i] = bidding.BID2ID[bid]
+                            print("Contract found in candidates, stopping rescue")
+                        alternatives = {}
+                        break_outer = True
+                        break
 
-                        # Simulate the hands
-                        contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np[:min(len(samples), self.models.max_samples_checked)], auction_np, self.hand_str)
-                        decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
-                        if self.verbose:
-                            print("tricks", np.mean(decoded_tricks))
-                        expected_tricks = np.mean(decoded_tricks)
-                        # We need to find a way to use how good the samples are
-                        # Assume we are doubled if going down
+                if break_outer:
+                    break
+                # Skip invalid bids
+                if bidding.can_bid(contract, auction):
+                    result = {"contract": contract, "tricks": tricks}
+                    level = int(contract[0])
+                    # Consider autodouble any contract going down
+                    if tricks >= level + 6:
+                        doubled = False
+                    score = scoring.score(contract + ("X" if doubled else ""), self.vuln, tricks)
+                    if self.verbose:
+                        print(result, score)
+                    if contract not in alternatives:
+                        alternatives[contract] = []
+                    alternatives[contract].append({"score": score, "tricks": tricks})
+                    
+            # Only if at least 75 of the samples suggest bidding check the score for the rescue bid
+            # print(len(alternatives), min(len(samples), self.models.max_samples_checked))
+            total_entries = sum(len(entries) for entries in alternatives.values())
+            if total_entries > 0.75 * min(len(samples), self.models.max_samples_checked):
+                # Initialize dictionaries to store counts and total scores
+                contract_counts = defaultdict(int)
+                contract_total_scores = defaultdict(int)
+                contract_total_tricks = defaultdict(int)
 
-                        ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
-                        evd= self.expected_score_doubled(len(auction) % 4, contracts, decl_tricks_softmax)
-                        expected_score = np.mean(ev)
-                        expected_score_doubled = np.mean(evd)
-                        # Take the lowest score of the two
-                        if expected_score_doubled < expected_score:
-                            expected_score = expected_score_doubled
-                        if self.verbose:
-                            print("expected_score", expected_score)
-                        if (expected_score > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
+                # Iterate through the alternatives dictionary to populate counts and total scores
+                for contract, entries in alternatives.items():
+                    for entry in entries:
+                        score = entry["score"]
+                        
+                        contract_counts[contract] += 1
+                        contract_total_scores[contract] += score
+                        contract_total_tricks[contract] += entry["tricks"]
 
-                            candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
-                                                        expected_score=contract_average_scores[max_count_contract], expected_tricks=expected_tricks, adjust=0, alert = False)
-                            candidates.insert(0, candidatebid)
-                            who = "Rescue"
-                            sys.stderr.write(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}\n")
+                # Calculate the average scores
+                contract_average_scores = {contract: round(contract_total_scores[contract] / contract_counts[contract])
+                                        for contract in contract_counts}
+                contract_average_tricks = {contract: round(contract_total_tricks[contract] / contract_counts[contract],2)
+                                        for contract in contract_counts}
+
+                # Print the results
+                if self.verbose:
+                    print("Contract Counts:", dict(contract_counts))
+                    print("Contract Average Scores:", contract_average_scores)
+                    print("Contract Average tricks:", contract_average_tricks)
+                # Find the contract with the highest count
+                max_count_contract = max(contract_counts, key=contract_counts.get)
+                # Unless we gain 300 or we expect 4 tricks more we will not override BEN
+                print(candidates[0])
+                if (contract_average_scores[max_count_contract] > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
+                    # Now we have found a possible resuce bid, so we need to check the samples with that contract
+                    if self.verbose:
+                        print("Evaluating", max_count_contract)
+                    new_auction = auction.copy()
+                    new_auction.append(max_count_contract)
+                    auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
+                    for i, bid in enumerate(new_auction):
+                        auction_np[:,i] = bidding.BID2ID[bid]
+
+                    # Simulate the hands
+                    contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np[:min(len(samples), self.models.max_samples_checked)], auction_np, self.hand_str)
+                    decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
+                    if self.verbose:
+                        print("tricks", np.mean(decoded_tricks))
+                    expected_tricks = np.mean(decoded_tricks)
+                    # We need to find a way to use how good the samples are
+                    # Assume we are doubled if going down
+
+                    ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax)
+                    evd= self.expected_score_doubled(len(auction) % 4, contracts, decl_tricks_softmax)
+                    expected_score = np.mean(ev)
+                    expected_score_doubled = np.mean(evd)
+                    # Take the lowest score of the two
+                    if expected_score_doubled < expected_score:
+                        expected_score = expected_score_doubled
+                    if self.verbose:
+                        print("expected_score", expected_score)
+                    if (expected_score > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
+
+                        candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
+                                                    expected_score=contract_average_scores[max_count_contract], expected_tricks=expected_tricks, adjust=0, alert = False)
+                        candidates.insert(0, candidatebid)
+                        who = "Rescue"
+                        sys.stderr.write(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}\n")
+            else:
+                if self.verbose:
+                    print("No rescue, due to not enough samples, that suggest bidding: ", total_entries, len(samples), self. models.max_samples_checked)
             if self.verbose:
                 print(f"Rescue bid calculation took {(time.time() - t_start):0.4f} seconds")
 
-        # We return the bid with the highest expected score or highest adjusted score 
+        else:
+            if self.verbose:
+                print("No rescue bid evaluated")
 
+        # We return the bid with the highest expected score or highest adjusted score 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=good_quality, alert = bool(candidates[0].alert))
     
     def do_rollout(self, auction, candidates, max_candidate_score):
@@ -475,7 +552,7 @@ class BotBid:
         candidates = []
 
         # If self.min_candidate_score == -1 we will just take what the neural network suggest 
-        if (self.min_candidate_score == -1):
+        if (self.get_min_candidate_score(self.my_bid_no) == -1):
             while True:
                 # We have to loop to avoid returning an invalid bid
                 bid_i = np.argmax(bid_softmax)
@@ -492,7 +569,7 @@ class BotBid:
                     # Only report it if above threshold
                     #print(bid_softmax)
                     
-                    if bid_softmax[bid_i] >= self.min_candidate_score:
+                    if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no):
                         # Seems to be an error in the training that needs to be solved
                         sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
                         
@@ -531,7 +608,7 @@ class BotBid:
 
         while True:
             bid_i = np.argmax(bid_softmax)
-            if bid_softmax[bid_i] < self.min_candidate_score:
+            if bid_softmax[bid_i] < self.get_min_candidate_score(self.my_bid_no):
                 if len(candidates) >= min_candidates:
                     break
             if bidding.can_bid(bidding.ID2BID[bid_i], auction):
@@ -543,9 +620,9 @@ class BotBid:
             else:
                 # Seems to be an error in the training that needs to be solved
                 # Only report it if above threshold
-                if bid_softmax[bid_i] >= self.min_candidate_score and self.min_candidate_score != -1:
+                if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no) and self.get_min_candidate_score(self.my_bid_no) != -1:
                     sys.stderr.write(f"{auction}\n")
-                    sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]:.3f} {self.min_candidate_score}\n")
+                    sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]:.3f} {self.get_min_candidate_score(self.my_bid_no)}\n")
                 if len(candidates) > 0:
                     break
                 #assert(bid_i > 1)

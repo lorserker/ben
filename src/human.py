@@ -50,8 +50,11 @@ class Channel:
 
     async def send(self, message):
         # Print only the first 100 characters of the message
+        message = message.replace('"PAD_START" ','')
+        message = message.replace('"PASS" ','"P"')
         if len(message) > 200:
-            print(message[:197] + "...")
+            #print(message[:197] + "...")
+            print("..." + message[-197:])
         else:
             print(message)
 
@@ -63,7 +66,8 @@ class ChannelSocket:
 
     async def send(self, message):
         if len(message) > 200:
-            print(message[:197] + "...")
+            #print(message[:197] + "...")
+            print("..." + message[-197:])
         else:
             print(message)
         await self.socket.send(message)

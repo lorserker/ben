@@ -14,7 +14,7 @@ from nn.bidder_tf2 import Bidder
 class Models:
 
     def __init__(self, name, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
-                 min_passout_candidates, min_rescue_reward, max_estimated_score,
+                 min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
                  lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_ben_dd_defending, pimc_apriori_probability,
                  use_adjustment,
                  adjust_NN,
@@ -59,6 +59,7 @@ class Models:
         self.no_biddingqualitycheck_after_bid_count = no_biddingqualitycheck_after_bid_count
         self.min_passout_candidates = min_passout_candidates
         self.min_rescue_reward = min_rescue_reward
+        self.min_bidding_trust_for_sample_when_rescue = min_bidding_trust_for_sample_when_rescue
         self.max_estimated_score = max_estimated_score
         self._lead_accept_nn = lead_accept_nn
         self.ns = ns
@@ -124,14 +125,32 @@ class Models:
         n_cards_bidding = conf.getint('models', 'n_cards_bidding', fallback=32)
         n_cards_play = conf.getint('models', 'n_cards_play', fallback=32)
         alert_supported = conf.getboolean('bidding', 'alert_supported', fallback=False)
-        search_threshold = float(conf['bidding']['search_threshold'])
-        no_search_threshold = conf.getfloat('bidding', 'no_search_threshold', fallback=1)
+
+        search_threshold_str = conf.get('bidding', 'search_threshold', fallback=-1)
+        # Check if the value is a list (with brackets), otherwise treat it as a single float
+        if search_threshold_str.startswith('[') and search_threshold_str.endswith(']'):
+            # Remove brackets and split the string to convert to a list of floats
+            search_threshold = [float(x) for x in search_threshold_str.strip('[]').split(',')]
+        else:
+            # Convert the value to a single float
+            search_threshold = float(search_threshold_str)
+
+        no_search_threshold_str = conf.get('bidding', 'no_search_threshold', fallback='1')
+        # Check if the value is a list (with brackets), otherwise treat it as a single float
+        if no_search_threshold_str.startswith('[') and no_search_threshold_str.endswith(']'):
+            # Remove brackets and split the string to convert to a list of floats
+            no_search_threshold = [float(x) for x in no_search_threshold_str.strip('[]').split(',')]
+        else:
+            # Convert the value to a single float
+            no_search_threshold = float(no_search_threshold_str)
+
         eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=-1)
         eval_opening_bid = conf.getboolean('bidding', 'eval_opening_bid', fallback=False)
         eval_pass_after_bid_count = conf.getint('bidding', 'eval_pass_after_bid_count', fallback=-1)
         no_biddingqualitycheck_after_bid_count = conf.getint('bidding', 'no_biddingqualitycheck_after_bid_count', fallback=-1)
         min_passout_candidates = conf.getint('bidding', 'min_passout_candidates', fallback=2)
         min_rescue_reward = conf.getint('bidding', 'min_rescue_reward', fallback=250)
+        min_bidding_trust_for_sample_when_rescue = conf.getfloat('bidding','min_bidding_trust_for_sample_when_rescue',fallback=0.5)
         max_estimated_score = conf.getint('bidding', 'max_estimated_score', fallback=300)
         use_biddingquality = conf.getboolean('bidding', 'use_biddingquality', fallback=False)
         check_final_contract = conf.getboolean('bidding', 'check_final_contract', fallback=False)
@@ -230,6 +249,7 @@ class Models:
             no_biddingqualitycheck_after_bid_count=no_biddingqualitycheck_after_bid_count,
             min_passout_candidates = min_passout_candidates,
             min_rescue_reward = min_rescue_reward,
+            min_bidding_trust_for_sample_when_rescue = min_bidding_trust_for_sample_when_rescue,
             max_estimated_score = max_estimated_score,
             lead_accept_nn=lead_accept_nn,
             ns=ns,
