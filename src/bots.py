@@ -122,7 +122,7 @@ class BotBid:
             return True
 
         # We only evaluate if the score is below a certain value, so if simulation give a score above this we do not try to rescue
-        if candidate_bid.expected_score is None or candidate_bid.expected_score < self.models.max_estimated_score:
+        if candidate_bid.expected_score < self.models.max_estimated_score:
             return True
 
         return False
@@ -155,7 +155,7 @@ class BotBid:
             raise ValueError(error_message)
         # A problem, that we get candidates with a threshold, and then simulates
         # When going negative, we would probably like to extend the candidates
-        my_bid_no = self.get_bid_number_for_player_to_bid(auction)
+        self.my_bid_no = self.get_bid_number_for_player_to_bid(auction)
         candidates, passout = self.get_bid_candidates(auction)
         good_quality = None
         hands_np = None
@@ -338,6 +338,8 @@ class BotBid:
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
             if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], good_quality, self.my_bid_no):    
+                if self.verbose:
+                    print("Updating samples with expected score")    
                 # initialize auction vector
                 auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
                 for i, bid in enumerate(auction):
