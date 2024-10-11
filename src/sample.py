@@ -906,9 +906,12 @@ class Sample:
         # Sort second dimension within each array in states based on min_bid_scores
         bidding_states = [state[sorted_indices] for state in states]
         
-        # We drop the samples we are not going to use
-        bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
-        sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_extend_play_threshold]
+        if self.verbose:
+            print("States after bidding:", len(bidding_states))
+        if len(states) > 100:
+            # We drop the samples we are not going to use
+            bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
+            sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_extend_play_threshold]
         assert bidding_states[0].shape[0] > 0, "No samples after bidding"
 
         if self.verbose:
