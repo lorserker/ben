@@ -265,7 +265,7 @@ class TMClient:
         # We should only instantiate the PIMC for the position we are playing
         if self.models.pimc_use_declaring and (cardplayer_i == 1 or cardplayer_i == 3): 
             from pimc.PIMC import BGADLL
-            declarer = BGADLL(self.models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.verbose)
+            declarer = BGADLL(self.models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, self.verbose)
             pimc[1] = declarer
             pimc[3] = declarer
             if self.verbose:
@@ -275,14 +275,14 @@ class TMClient:
             pimc[3] = None
         if self.models.pimc_use_defending and cardplayer_i == 0:
             from pimc.PIMCDef import BGADefDLL
-            pimc[0] = BGADefDLL(self.models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, self.verbose)
+            pimc[0] = BGADefDLL(self.models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, self.sampler, self.verbose)
             if self.verbose:
                 print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
         else:
             pimc[0] = None
         if self.models.pimc_use_defending and cardplayer_i == 2:
             from pimc.PIMCDef import BGADefDLL
-            pimc[2] = BGADefDLL(self.models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, self.verbose)
+            pimc[2] = BGADefDLL(self.models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, self.sampler, self.verbose)
             if self.verbose:
                 print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
         else:
@@ -369,9 +369,9 @@ class TMClient:
 
                     # if card_resp is None, we have to rollout
                     if card_resp == None:
-                        rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
-                        card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
-                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
+                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
                         card_resp.hcp = c_hcp
                         card_resp.shape = c_shp
 

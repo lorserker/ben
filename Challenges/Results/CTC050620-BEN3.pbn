@@ -1,0 +1,755 @@
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "1"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:AKT963.A6.AKT9.6 QJ4.KT94.7.KT852 85.QJ2.Q8652.943 72.8753.J43.AQJ7"]
+[Declarer "N"]
+[Contract "1S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS PASS PASS 1S
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 6\d   10\n 4\s    6\n 5\d    4\n 5\s    3\n 4\d    2\n 3\s    2\n 6\s    1\n
+
+Facit Score:     2\nRunning Score:   2
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "2"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:A2.AKT6.AQ943.A7 765.J952.K8.J942 KQ943.Q4.JT75.T6 JT8.873.62.KQ853"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+PASS PASS 2N PASS
+3H PASS 3S PASS
+3N PASS PASS PASS
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 6\d   10\n 6\s    7\n 7N    7\n 7\d    6\n 6N    5\n 5\s    4\n 3N    3\n 5\d    2\n 7\s    2\n
+
+Facit Score:     3\nRunning Score:   5
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "3"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:K4.AQJ8.QJT9.743 Q73.9.52.AKT9862 A9862.K53.AK8.J5 JT5.T7642.7643.Q"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+PASS 1D 3C 3S
+PASS 3N PASS PASS
+PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 4\h   10\nE3\cX   7\n 5\d    7\n 3\h    4\n 3\s    4\n 2N    4\n 4\s    3\n 3N    1\n
+
+Facit Score:     1\nRunning Score:   6
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "4"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:6.T543.KJT86.AK7 KT42.8.AQ932.643 A93.AKQ976..Q952 QJ875.J2.754.JT8"]
+[Declarer "S"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D PASS 2H PASS
+3D PASS 3H PASS
+4N PASS 5C PASS
+6H PASS PASS PASS
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 7\h    9\n 6\h    6\n 5\h    3\n
+
+Facit Score:     6\nRunning Score:  12
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "5"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:AK92.A972.63.T82 J53.T4.QJT4.KJ63 Q7.KQ8653.A82.A7 T864.J.K975.Q954"]
+[Declarer "S"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1H PASS 4H
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 6\h   10\n 5\h    4\n 5N    2\n 6N    1\n
+
+Facit Score:     4\nRunning Score:  16
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "6"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:QT64.754.AK3.QT6 92.QT6.QJT86.954 AKJ53.A9832..AKJ 87.KJ.97542.8732"]
+[Declarer "S"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1S PASS 1N PASS
+3H PASS 4S PASS
+4N PASS 5D PASS
+5H PASS 6C PASS
+6S PASS PASS PASS
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 5N   10\n 5\s    6\n 6\s    3\n 6N    2\n
+
+Facit Score:     3\nRunning Score:  19
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "7"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:AQJT53.AKJ.5.T93 964.Q.KJ9742.654 K7.T98732..AKQJ8 82.654.AQT863.72"]
+[Declarer "S"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+PASS 1S PASS 2H
+PASS 3H PASS 4N
+PASS 5C PASS 6H
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 7\s   10\n 7\c    7\n 7\h    4\n 6\s    4\n 6\h    2\n 6\c    2\n 5\c    1\n 5\h    1\n 5\s    1\n
+
+Facit Score:     2\nRunning Score:  21
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "8"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AK.AKJ74.7.KQ986 42.62.AJ432.JT75 9876.QT95.T98.32 QJT53.83.KQ65.A4"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H PASS PASS 1S
+3C PASS 4H PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 4\h   10\n 5\h    9\n 3\h    4\n
+
+Facit Score:    10\nRunning Score:  31
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "9"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:A85.AK985.J73.K9 JT6.QT64.A64.742 KQ74.2.852.AQJT5 932.J73.KQT9.863"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1C PASS 1H
+PASS 1S PASS 2D
+PASS 3C PASS 3H
+PASS 3N PASS PASS
+PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 3N   10\n 4\c    7\n 5\c    4\n 4\s    4\n 4\h    2\n
+
+Facit Score:    10\nRunning Score:  41
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "10"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:KT62.A43.J82.QT5 Q85.JT8.Q3.KJ873 AJ9.Q952.AK976.2 743.K76.T54.A964"]
+[Declarer "S"]
+[Contract "1N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1D PASS 1S PASS
+1N PASS PASS PASS
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 3\d   10\n 2\s   10\n 2\h    8\n 1N    7\n 4\d    6\n 3\s    6\n 2N    4\n 3\h    4\n 5\d    3\n 4\s    3\n 3N    3\n 4\h    1\n
+
+Facit Score:     7\nRunning Score:  48
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "11"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:987.KQ73.A.AK964 KT32.AJT.632.T87 AJ54.94.KT985.QJ Q6.8652.QJ74.532"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS PASS PASS 1C
+PASS 1D PASS 1H
+PASS 1S PASS 2C
+PASS 2N PASS 3N
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 3N    8\nE1\dX   8\n 4N    5\n 4\s    5\n 5\c    3\n 2N    3\n 3\s    2\n 4\c    1\n
+
+Facit Score:     8\nRunning Score:  56
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "12"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:AKQ.Q8.AK8.AKT93 JT.JT72.JT9.J742 987654.A5.Q543.Q 32.K9643.762.865"]
+[Declarer "S"]
+[Contract "7S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+PASS PASS 2C PASS
+2S PASS 4N PASS
+5D PASS 5N PASS
+6C PASS 7S PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 7N   11\n 7\s   10\n 6N    6\n 6\s    5\n 7\d    3\n 7\c    3\n 5N    2\n 6\d    1\n 6\c    1\n 5\s    1\n
+
+Facit Score:    10\nRunning Score:  66
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "13"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:AJT2.AK95.3.9632 7.JT762.QJT4.KJ4 KQ9854..A976.AT8 63.Q843.K852.Q75"]
+[Declarer "S"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+PASS 1C PASS 1S
+PASS 2S PASS 4N
+PASS 5S PASS 5N
+PASS 6D PASS 6S
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 7\s   10\n 6\s    4\n 5\s    1\n
+
+Facit Score:     4\nRunning Score:  70
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "14"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:T74.KQJ5.J.AK985 9853.T62.T86.Q64 KQ.A94.AKQ432.72 AJ62.873.975.JT3"]
+[Declarer "S"]
+[Contract "6N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C PASS 2D PASS
+3C PASS 3D PASS
+4H PASS 4N PASS
+5H PASS 6N PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 6N   10\n 6\h    7\n 6\d    7\n 5N    3\n 5\h    2\n 5\d    1\n
+
+Facit Score:    10\nRunning Score:  80
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "15"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:AKT743.T86.6.AK4 Q2.QJ2.JT54.7653 6.AK74.AKQ972.Q8 J985.953.83.JT92"]
+[Declarer "S"]
+[Contract "6N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1D PASS 1S
+PASS 2H PASS 3C
+PASS 3N PASS 6N
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 6N   10\n 6\d    6\n 7N    5\n 4N    4\n 7\d    4\n 6\s    3\n 6\h    3\n 5\s    2\n 5\h    2\n 5\d    1\n
+
+Facit Score:    10\nRunning Score:  90
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "16"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:KQT7.A8753.A.Q83 642.JT2.Q9762.KT AJ8.K96.K83.A754 953.Q4.JT54.J962"]
+[Declarer "S"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1N PASS 2C PASS
+2D PASS 3S PASS
+4H PASS 4N PASS
+5C PASS 6H PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 3N   10\n 4N    8\n 4\h    6\n 5\h    4\n 6N    1\n 6\h    1\n
+
+Facit Score:     1\nRunning Score:  91
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "17"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:765.Q984.3.AKQJ3 T9.KT3.QJT65.T75 AKQJ83.AJ72.K7.4 42.65.A9842.9862"]
+[Declarer "S"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+PASS 1C PASS 2S
+PASS 3C PASS 3S
+PASS 4N PASS 5C
+PASS 6S PASS PASS
+PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ S6N   10\n N6N    6\n 6\s    6\n 6\c    3\n S5N    3\n N5N    2\n 5\s    2\n 5\h    2\n 6\h    1\n 5\c    1\n
+
+Facit Score:     6\nRunning Score:  97
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "18"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:J8752.KQ9.K94.KT KQT.743.QJ72.Q87 .AT862.T8.AJ9543 A9643.J5.A653.62"]
+[Declarer "S"]
+[Contract "3C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S PASS 3C PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 4\h   11\n 3\h    8\n 5\h    7\n 5\c    4\n 3\c    4\n 2N    4\n 4\c    3\n 3N    3\n 6\h    2\n 6N    2\n 6\c    2\n
+
+Facit Score:     4\nRunning Score: 101
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "19"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:A53.AQ987.J54.Q7 QT6.J642.AT.8654 987..KQ8762.AKT9 KJ42.KT53.93.J32"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1D PASS 1H
+PASS 2C PASS 3N
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 5\d   10\n 4\d    6\n 2N    4\n 6\d    3\n 3N    2\n
+
+Facit Score:     2\nRunning Score: 103
+}
+
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000[Event ""]
+[Site ""]
+[Date "2024.10.10"]
+[BCFlags "801f"]
+[Board "20"]
+[West ""]
+[East ""]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:JT432.AT.AK54.86 A.6542.J862.Q943 K987.873.T7.AKT2 Q65.KQJ9.Q93.J75"]
+[Declarer "N"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+PASS PASS 1S PASS
+2C PASS 2S PASS
+4S PASS PASS PASS
+[Play ""]
+[Hidden "EW"]
+{
+
+
+Score Table:
+
+ 4\s   10\n 3\s    4\n
+
+Facit Score:    10\nRunning Score: 113
+}
+

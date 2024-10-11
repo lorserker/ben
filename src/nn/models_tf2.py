@@ -33,6 +33,8 @@ class Models:
                  draw_trump_reward,
                  draw_trump_penalty,
                  use_real_imp_or_mp,
+                 use_real_imp_or_mp_bidding,
+                 use_real_imp_or_mp_opening_lead,
                  check_final_contract,
                  max_samples_checked,
                  alert_supported
@@ -111,6 +113,8 @@ class Models:
         self.draw_trump_reward=draw_trump_reward
         self.draw_trump_penalty=draw_trump_penalty
         self.use_real_imp_or_mp = use_real_imp_or_mp
+        self.use_real_imp_or_mp_bidding = use_real_imp_or_mp_bidding
+        self.use_real_imp_or_mp_opening_lead = use_real_imp_or_mp_opening_lead
         self.check_final_contract = check_final_contract
         self.max_samples_checked = max_samples_checked
         self.alert_supported = alert_supported
@@ -205,6 +209,8 @@ class Models:
         draw_trump_reward = conf.getfloat('cardplay', 'draw_trump_reward', fallback=0.25)
         draw_trump_penalty = conf.getfloat('cardplay', 'draw_trump_penalty', fallback=0.25)
         use_real_imp_or_mp = conf.getboolean('cardplay', 'use_real_imp_or_mp', fallback=False)
+        use_real_imp_or_mp_bidding = conf.getboolean('eval', 'use_real_imp_or_mp_bidding', fallback=False)
+        use_real_imp_or_mp_opening_lead = conf.getboolean('lead', 'use_real_imp_or_mp_opening_lead', fallback=False)
         bba_ns = conf.getint('models', 'bba_ns', fallback=-1)
         bba_ew = conf.getint('models', 'bba_ew', fallback=-1)
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
@@ -302,6 +308,8 @@ class Models:
             draw_trump_reward=draw_trump_reward,
             draw_trump_penalty=draw_trump_penalty,
             use_real_imp_or_mp=use_real_imp_or_mp,
+            use_real_imp_or_mp_bidding=use_real_imp_or_mp_bidding,
+            use_real_imp_or_mp_opening_lead=use_real_imp_or_mp_opening_lead,
             check_final_contract=check_final_contract,
             max_samples_checked=max_samples_checked
         )

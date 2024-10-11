@@ -32,6 +32,24 @@ def load(fin):
                 auction_lines = []
                 scoring_lines = []
                 dealer= None
+        if inside_auction_section:
+            if line.startswith('[') or line == "\n":  # Check if it's the start of the next tag
+                inside_auction_section = False
+            else:
+                # Convert bids
+                line = line.strip().replace('.','').replace("NT","N").replace("Pass","P").replace("Double","X").replace("Redouble","XX").replace('AP','P P P')
+                # Remove extra spaces
+                line = re.sub(r'\s+', ' ', line)
+                # update alerts
+                line = re.sub(r' =\d{1,2}=', '*', line)
+                auction_lines.append(line)  
+
+        if inside_scoring_section:
+            if line.startswith('[') :  # Check if it's the start of the next tag
+                inside_scoring_section = False
+            else:
+                scoring_lines.append(line)  
+
         if line.startswith('[Dealer'):
             dealer = extract_value(line)
         if line.startswith('[Scoring'):
@@ -51,26 +69,7 @@ def load(fin):
         if line.startswith('[Auction'):
             inside_auction_section = True
             continue  
-
-        if inside_scoring_section:
-            if line.startswith('[') :  # Check if it's the start of the next tag
-                inside_scoring_section = False
-            else:
-                scoring_lines.append(line)  
-        if inside_auction_section:
-            if line.startswith('[') or line == "\n":  # Check if it's the start of the next tag
-                inside_auction_section = False
-            else:
-                # Convert bids
-                line = line.strip().replace('.','').replace("NT","N").replace("Pass","P").replace("Double","X").replace("Redouble","XX").replace('AP','P P P')
-                # Remove extra spaces
-                line = re.sub(r'\s+', ' ', line)
-                # update alerts
-                line = re.sub(r' =\d{1,2}=', '*', line)
-                auction_lines.append(line)  
-
-        else:
-            continue
+    
     if dealer != None:
         board = {
             'deal': ' '.join(hands_nesw),      

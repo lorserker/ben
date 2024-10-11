@@ -49,14 +49,12 @@ class ConfirmSocket:
 class Channel:
 
     async def send(self, message):
-        # Print only the first 100 characters of the message
-        message = message.replace('"PAD_START" ','')
-        message = message.replace('"PASS" ','"P"')
-        if len(message) > 200:
+        print_message = message.replace('"PAD_START", ','').replace('"PASS"','"P"')
+        if len(print_message) > 200:
             #print(message[:197] + "...")
-            print("..." + message[-197:])
+            print("..." + print_message[-197:])
         else:
-            print(message)
+            print(print_message)
 
 class ChannelSocket:
 
@@ -65,11 +63,12 @@ class ChannelSocket:
         self.verbose = verbose
 
     async def send(self, message):
-        if len(message) > 200:
+        print_message = message.replace('"PAD_START", ','').replace('"PASS"','"P"')
+        if len(print_message) > 200:
             #print(message[:197] + "...")
-            print("..." + message[-197:])
+            print("..." + print_message[-197:])
         else:
-            print(message)
+            print(print_message)
         await self.socket.send(message)
 
 

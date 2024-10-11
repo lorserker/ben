@@ -67,7 +67,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
     # We should only instantiate the PIMC for the position we are playing
     if models.pimc_use_declaring and position == 3: 
         from pimc.PIMC import BGADLL
-        declarer = BGADLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, verbose)
+        declarer = BGADLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
         pimc[1] = declarer
         pimc[3] = declarer
         if verbose:
@@ -77,7 +77,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
         pimc[3] = None
     if models.pimc_use_defending and (position == 0):
         from pimc.PIMCDef import BGADefDLL
-        pimc[0] = BGADefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, verbose)
+        pimc[0] = BGADefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
         if verbose:
             print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
     else:
@@ -85,7 +85,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
 
     if models.pimc_use_defending and (position == 2):
         from pimc.PIMCDef import BGADefDLL
-        pimc[2] = BGADefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, verbose)
+        pimc[2] = BGADefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
         if verbose:
             print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
     else:
@@ -173,12 +173,12 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                         return card_resp, player_i
 
                 # No obvious play, so we roll out
-                rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
+                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
                 assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                 
-                card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
+                card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
 
-                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
 
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp

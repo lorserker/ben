@@ -222,6 +222,8 @@
                                                     <li>
                                                         Bid: ${candidate.call.replace("PASS","P").padStart(2, ' ')},
                                                         ${candidate.expected_score !== undefined ? `Expected score: ${candidate.expected_score},` : ''}
+                                                        ${candidate.expected_mp !== undefined ? `Expected MP: ${candidate.expected_mp},` : ''}
+                                                        ${candidate.expected_imp !== undefined ? `Expected IMP: ${candidate.expected_imp},` : ''}
                                                         ${candidate.insta_score !== undefined ? `NN Score: ${candidate.insta_score},` : ''}
                                                         ${candidate.adjustment !== undefined ? `Adjusted: ${candidate.adjustment}` : ''}
                                                     </li>                               

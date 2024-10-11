@@ -25,7 +25,7 @@ BGADLL_PATH = os.path.join(BIN_FOLDER, BGADLL_LIB)
 
 class BGADefDLL:
 
-    def __init__(self, models, northhand, southhand, contract, is_decl_vuln, player_i, verbose):
+    def __init__(self, models, northhand, southhand, contract, is_decl_vuln, player_i, sampler, verbose):
         try:
            # Load the .NET assembly and import the types and classes from the assembly
             clr.AddReference(BGADLL_PATH)
@@ -41,7 +41,8 @@ class BGADefDLL:
             print("*****************************************************************************")
             sys.exit(1)
 
-        self.models = models            
+        self.models = models       
+        self.sampler = sampler     
         self.max_playout = models.pimc_max_playouts
         self.wait = models.pimc_wait
         self.autoplay = models.autoplaysingleton
@@ -96,7 +97,7 @@ class BGADefDLL:
         # if no bids, the hand can have a very long suits without having bid
         # Perhaps most important for partners hand
         # Should it be moved to configuration?
-        if quality:
+        if quality >= self.sampler.bidding_threshold_sampling :
             margin_declarer = 1
             margin_partner = 1
         else:
@@ -479,10 +480,10 @@ class BGADefDLL:
 
         if self.models.use_real_imp_or_mp:
             msg = f"Decl: {self.declarer_constraints.ToString()}|Partner: {self.partner_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+            real_scores = calculate.calculate_score(results, self.tricks_taken, self.player_i, self.score_by_tricks_taken)
             if self.models.matchpoint:
-                card_ev = calculate.calculate_mp_score(results)
+                card_ev = calculate.calculate_mp_score(real_scores)
             else:
-                real_scores = calculate.calculate_score(results, self.tricks_taken, self.player_i, self.score_by_tricks_taken)
                 if self.verbose:
                     print("Real scores")
                     print(real_scores)

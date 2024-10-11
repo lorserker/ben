@@ -1,7 +1,7 @@
 import pickle
 
 # Define file path and pickle DB path
-file_path = 'BBA - 10.02.2024 02.22.ben'
+file_path = 'GIB-Thorvald-8643-par-filtered.ben'
 pickle_db_path = 'hands_data.pkl'
 
 # Suit mapping: Indexes correspond to ['S', 'H', 'D', 'C']
@@ -88,36 +88,38 @@ with open(file_path, 'r') as file:
                 print(hands)
                 print(f"Error: Expected 4 hands but found {len(hands)} for key {key_line}")
                 continue  # Skip this record
+            
+            bids = key_line.split()[2:]
+            new_key = ' '.join(key_line.split()[:2])
+            for i in range(len(bids)):
+                # This should loop over the entire auction
+                # Initialize the entry for the key if it doesn't exist
+                new_key += ' ' + bids[i] 
+                if new_key not in hands_data:
+                    hands_data[new_key] = {
+                        'hand1': default_hand_stats(),
+                        'hand2': default_hand_stats(),
+                        'hand3': default_hand_stats(),
+                        'hand4': default_hand_stats()
+                    }
 
-            # Initialize the entry for the key if it doesn't exist
-            if key_line not in hands_data:
-                hands_data[key_line] = {
-                    'hand1': default_hand_stats(),
-                    'hand2': default_hand_stats(),
-                    'hand3': default_hand_stats(),
-                    'hand4': default_hand_stats()
-                }
+                if new_key == "N None 1N P 3C*":
+                    print(hands)
+                    #hand = hand[2]
+                    # Split hand into suits by '.'
+                    #suits = hand.split('.')                
+                    # Count number of cards per suit
+                    #suit_counts = [len(s) for s in suits]
+                    # Calculate honor points for the hand
+                    #total_hcp = sum(calculate_hcp(suit) for suit in suits)
+                    #if total_hcp > 9:
+                    #    print(hand, total_hcp)
 
-            if key_line == "N None 1N P P P":
-                print(hands)
-                hand = hand[2]
-                # Split hand into suits by '.'
-                suits = hand.split('.')                
-                # Count number of cards per suit
-                suit_counts = [len(s) for s in suits]
-                # Calculate honor points for the hand
-                total_hcp = sum(calculate_hcp(suit) for suit in suits)
-                if total_hcp > 9:
-                    print(hand, total_hcp)
-
-            # For each hand (there are 4 hands), update statistics in hands_data using the key
-            for i, hand in enumerate(hands):
-                hand_key = f'hand{i+1}'
-                update_global_hand_stats(hands_data[key_line][hand_key], hand)
+                # For each hand (there are 4 hands), update statistics in hands_data using the key
+                for i, hand in enumerate(hands):
+                    hand_key = f'hand{i+1}'
+                    update_global_hand_stats(hands_data[new_key][hand_key], hand)
  
-            if key_line == "N None 1N P P P":
-                print(hands_data[key_line]['hand3'])
-
  # Reset hands_line for the next pair
             hands_line = None
 #
@@ -126,3 +128,4 @@ with open(pickle_db_path, 'wb') as pickle_file:
     pickle.dump(hands_data, pickle_file)
 
 print(f"Data has been condensed and stored in {pickle_db_path}")
+

@@ -1,0 +1,430 @@
+% PBN 2.1
+% EXPORT
+%Content-type: text/x-pbn; charset=ISO-8859-1
+%Creator: BridgeComposer Version 5.105
+%Created: Thu Oct 10 11:58:43 2024 +0100
+%BCOptions Center STBorder STShade
+%BidAndCardSpacing Thin
+%BoardsPerPage 1
+%CardTableColors #008000,#ffffff,#aaaaaa
+%DDAFormat 0
+%DefaultPagination 0
+%Font:CardTable "Arial",11,400,0
+%Font:Commentary "Times New Roman",12,400,0
+%Font:Diagram "Times New Roman",12,400,0
+%Font:Event "Times New Roman",12,400,0
+%Font:FixedPitch "Courier New",10,400,0
+%Font:HandRecord "Arial",11,400,0
+%GutterSize 500,500
+%HRTitleDate 0
+%HRTitleEvent ""
+%HRTitleSetID ""
+%HRTitleSetIDPrefix ""
+%HRTitleSite ""
+%HtmlClubs entity,"https://bridgecomposer.com/suitimg/c.gif"
+%HtmlDiamonds entity,"https://bridgecomposer.com/suitimg/d.gif"
+%HtmlHearts entity,"https://bridgecomposer.com/suitimg/h.gif"
+%HtmlNavBar 0.75,#cfe2f3
+%HtmlSpades entity,"https://bridgecomposer.com/suitimg/s.gif"
+%Margins 1000,1000,1000,1000
+%PaperSize 1,0,0,2
+%ParaIndent 0
+%PipColors #000000,#ff0000,#ff0000,#000000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%ScoreTableColors #e6e6e6,#000000
+%SectionSpacing 0,0,0
+%SelectedBoard 19
+%ShowBoardLabels 2
+%ShowCardTable 2
+%TSTCustomSortOrder Default
+%TSTReport List
+%TSTReportOrder ByNumber
+%TSTReportShade Yes
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "1"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:QJ4.KT94.7.KT852 85.QJ2.Q8652.943 72.8753.J43.AQJ7 AKT963.A6.AKT9.6"]
+[Scoring "Facit"]
+{ 6D 10 4S 6 5D 4 5S 3 4D 2 3S 2 6S 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "2"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:KQ943.Q4.JT75.T6 JT8.873.62.KQ853 A2.AKT6.AQ943.A7 765.J952.K8.J942"]
+[Scoring "Facit"]
+{ 6D 10 6S 7 7N 7 7D 6 6N 5 5S 4 3N 3 5D 2 7S 2}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "3"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:JT5.T7642.7643.Q K4.AQJ8.QJT9.743 Q73.9.52.AKT9862 A9862.K53.AK8.J5"]
+[Scoring "Facit"]
+{ 4H 10 E3CX 7 5D 7 3H 4 3S 4 2N 4 4S 3 3N 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+[Auction "W"]
+P AC 3C 
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "4"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:6.T543.KJT86.AK7 KT42.8.AQ932.643 A93.AKQ976..Q952 QJ875.J2.754.JT8"]
+[Scoring "Facit"]
+{ 7H 9 6H 6 5H 3}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "5"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:J53.T4.QJT4.KJ63 Q7.KQ8653.A82.A7 T864.J.K975.Q954 AK92.A972.63.T82"]
+[Scoring "Facit"]
+{ 6H 10 5H 4 5N 2 6N 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "6"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:AKJ53.A9832..AKJ 87.KJ.97542.8732 QT64.754.AK3.QT6 92.QT6.QJT86.954"]
+[Scoring "Facit"]
+{ 5N 10 5S 6 6S 3 6N 2}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "7"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:82.654.AQT863.72 AQJT53.AKJ.5.T93 964.Q.KJ9742.654 K7.T98732..AKQJ8"]
+[Scoring "Facit"]
+{ 7S 10 7C 7 7H 4 6S 4 6H 2 6C 2 5C 1 5H 1 5S 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "8"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AK.AKJ74.7.KQ986 42.62.AJ432.JT75 9876.QT95.T98.32 QJT53.83.KQ65.A4"]
+[Scoring "Facit"]
+{ 4H 10 5H 9 3H 4}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+[Auction "N" ]
+AC P AC 1S
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "9"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:JT6.QT64.A64.742 KQ74.2.852.AQJT5 932.J73.KQT9.863 A85.AK985.J73.K9"]
+[Scoring "Facit"]
+{ 3N 10 4C 7 5C 4 4S 4 4H 2}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "10"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:AJ9.Q952.AK976.2 743.K76.T54.A964 KT62.A43.J82.QT5 Q85.JT8.Q3.KJ873"]
+[Scoring "Facit"]
+{ 3D 10 2S 10 2H 8 1N 7 4D 6 3S 6 2N 4 3H 4 5D 3 4S 3 3N 3 4H 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "11"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:KT32.AJT.632.T87 AJ54.94.KT985.QJ Q6.8652.QJ74.532 987.KQ73.A.AK964"] 
+[Scoring "Facit"]
+{ 3N 8 E1DX 8 4N 5 4S 5 5C 3 2N 3 3S 2 4C 1} 
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+[ Auction "E"]
+1D AC PASS
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "12"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:987654.A5.Q543.Q 32.K9643.762.865 AKQ.Q8.AK8.AKT93 JT.JT72.JT9.J742"]
+[Scoring "Facit"]
+{ 7N 11 7S 10 6N 6 6S 5 7D 3 7C 3 5N 2 6D 1 6C 1 5S 1 }
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "13"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:63.Q843.K852.Q75 AJT2.AK95.3.9632 7.JT762.QJT4.KJ4 KQ9854..A976.AT8"]
+[Scoring "Facit"]
+{ 7S 10 6S 4 5S 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "14"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:T74.KQJ5.J.AK985 9853.T62.T86.Q64 KQ.A94.AKQ432.72 AJ62.873.975.JT3"]
+[Scoring "Facit"]
+{ 6N 10 6H 7 6D 7 5N 3 5H 2 5D 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "15"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:Q2.QJ2.JT54.7653 6.AK74.AKQ972.Q8 J985.953.83.JT92 AKT743.T86.6.AK4"]
+[Scoring "Facit"]
+{ 6N 10 6D 6 7N 5 4N 4 7D 4 6S 3 6H 3 5S 2 5H 2 5D 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "16"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:AJ8.K96.K83.A754 953.Q4.JT54.J962 KQT7.A8753.A.Q83 642.JT2.Q9762.KT"]
+[Scoring "Facit"]
+{ 3N 10 4N 8 4H 6 5H 4 6N 1 6H 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "17"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:42.65.A9842.9862 765.Q984.3.AKQJ3 T9.KT3.QJT65.T75 AKQJ83.AJ72.K7.4"]
+[Scoring "Facit"]
+{ S6N 10 N6N 6 6S 6 6C 3 S5N 3 N5N 2 5S 2 5H 2 6H 1 5C 1}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "18"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:J8752.KQ9.K94.KT KQT.743.QJ72.Q87 .AT862.T8.AJ9543 A9643.J5.A653.62"]
+[Scoring "Facit"]
+{ 4H 11 3H 8 5H 7 5C 4 3C 4 2N 4 4C 3 3N 3 6H 2 6N 2 6C 2}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "19"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:QT6.J642.AT.8654 987..KQ8762.AKT9 KJ42.KT53.93.J32 A53.AQ987.J54.Q7"]
+[Scoring "Facit"]
+{ 5D 10 4D 6 2N 4 6D 3 3N 2}
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]
+[ Auction "E"]
+1S AC
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "20"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:K987.873.T7.AKT2 Q65.KQJ9.Q93.J75 JT432.AT.AK54.86 A.6542.J862.Q943"]
+[Scoring "Facit"]
+{ 4S 10 3S 4 }
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[Hidden "EW"]

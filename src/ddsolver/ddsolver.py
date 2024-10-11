@@ -1,3 +1,4 @@
+import sys
 import ctypes
 from typing import Dict, List
 
@@ -17,7 +18,7 @@ class DDSolver:
     # If 2 transport tables ignore trump
  
     def __init__(self, dds_mode=1):
-        print("DDSolver being loaded - dds mode", dds_mode)
+        sys.stderr.write(f"DDSolver being loaded - dds mode {dds_mode}\n")
         self.dds_mode = dds_mode
         self.bo = dds.boardsPBN()
         self.solved = dds.solvedBoards()

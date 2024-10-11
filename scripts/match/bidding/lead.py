@@ -23,7 +23,7 @@ import numpy as np
 
 SEATS = ['north', 'east', 'south', 'west']
 
-def lead(obj, models, sampler, verbose):
+def lead(obj, models, sampler, dds, verbose):
     if obj['contract'] is None:
         return None
 
@@ -33,7 +33,7 @@ def lead(obj, models, sampler, verbose):
     lead_i = (decl_i + 1) % 4
 
     hand_lead = obj[SEATS[lead_i]]
-    bot = BotLead(VULN[obj['vuln']], hand_lead, models, sampler, lead_i, dealer_i, verbose)
+    bot = BotLead(VULN[obj['vuln']], hand_lead, models, sampler, lead_i, dealer_i, dds, verbose)
     lead_card_indexes, _ = bot.get_opening_lead_candidates(obj['auction'])
     lead_card_i = lead_card_indexes[0]
     suit_i = lead_card_i // 8
@@ -71,9 +71,13 @@ if __name__ == '__main__':
 
     models = Models.from_conf(configuration,"../../..")
     sampler = Sample.from_conf(configuration)
+
+    from ddsolver import ddsolver
+    dds = ddsolver.DDSolver()
+
     for line in sys.stdin:
         obj = json.loads(line)
-        obj['lead'] = lead(obj, models, sampler, False)
+        obj['lead'] = lead(obj, models, sampler, dds, False)
 
         print(json.dumps(obj))
         sys.stdout.flush()

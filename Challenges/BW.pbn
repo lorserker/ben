@@ -96,6 +96,8 @@
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+1H AC P
 
 [Event ""]
 [Site ""]
@@ -153,6 +155,9 @@
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "S"]
+AC 2H AC P
+
 
 [Event ""]
 [Site ""]
@@ -267,6 +272,8 @@
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "S"]
+AC 2S AC P 
 
 [Event ""]
 [Site ""]
@@ -375,12 +382,14 @@
 [Vulnerable "NS"]
 [Deal "N:KJ.Q84.KQJT4.T82 9852.AKT62.6.A53 AQ73.73.A985.QJ9 T64.J95.732.K764"]
 [Scoring "Facit"]
-{ 2D 9 3D 6 3N 4 2N 4 2HP 4 2HX 4}
+{ 2D 9 3D 6 3N 4 2N 4 E2HP 4 E2HX 4}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "N"]
+AC 1H AC P
 
 [Event ""]
 [Site ""]
@@ -535,6 +544,8 @@ Pass AC 3D
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "S"]
+1C 2S AC P
 
 [Event ""]
 [Site ""]
@@ -662,12 +673,14 @@ Pass AC 3D
 [Vulnerable "None"]
 [Deal "W:KJT943.6.J.AQJT5 7.KT753.A842.K96 A8652.4.T63.8742 Q.AQJ982.KQ975.3"]
 [Scoring "Facit"]
-{ 5H 10 5D 8 6H 4 6D 3 4SP 1}
+{ 5H 10 5D 8 6H 4 6D 3 W4SP 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+2S AC 4S AC
 
 [Event ""]
 [Site ""]
@@ -782,6 +795,8 @@ Pass AC 3D
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "E"]
+1H AC P 
 
 [Event ""]
 [Site ""]

@@ -1,0 +1,1 @@
+python game.py --conf ./config/default_tf2_Short_imp_or_mp.conf --auto True --biddingonly NS --boards ../Challenges/BW.pbn --facit True --outputpbn ../Challenges/Results/BW-Result.pbn

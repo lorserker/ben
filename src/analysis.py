@@ -21,6 +21,8 @@ class CardByCard:
         self.models = models
         self.sampler = sampler
         self.verbose = verbose
+        from ddsolver import ddsolver
+        self.dds = ddsolver.DDSolver()
 
     async def analyze(self):
         print('analyzing the bidding')
@@ -76,7 +78,7 @@ class CardByCard:
 
         print(self.play[0])
 
-        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, (decl_i + 1) % 4, self.dealer_i, False)
+        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, (decl_i + 1) % 4, self.dealer_i, self.dds, False)
 
         card_resp = bot_lead.find_opening_lead(self.padded_auction)
         card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, card_resp.hcp, card_resp.shape, card_resp.quality,'')
@@ -98,7 +100,7 @@ class CardByCard:
 
         if self.models.pimc_use_declaring or self.models.pimc_use_defending:
             from pimc.PIMC import BGADLL
-            pimc = BGADLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose)
+            pimc = BGADLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, self.verbose)
             if self.verbose:
                 print("PIMC",dummy_hand, decl_hand, contract)
         else:
@@ -176,10 +178,10 @@ class CardByCard:
 
                     # if card_resp is None, we have to rollout
                     if card_resp == None:
-                        rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, self.padded_auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
 
-                        card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
-                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                        card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
+                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
                         card_resp.hcp = c_hcp
                         card_resp.shape = c_shp
 

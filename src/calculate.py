@@ -1,10 +1,16 @@
+import sys
 import scoring
+
+def check_array_lengths(dictionary):
+    lengths = [len(value) for value in dictionary.values()]
+    return min(lengths)
+
 
 def calculate_mp_score_probability( data, probabilities_list):
     scores = {key: 0 for key in data}  # Initialize scores for each key
     keys = list(data.keys())  # Get the list of keys
     num_arrays = len(keys)
-    num_plays = len(data[keys[0]])
+    num_plays = check_array_lengths(data)
 
     if num_arrays == 1:
         scores[keys[0]] = 100
@@ -14,7 +20,7 @@ def calculate_mp_score_probability( data, probabilities_list):
         for j in range(num_arrays):
             if i != j:
                 # Compare data[keys[i]] with data[keys[j]] column by column
-                for k in range(len(data[keys[i]])):  # Iterate through each value (column)
+                for k in range(num_plays):  # Iterate through each value (column)
                     if data[keys[i]][k] > data[keys[j]][k]:
                         scores[keys[i]] += 1 * probabilities_list[k] * num_plays
                     elif data[keys[i]][k] < data[keys[j]][k]:
@@ -31,7 +37,7 @@ def calculate_mp_score( data):
     scores = {key: 0 for key in data}  # Initialize scores for each key
     keys = list(data.keys())  # Get the list of keys
     num_arrays = len(keys)
-    num_plays = len(data[keys[0]])
+    num_plays = check_array_lengths(data)
 
     if num_arrays == 1:
         scores[keys[0]] = 100
@@ -42,13 +48,13 @@ def calculate_mp_score( data):
         for j in range(num_arrays):
             if i != j:
                 # Compare data[keys[i]] with data[keys[j]] column by column
-                for k in range(len(data[keys[i]])):  # Iterate through each value (column)
+                for k in range(num_plays):  # Iterate through each value (column)
                     if data[keys[i]][k] > data[keys[j]][k]:
                         scores[keys[i]] += 1
                     elif data[keys[i]][k] < data[keys[j]][k]:
                         scores[keys[i]] -= 1
     max_mp_score = 2 * num_plays * (num_arrays - 1)
-    #print(max_mp_score, scores)
+    # print(max_mp_score, scores)
     # Translate the scores to percentages
     for key in scores:
         scores[key] = round(100 * (scores[key] + max_mp_score / 2) / max_mp_score)
@@ -58,7 +64,7 @@ def calculate_imp_score_probability( data, probabilities_list):
     scores = {key: 0 for key in data}  # Initialize scores for each key
     keys = list(data.keys())  # Get the list of keys
     num_arrays = len(keys)
-    num_plays = len(data[keys[0]])
+    num_plays = check_array_lengths(data)
 
     if num_arrays == 1:
         scores[keys[0]] = 0
@@ -91,11 +97,7 @@ def calculate_imp_score( data):
     scores = {key: 0 for key in data}  # Initialize scores for each key
     keys = list(data.keys())  # Get the list of keys
     num_arrays = len(keys)
-    num_plays = len(data[keys[0]])
-
-    if num_arrays == 1:
-        scores[keys[0]] = 0
-        return scores
+    num_plays = check_array_lengths(data)
 
     # Compare each array with all others
     for i in range(num_arrays):

@@ -265,7 +265,7 @@ class Driver:
         pbn_str += '%PipColors #0000ff,#ff0000,#ffc000,#008000\n'
         pbn_str += '%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7\n'
         pbn_str += '%Font:FixedPitch "Courier New",14,700,0\n'
-        pbn_str += '%Margins 2000,1000,2000,1000'
+        pbn_str += '%Margins 2000,1000,2000,1000\n'
         pbn_str += '[Event ""]\n'
         pbn_str += '[Site ""]\n'
         date = datetime.datetime.now().date().isoformat().replace('-', '.')
@@ -315,6 +315,7 @@ class Driver:
 
         pbn_str += f'[ParScore "{self.parscore}"]\n'
         pbn_str += f'[Auction "{dealer}"]\n'
+        auctionlines = ((len(self.bid_responses) + (self.dealer_i + 1) % 4) + 3)// 4
         for i, b in enumerate(self.bid_responses, start=1):
             pbn_str += (b.bid)
             if i % 4 == 0:
@@ -338,19 +339,26 @@ class Driver:
 
         if self.bidding_only == "NS":
             pbn_str += '[Hidden "EW"]\n'
-            pbn_str += '{\n\n\nScore Table:\n\n'
+            pbn_str += '{'
+            for i in range(max(0,(9-auctionlines))):
+                pbn_str += '\\n'
+            pbn_str += 'Score Table:\n\n'
             elements = self.facit_score[self.board_number - 1]
             # Add a newline after every second element
             str = ""
-            for i in range(len(elements)):
-                score_str = elements[i]
-                if (i-1) % 2 == 0:
-                    str += ' ' * (2 - len(score_str)) + score_str
-                    str += '\\n'
-                else:
-                    str += ' ' * min((4 - len(score_str)),1)
-                    str += score_str[0] + score_str[1:].replace("S", "\\s").replace("H", "\\h").replace("D", "\\d").replace("C", "\\c")            
-                    str += ' ' * (6 - max(len(score_str),3))
+            for i in range(len(elements) // 2):
+                contract = elements[i*2]
+                contract_length = len(contract)
+                str += ' '
+                contract = contract[0] + contract[1:].replace("S", "\\s").replace("H", "\\h").replace("D", "\\d").replace("C", "\\c")            
+                str += contract + ' ' * (5 - contract_length)
+                score_str = elements[i*2 +1]
+                str += ' ' * (5 - len(score_str))
+                str += score_str
+                str += '\\n'
+
+            for i in range(12 - (len(elements) // 2)):
+                str += '\\n'
 
             # Replace the suit characters
             pbn_str += str + '\n\n'
@@ -452,7 +460,7 @@ class Driver:
         if self.models.pimc_use_declaring: 
             # No PIMC for dummy, we want declarer to play both hands
             from pimc.PIMC import BGADLL
-            declarer = BGADLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.verbose)
+            declarer = BGADLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, self.verbose)
             pimc[1] = declarer
             pimc[3] = declarer
             if self.verbose:
@@ -462,8 +470,8 @@ class Driver:
             pimc[3] = None
         if self.models.pimc_use_defending:
             from pimc.PIMCDef import BGADefDLL
-            pimc[0] = BGADefDLL(self.models, dummy_hand, lefty_hand, contract, is_decl_vuln, 0, self.verbose)
-            pimc[2] = BGADefDLL(self.models, dummy_hand, righty_hand, contract, is_decl_vuln, 2, self.verbose)
+            pimc[0] = BGADefDLL(self.models, dummy_hand, lefty_hand, contract, is_decl_vuln, 0, self.sampler, self.verbose)
+            pimc[2] = BGADefDLL(self.models, dummy_hand, righty_hand, contract, is_decl_vuln, 2, self.sampler, self.verbose)
             if self.verbose:
                 print("PIMC",dummy_hand, lefty_hand, righty_hand, contract)
         else:
@@ -567,21 +575,21 @@ class Driver:
                 # if card_resp is None, we have to rollout
                 if card_resp == None:    
                     if isinstance(card_players[player_i], bots.CardPlayer):
-                        rollout_states, bidding_scores, c_hcp, c_shp, good_quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
-                        card_players[player_i].check_pimc_constraints(trick_i, rollout_states, good_quality)
+                        card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
                     else: 
                         rollout_states = []
                         bidding_scores = []
                         c_hcp = -1
                         c_shp = -1
-                        good_quality = None
+                        quality = 1
                         probability_of_occurence = []
                         
                     await asyncio.sleep(0.01)
 
                     while card_resp is None:
-                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, good_quality, probability_of_occurence, shown_out_suits, play_status)
+                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
 
                         if (str(card_resp.card).startswith("Conceed")) :
                                 self.claimedbydeclarer = (player_i == 3) or (player_i == 1)
@@ -1036,7 +1044,7 @@ async def main():
     driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), seed, dds, verbose)
 
     # If the format is score - contract we swap the columns
-    if facit_score[0][0].isdigit(): 
+    if facit and facit_score[0][0].isdigit(): 
         for i in range(len(facit_score)):
             arr = np.array(facit_score[i])
             # Reshape the array to 2 columns (you can infer the number of rows automatically)
@@ -1100,7 +1108,7 @@ async def main():
                     "4S": ["5S"],
                     "4N": ["5N"]
                 }
-                print(driver.hands[0], driver.hands[2], driver.contract, driver.auction)
+                print( driver.contract, driver.hands[0], driver.hands[2], str(driver.auction).replace("PASS","P"))
                 # Loop through facit_score for the current board
                 for i in range(len(driver.facit_score[board_no[0] - 1]) // 2):
                     score_contract = driver.facit_score[board_no[0] - 1][i * 2]
