@@ -512,7 +512,7 @@ def bid():
             print("Auction: ",auction)
         if models.use_bba:
             from bba.BBA import BBABotBid
-            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
         else:
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
         with model_lock_bid:
@@ -522,7 +522,7 @@ def bid():
         if explain:
             from bba.BBA import BBABotBid
             print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
             auction.append(bid.bid)
             result["explanation"] = bot.explain(auction)
             print("explanation: ",result["explanation"])
@@ -773,7 +773,7 @@ def cuebid():
 
     if models.use_bba:
         from bba.BBA import BBABotBid
-        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
     else:
         hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
     with model_lock_bid:
@@ -783,7 +783,7 @@ def cuebid():
     if explain:
         from bba.BBA import BBABotBid
         print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-        bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+        bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
         auction.append(bid.bid)
         result["explanation"] = bot.explain(auction)
         print("explanation: ",result["explanation"])
@@ -808,7 +808,7 @@ def explain():
     dealer_i = dealer_enum[dealer]
     if verbose:
         print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i)
+    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
     ctx = request.args.get("ctx")
     # Split the string into chunks of every second character
     bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]

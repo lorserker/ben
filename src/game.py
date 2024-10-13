@@ -861,7 +861,7 @@ class Driver:
         for i, level in enumerate(self.human):
             if self.models.use_bba:
                 from bba.BBA import BBABotBid
-                players.append(BBABotBid(self.models.bba_ns, self.models.bba_ew, i, hands_str[i], vuln, self.dealer_i))
+                players.append(BBABotBid(self.models.bba_ns, self.models.bba_ew, i, hands_str[i], vuln, self.dealer_i, self.models.matchpoint))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)

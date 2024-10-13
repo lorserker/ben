@@ -133,10 +133,10 @@ W1NX
 [Declarer ""]
 [Contract ""]
 [Result ""]
-[Auction "W"]
-1N
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+1N AC P
 
 [Event ""]
 [Site ""]
@@ -261,6 +261,8 @@ W1NX
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+3D AC P AC
 
 [Event ""]
 [Site ""]
@@ -293,6 +295,8 @@ W1NX
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+ AC 1H AC
 
 [Event ""]
 [Site ""]
@@ -467,6 +471,8 @@ W1NX
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+3C AC P AC
 
 [Event ""]
 [Site ""]
@@ -615,6 +621,8 @@ E1SX
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+P AC 1S AC
 
 [Event ""]
 [Site ""]
@@ -819,6 +827,8 @@ E1SX
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+1H AC P AC
 
 [Event ""]
 [Site ""]
@@ -1133,6 +1143,8 @@ N4N
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+2H AC P AC
 
 [Event ""]
 [Site ""]
@@ -1289,6 +1301,8 @@ W3HP
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
+[Auction "W"]
+AC P AC 3H AC 4H AC
 
 [Event ""]
 [Site ""]

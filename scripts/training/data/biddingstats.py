@@ -1,7 +1,7 @@
 import pickle
 
 # Define file path and pickle DB path
-file_path = 'GIB-Thorvald-8643-par-filtered.ben'
+file_path = 'GIB-Thorvald-8663-optimum_OK.ben'
 pickle_db_path = 'hands_data.pkl'
 
 # Suit mapping: Indexes correspond to ['S', 'H', 'D', 'C']

@@ -32,106 +32,7 @@ class BBABotBid:
     SCORING_MATCH_POINTS = 0
     SCORING_IMP = 1
 
-    # Define your conventions in an array
-    conventions_list = {
-        "1D opening with 4 cards": False,
-        "1D opening with 5 cards": False,
-        "1m opening allows 5M": True,
-        "1m opening allows 5M strong": True,
-        "1M-3M blocking": False,
-        "1M-3M inviting": True,
-        "5431 convention after 1NT": False,
-        "5NT pick a slam": True,
-        "Bergen": False,
-        "Blackwood 0123": False,
-        "Blackwood 0314": True,
-        "Blackwood 1430": False,
-        "BROMAD": False,
-        "Canape style": False,
-        "Cappelletti": True,
-        "Checkback": False,
-        "Crosswood 0123": False,
-        "Crosswood 0314": False,
-        "Crosswood 1430": False,
-        "Cue bid": True,
-        "DEPO": False,
-        "DOPI": False,
-        "Drury": True,
-        "Exclusion": False,
-        "Extended acceptance after NT": False,
-        "Fit showing jumps": True,
-        "Forcing 1NT": True,
-        "Fourth suit": False,
-        "Fourth suit game force": True,
-        "French 2D": False,
-        "Gambling": False,
-        "Gazzilli": False,
-        "Gerber": True,
-        "Gerber only for 1NT and 2NT openings": False,
-        "Ghestem": False,
-        "Inverted minors": True,
-        "Jacoby 2NT": True,
-        "Jordan Truscott 2NT": True,
-        "Kickback 0123": False,
-        "Kickback 0314": False,
-        "Kickback 1430": False,
-        "King ask by 5NT": True,
-        "King ask by available bid": False,
-        "Leaping Michaels": False,
-        "Lebensohl after 1NT": True,
-        "Lebensohl after 1m": False,
-        "Lebensohl after double": True,
-        "Maximal Doubles": True,
-        "Michaels Cuebid": True,
-        "Mini Splinter": False,
-        "Minor Suit Slam Try after 2NT": False,
-        "Minor Suit Stayman after 1NT": True,
-        "Minor Suit Stayman after 2NT": True,
-        "Minor Suit Transfers after 1NT": True,
-        "Minor Suit Transfers after 2NT": False,
-        "Mixed raise": True,
-        "Multi": False,
-        "Multi-Landy": False,
-        "Namyats": False,
-        "New Minor Forcing": True,
-        "Ogust": True,
-        "Polish two suiters": False,
-        "Puppet Stayman after 2NT": False,
-        "Quantitative 4NT": True,
-        "Raptor 1NT": False,
-        "Responsive double": True,
-        "Reverse Bergen": False,
-        "Reverse drury": False,
-        "Reverse style": False,
-        "ROPI": True,
-        "Rubensohl after 1NT": False,
-        "Rubensohl after 1m": False,
-        "Rubensohl after double": False,
-        "Semi forcing 1NT": False,
-        "SMOLEN": True,
-        "Snapdragon Double": False,
-        "Soloway Jump Shifts": True,
-        "Soloway Jump Shifts Extended": False,
-        "Splinter": True,
-        "Strength Lawrence structure": False,
-        "Support 1NT": True,
-        "Support double redouble": True,
-        "Two suit takeout double": True,
-        "Two way game tries": True,
-        "Two Way New Minor Forcing": False,
-        "Unusual 1NT": True,
-        "Unusual 2NT": True,
-        "Unusual 4NT": False,
-        "Weak Jump Shifts": False,
-        "Western cue bid": False,
-        "Weak natural 2D": True,
-        "Weak natural 2M": True,
-        "Wilkosz": False,
-        "Not defined": False,
-        "1D opening to 18 HCP": False
-    }   
-
-    def __init__(self, ns_system, ew_system, position, hand, vuln, dealer):
+    def __init__(self, ns_system, ew_system, position, hand, vuln, dealer, scoring_matchpoint):
         try:
            # Load the .NET assembly and import the types and classes from the assembly
             clr.AddReference(EPBot_PATH)
@@ -155,19 +56,26 @@ class BBABotBid:
         # Set system types for NS and EW
         self.player.set_system_type(self.C_NS,int(ns_system))
         self.player.set_system_type(self.C_WE,int(ew_system))
-
+        self.load_ccs(ns_system, ew_system)
         # This is what we play
         print("System NS:", self.player.system_name(0))
         print("System EW:", self.player.system_name(1))
 
          # Iterate through the conventions array and set conventions for a player at a specific position
-        for convention, selected in self.conventions_list.items():
+        for convention, selected in self.conventions_ns.items():
             if selected:
                 self.player.set_conventions(self.C_NS, convention, True)
+
+         # Iterate through the conventions array and set conventions for a player at a specific position
+        for convention, selected in self.conventions_ew.items():
+            if selected:
                 self.player.set_conventions(self.C_WE, convention, True)
 
         # Set scoring type
-        self.player.scoring = self.SCORING_IMP
+        if scoring_matchpoint == True:
+            self.player.scoring = self.SCORING_MATCH_POINTS
+        else:
+            self.player.scoring = self.SCORING_IMP
 
         if vuln[0] and vuln[1]:
             self.vuln = 3
@@ -190,6 +98,44 @@ class BBABotBid:
     async def async_bid(self, auction, alert=None):
         return self.bid(auction)
 
+    def load_ccs(self, ns_system, ew_system):
+        # Initialize the dictionary to store the conventions
+        conventions_ew = {}
+
+        # Open the file and process each line
+        with open('../ew.bbsa', 'r') as file:
+            for i, line in enumerate(file):
+                # Split the line into key and value
+                key, value = line.strip().split(' = ')
+                
+                # Special case for the first line (System type)
+                if i == 0 and key == "System type":
+                    cc = int(value)  # Store the value as an integer
+                    if cc != ew_system:
+                        print("CC for EW has not the expected system type", cc, ew_system)
+                else:
+                    # Convert other values to boolean (1 -> True, 0 -> False)
+                    conventions_ew[key] = bool(int(value))
+
+        conventions_ns = {}
+
+        # Open the file and process each line
+        with open('../ns.bbsa', 'r') as file:
+            for i, line in enumerate(file):
+                # Split the line into key and value
+                key, value = line.strip().split(' = ')
+                
+                # Special case for the first line (System type)
+                if i == 0 and key == "System type":
+                    cc = int(value)  # Store the value as an integer
+                    if cc != ns_system:
+                        print("CC for NS has not the expected system type", cc, ns_system)
+                else:
+                    # Convert other values to boolean (1 -> True, 0 -> False)
+                    conventions_ns[key] = bool(int(value))
+        return conventions_ns, conventions_ew
+
+        
     def explain(self, auction):
         #print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)
         self.player.new_hand(self.position, self.hand_str, self.dealer, self.vuln)

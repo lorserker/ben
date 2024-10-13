@@ -167,7 +167,7 @@ class TMClient:
 
         if self.models.use_bba:
             from bba.BBA import BBABotBid            
-            bot = BBABotBid(self.models.bba_ns, self.models.bba_ew ,self.player_i,self.hand_str,vuln, self.dealer_i)
+            bot = BBABotBid(self.models.bba_ns, self.models.bba_ew ,self.player_i,self.hand_str,vuln, self.dealer_i, self.models.matchpoint)
         else:
             bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.dds, self.verbose)
 
