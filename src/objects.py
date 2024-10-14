@@ -199,7 +199,7 @@ class CandidateBid:
         expected_mp_str = f"{self.expected_mp:5.0f}" if self.expected_mp is not None else "---"
         expected_imp_str = f"{self.expected_imp:5.1f}" if self.expected_imp is not None else "---"
         expected_tricks = f"{self.expected_tricks:5.2f}" if self.expected_tricks is not None else "---"
-        adjust_str = f"{self.adjust:4.0f}" if self.adjust is not None else "---"
+        adjust_str = f"{self.adjust:4.2f}" if self.adjust is not None else "---"
         alert_str = "alertable" if self.alert else "  "
         return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, expected_mp={expected_mp_str}, expected_imp={expected_imp_str}, expected_tricks={expected_tricks}, adjust={adjust_str}, alert={alert_str})"
 

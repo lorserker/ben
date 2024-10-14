@@ -56,7 +56,7 @@ class BBABotBid:
         # Set system types for NS and EW
         self.player.set_system_type(self.C_NS,int(ns_system))
         self.player.set_system_type(self.C_WE,int(ew_system))
-        self.load_ccs(ns_system, ew_system)
+        self.conventions_ns, self.conventions_ew = self.load_ccs(ns_system, ew_system)
         # This is what we play
         print("System NS:", self.player.system_name(0))
         print("System EW:", self.player.system_name(1))
@@ -102,8 +102,9 @@ class BBABotBid:
         # Initialize the dictionary to store the conventions
         conventions_ew = {}
 
+        print(os.getcwd())
         # Open the file and process each line
-        with open('../ew.bbsa', 'r') as file:
+        with open('./config/ew.bbsa', 'r') as file:
             for i, line in enumerate(file):
                 # Split the line into key and value
                 key, value = line.strip().split(' = ')
@@ -120,7 +121,7 @@ class BBABotBid:
         conventions_ns = {}
 
         # Open the file and process each line
-        with open('../ns.bbsa', 'r') as file:
+        with open('./config/ns.bbsa', 'r') as file:
             for i, line in enumerate(file):
                 # Split the line into key and value
                 key, value = line.strip().split(' = ')

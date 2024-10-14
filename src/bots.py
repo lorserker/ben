@@ -242,8 +242,12 @@ class BotBid:
                 # If we have really bad scores because we added som extra, reduce the result from those
                 if candidate.insta_score < self.models.adjust_min1:
                     adjust -= self.models.adjust_min1_by
+                    if self.verbose:
+                        print("Adjust for bad scores", adjust)
                 if candidate.insta_score < self.models.adjust_min2:
                     adjust -= self.models.adjust_min2_by
+                    if self.verbose:
+                        print("Adjust for really bad scores", adjust)
                 
                 # Adding some bonus to the bid selected by the neural network
                 if hands_np.shape[0] == self.sampler.min_sample_hands_auction:
@@ -253,6 +257,8 @@ class BotBid:
                 else:
                     adjust += self.models.adjust_NN*candidate.insta_score
 
+                if self.verbose:
+                    print("Adjust for trust in NN", adjust)
                 # These adjustments should probably be configurable
                 if passout and candidate.insta_score < self.get_min_candidate_score(self.my_bid_no):
                     # If we are bidding in the passout situation, and are going down, assume we are doubled
@@ -261,6 +267,8 @@ class BotBid:
                             adjust += expected_score * self.models.adjust_passout_negative
                         else:
                             adjust += self.models.adjust_passout
+                        if self.verbose:
+                            print("Adjust for Passout", adjust)
 
                 # If we are doubling as penalty in the pass out-situation
                     if candidate.bid == "X":
@@ -278,6 +286,9 @@ class BotBid:
                                 
                                 # Recreate the dictionary with the remaining items
                                 ev = remaining_items
+                                if self.verbose:
+                                    print("Removed optimistic scores", n_elements_to_remove)
+
                             else:
                                 # In case n_elements_to_remove is 0 or out of bounds, just keep the sorted dictionary as is
                                 ev = sorted_items
@@ -296,6 +307,8 @@ class BotBid:
                                 adjust -= 2 * self.models.adjust_X
                             else:
                                 adjust -= self.models.adjust_X
+                        if self.verbose:
+                            print("Adjusted for double", adjust)
 
                     if candidate.bid == "XX":
                         # Don't redouble unless the expected score is positive with a margin
@@ -304,14 +317,20 @@ class BotBid:
                             adjust -= 2 * self.models.adjust_XX
                         else:
                             adjust -= self.models.adjust_XX
+                        if self.verbose:
+                            print("Adjusted for double", adjust)
                 else:
                     # Just a general adjustment of doubles
                     if candidate.bid == "X" and candidate.insta_score < 0.5:
                         adjust -= self.models.adjust_X
+                        if self.verbose:
+                            print("Adjusted for double if insta_score to low", adjust)
 
                 # The problem is that with a low score for X the expected bidding can be very wrong
                 if candidate.bid == "X" and candidate.insta_score < 0.01:
                     adjust -= 2*self.models.adjust_X
+                    if self.verbose:
+                        print("Adjusted for very low score in NN", adjust)
 
 
                 # Consider adding a penalty for jumping to slam
@@ -319,6 +338,8 @@ class BotBid:
 
                 if not self.models.use_adjustment:
                     adjust = 0
+                    if self.verbose:
+                        print("Removed all adjustments", adjust)
 
                 # Calculate the mean of the expected score
                 expected_score = np.mean(ev)
@@ -337,7 +358,7 @@ class BotBid:
                     for bid, score in expected_score.items():
                         for candidate in ev_candidates:
                             if candidate.bid == bid:
-                                adjust = candidate.adjust /10
+                                adjust = candidate.adjust / 10
                                 ev_c = candidate.with_expected_score_mp(score, adjust)
                                 #print("ev_c", ev_c)
                                 ev_candidates_mp_imp.append(ev_c)
@@ -346,12 +367,10 @@ class BotBid:
                     for bid, score in expected_score.items():
                         for candidate in ev_candidates:
                             if candidate.bid == bid:
-                                adjust = candidate.adjust / 20
+                                adjust = candidate.adjust / 25
                                 ev_c = candidate.with_expected_score_imp(score, adjust)
                                 ev_candidates_mp_imp.append(ev_c)
 
-                #print("expected_score",expected_score)
-                #print(ev_candidates)
                 if self.models.matchpoint:
                     # Ajust is in points, we need to change it to some percentage
                     candidates = sorted(ev_candidates_mp_imp, key=lambda c: (c.expected_mp + c.adjust, round(c.insta_score, 2)), reverse=True)
