@@ -49,21 +49,24 @@
             text-align: center;
         }
 
-		.spades { color: black; }
-        .hearts { color: red; }
-        .diamonds { color: red; }
-        .clubs { color: green; }
+		.spades { color: #0000ff; }
+        .hearts { color: #ff0000; }
+        .diamonds { color: #ffc000; }
+        .clubs { color: #008000; }
 
 	</style>
 
 	<!--JavaScript-->
 	<script>
-        let bid = getQueryParam('bid')
-        if (!bid) {
-            bid = "*"
-        }
+        let biddingsequence = getQueryParam('bid')
+        if (!biddingsequence) {
+            biddingsequence = "*"
+		} else if (biddingsequence.endsWith("-")) {
+ 		    biddingsequence += "*";
+		}
 
-        const numOfHyphens = (bid.match(/-/g) || []).length;
+		var url = "https://gibrest.bridgebase.com/u_bm/u_bm.php?s=" + biddingsequence +"&t=g&v3b=web&v3v=6.19.3&v3u=BBO1"
+        const numOfHyphens = (biddingsequence.match(/-/g) || []).length;
         const who = numOfHyphens % 2 === 0 ? 'us' : 'them';
 
         function getQueryParam(key) {
@@ -73,24 +76,38 @@
         }
 
 		function loadXMLDoc() {
-			let xmlhttp = new XMLHttpRequest();
-			xmlhttp.onreadystatechange = function () {
+			let cachedData = localStorage.getItem('bidData_' + biddingsequence);
 
-				// Request finished and response 
-				// is ready and Status is "OK"
-				if (this.readyState == 4 && this.status == 200) {
-					displayBidDetails(this);
-				}
-			};
-
-			// employee.xml is the external xml file
-			xmlhttp.open("GET", "https://gibrest.bridgebase.com/u_bm/u_bm.php?s=" + bid +"&t=g&v3b=web&v3v=6.19.3&v3u=BBO1", true);
-			xmlhttp.send();
+			if (cachedData) {
+                let parser = new DOMParser();
+                let xmlDoc = parser.parseFromString(cachedData, "text/xml"); // Convert string to XML
+				displayBidDetails(xmlDoc); // Use cached data
+			} else {
+				let xmlhttp = new XMLHttpRequest();
+				xmlhttp.onreadystatechange = function () {
+					if (this.readyState == 4 && this.status == 200) {
+						let data = this.responseText;
+						localStorage.setItem('bidData_' + biddingsequence, data); // Cache the response
+						let parser = new DOMParser();
+		                let xmlDoc = parser.parseFromString(data, "text/xml"); // Convert string to XML
+						displayBidDetails(xmlDoc);
+					}
+				};
+				xmlhttp.open("GET", url, true);
+				xmlhttp.send();
+			}
 		}
 
-		function displayBidDetails(xml) {
+		function biddingended(bid) {
+			return (biddingsequence.endsWith("-P-P-*") || biddingsequence.endsWith("-P-P-P"))  && bid == "P"
+		}
+
+		function canbid(bid) {
+			return !biddingsequence.endsWith("-P-P-P")
+		}
+
+		function displayBidDetails(xmlDoc) {
 			let i;
-			let xmlDoc = xml.responseXML;
 			let table =	`<tr><th>Bid</th><th>Description</th></tr>`;
 			let x = xmlDoc.getElementsByTagName("r");
 
@@ -103,7 +120,11 @@
 			mValueHtml = mValueHtml.replace(/!C/g, '<span style="color: green">&clubs;</span>');
 			mValueHtml = replaceSuitsBeforeDoubleDash(mValueHtml);
 			mValueHtml = replaceSuits(mValueHtml);
-			table += "<tr class="+ who + "><td><a href=?bid="+  bid.substring(0,bid.length - 1) + bValue + "-*>" + bValueHtml + "</a></td><td>" + mValueHtml + "</td></tr>";
+			if (!canbid(bValueHtml)) {
+				table += "<tr class="+ who + "><td></td><td>Bidding ended</td></tr>";
+			} else {
+				table += "<tr class="+ who + "><td><a href=?bid="+  biddingsequence.substring(0,biddingsequence.length - 1) + (biddingended(bValueHtml) ? "P>" : bValue +"-*>") + bValueHtml + "</a></td><td>" + mValueHtml + "</td></tr>";
+			}
 
 			// Start to fetch the data by using TagName 
 			for (i = x.length; i >1; i--) {
@@ -123,7 +144,7 @@
 				mValueHtml = mValueHtml.replace(/!C/g, '<span style="color: green">&clubs;</span>');
 				mValueHtml = replaceSuitsBeforeDoubleDash(mValueHtml);
 				mValueHtml = replaceSuits(mValueHtml);
-				table += "<tr class="+ who + "><td><a href=?bid="+  bid.substring(0,bid.length - 1) + bValue + "-*>" + bValueHtml + "</a></td><td>" + mValueHtml + "</td></tr>";
+				table += "<tr class="+ who + "><td><a href=?bid="+  biddingsequence.substring(0,biddingsequence.length - 1) + bValue + "-*>" + bValueHtml + "</a></td><td>" + mValueHtml + "</td></tr>";
 			}
 
 			// Print the xml data in table form
@@ -176,8 +197,8 @@
 <body onload="loadXMLDoc()">
 
 	<br><br>
-	<h1>GIB Bidding Definitions</h1>
-    <h2>Current bidding: </h2>
+	<h1>GIB Bidding Definitions from BBO</h1>
+	<h2>Current bidding: </h2>
     <table class="biddingdiagram">
 		<tbody id="biddingTable">
             <tr>
@@ -195,12 +216,13 @@
         		return "X";
     		}
     
-            return bid.replace(/S/g, '<span class="spades">♠</span>')
-                      .replace(/H/g, '<span class="hearts">♥</span>')
-                      .replace(/D/g, '<span class="diamonds">♦</span>')
-                      .replace(/C/g, '<span class="clubs">♣</span>')
-                      .replace(/R/g, 'XX')
-					  .replace(/\*/g, '?');
+	
+			return bid.replace(/S/g, '<span class="spades">&spades;</span>')
+						.replace(/H/g, '<span class="hearts">&hearts;</span>')
+						.replace(/D/g, '<span class="diamonds">&diams;</span>')
+						.replace(/C/g, '<span class="clubs">&clubs;</span>')
+						.replace(/R/g, 'XX')
+						.replace(/\*/g, '?');
         }
 
 		// Get the query string from the URL
@@ -240,8 +262,30 @@
                 biddingTable.appendChild(row);
 			}
 		}
+		    // Function to clear cache
+		function clearCache() {
+			// Clear all localStorage
+			localStorage.clear(); 
+			
+			// Optionally, if you want to clear only specific cached data (e.g., bid-related):
+			// localStorage.removeItem('bidData_' + bid); 
+			
+			alert('Cache has been cleared!');
+		}
+    	// Attach the clearCache function to the button
+    	document.getElementById('clearCacheButton').onclick = clearCache;
 		</script>
 	<table id="id"></table>
+	<h2>Trouble shooting</h2>
+		<p>The data is copied to your browser's local storage. If you see strange result, try clearing the local data, and you can see where the data come from by clicking on the link below.</p>
+		<a id="sourceLink" href="" target="_blank">Visit Source</a>
+		<!-- Clear Cache Button -->
+		<button id="clearCacheButton">Clear Cache</button>
+	</h2>
+    <script>
+		// Set the href attribute of the link
+		document.getElementById('sourceLink').href = url;
+	</script>
 </body>
 
 </html>

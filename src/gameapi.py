@@ -526,9 +526,10 @@ def bid():
             auction.append(bid.bid)
             result["explanation"] = bot.explain(auction)
             print("explanation: ",result["explanation"])
+
         if record: 
-            with shelve.open(f"{log_file_path}/gameapibiddb{dealno}") as db:
-                    db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
+            calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
+            logger.info(f"Calulations bid: {calculations}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
@@ -587,8 +588,8 @@ def lead():
         print("Leading:", card_resp.card.symbol())
         result = card_resp.to_dict()
         if record: 
-            with shelve.open(f"{log_file_path}/gameapiplaydb{dealno}") as db:
-                    db[uuid.uuid4().hex] =  {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "lead":result}
+            calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction,  "lead":result}
+            logger.info(f"Calulations lead: {calculations}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
@@ -684,8 +685,8 @@ def play():
         result["matchpoint"] = matchpoint
         result["MP_or_IMP"] = models.use_real_imp_or_mp
         if record: 
-            with shelve.open(f"{log_file_path}/gameapiplaydb{dealno}") as db:
-                    db[uuid.uuid4().hex] =  {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
+            calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
+            logger.info(f"Calulations play: {calculations}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
