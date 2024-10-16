@@ -15,7 +15,7 @@ from collections import defaultdict
 
 import carding
 from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed
-
+from colorama import Fore, Back, Style, init
 
 class BotBid:
 
@@ -130,7 +130,7 @@ class BotBid:
     def get_min_candidate_score(self, bid_no):
         if isinstance(self.min_candidate_score, list):
             # Get the element at index i, or the last element if i is out of bounds
-            threshold_value = self.min_candidate_score[bid_no] if bid_no < len(self.min_candidate_score) else self.min_candidate_score[-1]
+            threshold_value = self.min_candidate_score[bid_no-1] if bid_no < len(self.min_candidate_score) else self.min_candidate_score[-1]
         else:
             # If it's a single float, just use the float value
             threshold_value = self.min_candidate_score
@@ -629,6 +629,8 @@ class BotBid:
                 #print("bid_i",bid_i)
                 #print(bid_softmax)
                 if bidding.can_bid(bidding.ID2BID[bid_i], auction):
+                    if (bid_softmax[bid_i] < 0.5):
+                        sys.stderr.write(f"{Fore.LIGHTGREEN_EX}Consider adding samples for {auction} with {self.hand_str}\n{Style.RESET_ALL}")
                     candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i], alert=alert))
                     break
                 else:
@@ -637,6 +639,7 @@ class BotBid:
                     
                     if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no):
                         # Seems to be an error in the training that needs to be solved
+                        sys.stderr.write(f"{Fore.GREEN}Please create samples for {auction}\n{Style.RESET_ALL}")
                         sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
                         
                         #assert(bid_i > 1)
@@ -687,7 +690,7 @@ class BotBid:
                 # Seems to be an error in the training that needs to be solved
                 # Only report it if above threshold
                 if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no) and self.get_min_candidate_score(self.my_bid_no) != -1:
-                    sys.stderr.write(f"{auction}\n")
+                    sys.stderr.write(f"{Fore.GREEN}Please create samples for {auction}\n{Style.RESET_ALL}")
                     sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]:.3f} {self.get_min_candidate_score(self.my_bid_no)}\n")
                 if len(candidates) > 0:
                     break
@@ -801,8 +804,11 @@ class BotBid:
             #print(n_steps_vals, turn_i, bid_i, auction)
             #print("bidding_rollout - n_steps_vals: ", n_steps_vals, " turn_i: ", turn_i, " bid_i: ", bid_i, " auction: ", auction)
             X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models, self.models.n_cards_bidding)
-            y_bid_np = self.models.bidder_model.model_seq(X)[0]
-            #print(y_bid_np)
+            # We should select the opponent model
+            if turn_i % 2 == 0:
+                y_bid_np = self.models.bidder_model.model_seq(X)[0]
+            else:
+                y_bid_np = self.models.opponent_model.model_seq(X)[0]
             x_bid_np = y_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
             bid_np = x_bid_np[:,-1,:]
             #print(bid_np)
@@ -823,9 +829,8 @@ class BotBid:
                         # Pass is always allowed
                         if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
                             invalid_bids = True
-                            sys.stderr.write(f"{auction}\n")
-                            sys.stderr.write(f"Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
-                            #print(bid_np[i])
+                            sys.stderr.write(f"{Fore.GREEN}Please create samples for {auction}\n{Style.RESET_ALL}")
+                            sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
                             bid_np[i][bid] = 0
                             
 
@@ -841,7 +846,7 @@ class BotBid:
             n_steps_vals[turn_i] += 1
             turn_i = (turn_i + 1) % 4
         assert len(auction_np) > 0
-
+        
         if self.verbose:
             print("bidding_rollout - finished ",auction_np.shape)
         

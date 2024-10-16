@@ -32,7 +32,7 @@ class BBABotBid:
     SCORING_MATCH_POINTS = 0
     SCORING_IMP = 1
 
-    def __init__(self, ns_system, ew_system, position, hand, vuln, dealer, scoring_matchpoint):
+    def __init__(self, ns_system, ew_system, position, hand, vuln, dealer, scoring_matchpoint, verbose):
         try:
            # Load the .NET assembly and import the types and classes from the assembly
             clr.AddReference(EPBot_PATH)
@@ -44,22 +44,25 @@ class BBABotBid:
             print("Make sure the dll is not writeprotected")
             print('Error:', ex)
             raise ex
+        self.verbose = verbose
         self.ns_system = ns_system
         self.ew_system = ew_system
         self.vuln = vuln
         self.hand_str = hand.split('.')
         self.hand_str.reverse()
         self.player = EPBot()
-        print(f"Version: {self.player.version()}")
+        if self.verbose:
+            print(f"BBA Version (DLL): {self.player.version()}")
         self.dealer = dealer
         self.position = position
         # Set system types for NS and EW
         self.player.set_system_type(self.C_NS,int(ns_system))
         self.player.set_system_type(self.C_WE,int(ew_system))
         self.conventions_ns, self.conventions_ew = self.load_ccs(ns_system, ew_system)
-        # This is what we play
-        print("System NS:", self.player.system_name(0))
-        print("System EW:", self.player.system_name(1))
+        if self.verbose:
+            # This is what we play
+            print("System NS:", self.player.system_name(0))
+            print("System EW:", self.player.system_name(1))
 
          # Iterate through the conventions array and set conventions for a player at a specific position
         for convention, selected in self.conventions_ns.items():
@@ -102,7 +105,6 @@ class BBABotBid:
         # Initialize the dictionary to store the conventions
         conventions_ew = {}
 
-        print(os.getcwd())
         # Open the file and process each line
         with open('./config/ew.bbsa', 'r') as file:
             for i, line in enumerate(file):
@@ -184,7 +186,8 @@ class BBABotBid:
     # Define a Python function to find a bid
     def bid(self, auction):
         # Send all bids to the bot
-        print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)
+        if self.verbose:
+            print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)
         self.player.new_hand(self.position, self.hand_str, self.dealer, self.vuln)
 
         for k in range(len(auction)):
@@ -220,6 +223,7 @@ class BBABotBid:
         elif maxhcp < 37:
             meaning += f" {maxhcp}- hcp"
 
-        print(f"Bid: {bidding.ID2BID[new_bid]}={meaning}")
+        if self.verbose:
+            print(f"Bid: {bidding.ID2BID[new_bid]}={meaning}")
         return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA", quality=None, alert = alert)
 

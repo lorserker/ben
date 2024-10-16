@@ -21,6 +21,7 @@ pip install flask
 pip install flask_cors
 pip install gevent
 pip install pythonnet
+pip install colorama
 
 # When running ben on ubuntu 22.04, the following error happens during card play.
 

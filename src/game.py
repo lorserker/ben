@@ -45,6 +45,7 @@ from objects import CardResp, Card, BidResp
 from claim import Claimer
 from pbn2ben import load
 from util import calculate_seed, get_play_status, get_singleton, get_possible_cards
+from colorama import Fore, Back, Style, init
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -257,8 +258,7 @@ class Driver:
             'dict': self.to_dict()
         }))
     
-    def asPBN(self):
-        dealer = "NESW"[self.dealer_i]
+    def pbn_header(self):
         pbn_str = ""
         pbn_str += '% PBN 2.1\n'
         pbn_str += '% EXPORT\n'
@@ -266,15 +266,20 @@ class Driver:
         pbn_str += '%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7\n'
         pbn_str += '%Font:FixedPitch "Courier New",14,700,0\n'
         pbn_str += '%Margins 2000,1000,2000,1000\n'
-        pbn_str += '[Event ""]\n'
+        return pbn_str
+
+    def asPBN(self, event):
+        dealer = "NESW"[self.dealer_i]
+        pbn_str = ""
+        pbn_str += f'[Event "{event}"]\n'
         pbn_str += '[Site ""]\n'
         date = datetime.datetime.now().date().isoformat().replace('-', '.')
         pbn_str += f'[Date "{date}"]\n'
         pbn_str += '[BCFlags "801f"]\n'
         pbn_str += f'[Board "{self.board_number}"]\n'
         if self.bidding_only == "NS":
-            pbn_str += '[West ""]\n'
-            pbn_str += '[East ""]\n'
+            pbn_str += '[West "Facit"]\n'
+            pbn_str += '[East "Facit"]\n'
         else:
             pbn_str += '[West "BEN"]\n'
             pbn_str += '[East "BEN"]\n'
@@ -861,7 +866,7 @@ class Driver:
         for i, level in enumerate(self.human):
             if self.models.use_bba:
                 from bba.BBA import BBABotBid
-                players.append(BBABotBid(self.models.bba_ns, self.models.bba_ew, i, hands_str[i], vuln, self.dealer_i, self.models.matchpoint))
+                players.append(BBABotBid(self.models.bba_ns, self.models.bba_ew, i, hands_str[i], vuln, self.dealer_i, self.models.matchpoint, self.verbose))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
@@ -964,10 +969,12 @@ async def main():
     facit = args.facit
     facit_score = None
     boards = []
+    event = ""
 
     if args.boards:
         filename = args.boards
         file_extension = os.path.splitext(filename)[1].lower()  
+        event = os.path.splitext(os.path.basename(filename))[0]
         if file_extension == '.ben':
             with open(filename, "r") as file:
                 board_no.append(0) 
@@ -994,9 +1001,10 @@ async def main():
         boardno = args.boardno
 
     if random:
+        event = "Random deals"
         print("Playing random deals or deals from the client")
  
-    np.set_printoptions(precision=1, suppress=True, linewidth=200)
+    np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
     configuration = conf.load(configfile)
         
@@ -1072,7 +1080,7 @@ async def main():
         else:
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
-            print(f"Board: {board_no[0]+1} {rdeal}")
+            print(f"{Fore.BLUE}Board: {board_no[0]+1} {rdeal}{Style.RESET_ALL}")
             print("auction",auction)
             driver.set_deal(board_no[0] + 1, rdeal, auction, play_only=playonly, bidding_only=biddingonly)
             board_no[0] = (board_no[0] + 1)
@@ -1116,7 +1124,7 @@ async def main():
 
                     # Match contract or adjusted contract for declarer
                     if score_contract == contract or score_contract == f"{declarer}{contract}":
-                        print("Score for ", score_contract, score_value, driver.facit_score[board_no[0]-1])
+                        print(f"{Fore.BLUE}Score for {score_contract}: {score_value}{Style.RESET_ALL} ({driver.facit_score[board_no[0]-1]})")
                         driver.actual_score = score_value
                         driver.facit_total += score_value
                         break
@@ -1127,7 +1135,7 @@ async def main():
 
                         # Match adjusted contract (with or without declarer)
                         if score_contract in adjusted_contracts or score_contract in [f"{declarer}{adj}" for adj in adjusted_contracts]:
-                            print("Score for ", score_contract, score_value, driver.facit_score[board_no[0]-1])
+                            print(f"{Fore.BLUE}Score for {score_contract}: {score_value}{Style.RESET_ALL} ({driver.facit_score[board_no[0]-1]})")
                             driver.actual_score = score_value
                             driver.facit_total += score_value
                             break
@@ -1136,7 +1144,7 @@ async def main():
                     print("No score - Scoring",driver.contract[:-1], driver.facit_score[board_no[0]-1])
                     driver.actual_score = 0
                 else:
-                    print("Running score:", driver.facit_total)
+                    print(f"{Fore.BLUE}Running score: {driver.facit_total}{Style.RESET_ALL}")
         else:
             print("Calculating PAR")
             par_score = dds.calculatepar(driver.deal_str, [driver.vuln_ns, driver.vuln_ew])
@@ -1149,7 +1157,7 @@ async def main():
                 imps = abs(compare.get_imps(score, par_score))
                 print("Score: " + driver.contract + " " + str(score) + " Par: " + str(par_score) + " " + str(imps))
             driver.parscore = par_score
-            print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
         if biddingonly == "False":
             if paronly <= imps:
@@ -1160,8 +1168,16 @@ async def main():
 
         if outputpbn != "":
             if paronly <= imps:
-                with open(outputpbn, "a") as file:
-                    file.write(driver.asPBN())
+                # Check if the file exists and its size
+                if not os.path.exists(outputpbn) or os.path.getsize(outputpbn) == 0:
+                    # Write header if file is new or empty
+                    with open(outputpbn, "a") as file:
+                        file.write(driver.pbn_header())
+                        file.write(driver.asPBN(event))
+                else:
+                    # Just append the content if the file already has content
+                    with open(outputpbn, "a") as file:
+                        file.write(driver.asPBN(event))
 
         if not auto:
             user_input = input("\n Q to quit or any other key for next deal ")

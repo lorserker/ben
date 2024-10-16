@@ -12,7 +12,7 @@ def list_pickle_entries(pickle_db_path):
         
         # Iterate and print all entries
         for key, hands in hands_data.items():
-            if "P P 1C P 2D" in key:
+            if "N-S 1H P 1S 2D P P X" in key:
                 print(f"Key: {key}")
                 for hand_key, stats in hands.items():
                     print(f"  {hand_key}:")

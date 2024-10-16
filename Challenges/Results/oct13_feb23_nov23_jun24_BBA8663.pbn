@@ -4,13 +4,13 @@
 %PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
 %Font:FixedPitch "Courier New",14,700,0
 %Margins 2000,1000,2000,1000
-[Event "oct13_feb23_nov23_jun24"]
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "1"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
@@ -22,26 +22,31 @@
 [ParScore "0"]
 [Auction "N"]
 1H PASS 2N PASS
-3D PASS 4C PASS
-4D PASS 4N PASS
-5S PASS 6H PASS
+3D PASS 4N PASS
+5H PASS 6H PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\nScore Table:
+{\n\n\n\n\nScore Table:
 
  7\h      10\n 6\h       6\n 7\c       3\n 6\c       3\n 5\h       2\n 6N       1\n\n\n\n\n\n\n
 
 Facit Score:     6\nRunning Score:   6
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "2"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "E"]
@@ -66,13 +71,19 @@ PASS
 Facit Score:    10\nRunning Score:  16
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "3"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "S"]
@@ -84,24 +95,31 @@ Facit Score:    10\nRunning Score:  16
 [ParScore "0"]
 [Auction "S"]
 1H PASS 1S PASS
-3C PASS 4S PASS
+3C PASS 3D PASS
+3H PASS 4S PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\n\nScore Table:
 
  4\s      10\n 5\s       8\n 4\h       5\n 3N       4\n 5\h       3\n 5\d       3\n 6\s       2\n 6\d       2\n 6\h       1\n\n\n\n
 
 Facit Score:    10\nRunning Score:  26
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "4"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
@@ -113,25 +131,33 @@ Facit Score:    10\nRunning Score:  26
 [ParScore "0"]
 [Auction "W"]
 PASS 1C PASS 1H
-PASS 3C PASS 4N
-PASS 5C PASS 6C
+PASS 3C PASS 3S
+PASS 3N PASS 4C
+PASS 4D PASS 4N
+PASS 5D PASS 6C
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\nScore Table:
 
  7\c      10\n 6N       7\n 6\c       5\n E2\sX     4\n 5N       3\n 6\h       3\n 7N       2\n 5\h       2\n 5\c       1\n\n\n\n
 
 Facit Score:     5\nRunning Score:  31
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "5"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
@@ -143,25 +169,32 @@ Facit Score:     5\nRunning Score:  31
 [ParScore "0"]
 [Auction "N"]
 1S PASS 2D PASS
-3D PASS 4N PASS
-5H PASS 6S PASS
+3D PASS 4C PASS
+4S PASS 4N PASS
+5D PASS 6S PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\n\nScore Table:
 
  6N      10\n 6\s       8\n 6\d       6\n 5N       4\n 5\s       3\n 5\d       1\n\n\n\n\n\n\n
 
 Facit Score:     8\nRunning Score:  39
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "6"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "E"]
@@ -184,13 +217,19 @@ PASS PASS PASS
 Facit Score:    10\nRunning Score:  49
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "7"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
@@ -212,13 +251,19 @@ PASS PASS
 Facit Score:     0\nRunning Score:  49
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "8"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
@@ -229,54 +274,68 @@ Facit Score:     0\nRunning Score:  49
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "W"]
-PASS 1C PASS 2H
-PASS 3H PASS 6H
-PASS PASS PASS 
+PASS 1C PASS 1H
+PASS 1S PASS 2D
+PASS 2H PASS 3H
+PASS 4N PASS 5S
+PASS 6H PASS PASS
+PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\n\nScore Table:
+{\n\n\nScore Table:
 
  6\h      10\n 6\d       7\n 7\h       4\n 5\h       4\n 6N       4\n 7\d       3\n 5N       2\n 5\d       1\n\n\n\n\n
 
 Facit Score:    10\nRunning Score:  59
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "9"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:8.AKQ2.AKT973.T5 652.JT6.Q52.A842 KQT73.9754.6.Q73 AJ94.83.J84.KJ96"]
-[Declarer "S"]
-[Contract "4H"]
+[Declarer "N"]
+[Contract "3D"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "N"]
 1D PASS 1S PASS
-3D PASS 3H PASS
-4H PASS PASS PASS
+3D PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\n\n\n\nScore Table:
 
  3\h      10\n 2\d       7\n 4\h       6\n 3\d       3\n 2N       1\n\n\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score:  65
+Facit Score:     3\nRunning Score:  62
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "10"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "E"]
@@ -295,134 +354,164 @@ PASS
 
  2\d      10\n 3\c       9\n 3\d       7\n 4\c       6\n 2\s       4\n 3\s       2\n\n\n\n\n\n\n
 
-Facit Score:     7\nRunning Score:  72
+Facit Score:     7\nRunning Score:  69
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "11"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "E"]
 [Vulnerable "None"]
 [Deal "N:AQ96.J92.942.AK8 T5.K653.QJT7.J92 KJ83.4.A8.QT7543 742.AQT87.K653.6"]
-[Declarer "S"]
-[Contract "3C"]
+[Declarer "E"]
+[Contract "2D"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "E"]
 1D PASS 2D PASS
-PASS 3C PASS PASS
-PASS 
+PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\n\nScore Table:
+{\n\n\n\n\n\n\nScore Table:
 
  6\s      10\n 5\s       6\n N3N      3\n 3\s       3\n 5\c       3\n S3N      2\n 4\c       1\n\n\n\n\n\n
 
-Facit Score:     1\nRunning Score:  73
+Facit Score:     0\nRunning Score:  69
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "12"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "NS"]
 [Deal "N:AJ96.AJ.A973.Q75 QT87.9753.J4.JT2 K.K862.KQ52.A984 5432.QT4.T86.K63"]
 [Declarer "N"]
-[Contract "6N"]
+[Contract "3N"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "W"]
 PASS 1N PASS 2C
-PASS 2S PASS 4N
-PASS 6N PASS PASS
-PASS 
+PASS 2S PASS 3N
+PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\n\n\n\nScore Table:
 
  3N      10\n 4N       8\n 5\d       4\n 6\d       3\n 6N       2\n\n\n\n\n\n\n\n
 
-Facit Score:     2\nRunning Score:  75
+Facit Score:    10\nRunning Score:  79
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "13"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:A92.AKQ964.AK.AK Q54.T82.93.QT864 KT73.5.QJT8652.9 J86.J73.74.J7532"]
 [Declarer "N"]
-[Contract "3N"]
+[Contract "4H"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "N"]
 2C PASS 2D PASS
 2H PASS 3D PASS
 3H PASS 3S PASS
-3N PASS PASS PASS
+3N PASS 4H PASS
+PASS PASS 
 [Play ""]
 [Hidden "EW"]
 {\n\n\n\nScore Table:
 
  7N      10\n 7\d       8\n 6N       6\n 6\h       4\n 6\d       4\n 7\h       3\n 6\s       3\n 5N       2\n 5\h       1\n\n\n\n
 
-Facit Score:     2\nRunning Score:  77
+Facit Score:     1\nRunning Score:  80
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "14"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "None"]
 [Deal "N:KQ72..AKQJT.KJ84 J53.T976.42.A765 A984.AQ4.8753.QT T6.KJ8532.96.932"]
-[Declarer "S"]
-[Contract "6N"]
+[Declarer "N"]
+[Contract "6S"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "N"]
-1D 2H 3N PASS
-4N PASS 6N PASS
-PASS PASS 
+1D 2H 3D PASS
+3S PASS 4H PASS
+5H PASS 5N PASS
+6S PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\n\nScore Table:
+{\n\n\n\nScore Table:
 
  S6N     10\n N6N      9\n 6\s       5\n 6\d       4\n 5N       3\n 5\s       2\n 5\d       1\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score:  87
+Facit Score:     5\nRunning Score:  85
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "15"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "S"]
@@ -434,7 +523,7 @@ Facit Score:    10\nRunning Score:  87
 [ParScore "0"]
 [Auction "S"]
 1S PASS 2S PASS
-4D PASS 4S PASS
+3S PASS 4S PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
@@ -442,16 +531,22 @@ PASS PASS
 
  3N      10\n 2N       8\n 2\s       5\n 3\s       4\n 4\s       3\n\n\n\n\n\n\n\n
 
-Facit Score:     3\nRunning Score:  90
+Facit Score:     3\nRunning Score:  88
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "16"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
@@ -472,29 +567,35 @@ PASS
 
  6N      10\n 6\c       6\n 5N       4\n 6\h       3\n 5\c       1\n 5\h       1\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  94
+Facit Score:     4\nRunning Score:  92
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "17"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "None"]
 [Deal "N:A953.642.82.K953 T74.AT8.KJ976.T7 KQJ.QJ53.Q3.AQ84 862.K97.AT54.J62"]
-[Declarer "S"]
-[Contract "2N"]
+[Declarer "N"]
+[Contract "3C"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "W"]
 1D PASS PASS X
-PASS 1S PASS 1N
-PASS 2N PASS PASS
+PASS 1S PASS 2D
+PASS 3C PASS PASS
 PASS 
 [Play ""]
 [Hidden "EW"]
@@ -502,16 +603,22 @@ PASS
 
  1\s      10\n 2\c       9\n 2\s       8\n 3\c       6\n 1N       4\n 3\s       4\n 4\c       3\n 2N       2\n 4\s       2\n 3N       1\n\n\n
 
-Facit Score:     2\nRunning Score:  96
+Facit Score:     6\nRunning Score:  98
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "18"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "E"]
@@ -522,56 +629,70 @@ Facit Score:     2\nRunning Score:  96
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "E"]
-PASS 1C PASS 2D
-PASS 3C PASS 4N
+PASS 1C PASS 1D
+PASS 1H PASS 1S
+PASS 2C PASS 4N
 PASS 5S PASS 6N
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\nScore Table:
+{\n\n\nScore Table:
 
  7N      10\n 7\h       6\n 7\c       6\n 6N       4\n 6\h       3\n 6\c       3\n 5N       2\n 5\h       1\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 100
+Facit Score:     4\nRunning Score: 102
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "19"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "EW"]
 [Deal "N:T85.AKJ9.A85.AK3 Q963.Q4.Q6.97642 A.T763.KJ9732.Q8 KJ742.852.T4.JT5"]
-[Declarer "S"]
-[Contract "4H"]
+[Declarer "N"]
+[Contract "6H"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "S"]
-PASS PASS 1C PASS
-1D PASS 2N PASS
-3H PASS 4H PASS
-PASS PASS 
+1D PASS 2H PASS
+3H PASS 3N PASS
+4H PASS 4N PASS
+5D PASS 5S PASS
+6H PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\nScore Table:
+{\n\n\nScore Table:
 
  6\h       9\n 6\d       8\n 6N       6\n 5\h       4\n 5N       3\n 5\d       2\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 104
+Facit Score:     9\nRunning Score: 111
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "20"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
@@ -583,25 +704,30 @@ Facit Score:     4\nRunning Score: 104
 [ParScore "0"]
 [Auction "W"]
 PASS 1C PASS 1D
-PASS 1S PASS 2H
-PASS 3C PASS 3N
+PASS 1S PASS 3N
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\n\n\n\nScore Table:
 
  3\c      10\n 3\d       7\n 4\c       6\n 2N       5\n 5\c       5\n 4\d       5\n 3\s       5\n 3N       4\n 5\d       3\n 4\s       3\n\n\n
 
-Facit Score:     4\nRunning Score: 108
+Facit Score:     4\nRunning Score: 115
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "21"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "E"]
@@ -621,16 +747,22 @@ PASS
 
  6\s      10\n 5\s       4\n E1\hX     2\n 3N       1\n\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 112
+Facit Score:     4\nRunning Score: 119
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "22"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "E"]
@@ -642,56 +774,68 @@ Facit Score:     4\nRunning Score: 112
 [ParScore "0"]
 [Auction "E"]
 PASS 1S PASS 2N
-PASS 3C PASS 4N
+PASS 3C PASS 3S
+PASS 4H PASS 4N
 PASS 5S PASS 6S
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\nScore Table:
+{\n\n\nScore Table:
 
  S6N     10\n N6N      8\n 6\s       6\n 6\c       4\n 5N       3\n 5\s       3\n 5\c       1\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score: 118
+Facit Score:     6\nRunning Score: 125
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "23"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "All"]
 [Deal "N:A.AJ976.AKJ.AK87 8764.KT84.54.J92 Q532.Q2.QT632.Q3 KJT9.53.987.T654"]
 [Declarer "S"]
-[Contract "6D"]
+[Contract "3N"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "S"]
 PASS PASS 2C PASS
-3D PASS 4D PASS
-4H PASS 4N PASS
-5C PASS 6D PASS
+2D PASS 2H PASS
+2N PASS 3N PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\nScore Table:
+{\n\n\n\nScore Table:
 
  6\d      10\n 6\h       5\n 4N       4\n 5\h       4\n 7\d       3\n 6N       3\n 5\d       3\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 128
+Facit Score:     4\nRunning Score: 129
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "24"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
@@ -710,16 +854,22 @@ PASS
 
  3\d      10\n 1\h       9\n 2\h       8\n 1N       7\n 4\d       6\n 3\h       5\n 2N       4\n 5\d       3\n 4\h       2\n 3N       1\n\n\n
 
-Facit Score:     9\nRunning Score: 137
+Facit Score:     9\nRunning Score: 138
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "25"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
@@ -741,45 +891,56 @@ PASS PASS
 
  7N      10\n 7\h       9\n 7\s       8\n 6N       5\n 6\h       4\n 6\s       3\n 3N       1\n 4\s       1\n 4\h       1\n\n\n\n
 
-Facit Score:     9\nRunning Score: 146
+Facit Score:     9\nRunning Score: 147
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "26"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "All"]
 [Deal "N:6.KQT3.JT9632.84 QT7.J95.854.KT97 AK852.A87.KQ.Q32 J943.642.A7.AJ65"]
-[Declarer "N"]
-[Contract "2D"]
+[Declarer "S"]
+[Contract "2N"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "S"]
 1S 2C PASS PASS
-X PASS 2D PASS
-PASS PASS 
+2N PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\n\n\n\nScore Table:
 
  4\d      10\n 5\d       4\n 3N       3\n 2N       3\n 4\h       1\n 3\h       1\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 156
+Facit Score:     3\nRunning Score: 150
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "27"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "S"]
@@ -798,16 +959,22 @@ PASS PASS
 
  7\c      10\n 6N       7\n 6\c       5\n 7N       4\n 5N       4\n 7\s       3\n 5\s       3\n 6\s       2\n 5\c       1\n\n\n\n
 
-Facit Score:     1\nRunning Score: 157
+Facit Score:     1\nRunning Score: 151
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "28"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
@@ -827,46 +994,57 @@ PASS PASS PASS
 
  3N      10\n 2N       6\n 2\h       5\n 3\h       4\n 3\d       4\n 4\d       3\n 4\h       3\n 4\s       2\n 3\s       2\n 5\d       1\n\n\n
 
-Facit Score:     6\nRunning Score: 163
+Facit Score:     6\nRunning Score: 157
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "29"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "All"]
 [Deal "N:KT7.J6.A85.QJT74 83.A85.QJ743.983 QJ965.Q942.9.AK2 A42.KT73.KT62.65"]
 [Declarer "S"]
-[Contract "4S"]
+[Contract "3S"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "N"]
 PASS PASS 1S PASS
 2C PASS 2D PASS
-3S PASS 4S PASS
-PASS PASS 
+3S PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
 {\n\n\n\n\nScore Table:
 
  4\s      10\n 3N       5\n 3\s       4\n 2N       2\n\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 173
+Facit Score:     4\nRunning Score: 161
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "30"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "E"]
@@ -887,75 +1065,95 @@ PASS
 
  4\s      10\n 3\s       4\n 4\c       3\n 5\c       2\n 2N       2\n 6\c       1\n 3N       1\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 183
+Facit Score:    10\nRunning Score: 171
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "31"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "S"]
 [Vulnerable "NS"]
 [Deal "N:A983.AKJ87.Q5.A5 K72.93.9843.QJ32 JT.Q652.AKT6.T87 Q654.T4.J72.K964"]
 [Declarer "N"]
-[Contract "4H"]
+[Contract "6H"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "S"]
 PASS PASS 1H PASS
 2C PASS 2S PASS
-4H PASS PASS PASS
+3H PASS 4C PASS
+4H PASS 4N PASS
+5D PASS 6H PASS
+PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\nScore Table:
 
  6\h       9\n 5\h       5\n 3N       3\n 6N       3\n\n\n\n\n\n\n\n\n
 
-Facit Score:     5\nRunning Score: 188
+Facit Score:     9\nRunning Score: 180
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "32"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "EW"]
 [Deal "N:5.J954.KQT963.AT T43.KQT3.A42.J92 KQJ976.8.J.KQ753 A82.A762.875.864"]
-[Declarer "N"]
-[Contract "3N"]
+[Declarer "S"]
+[Contract "3S"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "W"]
 PASS 1D PASS 1S
 PASS 2D PASS 3S
-PASS 3N PASS PASS
-PASS 
+PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\n\n\n\nScore Table:
 
  2\s      10\n 3\s       8\n 2\c       5\n 4\s       4\n 3\c       4\n 2\d       3\n 2N       3\n 3\d       2\n 3N       1\n\n\n\n
 
-Facit Score:     1\nRunning Score: 189
+Facit Score:     8\nRunning Score: 188
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "33"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
@@ -975,45 +1173,58 @@ PASS PASS 1S PASS
 
  4\s      10\n 3\s       4\n\n\n\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 199
+Facit Score:    10\nRunning Score: 198
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "34"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "NS"]
 [Deal "N:KJ.QJ876.52.KQ95 QT4.AT4.KT63.743 98732.K9.A4.AJ86 A65.532.QJ987.T2"]
 [Declarer "S"]
-[Contract "2N"]
+[Contract "2S"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "N"]
 1H PASS 1S 2D
-PASS PASS 2N PASS
+PASS PASS X PASS
+2H PASS 2S PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\n\nScore Table:
+{\n\n\n\n\nScore Table:
 
  2\h      10\n 3\h       8\n 3\c       7\n 4\c       6\n 2\s       6\n 4\h       5\n 3\s       4\n 2N       3\n 5\c       3\n 4\s       2\n W2\d      2\n 3N       1\n
 
-Facit Score:     3\nRunning Score: 202
+Facit Score:     6\nRunning Score: 204
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "35"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "S"]
@@ -1026,37 +1237,43 @@ Facit Score:     3\nRunning Score: 202
 [Auction "S"]
 1D PASS 1H PASS
 2N PASS 3S PASS
-3N PASS 6N PASS
-PASS PASS 
+4S PASS 5N PASS
+6N PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
 {\n\n\n\nScore Table:
 
  7\d      10\n S7N      8\n N7N      6\n 7\s       4\n 6N       4\n 6\s       3\n 6\d       2\n 5N       1\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 206
+Facit Score:     4\nRunning Score: 208
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "36"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
 [Vulnerable "All"]
 [Deal "N:AK.Q9.AKQJ42.AT4 JT2.A5.9863.J652 Q96.JT86432..987 87543.K7.T75.KQ3"]
-[Declarer "N"]
+[Declarer "S"]
 [Contract "4H"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "W"]
 PASS 2C PASS 2D
-PASS 2N PASS 3D
-PASS 3H PASS 4H
+PASS 3D PASS 3H
+PASS 4D PASS 4H
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
@@ -1064,16 +1281,22 @@ PASS PASS PASS
 
  5\h       9\n 3N       5\n 6\h       3\n 4N       3\n 5\d       1\n\n\n\n\n\n\n\n
 
-Facit Score:     9\nRunning Score: 215
+Facit Score:     9\nRunning Score: 217
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "37"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
@@ -1086,55 +1309,65 @@ Facit Score:     9\nRunning Score: 215
 [Auction "N"]
 1H PASS 2C PASS
 2N PASS 3H PASS
-3S PASS 3N PASS
-4H PASS 4N PASS
+4D PASS 4N PASS
 5S PASS 6H PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\nScore Table:
+{\n\n\n\nScore Table:
 
  6N      10\n 6\h       8\n 6\c       6\n 5N       5\n 5\h       4\n 7N       1\n 7\h       1\n 7\c       1\n 5\c       1\n\n\n\n
 
-Facit Score:     8\nRunning Score: 223
+Facit Score:     8\nRunning Score: 225
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "38"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "N"]
 [Vulnerable "EW"]
 [Deal "N:4.K975.QT.KQT542 7652.QT8.A932.86 AKJ93.A64.J5.A93 QT8.J32.K8764.J7"]
 [Declarer "S"]
-[Contract "3N"]
+[Contract "1S"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "N"]
 PASS 1D 1S PASS
-2C PASS 3N PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\n\nScore Table:
+{\n\n\n\n\n\n\nScore Table:
 
  5\c       9\n E2\dX     7\n 4\c       6\n 3\h       5\n 3\s       5\n 4\h       4\n 4\s       4\n N3N      3\n\n\n\n\n
 
-Facit Score:     0\nRunning Score: 223
+Facit Score:     5\nRunning Score: 230
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "39"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "S"]
@@ -1153,16 +1386,22 @@ Facit Score:     0\nRunning Score: 223
 
  6\s      10\n 5\s       4\n 6\d       1\n 5\d       1\n\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 227
+Facit Score:     4\nRunning Score: 234
 }
 
-[Event "oct13_feb23_nov23_jun24"]
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+[Event ""]
 [Site ""]
-[Date "2024.10.15"]
+[Date "2024.10.12"]
 [BCFlags "801f"]
 [Board "40"]
-[West "Facit"]
-[East "Facit"]
+[West ""]
+[East ""]
 [North "BEN"]
 [South "BEN"]
 [Dealer "W"]
@@ -1174,16 +1413,17 @@ Facit Score:     4\nRunning Score: 227
 [ParScore "0"]
 [Auction "W"]
 PASS 1C PASS 1S
-PASS 3C PASS 4N
+PASS 3C PASS 3S
+PASS 4C PASS 4N
 PASS 5C PASS 5N
 PASS 6C PASS 7N
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\nScore Table:
+{\n\n\nScore Table:
 
  7N      10\n 7\s       7\n 7\c       6\n 6N       4\n 6\s       3\n 6\c       2\n 3N       1\n 4\s       1\n 5\c       1\n\n\n\n
 
-Facit Score:    10\nRunning Score: 237
+Facit Score:    10\nRunning Score: 244
 }
 

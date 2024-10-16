@@ -512,7 +512,7 @@ def bid():
             print("Auction: ",auction)
         if models.use_bba:
             from bba.BBA import BBABotBid
-            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
+            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
         else:
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
         with model_lock_bid:
@@ -522,7 +522,7 @@ def bid():
         if explain:
             from bba.BBA import BBABotBid
             print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
+            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
             auction.append(bid.bid)
             result["explanation"] = bot.explain(auction)
             print("explanation: ",result["explanation"])
@@ -739,6 +739,8 @@ def cuebidscores():
     # log request to log file
     print(data)
     result = {}
+    if record: 
+        logger.info(f"cuebidscores: {data}")
     print(f'Request took {(time.time() - t_start):0.2f} seconds')       
     return json.dumps(result),200
 
@@ -759,13 +761,12 @@ def cuebid():
     auction_input= data["auction"]
     vuln_input = data["vuln"]
     hand = data["hand"]
+    turn = data["turn"]
     #{ "bid": "3H", "partnerBidAlert": "4-5!S", "partnerBidAlertArtificial": false, "alert": "3-5!H 1+!C\\nSlam Try\\nForcing one", "artificial": false}
     dealer_i = dealer_enum[dealer]
     position_i = (dealer_i + len(auction_input)) % 4
     auction = ['PAD_START'] * dealer_i + [bid.upper() for bid in auction_input]
     auction = [bid.replace('--', "PASS").replace('Db', 'X').replace('Rd', 'XX').replace("NT","N") for bid in auction]
-
-    print("Auction:",auction)
 
     vuln_ns = vuln_input == 'NS' or vuln_input == 'ALL'
     vuln_ew = vuln_input == 'EW' or vuln_input == 'ALL'
@@ -774,21 +775,23 @@ def cuebid():
 
     if models.use_bba:
         from bba.BBA import BBABotBid
-        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
+        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
     else:
         hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
     with model_lock_bid:
         bid = hint_bot.bid(auction)
-    print("Bidding: ",bid.bid)
     result = bid.to_dict()
     if explain:
         from bba.BBA import BBABotBid
         print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-        bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
+        bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
         auction.append(bid.bid)
         result["explanation"] = bot.explain(auction)
-        print("explanation: ",result["explanation"])
     result = {"bid": bid.bid.replace("PASS","Pass"), "alert": bot.explain(auction), "artificial" : bid.alert}
+    if record: 
+        calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "turn":turn, "auction":auction, "bid":bid.to_dict()}
+        logger.info(f"Calulations cuebid: {calculations}")
+
     print(f'Request took {(time.time() - t_start):0.2f} seconds')       
     return json.dumps(result),200
 
@@ -809,7 +812,7 @@ def explain():
     dealer_i = dealer_enum[dealer]
     if verbose:
         print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint)
+    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint, verbose)
     ctx = request.args.get("ctx")
     # Split the string into chunks of every second character
     bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
