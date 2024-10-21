@@ -17,6 +17,7 @@ import carding
 from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed
 from colorama import Fore, Back, Style, init
 
+init()
 class BotBid:
 
     def __init__(self, vuln, hand_str, models, sampler, seat, dealer, ddsolver, verbose):
@@ -43,6 +44,9 @@ class BotBid:
             self.state = models.bidder_model.zero_state
         self.ddsolver = ddsolver
         self.my_bid_no = 1
+        if self.models.use_bba_to_count_aces:
+            from bba.BBA import BBABotBid
+            self.bbabot = BBABotBid(self.models.bba_ns, self.models.bba_ew, self.seat, self.hand_str, self.vuln, self.dealer, self.models.matchpoint, self.verbose)
 
     def get_random_generator(self):
         return self.rng
@@ -180,7 +184,7 @@ class BotBid:
                     sorted_score[i]
                 ))
 
-        if self.do_rollout(auction, candidates, self.get_max_candidate_score(self.my_bid_no)):
+        if self.do_rollout(auction, candidates, self.get_max_candidate_score(self.my_bid_no), hands_np.shape[0]):
             ev_candidates = []
             ev_scores = {}
             for candidate in candidates:
@@ -358,7 +362,7 @@ class BotBid:
                     for bid, score in expected_score.items():
                         for candidate in ev_candidates:
                             if candidate.bid == bid:
-                                adjust = candidate.adjust / 10
+                                adjust = candidate.adjust / self.models.factor_to_translate_to_mp
                                 ev_c = candidate.with_expected_score_mp(score, adjust)
                                 #print("ev_c", ev_c)
                                 ev_candidates_mp_imp.append(ev_c)
@@ -367,7 +371,7 @@ class BotBid:
                     for bid, score in expected_score.items():
                         for candidate in ev_candidates:
                             if candidate.bid == bid:
-                                adjust = candidate.adjust / 25
+                                adjust = candidate.adjust / self.models.factor_to_translate_to_imp
                                 ev_c = candidate.with_expected_score_imp(score, adjust)
                                 ev_candidates_mp_imp.append(ev_c)
 
@@ -581,7 +585,7 @@ class BotBid:
         # We return the bid with the highest expected score or highest adjusted score 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=quality, alert = bool(candidates[0].alert))
     
-    def do_rollout(self, auction, candidates, max_candidate_score):
+    def do_rollout(self, auction, candidates, max_candidate_score, sample_count):
         if candidates[0].insta_score > max_candidate_score:
             if self.verbose:
                 print(f"A candidate above threshold {max_candidate_score}, so no need for rolling out the bidding")
@@ -601,17 +605,28 @@ class BotBid:
                 print("Only simulate opening bid if enabled in configuration")
             return self.models.eval_opening_bid
 
+        if sample_count == 0:
+            if self.verbose:
+                print("We found no samples, so will just trust the NN")
+            return False
         return True
 
     def get_bid_candidates(self, auction):
+        if self.models.use_bba_to_count_aces:
+            kc_resp = self.bbabot.is_key_card_ask(auction)
+            if kc_resp != None:
+                if self.verbose:
+                    print("Keycards: ", kc_resp)
+                return [CandidateBid(bid=kc_resp.bid, insta_score=1, alert = True)], False
+
         bid_softmax, alerts = self.next_bid_np(auction)
 
         #print(bid_softmax, alerts)
     
         if self.verbose:
             index_highest = np.argmax(bid_softmax)
-            if self.models.alert_supported and alerts[0] > 0.5:
-                print(f"bid {bidding.ID2BID[index_highest]} value {bid_softmax[index_highest]:.4f} is recommended by NN with alert")
+            if self.models.alert_supported and alerts[0] > self.models.alert_threshold:
+                print(f"bid {bidding.ID2BID[index_highest]} value {bid_softmax[index_highest]:.4f} is recommended by NN with alert {alerts[0]:.2f}")
             else:
                 print(f"bid {bidding.ID2BID[index_highest]} value {bid_softmax[index_highest]:.4f} is recommended by NN")
 
@@ -623,7 +638,7 @@ class BotBid:
                 # We have to loop to avoid returning an invalid bid
                 bid_i = np.argmax(bid_softmax)
                 if self.models.alert_supported:
-                    alert = alerts[0]  > 0.5
+                    alert = alerts[0]  > self.models.alert_threshold
                 else:
                     alert = None
                 #print("bid_i",bid_i)
@@ -639,7 +654,8 @@ class BotBid:
                     
                     if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no):
                         # Seems to be an error in the training that needs to be solved
-                        sys.stderr.write(f"{Fore.GREEN}Please create samples for {auction}\n{Style.RESET_ALL}")
+                        sys.stderr.write(f"{Fore.GREEN}Please create samples for {"-".join(auction).replace("PASS", "P").replace("PAD_START-", "")}\n{Style.RESET_ALL}")
+                        sys.stderr.write(f"{Fore.GREEN}Hand {self.hand_str}\n{Style.RESET_ALL}")
                         sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
                         
                         #assert(bid_i > 1)
@@ -682,7 +698,7 @@ class BotBid:
                     break
             if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                 if self.models.alert_supported:
-                    alert = alerts[0]  > 0.5
+                    alert = alerts[0]  > self.models.alert_threshold
                 else:
                     alert = None
                 candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i], alert = alert))
@@ -690,7 +706,8 @@ class BotBid:
                 # Seems to be an error in the training that needs to be solved
                 # Only report it if above threshold
                 if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no) and self.get_min_candidate_score(self.my_bid_no) != -1:
-                    sys.stderr.write(f"{Fore.GREEN}Please create samples for {auction}\n{Style.RESET_ALL}")
+                    sys.stderr.write(f"{Fore.GREEN}Please create samples for {"-".join(auction).replace("PASS", "P").replace("PAD_START-", "")}\n{Style.RESET_ALL}")
+                    sys.stderr.write(f"{Fore.GREEN}Hand {self.hand_str}\n{Style.RESET_ALL}")
                     sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]:.3f} {self.get_min_candidate_score(self.my_bid_no)}\n")
                 if len(candidates) > 0:
                     break
@@ -829,7 +846,11 @@ class BotBid:
                         # Pass is always allowed
                         if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
                             invalid_bids = True
-                            sys.stderr.write(f"{Fore.GREEN}Please create samples for {auction}\n{Style.RESET_ALL}")
+                            deal = ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) for hand in hands_np[i,:,:])
+                            deal = deck52.convert_cards(deal,0, "", self.get_random_generator(), self.models.n_cards_bidding)
+                            deal = deck52.reorder_hand(deal)
+                            sys.stderr.write(f"{Fore.GREEN}Sampling this auction: {'-'.join(auction_so_far).replace('PASS', 'P').replace("PAD_START-", "")} with this deal {deal}\n")
+                            sys.stderr.write(f"{Fore.GREEN}Please add deal to training to avoid this auction {"-".join(auction).replace("PASS", "P")}\n{Style.RESET_ALL}")
                             sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
                             bid_np[i][bid] = 0
                             

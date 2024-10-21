@@ -28,6 +28,7 @@ logging.getLogger().setLevel(logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 # Configure absl logging to suppress logs
 import absl.logging
@@ -46,6 +47,9 @@ from sample import Sample
 from util import get_play_status, get_singleton, get_possible_cards, calculate_seed
 
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
+from colorama import Fore, Back, Style, init
+
+init()
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -353,6 +357,7 @@ if sys.platform != 'win32':
     models.pimc_use_declaring = False
     models.pimc_use_defending = False
     models.use_bba = False
+    models.use_bba_to_count_aces = False
     models.use_suitc = False
  
 from ddsolver import ddsolver
@@ -446,15 +451,12 @@ logger.setLevel(logging.INFO)
 @app.before_request
 def log_request_info():
     logger.info(f"Request: {request.method} {request.url}")
-    #logger.info(f"Headers: {request.headers}")
     if request.method == "POST":
         logger.info(f"Body: {request.get_data()}")
 
 
 @app.after_request
 def log_response_info(response):
-    #logger.info(f"Response status: {response.status}")
-    #logger.info(f"Response headers: {response.headers}")
     logger.info(f"Response body: {response.status} {response.get_data()}")
     return response
 
@@ -485,10 +487,8 @@ def bid():
         if 'X' in hand:
             hand = replace_x(hand,get_random_generator(hand), models.n_cards_bidding)
         seat = request.args.get("seat")
-        #print(hand)
         # Then vulnerability
         v = request.args.get("vul")
-        #print(v)
         vuln = []
         vuln.append('@v' in v)
         vuln.append('@V' in v)

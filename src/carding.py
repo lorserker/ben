@@ -166,7 +166,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     else:
                         card = card[-1]
                     suit_str = "SHDC"[interesting_suit]
-                    print(f"SuitC found: {suit_str}{card}")
+                    if verbose:
+                        print(f"SuitC found: {suit_str}{card}")
                     # Only play the card from SuitC if it was a candidate
                     for candidate_card in candidate_cards:
                         if candidate_card.card.symbol() == f"{suit_str}{card}":
@@ -186,7 +187,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             # If dummy and leading a pip, just lead lowest
             hand52 = binary.parse_hand_f(52)(hand_str)
             if player_i == 1:
-                print("Lead lowest pip")
+                if verbose:
+                    print("Lead lowest pip from dummy")
                 card_index = find_last_occurrence(hand52.reshape((4, 13))[candidate_cards[0].card.suit],1)
                 card_index = card_index + 13 * candidate_cards[0].card.suit
                 return Card.from_code(card_index), who

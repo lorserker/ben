@@ -1,0 +1,87 @@
+# These deals are samples, where BEN have had problems during simulation
+# Pavlicek
+Sampling this auction: 1H-P-2D-P-2H-P-3D-P-3H-P-4H-P with this deal 9.AK9864.3.KQJT2 82.Q75.T762.9754 K4.JT.AKQJ954.83 AQJT7653.32.8.A6
+Please add deal to training to avoid this aucction 1H-P-2D-P-2H-P-3D-P-3H-P-4H-P-4N-P-5D-P-5H-P-P
+Sampling this auction: 2D-P with this deal J5.95.KJ9543.Q84 72.86.QT82.J9765 T93.AK72.A76.KT3 AKQ864.QJT43..A2
+Please add deal to training to avoid this aucction 2D-P-2N-3D-P-P
+
+# BW
+Sampling this auction: PAD_START-P with this deal 7.K2.KT52.QJT754 954.JT874.96.932 AQ863.A653.873.8 KJT2.Q9.AQJ4.AK6
+Please add deal to training to avoid this auction P-1S-X-2C-P-2H-X-P
+Please add deal to training to avoid this auction P-1S-P-3N-P
+Sample: 85, Hand AKQxxx.Kx.KTx.xx Bid not valid: 3N insta_score: 0.344
+Sampling this auction: PAD_START-P-1S-P with this deal J92.J85.A52.AK83 T4.T4.JT9763.652 K8653.AKQ6.K8.Q7 AQ7.9732.Q4.JT94
+Please add deal to training to avoid this auction P-1S-P-3N-P
+Sample: 132, Hand Kxxxx.AKQx.Kx.Qx Bid not valid: 3N insta_score: 0.256
+Sampling this auction: PAD_START-P-1S-P with this deal J94.J42.A85.AK72 T6.863.QT9643.J8 KQ8753.AK9.J2.Q6 A2.QT75.K7.T9543
+Please add deal to training to avoid this auction P-1S-P-3N-P
+Sample: 134, Hand KQxxxx.AKx.Jx.Qx Bid not valid: 3N insta_score: 0.284
+Sampling this auction: PAD_START-P-1S-P with this deal J53.J63.A42.AK52 92.9.8653.QT9863 AKT764.AKT.JT.J4 Q8.Q87542.KQ97.7
+Please add deal to training to avoid this auction P-1S-P-3N-P
+Sample: 138, Hand AKTxxx.AKT.JT.Jx Bid not valid: 3N insta_score: 0.363
+Sampling this auction: PAD_START-P-1S-P with this deal J43.J98.A73.AK74 T72.KQ42.854.Q95 AKQ865.A3.K96.82 9.T765.QJT2.JT63
+Please add deal to training to avoid this auction P-1S-P-3N-P
+Sample: 147, Hand AKQxxx.Ax.Kxx.xx Bid not valid: 3N insta_score: 0.488
+Sampling this auction: PAD_START-P-1S-P with this deal J73.J87.A82.AK82 9.KT643.73.T9764 AKT652.A95.K4.Q5 Q84.Q2.QJT965.J3
+Please add deal to training to avoid this auction P-1S-P-3N-P
+Sample: 174, Hand AKTxxx.Axx.Kx.Qx Bid not valid: 3N insta_score: 0.339
+Sampling this auction: PAD_START-P with this deal AQT43.K974.KJ.75 9872.6.T942.KQ82 J.Q83.Q87653.J94 K65.AJT52.A.AT63
+Please add deal to training to avoid this auction P-2D-2H-3D-P-P-X-P
+Sample: 97, Hand xxxx.x.Txxx.KQxx Bid not valid: 3C insta_score: 0.445
+Sampling this auction: PAD_START-PAD_START-1H-P-2C-P-2N-P-3H-P-3S-P with this deal K2.KJT.AQ8.K9843 8765.AQ762.T2.65 AJT.98543.K97.AJ Q943..J6543.QT72
+Please add deal to training to avoid this auction 1H-P-2C-P-2N-P-3H-P-3S-P-3N-P-4C-P-4D-P-4N-P-5H-X-P-P
+Sample: 18, Hand Kx.KJT.AQx.Kxxxx Bid not valid: 5H insta_score: 0.474
+
+# BW2
+Sampling this auction: 1D-1H-X-P with this deal 8.Q.AK76543.A752 JT62.AJT9852..K3 K974.643.9.QJ864 AQ53.K7.QJT82.T9
+Please add deal to training to avoid this auction 1D-1H-X-P-2C-2H-3C-3H-4D-P
+Sample: 96, Hand Kxxx.xxx.x.QJxxx Bid not valid: 4C insta_score: 0.303
+Sampling this auction: 1D-1H-X-P-2D-P with this deal T8.K9.AKQ8743.85 KJ73.A7532.2.T74 AQ95.86.JT9.KQ63 642.QJT4.65.AJ92
+Please add deal to training to avoid this auction 1D-1H-X-P-2D-P-2H
+Sample: 38, Hand xxx.QJTx.xx.AJxx Bid not valid: 2H insta_score: 0.424
+Sampling this auction: 1D-1H-X-P-2D-P with this deal T2.Q3.AQ96542.A7 973.AJ752.K3.952 AQ65.86.JT7.KQ43 KJ84.KT94.8.JT86
+Please add deal to training to avoid this auction 1D-1H-X-P-2D-P-2H
+Sample: 96, Hand KJxx.KTxx.x.JTxx Bid not valid: 2H insta_score: 0.295
+Sampling this auction: 1D-1H-X-P-2D-P with this deal K7.42.AKQ653.T53 JT82.AKT87.42.74 AQ96.96.JT9.KQ96 543.QJ53.87.AJ82
+Please add deal to training to avoid this auction 1D-1H-X-P-2D-P-2H
+Sample: 146, Hand xxx.QJxx.xx.AJxx Bid not valid: 2H insta_score: 0.423
+Sampling this auction: 1D-1H-X-P-2D-P with this deal K96.95.AK7652.43 JT8.AQ842.Q9.JT2 AQ32.76.JT3.KQ86 754.KJT3.84.A975
+Please add deal to training to avoid this auction 1D-1H-X-P-2D-P-2H
+Sample: 179, Hand xxx.KJTx.xx.Axxx Bid not valid: 2H insta_score: 0.395
+Sampling this auction: 1H-P-1S-P-3D-P-4N-P-5C-P with this deal .AKQJT93.KT876.A K754.74.Q532.T84 AJ963.82.AJ.KQJ3 QT82.65.94.97652
+Please add deal to training to avoid this auction 1H-P-1S-P-3D-P-4N-P-5C-P-6N-P
+Sample: 56, Hand .AKQJTxx.KTxxx.A Bid not valid: 6H insta_score: 0.500
+Sampling this auction: 1H-P-1S-P-3D-P-4N-P-5C-P with this deal .AKQJT82.KT873.A QT7.53.9642.8532 AJ984.64.AJ.KQJ6 K6532.97.Q5.T974
+Please add deal to training to avoid this auction 1H-P-1S-P-3D-P-4N-P-5C-P-6N-P
+Sample: 105, Hand .AKQJTxx.KTxxx.A Bid not valid: 6H insta_score: 0.500
+Sampling this auction: 1H-P-1S-P-3D-P-4N-P-5C-P with this deal .AKQJ873.K9876.A KQ742.T6.QT.T853 AJ983.54.AJ.KQJ2 T65.92.5432.9764
+Please add deal to training to avoid this auction 1H-P-1S-P-3D-P-4N-P-5C-P-6N-P
+Sample: 128, Hand .AKQJxxx.Kxxxx.A Bid not valid: 6H insta_score: 0.517
+Sampling this auction: 1H-P-1S-P-3D-P-4N-P-5C-P with this deal .AKQJ987.KT987.A KT73.T4.432.7643 AJ986.32.AJ.KQJ5 Q542.65.Q65.T982
+Please add deal to training to avoid this auction 1H-P-1S-P-3D-P-4N-P-5C-P-6N-P
+Sample: 156, Hand .AKQJxxx.KTxxx.A Bid not valid: 6H insta_score: 0.521
+Sampling this auction: 1H-P-1S-P-3D-P-4N-P-5C-P with this deal .AKQJ865.K8765.A 87.92.QT92.98765 AJ965.43.AJ.KQJ2 KQT432.T7.43.T43
+Please add deal to training to avoid this auction 1H-P-1S-P-3D-P-4N-P-5C-P-6N-P
+Sample: 186, Hand .AKQJxxx.Kxxxx.A Bid not valid: 6H insta_score: 0.517
+Sampling this auction: 1H-P-1S-P-3D-P-4N-P-5C-P with this deal .AKQJ743.KT872.A T832.T.964.T7542 AJ974.65.AJ.KQJ8 KQ65.982.Q53.963
+Please add deal to training to avoid this auction 1H-P-1S-P-3D-P-4N-P-5C-P-6N-P
+Sample: 191, Hand .AKQJxxx.KTxxx.A Bid not valid: 6H insta_score: 0.521
+...l_start", "dealer": 2, "vuln": [false, true], "hand": ["932.A93.865432.K", "Q74.8652.T.QJ654", "AKJT5.KQ.AK97.A8", "86.JT74.QJ.T9732"], "name": "default (GIB) Keras (24 card deck)", "board_no": 22}
+Please create samples for PAD_START-PAD_START-2C-P-3D-P-4D-P-4S-P-4N-P-5D-P-5N-P-6D-P
+
+# oct13_feb23_nov23_jun24
+Sampling this auction: 1H-P-2N-P-3D-P with this deal A.AJT9852.3.Q953 T94.7.AQJ6.T8642 Q.KQ64.T9854.AK7 KJ876532.3.K72.J
+Please add deal to training to avoid this auction 1H-P-2N-P-3D-P-3H-P-4N-P-5S
+Sample: 117, Hand KJxxxxxx.x.Kxx.J Bid not valid: 4S insta_score: 0.755
+Sampling this auction: 1H-P-2N-P-3D-P with this deal A.AJT8632.4.Q963 T82.9.AQJ5.T8754 Q.KQ74.T8732.AK2 KJ976543.5.K96.J
+Please add deal to training to avoid this auction 1H-P-2N-P-3D-P-4H-P-4N-P-5S
+Sample: 117, Hand KJxxxxxx.x.Kxx.J Bid not valid: 4S insta_score: 0.837
+Sampling this auction: 1H-P-2N-P-3D-P-4C-P-4D-P with this deal AK.AT874.9.J6542 T2.J962.J54.QT93 Q.KQ53.T8763.AK7 J9876543..AKQ2.8
+Please add deal to training to avoid this auction 1H-P-2N-P-3D-P-4C-P-4D-P-4H-P-4N-P-5S
+Sample: 29, Hand Jxxxxxxx..AKQx.x Bid not valid: 4S insta_score: 0.761
+Sampling this auction: P-1C-P with this deal AT7.KQJ.AK643.A6 QJ864.2.QJ8.Q742 K93.A874.9.KJT85 52.T9653.T752.93
+Please add deal to training to avoid this auction P-1C-P-1D-1S-P-P
+Sample: 111, Hand ATx.KQJ.AKxxx.Ax Bid not valid: 1S insta_score: 0.783
+Sampling this auction: 1H-1S-P-2S-P with this deal K643.87.KQ9.8643 Q7.AQJT93.J74.Q9 AJT952.4.AT.AKT5 8.K652.86532.J72
+Please add deal to training to avoid this auction 1H-1S-P-2S-P-4H
+Sample: 12, Hand x.Kxxx.xxxxx.Jxx Bid not valid: 4H insta_score: 0.389

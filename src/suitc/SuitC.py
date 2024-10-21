@@ -44,8 +44,8 @@ class SuitCLib:
         # -ls is most important when the hand to lead has length
         input_str = "-Ls -ls1 -c100 " + input_str
         input_length = len(input_str)
-        #if self.verbose:
-        print("SuitC Input: " + input_str)
+        if self.verbose:
+            print("SuitC Input: " + input_str)
         
         # Convert input string to a wide char buffer
         input_buffer = create_unicode_buffer(input_str + '\0')  # Ensure null termination

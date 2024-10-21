@@ -14,7 +14,7 @@ class Models:
 
     def __init__(self, name, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
                  min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_ben_dd_defending, pimc_apriori_probability,
+                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_ben_dd_defending, pimc_apriori_probability,
                  use_adjustment,
                  adjust_NN,
                  adjust_NN_Few_Samples,
@@ -36,7 +36,10 @@ class Models:
                  use_real_imp_or_mp_opening_lead,
                  check_final_contract,
                  max_samples_checked,
-                 alert_supported
+                 alert_supported,
+                 alert_threshold,
+                 factor_to_translate_to_mp,
+                 factor_to_translate_to_imp
                  ):
         self.name = name
         self.model_version = model_version
@@ -68,6 +71,7 @@ class Models:
         self.bba_ns = bba_ns
         self.bba_ew = bba_ew
         self.use_bba = use_bba
+        self.use_bba_to_count_aces = use_bba_to_count_aces
         self.estimator = estimator
         self.claim = claim
         self.double_dummy = double_dummy
@@ -117,6 +121,9 @@ class Models:
         self.check_final_contract = check_final_contract
         self.max_samples_checked = max_samples_checked
         self.alert_supported = alert_supported
+        self.alert_threshold = alert_threshold
+        self.factor_to_translate_to_mp = factor_to_translate_to_mp
+        self.factor_to_translate_to_imp = factor_to_translate_to_imp
 
 
     @classmethod
@@ -128,6 +135,7 @@ class Models:
         n_cards_bidding = conf.getint('models', 'n_cards_bidding', fallback=32)
         n_cards_play = conf.getint('models', 'n_cards_play', fallback=32)
         alert_supported = conf.getboolean('bidding', 'alert_supported', fallback=False)
+        alert_threshold = conf.getfloat('bidding', 'alert_threshold', fallback=0.5)
 
         search_threshold_str = conf.get('bidding', 'search_threshold', fallback=-1)
         # Check if the value is a list (with brackets), otherwise treat it as a single float
@@ -159,7 +167,6 @@ class Models:
         check_final_contract = conf.getboolean('bidding', 'check_final_contract', fallback=False)
         max_samples_checked = conf.getint('bidding', 'max_samples_checked', fallback=10)
         use_probability = conf.getboolean('bidding', 'use_probability', fallback=False)
-        alert_supported = conf.getboolean('bidding', 'alert_supported', fallback=False)
         sample_hands_for_review = conf.getint('sampling', 'sample_hands_for_review', fallback=200)
         lead_threshold = float(conf['lead']['lead_threshold'])
         lead_accept_nn = float(conf['lead']['lead_accept_nn'])
@@ -168,6 +175,7 @@ class Models:
         lead_from_pips_nt = conf.get('lead', 'lead_from_pips_nt', fallback="random")
         lead_from_pips_suit = conf.get('lead', 'lead_from_pips_suit', fallback="random")
         use_bba = conf.getboolean('models', 'use_bba', fallback=False)
+        use_bba_to_count_aces = conf.getboolean('models', 'use_bba_to_count_aces', fallback=False)
         matchpoint = conf.getboolean('models', 'matchpoint', fallback=False)
         estimator = conf.get('eval', 'estimator', fallback="sde")
         double_dummy_calculator = conf.getboolean('eval', 'double_dummy_calculator', fallback=False)
@@ -198,6 +206,8 @@ class Models:
         adjust_min2 = conf.getfloat('adjustments', 'adjust_min2', fallback=0.0002)
         adjust_min1_by = conf.getint('adjustments', 'adjust_min1_by', fallback=200)
         adjust_min2_by = conf.getint('adjustments', 'adjust_min2_by', fallback=200)
+        factor_to_translate_to_mp = conf.getint('adjustments', 'factor_to_translate_to_mp', fallback=10)
+        factor_to_translate_to_imp = conf.getint('adjustments', 'factor_to_translate_to_imp', fallback=25)
 
         opening_lead_included = conf.getboolean('cardplay', 'opening_lead_included', fallback=False)
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'claim', fallback=False)
@@ -272,6 +282,7 @@ class Models:
             bba_ns=bba_ns,
             bba_ew=bba_ew,
             use_bba=use_bba,
+            use_bba_to_count_aces=use_bba_to_count_aces,
             estimator=estimator,
             claim=claim,
             double_dummy=double_dummy,
@@ -285,6 +296,7 @@ class Models:
             opening_lead_included=opening_lead_included,
             use_probability=use_probability,
             alert_supported=alert_supported,
+            alert_threshold=alert_threshold,
             matchpoint=matchpoint,
             pimc_use_declaring=pimc_use_declaring,
             pimc_use_defending=pimc_use_defending,
@@ -312,6 +324,8 @@ class Models:
             adjust_min2=adjust_min2,
             adjust_min1_by=adjust_min1_by,
             adjust_min2_by=adjust_min2_by,
+            factor_to_translate_to_mp=factor_to_translate_to_mp,
+            factor_to_translate_to_imp=factor_to_translate_to_imp,
             use_suitc=use_suitc,
             suitc_sidesuit_check=suitc_sidesuit_check,
             draw_trump_reward=draw_trump_reward,

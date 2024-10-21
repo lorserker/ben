@@ -10,6 +10,9 @@ import deck52
 from util import get_all_hidden_cards, calculate_seed, convert_to_probability
 from configparser import ConfigParser
 from util import hand_to_str
+from colorama import Fore, Back, Style, init
+
+init()
 
 np.set_printoptions(precision=2, suppress=True, linewidth=220, threshold=np.inf)
 
@@ -132,8 +135,6 @@ class Sample:
         deck = np.ones(n_cards, dtype=int)
         cards_in_suit = n_cards // 4
 
-        if self.verbose:
-            print("sample_cards_vec cards_in_suit", cards_in_suit)
         for j in range(4):
             deck[cards_in_suit* (j  + 1) -1] = 14 - cards_in_suit
         
@@ -248,14 +249,18 @@ class Sample:
             if np.round(c_hcp[i]) >= 11:
                 accept_hcp &= binary.get_hcp(lho_pard_rho[:, i, :]) >= np.round(c_hcp[i]) - 5
 
+        accepted = np.sum(accept_hcp)
+        if self.verbose:
+            print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {accepted}')
+
         accept_shp = np.ones(n_samples).astype(bool)
 
         for i in range(3):
             for j in range(4):
                 if np.round(c_shp[i, j] < 2):
                     accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) <= np.round(c_shp[i, j]) + 1
-                if np.round(c_shp[i, j] >= 4):
-                    accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
+                #if np.round(c_shp[i, j] >= 4):
+                #    accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
                 if np.round(c_shp[i, j] >= 6):
                     accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j])
 
@@ -402,19 +407,19 @@ class Sample:
                 abs_diff_lho = 1 - min_scores_lho[i]
                 if abs_diff_lho > 1 - self.exclude_samples:
                     # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
-                    distances[i] = 100
+                    distances[i] = 1000
                     continue
 
                 abs_diff_partner = 1 - min_scores_partner[i]
                 if abs_diff_partner > 1 - self.exclude_samples: 
                     # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
-                    distances[i] = 100
+                    distances[i] = 1000
                     continue
 
                 abs_diff_rho = 1 - min_scores_rho[i]
                 if abs_diff_rho > 1 - self.exclude_samples:
                     # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
-                    distances[i] = 100
+                    distances[i] = 1000
                     continue
                 
                 if no_of_bids > 0:
@@ -452,11 +457,19 @@ class Sample:
         # Reorder the original lho_pard_rho array based on the sorted indices
         sorted_samples = lho_pard_rho[sorted_indices]
 
+        # We remove the samples with negative scores
+        sorted_samples = sorted_samples[sorted_scores >= 0]
+        sorted_scores = sorted_scores[sorted_scores >= 0]
+
+        if self.verbose:
+            print("Samples after bidding distance: ", len(sorted_samples), " Threshold: ")
+        if len(sorted_scores) == 0:
+            return sorted_samples, sorted_scores, c_hcp[0], c_shp[0], -1
         # How much to trust the bidding for the samples
         accepted_samples = sorted_samples[sorted_scores >= self.bidding_threshold_sampling]
+        #quality = True
         if self.verbose:
             print("Samples after bidding filtering: ", len(accepted_samples), " Threshold: ", self.bidding_threshold_sampling)
-        #quality = True
 
         # If we havent found enough samples, just return the minimum number from configuration
         # It could be an idea to add an extra sampling in a later version
@@ -474,8 +487,6 @@ class Sample:
 
         sorted_scores = sorted_scores[:len(accepted_samples)]
         quality = np.mean(sorted_scores)
-        #print(quality)
-        #print(sorted_scores)
 
         return accepted_samples, sorted_scores, c_hcp[0], c_shp[0], quality
 

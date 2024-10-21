@@ -48,13 +48,21 @@ class ConfirmSocket:
 
 class Channel:
 
+    trick = []
     async def send(self, message):
-        print_message = message.replace('"PAD_START", ','').replace('"PASS"','"P"')
-        if len(print_message) > 200:
-            #print(message[:197] + "...")
-            print("..." + print_message[-197:])
+        if "card_played" in message:
+            card = json.loads(message)['card']
+            self.trick.append(card)
+            if len(self.trick) > 3:
+                print(self.trick)
+                self.trick = []
         else:
-            print(print_message)
+            print_message = message.replace('"PAD_START", ','').replace('"PASS"','"P"')
+            if len(print_message) > 200:
+                #print(message[:197] + "...")
+                print("..." + print_message[-197:])
+            else:
+                print(print_message)
 
 class ChannelSocket:
 

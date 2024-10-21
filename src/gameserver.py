@@ -9,6 +9,7 @@ logging.getLogger().setLevel(logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 # Configure absl logging to suppress logs
 import absl.logging
@@ -34,6 +35,10 @@ from websockets.exceptions import ConnectionClosedOK
 from sample import Sample
 from urllib.parse import parse_qs, urlparse
 from pbn2ben import load
+
+from colorama import Fore, Back, Style, init
+
+init()
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -122,6 +127,7 @@ if sys.platform != 'win32':
     models.pimc_use_declaring = False
     models.pimc_use_defending = False
     models.use_bba = False
+    models.use_bba_to_count_aces = False
     models.use_suitc = False
 
 print("Config:", configfile)
@@ -208,7 +214,7 @@ async def handler(websocket, path, board_no, seed):
             # Select the next from the provided inputfile
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
-            print(f"Board: {board_no[0]+1} {rdeal}")
+            print(f"{Fore.LIGHTBLUE_EX}Board: {board_no[0]+1} {rdeal}{Style.RESET_ALL}")
             np.random.seed(board_no[0]+1)
             driver.set_deal(board_no[0] + 1, rdeal, auction, play_only)
 

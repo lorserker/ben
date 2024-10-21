@@ -3,6 +3,9 @@ import ctypes
 from typing import Dict, List
 
 from ddsolver import dds
+from colorama import Fore, Back, Style, init
+
+init()
 
 # The number of threads is automatically configured by DDS on Windows, taking into account the number of processor cores and available memory.  
 # The number of threads can be influenced using by calling `SetMaxThreads`. 
@@ -54,8 +57,8 @@ class DDSolver:
 
         if res != 1:
             error_message = dds.get_error_message(res)
-            print(f"Error Code: {res}, Error Message: {error_message}")
-            print(hand.encode('utf-8'))
+            print(f"{Fore.RED}Error Code: {res}, Error Message: {error_message}")
+            print(f"{hand.encode('utf-8')}{Style.RESET_ALL}")
             return None
 
         par = ctypes.pointer(pres)
@@ -63,8 +66,8 @@ class DDSolver:
         if print_result:
             print("NS score: {}".format(par.contents.parScore[0].value.decode('utf-8')))
             print("EW score: {}".format(par.contents.parScore[1].value.decode('utf-8')))
-            print("NS list : {}".format(par.contents.parContractsString[0].value.decode('utf-8')))
-            print("EW list : {}\n".format(par.contents.parContractsString[1].value.decode('utf-8')))
+            #print("NS list : {}".format(par.contents.parContractsString[0].value.decode('utf-8')))
+            #print("EW list : {}\n".format(par.contents.parContractsString[1].value.decode('utf-8')))
         par = par.contents.parScore[0].value.decode('utf-8')
         ns_score = par.split()[1]
         return int(ns_score)
@@ -115,8 +118,8 @@ class DDSolver:
         res = dds.SolveAllBoards(ctypes.pointer(self.bo), ctypes.pointer(self.solved))
         if res != 1:
             error_message = dds.get_error_message(res)
-            print(f"Error Code: {res}, Error Message: {error_message}")
-            print(hands_pbn[0].encode('utf-8'))
+            print(f"{Fore.RED}Error Code: {res}, Error Message: {error_message}")
+            print(f"{hands_pbn[0].encode('utf-8')}{Style.RESET_ALL}")
             return None
 
         card_results = {}

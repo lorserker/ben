@@ -9,6 +9,7 @@ logging.getLogger().setLevel(logging.ERROR)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 # Configure absl logging to suppress logs
 import absl.logging
@@ -37,6 +38,10 @@ from util import get_play_status, get_singleton, get_possible_cards
 
 from deck52 import card52to32, decode_card, get_trick_winner_i, hand_to_str
 from bidding import bidding
+
+from colorama import Fore, Back, Style, init
+
+init()
 
 SEATS = ['North', 'East', 'South', 'West']
 

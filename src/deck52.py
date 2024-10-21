@@ -115,6 +115,28 @@ def handxxto52str(handxx, n_cards=32):
     card_string = '.'.join(suits)
     return card_string
 
+def reorder_hand(hands_string):
+    # Define the order of the cards
+    card_order = "AKQJT98765432"
+
+    # Split the hands into a list
+    hands_list = hands_string.split()
+
+    # Function to sort a hand by suit
+    def sort_hand_by_suit(hand):
+        # Split the hand into suits
+        suits = hand.split('.')
+        # Sort each suit in the specified order
+        sorted_suits = [''.join(sorted(suit, key=lambda card: card_order.index(card))) for suit in suits]
+        # Join the sorted suits back together
+        return '.'.join(sorted_suits)
+
+    # Apply sorting to each hand
+    sorted_hands = [sort_hand_by_suit(hand) for hand in hands_list]
+
+    # Join the sorted hands back into a string
+    return ' '.join(sorted_hands)
+
 def convert_cards(card_string, opening_lead, hand_str, rng, n_cards=32):
     updated_card_string = card_string
     pips_in_suit = 13 - (n_cards // 4) + 1

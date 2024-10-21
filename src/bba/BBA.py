@@ -138,6 +138,17 @@ class BBABotBid:
                     conventions_ns[key] = bool(int(value))
         return conventions_ns, conventions_ew
 
+
+    def is_key_card_ask(self, auction):
+        # Did partner ask for keycards
+        if len(auction) > 1:
+            if auction[-2] == "4N":
+                explanation = self.explain(auction[:-1])
+                if self.verbose:
+                    print(explanation)
+                if "Blackwood" in explanation:
+                    return self.bid(auction)
+        return None
         
     def explain(self, auction):
         #print("new_hand", self.position, self.hand_str, self.dealer, self.vuln)

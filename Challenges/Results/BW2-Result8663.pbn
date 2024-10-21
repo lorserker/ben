@@ -1,0 +1,1089 @@
+% PBN 2.1
+% EXPORT
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 2000,1000,2000,1000
+
+[Event "##BW2"]
+[Site "##BEN"]
+[Date "##2024.10.21"]
+[BCFlags "801f"]
+[Board "1"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:843.QT973.8.QT98 AT5.2.K7653.J762 KJ76.AKJ8654.A.A Q92..QJT942.K543"]
+[Declarer "S"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 2C PASS 2D
+PASS 2H PASS 3H
+PASS 4N PASS 5C=1
+PASS 6H PASS PASS
+PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 4\h      10\n 5\h       7\n 3N       4\n 6\h       3\n\n\n\n\n\n\n\n\n
+
+Facit Score:     3\nRunning Score:   3
+}
+
+[BCFlags "801f"]
+[Board "2"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "N:A72.AK92.84.A984 Q9.QT84.7653.Q63 KJ643.J.AKQ2.752 T85.7653.JT9.KJT"]
+[Declarer "S"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1S PASS 2C PASS
+2D PASS 3S PASS
+3N PASS 4C PASS
+4D PASS 4N PASS
+5H=1 PASS 6S PASS
+PASS PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 4\s      10\n 5\s       8\n 3N       5\n 6\s       4\n\n\n\n\n\n\n\n\n
+
+Facit Score:     4\nRunning Score:   7
+}
+
+[BCFlags "801f"]
+[Board "3"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "N:AK543.KJ64..9872 J876.Q92.QT4.T43 .83.K987632.AJ65 QT92.AT75.AJ5.KQ"]
+[Declarer "N"]
+[Contract "2D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+1N 2D PASS PASS
+PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\n\nScore Table:
+
+ 2\c      10\n 3\c       9\n W1N      8\n 2\d       8\n 3\d       5\n 4\c       4\n W1NX     2\n 4\d       2\n 2\s       2\n 2\h       2\n\n\n
+
+Facit Score:     8\nRunning Score:  15
+}
+
+[BCFlags "801f"]
+[Board "4"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:QJ.A92.QJ2.AKQ53 7532.K876.K764.2 K4.Q543.A.JT9864 AT986.JT.T9853.7"]
+[Declarer "N"]
+[Contract "6C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C PASS 1H PASS
+2N PASS 4C PASS
+4D PASS 4N PASS
+5C=1 PASS 6C PASS
+PASS PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 3N       9\n 5\c       5\n 4N       2\n\n\n\n\n\n\n\n\n\n
+
+Facit Score:     0\nRunning Score:  15
+}
+
+[BCFlags "801f"]
+[Board "5"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:AJ.762.QT6.KJ875 963.AJT3.875.Q96 KQT87.4.AKJ9.A42 542.KQ985.432.T3"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1S PASS 1N
+PASS 3D PASS 3N
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 4\s      10\n 5\s       9\n 5\c       6\n 6\s       5\n 6\c       4\n 6\d       4\n 5\d       2\n 3N       1\n\n\n\n\n
+
+Facit Score:     1\nRunning Score:  16
+}
+
+[BCFlags "801f"]
+[Board "6"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:98.KQJ963.97.A97 KQ43.8.KJ53.8542 A72.A754.AT6.J63 JT65.T2.Q842.KQT"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1C PASS 1H PASS
+2H PASS 4H PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 3N      10\n 2N       8\n 3\h       5\n 4\h       3\n\n\n\n\n\n\n\n\n
+
+Facit Score:     3\nRunning Score:  19
+}
+
+[BCFlags "801f"]
+[Board "7"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:AKQJ3.A7.KT54.A6 652.Q9432.63.743 T987.KJ65..KQT95 4.T8.AQJ9872.J82"]
+[Declarer "N"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+3D X PASS 3H
+PASS 3S PASS 4D
+PASS 4N PASS 5C=1
+PASS 6S PASS PASS
+PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 7\s      10\n 6\s       6\n 6N       4\n 5\s       3\n 6\c       3\n 7\c       3\n 5N       2\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score:  25
+}
+
+[BCFlags "801f"]
+[Board "8"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:2.Q.AK98643.A652 K76.AK8752.2.JT3 AQ54.96.JT7.KQ98 JT983.JT43.Q5.74"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D 1H X PASS
+2D PASS 2H PASS
+3C PASS 3D PASS
+3N PASS PASS PASS
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 6\d      10\n 6\c       7\n 5\d       4\n 5\c       3\n 4\d       1\n 4\c       1\n\n\n\n\n\n\n
+
+Facit Score:     0\nRunning Score:  25
+}
+
+[BCFlags "801f"]
+[Board "9"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:J2.KQT54..AK9765 K876.32.KT7543.8 A94.A9876.A9.QT2 QT53.J.QJ862.J43"]
+[Declarer "S"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1H PASS 2N
+PASS 3N PASS 6H
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 7N      10\n 7\h       7\n 7\c       5\n 6N       3\n 6\h       2\n 6\c       1\n\n\n\n\n\n\n
+
+Facit Score:     2\nRunning Score:  27
+}
+
+[BCFlags "801f"]
+[Board "10"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:J8.Q7.9753.AQJ72 QT53.J32.K642.T6 AK97.AKT98.J.K94 642.654.AQT8.853"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1H PASS 1N PASS
+2S PASS 3N PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 6\c      10\n 6\h       6\n 4\h       6\n 5\c       4\n 5\h       4\n 3N       2\n\n\n\n\n\n\n
+
+Facit Score:     2\nRunning Score:  29
+}
+
+[BCFlags "801f"]
+[Board "11"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:KQ94.4.AKJT.J654 A8763.9765.Q.K82 .AQT83.8762.AT93 JT52.KJ2.9543.Q7"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1H PASS 1S
+PASS 2C PASS 3N
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 3\c      10\n 3\d      10\n 4\c       6\n 4\d       6\n 2\h       5\n 2N       4\n 5\c       3\n 5\d       3\n 3N       3\n\n\n\n
+
+Facit Score:     3\nRunning Score:  32
+}
+
+[BCFlags "801f"]
+[Board "12"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "N:AKQT..AT94.97653 J95.K76532.75.Q2 432.A4.KQJ62.AK8 876.QJT98.83.JT4"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1N PASS 3H PASS
+3N PASS PASS PASS
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\nScore Table:
+
+ 7\d       9\n 6N       7\n 6\d       6\n 6\s       6\n 6\c       4\n 5N       4\n 5\s       3\n 5\d       2\n 5\c       1\n\n\n\n
+
+Facit Score:     4\nRunning Score:  36
+}
+
+[BCFlags "801f"]
+[Board "13"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:Q8653.Q7.KQT975. J.986432.643.654 AKT97.AJ5.AJ.KQ3 42.KT.82.AJT9872"]
+[Declarer "N"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+3C PASS PASS X
+PASS 4S PASS 4N
+PASS 5C=1 PASS 6S
+PASS PASS PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 7\s      10\n 7\d       8\n 6\s       6\n 6N       4\n 6\d       3\n 5\s       2\n 5N       1\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score:  42
+}
+
+[BCFlags "801f"]
+[Board "14"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:K9.AQJT2.KT84.A3 QT6.K965.753.T94 AJ842.83.AJ.KQJ6 753.74.Q962.8752"]
+[Declarer "S"]
+[Contract "6N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H PASS 1S PASS
+3D PASS 4N PASS
+5C=1 PASS 5N PASS
+6D PASS 6N PASS
+PASS PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 6N      10\n 7N       7\n 6\h       7\n 5N       3\n 7\h       2\n 5\h       2\n 6\s       2\n 7\s       1\n 7\c       1\n 7\d       1\n 6\d       1\n 6\c       1\n 5\s       1\n
+
+Facit Score:    10\nRunning Score:  52
+}
+
+[BCFlags "801f"]
+[Board "15"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:KT4.Q862.KQJ8.J6 J53.AKT5.743.K93 Q87..A92.AQ87542 A962.J9743.T65.T"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1C PASS 1H
+PASS 2C PASS 2N
+PASS 3C PASS 3N
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 5\c      10\n 4\c       6\n 4\d       4\n 5\d       4\n 6\c       3\n 6\d       2\n 3N       2\n 2N       2\n\n\n\n\n
+
+Facit Score:     2\nRunning Score:  54
+}
+
+[BCFlags "801f"]
+[Board "16"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:AQ4.8.AQ543.J976 9876.A9743.97.KT K53.K6.KJ86.A832 JT2.QJT52.T2.Q54"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1D PASS 2D PASS
+2H PASS 3N PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ S3N      9\n N3N      6\n S2N      6\n 4\d       5\n 4\c       5\n N2N      4\n 5\d       4\n 5\c       3\n\n\n\n\n
+
+Facit Score:     6\nRunning Score:  60
+}
+
+[BCFlags "801f"]
+[Board "17"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:T987.Q.AJ642.AKQ AKQ62.JT74.3.T93 .K983.KQT987.J86 J543.A652.5.7542"]
+[Declarer "N"]
+[Contract "5D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+PASS 1D 1S X
+PASS 1N PASS 5D
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\nScore Table:
+
+ 6\d      10\n 5\d       6\n 4\d       3\n 3N       2\n E1\sX     1\n\n\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score:  66
+}
+
+[BCFlags "801f"]
+[Board "18"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AK854.A432.AT9.A QT92.QT8.Q87.654 .J7.K6543.KQJT92 J763.K965.J2.873"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S PASS 3C PASS
+3H PASS 3N PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\nScore Table:
+
+ 6\c      10\n 6\d       8\n 6N       6\n 5N       4\n 5\c       2\n 5\d       2\n 7\d       1\n 7\c       1\n\n\n\n\n
+
+Facit Score:     4\nRunning Score:  70
+}
+
+[BCFlags "801f"]
+[Board "19"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:9.96.J9754.KQT53 AKT72.872.83.942 864.AKQJ43.A.AJ8 QJ53.T5.KQT62.76"]
+[Declarer "S"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 2C PASS 2D
+PASS 2H PASS 3D
+PASS 3H PASS 4H
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 6\h      10\n 6\c       9\n 5\h       4\n 5\c       2\n 3N       2\n 6N       1\n\n\n\n\n\n\n
+
+Facit Score:     4\nRunning Score:  74
+}
+
+[BCFlags "801f"]
+[Board "20"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:AK873.2.AKQT6.K4 Q92.K8.J983.JT87 64.AT76543.5.A62 JT5.QJ9.742.Q953"]
+[Declarer "S"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+3H PASS 4H PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\nScore Table:
+
+ 4\s       9\n 4\h       7\n 5\s       6\n 3N       4\n 5\h       4\n 5\d       3\n 6\s       3\n 6\d       2\n\n\n\n\n
+
+Facit Score:     7\nRunning Score:  81
+}
+
+[BCFlags "801f"]
+[Board "21"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:J3.A98.8542.K973 97.QJ7642.96.QT2 AQT8654.K5.T.A64 K2.T3.AKQJ73.J85"]
+[Declarer "S"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1S PASS 1N
+PASS 4S PASS PASS
+PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\nScore Table:
+
+ 4\s      10\n 3\s       4\n 5\s       4\n\n\n\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score:  91
+}
+
+[BCFlags "801f"]
+[Board "22"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:932.A93.865432.K Q74.8652.T.QJ654 AKJT5.KQ.AK97.A8 86.JT74.QJ.T9732"]
+[Declarer "N"]
+[Contract "7D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+2C PASS 3D PASS
+4D PASS 4S PASS
+4N PASS 5D=1 PASS
+5N PASS 6D PASS
+7D PASS PASS PASS
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\nScore Table:
+
+ 7N      10\n 7\d       8\n 6N       6\n 7\s       4\n 6\s       4\n 6\d       3\n 5N       3\n 5\s       2\n 5\d       1\n\n\n\n
+
+Facit Score:     8\nRunning Score:  99
+}
+
+[BCFlags "801f"]
+[Board "23"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:KQT7.AJ.K2.AK742 J96432.942.J8.JT .T8.AQ9763.98653 A85.KQ7653.T54.Q"]
+[Declarer "N"]
+[Contract "6C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+1H X PASS 2D
+PASS 3C PASS 4N
+PASS 5C PASS 6C
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 7\c      10\n 6\c      10\n 6\d       7\n 6N       7\n 7\d       7\n 5\c       4\n 3N       4\n 5\d       3\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 109
+}
+
+[BCFlags "801f"]
+[Board "24"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:J4.9863.QJT543.2 QT7.A542.A8.T987 AK532.7.K96.AKQ3 986.KQJT.72.J654"]
+[Declarer "S"]
+[Contract "1S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+PASS PASS 1S PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\n\nScore Table:
+
+ 5\d      10\n 4\d       5\n 2\s       4\n 3\s       3\n 4\s       2\n 3N       1\n\n\n\n\n\n\n
+
+Facit Score:     4\nRunning Score: 113
+}
+
+[BCFlags "801f"]
+[Board "25"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:AK65.7.52.AJ7542 JT43.Q984.A83.T3 8.AT652.KQ94.KQ6 Q972.KJ3.JT76.98"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1H PASS 1S
+PASS 2D PASS 2N
+PASS 3N PASS PASS
+PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 6\c      10\n 3N       4\n 5\c       3\n\n\n\n\n\n\n\n\n\n
+
+Facit Score:     4\nRunning Score: 117
+}
+
+[BCFlags "801f"]
+[Board "26"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:KJ976.Q.AK73.762 Q854.JT53.Q6.QJ5 A.9842.JT92.AK83 T32.AK76.854.T94"]
+[Declarer "S"]
+[Contract "3D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1D PASS 1S PASS
+2C PASS 3D PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 3\d      10\n 4\d       8\n 2N       6\n 2\s       5\n 2\c       5\n 5\d       4\n 3N       3\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 127
+}
+
+[BCFlags "801f"]
+[Board "27"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:AJ4.K2.6432.AKJ2 T863.AJ853.K.T54 KQ9.Q.JT9875.Q73 752.T9764.AQ.986"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+PASS 1N PASS 2S
+PASS 3C PASS 3N
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\nScore Table:
+
+ 3\d      10\n 4\d       8\n 2N       7\n 3N       4\n 5\d       3\n\n\n\n\n\n\n\n
+
+Facit Score:     4\nRunning Score: 131
+}
+
+[BCFlags "801f"]
+[Board "28"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AQT96.K2.52.QT73 742.QT97.K976.J6 K85.AJ3.AQ.A9542 J3.8654.JT843.K8"]
+[Declarer "N"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S PASS 2C PASS
+3C PASS 4N PASS
+5D=1 PASS 5H PASS
+5N PASS 6S PASS
+PASS PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ S6N     10\n N6N      7\n S6\s      6\n N6\s      5\n S6\c      5\n N6\c      4\n S4N      3\n N4N      2\n 5\s       1\n\n\n\n
+
+Facit Score:     5\nRunning Score: 136
+}
+
+[BCFlags "801f"]
+[Board "29"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:85.AQJT4.KJ63.AQ AQT63.86.T87.KT8 7.97532.AQ2.J976 KJ942.K.954.5432"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS PASS PASS 1H
+PASS 4H PASS PASS
+PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\nScore Table:
+
+ 4\h      10\n 5\h       8\n 6\h       4\n\n\n\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 146
+}
+
+[BCFlags "801f"]
+[Board "30"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "N:A985..KQ6542.K94 42.JT97.A3.87532 KJT3.AKQ43.J98.A Q76.8652.T7.QJT6"]
+[Declarer "N"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1H PASS 1S PASS
+4C PASS 4H PASS
+4S PASS 4N PASS
+5C=1 PASS 6S PASS
+PASS PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\nScore Table:
+
+ 6N      10\n 6\d       6\n 5N       5\n 6\s       4\n 5\s       4\n 5\d       2\n\n\n\n\n\n\n
+
+Facit Score:     4\nRunning Score: 150
+}
+
+[BCFlags "801f"]
+[Board "31"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:KQJ875.843.AQ4.Q 2.QJ72.532.AJT75 AT964.A6.KJ86.82 3.KT95.T97.K9643"]
+[Declarer "S"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1S PASS 2N
+PASS 4S PASS PASS
+PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\nScore Table:
+
+ 5\s      10\n 6\d       5\n 6\s       4\n 5\d       3\n\n\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 160
+}
+
+[BCFlags "801f"]
+[Board "32"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:KQ32.AKQ43.T6.84 96.T65.QJ53.QJT5 A8754.J9.AK8.A62 JT.872.9742.K973"]
+[Declarer "N"]
+[Contract "7S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1N PASS 2C PASS
+3D PASS 4N PASS
+5C=1 PASS 7S PASS
+PASS PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 7N      10\n 7\h       9\n 7\s       9\n 6N       6\n 6\s       4\n 6\h       4\n 5N       3\n 5\s       2\n 5\h       2\n\n\n\n
+
+Facit Score:     9\nRunning Score: 169
+}
+
+[BCFlags "801f"]
+[Board "33"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:A9.3.AK987.KJ842 Q7632.75.T542.T6 KJT.Q962.Q3.AQ53 854.AKJT84.J6.97"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+2H 3D PASS 3N
+PASS PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\n\nScore Table:
+
+ 6\c      10\n 4N       6\n 6\d       4\n 5\c       3\n 5\d       1\n\n\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 175
+}
+
+[BCFlags "801f"]
+[Board "34"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A.QJ943.KT95.AQ3 Q94.KT8.A62.8764 K7652.72.QJ8.J95 JT83.A65.743.KT2"]
+[Declarer "N"]
+[Contract "2H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H PASS 1S PASS
+2D PASS 2H PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\n\nScore Table:
+
+ 1N       9\n 2\h       9\n 2\d       7\n 2N       4\n 3\d       4\n 3\h       4\n 3N       1\n\n\n\n\n\n
+
+Facit Score:     9\nRunning Score: 184
+}
+
+[BCFlags "801f"]
+[Board "35"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:K96.QT93.KQ94.A5 T82.K76.T32.KT63 AQ43.J8.AJ875.87 J75.A542.6.QJ942"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1D PASS 1H
+PASS 1S PASS 2C
+PASS 3N PASS PASS
+PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 3N      10\n 2N       4\n 4\s       3\n 3\s       3\n 5\d       2\n 4\d       2\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 194
+}
+
+[BCFlags "801f"]
+[Board "36"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:Q.QJ7.AKJ643.963 K4.T9543.87.AJ54 A987632.A.QT92.8 JT5.K862.5.KQT72"]
+[Declarer "N"]
+[Contract "6D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1S PASS 2D PASS
+2S PASS 3D PASS
+4N PASS 5H=1 PASS
+6D PASS PASS PASS
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 6\d      10\n 4\s       5\n 5\d       4\n 3\s       2\n 4\d       2\n\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 204
+}
+
+[BCFlags "801f"]
+[Board "37"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "N:A85.J8.A82.AT654 742.T5.QJT93.K73 K63.AKQ9632.7.Q2 QJT9.74.K654.J98"]
+[Declarer "S"]
+[Contract "7H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "W"]
+PASS 1C PASS 2H
+PASS 3C PASS 3H
+PASS 4N PASS 5S=1
+PASS 5N PASS 6D
+PASS 7H PASS PASS
+PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\nScore Table:
+
+ 6\h      10\n 6N       6\n 5\h       4\n 5N       3\n\n\n\n\n\n\n\n\n
+
+Facit Score:     0\nRunning Score: 204
+}
+
+[BCFlags "801f"]
+[Board "38"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KQT75.93.J874.A7 642.Q87.T6.QJT62 AJ83.52.KQ2.K985 9.AKJT64.A953.43"]
+[Declarer "W"]
+[Contract "4HX"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+PASS PASS 1C 3H
+PASS 4H PASS PASS
+X PASS PASS PASS
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 4\s      10\n W4\hX     6\n 3\s       4\n W3\hX     4\n W4\hP     2\n W3\hP     1\n\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 210
+}
+
+[BCFlags "801f"]
+[Board "39"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "N:965.Q.AK864.AQ94 Q432.T7.QT9.8732 AK8.AJ98643.75.K JT7.K52.J32.JT65"]
+[Declarer "N"]
+[Contract "6N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "E"]
+PASS 1H PASS 2D
+PASS 3H PASS 4N
+PASS 5H=1 PASS 6N
+PASS PASS PASS 
+[Note "0: Alert."]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 6N      10\n 6\h       8\n 4N       5\n 5\h       4\n 6\d       2\n\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 220
+}
+
+[BCFlags "801f"]
+[Board "40"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "N:KQJT65.96.KJ.QT2 82.Q432.T43.A763 A93.J75.AQ87.J95 74.AKT8.9652.K84"]
+[Declarer "N"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "S"]
+1D PASS 1S PASS
+1N PASS 2C PASS
+2S PASS 4S PASS
+PASS PASS 
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 2\s      10\n 3\s       7\n 4\s       4\n 2N       2\n 3N       1\n\n\n\n\n\n\n\n
+
+Facit Score:     4\nRunning Score: 224
+}
+
