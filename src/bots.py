@@ -849,8 +849,8 @@ class BotBid:
                             deal = ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) for hand in hands_np[i,:,:])
                             deal = deck52.convert_cards(deal,0, "", self.get_random_generator(), self.models.n_cards_bidding)
                             deal = deck52.reorder_hand(deal)
-                            sys.stderr.write(f"{Fore.GREEN}Sampling this auction: {'-'.join(auction_so_far).replace('PASS', 'P').replace("PAD_START-", "")} with this deal {deal}\n")
-                            sys.stderr.write(f"{Fore.GREEN}Please add deal to training to avoid this auction {"-".join(auction).replace("PASS", "P")}\n{Style.RESET_ALL}")
+                            sys.stderr.write(f"{Fore.GREEN}Sampling this auction: {'-'.join(auction_so_far).replace('PASS', 'P').replace('PAD_START-', '')} with this deal {deal}\n")
+                            sys.stderr.write(f"{Fore.GREEN}Please add deal to training to avoid this auction {'-'.join(auction).replace('PASS', 'P')}\n{Style.RESET_ALL}")
                             sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
                             bid_np[i][bid] = 0
                             
