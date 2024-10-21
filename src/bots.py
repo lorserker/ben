@@ -654,7 +654,7 @@ class BotBid:
                     
                     if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no):
                         # Seems to be an error in the training that needs to be solved
-                        sys.stderr.write(f"{Fore.GREEN}Please create samples for {"-".join(auction).replace("PASS", "P").replace("PAD_START-", "")}\n{Style.RESET_ALL}")
+                        sys.stderr.write(f"{Fore.GREEN}Please create samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')}\n{Style.RESET_ALL}")
                         sys.stderr.write(f"{Fore.GREEN}Hand {self.hand_str}\n{Style.RESET_ALL}")
                         sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
                         
@@ -706,7 +706,7 @@ class BotBid:
                 # Seems to be an error in the training that needs to be solved
                 # Only report it if above threshold
                 if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no) and self.get_min_candidate_score(self.my_bid_no) != -1:
-                    sys.stderr.write(f"{Fore.GREEN}Please create samples for {"-".join(auction).replace("PASS", "P").replace("PAD_START-", "")}\n{Style.RESET_ALL}")
+                    sys.stderr.write(f"{Fore.GREEN}Please create samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')}\n{Style.RESET_ALL}")
                     sys.stderr.write(f"{Fore.GREEN}Hand {self.hand_str}\n{Style.RESET_ALL}")
                     sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]:.3f} {self.get_min_candidate_score(self.my_bid_no)}\n")
                 if len(candidates) > 0:
