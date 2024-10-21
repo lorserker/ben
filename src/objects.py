@@ -167,7 +167,7 @@ class CardResp:
         }
 
         if self.quality is not None:
-            result['quality'] = "Good" if self.quality else "Bad"
+            result['quality'] = self.quality
         if hcp_values and hcp_values != -1:
             result['hcp'] = hcp_values
         if shape_values and shape_values != -1:    

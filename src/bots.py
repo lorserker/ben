@@ -1094,21 +1094,7 @@ class BotLead:
         contract = bidding.get_contract(auction)
         scores_by_trick = scoring.contract_scores_by_trick(contract, tuple(self.vuln))
 
-        if self.verbose:
-            print("scores_by_trick", scores_by_trick)
-        if self.models.use_real_imp_or_mp_opening_lead:
-            dd_solved = {}
-            for i, card_i in enumerate(lead_card_indexes):
-                dd_solved[card_i] = (13 - tricks[:,i,0]).astype(int).flatten().tolist()
-            real_scores = calculate.calculate_score(dd_solved, 0, 0, scores_by_trick)
-            if self.verbose:
-                print("Real scores")
-                print(real_scores)
-            if self.models.matchpoint:
-                expected_score_mp_arr = calculate.calculate_mp_score(real_scores)
-            else:
-                expected_score_imp_arr = calculate.calculate_imp_score(real_scores)
-
+        print("samples", len(accepted_samples), "quality", quality)
         candidate_cards = []
         expected_tricks_sd = None
         expected_tricks_dd = None
@@ -1116,35 +1102,65 @@ class BotLead:
         expected_score_dd = None
         expected_score_mp = None
         expected_score_imp = None
-
-        for i, card_i in enumerate(lead_card_indexes):
+        if len(accepted_samples) > 0:
+            if self.verbose:
+                print("scores_by_trick", scores_by_trick)
             if self.models.use_real_imp_or_mp_opening_lead:
+                dd_solved = {}
+                for i, card_i in enumerate(lead_card_indexes):
+                    dd_solved[card_i] = (13 - tricks[:,i,0]).astype(int).flatten().tolist()
+                real_scores = calculate.calculate_score(dd_solved, 0, 0, scores_by_trick)
+                if self.verbose:
+                    print("Real scores")
+                    print(real_scores)
                 if self.models.matchpoint:
-                    expected_score_mp = expected_score_mp_arr[card_i]
+                    expected_score_mp_arr = calculate.calculate_mp_score(real_scores)
                 else:
-                    expected_score_imp = expected_score_imp_arr[card_i]
-            else:
-                assert(tricks[:,i,0].all() >= 0)
-                tricks_int = tricks[:,i,0].astype(int)
-                if self.models.double_dummy:
-                    expected_tricks_dd=np.mean(tricks[:,i,0])
-                    expected_score_dd = np.mean(scores_by_trick [tricks_int])
-                else:
-                    expected_tricks_sd=np.mean(tricks[:,i,0])
-                    expected_score_sd = np.mean(scores_by_trick [tricks_int])
+                    expected_score_imp_arr = calculate.calculate_imp_score(real_scores)
 
-            candidate_cards.append(CandidateCard(
-                card=Card.from_code(int(card_i), xcards=True),
-                insta_score=lead_softmax[0,card_i],
-                expected_tricks_sd=expected_tricks_sd,
-                expected_tricks_dd=expected_tricks_dd,
-                p_make_contract=np.mean(tricks[:,i,1]),
-                expected_score_sd = expected_score_sd,
-                expected_score_dd = expected_score_dd,
-                expected_score_mp = expected_score_mp,
-                expected_score_imp = expected_score_imp
-            ))
-        
+
+            for i, card_i in enumerate(lead_card_indexes):
+                if self.models.use_real_imp_or_mp_opening_lead:
+                    if self.models.matchpoint:
+                        expected_score_mp = expected_score_mp_arr[card_i]
+                    else:
+                        expected_score_imp = expected_score_imp_arr[card_i]
+                else:
+                    assert(tricks[:,i,0].all() >= 0)
+                    tricks_int = tricks[:,i,0].astype(int)
+                    if self.models.double_dummy:
+                        expected_tricks_dd=np.mean(tricks[:,i,0])
+                        expected_score_dd = np.mean(scores_by_trick [tricks_int])
+                    else:
+                        expected_tricks_sd=np.mean(tricks[:,i,0])
+                        expected_score_sd = np.mean(scores_by_trick [tricks_int])
+
+                candidate_cards.append(CandidateCard(
+                    card=Card.from_code(int(card_i), xcards=True),
+                    insta_score=lead_softmax[0,card_i],
+                    expected_tricks_sd=expected_tricks_sd,
+                    expected_tricks_dd=expected_tricks_dd,
+                    p_make_contract=np.mean(tricks[:,i,1]),
+                    expected_score_sd = expected_score_sd,
+                    expected_score_dd = expected_score_dd,
+                    expected_score_mp = expected_score_mp,
+                    expected_score_imp = expected_score_imp
+                ))
+
+        else:        
+            for i, card_i in enumerate(lead_card_indexes):
+                candidate_cards.append(CandidateCard(
+                    card=Card.from_code(int(card_i), xcards=True),
+                    insta_score=lead_softmax[0,card_i],
+                    expected_tricks_sd=expected_tricks_sd,
+                    expected_tricks_dd=expected_tricks_dd,
+                    p_make_contract=-1,
+                    expected_score_sd = expected_score_sd,
+                    expected_score_dd = expected_score_dd,
+                    expected_score_mp = expected_score_mp,
+                    expected_score_imp = expected_score_imp
+                ))
+
         candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score, reverse=True)
 
         if candidate_cards[0].insta_score > self.models.lead_accept_nn:
@@ -1154,9 +1170,9 @@ class BotLead:
             # If our sampling of the hands from the aution is bad.
             # We should probably try to find better samples, but for now, we just trust the neural network
 
-            if (self.models.use_biddingquality_in_eval and not quality):
+            if (self.models.use_biddingquality_in_eval and  quality < 0):
                 opening_lead = candidate_cards[0].card.code() 
-                who = "NN"
+                who = "NN - bad quality samples"
             else:
                 # Now we will select the card to play
                 # We have 3 factors, and they could all be right, so we remove most of the decimals
@@ -1187,7 +1203,7 @@ class BotLead:
                 opening_lead = candidate_cards[0].card.code()
 
         if self.verbose:
-            print(quality)
+            print("Samples quality:", quality)
             for card in candidate_cards:
                 print(card)
         if opening_lead % 8 == 7:
