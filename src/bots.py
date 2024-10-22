@@ -39,7 +39,7 @@ class BotBid:
         self.hash_integer = calculate_seed(hand_str)         
         if self.verbose:
             print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
-        self.rng = np.random.default_rng(self.hash_integer)
+        self.rng = self.get_random_generator()
         if self.models.model_version == 0:
             self.state = models.bidder_model.zero_state
         self.ddsolver = ddsolver
@@ -48,8 +48,6 @@ class BotBid:
             from bba.BBA import BBABotBid
             self.bbabot = BBABotBid(self.models.bba_ns, self.models.bba_ew, self.seat, self.hand_str, self.vuln, self.dealer, self.models.matchpoint, self.verbose)
 
-    def get_random_generator(self):
-        return self.rng
     
     @staticmethod
     def get_bid_number_for_player_to_bid(auction):
@@ -87,13 +85,13 @@ class BotBid:
     def evaluate_rescue_bid(self, auction, passout, samples, candidate_bid, quality, my_bid_no ):
         # check configuration
         if self.verbose:
-            print("Checking if we should avaluate rescue bid", self.models.check_final_contract, len(samples))
+            print("Checking if we should evaluate rescue bid", self.models.check_final_contract, len(samples))
             print("Auction",auction, passout)
             print("Candidate", candidate_bid, quality)
         if not self.models.check_final_contract:
             return False
 
-        # We dod not rescue bid before our 3rd bid        
+        # We did not rescue bid before our 3rd bid        
         if my_bid_no < 3:
             return False
 
@@ -183,8 +181,11 @@ class BotBid:
                     hand_to_str(hands_np[i,3,:],self.models.n_cards_bidding),
                     sorted_score[i]
                 ))
+            sample_count = hands_np.shape[0]
+        else:
+            sample_count = 0
 
-        if self.do_rollout(auction, candidates, self.get_max_candidate_score(self.my_bid_no), hands_np.shape[0]):
+        if self.do_rollout(auction, candidates, self.get_max_candidate_score(self.my_bid_no), sample_count):
             ev_candidates = []
             ev_scores = {}
             for candidate in candidates:
@@ -696,6 +697,9 @@ class BotBid:
             if bid_softmax[bid_i] < self.get_min_candidate_score(self.my_bid_no):
                 if len(candidates) >= min_candidates:
                     break
+                # Second candidate to low. Rescuebid should handle 
+                if bid_softmax[bid_i] <= 0.005:
+                    break
             if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                 if self.models.alert_supported:
                     alert = alerts[0]  > self.models.alert_threshold
@@ -771,7 +775,7 @@ class BotBid:
         if binary.get_number_of_bids(auction_so_far) > 20:
             sample_boards_for_auction *= 2
         # Reset randomizer
-        self.rng = np.random.default_rng(self.hash_integer)
+        self.rng = self.get_random_generator()
         accepted_samples, sorted_scores, p_hcp, p_shp, quality = self.sampler.sample_cards_auction(
             auction_so_far, turn_to_bid, self.hand_str, self.vuln, sample_boards_for_auction, self.rng, self.models)
         
@@ -781,7 +785,7 @@ class BotBid:
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
         if accepted_samples.shape[0] > self.sampler.sample_hands_auction:
-            random_indices = self.get_random_generator().permutation(accepted_samples.shape[0])
+            random_indices = self.rng.permutation(accepted_samples.shape[0])
             accepted_samples = accepted_samples[random_indices[:self.sampler.sample_hands_auction], :, :]
             sorted_scores = sorted_scores[random_indices[:self.sampler.sample_hands_auction]]
 
@@ -793,6 +797,10 @@ class BotBid:
             hands_np[:, (turn_to_bid + i) % 4, :] = accepted_samples[:,i-1,:]
 
         return hands_np, sorted_scores, p_hcp, p_shp, quality 
+
+    def get_random_generator(self):
+        #print(f"{Fore.BLUE}Fetching random generator for bid {self.hash_integer}{Style.RESET_ALL}")
+        return np.random.default_rng(self.hash_integer)
 
     def bidding_rollout(self, auction_so_far, candidate_bid, hands_np):
         auction = [*auction_so_far, candidate_bid]
@@ -847,7 +855,7 @@ class BotBid:
                         if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
                             invalid_bids = True
                             deal = ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) for hand in hands_np[i,:,:])
-                            deal = deck52.convert_cards(deal,0, "", self.get_random_generator(), self.models.n_cards_bidding)
+                            deal = deck52.convert_cards(deal,0, "", self.rng, self.models.n_cards_bidding)
                             deal = deck52.reorder_hand(deal)
                             sys.stderr.write(f"{Fore.GREEN}Sampling this auction: {'-'.join(auction_so_far).replace('PASS', 'P').replace('PAD_START-', '')} with this deal {deal}\n")
                             sys.stderr.write(f"{Fore.GREEN}Please add deal to training to avoid this auction {'-'.join(auction).replace('PASS', 'P')}\n{Style.RESET_ALL}")
@@ -1015,7 +1023,7 @@ class BotBid:
             leader = (leader + 4 - self.seat) % 4
 
             # Create PBN including pips
-            hands_pbn = [deck52.convert_cards(deck,0, hand_str, self.get_random_generator(), self.models.n_cards_bidding)]
+            hands_pbn = [deck52.convert_cards(deck,0, hand_str, self.rng, self.models.n_cards_bidding)]
 
             # It will probably improve performance if all is calculated in one go
             dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1)
@@ -1083,6 +1091,7 @@ class BotLead:
         self.dd = ddsolver
 
     def get_random_generator(self):
+        #print("Fetching random generator for lead", self.hash_integer)
         return np.random.default_rng(self.hash_integer)
 
     def find_opening_lead(self, auction):
@@ -1124,7 +1133,7 @@ class BotLead:
                     if self.models.matchpoint:
                         expected_score_mp = expected_score_mp_arr[card_i]
                     else:
-                        expected_score_imp = expected_score_imp_arr[card_i]
+                        expected_score_imp = round(expected_score_imp_arr[card_i],2)
                 else:
                     assert(tricks[:,i,0].all() >= 0)
                     tricks_int = tricks[:,i,0].astype(int)
@@ -1460,6 +1469,7 @@ class CardPlayer:
             self.pimc = None
     
     def get_random_generator(self):
+        #print("Fetching random generator for player", self.hash_integer)
         return np.random.default_rng(self.hash_integer)
     
     def init_x_play(self, public_hand, level, strain_i):
@@ -1824,7 +1834,7 @@ class CardPlayer:
                         "expected_score_mp": expected_score
                     } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_imp": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                        "expected_score_imp": round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),2)
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
                         "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
@@ -1919,7 +1929,7 @@ class CardPlayer:
                         "expected_score_mp": expected_score
                     } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_imp": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                        "expected_score_imp": round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),2)
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
                         "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
@@ -1936,7 +1946,7 @@ class CardPlayer:
                         "expected_score_mp": expected_score
                     } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_imp": e_score + (trump_adjust*2 if (card32 // 8) + 1 == self.strain_i else 0)
+                        "expected_score_imp": round(e_score + (trump_adjust*2 if (card32 // 8) + 1 == self.strain_i else 0),2)
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
                         "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)

@@ -455,8 +455,12 @@
                     let vulOptions = document.querySelectorAll("#vulInput option");
                     for (const element of vulOptions) {
                         if (element.text == currentBlock.value) {
-                            element.setAttribute("selected", "");
-                            break;
+                            // Remove 'selected' from all options
+                            vulOptions.forEach(opt => opt.removeAttribute("selected"));
+                            
+                            // Set 'selected' on the matching option
+                            element.setAttribute("selected", "true");
+                            break;                        
                         }
                     }
                 } 
@@ -886,7 +890,11 @@
                 port = 8088
             }
 
-            const url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&dummy=${dummy}&played=${played}&tournament=${matchpoint}&explain=${explain}`;
+            var url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&tournament=${matchpoint}&explain=${explain}`;
+            if (action == "play")
+                url += `&dummy=${dummy}&played=${played}`;
+            if (action == "contract")
+                url += `&dummy=${dummy}`;
 
             try {           
                 const response = await fetch(url, {

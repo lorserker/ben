@@ -89,6 +89,7 @@ class Driver:
         if seed is not None:
             print(f"Setting seed={seed}")
             np.random.seed(seed)
+            tf.random.set_seed(seed)
 
         #Default is a Human South
         self.human = [False, False, True, False]
@@ -963,7 +964,7 @@ async def main():
     parser.add_argument("--paronly", default=0, type=int, help="only record deals with this IMP difference from par")
     parser.add_argument("--facit", default=False, type=bool, help="Calcualte score for the bidding from facit")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
-    parser.add_argument("--seed", type=int, help="Seed for random")
+    parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 
     args = parser.parse_args()
 

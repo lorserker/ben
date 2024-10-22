@@ -322,6 +322,7 @@ parser.add_argument("--config", default=f"{config_path}/config/default_api.conf"
 parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=8085, help="Port for appserver")
 parser.add_argument("--record", type=bool, default=True, help="Recording of responses")
+parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 
 args = parser.parse_args()
 
@@ -329,6 +330,7 @@ configfile = args.config
 verbose = args.verbose
 port = args.port
 record = args.record
+seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=240)
 
@@ -379,6 +381,10 @@ if models.matchpoint:
 else:
     print("Playing IMPS mode")
 
+
+print(f"Setting seed={seed}")
+np.random.seed(seed)
+tf.random.set_seed(seed)
 
 host = args.host
 print(f'http://{host}:{port}/')

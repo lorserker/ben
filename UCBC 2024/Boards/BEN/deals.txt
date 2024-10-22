@@ -85,3 +85,8 @@ Sample: 111, Hand ATx.KQJ.AKxxx.Ax Bid not valid: 1S insta_score: 0.783
 Sampling this auction: 1H-1S-P-2S-P with this deal K643.87.KQ9.8643 Q7.AQJT93.J74.Q9 AJT952.4.AT.AKT5 8.K652.86532.J72
 Please add deal to training to avoid this auction 1H-1S-P-2S-P-4H
 Sample: 12, Hand x.Kxxx.xxxxx.Jxx Bid not valid: 4H insta_score: 0.389
+
+# Server
+Sampling this auction: P-P-P-1H with this deal 9874.K63.865.T62 AK6.AQT92.AQ72.9 T.J85.KJ43.QJ843 QJ532.74.T9.AK75
+Please add deal to training to avoid this auction P-P-P-1H-1N-X-P-4C-X-P-P
+Sample: 160, Hand AKx.AQTxx.AQxx.x Bid not valid: 3N insta_score: 0.367

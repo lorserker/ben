@@ -7,9 +7,10 @@ import binary
 
 from bidding import bidding
 import deck52
-from util import get_all_hidden_cards, calculate_seed, convert_to_probability
+from util import get_all_hidden_cards, calculate_seed, convert_to_probability, convert_to_probability_with_weight
 from configparser import ConfigParser
 from util import hand_to_str
+from collections import defaultdict
 from colorama import Fore, Back, Style, init
 
 init()
@@ -130,7 +131,7 @@ class Sample:
 
     def sample_cards_vec(self, n_samples, c_hcp, c_shp, my_hand, rng, n_cards=32):
         if self.verbose:
-            print("sample_cards_vec generating", n_samples)
+            print("sample_cards_vec generating", n_samples, rng.bit_generator.state['state']['state'])
             t_start = time.time()
         deck = np.ones(n_cards, dtype=int)
         cards_in_suit = n_cards // 4
@@ -178,16 +179,16 @@ class Sample:
         # calculate missing hcp
         missing_hcp = 40 - binary.get_hcp(np.array([my_hand]))[0]
 
-
         if missing_hcp > 0:
-            hcp_reduction_factor = self.hcp_reduction_factor * np.sum(r_hcp[0]) / missing_hcp
+            hcp_reduction_factor = round(self.hcp_reduction_factor * np.sum(r_hcp[0]) / missing_hcp,2)
         else:
             hcp_reduction_factor = 0
 
         if self.verbose:
             print("Missing HCP:", missing_hcp)
             print("Expected HCP:",r_hcp[0])
-            print("hcp_reduction_factor:", hcp_reduction_factor, self.hcp_reduction_factor)            
+            print(f"hcp_reduction_factor:{hcp_reduction_factor}  {self.hcp_reduction_factor}")            
+            print(f"shp_reduction_factor:{self.shp_reduction_factor}")            
 
         # print(ak_out_i)
         # all AK's in the same hand
@@ -214,6 +215,7 @@ class Sample:
 
         # distribute small cards
         js = np.zeros(n_samples, dtype=int)
+        loop_counter = 0
         while True:
             s_all_r = s_all[js < small_out_i.shape[1]]
             if len(s_all_r) == 0:
@@ -235,12 +237,13 @@ class Sample:
             # This can result in hands with 12 cards, and interestingly the bidding can be OK with 12 cards, and also single dummy is fine
             # But after implementing the option of Double Dummy for opening lead it is a problem
             # So we could just ship the boards where a player has 12 cards, but for now we just remove the counter
-            #loop_counter += 1  # Increment the loop counter
+            loop_counter += 1  # Increment the loop counter
             #if loop_counter >= 250:  # Check if the counter reaches 76
             #    print("Loop counter >= 76")
             #    break  #
 
-
+        if self.verbose:
+            print("Loops to deal the hands", loop_counter)
         # re-apply constraints
         # This is in principle just to reduce the number of samples for performance
         accept_hcp = np.ones(n_samples).astype(bool)
@@ -251,7 +254,7 @@ class Sample:
 
         accepted = np.sum(accept_hcp)
         if self.verbose:
-            print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {accepted}')
+            print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {accepted} state={rng.bit_generator.state['state']['state']}')
 
         accept_shp = np.ones(n_samples).astype(bool)
 
@@ -788,10 +791,10 @@ class Sample:
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
             h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
             sample_boards_for_play = self.sample_boards_for_play
-            if hidden_cards_no < 16:
+            if hidden_cards_no < 12:
+                sample_boards_for_play = sample_boards_for_play // 2
+            if hidden_cards_no < 7:
                 sample_boards_for_play = sample_boards_for_play // 4
-            if hidden_cards_no < 8:
-                sample_boards_for_play = sample_boards_for_play // 10
             # The more cards we know the less samples are needed to 
             h1_h2 = self.shuffle_cards_bidding_info(
                 sample_boards_for_play,
@@ -864,6 +867,7 @@ class Sample:
 
         # this is to see how many samples we actually have
         samples = []
+        counts = defaultdict(int)  # Dictionary to store counts of each sample  
         for i in range(states[0].shape[0]):
             sample = '%s %s %s %s' % (
                 hand_to_str(states[0][i, 0, :32].astype(int)),
@@ -875,13 +879,13 @@ class Sample:
                 unique_indices[i] = False
             else:
                 samples.append(sample)
+            
+            counts[sample] += 1 
 
         # Use the unique_indices to filter player_states
-        # If using probability, we should keep the count for each samples
-        # states = [state[unique_indices] for state in states]
+        states = [state[unique_indices] for state in states]
         if self.verbose:
-            print(f"States {states[0].shape[0]}")
-            print(f"Could drop {np.sum(unique_indices == False)} samples")
+            print(f"Unique states {states[0].shape[0]}")
 
         accept, c_hcp, c_shp = self.validate_shape_and_hcp_for_sample(auction, known_nesw, hand_bidding, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models)
 
@@ -917,16 +921,14 @@ class Sample:
         # Sort second dimension within each array in states based on min_bid_scores
         bidding_states = [state[sorted_indices] for state in states]
         
-        if self.verbose:
-            print("States after bidding:", len(bidding_states))
-        if len(states) > 100:
+        if bidding_states[0].shape[0] > 200:
             # We drop the samples we are not going to use
             bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
             sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_extend_play_threshold]
         assert bidding_states[0].shape[0] > 0, "No samples after bidding"
 
         if self.verbose:
-            print(f"States {bidding_states[0].shape[0]} before checking opening lead (after shape and hcp)")
+            print(f"States {bidding_states[0].shape[0]} before checking opening lead (after shape and hcp and bidding)")
 
         # We should probably test this after validating the bidding, and not before
         # reject samples inconsistent with the opening lead
@@ -938,10 +940,10 @@ class Sample:
         assert bidding_states[0].shape[0] > 0, "No samples after opening lead"
 
         # We should probably test this after validating the bidding, and not before
-        if self.play_accept_threshold > 0 and trick_i <= 11:
+        if self.play_accept_threshold > 0 and trick_i + 1 <= 11:
             bidding_states, sorted_min_bid_scores = self.validate_play_until_now(trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, bidding_states, sorted_min_bid_scores, models, contract)
         if self.verbose:
-            print(f"States {bidding_states[0].shape[0]} after checking the play.")
+            print(f"States {bidding_states[0].shape[0]} after checking the play. Trick {trick_i + 1}")
 
         assert bidding_states[0].shape[0] > 0, "No samples after checking play"
 
@@ -950,13 +952,11 @@ class Sample:
         if self.verbose:
             print("Bidding samples accepted: ",valid_bidding_samples)
 
-        quality = True
         # With only few cards left we will not filter the samples according to the bidding.
-        if trick_i <= 11:
+        if trick_i + 1 <= 11:
             # trusting the bidding after sampling cards
             # This could probably be set based on number of deals matching or sorted
             if valid_bidding_samples >= self.sample_hands_play: 
-                quality = True
                 if self.verbose:
                     print("Enough samples above threshold: ",valid_bidding_samples, self.bid_accept_play_threshold)
                 bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
@@ -968,28 +968,29 @@ class Sample:
                 sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
             else:            
                 if valid_bidding_samples < self.min_sample_hands_play: 
-                    quality = False
                     if np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold) == 0:
                         sys.stderr.write(" We have no idea about what the bidding means\n")
                         # We just take top three as we really have no idea about what the bidding means
                         bidding_states = [state[:self.min_sample_hands_play_bad] for state in bidding_states]
                     else:
+                        #sys.stderr.write(" Extending with samples below threshold\n")
                         bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
-                        quality = True
                         # Limit to just the minimum needed
                         bidding_states = [state[:self.min_sample_hands_play] for state in bidding_states]
                 else:
-                    quality = True
                     if self.verbose:
                         print("Enough samples above threshold: ",self.bid_accept_play_threshold)
                     bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
-                sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
 
+        quality = round(np.mean(sorted_min_bid_scores),5)
         if self.verbose:
-            print(f"Returning {min(bidding_states[0].shape[0],n_samples)} {quality}")
+            print(f"Returning {min(bidding_states[0].shape[0],n_samples)} {quality:.5f}")
         assert bidding_states[0].shape[0] > 0, "No samples for DDSolver"
         
-        probability_of_occurence = convert_to_probability(sorted_min_bid_scores[:min(bidding_states[0].shape[0],n_samples)])
+        bidding_states = [state[:min(bidding_states[0].shape[0],n_samples)] for state in bidding_states]
+        sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
+        #probability_of_occurence = convert_to_probability(sorted_min_bid_scores[:min(bidding_states[0].shape[0],n_samples)])
+        probability_of_occurence = convert_to_probability_with_weight(sorted_min_bid_scores, bidding_states, counts)
 
         return [state[:n_samples] for state in bidding_states], sorted_min_bid_scores[:min(bidding_states[0].shape[0],n_samples)], c_hcp, c_shp, quality, probability_of_occurence
     
@@ -1143,11 +1144,11 @@ class Sample:
         play_accept_threshold = self.play_accept_threshold
 
         if self.verbose:
-            print(f"Found deals above play threshold: {np.sum(min_scores > play_accept_threshold)} ")
+            print(f"Found deals above play threshold: {np.sum(min_scores > play_accept_threshold)} play_accept_threshold={play_accept_threshold}")
 
         while np.sum(min_scores > play_accept_threshold) < self.min_play_accept_threshold_samples and play_accept_threshold > 0:
             play_accept_threshold -= 0.01
-            # print(f"play_accept_threshold {play_accept_threshold} reduced")
+            #print(f"play_accept_threshold {play_accept_threshold:0.3f} reduced")
 
         s_accepted = min_scores > play_accept_threshold
 

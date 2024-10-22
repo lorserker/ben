@@ -167,7 +167,7 @@ class CardResp:
         }
 
         if self.quality is not None:
-            result['quality'] = self.quality
+            result['quality'] = str(round(self.quality,4))
         if hcp_values and hcp_values != -1:
             result['hcp'] = hcp_values
         if shape_values and shape_values != -1:    

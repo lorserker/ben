@@ -104,10 +104,38 @@ def calculate_seed(input):
     hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
     return hash_integer
 
+def convert_to_probability_with_weight(x, states, counts):
+    """Compute weighted softmax values for each set of scores in x using counts."""
+    
+    # Initialize weights array with the correct shape
+    weights = np.ones(states[0].shape[0])    
+    
+    # Calculate weights based on counts
+    for i in range(states[0].shape[0]):
+        sample = '%s %s %s %s' % (
+            hand_to_str(states[0][i, 0, :32].astype(int)),
+            hand_to_str(states[1][i, 0, :32].astype(int)),
+            hand_to_str(states[2][i, 0, :32].astype(int)),
+            hand_to_str(states[3][i, 0, :32].astype(int)),
+        )
+        
+        # Ensure that you get a scalar count for each sample
+        weights[i] = counts.get(sample, 0)  # Use .get to avoid KeyError
+
+    # Apply weights to x before calculating probabilities
+    # Ensure x is 2D: (num_samples, num_features) and weights is 1D: (num_samples,)
+    weighted_x = x * weights
+    sum_of_proba = np.sum(weighted_x, axis=0)
+
+    # Avoid division by zero if sum_of_proba contains zeros
+    x = np.divide(weighted_x, sum_of_proba, out=np.zeros_like(weighted_x), where=sum_of_proba != 0)
+    return x
+
 def convert_to_probability(x):
     """Compute softmax values for each sets of scores in x."""
     sum_of_proba = np.sum(x, axis=0)
-    return np.divide(x, sum_of_proba)
+    x =  np.divide(x, sum_of_proba)
+    return x
 
 class Board(NamedTuple):
     dealer: str
