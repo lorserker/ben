@@ -254,7 +254,7 @@ class Sample:
 
         accepted = np.sum(accept_hcp)
         if self.verbose:
-            print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {accepted} state={rng.bit_generator.state['state']['state']}')
+            print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {accepted} state={rng.bit_generator.state["state"]["state"]}')
 
         accept_shp = np.ones(n_samples).astype(bool)
 
@@ -791,10 +791,10 @@ class Sample:
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
             h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
             sample_boards_for_play = self.sample_boards_for_play
-            if hidden_cards_no < 12:
-                sample_boards_for_play = sample_boards_for_play // 2
-            if hidden_cards_no < 7:
-                sample_boards_for_play = sample_boards_for_play // 4
+            # if hidden_cards_no < 12:
+            #     sample_boards_for_play = sample_boards_for_play // 2
+            # if hidden_cards_no < 7:
+            #     sample_boards_for_play = sample_boards_for_play // 4
             # The more cards we know the less samples are needed to 
             h1_h2 = self.shuffle_cards_bidding_info(
                 sample_boards_for_play,
@@ -920,12 +920,14 @@ class Sample:
         # print("sorted_min_bid_scores",sorted_min_bid_scores)
         # Sort second dimension within each array in states based on min_bid_scores
         bidding_states = [state[sorted_indices] for state in states]
-        
-        if bidding_states[0].shape[0] > 200:
+        #print(bidding_states[0].shape[0])
+        valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold)
+        #print(valid_bidding_samples, sample_boards_for_play)
+        if bidding_states[0].shape[0] > 200 and valid_bidding_samples > 10:
             # We drop the samples we are not going to use
-            bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
-            sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_extend_play_threshold]
-        assert bidding_states[0].shape[0] > 0, "No samples after bidding"
+            bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold/10] for state in bidding_states]
+            sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_extend_play_threshold/10]
+        assert bidding_states[0].shape[0] > 0, "No samples after checking bidding"
 
         if self.verbose:
             print(f"States {bidding_states[0].shape[0]} before checking opening lead (after shape and hcp and bidding)")
@@ -969,7 +971,7 @@ class Sample:
             else:            
                 if valid_bidding_samples < self.min_sample_hands_play: 
                     if np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold) == 0:
-                        sys.stderr.write(" We have no idea about what the bidding means\n")
+                        sys.stderr.write(" We did not find any good samples\n")
                         # We just take top three as we really have no idea about what the bidding means
                         bidding_states = [state[:self.min_sample_hands_play_bad] for state in bidding_states]
                     else:

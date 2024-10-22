@@ -527,11 +527,13 @@ def bid():
         result = bid.to_dict()
         if explain:
             from bba.BBA import BBABotBid
-            print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
+            if verbose:
+                print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
             bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
             auction.append(bid.bid)
             result["explanation"] = bot.explain(auction)
-            print("explanation: ",result["explanation"])
+            if verbose:
+                print("explanation: ",result["explanation"])
 
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
@@ -789,7 +791,8 @@ def cuebid():
     result = bid.to_dict()
     if explain:
         from bba.BBA import BBABotBid
-        print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
+        if verbose:
+            print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
         bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
         auction.append(bid.bid)
         result["explanation"] = bot.explain(auction)

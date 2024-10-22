@@ -90,3 +90,16 @@ Sample: 12, Hand x.Kxxx.xxxxx.Jxx Bid not valid: 4H insta_score: 0.389
 Sampling this auction: P-P-P-1H with this deal 9874.K63.865.T62 AK6.AQT92.AQ72.9 T.J85.KJ43.QJ843 QJ532.74.T9.AK75
 Please add deal to training to avoid this auction P-P-P-1H-1N-X-P-4C-X-P-P
 Sample: 160, Hand AKx.AQTxx.AQxx.x Bid not valid: 3N insta_score: 0.367
+
+# Cuebids.com
+Sampling this auction: 1H-2S-P with this deal QT4.KT72.Q8.AK84 A.AQJ954.AJ2.QT2 J987632.8.K96.J5 K5.63.T7543.9763
+Please add deal to training to avoid this auction 1H-2S-P-3H
+Sample: 22, Hand A.AQJxxx.AJx.QTx Bid not valid: 3H insta_score: 0.388
+Sampling this auction: 1H-2S-P with this deal QT8.KT52.Q4.AK86 KJ.QJ9863.AK.QJ9 A976432.7.J763.5 5.A4.T9852.T7432
+Please add deal to training to avoid this auction 1H-2S-P-3H
+Sample: 49, Hand KJ.QJxxxx.AK.QJx Bid not valid: 3H insta_score: 0.277
+Sampling this auction: 1H-2S-P with this deal QT2.KT53.Q9.AK76 K5.AQ9864.AK5.J8 A987643.J2.743.Q J.7.JT862.T95432
+Please add deal to training to avoid this auction 1H-2S-P-3H
+Sample: 90, Hand Kx.AQxxxx.AKx.Jx Bid not valid: 3H insta_score: 0.433
+Sampling this auction: 1H-2S-P with this deal QT8.KT73.Q6.AK43 96.AQJ982.AKT.T9 AK7532.5.94.QJ82 J4.64.J87532.765
+Please add deal to training to avoid this auction 1H-2S-P-3H
