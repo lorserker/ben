@@ -221,7 +221,7 @@ async def handler(websocket, path, board_no, seed):
 
     try:
         t_start = time.time()
-        await driver.run()
+        await driver.run(t_start)
 
         print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 

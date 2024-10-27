@@ -14,7 +14,7 @@ from bidding import bidding
 from collections import defaultdict
 
 import carding
-from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed
+from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed, find_vuln_text, save_for_training
 from colorama import Fore, Back, Style, init
 
 init()
@@ -646,7 +646,7 @@ class BotBid:
                 #print(bid_softmax)
                 if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                     if (bid_softmax[bid_i] < 0.5):
-                        sys.stderr.write(f"{Fore.LIGHTGREEN_EX}Consider adding samples for {auction} with {self.hand_str}\n{Style.RESET_ALL}")
+                        sys.stderr.write(f"{Fore.LIGHTGREEN_EX}Consider adding samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')} with {self.hand_str}\n{Style.RESET_ALL}")
                     candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i], alert=alert))
                     break
                 else:
@@ -821,7 +821,6 @@ class BotBid:
 
         bid_i = len(auction) - 1
         turn_i = len(auction) % 4
-        #np.set_printoptions(precision=1, suppress=True)
 
         # Now we bid each sample to end of auction
         while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
@@ -857,8 +856,10 @@ class BotBid:
                             deal = ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) for hand in hands_np[i,:,:])
                             deal = deck52.convert_cards(deal,0, "", self.rng, self.models.n_cards_bidding)
                             deal = deck52.reorder_hand(deal)
-                            sys.stderr.write(f"{Fore.GREEN}Sampling this auction: {'-'.join(auction_so_far).replace('PASS', 'P').replace('PAD_START-', '')} with this deal {deal}\n")
-                            sys.stderr.write(f"{Fore.GREEN}Please add deal to training to avoid this auction {'-'.join(auction).replace('PASS', 'P')}\n{Style.RESET_ALL}")
+                            deal = "NESW"[self.dealer] + " " +find_vuln_text(self.vuln) + ' ' + deal
+                            save_for_training(deal, '-'.join(auction).replace('PASS', 'P'))
+                            sys.stderr.write(f"{Fore.RED}Sampling: {'-'.join(auction_so_far).replace('PASS', 'P').replace('PAD_START-', '').replace('PAD_START', 'Opening')} with this deal {deal} ")
+                            sys.stderr.write(f"to avoid this auction {'-'.join(auction).replace('PASS', 'P')}\n{Style.RESET_ALL}")
                             sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
                             bid_np[i][bid] = 0
                             
@@ -1027,16 +1028,8 @@ class BotBid:
 
             # It will probably improve performance if all is calculated in one go
             dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1)
-            # Only use 1st element from the result
-            first_key = next(iter(dd_solved))
-            first_item = dd_solved[first_key]
 
-            #print(contract)
-            #print(hands_pbn)
-            #print(leader)
-            #print("dd_solved", dd_solved)
-            # first_item[0] contain tricks for opening leader
-            decl_tricks_softmax[i,13 - first_item[0]] = 1
+            decl_tricks_softmax[i,13 - dd_solved["max"][0]] = 1
 
         if self.verbose:
             print(f'dds took: {(time.time() - t_start):0.4f}')
@@ -1103,7 +1096,6 @@ class BotLead:
         contract = bidding.get_contract(auction)
         scores_by_trick = scoring.contract_scores_by_trick(contract, tuple(self.vuln))
 
-        print("samples", len(accepted_samples), "quality", quality)
         candidate_cards = []
         expected_tricks_sd = None
         expected_tricks_dd = None
@@ -1208,7 +1200,6 @@ class BotLead:
                         else:
                             candidate_cards = sorted(candidate_cards, key=lambda c: (round(5*c.p_make_contract, 1), -round(c.expected_tricks_sd, 1), round(c.insta_score, 2)), reverse=True)
                             who = "Simulation (make/set SD)"
-                # Print each CandidateCard in the list
                 opening_lead = candidate_cards[0].card.code()
 
         if self.verbose:
@@ -1327,11 +1318,11 @@ class BotLead:
         n_accepted = accepted_samples.shape[0]
         tricks = np.zeros((n_accepted, len(lead_card_indexes), 2))
         strain_i = bidding.get_strain_i(contract)
-
-        # if defending the target is another
+        # When defending the target is another
         level = int(contract[0])
         tricks_needed = 13 - (level + 6) + 1
 
+        t_start = time.time()
         for j, lead_card_i in enumerate(lead_card_indexes):
             # Subtract the opening lead from the hand
             lead_hand = self.hand52[0]
@@ -1355,18 +1346,19 @@ class BotLead:
             if self.verbose:
                 print("Opening lead being examined: ", Card.from_code(opening_lead52), n_accepted)
             t_start = time.time()
+            hands_pbn = []
             for i in range(n_accepted):
-                hands_pbn = ['N:' + hand_str + ' ' + ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) for hand in accepted_samples[i])]
-                hands_pbn[0] = deck52.convert_cards(hands_pbn[0],opening_lead52, hand_str, self.get_random_generator(),self.models.n_cards_bidding)
+                sample_pbn = 'N:' + hand_str + ' ' + ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) for hand in accepted_samples[i])
+                hands_pbn.append(deck52.convert_cards(sample_pbn,opening_lead52, hand_str, self.get_random_generator(),self.models.n_cards_bidding))
                 # lead is relative to the order in the PBN-file, so West is 0 here
                 onlead = 0
                 
-                dd_solved = self.dd.solve(strain_i, onlead, [opening_lead52], hands_pbn, 3)
-                # Only use 1st element from the result
-                first_key = next(iter(dd_solved))
-                first_item = dd_solved[first_key]
-                tricks[i, j, 0] = first_item[0] 
-                tricks[i, j, 1] = 1 if (13 - first_item[0]) >= tricks_needed else 0
+            dd_solved = self.dd.solve(strain_i, onlead, [opening_lead52], hands_pbn, 1)
+
+            for i in range(n_accepted):
+                tricks[i, j, 0] = dd_solved["max"][i] 
+                tricks[i, j, 1] = 1 if (13 - dd_solved["max"][i]) >= tricks_needed else 0
+
             if self.verbose:
                 print(f'dds took: {(time.time() - t_start):0.4f}')
         return tricks
@@ -1555,16 +1547,19 @@ class CardPlayer:
         self.pimc_declaring = self.models.pimc_use_declaring and trick_i  >= (self.models.pimc_start_trick_declarer - 1)
         self.pimc_defending = self.models.pimc_use_defending and trick_i  >= (self.models.pimc_start_trick_defender - 1)
         if self.models.pimc_constraints:
-            if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
-                if trick_i >= (self.models.pimc_start_trick_declarer - 1) and not self.pimc.constraints_updated:
-                    if self.verbose:
-                        print("Declaring", self.pimc_declaring, self.player_i, trick_i)
-                    self.find_and_update_constraints(players_states, quality,self.player_i)
-            if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
-                if trick_i >= (self.models.pimc_start_trick_defender - 1) and not self.pimc.constraints_updated:
-                    if self.verbose:
-                        print("Defending", self.pimc_declaring, self.player_i, trick_i)
-                    self.find_and_update_constraints(players_states, quality,self.player_i)
+            if self.models.pimc_constraints_each_trick:
+                self.find_and_update_constraints(players_states, quality,self.player_i)
+            else:
+                if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
+                    if trick_i >= (self.models.pimc_start_trick_declarer - 1) and not self.pimc.constraints_updated:
+                        if self.verbose:
+                            print("Declaring", self.pimc_declaring, self.player_i, trick_i)
+                        self.find_and_update_constraints(players_states, quality,self.player_i)
+                if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
+                    if trick_i >= (self.models.pimc_start_trick_defender - 1) and not self.pimc.constraints_updated:
+                        if self.verbose:
+                            print("Defending", self.pimc_declaring, self.player_i, trick_i)
+                        self.find_and_update_constraints(players_states, quality,self.player_i)
 
     def merge_candidate_cards(self, pimc_resp, dd_resp, engine):
         merged_cards = {}
@@ -1582,19 +1577,20 @@ class CardPlayer:
 
         return merged_cards
     
-    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
+    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores):
         t_start = time.time()
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
 
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
-            samples.append('%s %s %s %s %.5f %.5f ' % (
+            samples.append('%s %s %s %s %.5f %.5f %.5f ' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),
                 hand_to_str(players_states[1][i,0,:32].astype(int)),
                 hand_to_str(players_states[2][i,0,:32].astype(int)),
                 hand_to_str(players_states[3][i,0,:32].astype(int)),
                 bidding_scores[i],
-                probability_of_occurence[i]
+                probability_of_occurence[i],
+                lead_scores[i]
             ))
         if not quality and self.verbose:
             print(samples)
@@ -1823,7 +1819,7 @@ class CardPlayer:
             card32 = deck52.card52to32(card52)
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
             if insta_score >= self.models.pimc_trust_NN:
-                expected_score = round(e_score + (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0), 0)
+                expected_score = round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0), 0)
 
                 candidate_cards.insert(0,CandidateCard(
                     card=Card.from_code(card52),

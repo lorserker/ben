@@ -15,7 +15,7 @@ class Models:
 
     def __init__(self, name, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
                  min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_ben_dd_defending, pimc_apriori_probability,
+                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability,
                  use_adjustment,
                  adjust_NN,
                  adjust_NN_Few_Samples,
@@ -84,6 +84,7 @@ class Models:
         self.use_biddingquality_in_eval = use_biddingquality_in_eval
         self.double_dummy_calculator = double_dummy_calculator
         self.opening_lead_included = opening_lead_included
+        self.pimc_verbose = pimc_verbose
         self.pimc_use_declaring = pimc_use_declaring
         self.pimc_use_defending = pimc_use_defending
         self.pimc_wait = pimc_wait
@@ -98,6 +99,7 @@ class Models:
         self.pimc_max_threads = pimc_max_threads
         self.pimc_trust_NN = pimc_trust_NN
         self.pimc_ben_dd_declaring = pimc_ben_dd_declaring
+        self.pimc_use_fusion_strategy = pimc_use_fusion_strategy
         self.pimc_ben_dd_defending = pimc_ben_dd_defending
         self.pimc_apriori_probability = pimc_apriori_probability
         self.use_adjustment = use_adjustment
@@ -181,6 +183,7 @@ class Models:
         estimator = conf.get('eval', 'estimator', fallback="sde")
         double_dummy_calculator = conf.getboolean('eval', 'double_dummy_calculator', fallback=False)
         claim = conf.getboolean('cardplay', 'claim', fallback=True)
+        pimc_verbose = conf.getboolean('pimc', 'pimc_verbose', fallback=True)
         pimc_use_declaring = conf.getboolean('pimc', 'pimc_use_declaring', fallback=False)
         pimc_use_defending = conf.getboolean('pimc', 'pimc_use_defending', fallback=False)
         pimc_wait = conf.getfloat('pimc', 'pimc_wait', fallback=1)
@@ -193,6 +196,7 @@ class Models:
         pimc_max_threads = conf.getint('pimc', 'pimc_max_threads', fallback=-1)
         pimc_trust_NN = conf.getfloat('pimc', 'pimc_trust_NN', fallback=0)
         pimc_ben_dd_declaring = conf.getboolean('pimc', 'pimc_ben_dd_declaring', fallback=False)
+        pimc_use_fusion_strategy = conf.getboolean('pimc', 'pimc_use_fusion_strategy', fallback=True)
         pimc_ben_dd_defending = conf.getboolean('pimc', 'pimc_ben_dd_defending', fallback=False)
         pimc_apriori_probability = conf.getboolean('pimc', 'pimc_apriori_probability', fallback=False)
         use_adjustment = conf.getboolean('adjustments', 'use_adjustment', fallback=True)
@@ -289,6 +293,7 @@ class Models:
             alert_supported=alert_supported,
             alert_threshold=alert_threshold,
             matchpoint=matchpoint,
+            pimc_verbose=pimc_verbose,
             pimc_use_declaring=pimc_use_declaring,
             pimc_use_defending=pimc_use_defending,
             pimc_wait=pimc_wait,
@@ -301,6 +306,7 @@ class Models:
             pimc_max_threads=pimc_max_threads,
             pimc_trust_NN=pimc_trust_NN,
             pimc_ben_dd_declaring=pimc_ben_dd_declaring,
+            pimc_use_fusion_strategy=pimc_use_fusion_strategy,
             pimc_ben_dd_defending=pimc_ben_dd_defending,
             pimc_apriori_probability=pimc_apriori_probability,
             use_adjustment=use_adjustment,

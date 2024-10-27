@@ -122,23 +122,35 @@ class DDSolver:
             print(f"{hands_pbn[0].encode('utf-8')}{Style.RESET_ALL}")
             return None
 
-        card_results = {}
+        if solutions == 1:
+            # Just return the maximum number of the side to play for each sample
+            card_results = {}
+            card_results["max"] = []
+            card_results["min"] = []
+            for handno in range(self.bo.noOfBoards):
+                fut = ctypes.pointer(self.solved.solvedBoards[handno])
+                suit_i = fut.contents.suit[0]
+                card = suit_i * 13 + 14 - fut.contents.rank[0]
+                card_results["max"].append(fut.contents.score[0])
+                card_results["min"].append(fut.contents.score[fut.contents.cards-1])
 
-        for handno in range(self.bo.noOfBoards):
-            fut = ctypes.pointer(self.solved.solvedBoards[handno])
-            for i in range(fut.contents.cards):
-                suit_i = fut.contents.suit[i]
-                card = suit_i * 13 + 14 - fut.contents.rank[i]
-                if card not in card_results:
-                    card_results[card] = []
-                card_results[card].append(fut.contents.score[i])
-                eq_cards_encoded = fut.contents.equals[i]
-                for k, rank_code in enumerate(card_rank):
-                    if rank_code & eq_cards_encoded > 0:
-                        eq_card = suit_i * 13 + k
-                        if eq_card not in card_results:
-                            card_results[eq_card] = []
-                        card_results[eq_card].append(fut.contents.score[i])
+        else:    
+            card_results = {}
+            for handno in range(self.bo.noOfBoards):
+                fut = ctypes.pointer(self.solved.solvedBoards[handno])
+                for i in range(fut.contents.cards):
+                    suit_i = fut.contents.suit[i]
+                    card = suit_i * 13 + 14 - fut.contents.rank[i]
+                    if card not in card_results:
+                        card_results[card] = []
+                    card_results[card].append(fut.contents.score[i])
+                    eq_cards_encoded = fut.contents.equals[i]
+                    for k, rank_code in enumerate(card_rank):
+                        if rank_code & eq_cards_encoded > 0:
+                            eq_card = suit_i * 13 + k
+                            if eq_card not in card_results:
+                                card_results[eq_card] = []
+                            card_results[eq_card].append(fut.contents.score[i])
         return card_results
 
 

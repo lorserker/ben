@@ -63,21 +63,21 @@ def calculate_mp_score( data):
 def calculate_imp_score_probability( data, probabilities_list):
     scores = {key: 0 for key in data}  # Initialize scores for each key
     keys = list(data.keys())  # Get the list of keys
-    num_arrays = len(keys)
-    num_plays = check_array_lengths(data)
+    num_plays = len(keys)
+    num_samples = check_array_lengths(data)
 
-    if num_arrays == 1:
+    if num_plays == 1:
         scores[keys[0]] = 0
         return scores
 
     # Compare each array with all others
-    for i in range(num_arrays):
-        for j in range(num_arrays):
+    for i in range(num_plays):
+        for j in range(num_plays):
             if i != j:
                 # Compare data[keys[i]] with data[keys[j]] column by column
-                for k in range(num_plays):  # Iterate through each value (column)
+                for k in range(num_samples):  # Iterate through each value (column)
                     diff = data[keys[i]][k] - data[keys[j]][k]
-                    imp_score = scoring.diff_to_imps(diff) * probabilities_list[k] * num_plays
+                    imp_score = scoring.diff_to_imps(diff) * probabilities_list[k] * num_samples
                     #if i == 0 and j == 5:
                     #    print(diff, imp_score, probabilities_list[k])
                     # Add or subtract the IMP score based on the sign of diff
@@ -86,7 +86,7 @@ def calculate_imp_score_probability( data, probabilities_list):
                     else:
                         scores[keys[i]] -= imp_score        
 
-    num_scores = num_plays  * (num_arrays - 1)
+    num_scores = num_samples  * (num_plays - 1)
     #print(num_score, scores)
     # Translate the scores to percentages
     for key in scores:
@@ -96,15 +96,15 @@ def calculate_imp_score_probability( data, probabilities_list):
 def calculate_imp_score( data):
     scores = {key: 0 for key in data}  # Initialize scores for each key
     keys = list(data.keys())  # Get the list of keys
-    num_arrays = len(keys)
-    num_plays = check_array_lengths(data)
+    num_plays = len(keys)
+    num_samples = check_array_lengths(data)
 
     # Compare each array with all others
-    for i in range(num_arrays):
-        for j in range(num_arrays):
+    for i in range(num_plays):
+        for j in range(num_plays):
             if i != j:
                 # Compare data[keys[i]] with data[keys[j]] column by column
-                for k in range(num_plays):  # Iterate through each value (column)
+                for k in range(num_samples):  # Iterate through each value (column)
                     diff = data[keys[i]][k] - data[keys[j]][k]
                     imp_score = scoring.diff_to_imps(diff)
                     
@@ -113,7 +113,7 @@ def calculate_imp_score( data):
                         scores[keys[i]] += imp_score
                     else:
                         scores[keys[i]] -= imp_score        
-    num_scores = num_plays * (num_arrays - 1)
+    num_scores = num_samples * (num_plays - 1)
     #print(num_scores, scores)
     # Translate the scores to percentages
     for key in scores:

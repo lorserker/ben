@@ -7,6 +7,23 @@ from typing import NamedTuple, List
 from bidding import bidding
 from binary import get_cards_from_binary_hand, get_binary_hand_from_cards
 
+def save_for_training(deal, auction):
+    with open("training.ben", "a") as file:
+        file.write(deal + " #" + auction + "\n")
+
+VULN = {
+    'None': [False, False],
+    'N-S': [True, False],
+    'E-W': [False, True],
+    'Both': [True, True]
+}
+
+def find_vuln_text(boolean_array):
+    for text, array in VULN.items():
+        if array == boolean_array:
+            return text
+    return None  # If no match is found
+
 def hand_to_str(hand, n_cards=32):
     x = hand.reshape((4, n_cards // 4))
     symbols = 'AKQJT98765432'

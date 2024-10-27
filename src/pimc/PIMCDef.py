@@ -46,7 +46,7 @@ class BGADefDLL:
         self.max_playout = models.pimc_max_playouts
         self.wait = models.pimc_wait
         self.autoplay = models.autoplaysingleton
-        self.pimc = PIMCDef(models.pimc_max_threads, verbose)
+        self.pimc = PIMCDef(models.pimc_max_threads, self.models.pimc_verbose and verbose)
         self.pimc.Clear()
         self.full_deck = Extensions.Parse("AKQJT98765432.AKQJT98765432.AKQJT98765432.AKQJT98765432")
         self.dummyhand = Extensions.Parse(northhand)
@@ -493,7 +493,7 @@ class BGADefDLL:
             for key in card_ev.keys():
                 card_result[key] = (round(e_tricks[key], 2), round(card_ev[key],2), making[key], msg)
                 if self.verbose:
-                    print(f'{key} {e_tricks[key]:0.3f} {card_ev[key]:5.2f} {making[key]:0.2f}')
+                    print(f'{key} {round(e_tricks[key],3):0.3f} {round(card_ev[key],2):5.2f} {round(making[key],3):0.3f}')
                         
 
         if self.verbose:

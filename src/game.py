@@ -73,8 +73,8 @@ class AsyncBotLead(bots.BotLead):
         return self.find_opening_lead(auction)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status):
-        return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
+    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores):
+        return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores)
     
     
 class Driver:
@@ -155,7 +155,7 @@ class Driver:
         np.random.seed(hash_integer)
 
 
-    async def run(self):
+    async def run(self, t_start):
         result_list = self.hands.copy()
 
         # If human involved hide the unseen hands
@@ -197,6 +197,7 @@ class Driver:
                 'pbn': self.deal_str,
                 'dict': self.to_dict() 
             }))
+            print('{1} Bidding took {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             return
 
         await self.channel.send(json.dumps({
@@ -206,6 +207,7 @@ class Driver:
             'strain': self.strain_i
         }))
 
+        print('{1} Bidding took {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         
         print("trick 1")
 
@@ -232,6 +234,7 @@ class Driver:
             'card': decode_card(opening_lead52)
         }))
 
+        print('{1} Opening lead after {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         # If human is dummy display declarers hand unless declarer also is human
         if self.human[(self.decl_i + 2) % 4] and not self.human[self.decl_i]:
             hand = self.deal_str.split()[self.decl_i]
@@ -261,7 +264,8 @@ class Driver:
             'pbn': self.deal_str,
             'dict': self.to_dict()
         }))
-    
+        print('{1} Finished after {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+
     def pbn_header(self, event):
         pbn_str = ""
         pbn_str += '% PBN 2.1\n'
@@ -545,9 +549,6 @@ class Driver:
                     print('player {}'.format(player_i))
                 
                 if trick_i == 0 and player_i == 0:
-                    # To get the state right we ask for the play when using Tf.2X
-                    if self.verbose:
-                        print('skipping opening lead for ',player_i)
                     for i, card_player in enumerate(card_players):
                         card_player.set_real_card_played(opening_lead52, player_i)
                         card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
@@ -559,43 +560,45 @@ class Driver:
                 if self.verbose:
                     print('play status', play_status)
 
-                if play_status == "Forced":
-                    card = get_singleton(card_players[player_i].hand52,current_trick52)
-                    card_resp = CardResp(
-                        card=Card.from_code(card),
-                        candidates=[],
-                        samples=[],
-                        shape=-1,
-                        hcp=-1, 
-                        quality=None,
-                        who="Forced"
-                    )
-                # if play status = follow 
-                # and all out cards are equal value (like JT9)
-                # the play lowest if defending and highest if declaring
-                if play_status == "Follow" and card_resp == None:
-                    result = get_possible_cards(card_players[player_i].hand52,current_trick52)
-                    if result[0] != -1:
-                        card = result[0] if player_i == 3 else result[1]
+                if isinstance(card_players[player_i], bots.CardPlayer):
+                    if play_status == "Forced":
+                        card = get_singleton(card_players[player_i].hand52,current_trick52)
                         card_resp = CardResp(
                             card=Card.from_code(card),
                             candidates=[],
                             samples=[],
                             shape=-1,
-                            hcp=-1,
+                            hcp=-1, 
                             quality=None,
-                            who="Follow"
-                        )                        
+                            who="Forced"
+                        )
+                # if play status = follow 
+                # and all out cards are equal value (like JT9)
+                # the play lowest if defending and highest if declaring
+                    if play_status == "Follow" and card_resp == None:
+                        result = get_possible_cards(card_players[player_i].hand52,current_trick52)
+                        if result[0] != -1:
+                            card = result[0] if player_i == 3 else result[1]
+                            card_resp = CardResp(
+                                card=Card.from_code(card),
+                                candidates=[],
+                                samples=[],
+                                shape=-1,
+                                hcp=-1,
+                                quality=None,
+                                who="Follow"
+                            )                        
 
                 # if card_resp is None, we have to rollout
                 if card_resp == None:    
                     if isinstance(card_players[player_i], bots.CardPlayer):
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
                     else: 
                         rollout_states = []
                         bidding_scores = []
+                        lead_scores = []
                         c_hcp = -1
                         c_shp = -1
                         quality = 1
@@ -604,7 +607,7 @@ class Driver:
                     await asyncio.sleep(0.01)
 
                     while card_resp is None:
-                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status)
+                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores)
 
                         if (str(card_resp.card).startswith("Conceed")) :
                                 self.claimedbydeclarer = (player_i == 3) or (player_i == 1)
@@ -964,7 +967,7 @@ async def main():
     parser.add_argument("--paronly", default=0, type=int, help="only record deals with this IMP difference from par")
     parser.add_argument("--facit", default=False, type=bool, help="Calcualte score for the bidding from facit")
     parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
-    parser.add_argument("--seed", type=int, default=42, help="Seed for random")
+    parser.add_argument("--seed", type=int, default=-1, help="Seed for random")
 
     args = parser.parse_args()
 
@@ -974,6 +977,8 @@ async def main():
     playonly = args.playonly
     biddingonly = args.biddingonly
     seed = args.seed
+    if seed == -1:
+        seed = np.random.SeedSequence().generate_state(1)[0]
     outputpbn = args.outputpbn
     paronly = args.paronly
     facit = args.facit
@@ -1098,7 +1103,7 @@ async def main():
         # BEN is handling all 4 hands
         driver.human = [False, False, False, False]
         t_start = time.time()
-        await driver.run()
+        await driver.run(t_start)
 
         score = 0
         imps = 0
@@ -1156,7 +1161,7 @@ async def main():
                 else:
                     print(f"{Fore.LIGHTBLUE_EX}Running score: {driver.facit_total}{Style.RESET_ALL}")
         else:
-            print("Calculating PAR")
+            #print("Calculating PAR")
             par_score = dds.calculatepar(driver.deal_str, [driver.vuln_ns, driver.vuln_ew])
             if driver.contract != None:
                 if (driver.contract[-1] == "N" or driver.contract[-1] =="S"):

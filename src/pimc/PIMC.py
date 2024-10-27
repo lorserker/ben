@@ -46,7 +46,7 @@ class BGADLL:
         self.max_playout = models.pimc_max_playouts
         self.wait = models.pimc_wait
         self.autoplay = models.autoplaysingleton
-        self.pimc = PIMC(models.pimc_max_threads, verbose)
+        self.pimc = PIMC(models.pimc_max_threads, self.models.pimc_verbose and verbose)
         self.pimc.Clear()
         self.full_deck = Extensions.Parse("AKQJT98765432.AKQJT98765432.AKQJT98765432.AKQJT98765432")
         self.northhand = Extensions.Parse(northhand)
@@ -338,11 +338,11 @@ class BGADLL:
             print("Current trick",self.current_trick.ListAsString())
             print("Previous tricks",self.previous_tricks.ListAsString())
             print("Other hands",self.easthand.ToString(), self.westhand.ToString())
-
-        try:
+            print("Strategy",self.models.pimc_use_fusion_strategy)
             
+        try:
             self.pimc.SetupEvaluation(hands, self.opposHand, self.current_trick, self.previous_tricks, [self.rho_constraints,
-                                  self.lho_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North, self.max_playout, self.autoplay)
+                                  self.lho_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North, self.max_playout, self.autoplay, self.models.pimc_use_fusion_strategy)
         except Exception as ex:        
             print('Error:', ex)
             print("max_playout",self.max_playout)
@@ -456,7 +456,7 @@ class BGADLL:
                 #print("probability",probability)
                 
                 # Calculate average tricks
-                tricks = sum(entry.Item1 * entry.Item2 for entry in output) / total_weight if total_weight > 0 else 0
+                tricks_avg = sum(entry.Item1 * entry.Item2 for entry in output) / total_weight if total_weight > 0 else 0
                 if self.models.use_real_imp_or_mp:
                     # Iterate through the ValueTuple objects
                     results[card52] = []
@@ -466,16 +466,16 @@ class BGADLL:
                         results[card52].append(tricks)
                         weights.append(weight)
                     making[card52] = making_probability
-                    e_tricks[card52] = tricks
+                    e_tricks[card52] = tricks_avg
                 else:
 
                     # Second element is the score. We need to calculate it
-                    score = sum(self.score_by_tricks_taken[entry.Item1 + self.tricks_taken] * entry.Item2 for entry in output) / total_weight if total_weight > 0 else 0
+                    score = (sum(self.score_by_tricks_taken[entry.Item1 + self.tricks_taken] * entry.Item2 for entry in output) / total_weight) if total_weight > 0 else 0
                     msg = f"LHO: {self.lho_constraints.ToString()}|RHO: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
 
-                    card_result[card52] = (round(tricks, 2), round(score), round(making_probability, 2), msg)
+                    card_result[card52] = (round(tricks_avg, 2), round(score), round(making_probability, 2), msg)
                     if self.verbose:
-                        print(f"{count} {card52} {tricks:.2f} {score:.0f} {making_probability:.2f}")
+                        print(f"{count} {card52} {tricks_avg:.2f} {score:.0f} {making_probability:.2f}")
 
         except Exception as e:
             print('Error legalMoves:', e)
@@ -486,6 +486,11 @@ class BGADLL:
 
         if self.models.use_real_imp_or_mp:
             msg = f"LHO: {self.lho_constraints.ToString()}|RHO: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+            if self.verbose:
+                print("Tricks")
+                print(results)
+                print("score_by_tricks_taken")
+                print(self.score_by_tricks_taken)
             real_scores = calculate.calculate_score(results, self.tricks_taken, player_i, self.score_by_tricks_taken)
             if self.models.matchpoint:
                 card_ev = calculate.calculate_mp_score(real_scores)
@@ -499,7 +504,7 @@ class BGADLL:
             for key in card_ev.keys():
                 card_result[key] = (round(e_tricks[key], 2), round(card_ev[key],2), making[key], msg)
                 if self.verbose:
-                    print(f'{key} {e_tricks[key]:0.3f} {card_ev[key]:5.2f} {making[key]:0.2f}')
+                    print(f'{key} {round(e_tricks[key],3):0.3f} {round(card_ev[key],2):5.2f} {round(making[key],3):0.3f}')
                         
 
         if self.verbose:

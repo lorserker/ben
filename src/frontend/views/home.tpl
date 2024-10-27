@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <link rel="stylesheet" href="/app/style.css">
     <script>
+        var formerror = false
         function copyToClipboard(idx) {
         const bbaText = document.getElementById('bbaText'+idx);
         const text = bbaText.textContent.trim();

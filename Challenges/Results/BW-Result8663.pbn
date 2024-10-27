@@ -7,7 +7,7 @@
 
 [Event "##BW"]
 [Site "##BEN"]
-[Date "##2024.10.20"]
+[Date "##2024.10.27"]
 [BCFlags "801f"]
 [Board "1"]
 [West "Facit"]
@@ -18,20 +18,21 @@
 [Vulnerable "None"]
 [Deal "N:AK87.A2.Q94.T432 62.K98743.J53.KQ JT93.J6.KT8.AJ97 Q54.QT5.A762.865"]
 [Declarer "S"]
-[Contract "2S"]
+[Contract "3S"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "E"]
 PASS PASS PASS 1C
 PASS 1S PASS 2S
-PASS PASS PASS 
+PASS 3S PASS PASS
+PASS 
 [Play ""]
 [Hidden "EW"]
 {\n\n\n\n\nScore Table:
 
  2\s      10\n 3\s       6\n 1N       4\n 4\s       2\n 2N       2\n 3N       1\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score:  10
+Facit Score:     6\nRunning Score:   6
 }
 
 [BCFlags "801f"]
@@ -59,7 +60,7 @@ PASS PASS
 
  4\h      10\n 5\h       7\n 3N       4\n 6\c       3\n 6\s       2\n\n\n\n\n\n\n\n
 
-Facit Score:     0\nRunning Score:  10
+Facit Score:     0\nRunning Score:   6
 }
 
 [BCFlags "801f"]
@@ -85,7 +86,7 @@ PASS PASS PASS
 
  7\s      10\n 7\c       8\n 6\s       5\n 6\c       3\n 6N       3\n 5\s       2\n\n\n\n\n\n\n
 
-Facit Score:     2\nRunning Score:  12
+Facit Score:     2\nRunning Score:   8
 }
 
 [BCFlags "801f"]
@@ -110,7 +111,7 @@ PASS PASS 1S PASS
 
  6\s      10\n 5\s       4\n\n\n\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  16
+Facit Score:     4\nRunning Score:  12
 }
 
 [BCFlags "801f"]
@@ -137,7 +138,7 @@ PASS
 
  4\s       9\n 3\s       5\n 2N       2\n 3N       1\n\n\n\n\n\n\n\n\n
 
-Facit Score:     9\nRunning Score:  25
+Facit Score:     9\nRunning Score:  21
 }
 
 [BCFlags "801f"]
@@ -162,7 +163,7 @@ PASS PASS
 
  3\d      10\n 4\d       7\n 2\s       6\n 2N       6\n 3\c       6\n 5\d       5\n 3\s       3\n 3N       3\n 4\s       1\n\n\n\n
 
-Facit Score:     6\nRunning Score:  31
+Facit Score:     6\nRunning Score:  27
 }
 
 [BCFlags "801f"]
@@ -188,7 +189,7 @@ PASS
 
  3N       9\n 2N       5\n 4\d       4\n 5\d       2\n\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  35
+Facit Score:     4\nRunning Score:  31
 }
 
 [BCFlags "801f"]
@@ -217,7 +218,7 @@ PASS PASS
 
  S6N     10\n N6N      8\n 6\s       6\n 6\c       4\n 5N       3\n 5\s       2\n\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score:  41
+Facit Score:     6\nRunning Score:  37
 }
 
 [BCFlags "801f"]
@@ -244,7 +245,7 @@ PASS
 
  6\d      10\n 4\s       6\n 5\s       5\n 6\s       4\n 5\d       2\n\n\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score:  47
+Facit Score:     6\nRunning Score:  43
 }
 
 [BCFlags "801f"]
@@ -261,9 +262,9 @@ Facit Score:     6\nRunning Score:  47
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "S"]
-1D PASS 1S PASS
-2S PASS 4D PASS
-4H PASS 4N PASS
+1D PASS 2S PASS
+3S PASS 3N PASS
+4S PASS 4N PASS
 5S=1 PASS 6S PASS
 PASS PASS 
 [Note "0: Alert."]
@@ -273,7 +274,7 @@ PASS PASS
 
  6\s      10\n 6N       6\n 5\s       4\n 3N       4\n\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score:  57
+Facit Score:    10\nRunning Score:  53
 }
 
 [BCFlags "801f"]
@@ -299,7 +300,7 @@ PASS PASS PASS
 
  2\s      10\n 3\s       8\n 1N       6\n 2N       5\n 4\s       3\n 3N       2\n\n\n\n\n\n\n
 
-Facit Score:     3\nRunning Score:  60
+Facit Score:     3\nRunning Score:  56
 }
 
 [BCFlags "801f"]
@@ -328,7 +329,7 @@ PASS PASS
 
  6N      10\n 6\h       6\n 6\d       4\n 5N       3\n 5\h       2\n\n\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score:  66
+Facit Score:     6\nRunning Score:  62
 }
 
 [BCFlags "801f"]
@@ -355,7 +356,7 @@ PASS
 
  5\d      10\n 3\s       6\n 4\d       4\n 4\s       4\n 3N       4\n 2N       3\n 6\d       2\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  70
+Facit Score:     4\nRunning Score:  66
 }
 
 [BCFlags "801f"]
@@ -382,7 +383,7 @@ PASS PASS
 
  S6N     10\n N6N      8\n 6\h       7\n 6\c       6\n 4N       4\n 5\h       3\n 5\c       1\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  74
+Facit Score:     4\nRunning Score:  70
 }
 
 [BCFlags "801f"]
@@ -408,7 +409,7 @@ PASS PASS PASS
 
  6\d      10\n 4N       4\n 5\d       2\n 4\s       2\n\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  78
+Facit Score:     4\nRunning Score:  74
 }
 
 [BCFlags "801f"]
@@ -434,7 +435,7 @@ Facit Score:     4\nRunning Score:  78
 
  4\c      10\n 1N       7\n 2N       6\n 5\c       4\n 3N       3\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  82
+Facit Score:     4\nRunning Score:  78
 }
 
 [BCFlags "801f"]
@@ -461,7 +462,7 @@ PASS PASS PASS
 
  7\h      10\n 6\h       6\n 5\h       3\n\n\n\n\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score:  88
+Facit Score:     6\nRunning Score:  84
 }
 
 [BCFlags "801f"]
@@ -487,7 +488,7 @@ PASS PASS
 
  2\d       9\n 3\d       6\n 3N       4\n 2N       4\n E2\hP     4\n E2\hX     4\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  92
+Facit Score:     4\nRunning Score:  88
 }
 
 [BCFlags "801f"]
@@ -513,7 +514,7 @@ PASS PASS PASS
 
  5N       9\n 6\d       4\n 6N       2\n\n\n\n\n\n\n\n\n\n
 
-Facit Score:     9\nRunning Score: 101
+Facit Score:     9\nRunning Score:  97
 }
 
 [BCFlags "801f"]
@@ -539,7 +540,7 @@ PASS PASS
 
  4\s      10\n 3\s       4\n\n\n\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 111
+Facit Score:    10\nRunning Score: 107
 }
 
 [BCFlags "801f"]
@@ -564,7 +565,7 @@ PASS PASS
 
  W3\dX    10\n W3\d      7\n 3\s       5\n 4\s       3\n 3N       3\n\n\n\n\n\n\n\n
 
-Facit Score:     7\nRunning Score: 118
+Facit Score:     7\nRunning Score: 114
 }
 
 [BCFlags "801f"]
@@ -590,7 +591,7 @@ Facit Score:     7\nRunning Score: 118
 
  3N      10\n 2N       6\n 3\c       5\n 4\c       4\n 2\h       4\n 5\c       2\n 3\h       1\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 128
+Facit Score:    10\nRunning Score: 124
 }
 
 [BCFlags "801f"]
@@ -620,7 +621,7 @@ PASS
 
  7N      10\n 7\s       7\n 7\h       7\n 6N       4\n 6\s       2\n 6\h       2\n\n\n\n\n\n\n
 
-Facit Score:     7\nRunning Score: 135
+Facit Score:     7\nRunning Score: 131
 }
 
 [BCFlags "801f"]
@@ -647,7 +648,7 @@ PASS PASS
 
  6\s      10\n 6N       6\n 5\s       5\n 6\d       4\n 5N       4\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 139
+Facit Score:     4\nRunning Score: 135
 }
 
 [BCFlags "801f"]
@@ -674,7 +675,7 @@ PASS
 
  2\d      10\n 3\d       9\n 2\s       8\n 1N       7\n 4\d       6\n 3\s       5\n 2N       4\n 5\d       3\n 3N       2\n 4\s       2\n\n\n
 
-Facit Score:     9\nRunning Score: 148
+Facit Score:     9\nRunning Score: 144
 }
 
 [BCFlags "801f"]
@@ -699,7 +700,7 @@ Facit Score:     9\nRunning Score: 148
 
  4\h       9\n 5\h       6\n 6\d       2\n 6\h       1\n\n\n\n\n\n\n\n\n
 
-Facit Score:     9\nRunning Score: 157
+Facit Score:     9\nRunning Score: 153
 }
 
 [BCFlags "801f"]
@@ -725,7 +726,7 @@ PASS PASS PASS
 
  S6N     10\n N6N      7\n 6\s       6\n 6\c       5\n S3N      4\n N3N      3\n 5\s       3\n 5\c       3\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 161
+Facit Score:     4\nRunning Score: 157
 }
 
 [BCFlags "801f"]
@@ -751,7 +752,7 @@ PASS PASS
 
  5\d      10\n 5\c       9\n 4\d       5\n 4\c       5\n 1N       5\n 6\d       3\n 6\c       3\n 2N       3\n 3N       1\n\n\n\n
 
-Facit Score:     5\nRunning Score: 166
+Facit Score:     5\nRunning Score: 162
 }
 
 [BCFlags "801f"]
@@ -777,7 +778,7 @@ PASS PASS PASS
 
  4N      10\n 4\c       6\n 4\h       4\n 4\s       3\n 5\c       3\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 176
+Facit Score:    10\nRunning Score: 172
 }
 
 [BCFlags "801f"]
@@ -807,7 +808,7 @@ PASS PASS
 
  7N      10\n 7\h       7\n 7\s       7\n 6N       5\n 6\h       4\n 6\s       4\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 180
+Facit Score:     4\nRunning Score: 176
 }
 
 [BCFlags "801f"]
@@ -837,7 +838,7 @@ PASS
 
  7N      10\n 7\h       7\n 6N       6\n 6\h       5\n 7\d       4\n 6\d       3\n 5N       3\n 5\h       2\n 5\d       1\n\n\n\n
 
-Facit Score:     7\nRunning Score: 187
+Facit Score:     7\nRunning Score: 183
 }
 
 [BCFlags "801f"]
@@ -865,7 +866,7 @@ PASS PASS
 
  S6\d     10\n N6\d      8\n S3N      4\n 4\h       4\n N3N      3\n 5\d       3\n 6N       2\n 6\h       2\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 197
+Facit Score:    10\nRunning Score: 193
 }
 
 [BCFlags "801f"]
@@ -891,7 +892,7 @@ PASS
 
  5\h      10\n 5\d       8\n 6\h       4\n 6\d       3\n W4\sP     1\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 201
+Facit Score:     4\nRunning Score: 197
 }
 
 [BCFlags "801f"]
@@ -917,7 +918,7 @@ Facit Score:     4\nRunning Score: 201
 
  5N       9\n 4\h       3\n 4\s       2\n 5\d       2\n 6N       1\n 6\d       1\n 6\s       1\n 6\h       1\n\n\n\n\n
 
-Facit Score:     9\nRunning Score: 210
+Facit Score:     9\nRunning Score: 206
 }
 
 [BCFlags "801f"]
@@ -929,21 +930,20 @@ Facit Score:     9\nRunning Score: 210
 [Dealer "E"]
 [Vulnerable "EW"]
 [Deal "N:A732.AK94.A432.K K984.8653.K.Q974 J.Q72.Q98765.J65 QT65.JT.JT.AT832"]
-[Declarer "S"]
-[Contract "5D"]
+[Declarer "N"]
+[Contract "1D"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "E"]
-PASS 2D PASS 2N
-PASS 3D PASS 5D
+PASS PASS PASS 1D
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\n\n\n\nScore Table:
 
  5\d      10\n 4\h       5\n 4\d       4\n 6\d       3\n 3\h       3\n N3N      3\n 2N       2\n S3N      2\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 220
+Facit Score:     4\nRunning Score: 210
 }
 
 [BCFlags "801f"]
@@ -962,7 +962,7 @@ Facit Score:    10\nRunning Score: 220
 [Auction "S"]
 1H PASS 2C PASS
 2N PASS 3H PASS
-3S PASS 4C PASS
+3N PASS 4C PASS
 4H PASS PASS PASS
 [Play ""]
 [Hidden "EW"]
@@ -970,7 +970,7 @@ Facit Score:    10\nRunning Score: 220
 
  3N       9\n 4\h       9\n 5\h       7\n 4N       7\n 6N       3\n 6\h       3\n 6\c       3\n 5\c       2\n\n\n\n\n
 
-Facit Score:     9\nRunning Score: 229
+Facit Score:     9\nRunning Score: 219
 }
 
 [BCFlags "801f"]
@@ -983,20 +983,22 @@ Facit Score:     9\nRunning Score: 229
 [Vulnerable "NS"]
 [Deal "N:97.AJT985.KJ5.A7 8642.6.T84.KJ643 AKQ3.Q7.AQ7.T985 JT5.K432.9632.Q2"]
 [Declarer "N"]
-[Contract "4H"]
+[Contract "6H"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "W"]
 PASS 1H PASS 1S
-PASS 2H PASS 4H
+PASS 2H PASS 4N
+PASS 5H=1 PASS 6H
 PASS PASS PASS 
+[Note "0: Alert."]
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\n\nScore Table:
+{\n\n\n\n\nScore Table:
 
  6\h      10\n 6N       8\n 7N       4\n 7\h       4\n 5N       4\n 5\h       4\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 233
+Facit Score:    10\nRunning Score: 229
 }
 
 [BCFlags "801f"]
@@ -1022,7 +1024,7 @@ PASS PASS 1D PASS
 
  3\d      10\n 2\h       8\n 2\s       7\n 4\d       6\n 1N       6\n 3\h       5\n 3\s       4\n 2N       3\n 5\d       2\n 4\h       2\n 4\s       2\n 3N       1\n
 
-Facit Score:     3\nRunning Score: 236
+Facit Score:     3\nRunning Score: 232
 }
 
 [BCFlags "801f"]
@@ -1047,7 +1049,7 @@ PASS PASS PASS
 
  3\d      10\n 1N       8\n 1\s       7\n 4\d       6\n 2\s       5\n 2N       5\n 3\c       5\n 3\s       3\n 5\d       3\n 3N       3\n\n\n
 
-Facit Score:     7\nRunning Score: 243
+Facit Score:     7\nRunning Score: 239
 }
 
 [BCFlags "801f"]
@@ -1077,6 +1079,6 @@ PASS PASS
 
  6N      11\n 6\s       9\n 5N       3\n 5\s       3\n\n\n\n\n\n\n\n\n
 
-Facit Score:     9\nRunning Score: 252
+Facit Score:     9\nRunning Score: 248
 }
 
