@@ -1351,7 +1351,7 @@ class BotLead:
                 sample_pbn = 'N:' + hand_str + ' ' + ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) for hand in accepted_samples[i])
                 hands_pbn.append(deck52.convert_cards(sample_pbn,opening_lead52, hand_str, self.get_random_generator(),self.models.n_cards_bidding))
                 # lead is relative to the order in the PBN-file, so West is 0 here
-                onlead = 0
+            onlead = 0
                 
             dd_solved = self.dd.solve(strain_i, onlead, [opening_lead52], hands_pbn, 1)
 
