@@ -223,8 +223,7 @@ async def handler(websocket, path, board_no, seed):
         t_start = time.time()
         await driver.run(t_start)
 
-        print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-
+        print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Board played in {time.time() - t_start:0.1f} seconds.{Fore.RESET}')  
         if not random and len(boards) > 0:
             board_no[0] = (board_no[0] + 1) % len(boards)
 
@@ -267,6 +266,7 @@ async def main():
         sys.exit(0)
 
 if __name__ == "__main__":
+    print(Back.BLACK)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
@@ -288,3 +288,4 @@ if __name__ == "__main__":
         sys.exit(0)
     finally:
         loop.close()
+        print(Style.RESET_ALL)

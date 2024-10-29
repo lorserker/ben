@@ -900,7 +900,7 @@ async def main():
                 first = False
             with shelve.open(shelf_filename) as db:
                 print("Saving Board: ",client.deal_str)
-                print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+                print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Board played in {time.time() - t_start:0.1f} seconds.{Fore.RESET}')  
                 if deal["board_number"]+"-Open" not in db:
                     db[deal["board_number"]+"-Open"] = deal
                 else:
@@ -908,6 +908,7 @@ async def main():
 
 
 if __name__ == "__main__":
+    print(Back.BLACK)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
@@ -930,4 +931,4 @@ if __name__ == "__main__":
     finally:
         loop.run_until_complete(loop.shutdown_asyncgens())
         loop.close()
-
+        print(Style.RESET_ALL)

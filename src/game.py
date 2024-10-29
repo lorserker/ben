@@ -5,20 +5,20 @@ import logging
 import compare
 import scoring
 
-# Set logging level to suppress warnings
-logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ["GRPC_VERBOSITY"] = "ERROR"
-os.environ["GLOG_minloglevel"] = "2"
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ["GRPC_VERBOSITY"] = "error"
+os.environ["GLOG_minloglevel"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+# Set logging level to suppress warnings
+logging.getLogger().setLevel(logging.CRITICAL)
 
 # Configure absl logging to suppress logs
-import absl.logging
+#import absl.logging
 # Suppress Abseil logs
-absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
-absl.logging.set_verbosity(absl.logging.FATAL)
-absl.logging.set_stderrthreshold(absl.logging.FATAL)
+#absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
+#absl.logging.set_verbosity(absl.logging.FATAL)
+#absl.logging.set_stderrthreshold(absl.logging.FATAL)
 
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
@@ -125,6 +125,8 @@ class Driver:
             auction_part = auction_str.split(' ')
             if play_only == None and len(auction_part) > 2: play_only = True
             self.fixed_auction = auction_part[2:]
+            if self.verbose:
+                print("Fixed auction: ", self.fixed_auction)
         else:
             auction_part = auction_str.split(' ')
             if play_only == None and len(auction_part) > 2: play_only = True
@@ -169,7 +171,7 @@ class Driver:
             'dealer': self.dealer_i,
             'vuln': [self.vuln_ns, self.vuln_ew],
             'hand': result_list,
-            'name': self.name,
+            #'name': self.name,
             'board_no' : self.board_number
         }))
 
@@ -895,7 +897,6 @@ class Driver:
 
         while not bidding.auction_over(auction):
             if self.bidding_only == "NS" and (player_i == 1 or player_i == 3):
-                #print("bidding_only_auction",bidding_only_auction, bid_no, len(bidding_only_auction))
                 if bidding_only_auction[0] != '' and len(bidding_only_auction) > bid_no:
                     if bidding.can_bid(bidding_only_auction[bid_no].replace("P","PASS"), auction):
                         bid_resp = BidResp(bid=bidding_only_auction[bid_no].replace("P","PASS"), candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
@@ -903,7 +904,6 @@ class Driver:
                         bid_resp = BidResp(bid="PASS", candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
                 else:
                     bid_resp = BidResp(bid="PASS", candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
-                #print(bid_resp)
             else:
                 bid_resp = await players[player_i].async_bid(auction, alert)
             if bid_resp.bid == "Alert": 
@@ -1139,7 +1139,14 @@ async def main():
 
                     # Match contract or adjusted contract for declarer
                     if score_contract == contract or score_contract == f"{declarer}{contract}":
-                        print(f"{Fore.LIGHTBLUE_EX}Score for {score_contract}: {score_value}{Style.RESET_ALL} ({driver.facit_score[board_no[0]-1]})")
+                        # Determine color based on score_value
+                        if score_value < 4:
+                            color = Fore.LIGHTYELLOW_EX  # Use this for an orange-like color
+                        elif score_value == 10:
+                            color = Fore.LIGHTGREEN_EX
+                        else:
+                            color = Fore.LIGHTBLUE_EX
+                        print(f"{color}Score for {score_contract}: {score_value}{Style.RESET_ALL} ({driver.facit_score[board_no[0]-1]})")
                         driver.actual_score = score_value
                         driver.facit_total += score_value
                         break
@@ -1150,16 +1157,23 @@ async def main():
 
                         # Match adjusted contract (with or without declarer)
                         if score_contract in adjusted_contracts or score_contract in [f"{declarer}{adj}" for adj in adjusted_contracts]:
-                            print(f"{Fore.LIGHTBLUE_EX}Score for {score_contract}: {score_value}{Style.RESET_ALL} ({driver.facit_score[board_no[0]-1]})")
+                            # Determine color based on score_value
+                            if score_value < 4:
+                                color = Fore.LIGHTYELLOW_EX  # Use this for an orange-like color
+                            elif score_value == 10:
+                                color = Fore.LIGHTGREEN_EX
+                            else:
+                                color = Fore.LIGHTBLUE_EX
+                            print(f"{color}Score for {score_contract}: {score_value}{Style.RESET_ALL} ({driver.facit_score[board_no[0]-1]})")
                             driver.actual_score = score_value
                             driver.facit_total += score_value
                             break
         
                 if driver.actual_score is None:
-                    print("No score - Scoring",driver.contract[:-1], driver.facit_score[board_no[0]-1])
+                    print(f"{Fore.RED}No score - Scoring {driver.contract[:-1]} {driver.facit_score[board_no[0]-1]}{Style.RESET_ALL}")
                     driver.actual_score = 0
                 else:
-                    print(f"{Fore.LIGHTBLUE_EX}Running score: {driver.facit_total}{Style.RESET_ALL}")
+                    print(f"{Fore.LIGHTGREEN_EX}Running score: {driver.facit_total}{Style.RESET_ALL}")
         else:
             #print("Calculating PAR")
             par_score = dds.calculatepar(driver.deal_str, [driver.vuln_ns, driver.vuln_ew])
@@ -1172,7 +1186,6 @@ async def main():
                 imps = abs(compare.get_imps(score, par_score))
                 print(f"{Fore.LIGHTBLUE_EX}Score: {driver.contract} {str(score)} Par: {str(par_score)} IMP: {str(imps)}{Style.RESET_ALL}")
             driver.parscore = par_score
-        print('{1} Board played in {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
         if biddingonly == "False":
             if paronly <= imps:
@@ -1194,6 +1207,7 @@ async def main():
                     with open(outputpbn, "a") as file:
                         file.write(driver.asPBN())
 
+        print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Board played in {time.time() - t_start:0.1f} seconds.{Fore.RESET}')  
         if not auto:
             user_input = input("\n Q to quit or any other key for next deal ")
             if user_input.lower() == "q":
@@ -1203,9 +1217,14 @@ async def main():
                 break
 
 if __name__ == '__main__':
+    print(Back.BLACK)
     loop = asyncio.new_event_loop()
     asyncio.set_event_loop(loop)
     try:
         loop.run_until_complete(main())
     except KeyboardInterrupt:
         pass
+    finally:
+        loop.run_until_complete(loop.shutdown_asyncgens())
+        loop.close()
+        print(Style.RESET_ALL)

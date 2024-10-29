@@ -1891,7 +1891,7 @@ AC 4S AC Pass
 [BCFlags "1f"]
 [Hidden "EW"]
 [ Auction N ]
-AC 2C AC
+AC 2C AC P
 
 [Event ""]
 [Site ""]
@@ -1912,7 +1912,7 @@ AC 2C AC
 [BCFlags "1f"]
 [Hidden "EW"]
 [ Auction N ]
-AC 2d  AC
+AC 2D  AC P
 
 [Event ""]
 [Site ""]
@@ -1933,7 +1933,8 @@ AC 2d  AC
 [BCFlags "1f"]
 [Hidden "EW"]
 [ Auction N ]
-AC P AC 2H AC
+AC P AC 2H
+AC P
 
 [Event ""]
 [Site ""]
@@ -1975,7 +1976,7 @@ AC 1S AC 2S AC
 [BCFlags "1f"]
 [Hidden "EW"]
 [ Auction N ]
-AC 1N AC 2D @C
+AC 1N AC 2D AC
 
 [Event ""]
 [Site ""]
@@ -1996,7 +1997,7 @@ AC 1N AC 2D @C
 [BCFlags "1f"]
 [Hidden "EW"]
 [ Auction N ]
-AC X AC 
+AC X AC 2C
 
 [Event ""]
 [Site ""]
@@ -2096,7 +2097,7 @@ AC Pass
 [Vulnerable "EW"]
 [Deal "N:A83.42.AKJ5.T643 KQJT6.QT97.763.A 42.AKJ3.QT2.J872 975.865.984.KQ95"]
 [Scoring "Facit"]
-{S3sx 10 S3s 7 4c 4 3n 3 4d 2 4h 1}
+{E3SX 10 E3S 7 4C 4 3N 3 4D 2 4H 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
@@ -2139,7 +2140,7 @@ AC X AC Pass
 [Vulnerable "None"]
 [Deal "N:AKQ94.AK92.J72.3 J3.JT4.A.AQJT976 52.65.T86543.K42 T876.Q873.KQ9.85"]
 [Scoring "Facit"]
-{E3cx 10 3d 9 3s 6 4d 5 N3c 4 4s 2 3n 1 5d 1}
+{E3cx 10 3d 9 3s 6 4d 5 E3c 4 4s 2 3n 1 5d 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
@@ -2161,7 +2162,7 @@ AC Pass
 [Vulnerable "NS"]
 [Deal "N:KQ73.T.K82.AJ863 J64.AKQ7.AT9.QT5 A92.J98654.Q73.2 T85.32.J654.K974"]
 [Scoring "Facit"]
-{2h 10 2s 7 N1n 6 3h 5 N3s 4 N1nx 3 2c 2 2d 1}
+{2h 10 2s 7 W1n 6 3h 5 N3s 4 W1nx 3 2c 2 2d 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
@@ -2224,7 +2225,7 @@ AC 2D AC Pass
 [Vulnerable "None"]
 [Deal "N:J2.72.AQT9765.A2 AKQT53.J96.43.64 94.AK84.K2.KT853 876.QT53.J8.QJ97"]
 [Scoring "Facit"]
-{5d 10 4d 6 E2sx 4 3c 3 2n 3 N2s 2 4c 2 3n 1 6d 1}
+{5d 10 4d 6 E2sx 4 3c 3 2n 3 E2s 2 4c 2 3n 1 6d 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
@@ -2245,7 +2246,7 @@ AC 2S AC Pass
 [Vulnerable "NS"]
 [Deal "N:KQ2.9762.A3.KJT8 6543.QJT5.54.542 JT97.A3.J82.Q963 A8.K84.KQT976.A7"]
 [Scoring "Facit"]
-{2s 10 3c 7 S2d 5 3s 4 4c 3 2n 2 W2dx 2 3n 1}
+{2s 10 3c 7 W2d 5 3s 4 4c 3 2n 2 W2dx 2 3n 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
@@ -2289,7 +2290,7 @@ AC Pass
 [Vulnerable "All"]
 [Deal "N:Q.AKQT72.982.543 AJ982.6.QT654.T7 K54.J3.AK73.QJ82 T763.9854.J.AK96"]
 [Scoring "Facit"]
-{3n 10 3h 7 2n 6 4h 5 4n 3 N2s 2 5h 1 N2sx 1}
+{3n 10 3h 7 2n 6 4h 5 4n 3 E2s 2 5h 1 E2sx 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
@@ -2338,7 +2339,7 @@ AC Pass AC 4S
 [BCFlags "1f"]
 [Hidden "EW"]
 [Auction "N"]
-AC 1N AC Pass
+1N X 2C Pass
 
 [Event ""]
 [Site ""]
