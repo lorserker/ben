@@ -379,7 +379,7 @@ def get_auction_binary_for_lead(auction, handbidding, handplay, vuln, dealer, mo
     vuln_us = vuln[lead_index % 2]
     vuln_them = vuln[decl_index % 2]
 
-    x = np.zeros(10+models.n_cards_play)
+    x = np.zeros(10+models.n_cards_play, dtype=np.float16)
 
     x[0] = level
     x[1 + strain] = 1
@@ -388,7 +388,9 @@ def get_auction_binary_for_lead(auction, handbidding, handplay, vuln, dealer, mo
     x[8] = vuln_us
     x[9] = vuln_them
     x[10:] = handplay.reshape(models.n_cards_play)
-    return x.reshape((1, -1)), get_shape_for_lead(auction, handbidding, vuln, contract, models, models.n_cards_bidding)
+    bidding_info = get_shape_for_lead(auction, handbidding, vuln, contract, models, models.n_cards_bidding)
+    
+    return x.reshape((1, -1)), bidding_info
 
 def get_shape_for_lead(auction, hand, vuln, contract, models, n_cards):
     b = np.zeros(15)
@@ -399,10 +401,17 @@ def get_shape_for_lead(auction, hand, vuln, contract, models, n_cards):
     A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, models, models.n_cards_bidding)
 
     p_hcp, p_shp = models.binfo_model.model(A)
+    # Convert p_hcp and p_shp to float16
+    p_hcp = np.array(p_hcp, dtype=np.float16)
+    p_shp = np.array(p_shp, dtype=np.float16)
+
+    # Create b as a float16 array from the start
+    b = np.zeros(15, dtype=np.float16)
 
     b[:3] = p_hcp.reshape((-1, n_steps, 3))[:, -1, :].reshape(3)
     b[3:] = p_shp.reshape((-1, n_steps, 12))[:, -1, :].reshape(12)
-    return b.reshape((1, -1))
+    b = b.reshape((1, -1))
+    return b
 
 def calculate_median(data):
     sorted_data = sorted(data)

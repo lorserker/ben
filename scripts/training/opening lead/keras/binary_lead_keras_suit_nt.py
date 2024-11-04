@@ -78,7 +78,6 @@ class DealData(object):
                 lho_bid = padded_auction[i - 3] if i - 3 >= 0 else 'PAD_START'
                 partner_bid = padded_auction[i - 2] if i - 2 >= 0 else 'PAD_START'
                 rho_bid = padded_auction[i - 1] if i - 1 >= 0 else 'PAD_START'
-                target_bid = padded_auction[i]
 
                 ftrs = np.concatenate((
                     vuln,
@@ -145,40 +144,6 @@ def get_hcp(hand):
     return sum([hcp.get(c, 0) for c in hand])
 
 
-def create_binary(data_it, out_dir, model, n_steps=8):
-    data_it, copy = itertools.tee(data_it)  # Create a copy of the iterator
-    n = sum(1 for _ in copy)  # Count items in the copy
-
-    #A = np.zeros((n, n_steps, 2 + 1 + 4 + 32 + 3 * 40), dtype=np.float16)
-    B = np.zeros((n, 15), dtype=np.float16)
-    X = np.zeros((n, 42), dtype=np.float16)
-    y = np.zeros((n, 32), dtype=np.float16)
-    
-    for i, (deal_str, meta_str, auction_str, play_str) in enumerate(data_it):
-        if (i+1) % 10000 == 0:
-            print(i+1)
-        deal_data = DealData.from_deal_meta_auction_play_string(deal_str, meta_str, auction_str, play_str)
-        a_part, x_part, y_part = deal_data.get_binary(n_steps)
-        
-        #A[i:i+1, :, :] = a_part
-        # We need to remove redundant boards with the same lead
-        X[i:i+1, :] = x_part
-        y[i:i+1, :] = y_part
-
-        p_hcp, p_shp = model.model(a_part)
-
-        b = np.zeros(15)
-        b[:3] = p_hcp.reshape((-1, n_steps, 3))[:,-1,:].reshape(3)
-        b[3:] = p_shp.reshape((-1, n_steps, 12))[:,-1,:].reshape(12)
-        B[i:i+1, :] = b
-
-
-    #np.save(os.path.join(out_dir, 'A.npy'), A)
-    np.save(os.path.join(out_dir, 'B.npy'), B)
-    np.save(os.path.join(out_dir, 'X.npy'), X)
-    np.save(os.path.join(out_dir, 'y.npy'), y)
-
-
 def play_data_iterator(fin):
     '''
     yields (deal_str, meta_str, auction_str, play_str)
@@ -198,7 +163,7 @@ if __name__ == '__main__':
 
     data_it = play_data_iterator(itertools.chain(
         open('../../data/WBC/play.txt'))) 
-    out_dir = './lead_keras_nt_jack'
+    out_dir = './lead_keras_nt'
     
     # Using Jack data
     # data_it = play_data_iterator(itertools.chain(
@@ -236,6 +201,7 @@ if __name__ == '__main__':
         if d_meta.strain == "N":
             if (i != 0) and i % 10000 == 0:
                 print(i)
+            #print(i, deal_str, outcome_str, auction_str, play_str)
             deal_data = DealData.from_deal_meta_auction_play_string(deal_str, outcome_str, auction_str, play_str)
             a_part, x_part, y_part = deal_data.get_binary(n_steps)
             

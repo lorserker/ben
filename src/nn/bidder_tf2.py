@@ -2,6 +2,7 @@ import numpy as np
 import tensorflow as tf
 from collections import namedtuple
 from tensorflow.keras.models import load_model
+import time
 
 class Bidder:
     
@@ -16,7 +17,6 @@ class Bidder:
         return load_model(self.model_path)
     
     def init_model_seq(self):
-        model = self.load_model()
         def pred_fun_seq( x):
             bids, alerts = self.model.predict(x, verbose=0)
             return bids, alerts

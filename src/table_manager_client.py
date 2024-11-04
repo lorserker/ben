@@ -193,9 +193,9 @@ class TMClient:
                 # just wait for the other player's bid
                 bid, alert = await self.receive_bid_for(player_i)
                 if (player_i + 2) % 4 == self.player_i:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.partner, quality=None, alert=alert)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.partner, quality=None, alert=alert, explanation=None)
                 else:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None, alert=alert)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None, alert=alert, explanation=None)
                 self.bid_responses.append(bid_resp)
                 auction.append(bid)
 

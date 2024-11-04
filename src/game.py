@@ -181,7 +181,7 @@ class Driver:
         if self.play_only:
             for bid in self.auction:
                 if bidding.BID2ID[bid] > 1:
-                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly", quality=None))
+                    self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly", quality=None, alert=None, explanation=None))
         else:
             self.auction = await self.bidding(self.bidding_only, self.fixed_auction)
 
@@ -332,10 +332,16 @@ class Driver:
         pbn_str += f'[Auction "{dealer}"]\n'
         auctionlines = ((len(self.bid_responses) + (self.dealer_i + 1) % 4) + 3)// 4
         alerts = 1
+        notes = []
         for i, b in enumerate(self.bid_responses, start=1):
-            pbn_str += (b.bid)
-            if b.alert:
-                pbn_str += f"={alerts}"
+            pbn_str += b.bid
+            if b.alert or b.explanation != None:
+                pbn_str += f" ={alerts}="
+                note = f'[Note "{alerts}:'
+                note += ' Alert.' if b.alert else ''
+                note += f' {b.explanation}' if b.explanation != None else ''
+                note += '"]'
+                notes.append(note)
                 alerts += 1
             if i % 4 == 0:
                 pbn_str += "\n"
@@ -344,9 +350,9 @@ class Driver:
         # Add an additional line break if the total number of bids is not divisible by 4
         if i % 4 != 0:
             pbn_str += "\n"
-        for i in range(alerts-1):
-            pbn_str += f'[Note "{i}: Alert."]\n'
-
+            
+        pbn_str +=  "\n".join(notes) + "\n"
+        auctionlines += len(notes)
         if self.contract is not None and self.card_play:
             declarer_i = "NESW".index(declarer)
             leader = "NESW"[(declarer_i + 1) % 4]            
@@ -899,11 +905,11 @@ class Driver:
             if self.bidding_only == "NS" and (player_i == 1 or player_i == 3):
                 if bidding_only_auction[0] != '' and len(bidding_only_auction) > bid_no:
                     if bidding.can_bid(bidding_only_auction[bid_no].replace("P","PASS"), auction):
-                        bid_resp = BidResp(bid=bidding_only_auction[bid_no].replace("P","PASS"), candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
+                        bid_resp = BidResp(bid=bidding_only_auction[bid_no].replace("P","PASS"), candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert, explanation=None)
                     else:
-                        bid_resp = BidResp(bid="PASS", candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
+                        bid_resp = BidResp(bid="PASS", candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert, explanation=None)
                 else:
-                    bid_resp = BidResp(bid="PASS", candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert)
+                    bid_resp = BidResp(bid="PASS", candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert, explanation=None)
             else:
                 bid_resp = await players[player_i].async_bid(auction, alert)
             if bid_resp.bid == "Alert": 

@@ -15,6 +15,8 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 # Limit the number of CPU threads used
 os.environ["OMP_NUM_THREADS"] = "32"
 os.environ["MKL_NUM_THREADS"] = "32"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
 print("os.cpu_count()", os.cpu_count())
 # TensorFlow thread settings
 tf.config.threading.set_intra_op_parallelism_threads(32)
@@ -61,9 +63,9 @@ n_ftrs = X_train.shape[1]
 n_cards = 32
 n_bi = B_train.shape[1]
 
-batch_size = 128  
+batch_size = 64  
 buffer_size = 5000
-epochs = 20  
+epochs = 200  
 learning_rate = 0.0005
 keep = 0.6
 
@@ -169,7 +171,7 @@ class CustomModelCheckpoint(Callback):
 
 # Define the custom checkpoint callback
 custom_checkpoint_callback = CustomModelCheckpoint(
-    save_path=os.path.join(checkpoint_dir, f"{model_name}-E{{epoch:02d}}.keras"),
+    save_path=os.path.join(checkpoint_dir, f"{model_name}-E{{epoch:03d}}.keras"),
     initial_epoch=initial_epoch
 )
 
@@ -183,7 +185,7 @@ model.fit(train_dataset, epochs=epochs, steps_per_epoch=steps_per_epoch,
 
 # Save the final model with the last epoch number
 final_epoch = initial_epoch + epochs -1
-final_model_path = os.path.join(checkpoint_dir, f"{model_name}-E{(epochs):02d}.keras")
+final_model_path = os.path.join(checkpoint_dir, f"{model_name}-E{(final_epoch):02d}.keras")
 
 model.save(final_model_path)
 print("Saved model:", final_model_path)

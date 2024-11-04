@@ -144,6 +144,9 @@ class CardResp:
         self.quality = quality
         self.who = who
 
+    def __str__(self):
+        return f"CardResp(card={self.card}, candidates={self.candidates}, samples={self.samples}, shape={self.shape}, hcp={self.hcp}, quality={self.quality}, who={self.who})"
+    
     def convert_to_floats(self, array):
         return [round(float(value), 1) if float(value) != int(value) else int(value) for value in array]
 
@@ -246,7 +249,7 @@ class CandidateBid:
 
 class BidResp:
 
-    def __init__(self, bid, candidates, samples, shape, hcp, who, quality, alert):
+    def __init__(self, bid, candidates, samples, shape, hcp, who, quality, alert, explanation):
         self.bid = bid
         self.candidates = candidates
         self.samples = samples
@@ -255,11 +258,13 @@ class BidResp:
         self.who = who
         self.quality = quality
         self.alert = alert
+        self.explanation = explanation
     
     def __str__(self):
         bid_str = self.bid.ljust(4) if self.bid is not None else "    "
-        alert_str = "alertable" if self.alert else "  "
-        return f"BidResp(bid={bid_str}, who={self.who}, alert={alert_str})"
+        alert_str = ", artificial" if self.alert else "  "
+        explain_str = ", " + self.explain if self.explain != None else ""
+        return f"BidResp(bid={bid_str}, who={self.who}{alert_str}{explain_str})"
 
     def convert_to_floats(self, array):
         return [round(float(value), 1) if float(value) != int(value) else int(value) for value in array]
@@ -297,6 +302,8 @@ class BidResp:
 
         if self.alert:
             result['alert'] = str(self.alert)
+        if self.explanation != None:
+            result['explanation'] = str(self.explanation)
 
         return result
 

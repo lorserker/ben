@@ -246,7 +246,16 @@ model.fit(train_dataset, epochs=epochs, steps_per_epoch=steps_per_epoch,
 
 # Save the final model with the last epoch number
 final_epoch = initial_epoch + epochs -1
-final_model_path = os.path.join(checkpoint_dir, f"{model_name}-E{(final_epoch ):02d}.keras")
+final_model_path = os.path.join(checkpoint_dir, f"{model_name}-E{(final_epoch ):02d}-inference.keras")
 
-model.save(final_model_path)
+# Define a tf.function-decorated prediction function for optimized inference
+@tf.function
+def optimized_predict(input_data):
+    return model(input_data, training=False)
+
+# Attach the `optimized_predict` function to the model for inference optimization
+model.call = optimized_predict
+
+# Save the model with the optimized predict function
+model.save(final_model_path, include_optimizer=False, save_format="tf")
 print("Saved model:", final_model_path)

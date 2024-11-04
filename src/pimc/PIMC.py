@@ -357,6 +357,8 @@ class BGADLL:
             print("West (LHO)",self.lho_constraints.ToString())
             print("Current trick",self.current_trick.ListAsString())
             print("Previous tricks",self.previous_tricks.ListAsString())
+            print("Other hands",self.easthand.ToString(), self.westhand.ToString())
+            print("Strategy",self.models.pimc_use_fusion_strategy)
             sys.exit(1) 
 
         trump = self.find_trump(self.suit)

@@ -129,7 +129,7 @@ class Models:
 
 
     @classmethod
-    def from_conf(cls, conf: ConfigParser, base_path=None) -> "Models":
+    def from_conf(cls, conf: ConfigParser, base_path=None, verbose=False) -> "Models":
         if base_path is None:
             base_path = os.getenv('BEN_HOME') or '..'
         name = conf.get('models', 'name', fallback="BEN")

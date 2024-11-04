@@ -343,6 +343,8 @@ class BGADefDLL:
             print("Autoplay",self.autoplay)
             print("Current trick",self.current_trick.ListAsString())
             print("Previous tricks",self.previous_tricks.ListAsString())
+            print("Other hands",self.declarerhand.ToString(), self.partnerhand.ToString())
+            print("Strategy",self.models.pimc_use_fusion_strategy)
 
         try:
             card = self.pimc.SetupEvaluation(hands, self.opposHand, self.current_trick, self.previous_tricks, [self.declarer_constraints,
@@ -363,6 +365,7 @@ class BGADefDLL:
             print("Current trick",self.current_trick.ListAsString())
             print("Previous tricks",self.previous_tricks.ListAsString())
             print("Other hands",self.declarerhand.ToString(), self.partnerhand.ToString())
+            print("Strategy",self.models.pimc_use_fusion_strategy)
             sys.exit(1) 
         
         trump = self.find_trump(self.suit)

@@ -130,7 +130,7 @@ class Models:
 
 
     @classmethod
-    def from_conf(cls, conf: ConfigParser, base_path=None) -> "Models":
+    def from_conf(cls, conf: ConfigParser, base_path=None, verbose=False) -> "Models":
         if base_path is None:
             base_path = os.getenv('BEN_HOME') or '..'
         name = conf.get('models', 'name', fallback="BEN")
@@ -227,6 +227,8 @@ class Models:
         use_real_imp_or_mp_opening_lead = conf.getboolean('lead', 'use_real_imp_or_mp_opening_lead', fallback=False)
         bba_ns = conf.getint('models', 'bba_ns', fallback=-1)
         bba_ew = conf.getint('models', 'bba_ew', fallback=-1)
+        if verbose:
+            print(f"loaded bba_ns and bba_ew as {bba_ns} and {bba_ew}")
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
         ns = int(conf['models']['ns'])
         ew = int(conf['models']['ew'])
@@ -235,16 +237,28 @@ class Models:
             opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['opponent']))
         else:
             opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['bidder']))
+        if verbose:
+            print(f"Loaded bidding models")
         contract_model=Contract(os.path.join(base_path, conf['contract']['contract']))
         binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info']))
+        if verbose:
+            print(f"Loaded contract and bidding info models")
+
         lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit']))
         lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt']))
+        if verbose:
+            print(f"Loaded lead models")
         sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['single_dummy_estimator']))
         sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['double_dummy_estimator']))
+        if verbose:
+            print(f"Loaded single dummy models")
 
         player_models=[
             BatchPlayer(name, os.path.join(base_path, conf['cardplay'][name])) for name in player_names
         ]
+
+        if verbose:
+            print(f"loaded {len(player_models)} player models")
 
         return cls(
             name=name,

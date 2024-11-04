@@ -69,6 +69,7 @@
         <small id="tooltip1" style="display: none;">Please enter the hand as four suits separated by '.'</small><br>
             
         <label for="playInput">Play:</label>
+        <input type="checkbox" id="format" data-default="false"><label for="format">Play is in PBN format (opening leader first in all tricks, but incomplete tricks should follow lead rules)</label><br>
         <textarea id="playInput"   rows="3" cols="64" placeholder="Enter cards (S7H3H6)" required onmouseover="showTooltip(2)" onmouseout="hideTooltip(2)"></textarea><br>
         <small id="tooltip2" style="display: none;">Please enter all the played cards including cards from BEN</small><br><br>
 
@@ -880,6 +881,7 @@
             const vul = document.getElementById('vulInput').value;
             const mp = document.getElementById('matchpoint').checked;
             const explain = document.getElementById('explain').checked;
+            const format = document.getElementById('format').checked;
             const matchpoint = mp  ?  "mp" : "imp";
             // Get the current hostname and protocol
             const hostname = window.location.hostname;
@@ -890,7 +892,7 @@
                 port = 8088
             }
 
-            var url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&tournament=${matchpoint}&explain=${explain}`;
+            var url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&tournament=${matchpoint}&explain=${explain}&format=${format}`;
             if (action == "play")
                 url += `&dummy=${dummy}&played=${played}`;
             if (action == "contract")

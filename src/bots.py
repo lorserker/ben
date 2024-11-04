@@ -153,7 +153,7 @@ class BotBid:
     def bid(self, auction):
         # Validate input
         if (len(auction)) % 4 != self.seat:
-            error_message = "Dealer, auction, and seat do not match!"
+            error_message = f"Dealer {self.dealer}, auction {auction}, and seat {self.seat} do not match!"
             raise ValueError(error_message)
         # A problem, that we get candidates with a threshold, and then simulates
         # When going negative, we would probably like to extend the candidates
@@ -584,7 +584,7 @@ class BotBid:
                 print("No rescue bid evaluated")
 
         # We return the bid with the highest expected score or highest adjusted score 
-        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=quality, alert = bool(candidates[0].alert))
+        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=quality, alert = bool(candidates[0].alert), explanation=None)
     
     def do_rollout(self, auction, candidates, max_candidate_score, sample_count):
         if candidates[0].insta_score > max_candidate_score:
@@ -770,14 +770,16 @@ class BotBid:
     def sample_hands_for_auction(self, auction_so_far, turn_to_bid):
         # The longer the aution the more hands we might need to sample
         sample_boards_for_auction = self.sampler.sample_boards_for_auction
+        # Skip this and create the loop below TODO
         if binary.get_number_of_bids(auction_so_far) > 10:
             sample_boards_for_auction *= 2
         if binary.get_number_of_bids(auction_so_far) > 20:
             sample_boards_for_auction *= 2
         # Reset randomizer
         self.rng = self.get_random_generator()
-        accepted_samples, sorted_scores, p_hcp, p_shp, quality = self.sampler.sample_cards_auction(
-            auction_so_far, turn_to_bid, self.hand_str, self.vuln, sample_boards_for_auction, self.rng, self.models)
+
+        # This should be changed to a loop testing 5000 samples, until we have enough TODO
+        accepted_samples, sorted_scores, p_hcp, p_shp, quality = self.sampler.sample_cards_auction(auction_so_far, turn_to_bid, self.hand_str, self.vuln, sample_boards_for_auction, self.rng, self.models)
         
         if self.verbose:
             print(f"Found {accepted_samples.shape[0]} samples for bidding. Quality={quality}")
@@ -824,18 +826,17 @@ class BotBid:
 
         # Now we bid each sample to end of auction
         while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
-            #auction = bidding.get_auction_as_list(auction_np[2])
-            #print(n_steps_vals, turn_i, bid_i, auction)
             #print("bidding_rollout - n_steps_vals: ", n_steps_vals, " turn_i: ", turn_i, " bid_i: ", bid_i, " auction: ", auction)
             X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models, self.models.n_cards_bidding)
-            # We should select the opponent model
             if turn_i % 2 == 0:
-                y_bid_np = self.models.bidder_model.model_seq(X)[0]
+                x_bid_np = self.models.bidder_model.model_seq(X)[0]
             else:
-                y_bid_np = self.models.opponent_model.model_seq(X)[0]
-            x_bid_np = y_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
+                x_bid_np = self.models.opponent_model.model_seq(X)[0]
+            
+            if self.models.model_version < 3:
+                x_bid_np = x_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
+                
             bid_np = x_bid_np[:,-1,:]
-            #print(bid_np)
             assert bid_np.shape[1] == 40
             # We can get invalid bids back from the neural network, so we need to filter those away first
             invalid_bids = True
@@ -929,7 +930,7 @@ class BotBid:
         #    lead_softmax = self.models.lead_suit_model.model(x_ftrs, b_ftrs)
                 
         lead_softmax = self.models.lead_suit_model.model(X_ftrs, B_ftrs)
-        print(lead_softmax.shape)
+        
         lead_cards = np.argmax(lead_softmax, axis=1)
         
         X_sd = np.zeros((n_samples, 32 + 5 + 4*32))
@@ -1244,6 +1245,7 @@ class BotLead:
             lead_softmax = self.models.lead_nt_model.model(x_ftrs, b_ftrs)
         else:
             lead_softmax = self.models.lead_suit_model.model(x_ftrs, b_ftrs)
+        # We remove all cards suggested by NN not in hand, and rescale the softmax
         lead_softmax = follow_suit(lead_softmax, self.handplay, np.array([[0, 0, 0, 0]]))
 
         candidates = []

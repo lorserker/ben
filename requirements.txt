@@ -9,7 +9,7 @@ tqdm
 
 websockets
 
-tensorflow==2.13
+tensorflow>=2.16
 grpcio-tools
 
 bottle

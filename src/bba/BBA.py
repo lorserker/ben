@@ -7,6 +7,9 @@ import os
 sys.path.append("..")
 from src.objects import BidResp
 from bidding import bidding
+from colorama import Fore, Back, Style, init
+
+init()
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
@@ -110,12 +113,11 @@ class BBABotBid:
             for i, line in enumerate(file):
                 # Split the line into key and value
                 key, value = line.strip().split(' = ')
-                
                 # Special case for the first line (System type)
                 if i == 0 and key == "System type":
                     cc = int(value)  # Store the value as an integer
                     if cc != ew_system:
-                        print("CC for EW has not the expected system type", cc, ew_system)
+                        print(f"{Fore.YELLOW}CC for EW has not the expected system type {cc} != {ew_system}. Using {ew_system}. {Style.RESET_ALL}")
                 else:
                     # Convert other values to boolean (1 -> True, 0 -> False)
                     conventions_ew[key] = bool(int(value))
@@ -132,7 +134,7 @@ class BBABotBid:
                 if i == 0 and key == "System type":
                     cc = int(value)  # Store the value as an integer
                     if cc != ns_system:
-                        print("CC for NS has not the expected system type", cc, ns_system)
+                        print(f"{Fore.YELLOW}CC for NS has not the expected system type {cc} != {ns_system}. Using {ns_system}.{Style.RESET_ALL}")
                 else:
                     # Convert other values to boolean (1 -> True, 0 -> False)
                     conventions_ns[key] = bool(int(value))
@@ -178,7 +180,7 @@ class BBABotBid:
         self.player.interpret_bid(lastbid)
         # Get information from Player(position) about the interpreted player
         meaning = self.player.get_info_meaning(self.C_INTERPRETED)
-        if not meaning: meaning = ""
+        if meaning is None: meaning = ""
         info = self.player.get_info_feature(self.C_INTERPRETED)
         minhcp = info[102]
         maxhcp = info[103]
@@ -221,20 +223,21 @@ class BBABotBid:
             new_bid += 2
         # Get information from Player(position) about the interpreted player
         meaning = self.player.get_info_meaning(self.C_INTERPRETED)
-        if not meaning: meaning = ""
         info = self.player.get_info_feature(self.C_INTERPRETED)
-        minhcp = info[102]
-        maxhcp = info[103]
         alert = info[144] == 1
-        if minhcp > 0:
-            if maxhcp < 37:
-                meaning += f" {minhcp}-{maxhcp} hcp"
-            else:
-                meaning += f" {minhcp}+ hcp"
-        elif maxhcp < 37:
-            meaning += f" {maxhcp}- hcp"
+        if  meaning is not None: 
+            minhcp = info[102]
+            maxhcp = info[103]
+            if minhcp > 0:
+                if maxhcp < 37:
+                    meaning += f" ({minhcp}-{maxhcp} hcp)"
+                else:
+                    meaning += f" ({minhcp}+ hcp)"
+            elif maxhcp < 37:
+                meaning += f" ({maxhcp}- hcp)"
 
         if self.verbose:
             print(f"Bid: {bidding.ID2BID[new_bid]}={meaning}")
-        return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA", quality=None, alert = alert)
+
+        return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA", quality=None, alert = alert, explanation=meaning)
 

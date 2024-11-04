@@ -90,9 +90,9 @@ SUIT_MASK = np.array([
     [0] * 24 + [1] * 8,
 ])
 
-def follow_suit(cards_softmax, own_cards, trick_suit):
-    assert cards_softmax.shape[1] == 32
-    assert own_cards.shape[1] == 32
+def follow_suit(cards_softmax, own_cards, trick_suit, n_cards=32):
+    assert cards_softmax.shape[1] == n_cards
+    assert own_cards.shape[1] == n_cards
     assert trick_suit.shape[1] == 4
     assert trick_suit.shape[0] == cards_softmax.shape[0]
     assert cards_softmax.shape[0] == own_cards.shape[0]

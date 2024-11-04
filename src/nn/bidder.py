@@ -100,6 +100,7 @@ class Bidder:
                     seq_in: x,
                 }
                 result = self.sess.run(self.output_softmax, feed_dict=feed_dict)
-            return result
+                
+            return [result,0]
         
         return pred_fun_seq, pred_fun

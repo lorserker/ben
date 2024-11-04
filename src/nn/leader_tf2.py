@@ -16,6 +16,6 @@ class Leader:
         model = self.load_model()
 
         def pred_fun(x, b):
-            result = model.predict([x, b],verbose=0)
+            result = model.predict({'X_input': x, 'B_input': b},verbose=0)
             return result
         return pred_fun

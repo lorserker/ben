@@ -141,7 +141,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
 
             card_i += 1
             if card_i >= len(play):
-                assert (player_i == position or (player_i == 1 and position == 3)), f"Cardplay order is not correct {play} {player_i} {position}"
+                assert (player_i == position or (player_i == 1 and position == 3)), f"Cardplay order is not correct {play} {player_i} {position} (or another player to play a card)"
                 play_status = get_play_status(card_players[player_i].hand52,current_trick52)
                 if verbose:
                     print("play_status", play_status)
@@ -347,7 +347,9 @@ except KeyError:
         # Default to version 1. of Tensorflow
         from nn.models import Models
 
-models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""), verbose)
+if verbose:
+    print("Loading sampler")
 sampler = Sample.from_conf(configuration, verbose)
 
 # Improve performance until it is supported
@@ -489,9 +491,12 @@ def bid():
         else:
             explain = False
         # First we extract our hand
-        hand = request.args.get("hand").replace('_','.')
+        hand = request.args.get("hand").replace('_','.').upper()
         if 'X' in hand:
-            hand = replace_x(hand,get_random_generator(hand), models.n_cards_bidding)
+            if '8' in hand or '9' in hand:
+                hand = replace_x(hand,get_random_generator(hand), models.n_cards_play)
+            else:
+                hand = replace_x(hand,get_random_generator(hand), models.n_cards_bidding)
         seat = request.args.get("seat")
         # Then vulnerability
         v = request.args.get("vul")
@@ -567,7 +572,13 @@ def lead():
             matchpoint = request.args.get("tournament").lower() == "mp"
             models.matchpoint = matchpoint
         # First we extract our hand and seat
-        hand = request.args.get("hand").replace('_','.')
+        hand = request.args.get("hand").replace('_','.').upper()
+        if 'X' in hand:
+            if '8' in hand or '9' in hand:
+                hand = replace_x(hand,get_random_generator(hand), models.n_cards_play)
+            else:
+                hand = replace_x(hand,get_random_generator(hand), models.n_cards_bidding)
+            print(hand)
         seat = request.args.get("seat")
         # Then vulnerability
         v = request.args.get("vul")
@@ -658,13 +669,54 @@ def play():
         if len(cards) > 51:
             result = {"message": "Game is over, no cards to play"}
             return json.dumps(result)
-
         # Validate number of cards played according to position
         auction = create_auction(bids, dealer_i)
         contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)
         strain_i = bidding.get_strain_i(contract)
         user = request.args.get("user")
+        play_pbn_format = request.args.get("format")
+        if request.args.get("format"):
+            play_pbn_format = request.args.get("format").lower() == "true"
+        else:
+            play_pbn_format = False
+
+        if play_pbn_format:
+            tricks = []
+            # Use a loop to group every 4 cards as a trick
+            for i in range(0, len(cards), 4):
+                trick = []
+                for card in cards[i:i+4]:
+                    trick.append(deck52.encode_card(card))
+                tricks.append(trick)
+
+            def print_trick(trick):
+                for card in trick:
+                    card = deck52.decode_card(card)
+                    print(card, end=" ")
+                print()
+
+            ordered_tricks = [tricks[0]]
+            for i in range(1, len(tricks)):
+                previous_ordered_trick = ordered_tricks[-1]
+                winner_index_in_ordered = deck52.get_trick_winner_i(previous_ordered_trick,  (strain_i - 1) % 5)
+                # Map winner's position back to the original trick's positions
+                original_trick = tricks[i - 1]
+                winner_card = previous_ordered_trick[winner_index_in_ordered]
+                winner_index_in_original = original_trick.index(winner_card)
+                
+                # Rotate the next trick to start with the winner's position in the original order
+                next_trick = tricks[i]
+                reordered_trick = next_trick[winner_index_in_original:] + next_trick[:winner_index_in_original]
+                ordered_tricks.append(reordered_trick)
+
+            pbn_cards = []
+            for trick in ordered_tricks:
+                for card in trick:
+                    card = deck52.decode_card(card)
+                    pbn_cards.append(card)
+            cards = pbn_cards
+
         # Hand is following N,E,S,W
         hands = ['...', '...', '...', '...']
         hands[position_i] = hand_str

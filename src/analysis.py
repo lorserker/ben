@@ -33,14 +33,16 @@ class CardByCard:
         await self.analyze_play()
 
     def analyze_bidding(self):
-        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.dealer_i, self.verbose) for idx, hand in enumerate(self.hands)]
+        from ddsolver import ddsolver
+        dds = ddsolver.DDSolver()
+        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.dealer_i, dds, self.verbose) for idx, hand in enumerate(self.hands)]
 
         player_i = self.dealer_i
         bid_i = self.dealer_i
 
         while bid_i < len(self.padded_auction):
             bid_resp = bidder_bots[player_i].bid(self.padded_auction[:bid_i])
-            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples, bid_resp.hcp, bid_resp.shape, "Analysis", bid_resp.quality, bid_resp.alert))
+            self.bid_responses.append(BidResp(self.padded_auction[bid_i], bid_resp.candidates, bid_resp.samples, bid_resp.hcp, bid_resp.shape, "Analysis", bid_resp.quality, bid_resp.alert, bid_resp.explanation))
             type(self).bid_eval(self.padded_auction[bid_i], bid_resp)
             bid_i += 1
             player_i = (player_i + 1) % 4
@@ -63,13 +65,16 @@ class CardByCard:
     @staticmethod
     def card_eval(card, card_resp):
         qualifier = 'OK'
-        best_tricks = card_resp.candidates[0].expected_tricks_dd
-        for candidate in card_resp.candidates:
-            if candidate.card.symbol() == card and candidate.expected_tricks_dd != None:
-                if best_tricks - candidate.expected_tricks_dd > 0.1:
-                    qualifier = f'? losing: {best_tricks - candidate.expected_tricks_dd:.2f}'
-                if best_tricks - candidate.expected_tricks_dd > 0.6:
-                    qualifier = f'?? losing: {best_tricks - candidate.expected_tricks_dd:.2f}'
+        if len(card_resp.candidates) == 0:
+            qualifier = card_resp.who
+        else:
+            best_tricks = card_resp.candidates[0].expected_tricks_dd
+            for candidate in card_resp.candidates:
+                if candidate.card.symbol() == card and candidate.expected_tricks_dd != None:
+                    if best_tricks - candidate.expected_tricks_dd > 0.1:
+                        qualifier = f'? losing: {best_tricks - candidate.expected_tricks_dd:.2f}'
+                    if best_tricks - candidate.expected_tricks_dd > 0.6:
+                        qualifier = f'?? losing: {best_tricks - candidate.expected_tricks_dd:.2f}'
         print(f'{card} {qualifier}')
 
     def analyze_opening_lead(self):
