@@ -64,7 +64,10 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, hcp_reduction_factor, shp_reduction_factor,verbose):
+    def __init__(self, lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, 
+                 bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, sample_boards_for_auction_opening_lead, 
+                 sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, 
+                 hcp_reduction_factor, shp_reduction_factor,verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.lead_accept_threshold_suit = lead_accept_threshold_suit
         self.lead_accept_threshold_honors = lead_accept_threshold_honors
@@ -78,6 +81,9 @@ class Sample:
         self._sample_hands_auction = sample_hands_auction
         self._min_sample_hands_auction = min_sample_hands_auction
         self.sample_boards_for_auction = sample_boards_for_auction
+        self.sample_boards_for_auction_step = sample_boards_for_auction_step
+        self.warn_to_few_samples = warn_to_few_samples
+        self.increase_for_bid_count = increase_for_bid_count
         self.sample_boards_for_auction_opening_lead = sample_boards_for_auction_opening_lead
         self.sample_hands_opening_lead = sample_hands_opening_lead
         self.sample_hands_play = sample_hands_play
@@ -110,7 +116,10 @@ class Sample:
         sample_hands_auction = int(conf['sampling']['sample_hands_auction'])
         min_sample_hands_auction = int(conf['sampling']['min_sample_hands_auction'])
         sample_boards_for_auction = int(conf['sampling']['sample_boards_for_auction'])
-
+        sample_boards_for_auction = conf.getint('sampling','sample_boards_for_auction',fallback=2000)
+        sample_boards_for_auction_step = conf.getint('sampling','sample_boards_for_auction_step',fallback=1000)
+        warn_to_few_samples = conf.getint('sampling','warn_to_few_samples',fallback=10)
+        increase_for_bid_count = conf.getint('sampling','increase_for_bid_count',fallback=6)
         sample_boards_for_auction_opening_lead = int(conf['sampling']['sample_boards_for_auction_opening_lead'])
         sample_hands_opening_lead = int(conf['sampling']['sample_hands_opening_lead'])
         sample_hands_play = int(conf['cardplay']['sample_hands_play'])
@@ -123,7 +132,10 @@ class Sample:
         no_biddingquality_after_bid_count = conf.getint('bidding', 'no_biddingquality_after_bid_count', fallback=12)
         hcp_reduction_factor = conf.getfloat('sampling', 'hcp_reduction_factor', fallback=0.9)
         shp_reduction_factor = conf.getfloat('sampling', 'shp_reduction_factor', fallback=0.5)
-        return cls(lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, verbose)
+        return cls(lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, 
+                   bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, 
+                   sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, 
+                   exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -300,9 +312,52 @@ class Sample:
             print("Shape: ", c_shp)
 
         return c_hcp, c_shp
+    
+    def process_bidding(self, player, lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho, 
+                    auction, nesw_i, hand, vuln, models, index, actual_bids, n_steps, size, model, verbose):
+        position = player["position"]
+        bid_count = player["bid_count"]
+        actual_bids = player["actual_bids"]        
+        if bid_count > 0:
+            X = np.zeros((lho_pard_rho.shape[0], n_steps, size), dtype=np.float16)
+            A = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + position) % 4, hand, vuln, models, models.n_cards_bidding)
+            X[:, :, :] = A
+            X[:, :, 7+index:7+models.n_cards_bidding+index] = lho_pard_rho[:, position-1:position, :]
+            X[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, position-1, :]).reshape((-1, 1)) - 10) / 4
+            X[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, position-1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
+
+            # Predict bids based on the model for the specific position
+            sample_bids = model.model_seq(X)[0].reshape((lho_pard_rho.shape[0], n_steps, -1))
+            if verbose:
+                print(f"Fetched bidding for position {position}")
+
+            # Update min scores based on actual bids
+            min_scores = np.ones_like(min_scores_lho)
+            for i in range(n_steps):
+                if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
+                    min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
+
+            # Filter samples and update all min scores arrays based on `exclude_samples`
+            mask = min_scores >= self.exclude_samples
+            lho_pard_rho = lho_pard_rho[mask]
+            min_scores_lho = min_scores_lho[mask]
+            min_scores_partner = min_scores_partner[mask]
+            min_scores_rho = min_scores_rho[mask]
+            # Now update the min scores based on response from the NN
+            if position == 1:
+                min_scores_lho = min_scores[mask]
+            if position == 2:
+                min_scores_partner = min_scores[mask]
+            if position == 3:
+                min_scores_rho = min_scores[mask]
+            
+        else:
+            if verbose:
+                print(f"No bidding for position {position}")
+        return lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho
 
         
-    def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, n_samples, rng, models):
+    def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, n_samples, rng, models, old_c_hcp, old_c_shp, extend_samples = True):
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_steps = binary.calculate_step_bidding_info(auction)
         bids = 4 if models.model_version >= 2 else 3
@@ -312,10 +367,16 @@ class Sample:
             print("hand", hand_str)
             print("nesw_i", nesw_i)
             print("n_samples", n_samples)
+        
+        if old_c_shp is None:            
+            c_hcp, c_shp = self.get_bidding_info(n_steps, auction, nesw_i, hand, vuln, models)
+            c_hcp = c_hcp[0]
+            c_shp = c_shp[0]
+        else:
+            c_hcp = old_c_hcp
+            c_shp = old_c_shp
 
-        c_hcp, c_shp = self.get_bidding_info(n_steps, auction, nesw_i, hand, vuln, models)        
-          
-        lho_pard_rho = self.sample_cards_vec(n_samples, c_hcp[0], c_shp[0], hand.reshape(models.n_cards_bidding), rng, models.n_cards_bidding)
+        lho_pard_rho = self.sample_cards_vec(n_samples, c_hcp, c_shp, hand.reshape(models.n_cards_bidding), rng, models.n_cards_bidding)
 
         # Consider saving the generated boards, and add the result from previous sampling to this output
         n_samples = lho_pard_rho.shape[0]
@@ -326,129 +387,96 @@ class Sample:
         if self.verbose:
             print("n_steps", n_steps)
 
-        # The hand used as input is our hand, but it will be overwritten with the sampled hand for that player
-        A_lho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 1) % 4, hand, vuln, models, models.n_cards_bidding)
-        A_pard = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 2) % 4, hand, vuln, models, models.n_cards_bidding)
-        A_rho = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + 3) % 4, hand, vuln, models, models.n_cards_bidding)
-        #print("RHO: ", n_steps, auction, (nesw_i + 3) % 4, hand, vuln, models)
+        #print(auction)
 
-        if models.model_version == 0 or models.ns == -1 :
-            index = 0
-        else:
-            index = 2
-
+        index = 0 if models.model_version == 0 or models.ns == -1 else 2
+            
         size = 7 + models.n_cards_bidding + index + bids*40
 
-        X_lho = np.zeros((n_samples, n_steps, size), dtype=np.float16)
-        X_pard = np.zeros((n_samples, n_steps, size), dtype=np.float16)
-        X_rho = np.zeros((n_samples, n_steps, size), dtype=np.float16)
-
-        X_lho[:, :, :] = A_lho
-        X_lho[:, :, 7+index:7+models.n_cards_bidding+index] = lho_pard_rho[:, 0:1, :]
-        X_lho[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 0, :]).reshape((-1, 1)) - 10) / 4
-        X_lho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 0, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
-        if self.verbose:
-            print("get_bid_ids", n_steps, auction, (nesw_i + 2) % 4)
-        lho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 1) % 4, n_steps)
-        lho_sample_bids = models.opponent_model.model_seq(X_lho)[0].reshape((n_samples, n_steps, -1))
-        if self.verbose:
-            print("Fetched LHO bidding")
-
-        X_pard[:, :, :] = A_pard
-        X_pard[:, :, 7+index:7+models.n_cards_bidding+index] = lho_pard_rho[:, 1:2, :]
-        X_pard[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 1, :]).reshape((-1, 1)) - 10) / 4
-        X_pard[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
-        if self.verbose:
-            print("get_bid_ids", n_steps, auction, (nesw_i + 2) % 4)
-        pard_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 2) % 4, n_steps)
-        pard_sample_bids = models.bidder_model.model_seq(X_pard)[0].reshape((n_samples, n_steps, -1))
-        if self.verbose:
-            print("Fetched partner bidding")
-
-        X_rho[:, :, :] = A_rho
-        X_rho[:, :, 7+index:7+models.n_cards_bidding+index] = lho_pard_rho[:, 2:, :]
-        X_rho[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, 2, :]).reshape((-1, 1)) - 10) / 4
-        X_rho[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, 2, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
-        if self.verbose:
-            print("get_bid_ids", n_steps, auction, (nesw_i + 2) % 4)
-        rho_actual_bids = bidding.get_bid_ids(auction, (nesw_i + 3) % 4, n_steps)
-        rho_sample_bids = models.opponent_model.model_seq(X_rho)[0].reshape((n_samples, n_steps, -1))
-        if self.verbose:
-            print("Fetched RHO bidding")
-
-        # Current implementation should be updated due to long sequences is difficult to match
         
-        min_scores = np.ones(n_samples)
-        min_scores_lho = np.ones(n_samples)
-        min_scores_partner = np.ones(n_samples)
-        min_scores_rho = np.ones(n_samples)
-
-        lho_bids = 0
-        pard_bids = 0
-        rho_bids = 0
-
-        for i in range(n_steps):
-            if lho_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
-                min_scores_lho = np.minimum(min_scores_lho, lho_sample_bids[:, i, lho_actual_bids[i]])
-                lho_bids += 1                
-            if pard_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
-                min_scores_partner = np.minimum(min_scores_partner, pard_sample_bids[:, i, pard_actual_bids[i]])
-                pard_bids += 1
-            if rho_actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
-                min_scores_rho = np.minimum(min_scores_rho, rho_sample_bids[:, i, rho_actual_bids[i]])
-                rho_bids += 1
-
         if self.verbose:
-            print("lho_bids", lho_bids, "pard_bids", pard_bids, "rho_bids", rho_bids)
+            print("get_bid_ids", n_steps, auction)
+        
+        # Initialize the players list with a loop to get bid information for each position
+        players = []
+        for i in range(1, 4):
+            actual_bids, bid_count = bidding.get_bid_ids(auction, (nesw_i + i) % 4, n_steps)
+            players.append({
+                "position": i,
+                "bid_count": bid_count,
+                "actual_bids": actual_bids
+            })
+        lho_bid_count = players[0]["bid_count"]
+        pard_bid_count = players[1]["bid_count"]
+        rho_bid_count = players[2]["bid_count"]
+        
 
-        #print(min_scores_rho)
-        no_of_bids = lho_bids + pard_bids + rho_bids
-        max_distance = lho_bids + 2 * pard_bids + rho_bids  # Replace with the maximum possible distance in your context
+        # Calculate the total bid_count for all players
+        total_bid_count = sum(player["bid_count"] for player in players)
+        if total_bid_count == 0:
+            # No bidding yet, so we just return the first samples
+            quality = 1
+            sorted_scores = np.ones(self.sample_hands_auction)
+            accepted_samples = lho_pard_rho[:self.sample_hands_auction]
+            return accepted_samples, sorted_scores, c_hcp, c_shp, quality
+
+
+        # Sort players by bid_count in descending order
+        #players.sort(key=lambda x: x["bid_count"], reverse=True)
+        # Rearrange the players in the order [2, 3, 1]
+        players = [players[1], players[2], players[0]]
+
+        # Initialize min scores arrays for each position
+        min_scores_lho = np.ones(lho_pard_rho.shape[0])
+        min_scores_partner = np.ones(lho_pard_rho.shape[0])
+        min_scores_rho = np.ones(lho_pard_rho.shape[0])
+
+        # We will now validate the generated deals against the actual bidding.
+        # We take one player at a time, and start with the most difficult one (based on number of bids)
+        for player in players:            
+            # Call process_bidding for the current player, updating all `min_scores` arrays
+            lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho = self.process_bidding(
+                player, lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho, 
+                auction, nesw_i, hand, vuln, models, index, actual_bids, n_steps, size, models.bidder_model if player["position"] == 1 else models.opponent_model, self.verbose
+            )
+            #print(f"Processed bidding for player {player['position']} lho_pard_rho shape", lho_pard_rho.shape)
+            if lho_pard_rho.shape[0] == 0:
+                sorted_scores = []
+                quality = -1
+                return lho_pard_rho, sorted_scores, c_hcp, c_shp, quality
+
+        
+        min_scores = np.ones(lho_pard_rho.shape[0])
+
+        max_distance = lho_bid_count + 2 * pard_bid_count + rho_bid_count  # Replace with the maximum possible distance in your context
         
         if self.use_distance:
             # Initialize an array to store distances
-            distances = np.zeros(n_samples, dtype=np.float16)
+            distances = np.zeros(lho_pard_rho.shape[0], dtype=np.float16)
             # Calculate the Euclidean distance for each index
             # Small distance is good
-            for i in range(n_samples):
+            for i in range(lho_pard_rho.shape[0]):
                 abs_diff_lho = 1 - min_scores_lho[i]
-                if abs_diff_lho > 1 - self.exclude_samples:
-                    # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
-                    distances[i] = 1000
-                    continue
-
                 abs_diff_partner = 1 - min_scores_partner[i]
-                if abs_diff_partner > 1 - self.exclude_samples: 
-                    # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
-                    distances[i] = 1000
-                    continue
-
                 abs_diff_rho = 1 - min_scores_rho[i]
-                if abs_diff_rho > 1 - self.exclude_samples:
-                    # Increase the distance if any absolute score is less than 0.01 (exclude samples) - in principle discarding that sample
-                    distances[i] = 1000
-                    continue
-                
-                if no_of_bids > 0:
-                    distances[i] = (abs_diff_lho * lho_bids + 2 * abs_diff_partner * pard_bids + abs_diff_rho * rho_bids)
+              
+                # We have returned a set earlier if no bidding
+                #if no_of_bids > 0:
+                distances[i] = (abs_diff_lho * lho_bid_count + 2 * abs_diff_partner * pard_bid_count + abs_diff_rho * rho_bid_count)
 
-                #if distances[i] < max_distance * (1-self.bid_accept_threshold_bidding) :
-                #    print(abs_diff_lho * lho_bids, 2 * abs_diff_partner * pard_bids, abs_diff_rho * rho_bids, no_of_bids)
-                #    print(i, distances[i], hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), round(abs_diff_lho,3), hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding),round(abs_diff_partner,3), hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding),round(abs_diff_rho,3))
+            #if distances[i] < max_distance * (1-self.bid_accept_threshold_bidding) :
+            #    print(abs_diff_lho * lho_bids, 2 * abs_diff_partner * pard_bids, abs_diff_rho * rho_bids, no_of_bids)
+            #    print(i, distances[i], hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), round(abs_diff_lho,3), hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding),round(abs_diff_partner,3), hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding),round(abs_diff_rho,3))
 
-            if no_of_bids > 0:
-                # Normalize the total distance to a scale between 0 and 100
-                if self.verbose:
-                    print("Max distance", max_distance, lho_bids, pard_bids, rho_bids)
-                scaled_distance_A = ((max_distance - distances) / max_distance)
-                #print("scaled_distance_A", scaled_distance_A)
+            # Normalize the total distance to a scale between 0 and 100
+            if self.verbose:
+                print("Max distance", max_distance, lho_bid_count, pard_bid_count, rho_bid_count)
+            scaled_distance_A = ((max_distance - distances) / max_distance)
+            #print("scaled_distance_A", scaled_distance_A)
 
-                # Get the indices that would sort min_scores in descending order
-                sorted_indices = np.argsort(scaled_distance_A)[::-1]
-                sorted_scores = scaled_distance_A[sorted_indices]
-            else:
-                sorted_indices = np.argsort(min_scores)[::-1]
-                sorted_scores = min_scores[sorted_indices]
+            # Get the indices that would sort min_scores in descending order
+            sorted_indices = np.argsort(scaled_distance_A)[::-1]
+            sorted_scores = scaled_distance_A[sorted_indices]
         else:
             min_scores = np.minimum(min_scores_rho, min_scores)
             min_scores = np.minimum(min_scores_partner, min_scores)
@@ -471,7 +499,7 @@ class Sample:
         if self.verbose:
             print("Samples after bidding distance: ", len(sorted_samples), " Threshold: ")
         if len(sorted_scores) == 0:
-            return sorted_samples, sorted_scores, c_hcp[0], c_shp[0], -1
+            return sorted_samples, sorted_scores, c_hcp, c_shp, -1
         # How much to trust the bidding for the samples
         accepted_samples = sorted_samples[sorted_scores >= self.bidding_threshold_sampling]
         #quality = True
@@ -480,7 +508,7 @@ class Sample:
 
         # If we havent found enough samples, just return the minimum number from configuration
         # It could be an idea to add an extra sampling in a later version
-        if len(accepted_samples) < self._min_sample_hands_auction:
+        if (len(accepted_samples) < self._min_sample_hands_auction) and extend_samples:
             if self.use_distance:
                 #quality = len(sorted_samples[sorted_scores >= self.bid_accept_threshold_bidding]) > 2 or n_steps*4 > self.no_biddingqualitycheck_after_bid_count
                 if self.verbose:
@@ -492,10 +520,17 @@ class Sample:
                 #quality = len(accepted_samples) > 2 or n_steps*4 > self.no_biddingqualitycheck_after_bid_count
             accepted_samples = sorted_samples[:self._min_sample_hands_auction]
 
+        if len(accepted_samples) == 0:
+            if self.verbose:
+                print("No samples found. Extende={extend_samples}")
+            return sorted_samples, sorted_scores, c_hcp, c_shp, -1
+        
+        if self.verbose:
+            print("Returning", len(accepted_samples), extend_samples)
         sorted_scores = sorted_scores[:len(accepted_samples)]
         quality = np.mean(sorted_scores)
 
-        return accepted_samples, sorted_scores, c_hcp[0], c_shp[0], quality
+        return accepted_samples, sorted_scores, c_hcp, c_shp, quality
 
     # shuffle the cards between the 2 hidden hands
     def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, public_hand_str,vuln, known_nesw, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
@@ -753,7 +788,7 @@ class Sample:
         X = np.zeros((sample_hands.shape[0], n_steps, A.shape[-1]), dtype=np.float16)
         X[:, :, :] = A
 
-        actual_bids = bidding.get_bid_ids(auction, nesw_i, n_steps)
+        actual_bids, _ = bidding.get_bid_ids(auction, nesw_i, n_steps)
         if partner:
             sample_bids = models.bidder_model.model_seq(X)[0]
         else:
@@ -762,12 +797,10 @@ class Sample:
 
         min_scores = np.ones(sample_hands.shape[0])
 
-        bids_made = 0
         # We check the bid for each bidding round
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
-                bids_made += 1
         return min_scores
 
     def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, public_hand_str,vuln, models, rng):

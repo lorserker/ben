@@ -185,7 +185,7 @@ class CardResp:
 
 class CandidateBid:
 
-    def __init__(self, bid, insta_score, expected_score=None, expected_mp=None, expected_imp=None, expected_tricks=None, adjust=None, alert = None):
+    def __init__(self, bid, insta_score, expected_score=None, expected_mp=None, expected_imp=None, expected_tricks=None, adjust=None, alert = None, who=None):
         self.bid = bid
         self.insta_score = None if insta_score is None else float(insta_score)
         self.expected_score = None if expected_score is None else float(expected_score)
@@ -194,6 +194,7 @@ class CandidateBid:
         self.expected_tricks = None if expected_tricks is None else float(expected_tricks)
         self.adjust = None if adjust is None else float(adjust)
         self.alert = alert
+        self.who = who
 
     def __str__(self):
         bid_str = self.bid.ljust(4) if self.bid is not None else "    "
@@ -204,7 +205,8 @@ class CandidateBid:
         expected_tricks = f"{self.expected_tricks:5.2f}" if self.expected_tricks is not None else "---"
         adjust_str = f"{self.adjust:4.2f}" if self.adjust is not None else "---"
         alert_str = "alertable" if self.alert else "  "
-        return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, expected_mp={expected_mp_str}, expected_imp={expected_imp_str}, expected_tricks={expected_tricks}, adjust={adjust_str}, alert={alert_str})"
+        who_str = f"who={self.who})" if self.who is not None else ""
+        return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, expected_mp={expected_mp_str}, expected_imp={expected_imp_str}, expected_tricks={expected_tricks}, adjust={adjust_str}, alert={alert_str} {who_str})"
 
     def with_expected_score(self, expected_score, expected_tricks, adjust):
         #print("Updating candidate bid",expected_score, expected_tricks, adjust)
@@ -244,6 +246,9 @@ class CandidateBid:
         if self.alert is not None:
             result['alert'] = str(self.alert)
 
+        if self.who is not None:
+            result['who'] = self.who
+
         return result
 
 
@@ -263,7 +268,7 @@ class BidResp:
     def __str__(self):
         bid_str = self.bid.ljust(4) if self.bid is not None else "    "
         alert_str = ", artificial" if self.alert else "  "
-        explain_str = ", " + self.explain if self.explain != None else ""
+        explain_str = ", " + self.explanation if self.explanation != None else ""
         return f"BidResp(bid={bid_str}, who={self.who}{alert_str}{explain_str})"
 
     def convert_to_floats(self, array):

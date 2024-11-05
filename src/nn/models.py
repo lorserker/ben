@@ -12,34 +12,16 @@ from nn.contract import Contract
 
 class Models:
 
-    def __init__(self, name, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count,
-                 min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability,
-                 use_adjustment,
-                 adjust_NN,
-                 adjust_NN_Few_Samples,
-                 adjust_XX,
-                 adjust_X,
-                 adjust_X_remove,
-                 adjust_passout,
-                 adjust_passout_negative,
-                 adjust_min1,
-                 adjust_min2,
-                 adjust_min1_by,
-                 adjust_min2_by,
-                 use_suitc,
-                 suitc_sidesuit_check,
-                 draw_trump_reward,
-                 draw_trump_penalty,
-                 use_real_imp_or_mp,
-                 use_real_imp_or_mp_bidding,
-                 use_real_imp_or_mp_opening_lead,
-                 check_final_contract,
-                 max_samples_checked,
-                 alert_supported,
-                 alert_threshold,
-                 factor_to_translate_to_mp,
-                 factor_to_translate_to_imp
+    def __init__(self, name, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, 
+                 no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count, min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
+                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
+                 double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, 
+                 pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, use_adjustment,
+                 adjust_NN, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
+                 use_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
+                 use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead,check_final_contract, max_samples_checked,  
+                 alert_supported, alert_threshold,
+                 factor_to_translate_to_mp, factor_to_translate_to_imp, suppress_warnings
                  ):
         self.name = name
         self.model_version = model_version
@@ -126,6 +108,8 @@ class Models:
         self.alert_threshold = alert_threshold
         self.factor_to_translate_to_mp = factor_to_translate_to_mp
         self.factor_to_translate_to_imp = factor_to_translate_to_imp
+        self.suppress_warnings = suppress_warnings
+
 
 
     @classmethod
@@ -222,6 +206,7 @@ class Models:
         use_real_imp_or_mp = conf.getboolean('cardplay', 'use_real_imp_or_mp', fallback=False)
         use_real_imp_or_mp_bidding = conf.getboolean('eval', 'use_real_imp_or_mp_bidding', fallback=False)
         use_real_imp_or_mp_opening_lead = conf.getboolean('lead', 'use_real_imp_or_mp_opening_lead', fallback=False)
+        suppress_warnings = conf.getboolean('models', 'suppress_warnings', fallback=True)
         bba_ns = conf.getint('models', 'bba_ns', fallback=-1)
         bba_ew = conf.getint('models', 'bba_ew', fallback=-1)
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
@@ -245,16 +230,27 @@ class Models:
                 opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['bidder']),alert_supported=alert_supported)
         contract_model=Contract(os.path.join(base_path, conf['contract']['contract']))
         binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info']))
+        if verbose:
+            print(f"Loaded contract and bidding info models")
+
         lead_suit_model=Leader(os.path.join(base_path, conf['lead']['lead_suit']))
         lead_nt_model=Leader(os.path.join(base_path, conf['lead']['lead_nt']))
+        if verbose:
+            print(f"Loaded lead models")
         sd_model=LeadSingleDummy(os.path.join(base_path, conf['eval']['single_dummy_estimator']))
         sd_model_no_lead=LeadSingleDummy(os.path.join(base_path, conf['eval']['double_dummy_estimator']))
+        if verbose:
+            print(f"Loaded single dummy models")
 
         player_models=[
             BatchPlayerLefty(name, os.path.join(base_path, conf['cardplay'][name])) if 'lefty' in name and opening_lead_included == False else
             BatchPlayer(name, os.path.join(base_path, conf['cardplay'][name]))
             for name in player_names
         ]
+
+        if verbose:
+            print(f"loaded {len(player_models)} player models")
+
         return cls(
             name=name,
             model_version=model_version,
@@ -340,7 +336,8 @@ class Models:
             use_real_imp_or_mp_bidding=use_real_imp_or_mp_bidding,
             use_real_imp_or_mp_opening_lead=use_real_imp_or_mp_opening_lead,
             check_final_contract=check_final_contract,
-            max_samples_checked=max_samples_checked
+            max_samples_checked=max_samples_checked,
+            suppress_warnings=suppress_warnings
         )
 
     @property

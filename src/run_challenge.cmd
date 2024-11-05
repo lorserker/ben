@@ -1,1 +1,7 @@
 python game.py --conf ./config/default_tf2_Short_imp_or_mp.conf --auto True --biddingonly NS --boards ../Challenges/CTC_mayjun20.pbn --facit True --outputpbn ../Challenges/Results/CTC_mayjun20-Result8663.pbn
+python game.py --conf ./config/default_tf2_Short_imp_or_mp.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-Result8663.pbn
+python game.py --conf ./config/default_tf2_Short_imp_or_mp.conf --auto True --biddingonly NS --boards ../Challenges/pav_first58.pbn --facit True --outputpbn ../Challenges/Results/pav_first58-Result8663.pbn
+python game.py --conf ./config/BBA-2over1.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-ResultBBA21.pbn
+python game.py --conf ./config/BBA-SAYC.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-ResultBBASayc.pbn
+python game.py --conf ./config/default_tf2_Short_imp_or_mp.conf --auto True --biddingonly NS --boards ../Challenges/oct13_feb23_nov23_jun24.pbn --facit True --outputpbn ../Challenges/Results/oct13_feb23_nov23_jun24-Result8663.pbn
+python game.py --conf ./config/BBA-2over1.conf --auto True --biddingonly NS --boards ../Challenges/oct13_feb23_nov23_jun24.pbn --facit True --outputpbn ../Challenges/Results/oct13_feb23_nov23_jun24-BBA8663.pbn

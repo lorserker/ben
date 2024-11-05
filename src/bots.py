@@ -398,7 +398,7 @@ class BotBid:
             if self.verbose:
                 print(f"Estimating took {(time.time() - t_start):0.4f} seconds")
         else:
-            who = "NN"
+            who = "NN" if candidates[0].who is None else candidates[0].who
             n_steps = binary.calculate_step_bidding_info(auction)
             p_hcp, p_shp = self.sampler.get_bidding_info(n_steps, auction, self.seat, self.hand_bidding, self.vuln, self.models)
             p_hcp = p_hcp[0]
@@ -645,8 +645,9 @@ class BotBid:
                 #print("bid_i",bid_i)
                 #print(bid_softmax)
                 if bidding.can_bid(bidding.ID2BID[bid_i], auction):
-                    if (bid_softmax[bid_i] < 0.5):
-                        sys.stderr.write(f"{Fore.LIGHTGREEN_EX}Consider adding samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')} with {self.hand_str}\n{Style.RESET_ALL}")
+                    if not self.models.suppress_warnings:
+                        if (bid_softmax[bid_i] < 0.5):
+                            sys.stderr.write(f"{Fore.YELLOW}Consider adding samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')} with {self.hand_str}\n{Style.RESET_ALL}")
                     candidates.append(CandidateBid(bid=bidding.ID2BID[bid_i], insta_score=bid_softmax[bid_i], alert=alert))
                     break
                 else:
@@ -770,26 +771,61 @@ class BotBid:
     def sample_hands_for_auction(self, auction_so_far, turn_to_bid):
         # The longer the aution the more hands we might need to sample
         sample_boards_for_auction = self.sampler.sample_boards_for_auction
-        # Skip this and create the loop below TODO
-        if binary.get_number_of_bids(auction_so_far) > 10:
-            sample_boards_for_auction *= 2
-        if binary.get_number_of_bids(auction_so_far) > 20:
-            sample_boards_for_auction *= 2
+        
+        bid_count = binary.get_number_of_bids_without_pass(auction_so_far)
+        if self.sampler.increase_for_bid_count > 0:
+            factor = bid_count // self.sampler.increase_for_bid_count
+            if factor > 0:
+                sample_boards_for_auction = round((1.5 ** factor) * sample_boards_for_auction)
+                if self.verbose:
+                    print(f"Increasing samples to {sample_boards_for_auction} for auction with {binary.get_number_of_bids(auction_so_far)} bids")
+
         # Reset randomizer
         self.rng = self.get_random_generator()
 
-        # This should be changed to a loop testing 5000 samples, until we have enough TODO
-        accepted_samples, sorted_scores, p_hcp, p_shp, quality = self.sampler.sample_cards_auction(auction_so_far, turn_to_bid, self.hand_str, self.vuln, sample_boards_for_auction, self.rng, self.models)
-        
+        accepted_samples = []
+        sorted_scores = []
+        samplings = 0
+        current_count = 0
+        quality = 0
+        p_hcp, p_shp = None, None
+        while samplings < sample_boards_for_auction and current_count <= self.sampler.sample_hands_auction:
+            new_samples, new_sorted_scores, p_hcp, p_shp, new_quality = self.sampler.sample_cards_auction(auction_so_far, turn_to_bid, self.hand_str, self.vuln, self.sampler.sample_boards_for_auction_step, self.rng, self.models, p_hcp, p_shp, extend_samples = (samplings+self.sampler.sample_boards_for_auction_step >= sample_boards_for_auction) )
+            current_count += new_samples.shape[0]
+            quality += new_quality * new_samples.shape[0]
+            # Accumulate the samples and scores
+            # We should probably check for duplicates
+            accepted_samples.append(new_samples)
+            sorted_scores.append(new_sorted_scores)
+            samplings += self.sampler.sample_boards_for_auction_step
+
+        if current_count == 0:
+            print(f"{samplings} {sample_boards_for_auction}")
+            print(f"No samples found for auction {auction_so_far}")
+
+        # Convert list of arrays into a single array along the first dimension
+        quality = -1 if current_count == 0 else quality / current_count
+        accepted_samples = np.concatenate(accepted_samples, axis=0)
+        sorted_scores = np.concatenate(sorted_scores, axis=0)
         if self.verbose:
-            print(f"Found {accepted_samples.shape[0]} samples for bidding. Quality={quality}")
+            print(f"Found {accepted_samples.shape[0]} samples for bidding. Quality={quality}, Samplings={samplings}, Auction{auction_so_far}")
 
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
-        if accepted_samples.shape[0] > self.sampler.sample_hands_auction:
+        if accepted_samples.shape[0] >= self.sampler.sample_hands_auction:
             random_indices = self.rng.permutation(accepted_samples.shape[0])
             accepted_samples = accepted_samples[random_indices[:self.sampler.sample_hands_auction], :, :]
             sorted_scores = sorted_scores[random_indices[:self.sampler.sample_hands_auction]]
+        else:
+            # Inform user
+            if not self.models.suppress_warnings:
+                if accepted_samples.shape[0] <= self.sampler.warn_to_few_samples:
+                    sys.stderr.write(f"{Fore.YELLOW}Warning: Not enough samples found. Using all samples {accepted_samples.shape[0]}, Samplings={samplings}, Auction{auction_so_far}{Style.RESET_ALL}\n")
+
+        sorted_indices = np.argsort(sorted_scores)[::-1]
+        # Extract scores based on the sorted indices
+        sorted_scores = sorted_scores[sorted_indices]
+        accepted_samples = accepted_samples[sorted_indices]
 
         n_samples = accepted_samples.shape[0]
         
@@ -858,10 +894,11 @@ class BotBid:
                             deal = deck52.convert_cards(deal,0, "", self.rng, self.models.n_cards_bidding)
                             deal = deck52.reorder_hand(deal)
                             deal = "NESW"[self.dealer] + " " +find_vuln_text(self.vuln) + ' ' + deal
-                            save_for_training(deal, '-'.join(auction).replace('PASS', 'P'))
-                            sys.stderr.write(f"{Fore.RED}Sampling: {'-'.join(auction_so_far).replace('PASS', 'P').replace('PAD_START-', '').replace('PAD_START', 'Opening')} with this deal {deal} ")
-                            sys.stderr.write(f"to avoid this auction {'-'.join(auction).replace('PASS', 'P')}\n{Style.RESET_ALL}")
-                            sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                            if not self.models.suppress_warnings:
+                                save_for_training(deal, '-'.join(auction).replace('PASS', 'P'))
+                                sys.stderr.write(f"{Fore.RED}Sampling: {'-'.join(auction_so_far).replace('PASS', 'P').replace('PAD_START-', '').replace('PAD_START', 'Opening')} with this deal {deal} ")
+                                sys.stderr.write(f"to avoid this auction {'-'.join(auction).replace('PASS', 'P')}\n{Style.RESET_ALL}")
+                                sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
                             bid_np[i][bid] = 0
                             
 
@@ -1278,7 +1315,7 @@ class BotLead:
         if self.verbose:
             print(f'Now generating {self.sampler.sample_boards_for_auction_opening_lead} deals to find opening lead')
         
-        accepted_samples, sorted_scores, p_hcp, p_shp, quality = self.sampler.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.sampler.sample_boards_for_auction_opening_lead, self.get_random_generator(), self.models)
+        accepted_samples, sorted_scores, p_hcp, p_shp, quality = self.sampler.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.sampler.sample_boards_for_auction_opening_lead, self.get_random_generator(), self.models, None, None, extend_samples=True)
 
         if self.verbose:
             print("Generated samples:", accepted_samples.shape[0], " Quality", quality)
@@ -1858,9 +1895,17 @@ class CardPlayer:
             for i in range(len(candidate_cards)):
                 print(candidate_cards[i].card, candidate_cards[i].insta_score, candidate_cards[i].expected_tricks_dd, round(5*candidate_cards[i].p_make_contract, 1), candidate_cards[i].expected_score_dd, int(candidate_cards[i].expected_tricks_dd * 10) / 10)
 
-
-        who = "PIMC-MP" if self.models.matchpoint else "PIMC" 
-
+        if self.models.matchpoint:
+            if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
+                who = "PIMC-BEN-MP" 
+            else:
+                who = "PIMC-MP" 
+        else:
+            if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
+                who = "PIMC-BEN-IMP" 
+            else:
+                who = "PIMC-IMP" 
+            
         right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who, self.verbose)
         best_card_resp = CardResp(
             card=right_card,

@@ -109,7 +109,7 @@ class BBABotBid:
         conventions_ew = {}
 
         # Open the file and process each line
-        with open('./config/ew.bbsa', 'r') as file:
+        with open(f'./config/{ew_system}ew.bbsa', 'r') as file:
             for i, line in enumerate(file):
                 # Split the line into key and value
                 key, value = line.strip().split(' = ')
@@ -125,7 +125,7 @@ class BBABotBid:
         conventions_ns = {}
 
         # Open the file and process each line
-        with open('./config/ns.bbsa', 'r') as file:
+        with open(f'./config/{ns_system}ns.bbsa', 'r') as file:
             for i, line in enumerate(file):
                 # Split the line into key and value
                 key, value = line.strip().split(' = ')

@@ -350,6 +350,18 @@ def get_number_of_bids(auction):
         bids += 1
     return bids
 
+def get_number_of_bids_without_pass(auction):
+    bids = 0
+    for bid in auction:
+        if bid == 'PAD_START':
+            continue
+        if bid == 'PASS':
+            continue
+        if bid == 'PAD_END':
+            continue
+        bids += 1
+    return bids
+
 def calculate_step_bidding_info(auction):
     # This is number of levels to get from the neural network. 
     bids = get_number_of_bids(auction)

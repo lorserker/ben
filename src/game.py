@@ -351,7 +351,8 @@ class Driver:
         if i % 4 != 0:
             pbn_str += "\n"
             
-        pbn_str +=  "\n".join(notes) + "\n"
+        if len(notes) > 0:
+            pbn_str +=  "\n".join(notes) + "\n"
         auctionlines += len(notes)
         if self.contract is not None and self.card_play:
             declarer_i = "NESW".index(declarer)
@@ -1026,6 +1027,8 @@ async def main():
         print("Playing random deals or deals from the client")
  
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
+
+    print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration.{Fore.RESET}')  
 
     configuration = conf.load(configfile)
         
