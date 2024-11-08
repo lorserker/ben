@@ -1,26 +1,27 @@
 import sys
 import os
-import logging
 import traceback
 
-# Set logging level to suppress warnings
-logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ["GRPC_VERBOSITY"] = "ERROR"
-os.environ["GLOG_minloglevel"] = "2"
+os.environ["GLOG_minloglevel"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-
-# Configure absl logging to suppress logs
-import absl.logging
-# Suppress Abseil logs
-absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
-absl.logging.set_verbosity(absl.logging.FATAL)
-absl.logging.set_stderrthreshold(absl.logging.FATAL)
-
+# Set logging level to suppress warnings
+#logging.getLogger().setLevel(logging.CRITICAL)
 import shelve
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
+
+# Configure absl logging to suppress logs
+from absl import logging, app
+# Suppress Abseil logs
+logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
+logging.set_verbosity(logging.FATAL)
+logging.set_stderrthreshold(logging.FATAL)
+
+import warnings
+warnings.filterwarnings("ignore")
 
 import ipaddress
 import argparse
@@ -102,8 +103,9 @@ class TMClient:
         # level = int(self.contract[0])
         # strain_i = bidding.get_strain_i(self.contract)
         self.decl_i = bidding.get_decl_i(self.contract)
+        auction_str = "-".join(auction).replace('PAD_START-', '').replace('PASS','P')
 
-        print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Bidding ended: {auction}')
+        print(f'{Fore.LIGHTGREEN_EX}{datetime.datetime.now().strftime("%H:%M:%S")} Bidding:   {auction_str}{Fore.RESET}')
         if (self.verbose):
             print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Contract {self.contract}')
 
@@ -138,6 +140,7 @@ class TMClient:
 
             print(f"Server not responding {str(e)}")
             self._is_connected = False
+            print(Style.RESET_ALL)
             sys.exit()
 
 
@@ -319,7 +322,7 @@ class TMClient:
         card_players[0].hand52[opening_lead52] -= 1
 
         for trick_i in range(12):
-            print("{} Playing trick {}".format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1))
+            print("{}            Playing trick {}".format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1))
 
             for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
                 if (self.verbose):
@@ -339,7 +342,7 @@ class TMClient:
                 card_resp = None
                 # it's dummy's turn and this is the declarer
                 if (player_i == 1 and cardplayer_i == 3):
-                    print('{} declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
+                    print('{}            Declarers turn for dummy'.format(datetime.datetime.now().strftime("%H:%M:%S")))
 
                 if (player_i == cardplayer_i and player_i != 1) or (player_i == 1 and cardplayer_i == 3):
                     play_status = get_play_status(card_players[player_i].hand52,current_trick52)
@@ -494,7 +497,7 @@ class TMClient:
                     if isinstance(card_players[3], bots.CardPlayer) and card_players[3].pimc :
                         card_players[3].pimc.update_trick_needed()
 
-            print('{} trick {} cards={}. won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
+            print('{}            trick {} cards={} won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), "NESW"[(trick_winner + self.decl_i + 1) % 4]))
 
             # update cards shown
             for i, card32 in enumerate(current_trick):
@@ -570,14 +573,13 @@ class TMClient:
         trick_winner = (leader_i + get_trick_winner_i(current_trick52, (strain_i - 1) % 5)) % 4
         trick_won_by.append(trick_winner)
 
-        if (self.verbose):
-            pprint.pprint(list(zip(tricks, trick_won_by)))
-
         self.trick_winners = trick_won_by
         
-        # Decode each element of tricks52
-        decoded_tricks52 = [[decode_card(item) for item in inner] for inner in tricks52]
-        pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
+        if (self.verbose):
+            #pprint.pprint(list(zip(tricks, trick_won_by)))
+            # Decode each element of tricks52
+            decoded_tricks52 = [[decode_card(item) for item in inner] for inner in tricks52]
+            pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
 
         concatenated_str = ""
 
@@ -747,7 +749,7 @@ class TMClient:
     async def send_message(self, message: str):
         time.sleep(0.1)
         try:
-            print(f'{datetime.datetime.now().strftime("%H:%M:%S")} sending:   {message.ljust(60)}', end='')
+            print(f'{datetime.datetime.now().strftime("%H:%M:%S")} sending:   {message.ljust(57)}', end='')
 
             self.writer.write((message + "\r\n").encode())
             await self.writer.drain()
@@ -758,6 +760,7 @@ class TMClient:
             # Close the connection (in case it's not already closed)
             self._is_connected = False
             # Stop the event loop to terminate the application
+            print(Style.RESET_ALL)
             sys.exit()
 
     async def receive_line(self) -> str:
@@ -765,10 +768,13 @@ class TMClient:
             print('{} receiving: '.format(datetime.datetime.now().strftime("%H:%M:%S")), end='')
             message = await self.reader.readline()
             msg = message.decode().replace('\r', '').replace('\n', '')
-            print(f'{msg.ljust(60)} ...received.')
+            if msg.startswith('Timing'):
+                msg = msg.replace('E/W','\n                             E/W') + "        "
+            print(f'{msg.ljust(57)} ...received.')
             if (msg == "End of session"):
                 # Stop the event loop to terminate the application
                 self._is_connected = False
+                print(Style.RESET_ALL)
                 sys.exit(0)
             return msg
         except ConnectionAbortedError as ex:
@@ -776,6 +782,7 @@ class TMClient:
             # Close the connection (in case it's not already closed)
             self._is_connected = False
             # Stop the event loop to terminate the application
+            print(Style.RESET_ALL)
             sys.exit(0)
 
 def validate_ip(ip_str):
@@ -899,12 +906,16 @@ async def main():
                 cleanup_shelf(shelf_filename)
                 first = False
             with shelve.open(shelf_filename) as db:
-                print("Saving Board: ",client.deal_str)
-                print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Board played in {time.time() - t_start:0.1f} seconds.{Fore.RESET}')  
+                print(f"{datetime.datetime.now():%H:%M:%S} Saving Board:",client.deal_str)
+                print(f'{Fore.CYAN}{datetime.datetime.now():%H:%M:%S} Board played in {time.time() - t_start:0.1f} seconds.{Fore.RESET}')  
                 if deal["board_number"]+"-Open" not in db:
                     db[deal["board_number"]+"-Open"] = deal
                 else:
                     db[deal["board_number"]+"-Closed"] = deal
+
+def initialize_logging(argv):
+    # Empty function just to initialize absl logging
+    pass
 
 
 if __name__ == "__main__":

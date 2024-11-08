@@ -3,6 +3,7 @@ import time
 import pprint
 import sys
 import numpy as np
+import tensorflow as tf
 
 import binary
 import deck52
@@ -446,9 +447,23 @@ class BotBid:
                     if self.verbose: 
                         print("Skipping sample due to threshold", self.models.min_bidding_trust_for_sample_when_rescue)
                     continue
-                X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, samples[i].split(" ")[(self.seat + 2) % 4])
-                contract_id, doubled, tricks = self.models.contract_model.model[0](X)
+                X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, sample[(self.seat + 2) % 4])
+                # Perhaps we should collect all samples, and just make one call to the neural network
+                contract_id, doubled, tricks, score = self.models.contract_model.model[0](X)
+                if tf.is_tensor(score):
+                    score = score.numpy()
+                if tf.is_tensor(tricks):
+                    tricks = tricks.numpy()
+
+                contract_id = int(contract_id)
+                doubled = bool(doubled)
                 contract = bidding.ID2BID[contract_id] 
+                if score < self.models.min_bidding_trust_for_sample_when_rescue:
+                    if self.verbose:
+                        print(self.hand_str, [sample[(self.seat + 2) % 4]])
+                        print(f"Skipping sample below level{self.models.min_bidding_trust_for_sample_when_rescue} {contract}{"X" if doubled else ""}-{tricks} score {score:.3f}")
+                    continue
+
                 while not bidding.can_bid(contract, auction) and contract_id < 35:
                     contract_id += 5
                     contract = bidding.ID2BID[contract_id] 
@@ -757,58 +772,19 @@ class BotBid:
                 alerts = bid_np[1][-1:][0]                   
             bid_np = bid_np[0][-1:][0]
         if self.models.model_version == 3:
-            if self.models.alert_supported:
-                bid_np, alerts = self.models.bidder_model.model_seq(x)
-                alerts = alerts[0][-1:][0]
-            else:
-                bid_np = self.models.bidder_model.model_seq(x)
-                alerts = None
-                bid_np = bid_np[0]
-            bid_np = bid_np[0][-1:][0]
+            bid_np, alerts = self.models.bidder_model.model_seq(x)
+            alerts = alerts.numpy()[0]
+            bid_np = bid_np.numpy()[0]
+            alerts = alerts[-1:][0]
+            bid_np = bid_np[-1:][0]
         assert len(bid_np) == 40, "Wrong Result: " + str(bid_np.shape)
         return bid_np, alerts
     
     def sample_hands_for_auction(self, auction_so_far, turn_to_bid):
-        # The longer the aution the more hands we might need to sample
-        sample_boards_for_auction = self.sampler.sample_boards_for_auction
-        
-        bid_count = binary.get_number_of_bids_without_pass(auction_so_far)
-        if self.sampler.increase_for_bid_count > 0:
-            factor = bid_count // self.sampler.increase_for_bid_count
-            if factor > 0:
-                sample_boards_for_auction = round((1.5 ** factor) * sample_boards_for_auction)
-                if self.verbose:
-                    print(f"Increasing samples to {sample_boards_for_auction} for auction with {binary.get_number_of_bids(auction_so_far)} bids")
-
-        # Reset randomizer
+                # Reset randomizer
         self.rng = self.get_random_generator()
 
-        accepted_samples = []
-        sorted_scores = []
-        samplings = 0
-        current_count = 0
-        quality = 0
-        p_hcp, p_shp = None, None
-        while samplings < sample_boards_for_auction and current_count <= self.sampler.sample_hands_auction:
-            new_samples, new_sorted_scores, p_hcp, p_shp, new_quality = self.sampler.sample_cards_auction(auction_so_far, turn_to_bid, self.hand_str, self.vuln, self.sampler.sample_boards_for_auction_step, self.rng, self.models, p_hcp, p_shp, extend_samples = (samplings+self.sampler.sample_boards_for_auction_step >= sample_boards_for_auction) )
-            current_count += new_samples.shape[0]
-            quality += new_quality * new_samples.shape[0]
-            # Accumulate the samples and scores
-            # We should probably check for duplicates
-            accepted_samples.append(new_samples)
-            sorted_scores.append(new_sorted_scores)
-            samplings += self.sampler.sample_boards_for_auction_step
-
-        if current_count == 0:
-            print(f"{samplings} {sample_boards_for_auction}")
-            print(f"No samples found for auction {auction_so_far}")
-
-        # Convert list of arrays into a single array along the first dimension
-        quality = -1 if current_count == 0 else quality / current_count
-        accepted_samples = np.concatenate(accepted_samples, axis=0)
-        sorted_scores = np.concatenate(sorted_scores, axis=0)
-        if self.verbose:
-            print(f"Found {accepted_samples.shape[0]} samples for bidding. Quality={quality}, Samplings={samplings}, Auction{auction_so_far}")
+        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction_so_far, turn_to_bid, self.sampler.sample_boards_for_auction, self.sampler.sample_hands_auction, self.rng, self.hand_str, self.vuln, self.models)
 
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
@@ -865,12 +841,14 @@ class BotBid:
             #print("bidding_rollout - n_steps_vals: ", n_steps_vals, " turn_i: ", turn_i, " bid_i: ", bid_i, " auction: ", auction)
             X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models, self.models.n_cards_bidding)
             if turn_i % 2 == 0:
-                x_bid_np = self.models.bidder_model.model_seq(X)[0]
+                x_bid_np, _ = self.models.bidder_model.model_seq(X)
             else:
-                x_bid_np = self.models.opponent_model.model_seq(X)[0]
+                x_bid_np, _ = self.models.opponent_model.model_seq(X)
             
             if self.models.model_version < 3:
                 x_bid_np = x_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
+            else:
+                x_bid_np = x_bid_np.numpy()
                 
             bid_np = x_bid_np[:,-1,:]
             assert bid_np.shape[1] == 40
@@ -1282,6 +1260,10 @@ class BotLead:
             lead_softmax = self.models.lead_nt_model.model(x_ftrs, b_ftrs)
         else:
             lead_softmax = self.models.lead_suit_model.model(x_ftrs, b_ftrs)
+
+        if tf.is_tensor(lead_softmax):
+            lead_softmax = lead_softmax.numpy()
+
         # We remove all cards suggested by NN not in hand, and rescale the softmax
         lead_softmax = follow_suit(lead_softmax, self.handplay, np.array([[0, 0, 0, 0]]))
 
@@ -1310,19 +1292,17 @@ class BotLead:
 
         decl_i = bidding.get_decl_i(contract)
         lead_index = (decl_i + 1) % 4
+                # Reset randomizer
+        self.rng = self.get_random_generator()
 
-        # Consider changing this to a loop, so it is the target result that defines how many samples we should generate
-        if self.verbose:
-            print(f'Now generating {self.sampler.sample_boards_for_auction_opening_lead} deals to find opening lead')
-        
-        accepted_samples, sorted_scores, p_hcp, p_shp, quality = self.sampler.sample_cards_auction(auction, lead_index, self.hand_str, self.vuln, self.sampler.sample_boards_for_auction_opening_lead, self.get_random_generator(), self.models, None, None, extend_samples=True)
+        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction, lead_index, self.sampler.sample_boards_for_auction_opening_lead, self.sampler.sample_hands_opening_lead, self.rng, self.hand_str, self.vuln, self.models)
 
         if self.verbose:
-            print("Generated samples:", accepted_samples.shape[0], " Quality", quality)
+            print(f"Generated samples: {accepted_samples.shape[0]} in {samplings} samples. Quality {quality}")
             print(f'Now simulate on {min(accepted_samples.shape[0], self.sampler.sample_hands_opening_lead)} deals to find opening lead')
                 
 
-        # We have more samples than we want to calculate on
+    # We have more samples than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick based on scores
         if accepted_samples.shape[0] > self.sampler.sample_hands_opening_lead:
             # Normalize the scores to create a probability distribution
@@ -1340,8 +1320,7 @@ class BotLead:
             accepted_samples = accepted_samples[selected_indices, :, :]
             sorted_scores = sorted_scores[selected_indices]
     
-
-        # This should probably be changed from tricks to MP or IMP depending on tournament type
+        # We return tricks and the conversion to MP or IMP is done at a higher level
         if self.models.double_dummy:
             tricks = self.double_dummy_estimates(lead_card_indexes, contract, accepted_samples)
         else:
@@ -1600,17 +1579,17 @@ class CardPlayer:
                             print("Defending", self.pimc_declaring, self.player_i, trick_i)
                         self.find_and_update_constraints(players_states, quality,self.player_i)
 
-    def merge_candidate_cards(self, pimc_resp, dd_resp, engine):
+    def merge_candidate_cards(self, pimc_resp, dd_resp, engine, weight):
         merged_cards = {}
 
         for card52, (e_tricks, e_score, e_make) in dd_resp.items():
             pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card52]
-            new_e_tricks = round((pimc_e_tricks + e_tricks) / 2.0,2) if pimc_e_tricks is not None and e_tricks is not None else None
-            new_e_score = round((pimc_e_score + e_score) / 2.0,2) if pimc_e_score is not None and e_score is not None else None
-            new_e_make = round((pimc_e_make + e_make) / 2.0,2) if pimc_e_make is not None and e_make is not None else None
-            new_msg = engine + "|" + (pimc_msg or '') 
+            new_e_tricks = round((pimc_e_tricks * (1-weight) + e_tricks * weight),2) if pimc_e_tricks is not None and e_tricks is not None else None
+            new_e_score = round((pimc_e_score * (1-weight) + e_score * weight),2) if pimc_e_score is not None and e_score is not None else None
+            new_e_make = round((pimc_e_make * (1-weight) + e_make * weight),2) if pimc_e_make is not None and e_make is not None else None
+            new_msg = engine + f" {(1-weight)*100:.0f}%|" + (pimc_msg or '') 
             new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
-            new_msg += "|BEN DD|" 
+            new_msg += f"|BEN DD {weight*100:.0f}%|" 
             new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
             merged_cards[card52] = (new_e_tricks, new_e_score, new_e_make, new_msg)
 
@@ -1631,7 +1610,7 @@ class CardPlayer:
                 probability_of_occurence[i],
                 lead_scores[i]
             ))
-        if not quality and self.verbose:
+        if quality < 0.1 and self.verbose:
             print(samples)
 
         if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
@@ -1643,7 +1622,7 @@ class CardPlayer:
                 #print(pimc_resp_cards)
                 dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
                 #print(dd_resp_cards)
-                merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC")
+                merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", self.models.pimc_ben_dd_declaring_weight)
             else:
                 merged_card_resp = pimc_resp_cards
             card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status)            
@@ -1657,7 +1636,7 @@ class CardPlayer:
                     #print(pimc_resp_cards)
                     dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
                     #print(dd_resp_cards)
-                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef")
+                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef", self.models.pimc_ben_dd_defending_weight)
                 else:
                     merged_card_resp = pimc_resp_cards
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status)            
@@ -1736,7 +1715,7 @@ class CardPlayer:
 
         t_start = time.time()
         if self.verbose:
-            print("Samples: ",n_samples, " Solving: ",len(hands_pbn), self.strain_i, leader_i, current_trick52)
+            print("Samples:", n_samples, " Solving:",len(hands_pbn), self.strain_i, leader_i, current_trick52)
         dd_solved = self.dds.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
 
         # if defending the target is another
@@ -1807,6 +1786,8 @@ class CardPlayer:
         cards_softmax = self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i + 1),:])
         assert cards_softmax.shape == (1, 32), f"Expected shape (1, 32), but got shape {cards_softmax.shape}"
 
+        if tf.is_tensor(cards_softmax):
+            cards_softmax = cards_softmax.numpy()
         x = follow_suit(
             cards_softmax,
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_player_hand(),
@@ -1844,7 +1825,7 @@ class CardPlayer:
 
         all_cards = np.arange(32)
         ## This could be a parameter, but only used for display purposes
-        s_opt = card_softmax > 0.001
+        s_opt = card_softmax >= self.models.pimc_trust_NN
 
         card_options, card_scores = all_cards[s_opt], card_softmax[s_opt]
 
@@ -1857,25 +1838,28 @@ class CardPlayer:
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
             card32 = deck52.card52to32(card52)
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
-            if insta_score >= self.models.pimc_trust_NN:
-                expected_score = round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0), 0)
+            # Ignore cards not suggested by the NN
+            if insta_score < self.models.pimc_trust_NN:
+                continue
 
-                candidate_cards.insert(0,CandidateCard(
-                    card=Card.from_code(card52),
-                    insta_score=round(insta_score,3),
-                    expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
-                    p_make_contract=e_make,
-                    **({
-                        "expected_score_mp": expected_score
-                    } if self.models.matchpoint and self.models.use_real_imp_or_mp else
-                    {
-                        "expected_score_imp": round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),2)
-                    } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
-                    {
-                        "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
-                    }),
-                    msg=msg + (f"|trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
-                ))
+            expected_score = round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0), 0)
+
+            candidate_cards.insert(0,CandidateCard(
+                card=Card.from_code(card52),
+                insta_score=round(insta_score,3),
+                expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
+                p_make_contract=e_make,
+                **({
+                    "expected_score_mp": expected_score
+                } if self.models.matchpoint and self.models.use_real_imp_or_mp else
+                {
+                    "expected_score_imp": round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),2)
+                } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
+                {
+                    "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                }),
+                msg=msg + (f"|trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
+            ))
 
 
         if self.models.use_real_imp_or_mp:
@@ -1962,6 +1946,9 @@ class CardPlayer:
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
             expected_score =round(e_score+ (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0),0)
+            # Ignore cards bot suggested by the NN
+            if insta_score < self.models.trust__NN:
+                continue
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
                 candidate_cards.insert(0, CandidateCard(
                     card=card,

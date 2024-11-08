@@ -1,5 +1,5 @@
 import numpy as np
-
+import tensorflow as tf
 from bidding import bidding
 
 # input
@@ -413,9 +413,9 @@ def get_shape_for_lead(auction, hand, vuln, contract, models, n_cards):
     A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, models, models.n_cards_bidding)
 
     p_hcp, p_shp = models.binfo_model.model(A)
-    # Convert p_hcp and p_shp to float16
-    p_hcp = np.array(p_hcp, dtype=np.float16)
-    p_shp = np.array(p_shp, dtype=np.float16)
+    if tf.is_tensor(p_hcp):
+        p_hcp = p_hcp.numpy()
+        p_shp = p_shp.numpy()
 
     # Create b as a float16 array from the start
     b = np.zeros(15, dtype=np.float16)

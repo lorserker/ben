@@ -37,10 +37,15 @@ class Contract:
             feed_dict = {X: x, labels_bool1: np.zeros((x.shape[0], 1)), 
                          labels_tricks: np.zeros((x.shape[0], 14)), labels_oh: np.zeros((x.shape[0], 40))}
             bool1, tricks, contract = self.sess.run([bool1_logits, tricks_logits, contract_logits], feed_dict=feed_dict)
+
+ # Apply softmax to get probabilities for contract logits in the same session
+            contract_probs = self.sess.run(tf.nn.softmax(contract_logits), feed_dict=feed_dict)
+    
             doubled = bool1[0] > 0
             tricks = int(np.argmax(tricks, axis=1)[0])
             contract_id = np.argmax(contract, axis=1)[0]
-            return contract_id, doubled[0], tricks
+            score = contract_probs[0][contract_id]
+            return contract_id, doubled[0], tricks, score
 
         def get_top_k_tricks(x, k=3):
             feed_dict = {X: x, labels_bool1: np.zeros((x.shape[0], 1)),

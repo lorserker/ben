@@ -15,10 +15,11 @@ class Models:
 
     def __init__(self, name, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, 
                  no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count, min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
+                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, trust_NN, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
                  double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, 
-                 pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, use_adjustment,
-                 adjust_NN, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
+                 pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
+                 pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples,
+                 use_adjustment, adjust_NN, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
                  use_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
                  use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead,check_final_contract, max_samples_checked,  
                  alert_supported, alert_threshold,
@@ -57,6 +58,7 @@ class Models:
         self.use_bba_to_count_aces = use_bba_to_count_aces
         self.estimator = estimator
         self.claim = claim
+        self.trust_NN = trust_NN
         self.double_dummy = double_dummy
         self.lead_from_pips_nt = lead_from_pips_nt
         self.lead_from_pips_suit = lead_from_pips_suit
@@ -84,6 +86,12 @@ class Models:
         self.pimc_use_fusion_strategy = pimc_use_fusion_strategy
         self.pimc_ben_dd_defending = pimc_ben_dd_defending
         self.pimc_apriori_probability = pimc_apriori_probability
+        self.pimc_ben_dd_declaring_weight = pimc_ben_dd_declaring_weight 
+        self.pimc_ben_dd_defending_weight = pimc_ben_dd_defending_weight 
+        self.pimc_margin_suit = pimc_margin_suit 
+        self.pimc_margin_hcp = pimc_margin_hcp 
+        self.pimc_margin_suit_bad_samples = pimc_margin_suit_bad_samples 
+        self.pimc_margin_hcp_bad_samples = pimc_margin_hcp_bad_samples  
         self.use_adjustment = use_adjustment
         self.adjust_NN = adjust_NN
         self.adjust_NN_Few_Samples = adjust_NN_Few_Samples
@@ -167,6 +175,7 @@ class Models:
         estimator = conf.get('eval', 'estimator', fallback="sde")
         double_dummy_calculator = conf.getboolean('eval', 'double_dummy_calculator', fallback=False)
         claim = conf.getboolean('cardplay', 'claim', fallback=True)
+        trust_NN = conf.getfloat('cardplay', 'trust_NN', fallback=0)
         pimc_verbose = conf.getboolean('pimc', 'pimc_verbose', fallback=True)
         pimc_use_declaring = conf.getboolean('pimc', 'pimc_use_declaring', fallback=False)
         pimc_use_defending = conf.getboolean('pimc', 'pimc_use_defending', fallback=False)
@@ -183,6 +192,14 @@ class Models:
         pimc_use_fusion_strategy = conf.getboolean('pimc', 'pimc_use_fusion_strategy', fallback=True)
         pimc_ben_dd_defending = conf.getboolean('pimc', 'pimc_ben_dd_defending', fallback=False)
         pimc_apriori_probability = conf.getboolean('pimc', 'pimc_apriori_probability', fallback=False)
+
+        pimc_ben_dd_declaring_weight = conf.getfloat('pimc', 'pimc_ben_dd_declaring_weight', fallback=0.5)
+        pimc_ben_dd_defending_weight = conf.getfloat('pimc', 'pimc_ben_dd_defending_weight', fallback=0.5)
+        pimc_margin_suit = conf.getint('pimc', 'pimc_margin_suit', fallback=1)
+        pimc_margin_hcp = conf.getint('pimc', 'pimc_margin_hcp', fallback=2)
+        pimc_margin_suit_bad_samples = conf.getint('pimc', 'pimc_margin_suit_bad_samples', fallback=2)
+        pimc_margin_hcp_bad_samples = conf.getint('pimc', 'pimc_margin_hcp_bad_samples', fallback=5)
+
         use_adjustment = conf.getboolean('adjustments', 'use_adjustment', fallback=True)
         adjust_NN = conf.getint('adjustments', 'adjust_NN', fallback=50)
         adjust_NN_Few_Samples = conf.getint('adjustments', 'adjust_NN_Few_Samples', fallback=500)
@@ -201,7 +218,7 @@ class Models:
         opening_lead_included = conf.getboolean('cardplay', 'opening_lead_included', fallback=False)
         if not opening_lead_included:
             print("opening lead must be included in TF 2.X models for cardplay")
-        use_biddingquality_in_eval = conf.getboolean('cardplay', 'claim', fallback=False)
+        use_biddingquality_in_eval = conf.getboolean('cardplay', 'use_biddingquality_in_eval', fallback=False)
         use_suitc = conf.getboolean('cardplay', 'use_suitc', fallback=False)
         suitc_sidesuit_check = conf.getboolean('cardplay', 'suitc_sidesuit_check', fallback=False)
         draw_trump_reward = conf.getfloat('cardplay', 'draw_trump_reward', fallback=0.25)
@@ -279,6 +296,7 @@ class Models:
             use_bba_to_count_aces=use_bba_to_count_aces,
             estimator=estimator,
             claim=claim,
+            trust_NN=trust_NN,
             double_dummy=double_dummy,
             lead_from_pips_nt=lead_from_pips_nt,
             lead_from_pips_suit=lead_from_pips_suit,
@@ -308,6 +326,12 @@ class Models:
             pimc_use_fusion_strategy=pimc_use_fusion_strategy,
             pimc_ben_dd_defending=pimc_ben_dd_defending,
             pimc_apriori_probability=pimc_apriori_probability,
+            pimc_ben_dd_declaring_weight = pimc_ben_dd_declaring_weight,
+            pimc_ben_dd_defending_weight = pimc_ben_dd_defending_weight,
+            pimc_margin_suit = pimc_margin_suit,
+            pimc_margin_hcp = pimc_margin_hcp,
+            pimc_margin_suit_bad_samples = pimc_margin_suit_bad_samples,
+            pimc_margin_hcp_bad_samples = pimc_margin_hcp_bad_samples, 
             use_adjustment=use_adjustment,
             adjust_NN=adjust_NN,
             adjust_NN_Few_Samples=adjust_NN_Few_Samples,

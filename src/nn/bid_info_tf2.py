@@ -17,8 +17,13 @@ class BidInfo:
     def init_model(self):
         model = self.load_model()
 
+        @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, None], dtype=tf.float16)])
         def pred_fun(x):
-            out_hcp_seq, out_shape_seq = model.predict(x,verbose=0) 
-            return out_hcp_seq, out_shape_seq
+            # Ensure that x is a tensor
+            input_tensor = tf.convert_to_tensor(x, dtype=tf.float16)
+            
+            # Perform the model prediction (returns tensors)
+            out_hcp_seq, out_shape_seq  = model(input_tensor, training=False)  # Use model call instead of predict
+            return out_hcp_seq, out_shape_seq 
 
         return pred_fun

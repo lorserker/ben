@@ -1,3 +1,4 @@
+import sys
 from urllib.request import urlopen
 import json
 import numpy as np
@@ -5,6 +6,10 @@ import numpy as np
 from objects import Card
 import deck52
 import binary
+
+from colorama import Fore, Back, Style, init
+
+init()
 
 RANKS = 'AKQJT98765432'
 
@@ -116,7 +121,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             if (player_i  == 1 or player_i == 3) and play_status == "Lead":
                 # We only use SuitC the first time the suit is played 
                 # but allow 3 discards / rufs in the suit
-                if current_count + 3 >= original_count and models.use_suitc:
+                if current_count + 2 >= original_count and models.use_suitc:
                     if verbose:
                         print("SuitC activated")
                         print("discards", discards)
@@ -141,6 +146,10 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                             continue
                         suits_westeast  += c
 
+                    if len(suits_westeast) < 2:
+                        if verbose:
+                            print("Opponents got at most 1 card in the suit, no calculations")
+                        return candidate_cards[0].card, who 
                     from suitc.SuitC import SuitCLib
                     suitc = SuitCLib(False)
                     if verbose: 
@@ -148,30 +157,34 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
 
                     card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
-                    
-                    response_dict = json.loads(card)
-                    optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
-                    card == "N/A"
-                    # We just take the play for MAX as we really don't know how many tricks are needed
-                    for play in optimum_plays:
-                        if "MAX" in play["OptimumPlayFor"]:
-                            if len(play["GameTree"]) > 0:
-                                card = play["GameTree"]["T"]
-                            else:
-                                print("SuitC found no gametree")
-                                return candidate_cards[0].card, who
-                            #print("card", card)
-                    if card == "N/A":
-                        print("SuitC found no plays")
+                    suitc_card = None
+                    try:
+                        response_dict = json.loads(card)
+                        optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
+                        # We just take the play for MAX as we really don't know how many tricks are needed
+                        for play in optimum_plays:
+                            if "MAX" in play["OptimumPlayFor"]:
+                                if len(play["GameTree"]) > 0:
+                                    suitc_card = play["GameTree"]["T"]
+                                else:
+                                    print("SuitC found no gametree")
+                                    return candidate_cards[0].card, who
+                                #print("card", card)
+                    except:
+                        sys.stderr.write(f"{Fore.RED}SuitC failed: {card} Input:{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}{Fore.RESET}\n")
+                        return candidate_cards[0].card, who
+                    if suitc_card is None:
+                        if verbose:
+                            print("SuitC found no plays")
                         return candidate_cards[0].card, who
                     else:
-                        card = card[-1]
+                        suitc_card = suitc_card[-1]
                     suit_str = "SHDC"[interesting_suit]
                     if verbose:
-                        print(f"SuitC found: {suit_str}{card}")
+                        print(f"SuitC found: {suit_str}{suitc_card}")
                     # Only play the card from SuitC if it was a candidate
                     for candidate_card in candidate_cards:
-                        if candidate_card.card.symbol() == f"{suit_str}{card}":
+                        if candidate_card.card.symbol() == f"{suit_str}{suitc_card}":
                             # Only play SuitC if not losing to much DD
                             if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
                                 if candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.1:

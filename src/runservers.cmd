@@ -26,6 +26,6 @@ start "Default" python gameserver.py --config config\default.conf --port 4445
 timeout /t 10 /nobreak >nul
 start "Jack Sayc" python gameserver.py --config config\jacksayc.conf --port 4446
 timeout /t 10 /nobreak >nul
-start "TF2 GIB" python gameserver.py --config config\default_TF2.conf --port 4447
+start "TF2 GIB" python gameserver.py --config config\default_tf2_Short_imp_or_mp.conf --port 4447
 timeout /t 10 /nobreak >nul
 start "TF2 Jackos" python gameserver.py --config config\muppet_TF2.conf --port 4448

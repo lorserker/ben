@@ -99,9 +99,9 @@ class BGADLL:
         # Should it be moved to configuration?
 
         if quality >= self.sampler.bidding_threshold_sampling :
-            margin = 1
+            margin = self.models.pimc_margin_suit
         else:
-            margin = 3
+            margin = self.models.pimc_margin_suit_bad_samples
 
         # allready_shown is in normal order (Spades,Hearts,Diamonds,Clubs)
         allready_shown_rho = [0,0,0,0]
@@ -163,13 +163,12 @@ class BGADLL:
             print("allready_shown_rho",allready_shown_rho)
         
         # The margin should probably be smaller if the opponents was active during bidding
-        # Or perhaps configurable
         # It could also be worth counting the hcp divided by opponents
         # and perhaps no margin on max hcp
         if quality:
-            margin = 2
+            margin = self.models.pimc_margin_hcp
         else:
-            margin = 5
+            margin = self.models.pimc_margin_hcp_bad_samples
         self.lho_constraints.MinHCP = max(min_lho-margin-allready_shown_lho, 0)
         self.lho_constraints.MaxHCP = min(max_lho+margin-allready_shown_lho, 37)
         self.rho_constraints.MinHCP = max(min_rho-margin-allready_shown_rho, 0)

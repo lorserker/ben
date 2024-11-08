@@ -2,6 +2,7 @@ import sys
 import time
 
 import numpy as np
+import tensorflow as tf
 
 import binary
 
@@ -145,6 +146,48 @@ class Sample:
     def min_sample_hands_auction(self):
         return self._min_sample_hands_auction
 
+    def generate_samples_iterative(self, auction_so_far, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models):
+        # The longer the aution the more hands we might need to sample
+        sample_boards_for_auction = max_samples
+        
+        bid_count = binary.get_number_of_bids_without_pass(auction_so_far)
+        if self.increase_for_bid_count > 0:
+            factor = bid_count // self.increase_for_bid_count
+            if factor > 0:
+                sample_boards_for_auction = round((1.5 ** factor) * sample_boards_for_auction)
+                if self.verbose:
+                    print(f"Increasing samples to {sample_boards_for_auction} for auction with {binary.get_number_of_bids(auction_so_far)} bids")
+
+
+        accepted_samples = []
+        sorted_scores = []
+        samplings = 0
+        current_count = 0
+        quality = 0
+        p_hcp, p_shp = None, None
+        while samplings < sample_boards_for_auction and current_count <= needed_samples:
+            new_samples, new_sorted_scores, p_hcp, p_shp, new_quality = self.sample_cards_auction(auction_so_far, turn_to_bid, hand_str, vuln, self.sample_boards_for_auction_step, rng, models, p_hcp, p_shp, extend_samples = (samplings+self.sample_boards_for_auction_step >= max_samples) )
+            current_count += new_samples.shape[0]
+            quality += new_quality * new_samples.shape[0]
+            # Accumulate the samples and scores
+            # We should probably check for duplicates
+            accepted_samples.append(new_samples)
+            sorted_scores.append(new_sorted_scores)
+            samplings += self.sample_boards_for_auction_step
+
+        if current_count == 0:
+            print(f"Samplings: {samplings} max {sample_boards_for_auction}")
+            print(f"No samples found for auction {auction_so_far}")
+
+        # Convert list of arrays into a single array along the first dimension
+        quality = -1 if current_count == 0 else quality / current_count
+        accepted_samples = np.concatenate(accepted_samples, axis=0)
+        sorted_scores = np.concatenate(sorted_scores, axis=0)
+        if self.verbose:
+            print(f"Found {accepted_samples.shape[0]} samples for bidding. Quality={quality}, Samplings={samplings}, Auction{auction_so_far}")
+
+        return accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings
+
     def sample_cards_vec(self, n_samples, c_hcp, c_shp, my_hand, rng, n_cards=32):
         if self.verbose:
             print("sample_cards_vec generating", n_samples, rng.bit_generator.state['state']['state'])
@@ -183,28 +226,37 @@ class Sample:
         small_out_i = np.zeros((n_samples, len(small_out_i_list)), dtype=int)
         small_out_i[:, :] = np.array(small_out_i_list)
 
-        #c_hcp = (lambda x: 4 * x + 10)(p_hcp.copy())
-        c_shp = c_shp.reshape((3, 4))
 
-        r_hcp = np.zeros((n_samples, 3)) + c_hcp
-        r_shp = np.zeros((n_samples, 3, 4)) + c_shp
+        if self.use_bidding_info:
+            #c_hcp = (lambda x: 4 * x + 10)(p_hcp.copy())
+            c_shp = c_shp.reshape((3, 4))
+            r_hcp = np.zeros((n_samples, 3)) + c_hcp
+            r_shp = np.zeros((n_samples, 3, 4)) + c_shp
+
+            # calculate missing hcp
+            missing_hcp = 40 - binary.get_hcp(np.array([my_hand]))[0]
+
+            if missing_hcp > 0:
+                hcp_reduction_factor = round(self.hcp_reduction_factor * np.sum(r_hcp[0]) / missing_hcp,2)
+            else:
+                hcp_reduction_factor = 0
+
+            shp_reduction_factor = self.shp_reduction_factor
+        else:
+            r_hcp = np.ones((n_samples, 3)) 
+            r_shp = np.ones((n_samples, 3, 4))
+            hcp_reduction_factor = 0
+            shp_reduction_factor = 0
 
         lho_pard_rho = np.zeros((n_samples, 3, n_cards), dtype=int)
         cards_received = np.zeros((n_samples, 3), dtype=int)
 
-        # calculate missing hcp
-        missing_hcp = 40 - binary.get_hcp(np.array([my_hand]))[0]
-
-        if missing_hcp > 0:
-            hcp_reduction_factor = round(self.hcp_reduction_factor * np.sum(r_hcp[0]) / missing_hcp,2)
-        else:
-            hcp_reduction_factor = 0
 
         if self.verbose:
             print("Missing HCP:", missing_hcp)
             print("Expected HCP:",r_hcp[0])
             print(f"hcp_reduction_factor:{hcp_reduction_factor}  {self.hcp_reduction_factor}")            
-            print(f"shp_reduction_factor:{self.shp_reduction_factor}")            
+            print(f"shp_reduction_factor:{shp_reduction_factor}  {self.shp_reduction_factor}")            
 
         # all AK's in the same hand
         # vectorize has an overhead
@@ -260,45 +312,53 @@ class Sample:
 
         if self.verbose:
             print("Loops to deal the hands", loop_counter)
-        # re-apply constraints
-        # This is in principle just to reduce the number of samples for performance
-        accept_hcp = np.ones(n_samples).astype(bool)
-        
-        for i in range(3):
-            if np.round(c_hcp[i]) >= 11:
-                accept_hcp &= binary.get_hcp(lho_pard_rho[:, i, :]) >= np.round(c_hcp[i]) - 5
 
-        accepted = np.sum(accept_hcp)
-        if self.verbose:
-            print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {accepted} state={rng.bit_generator.state["state"]["state"]}')
+        if self.use_bidding_info:
 
-        accept_shp = np.ones(n_samples).astype(bool)
+            # re-apply constraints
+            # This is in principle just to reduce the number of samples for performance
+            accept_hcp = np.ones(n_samples).astype(bool)
+            
+            for i in range(3):
+                if np.round(c_hcp[i]) >= 11:
+                    accept_hcp &= binary.get_hcp(lho_pard_rho[:, i, :]) >= np.round(c_hcp[i]) - 5
 
-        for i in range(3):
-            for j in range(4):
-                if np.round(c_shp[i, j] < 2):
-                    accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) <= np.round(c_shp[i, j]) + 1
-                #if np.round(c_shp[i, j] >= 4):
-                #    accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
-                if np.round(c_shp[i, j] >= 6):
-                    accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j])
+            accepted = np.sum(accept_hcp)
+            if self.verbose:
+                print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {accepted} state={rng.bit_generator.state["state"]["state"]}')
 
-        accept = accept_hcp & accept_shp
+            accept_shp = np.ones(n_samples).astype(bool)
 
-        accepted = np.sum(accept)
-        if self.verbose:
-            print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals: {accepted}')
+            for i in range(3):
+                for j in range(4):
+                    if np.round(c_shp[i, j] < 2):
+                        accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) <= np.round(c_shp[i, j]) + 1
+                    #if np.round(c_shp[i, j] >= 4):
+                    #    accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
+                    if np.round(c_shp[i, j] >= 6):
+                        accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j])
 
-        # If we have filtered to many away just return all samples - performance            
-        if accepted >= n_samples / 2:
-            return lho_pard_rho[accept]
+            accept = accept_hcp & accept_shp
+
+            accepted = np.sum(accept)
+            if self.verbose:
+                print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals: {accepted}')
+            # If we have filtered to many away just return all samples - performance            
+            if accepted >= n_samples / 2:
+                return lho_pard_rho[accept]
+            else:
+                return lho_pard_rho
         else:
             return lho_pard_rho
+
 
     def get_bidding_info(self, n_steps, auction, nesw_i, hand, vuln, models):
         assert n_steps > 0, "n_steps should be greater than zero"
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, models, models.n_cards_bidding)
         p_hcp, p_shp = models.binfo_model.model(A)
+        if tf.is_tensor(p_hcp):
+            p_hcp = p_hcp.numpy()
+            p_shp = p_shp.numpy()
 
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
         p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
@@ -327,9 +387,11 @@ class Sample:
             X[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, position-1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
 
             # Predict bids based on the model for the specific position
-            sample_bids = model.model_seq(X)[0].reshape((lho_pard_rho.shape[0], n_steps, -1))
-            if verbose:
-                print(f"Fetched bidding for position {position}")
+            sample_bids, _ = model.model_seq(X)
+            # Check if sample_bids is a TensorFlow tensor
+            if tf.is_tensor(sample_bids):
+                sample_bids = sample_bids.numpy()
+            sample_bids = sample_bids.reshape((lho_pard_rho.shape[0], n_steps, -1))
 
             # Update min scores based on actual bids
             min_scores = np.ones_like(min_scores_lho)
@@ -522,8 +584,8 @@ class Sample:
 
         if len(accepted_samples) == 0:
             if self.verbose:
-                print("No samples found. Extende={extend_samples}")
-            return sorted_samples, sorted_scores, c_hcp, c_shp, -1
+                print(f"No samples found. Extend={extend_samples}")
+            return accepted_samples, [], c_hcp, c_shp, -1
         
         if self.verbose:
             print("Returning", len(accepted_samples), extend_samples)
@@ -535,64 +597,45 @@ class Sample:
     # shuffle the cards between the 2 hidden hands
     def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, public_hand_str,vuln, known_nesw, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
-        missing_hcp = 40 - (binary.get_hcp(hand)[0] + binary.get_hcp(binary.parse_hand_f(models.n_cards_bidding)(public_hand_str))[0])
 
-        if self.verbose:
-            print("missing_hcp:", missing_hcp)
-
-        n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2])
-
-        #if self.verbose:
-        #print("shuffle_cards_bidding_info cards to sample: ", n_cards_to_receive)
-        n_steps = binary.calculate_step_bidding_info(auction)
-
-        A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models, models.n_cards_bidding)
-
-        p_hcp, p_shp = models.binfo_model.model(A)
-
-        p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
-        p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
-
-        def f_trans_hcp(x): return 4 * x + 10
-        def f_trans_shp(x): return 1.75 * x + 3.25
-
-        #print("p_hcp: ", p_hcp, "p_shp: ", p_shp)
-
-        p_hcp = f_trans_hcp(p_hcp[0, [(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1]])
-        p_shp = f_trans_shp(p_shp[0].reshape((3, 4))[[(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1], :])
-
-        #print("p_hcp: ", p_hcp, "p_shp: ", p_shp)
-
-        h1_h2 = np.zeros((n_samples, 2, models.n_cards_play), dtype=int)
-        cards_received = np.zeros((n_samples, 2), dtype=int)
-
+        # This is a constant and should probably be define globally
         card_hcp = [4, 3, 2, 1, 0, 0, 0, 0] * 4
 
-        # we get an average hcp and distribution from bidding info
-        # this average is used to distribute the cards
-        # so the final hands are close to stats
-        # we need to count the hcp missing and compare it to stats
+        if self.use_bidding_info:
+            n_steps = binary.calculate_step_bidding_info(auction)
 
-        if missing_hcp > 0:
-            hcp_reduction_factor = round(self.hcp_reduction_factor * np.sum(p_hcp) / missing_hcp, 2)
-        else:
-            hcp_reduction_factor = 0
-                
-        shp_reduction_factor = self.shp_reduction_factor
-        # distribute all cards of suits which are known to have shown out
-        cards_shownout_suits = []
-        for i, suits in enumerate(shown_out_suits):
-            for suit in suits:
-                for card in filter(lambda x: x // 8 == suit, hidden_cards):
-                    other_hand_i = (i + 1) % 2
-                    h1_h2[:, other_hand_i, card] += 1
-                    cards_received[:, other_hand_i] += 1
-                    p_hcp[other_hand_i] -= card_hcp[card] * hcp_reduction_factor
-                    # As we know it is a void, then this will have no effect
-                    p_shp[other_hand_i, suit] -= shp_reduction_factor
-                    cards_shownout_suits.append(card)
+            A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models, models.n_cards_bidding)
 
-        if self.hcp_reduction_factor > 0:
+            p_hcp, p_shp = models.binfo_model.model(A)
+            if tf.is_tensor(p_hcp):
+                p_hcp = p_hcp.numpy()
+                p_shp = p_shp.numpy()
+
+            p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
+            p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
+
+            def f_trans_hcp(x): return 4 * x + 10
+            def f_trans_shp(x): return 1.75 * x + 3.25
+
+            p_hcp = f_trans_hcp(p_hcp[0, [(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1]])
+            p_shp = f_trans_shp(p_shp[0].reshape((3, 4))[[(h_1_nesw - known_nesw) % 4 - 1, (h_2_nesw - known_nesw) % 4 - 1], :])
+
+
+            # we get an average hcp and distribution from bidding info
+            # this average is used to distribute the cards
+            # so the final hands are close to stats
+            # we need to count the hcp missing and compare it to stats
+
+            missing_hcp = 40 - (binary.get_hcp(hand)[0] + binary.get_hcp(binary.parse_hand_f(models.n_cards_bidding)(public_hand_str))[0])
+            if self.verbose:
+                print("missing_hcp:", missing_hcp)
+            if missing_hcp > 0:
+                hcp_reduction_factor = round(self.hcp_reduction_factor * np.sum(p_hcp) / missing_hcp, 2)
+            else:
+                hcp_reduction_factor = 0
+                    
+            shp_reduction_factor = self.shp_reduction_factor
+
             if self.verbose:
                 print("hcp_reduction_factor",hcp_reduction_factor, "shp_reduction_factor" ,shp_reduction_factor)
 
@@ -614,9 +657,31 @@ class Sample:
             r_hcp = np.zeros((n_samples, 2)) + p_hcp
             r_shp = np.zeros((n_samples, 2, 4)) + p_shp
         else:
+            if self.verbose:
+                print("We do not use the bidding info")
+            shp_reduction_factor = 0
+            hcp_reduction_factor = 0
             # we do not use the bidding info
             r_hcp = np.ones((n_samples, 2))
             r_shp = np.ones((n_samples, 2, 4))
+
+        n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2])
+        h1_h2 = np.zeros((n_samples, 2, models.n_cards_play), dtype=int)
+        cards_received = np.zeros((n_samples, 2), dtype=int)
+
+        # distribute all cards of suits which are known to have shown out
+        cards_shownout_suits = []
+        for i, suits in enumerate(shown_out_suits):
+            for suit in suits:
+                for card in filter(lambda x: x // 8 == suit, hidden_cards):
+                    other_hand_i = (i + 1) % 2
+                    h1_h2[:, other_hand_i, card] += 1
+                    cards_received[:, other_hand_i] += 1
+                    if self.use_bidding_info:
+                        p_hcp[other_hand_i] -= card_hcp[card] * hcp_reduction_factor
+                        # As we know it is a void, then this will have no effect
+                        p_shp[other_hand_i, suit] -= shp_reduction_factor
+                    cards_shownout_suits.append(card)
 
         hidden_cards = [c for c in hidden_cards if c not in cards_shownout_suits]
         ak_cards = [c for c in hidden_cards if c in {0, 1, 8, 9, 16, 17, 24, 25}]
@@ -726,6 +791,9 @@ class Sample:
         A = binary.get_auction_binary_sampling(n_steps, auction, lead_index, handbidding, vuln, models, models.n_cards_bidding)
 
         p_hcp, p_shp = binfo_model.model(A)
+        if tf.is_tensor(p_hcp):
+            p_hcp = p_hcp.numpy()
+            p_shp = p_shp.numpy()
 
         b[:, :3] = p_hcp.reshape((-1, n_steps, 3))[:, -1, :].reshape((-1, 3))
         b[:, 3:] = p_shp.reshape((-1, n_steps, 12))[:, -1, :].reshape((-1, 12))
@@ -790,9 +858,11 @@ class Sample:
 
         actual_bids, _ = bidding.get_bid_ids(auction, nesw_i, n_steps)
         if partner:
-            sample_bids = models.bidder_model.model_seq(X)[0]
+            sample_bids, _ = models.bidder_model.model_seq(X)
         else:
-            sample_bids = models.opponent_model.model_seq(X)[0]
+            sample_bids, _ = models.opponent_model.model_seq(X)
+        if tf.is_tensor(sample_bids):
+            sample_bids = sample_bids.numpy()
         sample_bids = sample_bids.reshape((sample_hands.shape[0], n_steps, -1))
 
         min_scores = np.ones(sample_hands.shape[0])
@@ -802,14 +872,20 @@ class Sample:
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
         return min_scores
-
     def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, public_hand_str,vuln, models, rng):
+        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores = self.init_rollout_states_iterative(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, public_hand_str,vuln, models, rng)
+
+        if self.verbose:
+            print(f"Called init_rollout_states {self.sample_hands_play} - Contract {bidding.get_contract(auction)} - Player {player_i}")
+
+        return rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores
+    
+    def init_rollout_states_iterative(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer, auction, hand_str, public_hand_str,vuln, models, rng):
         hand_bidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_samples = self.sample_hands_play
         contract = bidding.get_contract(auction)
         if self.verbose:
-            print(f"Called init_rollout_states {n_samples} - Contract {contract} - Player {player_i}")
-
+            print(f"Called init_rollout_states_iterative {n_samples} - Contract {contract} - Player {player_i}")
 
         leader_i = (player_i - len(current_trick)) % 4
         # Dummy is always 1
@@ -933,14 +1009,15 @@ class Sample:
         if self.verbose:
             print(f"Unique states {states[0].shape[0]}")
 
-        accept, c_hcp, c_shp = self.validate_shape_and_hcp_for_sample(auction, known_nesw, hand_bidding, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models)
-
         if self.use_bidding_info:
+            accept, c_hcp, c_shp = self.validate_shape_and_hcp_for_sample(auction, known_nesw, hand_bidding, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models)
             # If to few examples we ignore the above filtering
             if np.sum(accept) < n_samples:
                 accept = np.ones_like(accept).astype(bool)
 
             states = [state[accept] for state in states]
+        else:
+            c_hcp, c_shp = None, None
         
         min_bid_scores = np.ones(states[0].shape[0])
 
@@ -988,7 +1065,6 @@ class Sample:
         else:  
             lead_scores = np.ones(bidding_states[0].shape[0])
 
-            
         assert bidding_states[0].shape[0] > 0, "No samples after opening lead"
 
         # We should probably test this after validating the bidding, and not before
@@ -1068,6 +1144,10 @@ class Sample:
 
         p_hcp, p_shp = models.binfo_model.model(A)
 
+        if tf.is_tensor(p_hcp):
+            p_hcp = p_hcp.numpy()
+            p_shp = p_shp.numpy()
+
         # Only take the result from the latest bidding round
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
         p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
@@ -1130,6 +1210,8 @@ class Sample:
 
                 opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
                 lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead)
+                if tf.is_tensor(lead_scores):
+                    lead_scores = lead_scores.numpy()
                 while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
                     # We are RHO and trust partners lead
                     #print("Reducing threshold")
@@ -1206,6 +1288,8 @@ class Sample:
             # 0-3 is for NT 4-7 is for suit
             # When the player is instantiated the right model is selected, but here we get it from the configuration
             p_cards = models.player_models[p_i+playermodelindex].model(states[p_i][:, :n_tricks_pred, :])
+            if tf.is_tensor(p_cards):
+                p_cards = p_cards.numpy()
             card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]
             # The opening lead is validated elsewhere, so we just change the score to 1 for all samples
             if p_i == 0 and models.opening_lead_included:

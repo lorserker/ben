@@ -16,15 +16,23 @@ class Contract:
     def init_model(self):
         model = self.load_model()
 
+        @tf.function(input_signature=[tf.TensorSpec(shape=[None, 66], dtype=tf.float16)])
         def pred_fun(x):
-            # Perform inference
-            predictions = model.predict(x, verbose=0)
-            contract_logits, bool1_logits, tricks_logits = predictions
+            input_tensor = tf.convert_to_tensor(x, dtype=tf.float16)
 
+            # Forward pass through the model (note that we now use the TensorFlow model)
+            contract_logits, bool1_logits, tricks_logits = model(input_tensor, training=False)  # Using the model directly (no `predict` method)
+
+            # Apply softmax to contract_logits
+            contract_probs = tf.nn.softmax(contract_logits)
+            
+            # Print the softmax probabilities for contract_logits
+            #tf.print("contract_probs (softmax of contract_logits):", contract_probs)
             doubled = bool1_logits[0] > 0
-            tricks = int(np.argmax(tricks_logits, axis=1)[0])
-            contract_id = np.argmax(contract_logits, axis=1)[0]
-            return contract_id, doubled, tricks
+            tricks = tf.argmax(tricks_logits, axis=1)[0]
+            contract_id = tf.argmax(contract_logits, axis=1)[0]
+            score = contract_probs[0][contract_id]
+            return contract_id, doubled, tricks, score
 
         def get_top_k_tricks(x, k=3):
             # Perform inference

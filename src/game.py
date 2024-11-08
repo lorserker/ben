@@ -5,8 +5,13 @@ import logging
 import compare
 import scoring
 
-# Just disables the warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+# Intil fixed in Keras, this is needed to remove a wrong warning
+import warnings
+warnings.filterwarnings("ignore")
+
+
+# Just disables the warnings from tensorflow
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ["GRPC_VERBOSITY"] = "error"
 os.environ["GLOG_minloglevel"] = "3"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -266,7 +271,6 @@ class Driver:
             'pbn': self.deal_str,
             'dict': self.to_dict()
         }))
-        print('{1} Finished after {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
 
     def pbn_header(self, event):
         pbn_str = ""
@@ -834,11 +838,9 @@ class Driver:
 
         trick_won_by.append(trick_winner)
         if self.verbose:
-            print('trick52 {} cards={}. won by {}'.format(trick_i+1, list(map(decode_card, current_trick52)), trick_winner))
-
-        # Decode each element of tricks52
-        decoded_tricks52 = [[decode_card(item) for item in inner] for inner in tricks52]
-        pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
+            # Decode each element of tricks52
+            decoded_tricks52 = [[decode_card(item) for item in inner] for inner in tricks52]
+            pprint.pprint(list(zip(decoded_tricks52, trick_won_by)))
 
         self.trick_winners = trick_won_by
         self.tricks_taken = card_players[3].n_tricks_taken
@@ -1104,7 +1106,7 @@ async def main():
         else:
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
-            print(f"{Fore.LIGHTBLUE_EX}Board: {board_no[0]+1} {rdeal}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}Board: {board_no[0]+1} {rdeal}{Fore.RESET}")
             #print("auction",auction)
             driver.set_deal(board_no[0] + 1, rdeal, auction, play_only=playonly, bidding_only=biddingonly)
             board_no[0] = (board_no[0] + 1)
@@ -1200,7 +1202,7 @@ async def main():
             if paronly <= imps:
                 with shelve.open(f"{config_path}/paronlydb") as db:
                     deal = driver.to_dict()
-                    print(f"Saving Board: {driver.hands} in {config_path}/paronlydb")
+                    print(f"{datetime.datetime.now():%H:%M:%S} Saving Board: {driver.hands} in {config_path}/paronlydb")
                     db[uuid.uuid4().hex] = deal
 
         if outputpbn != "":

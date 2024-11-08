@@ -15,7 +15,15 @@ class Leader:
     def init_model(self):
         model = self.load_model()
 
+        @tf.function(input_signature=[
+            tf.TensorSpec(shape=[None, 42], dtype=tf.float16),  # shape of x
+            tf.TensorSpec(shape=[None, 15], dtype=tf.float16)    # shape of b (adjust shape accordingly)
+        ])
         def pred_fun(x, b):
-            result = model.predict({'X_input': x, 'B_input': b},verbose=0)
+            # Forward x and b as a dictionary to the model
+            hand = tf.convert_to_tensor(x, dtype=tf.float16)
+            shape = tf.convert_to_tensor(b, dtype=tf.float16)
+
+            result = model({'X_input': hand, 'B_input': shape}, training=False)  # Using model() instead of model.predict()
             return result
         return pred_fun

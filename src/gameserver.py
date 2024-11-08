@@ -3,6 +3,11 @@ import sys
 import logging
 import traceback
 
+# Intil fixed in Keras, this is needed to remove a wrong warning
+import warnings
+warnings.filterwarnings("ignore")
+
+
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
@@ -215,7 +220,7 @@ async def handler(websocket, path, board_no, seed):
             # Select the next from the provided inputfile
             rdeal = boards[board_no[0]]['deal']
             auction = boards[board_no[0]]['auction']
-            print(f"{Fore.LIGHTBLUE_EX}Board: {board_no[0]+1} {rdeal}{Style.RESET_ALL}")
+            print(f"{Fore.LIGHTBLUE_EX}Board: {board_no[0]+1} {rdeal}{Fore.RESET}")
             np.random.seed(board_no[0]+1)
             driver.set_deal(board_no[0] + 1, rdeal, auction, play_only)
 

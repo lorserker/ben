@@ -96,14 +96,13 @@ class BGADefDLL:
         # Perhaps we should have a larger margin, depending on the bidding from this hand
         # if no bids, the hand can have a very long suits without having bid
         # Perhaps most important for partners hand
-        # Should it be moved to configuration?
         if quality >= self.sampler.bidding_threshold_sampling :
-            margin_declarer = 1
-            margin_partner = 1
+            margin_declarer = self.models.pimc_margin_suit
+            margin_partner = self.models.pimc_margin_suit
         else:
-            margin_declarer = 2
-            margin_partner = 2
-        
+            margin_declarer = self.models.pimc_margin_suit_bad_samples
+            margin_partner = self.models.pimc_margin_suit_bad_samples
+
         # Perhaps we should use another margin for trump
 
         allready_shown_partner = [0,0,0,0]
@@ -163,9 +162,9 @@ class BGADefDLL:
             print("allready_shown_d",allready_shown_declarer)
             print("allready_shown_p",allready_shown_partner)
         if quality:
-            margin = 2
+            margin = self.models.pimc_margin_hcp
         else:
-            margin = 5
+            margin = self.models.pimc_margin_hcp_bad_samples
         self.declarer_constraints.MinHCP = max(min_declarer-margin-allready_shown_declarer, 0)
         self.declarer_constraints.MaxHCP = min(max_declarer+margin-allready_shown_declarer, 37)
         self.partner_constraints.MinHCP = max(min_partner-margin-allready_shown_partner, 0)

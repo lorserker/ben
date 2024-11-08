@@ -17,11 +17,16 @@ class Bidder:
         return load_model(self.model_path)
     
     def init_model_seq(self):
-        def pred_fun_seq( x):
-            bids, alerts = self.model.predict(x, verbose=0)
+        # Wrapping the function with @tf.function to optimize for graph execution
+        # @tf.function
+        @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, None], dtype=tf.float16)])
+        def pred_fun_seq(x):
+            # Ensure that x is a tensor
+            input_tensor = tf.convert_to_tensor(x, dtype=tf.float16)
+            
+            # Perform the model prediction (returns tensors)
+            bids, alerts = self.model(input_tensor, training=False)  # Use model call instead of predict
             return bids, alerts
 
-
         return pred_fun_seq
-
 

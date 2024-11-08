@@ -43,11 +43,13 @@ class Bidder:
                     keep_prob: p_keep,
                     seq_in: x,
                 }
-                if self.alert_supported:
-                    result = self.sess.run([bids, alert], feed_dict=feed_dict)
-                else:
-                    result = self.sess.run([bids], feed_dict=feed_dict)
-                
-                return result
+            if self.alert_supported:
+                result = self.sess.run([bids, alert], feed_dict=feed_dict)
+                bids_result, alert_result = result
+            else:
+                result = self.sess.run([bids], feed_dict=feed_dict)
+                bids_result, alert_result = result[0], 0
+
+            return bids_result, alert_result
 
         return pred_fun_seq

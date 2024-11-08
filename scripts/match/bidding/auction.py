@@ -5,10 +5,24 @@ sys.path.append('../../../src')
 
 import logging
 
+# Intil fixed in Keras, this is needed to remove a wrong warning
+import warnings
+warnings.filterwarnings("ignore")
+
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ["GRPC_VERBOSITY"] = "ERROR"
+os.environ["GLOG_minloglevel"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+
+# Configure absl logging to suppress logs
+import absl.logging
+# Suppress Abseil logs
+absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
+absl.logging.set_verbosity(absl.logging.FATAL)
+absl.logging.set_stderrthreshold(absl.logging.FATAL)
 
 import argparse
 import json
@@ -127,7 +141,7 @@ if __name__ == '__main__':
         vuln = parts[1]
         hands = parts[2:]
 
-        sys.stderr.write(f'Bidding board {index + 1}\n')
+        sys.stderr.write(f'Bidding board {index + 1} {verbose}\n')
         auction, bid_responses = bid_hand(hands, dealer, vuln, [models_ns, models_ew], [Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)], dds, verbose)
 
         record = {

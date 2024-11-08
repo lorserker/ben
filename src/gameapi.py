@@ -12,20 +12,23 @@ from objects import Card, CardResp
 import deck52
 import binary
 
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
+from werkzeug.exceptions import HTTPException
 import json
 import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
-import uuid
-import shelve
 from threading import Lock
+
+# Intil fixed in Keras, this is needed to remove a wrong warning
+import warnings
+warnings.filterwarnings("ignore")
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
@@ -38,6 +41,7 @@ absl.logging.set_verbosity(absl.logging.FATAL)
 absl.logging.set_stderrthreshold(absl.logging.FATAL)
 # This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
+tf.get_logger().setLevel('FATAL')
 
 import pprint
 import argparse
@@ -456,8 +460,19 @@ logger = logging.getLogger(__name__)
 logger.addHandler(log_handler)
 logger.setLevel(logging.INFO)
 
+# Define allowed hosts
+ALLOWED_HOSTS = {'localhost', '127.0.0.1', 'ben.aalborgdata.dk', 'remote.aalborgdata.dk'}
+class SilentAbort(HTTPException):
+    code = 444  # Non-standard code to terminate without response
+    description = "No Response"
+
 @app.before_request
 def log_request_info():
+    # Get the host from the request headers
+    host = request.headers.get("Host", "").split(':')[0]  # Ignore port number if present
+    # Check if the host is allowed
+    if host not in ALLOWED_HOSTS:
+        raise SilentAbort()  # Terminates connection silently
     logger.info(f"Request: {request.method} {request.url}")
     if request.method == "POST":
         logger.info(f"Body: {request.get_data()}")
