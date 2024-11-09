@@ -461,7 +461,7 @@ class BotBid:
                 if score < self.models.min_bidding_trust_for_sample_when_rescue:
                     if self.verbose:
                         print(self.hand_str, [sample[(self.seat + 2) % 4]])
-                        print(f"Skipping sample below level{self.models.min_bidding_trust_for_sample_when_rescue} {contract}{"X" if doubled else ""}-{tricks} score {score:.3f}")
+                        print(f"Skipping sample below level{self.models.min_bidding_trust_for_sample_when_rescue} {contract}{'X' if doubled else ''}-{tricks} score {score:.3f}")
                     continue
 
                 while not bidding.can_bid(contract, auction) and contract_id < 35:
@@ -667,13 +667,12 @@ class BotBid:
                     break
                 else:
                     # Only report it if above threshold
-                    #print(bid_softmax)
-                    
-                    if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no):
-                        # Seems to be an error in the training that needs to be solved
-                        sys.stderr.write(f"{Fore.GREEN}Please create samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')}\n{Style.RESET_ALL}")
-                        sys.stderr.write(f"{Fore.GREEN}Hand {self.hand_str}\n{Style.RESET_ALL}")
-                        sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
+                    if not self.models.suppress_warnings:
+                        if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no):
+                            # Seems to be an error in the training that needs to be solved
+                            sys.stderr.write(f"{Fore.GREEN}Please create samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')}\n{Style.RESET_ALL}")
+                            sys.stderr.write(f"{Fore.GREEN}Hand {self.hand_str}\n{Style.RESET_ALL}")
+                            sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
                         
                         #assert(bid_i > 1)
                 # set the score for the bid just processed to zero so it is out of the loop
@@ -725,13 +724,13 @@ class BotBid:
             else:
                 # Seems to be an error in the training that needs to be solved
                 # Only report it if above threshold
-                if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no) and self.get_min_candidate_score(self.my_bid_no) != -1:
-                    sys.stderr.write(f"{Fore.GREEN}Please create samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')}\n{Style.RESET_ALL}")
-                    sys.stderr.write(f"{Fore.GREEN}Hand {self.hand_str}\n{Style.RESET_ALL}")
-                    sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]:.3f} {self.get_min_candidate_score(self.my_bid_no)}\n")
+                if not self.models.suppress_warnings:
+                    if bid_softmax[bid_i] >= self.get_min_candidate_score(self.my_bid_no) and self.get_min_candidate_score(self.my_bid_no) != -1:
+                        sys.stderr.write(f"{Fore.GREEN}Please create samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')}\n{Style.RESET_ALL}")
+                        sys.stderr.write(f"{Fore.GREEN}Hand {self.hand_str}\n{Style.RESET_ALL}")
+                        sys.stderr.write(f"Bid not valid: {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]:.3f} {self.get_min_candidate_score(self.my_bid_no)}\n")
                 if len(candidates) > 0:
                     break
-                #assert(bid_i > 1)
 
             # set the score for the bid just processed to zero so it is out of the loop
             bid_softmax[bid_i] = 0
