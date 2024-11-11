@@ -27,8 +27,13 @@ class BGADLL:
 
     def __init__(self, models, northhand, southhand, contract, is_decl_vuln, sampler, verbose):
         try:
-           # Load the .NET assembly and import the types and classes from the assembly
-            clr.AddReference(BGADLL_PATH)
+            # Load the .NET assembly and import the types and classes from the assembly
+            try:
+                clr.AddReference(BGADLL_PATH)
+            except Exception as ex:
+                # Try loading with .dll extension
+                clr.AddReference(BGADLL_PATH+'.dll')
+
             from BGADLL import PIMC, Hand, Play, Constraints, Extensions, Card as PIMCCard
 
         except Exception as ex:

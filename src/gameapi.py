@@ -484,6 +484,8 @@ def log_request_info():
 
 @app.after_request
 def log_response_info(response):
+    if response.status == 444:  # SilentAbort code, ignore status
+        return response
     logger.info(f"Response body: {response.status} {response.get_data()}")
     return response
 

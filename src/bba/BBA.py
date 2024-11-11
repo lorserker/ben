@@ -37,7 +37,11 @@ class BBABotBid:
     def __init__(self, ns_system, ew_system, position, hand, vuln, dealer, scoring_matchpoint, verbose):
         try:
             # Load the .NET assembly and import the types and classes from the assembly
-            clr.AddReference(EPBot_PATH)
+            try:
+                clr.AddReference(EPBot_PATH)
+            except Exception as ex:
+                # Try loading with .dll extension
+                clr.AddReference(EPBot_PATH+'.dll')
             from EPBot86 import EPBot
             print(f"EPBot Version (DLL): {EPBot().version()}")
         except Exception as ex:

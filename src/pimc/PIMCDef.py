@@ -28,7 +28,11 @@ class BGADefDLL:
     def __init__(self, models, northhand, southhand, contract, is_decl_vuln, player_i, sampler, verbose):
         try:
            # Load the .NET assembly and import the types and classes from the assembly
-            clr.AddReference(BGADLL_PATH)
+            try:
+                clr.AddReference(BGADLL_PATH)
+            except Exception as ex:
+                # Try loading with .dll extension
+                clr.AddReference(BGADLL_PATH+'.dll')
             from BGADLL import PIMCDef, Hand, Constraints, Extensions, Play
 
         except Exception as ex:
