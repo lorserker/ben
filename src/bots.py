@@ -1594,20 +1594,21 @@ class CardPlayer:
 
         return merged_cards
     
-    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores):
+    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores):
         t_start = time.time()
         current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
 
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
-            samples.append('%s %s %s %s %.5f %.5f %.5f ' % (
+            samples.append('%s %s %s %s | %.5f %.5f %.5f %.5f ' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),
                 hand_to_str(players_states[1][i,0,:32].astype(int)),
                 hand_to_str(players_states[2][i,0,:32].astype(int)),
                 hand_to_str(players_states[3][i,0,:32].astype(int)),
                 bidding_scores[i],
                 probability_of_occurence[i],
-                lead_scores[i]
+                lead_scores[i],
+                play_scores[i]
             ))
         if quality < 0.1 and self.verbose:
             print(samples)
@@ -1946,7 +1947,7 @@ class CardPlayer:
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
             expected_score =round(e_score+ (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0),0)
             # Ignore cards bot suggested by the NN
-            if insta_score < self.models.trust__NN:
+            if insta_score < self.models.trust_NN:
                 continue
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
                 candidate_cards.insert(0, CandidateCard(

@@ -1,6 +1,5 @@
 
 import clr
-import ctypes
 import sys
 import os
 
@@ -14,7 +13,7 @@ init()
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':
-    EPBot_LIB = 'EPBot86'
+    EPBot_LIB = 'EPBot86.dll'
 elif sys.platform == 'darwin':
     EPBot_LIB = 'N/A'
 else:
@@ -37,9 +36,10 @@ class BBABotBid:
 
     def __init__(self, ns_system, ew_system, position, hand, vuln, dealer, scoring_matchpoint, verbose):
         try:
-           # Load the .NET assembly and import the types and classes from the assembly
+            # Load the .NET assembly and import the types and classes from the assembly
             clr.AddReference(EPBot_PATH)
             from EPBot86 import EPBot
+            print(f"EPBot Version (DLL): {EPBot().version()}")
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
             print("Error: Unable to load EPBot86.dll. Make sure the DLL is in the ./bin directory")

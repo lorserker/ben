@@ -1,10 +1,17 @@
-import sys
-import traceback
 from gevent import monkey
 monkey.patch_all()
+import sys
+import os
+import platform
+import traceback
 from gevent.pywsgi import WSGIServer
 import datetime 
 import time
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ["GRPC_VERBOSITY"] = "ERROR"
+os.environ["GLOG_minloglevel"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 from bots import BotBid, BotLead, CardPlayer
 from bidding import bidding
@@ -16,7 +23,6 @@ from flask import Flask, request, jsonify, abort
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 import json
-import os
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from threading import Lock
@@ -28,11 +34,7 @@ warnings.filterwarnings("ignore")
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
-os.environ["GRPC_VERBOSITY"] = "ERROR"
-os.environ["GLOG_minloglevel"] = "2"
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-
+import tensorflow as tf
 # Configure absl logging to suppress logs
 import absl.logging
 # Suppress Abseil logs
@@ -181,12 +183,12 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                         return card_resp, player_i
 
                 # No obvious play, so we roll out
-                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
+                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
                 assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
 
-                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores)
+                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
 
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
@@ -338,11 +340,13 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=240)
 
+print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()}{Fore.RESET}')  
+
 configuration = conf.load(configfile)
 
+sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
 try:
     if (configuration["models"]['tf_version'] == "2"):
-        sys.stderr.write("Loading tensorflow 2.X\n")
         from nn.models_tf2 import Models
     else: 
         # Default to version 1. of Tensorflow
@@ -380,7 +384,7 @@ print("System:", models.name)
 if models.use_bba:
     print("Using BBA for bidding")
 else:
-    print("Model:", models.bidder_model.model_path)
+    print("Model:   ", models.bidder_model.model_path)
     print("Opponent:", models.opponent_model.model_path)
 if models.matchpoint:
     print("Matchpoint mode on")

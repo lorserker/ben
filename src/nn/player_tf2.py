@@ -17,7 +17,10 @@ class BatchPlayer:
     def init_model(self):
         @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, 298], dtype=tf.float16)])
         def pred_fun(x):
-            input_tensor = tf.convert_to_tensor(x, dtype=tf.float16)
+            try:
+                input_tensor = tf.cast(x, dtype=tf.float16)
+            except:
+                input_tensor = tf.cast(x, dtype=tf.float32)
             #card_logit = model.predict(input_tensor,verbose=0)
             card_logit = self.model(input_tensor, training=False)
             return card_logit

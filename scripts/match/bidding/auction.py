@@ -1,5 +1,10 @@
 import sys
 import os
+# Just disables the warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ["GRPC_VERBOSITY"] = "ERROR"
+os.environ["GLOG_minloglevel"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 sys.path.append('../../../src')
 
@@ -11,11 +16,6 @@ warnings.filterwarnings("ignore")
 
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
-# Just disables the warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ["GRPC_VERBOSITY"] = "ERROR"
-os.environ["GLOG_minloglevel"] = "2"
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 # Configure absl logging to suppress logs
 import absl.logging
@@ -23,6 +23,8 @@ import absl.logging
 absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
 absl.logging.set_verbosity(absl.logging.FATAL)
 absl.logging.set_stderrthreshold(absl.logging.FATAL)
+
+import tensorflow as tf
 
 import argparse
 import json
@@ -105,9 +107,9 @@ if __name__ == '__main__':
 
     np.set_printoptions(precision=2, suppress=True)
 
+    sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
     try:
         if configuration_ns["models"]['tf_version'] == "2":
-            sys.stderr.write("Loading tensorflow 2.X\n")
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow

@@ -1,5 +1,11 @@
 import os
 import sys
+import platform
+# Just disables the warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ["GRPC_VERBOSITY"] = "ERROR"
+os.environ["GLOG_minloglevel"] = "2"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import logging
 import traceback
 
@@ -7,14 +13,8 @@ import traceback
 import warnings
 warnings.filterwarnings("ignore")
 
-
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
-# Just disables the warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ["GRPC_VERBOSITY"] = "ERROR"
-os.environ["GLOG_minloglevel"] = "2"
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 
 # Configure absl logging to suppress logs
 import absl.logging
@@ -23,7 +23,6 @@ absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
 absl.logging.set_verbosity(absl.logging.FATAL)
 absl.logging.set_stderrthreshold(absl.logging.FATAL)
 
-# This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
 
 import time
@@ -109,11 +108,13 @@ if random:
 
 np.set_printoptions(precision=2, suppress=True, linewidth=240)
 
+print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()}{Fore.RESET}')  
+
 configuration = conf.load(configfile)
 
+sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
 try:
     if (configuration["models"]['tf_version'] == "2"):
-        sys.stderr.write("Loading tensorflow 2.X\n")
         from nn.models_tf2 import Models
     else: 
         # Default to version 1. of Tensorflow
@@ -127,7 +128,6 @@ models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src"
 # Override any configuration of claim, as it is included in the UI
 models.claim = True
 
-import platform
 if sys.platform != 'win32':
     print("Disabling PIMC/BBA/SuitC as platform is not win32")
     models.pimc_use_declaring = False
@@ -141,7 +141,7 @@ print("System:", models.name)
 if models.use_bba:
     print("Using BBA for bidding")
 else:
-    print("Model:", models.bidder_model.model_path)
+    print("Model:   ", models.bidder_model.model_path)
     print("Opponent:", models.opponent_model.model_path)
 if models.matchpoint:
     print("Matchpoint mode on")

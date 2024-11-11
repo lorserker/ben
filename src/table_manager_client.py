@@ -1,6 +1,7 @@
 import sys
 import os
 import traceback
+import platform
 
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -10,7 +11,6 @@ os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 # Set logging level to suppress warnings
 #logging.getLogger().setLevel(logging.CRITICAL)
 import shelve
-# This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
 
 # Configure absl logging to suppress logs
@@ -377,9 +377,9 @@ class TMClient:
 
                     # if card_resp is None, we have to rollout
                     if card_resp == None:
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
-                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores)
+                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
                         card_resp.hcp = c_hcp
                         card_resp.shape = c_shp
 
@@ -841,11 +841,13 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True)
 
+    print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()}{Fore.RESET}')  
+
     configuration = conf.load(configfile)
 
+    sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
     try:
         if (configuration["models"]['tf_version'] == "2"):
-            sys.stderr.write("Loading tensorflow 2.X\n")
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow
@@ -860,7 +862,7 @@ async def main():
     if models.use_bba:
         print("Using BBA for bidding")
     else:
-        print("Model:", models.bidder_model.model_path)
+        print("Model:   ", models.bidder_model.model_path)
         print("Opponent:", models.opponent_model.model_path)
     if matchpoint:
         models.matchpoint = True
@@ -869,7 +871,6 @@ async def main():
     else:
         print("Playing IMPS mode")
 
-    import platform
     if sys.platform != 'win32':
         print("Disabling PIMC/BBA/SuitC as platform is not win32")
         models.pimc_use_declaring = False

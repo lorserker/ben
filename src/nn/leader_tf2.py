@@ -23,6 +23,12 @@ class Leader:
             # Forward x and b as a dictionary to the model
             hand = tf.convert_to_tensor(x, dtype=tf.float16)
             shape = tf.convert_to_tensor(b, dtype=tf.float16)
+            try:
+                hand = tf.cast(x, dtype=tf.float16)
+                shape = tf.cast(b, dtype=tf.float16)
+            except:
+                hand = tf.cast(x, dtype=tf.float32)
+                shape = tf.cast(b, dtype=tf.float32)
 
             result = model({'X_input': hand, 'B_input': shape}, training=False)  # Using model() instead of model.predict()
             return result

@@ -15,6 +15,7 @@ from colorama import Fore, Back, Style, init
 logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+import tensorflow as tf
 
 import numpy as np
 
@@ -83,9 +84,9 @@ def main():
 
     config = conf.load(config_path)
    
+    sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
     try:
         if (config["models"]['tf_version'] == "2"):
-            sys.stderr.write("Loading tensorflow 2.X\n")
             from nn.bidder_tf2 import Bidder
             from nn.models_tf2 import Models
         else: 

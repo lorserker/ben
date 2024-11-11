@@ -22,7 +22,10 @@ class Bidder:
         @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, None], dtype=tf.float16)])
         def pred_fun_seq(x):
             # Ensure that x is a tensor
-            input_tensor = tf.convert_to_tensor(x, dtype=tf.float16)
+            try:
+                input_tensor = tf.cast(x, dtype=tf.float16)
+            except:
+                input_tensor = tf.cast(x, dtype=tf.float32)
             
             # Perform the model prediction (returns tensors)
             bids, alerts = self.model(input_tensor, training=False)  # Use model call instead of predict

@@ -256,6 +256,8 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
                     card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 5)
             return card_index + 13 * opening_suit
 
+    #Perhaps this is the right place to add generic rules like 2nd hand low and 3rd hand high
+
     # Fallback to the original lead of a random pip
     # it's a pip ~> choose a random one
     if opening_lead % 8 == 7:

@@ -14,7 +14,7 @@ sys.path.append("..")
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':
-    BGADLL_LIB = 'BGADLL'
+    BGADLL_LIB = 'BGADLL.dll'
 elif sys.platform == 'darwin':
     BGADLL_LIB = 'N/A'
 else:

@@ -1,5 +1,11 @@
 import os
 import sys
+import platform
+# Just disables the warnings from tensorflow
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ["GRPC_VERBOSITY"] = "error"
+os.environ["GLOG_minloglevel"] = "3"
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import asyncio
 import logging
 import compare
@@ -10,11 +16,6 @@ import warnings
 warnings.filterwarnings("ignore")
 
 
-# Just disables the warnings from tensorflow
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ["GRPC_VERBOSITY"] = "error"
-os.environ["GLOG_minloglevel"] = "3"
-os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.CRITICAL)
 
@@ -78,8 +79,8 @@ class AsyncBotLead(bots.BotLead):
         return self.find_opening_lead(auction)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores):
-        return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores)
+    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores):
+        return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
     
     
 class Driver:
@@ -605,7 +606,7 @@ class Driver:
                 # if card_resp is None, we have to rollout
                 if card_resp == None:    
                     if isinstance(card_players[player_i], bots.CardPlayer):
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.dealer_i, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
                     else: 
@@ -620,7 +621,7 @@ class Driver:
                     await asyncio.sleep(0.01)
 
                     while card_resp is None:
-                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores)
+                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
 
                         if (str(card_resp.card).startswith("Conceed")) :
                                 self.claimedbydeclarer = (player_i == 3) or (player_i == 1)
@@ -1030,13 +1031,13 @@ async def main():
  
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration.{Fore.RESET}')  
+    print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()}{Fore.RESET}')  
 
     configuration = conf.load(configfile)
         
+    sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
     try:
         if (configuration["models"]['tf_version'] == "2"):
-            sys.stderr.write("Loading tensorflow 2.X\n")
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow
@@ -1046,7 +1047,7 @@ async def main():
             from nn.models import Models
 
     models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
-    import platform
+    
     if sys.platform != 'win32':
         print("Disabling PIMC/BBA/SuitC as platform is not win32")
         models.pimc_use_declaring = False
@@ -1060,7 +1061,7 @@ async def main():
     if models.use_bba:
         print("Using BBA for bidding")
     else:
-        print("Model:", models.bidder_model.model_path)
+        print("Model:   ", models.bidder_model.model_path)
         print("Opponent:", models.opponent_model.model_path)
 
     if facit:

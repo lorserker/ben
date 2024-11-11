@@ -18,7 +18,10 @@ class Contract:
 
         @tf.function(input_signature=[tf.TensorSpec(shape=[None, 66], dtype=tf.float16)])
         def pred_fun(x):
-            input_tensor = tf.convert_to_tensor(x, dtype=tf.float16)
+            try:
+                input_tensor = tf.cast(x, dtype=tf.float16)
+            except:
+                input_tensor = tf.cast(x, dtype=tf.float32)
 
             # Forward pass through the model (note that we now use the TensorFlow model)
             contract_logits, bool1_logits, tricks_logits = model(input_tensor, training=False)  # Using the model directly (no `predict` method)

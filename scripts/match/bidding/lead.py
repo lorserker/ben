@@ -1,9 +1,10 @@
 import sys
 import os
+import platform
 sys.path.append('../../../src')
 
 import logging
-
+import datetime
 # Set logging level to suppress warnings
 logging.getLogger().setLevel(logging.ERROR)
 # Just disables the warnings
@@ -19,6 +20,9 @@ from sample import Sample
 from objects import Card
 from auction import VULN
 import numpy as np
+from colorama import Fore, init
+
+init()
 
 
 SEATS = ['north', 'east', 'south', 'west']
@@ -55,6 +59,8 @@ if __name__ == '__main__':
     sys.stderr.write(f'NS = {args.bidder}\n')
     
     np.set_printoptions(precision=2, suppress=True)
+
+    sys.stderr.write(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()} Python {platform.python_version()}{Fore.RESET}\n')  
 
     configuration = conf.load(args.bidder)
 

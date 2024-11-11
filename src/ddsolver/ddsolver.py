@@ -21,7 +21,7 @@ class DDSolver:
     # If 2 transport tables ignore trump
  
     def __init__(self, dds_mode=1):
-        sys.stderr.write(f"DDSolver being loaded - dds mode {dds_mode}\n")
+        sys.stderr.write(f"DDSolver being loaded version 2.9.0.0 - dds mode {dds_mode}\n")
         self.dds_mode = dds_mode
         self.bo = dds.boardsPBN()
         self.solved = dds.solvedBoards()
