@@ -2,6 +2,7 @@ from gevent import monkey
 monkey.patch_all()
 import sys
 import os
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
 import platform
 import traceback
 from gevent.pywsgi import WSGIServer

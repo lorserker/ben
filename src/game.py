@@ -1,6 +1,7 @@
 import os
 import sys
 import platform
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
 # Just disables the warnings from tensorflow
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ["GRPC_VERBOSITY"] = "error"

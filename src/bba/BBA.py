@@ -13,7 +13,7 @@ init()
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':
-    EPBot_LIB = 'EPBot86.dll'
+    EPBot_LIB = 'EPBot86'
 elif sys.platform == 'darwin':
     EPBot_LIB = 'N/A'
 else:

@@ -1078,7 +1078,7 @@ class Sample:
         assert bidding_states[0].shape[0] > 0, "No samples after checking play"
 
         # Count how many samples we found matching the bidding
-        valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
+        valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bidding_threshold_sampling)
         if self.verbose:
             print("Bidding samples accepted: ",valid_bidding_samples)
 
@@ -1088,10 +1088,10 @@ class Sample:
             # This could probably be set based on number of deals matching or sorted
             if valid_bidding_samples >= self.sample_hands_play: 
                 if self.verbose:
-                    print("Enough samples above threshold: ",valid_bidding_samples, self.bid_accept_play_threshold)
-                bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
-                lead_scores = lead_scores[sorted_min_bid_scores > self.bid_accept_play_threshold]
-                sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_accept_play_threshold]
+                    print("Enough samples above threshold: ",valid_bidding_samples, self.bidding_threshold_sampling)
+                bidding_states = [state[sorted_min_bid_scores > self.bidding_threshold_sampling] for state in bidding_states]
+                lead_scores = lead_scores[sorted_min_bid_scores > self.bidding_threshold_sampling]
+                sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bidding_threshold_sampling]
                 # Randomize the samples, as we have to many
                 # Should be based on likelyness of how well the bidding match
                 random_indices = rng.permutation(bidding_states[0].shape[0])
@@ -1099,6 +1099,8 @@ class Sample:
                 sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
                 lead_scores = lead_scores[random_indices]
             else:            
+                # Count how many samples we found matching the bidding
+                valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
                 if valid_bidding_samples < self.min_sample_hands_play: 
                     if np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold) == 0:
                         if self.verbose:

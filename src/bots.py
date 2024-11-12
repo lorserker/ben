@@ -45,13 +45,26 @@ class BotBid:
             self.state = models.bidder_model.zero_state
         self.ddsolver = ddsolver
         self.my_bid_no = 1
-        if self.models.use_bba_to_count_aces:
-            from bba.BBA import BBABotBid
-            self.bbabot = BBABotBid(self.models.bba_ns, self.models.bba_ew, self.seat, self.hand_str, self.vuln, self.dealer, self.models.matchpoint, self.verbose)
+        self._bbabot_instance = None
 
+    @property
+    def bbabot(self):
+        if self._bbabot_instance is None:
+            from bba.BBA import BBABotBid
+            # Initialize the BBABotBid instance with required parameters
+            self._bbabot_instance = BBABotBid(
+                self.models.bba_ns,
+                self.models.bba_ew,
+                self.seat,
+                self.hand_str,
+                self.vuln,
+                self.dealer,
+                self.models.matchpoint,
+                self.verbose
+            )
+        return self._bbabot_instance
     
-    @staticmethod
-    def get_bid_number_for_player_to_bid(auction):
+    def get_bid_number_for_player_to_bid(self, auction):
         hand_i = len(auction) % 4
         i = hand_i
         while i < len(auction) and auction[i] == 'PAD_START':
@@ -61,7 +74,7 @@ class BotBid:
         return n_step
 
     def get_binary(self, auction, models):
-        n_steps = BotBid.get_bid_number_for_player_to_bid(auction)
+        n_steps = self.get_bid_number_for_player_to_bid(auction)
         hand_ix = len(auction) % 4
         X = binary.get_auction_binary(n_steps, auction, hand_ix, self.hand_bidding, self.vuln, models)
         return X
@@ -825,7 +838,7 @@ class BotBid:
         
         n_steps_vals = [0, 0, 0, 0]
         for i in range(1, 5):
-            n_steps_vals[(len(auction_so_far) % 4 + i) % 4] = BotBid.get_bid_number_for_player_to_bid(auction_so_far + ['?'] * i)  
+            n_steps_vals[(len(auction_so_far) % 4 + i) % 4] = self.get_bid_number_for_player_to_bid(auction_so_far + ['?'] * i)  
         
         # initialize auction vector
         auction_np = np.ones((n_samples, 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
@@ -1986,7 +1999,7 @@ class CardPlayer:
             current_card = card52
             current_insta_score = insta_score
 
-        valid_bidding_samples = np.sum(bidding_scores > self.bid_accept_play_threshold)
+        valid_bidding_samples = np.sum(bidding_scores >= self.sampler.bidding_threshold_sampling)
         if self.models.use_real_imp_or_mp:
             if self.models.matchpoint:
                 candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_mp, x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
