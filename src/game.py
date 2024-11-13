@@ -1036,6 +1036,10 @@ async def main():
 
     configuration = conf.load(configfile)
         
+    # Print the PythonNet version
+    import clr
+    import Python.Runtime
+    sys.stderr.write(f"pythonnet {Python.Runtime.PythonEngine.Version}\n") 
     sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
     try:
         if (configuration["models"]['tf_version'] == "2"):

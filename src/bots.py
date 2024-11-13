@@ -1470,6 +1470,7 @@ class CardPlayer:
         self.level = int(contract[0])
         self.init_x_play(binary.parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
         self.dds = ddsolver
+        self.sampler = sampler
         # If we don't get a hand, the class is just used for recording
         if hand_str != "...":
             self.sample_hands_for_review = models.sample_hands_for_review
@@ -1576,6 +1577,8 @@ class CardPlayer:
         # If we are declarer and PIMC enabled - use PIMC
         self.pimc_declaring = self.models.pimc_use_declaring and trick_i  >= (self.models.pimc_start_trick_declarer - 1)
         self.pimc_defending = self.models.pimc_use_defending and trick_i  >= (self.models.pimc_start_trick_defender - 1)
+        if not self.pimc_defending and not self.pimc_declaring:
+            return
         if self.models.pimc_constraints:
             if self.models.pimc_constraints_each_trick:
                 self.find_and_update_constraints(players_states, quality,self.player_i)

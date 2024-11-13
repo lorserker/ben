@@ -345,6 +345,10 @@ print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configura
 
 configuration = conf.load(configfile)
 
+# Print the PythonNet version
+import clr
+import Python.Runtime
+sys.stderr.write(f"pythonnet {Python.Runtime.PythonEngine.Version}\n") 
 sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
 try:
     if (configuration["models"]['tf_version'] == "2"):
@@ -863,14 +867,15 @@ def cuebid():
     with model_lock_bid:
         bid = hint_bot.bid(auction)
     result = bid.to_dict()
+    explanation = ""
     if explain:
-        from bba.BBA import BBABotBid
-        if verbose:
-            print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-        bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
         auction.append(bid.bid)
-        result["explanation"] = bot.explain(auction)
-    result = {"bid": bid.bid.replace("PASS","Pass"), "alert": bot.explain(auction), "artificial" : bid.alert}
+        if models.use_bba:
+            explanation = hint_bot.explain(auction)
+        else:
+            explanation = hint_bot.bbabot.explain(auction)
+        result["explanation"] = explanation
+    result = {"bid": bid.bid.replace("PASS","Pass"), "alert": explanation, "artificial" : bid.alert}
     if record: 
         calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "turn":turn, "auction":auction, "bid":bid.to_dict()}
         logger.info(f"Calulations cuebid: {calculations}")

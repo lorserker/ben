@@ -844,6 +844,10 @@ async def main():
     print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()}{Fore.RESET}')  
 
     configuration = conf.load(configfile)
+    # Print the PythonNet version
+    import clr
+    import Python.Runtime
+    sys.stderr.write(f"pythonnet {Python.Runtime.PythonEngine.Version}\n") 
 
     sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
     try:
