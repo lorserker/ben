@@ -1599,12 +1599,12 @@ class CardPlayer:
 
         for card52, (e_tricks, e_score, e_make) in dd_resp.items():
             pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card52]
-            new_e_tricks = round((pimc_e_tricks * (1-weight) + e_tricks * weight),2) if pimc_e_tricks is not None and e_tricks is not None else None
-            new_e_score = round((pimc_e_score * (1-weight) + e_score * weight),2) if pimc_e_score is not None and e_score is not None else None
-            new_e_make = round((pimc_e_make * (1-weight) + e_make * weight),2) if pimc_e_make is not None and e_make is not None else None
-            new_msg = engine + f" {(1-weight)*100:.0f}%|" + (pimc_msg or '') 
+            new_e_tricks = round((pimc_e_tricks * weight + e_tricks * (1-weight)),2) if pimc_e_tricks is not None and e_tricks is not None else None
+            new_e_score = round((pimc_e_score * weight + e_score * (1-weight)),2) if pimc_e_score is not None and e_score is not None else None
+            new_e_make = round((pimc_e_make * weight + e_make * (1-weight)),2) if pimc_e_make is not None and e_make is not None else None
+            new_msg = engine + f" {weight*100:.0f}%|" + (pimc_msg or '') 
             new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
-            new_msg += f"|BEN DD {weight*100:.0f}%|" 
+            new_msg += f"|BEN DD {(1-weight)*100:.0f}%|" 
             new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
             merged_cards[card52] = (new_e_tricks, new_e_score, new_e_make, new_msg)
 
@@ -1904,7 +1904,7 @@ class CardPlayer:
             if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
                 who = "PIMC-BEN-IMP" 
             else:
-                who = "PIMC-IMP" 
+                who = "BEN-IMP" 
             
         right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, play_status, who, self.verbose)
         best_card_resp = CardResp(

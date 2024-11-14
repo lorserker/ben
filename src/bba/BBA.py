@@ -46,9 +46,9 @@ class BBABotBid:
             print(f"EPBot Version (DLL): {EPBot().version()}")
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
-            print("Error: Unable to load EPBot86.dll. Make sure the DLL is in the ./bin directory")
+            print(f"{Fore.RED}Error: Unable to load EPBot86.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
-            print("Make sure the dll is not writeprotected")
+            print(f"Make sure the dll is not writeprotected{Fore.RESET}")
             print('Error:', ex)
             raise ex
         self.verbose = verbose

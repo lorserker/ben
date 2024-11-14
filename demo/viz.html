@@ -46,6 +46,20 @@
           <span>&clubs;</span>
       </div>
   </div>
+  <div id="table">
+    <div class="north">
+        BEN
+    </div>
+    <div class="west">
+        BEN
+    </div>
+    <div class="south">
+        BEN
+    </div>
+    <div class="east">
+        BEN
+    </div>
+  </div>
   <div id="east">
       <div class="suit">
           <span>&spades;</span>
@@ -110,6 +124,27 @@
 
         let deal = new Deal(log)
         deal.start()
+        if (deal.data.opponents) {
+            if (deal.data.seat == "North"  || deal.data.seat == "South") {
+                document.querySelector('.north').innerHTML = deal.data.partner
+                document.querySelector('.south').innerHTML = deal.data.partner
+                document.querySelector('.east').innerHTML = deal.data.opponents
+                document.querySelector('.west').innerHTML = deal.data.opponents
+            }
+            else {
+                document.querySelector('.north').innerHTML = deal.data.opponents
+                document.querySelector('.south').innerHTML = deal.data.opponents
+                document.querySelector('.east').innerHTML = deal.data.partner
+                document.querySelector('.west').innerHTML = deal.data.partner
+            }
+        }
+        if (deal.data.human) {
+            if (deal.data.human[0]) document.querySelector('.north').innerHTML = deal.data.player
+            if (deal.data.human[1]) document.querySelector('.east').innerHTML = deal.data.player
+            if (deal.data.human[2]) document.querySelector('.south').innerHTML = deal.data.player
+            if (deal.data.human[3]) document.querySelector('.west').innerHTML = deal.data.player
+        }
+
         if (deal.data.model) {
             document.querySelector('#model').innerHTML = deal.data.model
        }

@@ -62,6 +62,7 @@ class TMClient:
         self.trick_winners = None
         self.opponents = None
         self.dds = ddsolver
+        self.partner = None
 
     @property
     def is_connected(self):
@@ -81,6 +82,7 @@ class TMClient:
             'board_number': self.board_number,
             'seat': self.seat,
             'opponents': self.opponents,
+            'partner': self.partner,
             'models': self.models.name
         }
 
@@ -747,7 +749,7 @@ class TMClient:
 
 
     async def send_message(self, message: str):
-        time.sleep(0.1)
+        time.sleep(0.05)
         try:
             print(f'{datetime.datetime.now().strftime("%H:%M:%S")} sending:   {message.ljust(57)}', end='')
 

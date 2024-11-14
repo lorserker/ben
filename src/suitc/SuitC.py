@@ -1,6 +1,7 @@
 import sys
 import os
 sys.path.append("..")
+from colorama import Fore, Back, Style, init
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
@@ -29,12 +30,12 @@ class SuitCLib:
             self.verbose = verbose
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
-            print('Error:', ex)
+            print(f"{Fore.RED}Error:", ex)
             print("*****************************************************************************")
             print("Error: Unable to load SuitCLib.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
             print("Make sure the dll is not write protected")
-            print("*****************************************************************************")
+            print(f"*****************************************************************************{Fore.RESET}")
             sys.exit(1)
         self.verbose = verbose
     

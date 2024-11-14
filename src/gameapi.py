@@ -709,12 +709,15 @@ def play():
 
         if play_pbn_format:
             tricks = []
+            current_trick = []
             # Use a loop to group every 4 cards as a trick
             for i in range(0, len(cards), 4):
-                trick = []
+                ct = cards[i:i+4]
                 for card in cards[i:i+4]:
-                    trick.append(deck52.encode_card(card))
-                tricks.append(trick)
+                    current_trick.append(deck52.encode_card(card))
+                if len(ct) == 4:
+                    tricks.append(current_trick)
+                    current_trick = []
 
             def print_trick(trick):
                 for card in trick:
@@ -741,7 +744,10 @@ def play():
                 for card in trick:
                     card = deck52.decode_card(card)
                     pbn_cards.append(card)
+            
             cards = pbn_cards
+            for card in current_trick:
+                cards.append(deck52.decode_card(card))
 
         # Hand is following N,E,S,W
         hands = ['...', '...', '...', '...']

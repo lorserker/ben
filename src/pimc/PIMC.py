@@ -9,6 +9,8 @@ from binary import get_hcp, calculate_median
 import scoring
 import calculate
 from bidding import bidding
+from colorama import Fore, Back, Style, init
+
 sys.path.append("..")
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
@@ -38,12 +40,12 @@ class BGADLL:
 
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
-            print('Error:', ex)
+            print(f"{Fore.RED}Error: {ex}")
             print("*****************************************************************************")
             print("Error: Unable to load BGADLL.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
             print("Make sure the dll is not write protected")
-            print("*****************************************************************************")
+            print(f"*****************************************************************************{Fore.RESET}")
             sys.exit(1)
 
         self.models = models
@@ -348,7 +350,7 @@ class BGADLL:
             self.pimc.SetupEvaluation(hands, self.opposHand, self.current_trick, self.previous_tricks, [self.rho_constraints,
                                   self.lho_constraints], Macros.Player.South if player_i == 3 else Macros.Player.North, self.max_playout, self.autoplay, self.models.pimc_use_fusion_strategy)
         except Exception as ex:        
-            print('Error:', ex)
+            print(f"{Fore.RED}Error: {ex} {Fore.RESET}")
             print("max_playout",self.max_playout)
             print("player_i", player_i)
             print(self.northhand.ToString(), self.southhand.ToString())
@@ -383,7 +385,7 @@ class BGADLL:
 
         start_time = time.time()
         try:
-            self.pimc.BeginEvaluate(trump)
+            self.pimc.Evaluate(trump)
         except Exception as ex:
             print('Error BeginEvaluate:', ex)
             sys.exit(1)
@@ -397,7 +399,7 @@ class BGADLL:
             print('Error AwaitEvaluation:', ex)
             sys.exit(1)
         # Allow running threads to finalize
-        time.sleep(0.1)
+        time.sleep(0.05)
         if self.verbose:    
             print("max_playout",self.max_playout)
             print(f"Playouts: {self.pimc.Playouts}")

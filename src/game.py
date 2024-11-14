@@ -424,6 +424,8 @@ class Driver:
             'play_only': self.play_only,
             'bidding_only': self.bidding_only,
             'human': self.human,
+            'opponents': "BEN",
+            'partner': "BEN",
             'model': self.models.name
         }
         if self.decl_i is not None:
