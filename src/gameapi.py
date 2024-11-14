@@ -62,11 +62,10 @@ def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
     return os.getcwd()
 
-def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, position, verbose):
+def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, cardplayer_i, verbose):
     
     level = int(contract[0])
     is_decl_vuln = [vuln_ns, vuln_ew, vuln_ns, vuln_ew][decl_i]
-    cardplayer_i = position  # lefty=0, dummy=1, righty=2, decl=3
 
     lefty_hand_str = hands[(decl_i + 1) % 4]
     dummy_hand_str = hands[(decl_i + 2) % 4]
@@ -76,7 +75,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
     pimc = [None, None, None, None]
 
     # We should only instantiate the PIMC for the position we are playing
-    if models.pimc_use_declaring and position == 3: 
+    if models.pimc_use_declaring and cardplayer_i == 3: 
         from pimc.PIMC import BGADLL
         declarer = BGADLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
         pimc[1] = declarer
@@ -86,7 +85,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
     else:
         pimc[1] = None
         pimc[3] = None
-    if models.pimc_use_defending and (position == 0):
+    if models.pimc_use_defending and (cardplayer_i == 0):
         from pimc.PIMCDef import BGADefDLL
         pimc[0] = BGADefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
         if verbose:
@@ -94,7 +93,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
     else:
         pimc[0] = None
 
-    if models.pimc_use_defending and (position == 2):
+    if models.pimc_use_defending and (cardplayer_i == 2):
         from pimc.PIMCDef import BGADefDLL
         pimc[2] = BGADefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
         if verbose:
@@ -148,7 +147,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
 
             card_i += 1
             if card_i >= len(play):
-                assert (player_i == position or (player_i == 1 and position == 3)), f"Cardplay order is not correct {play} {player_i} {position} (or another player to play a card)"
+                assert (player_i == cardplayer_i or (player_i == 1 and cardplayer_i == 3)), f"Cardplay order is not correct {play} {player_i} {cardplayer_i} (or another player to play a card)"
                 play_status = get_play_status(card_players[player_i].hand52,current_trick52)
                 if verbose:
                     print("play_status", play_status)
@@ -393,7 +392,9 @@ else:
     print("Opponent:", models.opponent_model.model_path)
 if models.matchpoint:
     print("Matchpoint mode on")
+    matchpoint = True
 else:
+    matchpoint = False
     print("Playing IMPS mode")
 
 
@@ -508,10 +509,11 @@ def bid():
             dealno = request.args.get("dealno")
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
         else:
-            dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
+            dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))  
+        mp = matchpoint      
         if request.args.get("tournament"):
-            matchpoint = request.args.get("tournament").lower() == "mp"
-            models.matchpoint = matchpoint
+            mp = request.args.get("tournament").lower() == "mp"
+            models.matchpoint = mp
         if request.args.get("explain"):
             explain = request.args.get("explain").lower() == "true"
         else:
@@ -539,6 +541,7 @@ def bid():
         auction = create_auction(bids, dealer_i)
         if bidding.auction_over(auction):
             result = {"message":"Bidding is over"}
+            print(result)
             return json.dumps(result)
 
         if verbose:
@@ -549,7 +552,7 @@ def bid():
             print("Auction: ",auction)
         if models.use_bba:
             from bba.BBA import BBABotBid
-            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
+            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, mp, verbose)
         else:
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
         with model_lock_bid:
@@ -560,7 +563,7 @@ def bid():
             from bba.BBA import BBABotBid
             if verbose:
                 print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
+            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, mp, verbose)
             auction.append(bid.bid)
             result["explanation"] = bot.explain(auction)
             if verbose:
@@ -593,10 +596,11 @@ def lead():
             dealno = request.args.get("dealno")
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
         else:
-            dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
+            dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))   
+        mp = matchpoint     
         if request.args.get("tournament"):
-            matchpoint = request.args.get("tournament").lower() == "mp"
-            models.matchpoint = matchpoint
+            mp = request.args.get("tournament").lower() == "mp"
+            models.matchpoint = mp
         # First we extract our hand and seat
         hand = request.args.get("hand").replace('_','.').upper()
         if 'X' in hand:
@@ -623,6 +627,7 @@ def lead():
         decl_i = bidding.get_decl_i(contract)
         if "NESW"[(decl_i + 1) % 4] != seat:
             result = {"message":"Not this player to lead"}
+            print(result)
             return json.dumps(result)
 
         hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, dds, verbose)
@@ -661,18 +666,21 @@ def play():
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
         else:
             dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
+        mp = matchpoint
         if request.args.get("tournament"):
-            matchpoint = request.args.get("tournament").lower() == "mp"
-            models.matchpoint = matchpoint
+            mp = request.args.get("tournament").lower() == "mp"
+            models.matchpoint = mp
         # First we extract the hands and seat
         hand_str = request.args.get("hand").replace('_','.')
         dummy_str = request.args.get("dummy").replace('_','.')
         if hand_str == dummy_str:
             result = {"message":"Hand and dummy are identical"}
+            print(result)
             return json.dumps(result)
 
         if "" == dummy_str:
             result = {"message":"No dummy provided"}
+            print(result)
             return json.dumps(result)
         
         played = request.args.get("played")
@@ -694,6 +702,7 @@ def play():
         #print(cards, len(cards))
         if len(cards) > 51:
             result = {"message": "Game is over, no cards to play"}
+            print(result)
             return json.dumps(result)
         # Validate number of cards played according to position
         auction = create_auction(bids, dealer_i)
@@ -767,14 +776,18 @@ def play():
             cardplayer = 0
         if (decl_i + 3) % 4 == position_i:
             cardplayer = 2
-        #print("cardplayer:",cardplayer)
+        if cardplayer == 1:
+            result = {"message": "Called as dummy or with wrong dealer"}
+            print(result)
+            return json.dumps(result)
+
         #print(hands)
         with model_lock_play:
             card_resp, player_i =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
         result["player"] = player_i
-        result["matchpoint"] = matchpoint
+        result["matchpoint"] = mp
         result["MP_or_IMP"] = models.use_real_imp_or_mp
         if record: 
             calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
@@ -867,7 +880,7 @@ def cuebid():
 
     if models.use_bba:
         from bba.BBA import BBABotBid
-        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
+        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, matchpoint, verbose)
     else:
         hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
     with model_lock_bid:
@@ -900,13 +913,17 @@ def explain():
     vuln = []
     vuln.append('@v' in v)
     vuln.append('@V' in v)
+    mp = matchpoint
+    if request.args.get("tournament"):
+        mp = request.args.get("tournament").lower() == "mp"
+        models.matchpoint = mp
     # And finally we deduct our position
     position_i = dealer_enum[seat]
     dealer = request.args.get("dealer")
     dealer_i = dealer_enum[dealer]
     if verbose:
         print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint, verbose)
+    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, mp, verbose)
     ctx = request.args.get("ctx")
     # Split the string into chunks of every second character
     bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
