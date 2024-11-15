@@ -1636,7 +1636,7 @@ class CardPlayer:
             assert pimc_resp_cards is not None, "PIMC result is None"
             if self.models.pimc_ben_dd_declaring:
                 #print(pimc_resp_cards)
-                dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
+                dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                 #print(dd_resp_cards)
                 merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", self.models.pimc_ben_dd_declaring_weight)
             else:
@@ -1650,7 +1650,7 @@ class CardPlayer:
                 assert pimc_resp_cards is not None, "PIMCDef result is None"
                 if self.models.pimc_ben_dd_defending:
                     #print(pimc_resp_cards)
-                    dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
+                    dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                     #print(dd_resp_cards)
                     merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef", self.models.pimc_ben_dd_defending_weight)
                 else:
@@ -1658,20 +1658,22 @@ class CardPlayer:
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status)            
                 
             else:
-                dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, current_trick52, players_states, probability_of_occurence)
+                dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                 card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status)
 
         if self.verbose:
             print(f'Play card response time: {time.time() - t_start:0.4f}')
         return card_resp
 
-    def get_cards_dd_evaluation(self, trick_i, leader_i, current_trick52, players_states, probabilities_list):
+    def get_cards_dd_evaluation(self, trick_i, leader_i, tricks52, current_trick52, players_states, probabilities_list):
         
         n_samples = players_states[0].shape[0]
         assert n_samples > 0, "No samples for DDSolver"
 
+        cards_played = list([card for trick in tricks52 for card in trick])
         # All previously played pips are also unavailable, so we use the original dummy and not what we can see
-        unavailable_cards = set(list(np.nonzero(self.hand52)[0]) + list(np.nonzero(self.dummy)[0]) + current_trick52)
+        # unavailable_cards = set(list(np.nonzero(self.hand52)[0]) + list(np.nonzero(self.dummy)[0]) + current_trick52)
+        unavailable_cards = set(list(np.nonzero(self.hand52)[0]) + list(np.nonzero(self.public52)[0]) + current_trick52 + cards_played)
 
         pips = [
             [c for c in range(7, 13) if i*13+c not in unavailable_cards] for i in range(4)
@@ -1732,6 +1734,7 @@ class CardPlayer:
         t_start = time.time()
         if self.verbose:
             print("Samples:", n_samples, " Solving:",len(hands_pbn), self.strain_i, leader_i, current_trick52)
+        
         dd_solved = self.dds.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
 
         # if defending the target is another
