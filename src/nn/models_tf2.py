@@ -18,7 +18,7 @@ class Models:
                  lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, trust_NN, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
                  double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, 
                  pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
-                 pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples,
+                 pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples, pimc_bidding_quality,
                  use_adjustment, adjust_NN, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
                  use_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
                  use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead,check_final_contract, max_samples_checked,  
@@ -92,6 +92,7 @@ class Models:
         self.pimc_margin_hcp = pimc_margin_hcp 
         self.pimc_margin_suit_bad_samples = pimc_margin_suit_bad_samples 
         self.pimc_margin_hcp_bad_samples = pimc_margin_hcp_bad_samples  
+        self.pimc_bidding_quality = pimc_bidding_quality
         self.use_adjustment = use_adjustment
         self.adjust_NN = adjust_NN
         self.adjust_NN_Few_Samples = adjust_NN_Few_Samples
@@ -199,7 +200,7 @@ class Models:
         pimc_margin_hcp = conf.getint('pimc', 'pimc_margin_hcp', fallback=2)
         pimc_margin_suit_bad_samples = conf.getint('pimc', 'pimc_margin_suit_bad_samples', fallback=2)
         pimc_margin_hcp_bad_samples = conf.getint('pimc', 'pimc_margin_hcp_bad_samples', fallback=5)
-
+        pimc_bidding_quality = conf.getfloat('pimc', 'pimc_bidding_quality', fallback=0.4)
         use_adjustment = conf.getboolean('adjustments', 'use_adjustment', fallback=True)
         adjust_NN = conf.getint('adjustments', 'adjust_NN', fallback=50)
         adjust_NN_Few_Samples = conf.getint('adjustments', 'adjust_NN_Few_Samples', fallback=500)
@@ -332,6 +333,7 @@ class Models:
             pimc_margin_hcp = pimc_margin_hcp,
             pimc_margin_suit_bad_samples = pimc_margin_suit_bad_samples,
             pimc_margin_hcp_bad_samples = pimc_margin_hcp_bad_samples, 
+            pimc_bidding_quality = pimc_bidding_quality,
             use_adjustment=use_adjustment,
             adjust_NN=adjust_NN,
             adjust_NN_Few_Samples=adjust_NN_Few_Samples,

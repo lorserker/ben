@@ -2,6 +2,8 @@ import sys
 import os
 import traceback
 import platform
+import socket
+
 os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -127,9 +129,14 @@ class TMClient:
         
     async def connect(self, host, port):
         try:
+            # Resolve the hostname to an IP address
+            resolved_ip = socket.gethostbyname(host)
+            print(f"Resolved {host} to {resolved_ip}")
             self.reader, self.writer = await asyncio.open_connection(host, port)
             self._is_connected = True
-        except ConnectionRefusedError as e: 
+            print(f"Connected to {host}:{port}")
+        except Exception as e:
+            print(f"Failed to connect to {host}:{port} - {e}")            
             traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
             traceback_lines = "".join(traceback_str).splitlines()
             file_traceback = None
@@ -140,7 +147,6 @@ class TMClient:
             if file_traceback:
                 print(file_traceback)  # This will print the last section starting with "File"
 
-            print(f"Server not responding {str(e)}")
             self._is_connected = False
             print(Style.RESET_ALL)
             sys.exit()
@@ -810,6 +816,24 @@ def cleanup_shelf(shelf_filename):
                 os.remove(filename)
 
 
+def validate_ip_or_hostname(value):
+    """Validate that the value is either an IP address or a hostname."""
+    # Check if the value is a valid IP address
+    try:
+        socket.inet_aton(value)
+        return value
+    except socket.error:
+        pass
+    
+    print("Validating hostname",value)
+    # Validate hostname using a regex
+    hostname_regex = re.compile(
+        r"^(?=.{1,253}$)(?!-)[A-Za-z0-9-]{1,63}(?<!-)(?:\.[A-Za-z0-9-]{1,63})*$"
+    )
+    if hostname_regex.match(value):
+        return value
+
+    raise argparse.ArgumentTypeError(f"Invalid IP address or hostname: {value}")
 
 #  Examples of how to start the table manager
 # python table_manager_client.py --name BEN --seat North
@@ -821,7 +845,7 @@ async def main():
     config_path = get_execution_path()
 
     parser = argparse.ArgumentParser(description="Table manager interface")
-    parser.add_argument("--host", type=validate_ip, default="127.0.0.1", help="IP for Table Manager")
+    parser.add_argument("--host", type=validate_ip_or_hostname, default="127.0.0.1", help="IP address or hostname for Table Manager")    
     parser.add_argument("--port", type=int, default=2000, help="Port for Table Manager")
     parser.add_argument("--name", required=True, help="Name in Table Manager")
     parser.add_argument("--seat", required=True, help="Where to sit (North, East, South or West)")

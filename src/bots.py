@@ -1594,8 +1594,11 @@ class CardPlayer:
                             print("Defending", self.pimc_declaring, self.player_i, trick_i)
                         self.find_and_update_constraints(players_states, quality,self.player_i)
 
-    def merge_candidate_cards(self, pimc_resp, dd_resp, engine, weight):
+    def merge_candidate_cards(self, pimc_resp, dd_resp, engine, weight, quality):
         merged_cards = {}
+
+        if quality < self.models.pimc_bidding_quality:
+            weight = 1
 
         for card52, (e_tricks, e_score, e_make) in dd_resp.items():
             pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card52]
@@ -1638,7 +1641,7 @@ class CardPlayer:
                 #print(pimc_resp_cards)
                 dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                 #print(dd_resp_cards)
-                merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", self.models.pimc_ben_dd_declaring_weight)
+                merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", self.models.pimc_ben_dd_declaring_weight, quality)
             else:
                 merged_card_resp = pimc_resp_cards
             card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status)            
@@ -1652,7 +1655,7 @@ class CardPlayer:
                     #print(pimc_resp_cards)
                     dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                     #print(dd_resp_cards)
-                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef", self.models.pimc_ben_dd_defending_weight)
+                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef", self.models.pimc_ben_dd_defending_weight, quality)
                 else:
                     merged_card_resp = pimc_resp_cards
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status)            
