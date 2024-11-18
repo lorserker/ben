@@ -1605,6 +1605,9 @@ class CardPlayer:
             new_e_tricks = round((pimc_e_tricks * weight + e_tricks * (1-weight)),2) if pimc_e_tricks is not None and e_tricks is not None else None
             new_e_score = round((pimc_e_score * weight + e_score * (1-weight)),2) if pimc_e_score is not None and e_score is not None else None
             new_e_make = round((pimc_e_make * weight + e_make * (1-weight)),2) if pimc_e_make is not None and e_make is not None else None
+            #print(new_e_tricks, new_e_score, new_e_make)
+            #print(pimc_e_tricks, pimc_e_score, pimc_e_make)
+            #print(e_tricks, e_score, e_make)
             new_msg = engine + f" {weight*100:.0f}%|" + (pimc_msg or '') 
             new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
             new_msg += f"|BEN DD {(1-weight)*100:.0f}%|" 

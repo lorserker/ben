@@ -414,13 +414,16 @@ class BGADefDLL:
         try:
             legalMoves = self.pimc.LegalMoves
             results = {}
+            weights = []
             e_tricks = {}
             making = {}
             for card in legalMoves:
                 # Calculate win probability
                 card52 = Card.from_symbol(str(card)[::-1]).code()
                 #print(card52)
-                output = self.pimc.Output[card]
+                self.pimc.Output.SortResults()
+                x = self.pimc.Output.GetTricksWithWeights(card)
+                output = list(x)
                 count = float(len(output))
                 # If we found no playout we need to reevaluate without constraints
                 if count == 0:
@@ -454,29 +457,41 @@ class BGADefDLL:
                     self.declarer_constraints.MaxHCP = 37
                     print("Done without constraints")
                     return card_result
-                makable = sum(1 for t in output if t >= self.mintricks)
-                probability = makable / count if count > 0 else 0
-                if math.isnan(probability):
-                    probability = 0
-                tricks = sum(t for t in output) / count if count > 0 else 0
- 
+
+                # Calculate total weight and makable weight
+                total_weight = sum(entry.Item2 for entry in output)  # Accessing the second item in ValueTuple (assuming Single is float)
+                #print("total_weight",total_weight)
+                makable_weight = sum(entry.Item2 for entry in output if entry.Item1 >= self.mintricks)  # Summing weights where tricks >= mintricks
+                #print("makable_weight",makable_weight)
+                
+                # Calculate probability
+                making_probability = makable_weight / total_weight if total_weight > 0 else 0
+                if math.isnan(making_probability):
+                    making_probability = 0
+                #print("probability",making_probability)
+                
+                # Calculate average tricks
+                tricks_avg = sum(entry.Item1 * entry.Item2 for entry in output) / total_weight if total_weight > 0 else 0
+                #print("tricks_avg",tricks_avg)
                 if self.models.use_real_imp_or_mp:
                     # Iterate through the ValueTuple objects
                     results[card52] = []
                     for entry in output:
-                        tricks = entry  # Access tricks
+                        tricks = entry.Item1  # Access tricks
+                        weight = entry.Item2  # Access weight
                         results[card52].append(tricks)
-                    making[card52] = probability
-                    e_tricks[card52] = tricks
+                        weights.append(weight)
+                    making[card52] = making_probability
+                    e_tricks[card52] = tricks_avg
                 else:
 
                     # Second element is the score. We need to calculate it
-                    score = -sum(self.score_by_tricks_taken[13 - t - self.tricks_taken] for t in output) / count if count > 0 else 0
-                    msg = f"Decl: {self.declarer_constraints.ToString()}|Partner: {self.partner_constraints.ToString()}| - {self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+                    score = (sum(self.score_by_tricks_taken[entry.Item1 + self.tricks_taken] * entry.Item2 for entry in output) / total_weight) if total_weight > 0 else 0
+                    msg = f"LHO: {self.lho_constraints.ToString()}|RHO: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
 
-                    card_result[card52] = (round(tricks, 2), round(score), round(probability, 2), msg)
+                    card_result[card52] = (round(tricks_avg, 2), round(score), round(making_probability, 2), msg)
                     if self.verbose:
-                        print(f"{count} {card52} {tricks:.2f} {score:.0f} {probability:.2f}")
+                        print(f"{count} {card52} {tricks_avg:.2f} {score:.0f} {making_probability:.2f}")
 
         except Exception as e:
             print('Error legalMoves:', e)

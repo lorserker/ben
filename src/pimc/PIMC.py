@@ -416,6 +416,7 @@ class BGADLL:
                 # Calculate win probability
                 card52 = Card.from_symbol(str(card)[::-1]).code()
                 #print(card52)
+                self.pimc.Output.SortResults()
                 x = self.pimc.Output.GetTricksWithWeights(card)
                 output = list(x)
                 count = float(len(output))
@@ -461,10 +462,11 @@ class BGADLL:
                 making_probability = makable_weight / total_weight if total_weight > 0 else 0
                 if math.isnan(making_probability):
                     making_probability = 0
-                #print("probability",probability)
+                #print("probability",making_probability)
                 
                 # Calculate average tricks
                 tricks_avg = sum(entry.Item1 * entry.Item2 for entry in output) / total_weight if total_weight > 0 else 0
+                #print("tricks_avg",tricks_avg)
                 if self.models.use_real_imp_or_mp:
                     # Iterate through the ValueTuple objects
                     results[card52] = []
@@ -500,6 +502,7 @@ class BGADLL:
                 print("score_by_tricks_taken")
                 print(self.score_by_tricks_taken)
             real_scores = calculate.calculate_score(results, self.tricks_taken, player_i, self.score_by_tricks_taken)
+            print(real_scores)
             if self.models.matchpoint:
                 card_ev = calculate.calculate_mp_score(real_scores)
             else:
