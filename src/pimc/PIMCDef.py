@@ -158,6 +158,7 @@ class BGADefDLL:
             print("Partner",self.partner_constraints.ToString())
 
     def set_hcp_constraints(self, min_partner, max_partner, min_declarer, max_declarer, quality):
+        # Perhaps we should add a constraint on max hcp for a passed hand
         if self.constraints_updated:
             return
         allready_shown_declarer = 37 - self.declarer_constraints.MaxHCP

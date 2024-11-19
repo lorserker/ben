@@ -152,7 +152,7 @@
 
         let i = 0
         log['bids'].forEach(data => {
-            document.querySelector('#info').innerHTML += `
+            document.querySelector('#info').innerHTML += `<br>
             <p class="bid"><strong>Bid:</strong> ${data.bid}${data.alert=="True"? "*":""} ${data.who !== undefined ? ' by ' + data.who : ''}</p>
             `;
             if (data.candidates && data.candidates.length > 0)

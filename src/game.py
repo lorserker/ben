@@ -573,7 +573,7 @@ class Driver:
 
                 card52 = None
                 card_resp = None
-                play_status = get_play_status(card_players[player_i].hand52,current_trick52)
+                play_status = get_play_status(card_players[player_i].hand52,current_trick52, strain_i)
                 if self.verbose:
                     print('play status', play_status)
 

@@ -68,7 +68,7 @@ class Sample:
     def __init__(self, lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, 
                  bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, sample_boards_for_auction_opening_lead, 
                  sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, 
-                 hcp_reduction_factor, shp_reduction_factor,verbose):
+                 hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.lead_accept_threshold_suit = lead_accept_threshold_suit
         self.lead_accept_threshold_honors = lead_accept_threshold_honors
@@ -98,6 +98,7 @@ class Sample:
         self.no_biddingqualitycheck_after_bid_count = no_biddingqualitycheck_after_bid_count
         self.hcp_reduction_factor = hcp_reduction_factor
         self.shp_reduction_factor = shp_reduction_factor
+        self.sample_previous_round_if_needed = sample_previous_round_if_needed
         self.verbose = verbose
 
 
@@ -133,10 +134,11 @@ class Sample:
         no_biddingquality_after_bid_count = conf.getint('bidding', 'no_biddingquality_after_bid_count', fallback=12)
         hcp_reduction_factor = conf.getfloat('sampling', 'hcp_reduction_factor', fallback=0.9)
         shp_reduction_factor = conf.getfloat('sampling', 'shp_reduction_factor', fallback=0.5)
+        sample_previous_round_if_needed = conf.getboolean('sampling', 'sample_previous_round_if_needed', fallback=False)        
         return cls(lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, 
                    bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, 
                    sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, 
-                   exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, verbose)
+                   exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose)
 
     @property
     def sample_hands_auction(self):
@@ -146,7 +148,7 @@ class Sample:
     def min_sample_hands_auction(self):
         return self._min_sample_hands_auction
 
-    def generate_samples_iterative(self, auction_so_far, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models):
+    def generate_samples_iterative(self, auction_so_far, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples):
         # The longer the aution the more hands we might need to sample
         sample_boards_for_auction = max_samples
         
@@ -159,32 +161,47 @@ class Sample:
                     print(f"Increasing samples to {sample_boards_for_auction} for auction with {binary.get_number_of_bids(auction_so_far)} bids")
 
 
-        accepted_samples = []
         sorted_scores = []
         samplings = 0
-        current_count = 0
+        current_count = len(accepted_samples)
         quality = 0
         p_hcp, p_shp = None, None
+        step = self.sample_boards_for_auction_step
+        extend_samples = False
         while samplings < sample_boards_for_auction and current_count <= needed_samples:
-            new_samples, new_sorted_scores, p_hcp, p_shp, new_quality = self.sample_cards_auction(auction_so_far, turn_to_bid, hand_str, vuln, self.sample_boards_for_auction_step, rng, models, p_hcp, p_shp, extend_samples = (samplings+self.sample_boards_for_auction_step >= max_samples) )
+            new_samples, new_sorted_scores, p_hcp, p_shp, new_quality = self.sample_cards_auction(auction_so_far, turn_to_bid, hand_str, vuln, step, rng, models, p_hcp, p_shp, extend_samples )
             current_count += new_samples.shape[0]
             quality += new_quality * new_samples.shape[0]
             # Accumulate the samples and scores
             # We should probably check for duplicates
             accepted_samples.append(new_samples)
             sorted_scores.append(new_sorted_scores)
-            samplings += self.sample_boards_for_auction_step
+            samplings += step
+            extend_samples = (samplings + 3*step >= max_samples)
+            # In the first iterations we did not find enough samples
+            # so this time we are going to extend below threshold, and create a large sample
+            # Another option could be to save doubted samples from earlier iterations
+            if current_count < needed_samples and extend_samples:
+                step = self.sample_boards_for_auction_step * 3
 
         if current_count == 0:
-            print(f"Samplings: {samplings} max {sample_boards_for_auction}")
-            print(f"No samples found for auction {auction_so_far}")
+            print(f"{Fore.RED}No samples found for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}")
 
         # Convert list of arrays into a single array along the first dimension
         quality = -1 if current_count == 0 else quality / current_count
         accepted_samples = np.concatenate(accepted_samples, axis=0)
         sorted_scores = np.concatenate(sorted_scores, axis=0)
         if self.verbose:
-            print(f"Found {accepted_samples.shape[0]} samples for bidding. Quality={quality}, Samplings={samplings}, Auction{auction_so_far}")
+            print(f"Found {len(accepted_samples)} samples for bidding. Quality={quality}, Samplings={samplings}, Auction{auction_so_far}")
+        
+        if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and len(auction_so_far) >= 8:
+            print(f"{Fore.RED}Quality {quality:.2f} too low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}")
+            print(f"{Fore.RED}Skipping last bidding round{Fore.RESET}")
+            auction_so_far = auction_so_far[:-4]
+            needed_samples = needed_samples / 4
+            # Consider transferring found samples, but we also need score and quality then
+            accepted_samples = []
+            return self.generate_samples_iterative(auction_so_far, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples)
 
         return accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings
 
@@ -253,8 +270,9 @@ class Sample:
 
 
         if self.verbose:
-            print("Missing HCP:", missing_hcp)
-            print("Expected HCP:",r_hcp[0])
+            print("Missing HCP   :", missing_hcp)
+            print("Expected HCP  :",r_hcp[0])
+            print("Expected Shape:",r_shp[0])
             print(f"hcp_reduction_factor:{hcp_reduction_factor}  {self.hcp_reduction_factor}")            
             print(f"shp_reduction_factor:{shp_reduction_factor}  {self.shp_reduction_factor}")            
 
@@ -324,20 +342,20 @@ class Sample:
                 if np.round(c_hcp[i]) >= 11:
                     accept_hcp &= binary.get_hcp(lho_pard_rho[:, i, :]) >= np.round(c_hcp[i]) - 5
 
-            accepted = np.sum(accept_hcp)
             if self.verbose:
-                print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {accepted} state={rng.bit_generator.state["state"]["state"]}')
+                print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {np.sum(accept_hcp)}')
 
             accept_shp = np.ones(n_samples).astype(bool)
 
             for i in range(3):
                 for j in range(4):
                     if np.round(c_shp[i, j] < 2):
-                        accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) <= np.round(c_shp[i, j]) + 1
-                    #if np.round(c_shp[i, j] >= 4):
-                    #    accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
-                    if np.round(c_shp[i, j] >= 6):
-                        accept_shp &= np.sum(lho_pard_rho[:, i, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j])
+                        accept_shp &= np.sum(lho_pard_rho[:, i, (j*cards_in_suit):((j+1)*cards_in_suit)], axis=1) <= np.round(c_shp[i, j]) + 1
+                    if np.round(c_shp[i, j] >= 8):
+                        accept_shp &= np.sum(lho_pard_rho[:, i, (j*cards_in_suit):((j+1)*cards_in_suit)], axis=1) >= np.round(c_shp[i, j]) 
+
+            if self.verbose:
+                print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals shape accepted: {np.sum(accept_shp)}')
 
             accept = accept_hcp & accept_shp
 
@@ -563,24 +581,20 @@ class Sample:
             print("Samples after bidding distance: ", len(sorted_samples), " Threshold: ")
         if len(sorted_scores) == 0:
             return sorted_samples, sorted_scores, c_hcp, c_shp, -1
+
         # How much to trust the bidding for the samples
         accepted_samples = sorted_samples[sorted_scores >= self.bidding_threshold_sampling]
-        #quality = True
         if self.verbose:
             print("Samples after bidding filtering: ", len(accepted_samples), " Threshold: ", self.bidding_threshold_sampling)
 
         # If we havent found enough samples, just return the minimum number from configuration
-        # It could be an idea to add an extra sampling in a later version
         if (len(accepted_samples) < self._min_sample_hands_auction) and extend_samples:
             if self.use_distance:
-                #quality = len(sorted_samples[sorted_scores >= self.bid_accept_threshold_bidding]) > 2 or n_steps*4 > self.no_biddingqualitycheck_after_bid_count
                 if self.verbose:
                     print(f"Only found {len(sorted_samples[sorted_scores >= self.bid_accept_threshold_bidding])} {self._min_sample_hands_auction}")
             else:
                 if self.verbose:
                     print(f"Only found {len(accepted_samples)} {self._min_sample_hands_auction}")
-                # If we found 2 boards with OK bidding we accept the quality
-                #quality = len(accepted_samples) > 2 or n_steps*4 > self.no_biddingqualitycheck_after_bid_count
             accepted_samples = sorted_samples[:self._min_sample_hands_auction]
 
         if len(accepted_samples) == 0:
@@ -1232,6 +1246,8 @@ class Sample:
         # The primary idea is to filter away hands, that lead the Q as it denies the K
         lead_scores = np.zeros(states[0].shape[0])
         if (hidden_1_i == 0 or hidden_2_i == 0): 
+            # Here we should probably remove leads that should not be possible.
+            # But impossible lead should get a very low score from the neural network, so perhaps it is overkill
             if states[0].shape[0] >= self.min_sample_hands_play:
                 if (hidden_2_i == 3):
                     # We are RHO and trust partners lead
@@ -1318,10 +1334,6 @@ class Sample:
             # Depending on suit or NT we must select the right model
             # 0-3 is for NT 4-7 is for suit
             # When the player is instantiated the right model is selected, but here we get it from the configuration
-            print("p_i+playermodelindex", p_i+playermodelindex)
-            print("p_i", p_i)
-            print(states[p_i][:, :n_tricks_pred, :].shape)
-            print("Model", models.player_models[p_i+playermodelindex].name)
             p_cards = models.player_models[p_i+playermodelindex].model(states[p_i][:, :n_tricks_pred, :])
             if tf.is_tensor(p_cards):
                 p_cards = p_cards.numpy()

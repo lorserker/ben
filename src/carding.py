@@ -41,7 +41,7 @@ def find_last_occurrence(arr, target):
 
 def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, play_status, who, verbose):
     if verbose:
-        print(f"select_right_card_for_play for player {player_i} {hand_str}")
+        print(f"select_right_card_for_play for player {player_i} {hand_str} {play_status}")
     if len(candidate_cards) == 1:
         return candidate_cards[0].card, who
     
@@ -64,7 +64,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
                 card_index = find_last_occurrence(hand52.reshape((4, 13))[candidate_cards[0].card.suit],1)
                 card_index = card_index + 13 * candidate_cards[0].card.suit
-                return Card.from_code(card_index), who
+                return Card.from_code(card_index), "Discarding"
             
         if player_i == 3:
             # Currently no specific rule for declarer

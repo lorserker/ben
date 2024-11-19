@@ -207,14 +207,20 @@ def parse_lin(lin):
 
     return Board(dealer, vuln, hands, auction, play)
 
-def get_play_status(hand, current_trick):
+def get_play_status(hand, current_trick, strain):
     suits = np.array(hand).reshape((4, -1))
     shape = suits.sum(axis=1)
     if current_trick == [] or len(current_trick) == 4:
         return "Lead"
     suitlead = current_trick[0] // 13
     if shape[suitlead] == 0:
-        return "Discard"
+        if strain == 0:
+            return "Discard"
+        else:
+            if shape[strain-1] == 0:
+                return "Discard"
+            else:
+                return "Ruff"
     elif shape[suitlead] == 1:
         return "Forced"
     else:

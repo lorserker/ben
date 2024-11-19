@@ -163,14 +163,33 @@ class BotBid:
 
         return threshold_value
 
+    def translate_hands(self, hands_np, hand_str, n_samples):
+        hands_pbn = []
+        for i in range(n_samples):
+            # Create PBN for hand
+            # deck = 'N:' + ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) if j != self.seat else hand_str for j, hand in enumerate(hands_np[i]))
+            # We want to rotate the hands such that the hand_str comes first, and the remaining hands follow in their original order, wrapping around. 
+            # This is to ensure that we get the same DD results for a rotateded deal.
+            deck = 'N:' + ' '.join(
+                hand_str if j == 0 else deck52.handxxto52str(hands_np[i][(j + self.seat) % 4], self.models.n_cards_bidding)
+                for j in range(4)
+            )
+
+            # Create PBN including pips
+            hands_pbn.append(deck52.convert_cards(deck,0, hand_str, self.rng, self.models.n_cards_bidding))
+
+        return hands_pbn
 
     def bid(self, auction):
         # Validate input
         if (len(auction)) % 4 != self.seat:
             error_message = f"Dealer {self.dealer}, auction {auction}, and seat {self.seat} do not match!"
             raise ValueError(error_message)
-        # A problem, that we get candidates with a threshold, and then simulates
-        # When going negative, we would probably like to extend the candidates
+
+        # Reseed the rng, so that we get the same result each time in this situation
+        # We should perhaps add current auction to the seed
+        self.rng = self.get_random_generator()
+
         self.my_bid_no = self.get_bid_number_for_player_to_bid(auction)
         candidates, passout = self.get_bid_candidates(auction)
         quality = 1
@@ -199,9 +218,13 @@ class BotBid:
         else:
             sample_count = 0
 
+
         if self.do_rollout(auction, candidates, self.get_max_candidate_score(self.my_bid_no), sample_count):
             ev_candidates = []
             ev_scores = {}
+            # we would like to have the same samples including pips for all calculations
+            if self.models.double_dummy_calculator:
+                hands_np_as_pbn = self.translate_hands(hands_np, self.hand_str, sample_count)
             for candidate in candidates:
                 if self.verbose:
                     print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.3f} Samples: {len(hands_np)}")
@@ -215,7 +238,7 @@ class BotBid:
                 decl_tricks_softmax3 = None
                 
                 if self.models.double_dummy_calculator:
-                    contracts, decl_tricks_softmax1 = self.expected_tricks_dd(hands_np, auctions_np, self.hand_str)
+                    contracts, decl_tricks_softmax1 = self.expected_tricks_dd(hands_np_as_pbn, auctions_np, self.hand_str, sample_count)
                     ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax1)
                     ev_scores[candidate.bid] = ev
                     decoded_tricks = np.argmax(decl_tricks_softmax1, axis=1)
@@ -425,7 +448,8 @@ class BotBid:
                 for i, bid in enumerate(auction):
                     auction_np[:,i] = bidding.BID2ID[bid]
 
-                contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np, auction_np, self.hand_str)
+                hands_np_as_pbn = self.translate_hands(hands_np, self.hand_str, sample_count)
+                contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np_as_pbn, auction_np, self.hand_str, sample_count)
                 decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
                 if self.verbose:
                     print("tricks", np.mean(decoded_tricks))
@@ -576,7 +600,7 @@ class BotBid:
                         auction_np[:,i] = bidding.BID2ID[bid]
 
                     # Simulate the hands
-                    contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np[:min(len(samples), self.models.max_samples_checked)], auction_np, self.hand_str)
+                    contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np_as_pbn[:self.models.max_samples_checked], auction_np, self.hand_str, self.models.max_samples_checked)
                     decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
                     if self.verbose:
                         print("tricks", np.mean(decoded_tricks))
@@ -793,10 +817,10 @@ class BotBid:
         return bid_np, alerts
     
     def sample_hands_for_auction(self, auction_so_far, turn_to_bid):
-                # Reset randomizer
+        # Reset randomizer
         self.rng = self.get_random_generator()
 
-        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction_so_far, turn_to_bid, self.sampler.sample_boards_for_auction, self.sampler.sample_hands_auction, self.rng, self.hand_str, self.vuln, self.models)
+        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction_so_far, turn_to_bid, self.sampler.sample_boards_for_auction, self.sampler.sample_hands_auction, self.rng, self.hand_str, self.vuln, self.models, [])
 
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
@@ -808,7 +832,7 @@ class BotBid:
             # Inform user
             if not self.models.suppress_warnings:
                 if accepted_samples.shape[0] <= self.sampler.warn_to_few_samples:
-                    sys.stderr.write(f"{Fore.YELLOW}Warning: Not enough samples found. Using all samples {accepted_samples.shape[0]}, Samplings={samplings}, Auction{auction_so_far}{Style.RESET_ALL}\n")
+                    sys.stderr.write(f"{Fore.YELLOW}Warning: Not enough samples found. Using all samples {accepted_samples.shape[0]}, Samplings={samplings}, Auction={auction_so_far}, Quality={quality:.2f}{Style.RESET_ALL}\n")
 
         sorted_indices = np.argsort(sorted_scores)[::-1]
         # Extract scores based on the sorted indices
@@ -1021,9 +1045,7 @@ class BotBid:
         decl_tricks_softmax = self.models.sd_model_no_lead.model(X_sd)
         return contracts, decl_tricks_softmax
 
-    def expected_tricks_dd(self, hands_np, auctions_np, hand_str):
-        n_samples = hands_np.shape[0]
-
+    def expected_tricks_dd(self, hands_np_as_pbn, auctions_np, hand_str, n_samples):
         decl_tricks_softmax = np.zeros((n_samples, 14), dtype=np.int32)
         contracts = []
         t_start = time.time()
@@ -1041,18 +1063,10 @@ class BotBid:
             declarer = 'NESW'.index(contract[-1])
             leader = (declarer + 1) % 4
 
-            # Create PBN for hand
-            # deck = 'N:' + ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) if j != self.seat else hand_str for j, hand in enumerate(hands_np[i]))
-            # We want to rotate the hands such that the hand_str comes first, and the remaining hands follow in their original order, wrapping around. 
-            # This is to ensure that we get the same DD results for a rotateded deal.
-            deck = 'N:' + ' '.join(
-                hand_str if j == 0 else deck52.handxxto52str(hands_np[i][(j + self.seat) % 4], self.models.n_cards_bidding)
-                for j in range(4)
-            )
             leader = (leader + 4 - self.seat) % 4
 
             # Create PBN including pips
-            hands_pbn = [deck52.convert_cards(deck,0, hand_str, self.rng, self.models.n_cards_bidding)]
+            hands_pbn = [hands_np_as_pbn[i]]
 
             # It will probably improve performance if all is calculated in one go
             dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1)
@@ -1112,7 +1126,7 @@ class BotLead:
         self.dd = ddsolver
 
     def get_random_generator(self):
-        #print("Fetching random generator for lead", self.hash_integer)
+        #print(f"{Fore.BLUE}Fetching random generator for lead {self.hash_integer}{Style.RESET_ALL}")
         return np.random.default_rng(self.hash_integer)
 
     def find_opening_lead(self, auction):
@@ -1304,13 +1318,14 @@ class BotLead:
 
         decl_i = bidding.get_decl_i(contract)
         lead_index = (decl_i + 1) % 4
-                # Reset randomizer
+        
+        # Reset randomizer
         self.rng = self.get_random_generator()
 
-        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction, lead_index, self.sampler.sample_boards_for_auction_opening_lead, self.sampler.sample_hands_opening_lead, self.rng, self.hand_str, self.vuln, self.models)
+        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction, lead_index, self.sampler.sample_boards_for_auction_opening_lead, self.sampler.sample_hands_opening_lead, self.rng, self.hand_str, self.vuln, self.models, [])
 
         if self.verbose:
-            print(f"Generated samples: {accepted_samples.shape[0]} in {samplings} samples. Quality {quality}")
+            print(f"Generated samples: {accepted_samples.shape[0]} in {samplings} samples. Quality {quality:.2f}")
             print(f'Now simulate on {min(accepted_samples.shape[0], self.sampler.sample_hands_opening_lead)} deals to find opening lead')
                 
 
@@ -1492,7 +1507,7 @@ class CardPlayer:
             self.pimc = None
     
     def get_random_generator(self):
-        #print("Fetching random generator for player", self.hash_integer)
+        #print(f"{Fore.BLUE}Fetching random generator for player {self.hash_integer}{Style.RESET_ALL}")
         return np.random.default_rng(self.hash_integer)
     
     def init_x_play(self, public_hand, level, strain_i):
@@ -1598,7 +1613,7 @@ class CardPlayer:
         merged_cards = {}
 
         if quality < self.models.pimc_bidding_quality:
-            weight = 1
+            weight = 1 - weight
 
         for card52, (e_tricks, e_score, e_make) in dd_resp.items():
             pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card52]

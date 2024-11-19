@@ -148,7 +148,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
             card_i += 1
             if card_i >= len(play):
                 assert (player_i == cardplayer_i or (player_i == 1 and cardplayer_i == 3)), f"Cardplay order is not correct {play} {player_i} {cardplayer_i} (or another player to play a card)"
-                play_status = get_play_status(card_players[player_i].hand52,current_trick52)
+                play_status = get_play_status(card_players[player_i].hand52,current_trick52, strain_i)
                 if verbose:
                     print("play_status", play_status)
 

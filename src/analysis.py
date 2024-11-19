@@ -151,7 +151,7 @@ class CardByCard:
                 card_resp = None               
                 rollout_states = None
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    play_status = get_play_status(card_players[player_i].hand52,current_trick52)
+                    play_status = get_play_status(card_players[player_i].hand52,current_trick52, strain_i)
 
                     if play_status == "Forced":
                         card = get_singleton(card_players[player_i].hand52,current_trick52)

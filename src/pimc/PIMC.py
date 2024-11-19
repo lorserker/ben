@@ -98,12 +98,15 @@ class BGADLL:
             print("tricks_taken",self.tricks_taken)
             
     def set_shape_constraints(self, min_lho, max_lho, min_rho, max_rho, quality):
+
+        # Perhaps we should add a constraint on max shape for a passed hand
+        # Opening lead might set some constraints on length in suit
+        # ie leading an unsupported king in an unbid suit is normally single or double
         if self.constraints_updated:
             return
 
         # Perhaps we should have a larger margin, depending on the bidding from this hand
         # if no bids, the hand can have a very long suits without having bid
-        # Should it be moved to configuration?
 
         if quality >= self.sampler.bidding_threshold_sampling :
             margin = self.models.pimc_margin_suit
@@ -160,6 +163,7 @@ class BGADLL:
             print("West (LHO)",self.lho_constraints.ToString())
 
     def set_hcp_constraints(self, min_lho, max_lho, min_rho, max_rho, quality):
+        # Perhaps we should add a constraint on max hcp for a passed hand
         if self.constraints_updated:
             return
         allready_shown_lho = 37 - self.lho_constraints.MaxHCP
