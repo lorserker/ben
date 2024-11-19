@@ -502,7 +502,6 @@ class BGADLL:
                 print("score_by_tricks_taken")
                 print(self.score_by_tricks_taken)
             real_scores = calculate.calculate_score(results, self.tricks_taken, player_i, self.score_by_tricks_taken)
-            print(real_scores)
             if self.models.matchpoint:
                 card_ev = calculate.calculate_mp_score(real_scores)
             else:

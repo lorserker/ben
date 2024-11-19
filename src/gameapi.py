@@ -734,29 +734,30 @@ def play():
                     print(card, end=" ")
                 print()
 
-            ordered_tricks = [tricks[0]]
-            for i in range(1, len(tricks)):
-                previous_ordered_trick = ordered_tricks[-1]
-                winner_index_in_ordered = deck52.get_trick_winner_i(previous_ordered_trick,  (strain_i - 1) % 5)
-                # Map winner's position back to the original trick's positions
-                original_trick = tricks[i - 1]
-                winner_card = previous_ordered_trick[winner_index_in_ordered]
-                winner_index_in_original = original_trick.index(winner_card)
-                
-                # Rotate the next trick to start with the winner's position in the original order
-                next_trick = tricks[i]
-                reordered_trick = next_trick[winner_index_in_original:] + next_trick[:winner_index_in_original]
-                ordered_tricks.append(reordered_trick)
+            if len(tricks) > 0:
+                ordered_tricks = [tricks[0]]
+                for i in range(1, len(tricks)):
+                    previous_ordered_trick = ordered_tricks[-1]
+                    winner_index_in_ordered = deck52.get_trick_winner_i(previous_ordered_trick,  (strain_i - 1) % 5)
+                    # Map winner's position back to the original trick's positions
+                    original_trick = tricks[i - 1]
+                    winner_card = previous_ordered_trick[winner_index_in_ordered]
+                    winner_index_in_original = original_trick.index(winner_card)
+                    
+                    # Rotate the next trick to start with the winner's position in the original order
+                    next_trick = tricks[i]
+                    reordered_trick = next_trick[winner_index_in_original:] + next_trick[:winner_index_in_original]
+                    ordered_tricks.append(reordered_trick)
 
-            pbn_cards = []
-            for trick in ordered_tricks:
-                for card in trick:
-                    card = deck52.decode_card(card)
-                    pbn_cards.append(card)
-            
-            cards = pbn_cards
-            for card in current_trick:
-                cards.append(deck52.decode_card(card))
+                pbn_cards = []
+                for trick in ordered_tricks:
+                    for card in trick:
+                        card = deck52.decode_card(card)
+                        pbn_cards.append(card)
+                
+                cards = pbn_cards
+                for card in current_trick:
+                    cards.append(deck52.decode_card(card))
 
         # Hand is following N,E,S,W
         hands = ['...', '...', '...', '...']
