@@ -163,6 +163,11 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                         optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
                         # We just take the play for MAX as we really don't know how many tricks are needed
                         for play in optimum_plays:
+                            # If we can take all tricks we drop SuitC
+                            #print(play['Plays'][0]['Tricks'])
+                            #print("Tricks", play['Plays'][0]['Tricks'], " Max: ",max(len(suits_north),len(suits_south)))
+                            if play['Plays'][0]['Tricks'] == max(len(suits_north),len(suits_south)):
+                                return candidate_cards[0].card, who
                             if "MAX" in play["OptimumPlayFor"]:
                                 if len(play["GameTree"]) > 0:
                                     suitc_card = play["GameTree"]["T"]
@@ -186,10 +191,22 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     for candidate_card in candidate_cards:
                         if candidate_card.card.symbol() == f"{suit_str}{suitc_card}":
                             # Only play SuitC if not losing to much DD
-                            if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
-                                if candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.1:
-                                    return candidate_card.card, "SuitC"
-                            
+                            if models.use_real_imp_or_mp:
+                                if models.matchpoint:
+                                    if candidate_card.expected_score_mp > candidate_cards[0].expected_score_mp - 1:
+                                        return candidate_card.card, "SuitC-MP"
+                                else:
+                                    if candidate_card.expected_score_imp > candidate_cards[0].expected_score_imp - 0.1:
+                                        return candidate_card.card, "SuitC-Imp"
+                            else:
+                                if models.double_dummy:
+                                    if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
+                                        if candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.1:
+                                            return candidate_card.card, "SuitC-DD"
+                                else:
+                                    if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
+                                        if candidate_card.expected_tricks_sd > candidate_cards[0].expected_tricks_sd - 0.1:
+                                            return candidate_card.card, "SuitC-SD"
                 return candidate_cards[0].card, who
     
     if original_count == current_count:
@@ -211,6 +228,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             if verbose:
                 print("card selected", card)
             return Card.from_code(card), who
+    # If we are dummy and playing a pip, just play lowest
     if verbose:
         print("No lead rules actual, playing top of candidate list", candidate_cards[0].card)
     return candidate_cards[0].card, who

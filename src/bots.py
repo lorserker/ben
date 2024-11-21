@@ -462,7 +462,7 @@ class BotBid:
 
 
         if self.verbose:
-            print(candidates[0].bid, "selected")
+            print(f"{Fore.LIGHTCYAN_EX}{candidates[0].bid} selected by {who} and sampling{Fore.RESET}")
 
         if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], quality, self.my_bid_no):    
 
@@ -1703,12 +1703,12 @@ class CardPlayer:
         symbols = 'AKQJT98765432'
 
         current_trick_players = [(leader_i + i) % 4 for i in range(len(current_trick52))]
-
+        rng = self.get_random_generator()
         hands_pbn = []
         for i in range(n_samples):
             hands = [None, None, None, None]
             for j in range(4):
-                self.get_random_generator().shuffle(pips[j])
+                rng.shuffle(pips[j])
             pip_i = [0, 0, 0, 0]
 
             hands[self.player_i] = deck52.deal_to_str(self.hand52)
@@ -1750,14 +1750,14 @@ class CardPlayer:
 
 
         if self.verbose:
-            print(hands_pbn[:10])
+            print('\n'.join(hands_pbn[:10]))
 
         t_start = time.time()
         if self.verbose:
             print("Samples:", n_samples, " Solving:",len(hands_pbn), self.strain_i, leader_i, current_trick52)
         
         dd_solved = self.dds.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
-
+        #print(dd_solved)
         # if defending the target is another
         level = int(self.contract[0])
         if self.player_i % 2 == 1:
@@ -1765,12 +1765,13 @@ class CardPlayer:
         else:
             tricks_needed = 13 - (level + 6) - self.n_tricks_taken + 1
 
-        # print("Calculated tricks")
+        if self.verbose:
+            print("Calculating tricks. Using probability {}".format(self.models.use_probability))
         if self.models.use_probability:
             card_tricks = self.dds.expected_tricks_dds_probability(dd_solved, probabilities_list)
         else:
             card_tricks = self.dds.expected_tricks_dds(dd_solved)
-
+        #print(card_tricks)
         making = self.dds.p_made_target(tricks_needed)(dd_solved)
 
         if self.models.use_real_imp_or_mp:

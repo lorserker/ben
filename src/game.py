@@ -673,6 +673,8 @@ class Driver:
                     if self.verbose:
                         pprint.pprint(card_resp.to_dict(), width=200)
                     
+                    if self.verbose:
+                        print(f"{Fore.LIGHTCYAN_EX}{card_resp} selected by human{Fore.RESET}")
                     await asyncio.sleep(0.01)
 
                 self.card_responses.append(card_resp)
@@ -866,6 +868,8 @@ class Driver:
 
         if self.human[(decl_i + 1) % 4]:
             card_resp = await self.factory.create_human_leader().async_lead()
+            if self.verbose:
+                print(f"{Fore.LIGHTCYAN_EX}{card_resp} selected by human{Fore.RESET}")
         else:
             bot_lead = AsyncBotLead(
                 [self.vuln_ns, self.vuln_ew], 

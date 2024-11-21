@@ -165,7 +165,8 @@ class HumanLeadSocket:
 
             except Exception as ex:
                 print(f"Exception receiving card ", ex)
-                raise ex
+                if "going away" in str(ex):
+                    raise ex
 
 
 
@@ -225,7 +226,7 @@ class HumanCardPlayer:
         card = input('your play: ').strip().upper()
         return deck52.encode_card(card)
 
-    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores):
+    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores):
         candidates = []
         samples = []
 
@@ -260,7 +261,8 @@ class HumanCardPlayerSocket(HumanCardPlayer):
                     return deck52.encode_card(human_card)
             except Exception as ex:
                 print(f"Exception receiving card", ex)
-                raise ex
+                if "going away" in str(ex):
+                    raise ex
 
 class ConsoleFactory:
 

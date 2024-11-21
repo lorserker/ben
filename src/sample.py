@@ -342,8 +342,8 @@ class Sample:
                 if np.round(c_hcp[i]) >= 11:
                     accept_hcp &= binary.get_hcp(lho_pard_rho[:, i, :]) >= np.round(c_hcp[i]) - 5
 
-            if self.verbose:
-                print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {np.sum(accept_hcp)}')
+            #if self.verbose:
+            #    print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals hcp accepted: {np.sum(accept_hcp)}')
 
             accept_shp = np.ones(n_samples).astype(bool)
 
@@ -351,11 +351,11 @@ class Sample:
                 for j in range(4):
                     if np.round(c_shp[i, j] < 2):
                         accept_shp &= np.sum(lho_pard_rho[:, i, (j*cards_in_suit):((j+1)*cards_in_suit)], axis=1) <= np.round(c_shp[i, j]) + 1
-                    if np.round(c_shp[i, j] >= 8):
-                        accept_shp &= np.sum(lho_pard_rho[:, i, (j*cards_in_suit):((j+1)*cards_in_suit)], axis=1) >= np.round(c_shp[i, j]) 
+                    if np.round(c_shp[i, j] >= 6):
+                        accept_shp &= np.sum(lho_pard_rho[:, i, (j*cards_in_suit):((j+1)*cards_in_suit)], axis=1) >= np.round(c_shp[i, j]) - 1
 
-            if self.verbose:
-                print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals shape accepted: {np.sum(accept_shp)}')
+            #if self.verbose:
+            #    print(f'sample_cards_vec took {(time.time() - t_start):0.4f} Deals shape accepted: {np.sum(accept_shp)}')
 
             accept = accept_hcp & accept_shp
 
@@ -611,10 +611,12 @@ class Sample:
 
     # shuffle the cards between the 2 hidden hands
     def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, public_hand_str,vuln, known_nesw, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
-        hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
+        if self.verbose:    
+            print(f"Called shuffle_cards_bidding_info {n_samples} - {rng.bit_generator.state['state']['state']}")
 
         # This is a constant and should probably be define globally
         card_hcp = [4, 3, 2, 1, 0, 0, 0, 0] * 4
+        cards_in_suit = models.n_cards_play // 4
 
         # If we are declarer (or dummy) and they did not bid, we will not use bidding info.
 
@@ -665,7 +667,7 @@ class Sample:
             for i, cards in enumerate(cards_played):
                 for c in cards:
                     p_hcp[i] -= card_hcp[c] * hcp_reduction_factor
-                    suit = c // 8
+                    suit = c // cards_in_suit
                     p_shp[i, suit] -= shp_reduction_factor
 
             if len(current_trick) in {1, 2, 3}:
@@ -673,7 +675,7 @@ class Sample:
                 for i, card_index in indices[:len(current_trick)]:
                     card = current_trick[card_index]
                     p_hcp[i] -= card_hcp[card] * hcp_reduction_factor
-                    p_shp[i, card // 8] -= shp_reduction_factor
+                    p_shp[i, card // cards_in_suit] -= shp_reduction_factor
                     #print("p_hcp: ", p_hcp, "p_shp: ", p_shp)
         
             r_hcp = np.zeros((n_samples, 2)) + p_hcp
@@ -695,7 +697,7 @@ class Sample:
         cards_shownout_suits = []
         for i, suits in enumerate(shown_out_suits):
             for suit in suits:
-                for card in filter(lambda x: x // 8 == suit, hidden_cards):
+                for card in filter(lambda x: x // cards_in_suit == suit, hidden_cards):
                     other_hand_i = (i + 1) % 2
                     h1_h2[:, other_hand_i, card] += 1
                     cards_received[:, other_hand_i] += 1
@@ -733,7 +735,7 @@ class Sample:
 
             js_r = js[s_all_r]
             cards = ak_out_i[s_all_r, js_r]
-            receivers = distr2_vec(r_shp[s_all_r, :, cards//8], r_hcp[s_all_r], rng)
+            receivers = distr2_vec(r_shp[s_all_r, :, cards//cards_in_suit], r_hcp[s_all_r], rng)
 
             can_receive_cards = cards_received[s_all_r, receivers] < n_max_cards[s_all_r, receivers]
 
@@ -743,7 +745,7 @@ class Sample:
             # Above we use hcp / 1.2, but here it is fixed to 3
             if use_bidding_info_stats:
                 r_hcp[s_all_r[can_receive_cards], receivers[can_receive_cards]] -= 3 * hcp_reduction_factor
-                r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= shp_reduction_factor
+                r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // cards_in_suit] -= shp_reduction_factor
             js[s_all_r[can_receive_cards]] += 1
 
         js = np.zeros(n_samples, dtype=int)
@@ -754,25 +756,22 @@ class Sample:
 
             js_r = js[s_all_r]
             cards = small_out_i[s_all_r, js_r]
-            receivers = distr_vec(r_shp[s_all_r, :, cards//8], rng)
+            receivers = distr_vec(r_shp[s_all_r, :, cards//cards_in_suit], rng)
 
             can_receive_cards = cards_received[s_all_r, receivers] < n_max_cards[s_all_r, receivers]
 
             cards_received[s_all_r[can_receive_cards], receivers[can_receive_cards]] += 1
             h1_h2[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
-            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // 8] -= shp_reduction_factor
+            r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // cards_in_suit] -= shp_reduction_factor
             js[s_all_r[can_receive_cards]] += 1
 
         assert np.sum(h1_h2) == n_samples * np.sum(n_cards_to_receive)
 
-        # Shuffle the samples generated
-        # indices = np.arange(n_samples)
-        #return h1_h2[indices]
         return h1_h2, use_bidding_info_stats
 
     def get_opening_lead_scores(self, auction, vuln, models, handsamples, opening_lead_card):
         assert(handsamples.shape[1] == models.n_cards_play)
-
+        cards_in_suit = models.n_cards_play // 4
         #handsamples = handsamples[:1,:]
         contract = bidding.get_contract(auction)
 
@@ -838,7 +837,7 @@ class Sample:
             quartile_probabilities = np.array(quartile_probabilities)
             if self.verbose:
                 print(quartile_probabilities)
-            return quartile_probabilities[:,opening_lead_card // 8]
+            return quartile_probabilities[:,opening_lead_card // cards_in_suit]
         
         if self.lead_accept_threshold_honors:
             # Reduce each row by splitting it into 4 parts and summing the last 3 elements in each part
@@ -853,7 +852,7 @@ class Sample:
 
             # Convert reduced data to a 2D numpy array for easier handling if needed
             reduced_data = np.array(reduced_data)
-            new_lead_index = (opening_lead_card // 8) * 6 + min(opening_lead_card % 8, 5)
+            new_lead_index = (opening_lead_card // cards_in_suit) * 6 + min(opening_lead_card % cards_in_suit, 5)
             return reduced_data[:, new_lead_index]
 
         return lead_softmax[:, opening_lead_card]
@@ -861,7 +860,7 @@ class Sample:
     def get_bid_scores(self, nesw_i, partner, auction, vuln, sample_hands, models):
         n_steps = binary.calculate_step_bidding(auction)
         if self.verbose:
-            print("sample hand", hand_to_str(sample_hands[0]))
+            print(f"{Fore.YELLOW}sample hand {hand_to_str(sample_hands[0])}{Fore.RESET}")
             print("n_step", n_steps)
             print("auction", auction)
             print("nesw_i", nesw_i)
@@ -898,10 +897,9 @@ class Sample:
         return min_scores
     
     def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
-        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.init_rollout_states_iterative(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand_str, public_hand_str,vuln, models, rng)
-
         if self.verbose:
             print(f"Called init_rollout_states {self.sample_hands_play} - Contract {bidding.get_contract(auction)} - Player {player_i}")
+        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.init_rollout_states_iterative(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand_str, public_hand_str,vuln, models, rng)
 
         return rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores
     
@@ -1114,7 +1112,6 @@ class Sample:
             # This could probably be set based on number of deals matching or sorted
             if valid_bidding_samples >= self.sample_hands_play: 
                 #if self.verbose:
-                print("Enough samples above threshold: ",valid_bidding_samples, self.bidding_threshold_sampling)
                 bidding_states = [state[sorted_min_bid_scores > self.bidding_threshold_sampling] for state in bidding_states]
                 lead_scores = lead_scores[sorted_min_bid_scores > self.bidding_threshold_sampling]
                 play_scores = play_scores[sorted_min_bid_scores > self.bidding_threshold_sampling]
@@ -1126,7 +1123,7 @@ class Sample:
                 # Normalize combined scores to sum to 1 (this forms probabilities for sampling)
                 probabilities = combined_scores / np.sum(combined_scores)
                 # Perform weighted random permutation
-                random_indices = np.random.choice(
+                random_indices = rng.choice(
                     np.arange(bidding_states[0].shape[0]),  # Indices to choose from
                     size=bidding_states[0].shape[0],        # Number of samples
                     replace=False,                    # No replacement (a permutation)
@@ -1187,6 +1184,7 @@ class Sample:
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models):
         n_steps = binary.calculate_step_bidding_info(auction)
+        cards_in_suit = models.n_cards_play // 4
 
         A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models, models.n_cards_bidding)
 
@@ -1224,11 +1222,11 @@ class Sample:
         for i in range(2):
             for j in range(4):
                 if np.round(c_shp[i, j] < 1.5):
-                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) <= np.round(c_shp[i, j]) + 2
+                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*cards_in_suit):((j+1)*cards_in_suit)], axis=1) <= np.round(c_shp[i, j]) + 2
                 if np.round(c_shp[i, j] >= 5):
-                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j]) - 1
+                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*cards_in_suit):((j+1)*cards_in_suit)], axis=1) >= np.round(c_shp[i, j]) - 1
                 if np.round(c_shp[i, j] >= 6):
-                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*8):((j+1)*8)], axis=1) >= np.round(c_shp[i, j])
+                    accept_shp &= np.sum(states[[hidden_1_i, hidden_2_i][i]][:, 0, (j*cards_in_suit):((j+1)*cards_in_suit)], axis=1) >= np.round(c_shp[i, j])
 
         accept = accept_hcp & accept_shp
 
