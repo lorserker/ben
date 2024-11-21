@@ -611,6 +611,7 @@ class Sample:
 
     # shuffle the cards between the 2 hidden hands
     def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, public_hand_str,vuln, known_nesw, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
+        hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         if self.verbose:    
             print(f"Called shuffle_cards_bidding_info {n_samples} - {rng.bit_generator.state['state']['state']}")
 
