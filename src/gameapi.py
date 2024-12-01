@@ -567,7 +567,7 @@ def bid():
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
         else:
             dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))  
-        mp = matchpoint      
+        mp = models.matchpoint      
         if request.args.get("tournament"):
             mp = request.args.get("tournament").lower() == "mp"
             models.matchpoint = mp
@@ -645,7 +645,7 @@ def lead():
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
         else:
             dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))   
-        mp = matchpoint     
+        mp = models.matchpoint     
         if request.args.get("tournament"):
             mp = request.args.get("tournament").lower() == "mp"
             models.matchpoint = mp
@@ -705,7 +705,7 @@ def play():
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
         else:
             dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
-        mp = matchpoint
+        mp = models.matchpoint
         if request.args.get("tournament"):
             mp = request.args.get("tournament").lower() == "mp"
             models.matchpoint = mp
@@ -912,7 +912,7 @@ def cuebid():
 
     if models.use_bba:
         from bba.BBA import BBABotBid
-        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, matchpoint, verbose)
+        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
     else:
         hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
     with model_lock_bid:
@@ -945,7 +945,7 @@ def explain():
     vuln = []
     vuln.append('@v' in v)
     vuln.append('@V' in v)
-    mp = matchpoint
+    mp = models.matchpoint
     if request.args.get("tournament"):
         mp = request.args.get("tournament").lower() == "mp"
         models.matchpoint = mp
