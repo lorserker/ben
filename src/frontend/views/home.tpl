@@ -48,13 +48,12 @@
             <option value="0">BEN 2/1</option>
             <option value="1">BEN SAYC</option>
             <option value="2">SAYC-WBridge5</option>
-            <option value="3">Jackos (muppet)</option>
+            <option value="3">Default (21GF)</option>
             <option value="4">BBA 2/1 (GIB)</option>
-            <option value="5">Default.conf</option>
+            <option value="5">Jackos (muppet)</option>
             <option value="6">Jack SAYC</option>
             <option value="7">GIB - TF2</option>
             <option value="8">Jackos - TF2</option>
-            <option value="9">Jackos</option>
         </select><br>
         </div>
     </div>

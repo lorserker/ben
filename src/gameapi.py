@@ -338,7 +338,6 @@ def str_to_bool(value):
     raise ValueError("Invalid boolean value")
 
 
-
 def create_auction(bids, dealer_i):
     auction = [bid.replace('--', "PASS").replace('Db', 'X').replace('Rd', 'XX') for bid in bids]
     auction = ['PAD_START'] * dealer_i + auction
@@ -455,21 +454,6 @@ log_file_path = os.path.join(config_path, 'logs')
 if not os.path.exists(log_file_path):
     os.makedirs(log_file_path)
     print(f"Directory '{log_file_path}' created.")
-
-print("Config:", configfile)
-print("System:", models.name)
-if models.use_bba:
-    print("Using BBA for bidding")
-else:
-    print("Model:   ", models.bidder_model.model_path)
-    print("Opponent:", models.opponent_model.model_path)
-if models.matchpoint:
-    print("Matchpoint mode on")
-    matchpoint = True
-else:
-    matchpoint = False
-    print("Playing IMPS mode")
-
 
 print(f"Setting seed = {seed}")
 np.random.seed(seed)

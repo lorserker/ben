@@ -20,14 +20,12 @@ start "SAYC UCBC" python gameserver.py --config "..\UCBC 2024\Conf\UCBC2024src.c
 timeout /t 10 /nobreak >nul
 start "Default" python gameserver.py --config config\default.conf --port 4443
 timeout /t 10 /nobreak >nul
-start "BBA" python gameserver.py --config config\BBA-2over1.conf --port 4444
+start "BBA" python gameserver.py --config config\BBA-21GF.conf --port 4444
 timeout /t 10 /nobreak >nul
-start "Default" python gameserver.py --config config\default.conf --port 4445
+start "muppet" python gameserver.py --config config\muppet.conf --port 4445
 timeout /t 10 /nobreak >nul
 start "Jack Sayc" python gameserver.py --config config\jacksayc.conf --port 4446
 timeout /t 10 /nobreak >nul
 start "TF2 GIB" python gameserver.py --config config\GIB-BBO.conf --port 4447
 timeout /t 10 /nobreak >nul
 start "TF2 Jackos" python gameserver.py --config config\muppet_TF2.conf --port 4448
-timeout /t 10 /nobreak >nul
-start "Jackos" python gameserver.py --config config\muppet.conf --port 4449
