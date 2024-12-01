@@ -45,8 +45,8 @@
     <div class="content">
         <label for="board">Server:</label>
         <select id="server" name="server">
-            <option value="0">2/1 GIB</option>
-            <option value="1">SAYC</option>
+            <option value="0">BEN 2/1</option>
+            <option value="1">BEN SAYC</option>
             <option value="2">SAYC-WBridge5</option>
             <option value="3">Jackos (muppet)</option>
             <option value="4">BBA 2/1 (GIB)</option>
@@ -54,6 +54,7 @@
             <option value="6">Jack SAYC</option>
             <option value="7">GIB - TF2</option>
             <option value="8">Jackos - TF2</option>
+            <option value="9">Jackos</option>
         </select><br>
         </div>
     </div>

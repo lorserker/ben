@@ -61,7 +61,9 @@ def handle_exception(e):
         if line.startswith("  File"):
             file_traceback.append(line.strip()) 
     if file_traceback:
-        sys.stderr.write(f"{Fore.RED}{'\n'.join(file_traceback)}\n{Fore.RESET}")
+        sys.stderr.write(f"{Fore.RED}")
+        sys.stderr.write('\n'.join(file_traceback)+'\n')
+        sys.stderr.write(f"{Fore.RESET}")
 
 class TMClient:
 
