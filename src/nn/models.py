@@ -225,8 +225,8 @@ class Models:
         use_real_imp_or_mp_bidding = conf.getboolean('eval', 'use_real_imp_or_mp_bidding', fallback=False)
         use_real_imp_or_mp_opening_lead = conf.getboolean('lead', 'use_real_imp_or_mp_opening_lead', fallback=False)
         suppress_warnings = conf.getboolean('models', 'suppress_warnings', fallback=True)
-        bba_ns = conf.getint('models', 'bba_ns', fallback=-1)
-        bba_ew = conf.getint('models', 'bba_ew', fallback=-1)
+        bba_ns = os.path.join(base_path,conf.get('models', 'bba_ns', fallback='ns'))
+        bba_ew = os.path.join(base_path,conf.get('models', 'bba_ew', fallback='ew'))
         if verbose:
             print(f"loaded bba_ns and bba_ew as {bba_ns} and {bba_ew}")
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']

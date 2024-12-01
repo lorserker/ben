@@ -1,6 +1,11 @@
 import sys
 import datetime
 import os
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+# Set logging level to suppress warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'
+os.environ['TF_NUMA_ENABLED'] = '0'
 import numpy as np
 import logging
 import tensorflow as tf
@@ -10,11 +15,6 @@ from tensorflow.keras.models import load_model
 import time
 import psutil
 import GPUtil
-#tf.compat.v1.disable_eager_execution()
-
-# Set logging level to suppress warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ['TF_NUMA_ENABLED'] = '0'
 
 # Redirect standard output and error
 logging.getLogger('tensorflow').disabled = True
@@ -26,6 +26,10 @@ print("os.cpu_count()", os.cpu_count())
 # TensorFlow thread settings
 tf.config.threading.set_intra_op_parallelism_threads(32)
 tf.config.threading.set_inter_op_parallelism_threads(32)
+
+#from tensorflow.keras import mixed_precision
+#policy = mixed_precision.Policy('mixed_float16')
+#mixed_precision.set_global_policy(policy)
 
 # Set TensorFlow to only allocate as much GPU memory as needed
 physical_devices = tf.config.list_physical_devices('GPU')
@@ -58,25 +62,25 @@ if len(sys.argv) > 2:
     system = sys.argv[2]
 
 # Load training data
-X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
-y_train = np.load(os.path.join(bin_dir, 'y.npy'), mmap_mode='r')
-z_train = np.load(os.path.join(bin_dir, 'z.npy'), mmap_mode='r')
+#X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
+#y_train = np.load(os.path.join(bin_dir, 'y.npy'), mmap_mode='r')
+X_train = np.load(os.path.join(bin_dir, 'x.npy'))
+y_train = np.load(os.path.join(bin_dir, 'y.npy'))
 
 n_examples = X_train.shape[0]
 n_sequence = X_train.shape[1]
 n_ftrs = X_train.shape[2]
 n_bids = y_train.shape[2]
-n_alerts = z_train.shape[2]
 
 n_cards = 24
 
-batch_size = 128  
-buffer_size = 12800
+batch_size = 512  
+buffer_size = 100000
 epochs = 100
-learning_rate = 0.0005
+learning_rate = 0.001
 keep = 0.8
 steps_per_epoch = n_examples // batch_size
-# If no improvement in validation loss after 3 epochs, stop training
+# If no improvement in validation loss after 10 epochs, stop training
 patience = 10
 
 model_name = f'{system}_{datetime.datetime.now().strftime("%Y-%m-%d")}'
@@ -92,11 +96,9 @@ print("Size input hand:         ", n_ftrs)
 print("Number of Cards:         ", n_cards)
 print("Number of Sequences:     ", n_sequence)
 print("Size output bid:         ", n_bids)
-print("Size output alert:       ", n_alerts)
 print("-------------------------")
 print("dtype X_train:           ", X_train.dtype)
 print("dtype y_train:           ", y_train.dtype)
-print("dtype z_train:           ", z_train.dtype)
 print("-------------------------")
 print("Batch size:              ", batch_size)
 print("buffer_size:             ", buffer_size)
@@ -114,7 +116,7 @@ np.random.seed(seed_value)
 tf.random.set_seed(seed_value)
 
 # Build the model
-def build_model(input_shape, lstm_size, n_layers, n_bids, n_alerts):
+def build_model(input_shape, lstm_size, n_layers, n_bids):
     inputs = tf.keras.Input(shape=input_shape, dtype=tf.float16)
     x = inputs
 
@@ -124,39 +126,42 @@ def build_model(input_shape, lstm_size, n_layers, n_bids, n_alerts):
         x = layers.BatchNormalization()(x)
 
     bid_outputs = layers.TimeDistributed(layers.Dense(n_bids, activation='softmax'), name='bid_output')(x)
-    alert_outputs = layers.TimeDistributed(layers.Dense(n_alerts, activation='sigmoid'), name='alert_output')(x)
 
-    model = models.Model(inputs=inputs, outputs=[bid_outputs, alert_outputs])
+    model = models.Model(inputs=inputs, outputs=bid_outputs)
 
     # Custom loss function integrated into the model compilation
-    model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate),
-                loss={'bid_output': 'categorical_crossentropy',
-                        'alert_output': 'binary_crossentropy'},
-                metrics={'bid_output': 'accuracy',
-                        'alert_output': 'accuracy'})     
+    model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate_schedule),
+                loss={'bid_output': 'categorical_crossentropy'},
+                metrics={'bid_output': 'accuracy'})     
     print(model.summary())
 
     return model
 
+# Learning rate scheduler
+from tensorflow.keras.optimizers.schedules import ExponentialDecay
+learning_rate_schedule = ExponentialDecay(
+    initial_learning_rate=learning_rate,
+    decay_steps=1000,
+    decay_rate=0.96,
+    staircase=True
+)
+
 # Create datasets
-@tf.function
+
 def create_dataset():
     print("Reading input")
-    def data_generator(X, y, z):
-        for xi, yi, zi in zip(X, y, z):
-            yield xi, (yi, zi)
+    def data_generator(X, y):
+        for xi, yi in zip(X, y):
+            yield xi, yi
 
     output_signature = (
         tf.TensorSpec(shape=X_train.shape[1:], dtype=X_train.dtype),
-        (
-            tf.TensorSpec(shape=y_train.shape[1:], dtype=y_train.dtype),
-            tf.TensorSpec(shape=z_train.shape[1:], dtype=z_train.dtype)
-        )
+        tf.TensorSpec(shape=y_train.shape[1:], dtype=y_train.dtype),
     )
 
-    print("Shuffling input")
+    print("Shuffling input", output_signature)
     train_dataset = tf.data.Dataset.from_generator(
-        lambda: data_generator(X_train, y_train, z_train),
+        lambda: data_generator(X_train, y_train),
         output_signature=output_signature
     )
 
@@ -166,7 +171,7 @@ def create_dataset():
 
 
 print("Building model")
-model  = build_model((None, n_ftrs), lstm_size, n_layers, n_bids, n_alerts)
+model  = build_model((None, n_ftrs), lstm_size, n_layers, n_bids)
 
 # Define the path to save model weights
 checkpoint_dir = "model"
@@ -233,7 +238,7 @@ custom_checkpoint_callback = CustomModelCheckpoint(
     initial_epoch=initial_epoch
 )
 
-early_stopping_callback = callbacks.EarlyStopping(monitor='loss', patience=patience, verbose=1)
+early_stopping_callback = callbacks.EarlyStopping(monitor='loss', patience=patience, verbose=1, restore_best_weights=True)
 
 print("Training started")
 t_start = time.time()
@@ -244,18 +249,3 @@ train_dataset = create_dataset()
 model.fit(train_dataset, epochs=epochs, steps_per_epoch=steps_per_epoch,
           callbacks=[custom_checkpoint_callback, early_stopping_callback, monitor])
 
-# Save the final model with the last epoch number
-final_epoch = initial_epoch + epochs -1
-final_model_path = os.path.join(checkpoint_dir, f"{model_name}-E{(final_epoch ):02d}-inference.keras")
-
-# Define a tf.function-decorated prediction function for optimized inference
-@tf.function
-def optimized_predict(input_data):
-    return model(input_data, training=False)
-
-# Attach the `optimized_predict` function to the model for inference optimization
-model.call = optimized_predict
-
-# Save the model with the optimized predict function
-model.save(final_model_path, include_optimizer=False, save_format="tf")
-print("Saved model:", final_model_path)

@@ -4,7 +4,11 @@ sys.path.append("..")
 from colorama import Fore, Back, Style, init
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
-BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+if BEN_HOME == '.':
+    BIN_FOLDER = os.getcwd().replace(os.path.sep + "src","")+ os.path.sep + 'bin'
+else:
+    BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+
 if sys.platform == 'win32':
     SuitCLib = 'SuitCLib.dll'
 elif sys.platform == 'darwin':
@@ -21,6 +25,8 @@ from ctypes import c_wchar_p, c_int, POINTER, create_unicode_buffer, byref, cast
 class SuitCLib:
     def __init__(self, verbose):
         try:
+            if verbose:
+                print(f"loading {SuitCLib_PATH}")
             self.suitc = ctypes.CDLL(SuitCLib_PATH)
             # Define the argument and return types of the C++ function
             self.suitc.call_suitc.argtypes = [POINTER(c_wchar_p), c_int,
@@ -39,11 +45,16 @@ class SuitCLib:
             sys.exit(1)
         self.verbose = verbose
     
-    def calculate(self, input_str):
+    def calculate(self, input, east_vacant=None, west_vacant=None ):
         # -F5 is combines the effect of -F1 and -F4, -F7 combines all 3 options.
         # -ls2 limits the entries to 2 should be calculated
         # -ls is most important when the hand to lead has length
-        input_str = "-Ls -ls1 -c100 " + input_str
+        input_str = "-Ls -ls1 -c100 "
+        if east_vacant:
+
+            input_str +=f'-wv{west_vacant} '
+            input_str +=f'-ev{east_vacant} '
+        input_str += input
         input_length = len(input_str)
         if self.verbose:
             print("SuitC Input: " + input_str)

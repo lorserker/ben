@@ -25,7 +25,7 @@ def get_info_for_opening(hand, bid, models):
     vuln = [True, False]
     hand = binary.parse_hand_f(models.n_cards_bidding)(hand)
     A = binary.get_auction_binary(n_steps, auction, nesw_i, hand, vuln, models)
-    p_hcp, p_shp = models.binfo_model.model(A)
+    p_hcp, p_shp = models.binfo_model.pred_fun(A)
 
     if tf.is_tensor(p_hcp):
         p_hcp = p_hcp.numpy()

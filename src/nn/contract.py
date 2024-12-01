@@ -23,44 +23,43 @@ class Contract:
         graph = self.sess.graph
 
         # Get placeholder variables
-        X = graph.get_tensor_by_name('X:0')
-        labels_bool1 = graph.get_tensor_by_name('labels_bool1:0')
-        labels_tricks = graph.get_tensor_by_name('labels_tricks:0')
-        labels_oh = graph.get_tensor_by_name('labels_contract:0')
+        self.X = graph.get_tensor_by_name('X:0')
+        self.labels_bool1 = graph.get_tensor_by_name('labels_bool1:0')
+        self.labels_tricks = graph.get_tensor_by_name('labels_tricks:0')
+        self.labels_oh = graph.get_tensor_by_name('labels_contract:0')
 
         # Get output logits
-        bool1_logits = graph.get_tensor_by_name('bool1_logits:0')
-        tricks_logits = graph.get_tensor_by_name('tricks_logits:0')
-        contract_logits = graph.get_tensor_by_name('oh_logits:0')
+        self.bool1_logits = graph.get_tensor_by_name('bool1_logits:0')
+        self.tricks_logits = graph.get_tensor_by_name('tricks_logits:0')
+        self.contract_logits = graph.get_tensor_by_name('oh_logits:0')
 
-        def pred_fun(x):
-            feed_dict = {X: x, labels_bool1: np.zeros((x.shape[0], 1)), 
-                         labels_tricks: np.zeros((x.shape[0], 14)), labels_oh: np.zeros((x.shape[0], 40))}
-            bool1, tricks, contract = self.sess.run([bool1_logits, tricks_logits, contract_logits], feed_dict=feed_dict)
+    def pred_fun(self,x):
+        feed_dict = {self.X: x, self.labels_bool1: np.zeros((x.shape[0], 1)), 
+                        self.labels_tricks: np.zeros((x.shape[0], 14)), self.labels_oh: np.zeros((x.shape[0], 40))}
+        bool1, tricks, contract = self.sess.run([self.bool1_logits, self.tricks_logits, self.contract_logits], feed_dict=feed_dict)
 
- # Apply softmax to get probabilities for contract logits in the same session
-            contract_probs = self.sess.run(tf.nn.softmax(contract_logits), feed_dict=feed_dict)
+# Apply softmax to get probabilities for contract logits in the same session
+        contract_probs = self.sess.run(tf.nn.softmax(self.contract_logits), feed_dict=feed_dict)
+
+        doubled = bool1[0] > 0
+        tricks = int(np.argmax(tricks, axis=1)[0])
+        contract_id = np.argmax(contract, axis=1)[0]
+        score = contract_probs[0][contract_id]
+        return contract_id, doubled[0], tricks, score
+
+    def get_top_k_tricks(self, x, k=3):
+        feed_dict = {self.X: x, self.labels_bool1: np.zeros((x.shape[0], 1)),
+                    self.labels_tricks: np.zeros((x.shape[0], 14)), self.labels_oh: np.zeros((x.shape[0], 40))}
+        probs, indices = self.sess.run([tf.nn.softmax(self.tricks_logits), tf.argsort(self.tricks_logits, axis=1, direction="DESCENDING")], feed_dict=feed_dict)
+        top_k_indices = indices[:, :k]
+        top_k_probs = probs[np.arange(probs.shape[0])[:, np.newaxis], top_k_indices]
+        return top_k_indices, top_k_probs
     
-            doubled = bool1[0] > 0
-            tricks = int(np.argmax(tricks, axis=1)[0])
-            contract_id = np.argmax(contract, axis=1)[0]
-            score = contract_probs[0][contract_id]
-            return contract_id, doubled[0], tricks, score
-
-        def get_top_k_tricks(x, k=3):
-            feed_dict = {X: x, labels_bool1: np.zeros((x.shape[0], 1)),
-                        labels_tricks: np.zeros((x.shape[0], 14)), labels_oh: np.zeros((x.shape[0], 40))}
-            probs, indices = self.sess.run([tf.nn.softmax(tricks_logits), tf.argsort(tricks_logits, axis=1, direction="DESCENDING")], feed_dict=feed_dict)
-            top_k_indices = indices[:, :k]
-            top_k_probs = probs[np.arange(probs.shape[0])[:, np.newaxis], top_k_indices]
-            return top_k_indices, top_k_probs
+    def get_top_k_oh(self, x, k=3):
+        feed_dict = {self.X: x, self.labels_bool1: np.zeros((x.shape[0], 1)),
+                    self.labels_tricks: np.zeros((x.shape[0], 14)), self.labels_oh: np.zeros((x.shape[0], 40))}
+        probs, indices = self.sess.run([tf.nn.softmax(self.contract_logits), tf.argsort(self.contract_logits, axis=1, direction='DESCENDING')], feed_dict=feed_dict)
+        top_k_indices = indices[:, :k]
+        top_k_probs = probs[np.arange(probs.shape[0])[:, np.newaxis], top_k_indices]
+        return top_k_indices, top_k_probs         
         
-        def get_top_k_oh( x, k=3):
-            feed_dict = {X: x, labels_bool1: np.zeros((x.shape[0], 1)),
-                        labels_tricks: np.zeros((x.shape[0], 14)), labels_oh: np.zeros((x.shape[0], 40))}
-            probs, indices = self.sess.run([tf.nn.softmax(contract_logits), tf.argsort(contract_logits, axis=1, direction='DESCENDING')], feed_dict=feed_dict)
-            top_k_indices = indices[:, :k]
-            top_k_probs = probs[np.arange(probs.shape[0])[:, np.newaxis], top_k_indices]
-            return top_k_indices, top_k_probs         
-        
-        return pred_fun, get_top_k_tricks, get_top_k_oh

@@ -111,3 +111,10 @@ scripts/training/bidding/Old versions/
 src/logs/
 scripts/training/data/hands_data.pkl
 src/test.py
+BBA/Boards
+install/dist
+install/BEN
+install/BEN*.zip
+install/MvsM
+install/BBA/
+install/*.zip

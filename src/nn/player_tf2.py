@@ -14,18 +14,11 @@ class BatchPlayer:
         model = load_model(self.model_path)
         return model
 
-    def init_model(self):
-        @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, 298], dtype=tf.float16)])
-        def pred_fun(x):
-            try:
-                input_tensor = tf.cast(x, dtype=tf.float16)
-            except:
-                input_tensor = tf.cast(x, dtype=tf.float32)
-            #card_logit = model.predict(input_tensor,verbose=0)
-            card_logit = self.model(input_tensor, training=False)
-            return card_logit
-
-        return pred_fun
+    @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, 298], dtype=tf.float16)])
+    def pred_fun(self, x):
+        input_tensor = tf.cast(x, dtype=tf.float16)
+        card_logit = self.model(input_tensor, training=False)
+        return card_logit
 
     def next_cards_softmax(self, x):
         result = self.model(x)[:,-1,:]

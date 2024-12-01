@@ -1,18 +1,37 @@
 from gevent import monkey
 monkey.patch_all()
-import sys
 import os
-os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
+import sys
 import platform
-import traceback
-from gevent.pywsgi import WSGIServer
-import datetime 
-import time
-
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
+# Just disables the warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+import logging
+import traceback
+import util
+# Intil fixed in Keras, this is needed to remove a wrong warning
+import warnings
+warnings.filterwarnings("ignore")
+
+# Set logging level to suppress warnings
+logging.getLogger().setLevel(logging.ERROR)
+
+# Configure absl logging to suppress logs
+import absl.logging
+# Suppress Abseil logs
+absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
+absl.logging.set_verbosity(absl.logging.FATAL)
+absl.logging.set_stderrthreshold(absl.logging.FATAL)
+
+import tensorflow as tf
+
+
+from gevent.pywsgi import WSGIServer
+import datetime 
+import time
 
 from bots import BotBid, BotLead, CardPlayer
 from bidding import bidding
@@ -33,18 +52,9 @@ import warnings
 warnings.filterwarnings("ignore")
 
 # Set logging level to suppress warnings
-logging.getLogger().setLevel(logging.ERROR)
+logging.getLogger().setLevel(logging.CRITICAL)
 # Just disables the warnings
 import tensorflow as tf
-# Configure absl logging to suppress logs
-import absl.logging
-# Suppress Abseil logs
-absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
-absl.logging.set_verbosity(absl.logging.FATAL)
-absl.logging.set_stderrthreshold(absl.logging.FATAL)
-# This import is only to help PyInstaller when generating the executables
-import tensorflow as tf
-tf.get_logger().setLevel('FATAL')
 
 import pprint
 import argparse
@@ -57,6 +67,16 @@ dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
 init()
+def handle_exception(e):
+    sys.stderr.write(f"{str(e)}\n")
+    traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+    traceback_lines = "".join(traceback_str).splitlines()
+    file_traceback = []
+    for line in reversed(traceback_lines):
+        if line.startswith("  File"):
+            file_traceback.append(line.strip()) 
+    if file_traceback:
+        sys.stderr.write(f"{Fore.RED}{'\n'.join(file_traceback)}\n{Fore.RESET}")
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -307,6 +327,15 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
         current_trick = []
         current_trick52 = []
 
+# Custom function to convert string to boolean
+def str_to_bool(value):
+    if value.lower() in ['true', '1', 't', 'y', 'yes']:
+        return True
+    elif value.lower() in ['false', '0', 'f', 'n', 'no']:
+        return False
+    raise ValueError("Invalid boolean value")
+
+
 
 def create_auction(bids, dealer_i):
     auction = [bid.replace('--', "PASS").replace('Db', 'X').replace('Rd', 'XX') for bid in bids]
@@ -325,9 +354,9 @@ config_path = get_execution_path()
 parser = argparse.ArgumentParser(description="Game API")
 parser.add_argument("--host", default="localhost", help="Hostname for appserver")
 parser.add_argument("--config", default=f"{config_path}/config/default_api.conf", help="Filename for configuration")
-parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
+parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=8085, help="Port for appserver")
-parser.add_argument("--record", type=bool, default=True, help="Recording of responses")
+parser.add_argument("--record", type=str_to_bool, default=True, help="Recording of responses")
 parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 
 args = parser.parse_args()
@@ -338,16 +367,25 @@ port = args.port
 record = args.record
 seed = args.seed
 
-np.set_printoptions(precision=2, suppress=True, linewidth=240)
+np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()}{Fore.RESET}')  
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py")
+if util.is_pyinstaller_executable():
+    print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
+else:
+    print(f"Running in a standard Python environment: {platform.python_version()}")
+
+print(f"Python version: {sys.version}{Fore.RESET}")
+
+print(f'Loading configuration.')  
 
 configuration = conf.load(configfile)
+    
+if sys.platform == 'win32':
+    # Print the PythonNet version
+    sys.stderr.write(f"PythonNet: {util.get_pythonnet_version()}\n") 
+    sys.stderr.write(f"{util.check_dotnet_version()}\n") 
 
-# Print the PythonNet version
-import clr
-import Python.Runtime
-sys.stderr.write(f"pythonnet {Python.Runtime.PythonEngine.Version}\n") 
 sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
 try:
     if (configuration["models"]['tf_version'] == "2"):
@@ -359,7 +397,7 @@ except KeyError:
         # Default to version 1. of Tensorflow
         from nn.models import Models
 
-models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""), verbose)
+models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 if verbose:
     print("Loading sampler")
 sampler = Sample.from_conf(configuration, verbose)
@@ -367,7 +405,7 @@ sampler = Sample.from_conf(configuration, verbose)
 # Improve performance until it is supported
 models.claim = False
 
-import platform
+
 if sys.platform != 'win32':
     print("Disabling PIMC/BBA/SuitC as platform is not win32")
     models.pimc_use_declaring = False
@@ -375,9 +413,42 @@ if sys.platform != 'win32':
     models.use_bba = False
     models.use_bba_to_count_aces = False
     models.use_suitc = False
- 
+    
+print("Config:", configfile)
+print("System:", models.name)
+
+if models.use_bba:
+    print("Using BBA for bidding")
+else:
+    print("Model:   ", models.bidder_model.model_path)
+    print("Opponent:", models.opponent_model.model_path)
+
+if models.matchpoint:
+    print("Matchpoint mode on")
+else:
+    print("Playing IMPS mode")
+
+if models.use_bba or models.use_bba_to_count_aces:
+    print("BBA enabled")    
+    from bba.BBA import BBABotBid
+    bot = BBABotBid(None, None ,None, None, None, None, None, None)
+
+if models.use_suitc:
+    print("SuitC enabled")
+    from suitc.SuitC import SuitCLib
+    suitc = SuitCLib(verbose)
+
+if models.pimc_use_declaring or models.pimc_use_defending:
+    print("PIMC enabled")
+    from pimc.PIMC import BGADLL
+    pimc = BGADLL(None, None, None, None, None, None, None)
+    from pimc.PIMCDef import BGADefDLL
+    pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
+
 from ddsolver import ddsolver
-dds = ddsolver.DDSolver() 
+print("DDSolver enabled")
+dds = ddsolver.DDSolver()
+
 log_file_path = os.path.join(config_path, 'logs')
 if not os.path.exists(log_file_path):
     os.makedirs(log_file_path)
@@ -398,7 +469,7 @@ else:
     print("Playing IMPS mode")
 
 
-print(f"Setting seed={seed}")
+print(f"Setting seed = {seed}")
 np.random.seed(seed)
 tf.random.set_seed(seed)
 
@@ -575,16 +646,7 @@ def bid():
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
-        print(e)
-        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
-        traceback_lines = "".join(traceback_str).splitlines()
-        file_traceback = None
-        for line in reversed(traceback_lines):
-            if line.startswith("  File"):
-                file_traceback = line
-                break
-        if file_traceback:
-            print(file_traceback)  # This will print the last section starting with "File"
+        handle_exception(e)
         error_message = "An error occurred: {}".format(str(e))
         return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error    
     
@@ -643,16 +705,7 @@ def lead():
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
-        print(e)
-        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
-        traceback_lines = "".join(traceback_str).splitlines()
-        file_traceback = None
-        for line in reversed(traceback_lines):
-            if line.startswith("  File"):
-                file_traceback = line
-                break
-        if file_traceback:
-            print(file_traceback)  # This will print the last section starting with "File"
+        handle_exception(e)
         error_message = "An error occurred: {}".format(str(e))
         return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
@@ -797,27 +850,19 @@ def play():
         return json.dumps(result)
     except Exception as e:
         print(e)
-        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
-        traceback_lines = "".join(traceback_str).splitlines()
-        file_traceback = None
-        for line in reversed(traceback_lines):
-            if line.startswith("  File"):
-                file_traceback = line
-                break
-        if file_traceback:
-            print(file_traceback)  # This will print the last section starting with "File"
+        handle_exception(e)
         error_message = "An error occurred: {}".format(str(e))
         return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
-def get_binary_contract(position, vuln, hand_str, dummy_str):
-    X = np.zeros(2 + 2 * 32, dtype=np.float16)
+def get_binary_contract(position, vuln, hand_str, dummy_str, n_cards=32):
+    X = np.zeros(2 + 2 * n_cards, dtype=np.float16)
 
     v_we = vuln[0] if position % 2 == 0 else vuln[1]
     v_them = vuln[1] if position % 2 == 0 else vuln[0]
     vuln = np.array([[v_we, v_them]], dtype=np.float16)
     
-    hand = binary.parse_hand_f(32)(hand_str).reshape(32)
-    dummy = binary.parse_hand_f(32)(dummy_str).reshape(32)
+    hand = binary.parse_hand_f(n_cards)(hand_str).reshape(n_cards)
+    dummy = binary.parse_hand_f(n_cards)(dummy_str).reshape(n_cards)
     ftrs = np.concatenate((
         vuln,
         [hand],
@@ -940,38 +985,56 @@ def explain():
 
 @app.route('/contract')
 def contract():
-    t_start = time.time()
-    # First we extract the hands and seat
-    hand_str = request.args.get("hand").replace('_','.')
-    if 'X' in hand_str:
-        hand_str = replace_x(hand_str,get_random_generator(hand_str), models.n_cards_bidding)
-    dummy_str = request.args.get("dummy").replace('_','.')
-    if 'X' in dummy_str:
-        dummy_str = replace_x(dummy_str,get_random_generator(dummy_str), models.n_cards_bidding)
-    seat = request.args.get("seat")
-    # Then vulnerability
-    v = request.args.get("vul")
-    vuln = []
-    vuln.append('@v' in v)
-    vuln.append('@V' in v)
-    # And finally we deduct our position
-    position_i = dealer_enum[seat]
-    X = get_binary_contract(position_i, vuln, hand_str, dummy_str)
-    with model_lock_bid:
-        contract_id, doubled, tricks = models.contract_model.model[0](X)
-        contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
-        result = {"contract": contract,
-                "tricks": tricks}
-        print(result)
-        # New call to get top 3 tricks
-        top_k_indices_tricks, top_k_probs_tricks = models.contract_model.model[1](X)
-        print(top_k_indices_tricks, top_k_probs_tricks)
+    try:
+        t_start = time.time()
+        # First we extract the hands and seat
+        hand_str = request.args.get("hand").replace('_','.')
+        if 'X' in hand_str:
+            hand_str = replace_x(hand_str,get_random_generator(hand_str), models.n_cards_bidding)
+        dummy_str = request.args.get("dummy").replace('_','.')
+        if 'X' in dummy_str:
+            dummy_str = replace_x(dummy_str,get_random_generator(dummy_str), models.n_cards_bidding)
+        seat = request.args.get("seat")
+        # Then vulnerability
+        v = request.args.get("vul")
+        vuln = []
+        vuln.append('@v' in v)
+        vuln.append('@V' in v)
+        # And finally we deduct our position
+        position_i = dealer_enum[seat]
+        X = get_binary_contract(position_i, vuln, hand_str, dummy_str, models.n_cards_bidding)
+        with model_lock_bid:
+            if verbose:
+                print(position_i, vuln, hand_str, dummy_str)
+            contract_id, doubled, tricks, score = models.contract_model.pred_fun(X)
+            if tf.is_tensor(contract_id):
+                contract_id = contract_id.numpy()
+                doubled = doubled.numpy()
+                tricks = tricks.numpy()
+                score = score.numpy()
+            contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
+            result = {"contract": contract,
+                    "tricks": str(tricks),
+                    "score": str(round(score, 3)), # score
+                    }
+            # New call to get top 3 tricks
+            top_k_indices_tricks, top_k_probs_tricks = models.contract_model.get_top_k_tricks(X)
+            if verbose:
+                print(top_k_indices_tricks, top_k_probs_tricks)
 
-        # New call to get top 3 contracts
-        top_k_indices_oh, top_k_probs_oh = models.contract_model.model[2](X, k=3)
-        print(top_k_indices_oh, top_k_probs_oh)
-        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
-    return json.dumps(result)    
+            # New call to get top 3 contracts
+            top_k_indices_oh, top_k_probs_oh = models.contract_model.get_top_k_oh(X, k=3)
+            if verbose:
+                print(top_k_indices_oh, top_k_probs_oh)
+                print(result)
+            print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+
+        return json.dumps(result)    
+    except Exception as e:
+        print(e)
+        handle_exception(e)
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
 
 if __name__ == "__main__":

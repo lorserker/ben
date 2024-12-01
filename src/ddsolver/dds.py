@@ -29,7 +29,10 @@ linux x8      : linux  / x86_64
 """
 # If running some of the analysis you have to set BEN_HOMe to the src directory, or use '../../..'
 BEN_HOME = os.getenv('BEN_HOME') or '..'
-BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+if BEN_HOME == '.':
+    BIN_FOLDER = os.getcwd().replace(os.path.sep + "src","")+ os.path.sep + 'bin'
+else:
+    BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':
     DDS_LIB = 'dds.dll'
 elif sys.platform == 'darwin':
@@ -42,8 +45,9 @@ try:
     #print("Loading DDS:",DDS_PATH)
     dds = cdll.LoadLibrary(DDS_PATH)
 except:  # could be mac/linux on aarch64
-    DDS_PATH = 'libdds.so' # use system lib from libdds-dev
-    dds = cdll.LoadLibrary(DDS_PATH)
+    if not sys.platform == 'win32':
+        DDS_PATH = 'libdds.so' # use system lib from libdds-dev
+        dds = cdll.LoadLibrary(DDS_PATH)
 
 sys.stderr.write(f"Loaded lib { os.path.basename(DDS_PATH)}\n")
 

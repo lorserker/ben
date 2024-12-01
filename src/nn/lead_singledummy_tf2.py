@@ -9,9 +9,9 @@ class LeadSingleDummy:
 
     def load_model(self):
         model = keras.models.load_model(self.model_path)
+        return model
 
-        def pred_fun(x):
-            result = model.predict(x,verbose=0)
-            return result
+    def pred_fun(self, x):
+        result = self.model.predict(x,verbose=0)
+        return result
 
-        return pred_fun

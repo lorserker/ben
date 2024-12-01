@@ -1,5 +1,5 @@
 import traceback
-import clr
+import util
 import sys
 import os
 import math
@@ -9,12 +9,14 @@ from binary import get_hcp, calculate_median
 import scoring
 import calculate
 from bidding import bidding
+sys.path.append("..")
 from colorama import Fore, Back, Style, init
 
-sys.path.append("..")
-
 BEN_HOME = os.getenv('BEN_HOME') or '..'
-BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+if BEN_HOME == '.':
+    BIN_FOLDER = 'bin'
+else:
+    BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':
     BGADLL_LIB = 'BGADLL'
 elif sys.platform == 'darwin':
@@ -30,11 +32,7 @@ class BGADLL:
     def __init__(self, models, northhand, southhand, contract, is_decl_vuln, sampler, verbose):
         try:
             # Load the .NET assembly and import the types and classes from the assembly
-            try:
-                clr.AddReference(BGADLL_PATH)
-            except Exception as ex:
-                # Try loading with .dll extension
-                clr.AddReference(BGADLL_PATH+'.dll')
+            util.load_dotnet_assembly(BGADLL_PATH)
 
             from BGADLL import PIMC, Hand, Play, Constraints, Extensions, Card as PIMCCard
 
@@ -47,7 +45,8 @@ class BGADLL:
             print("Make sure the dll is not write protected")
             print(f"*****************************************************************************{Fore.RESET}")
             sys.exit(1)
-
+        if models == None:   
+            return
         self.models = models
         self.sampler = sampler
         self.max_playout = models.pimc_max_playouts
@@ -67,6 +66,10 @@ class BGADLL:
         # Constraint are Clubs, Diamonds ending with hcp
         self.lho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
         self.rho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
+        self.already_shown_rho = [0,0,0,0]
+        self.already_shown_lho = [0,0,0,0]
+        self.already_shown_hcp_rho = 0
+        self.already_shown_hcp_lho = 0
         self.suit = bidding.get_strain_i(contract)
         self.mintricks = int(contract[0]) + 6
         self.contract = contract
@@ -103,37 +106,31 @@ class BGADLL:
         # Opening lead might set some constraints on length in suit
         # ie leading an unsupported king in an unbid suit is normally single or double
         if self.constraints_updated:
-            return
+            if not self.models.pimc_constraints_each_trick:
+                print(f"{Fore.RED}Constraints already set{Fore.RESET}")
+                return
 
         # Perhaps we should have a larger margin, depending on the bidding from this hand
         # if no bids, the hand can have a very long suits without having bid
 
-        if quality >= self.sampler.bidding_threshold_sampling :
+        if quality >= self.sampler.bid_accept_threshold_bidding :
             margin = self.models.pimc_margin_suit
         else:
             margin = self.models.pimc_margin_suit_bad_samples
 
-        # allready_shown is in normal order (Spades,Hearts,Diamonds,Clubs)
-        allready_shown_rho = [0,0,0,0]
-        allready_shown_rho[0] = 13 - self.rho_constraints.MaxSpades
-        allready_shown_rho[1] = 13 - self.rho_constraints.MaxHearts
-        allready_shown_rho[2] = 13 - self.rho_constraints.MaxDiamonds
-        allready_shown_rho[3] = 13 - self.rho_constraints.MaxClubs
-        allready_shown_lho = [0,0,0,0]
-        allready_shown_lho[0] = 13 - self.lho_constraints.MaxSpades
-        allready_shown_lho[1] = 13 - self.lho_constraints.MaxHearts
-        allready_shown_lho[2] = 13 - self.lho_constraints.MaxDiamonds
-        allready_shown_lho[3] = 13 - self.lho_constraints.MaxClubs
+        if self.verbose:
+            print("already_shown_lho",self.already_shown_lho)
+            print("already_shown_rho",self.already_shown_rho)
 
         if self.verbose:
-            print("allready_shown_lho",allready_shown_lho)
-            print("allready_shown_rho",allready_shown_rho)
+            print("LHO", min_lho, max_lho)
+            print("RHO", min_rho, max_rho)
 
         for i in range(4):
-            min_lho[i] = max(min_lho[i] - margin - allready_shown_lho[i], 0)
-            max_lho[i] = min(max_lho[i] + margin - allready_shown_lho[i], 13)
-            min_rho[i] = max(min_rho[i] - margin - allready_shown_rho[i], 0)
-            max_rho[i] = min(max_rho[i] + margin - allready_shown_rho[i], 13)
+            min_lho[i] = max(min_lho[i] - margin - self.already_shown_lho[i], 0)
+            max_lho[i] = min(max_lho[i] + margin - self.already_shown_lho[i], 13)
+            min_rho[i] = max(min_rho[i] - margin - self.already_shown_rho[i], 0)
+            max_rho[i] = min(max_rho[i] + margin - self.already_shown_rho[i], 13)
 
         if self.verbose:
             print("LHO", min_lho, max_lho)
@@ -166,12 +163,11 @@ class BGADLL:
         # Perhaps we should add a constraint on max hcp for a passed hand
         if self.constraints_updated:
             return
-        allready_shown_lho = 37 - self.lho_constraints.MaxHCP
-        allready_shown_rho = 37 - self.rho_constraints.MaxHCP
+        #  Constraints are for the remaining tricks and input if for full samples, so we subtract previous played card
         if self.verbose:
             print(min_lho, max_lho, min_rho, max_rho, quality)
-            print("allready_shown_lho",allready_shown_lho)
-            print("allready_shown_rho",allready_shown_rho)
+            print("already_shown_lho",self.already_shown_hcp_lho)
+            print("already_shown_rho",self.already_shown_hcp_rho)
         
         # The margin should probably be smaller if the opponents was active during bidding
         # It could also be worth counting the hcp divided by opponents
@@ -180,10 +176,10 @@ class BGADLL:
             margin = self.models.pimc_margin_hcp
         else:
             margin = self.models.pimc_margin_hcp_bad_samples
-        self.lho_constraints.MinHCP = max(min_lho-margin-allready_shown_lho, 0)
-        self.lho_constraints.MaxHCP = min(max_lho+margin-allready_shown_lho, 37)
-        self.rho_constraints.MinHCP = max(min_rho-margin-allready_shown_rho, 0)
-        self.rho_constraints.MaxHCP = min(max_rho+margin-allready_shown_rho, 37)
+        self.lho_constraints.MinHCP = max(min_lho-margin-self.already_shown_hcp_lho, 0)
+        self.lho_constraints.MaxHCP = min(max_lho+margin-self.already_shown_hcp_lho, 37)
+        self.rho_constraints.MinHCP = max(min_rho-margin-self.already_shown_hcp_rho, 0)
+        self.rho_constraints.MaxHCP = min(max_rho+margin-self.already_shown_hcp_rho, 37)
         if self.verbose:
             print("set_hcp_constraints")
             print("East (RHO)",self.rho_constraints.ToString())
@@ -238,11 +234,16 @@ class BGADLL:
         from BGADLL import Card as PIMCCard
         self.current_trick.Add(PIMCCard(card))
         self.opposHand.Remove(PIMCCard(card))
+        suit = real_card.suit
 
         if (playedBy == 0):
             self.westhand.Add(PIMCCard(card))
+            self.already_shown_hcp_lho += self.calculate_hcp(real_card.rank)
+            self.already_shown_lho[suit] += 1
         if (playedBy == 2):
             self.easthand.Add(PIMCCard(card))
+            self.already_shown_hcp_rho += self.calculate_hcp(real_card.rank)
+            self.already_shown_rho[suit] += 1
         if (playedBy == 1):
             self.northhand.Remove(PIMCCard(card))
         if (playedBy == 3):
@@ -269,8 +270,59 @@ class BGADLL:
             # For now, let's return None
             return None
 
+    def update_missing_cards(self, missing_cards):
+        # Define suits mapping
+        suits = {
+            0: "Spades",
+            1: "Hearts",
+            2: "Diamonds",
+            3: "Clubs"
+        }
+        for i, suit in suits.items():
+            value = int(missing_cards[i])
+            # Update LHO constraints with minimum values
+            if value < getattr(self.lho_constraints, f"Min{suit}"):
+                setattr(self.lho_constraints, f"Min{suit}", value)
+            if value < getattr(self.lho_constraints, f"Max{suit}"):
+                setattr(self.lho_constraints, f"Max{suit}", int(value))
+            # Update RHO constraints with minimum values
+            if value < getattr(self.rho_constraints, f"Min{suit}"):
+                setattr(self.rho_constraints, f"Min{suit}", value)
+            if value < getattr(self.rho_constraints, f"Max{suit}"):
+                setattr(self.rho_constraints, f"Max{suit}", value)
+
+    def update_voids(self,shown_out_suits):
+        # Define suits mapping
+        suits = {
+            0: "Spades",
+            1: "Hearts",
+            2: "Diamonds",
+            3: "Clubs"
+        }
+
+        # Convert shown_out_suits[0] and shown_out_suits[2] to sets for O(1) lookup
+        shown_suits_lho = set(shown_out_suits[0])
+        shown_suits_rho = set(shown_out_suits[2])
+
+        # Iterate over all suits
+        for suit_index, suit_name in suits.items():
+            # Update LHO constraints based on shown_suits_0
+            if suit_index in shown_suits_lho:
+                setattr(self.lho_constraints, f"Min{suit_name}", 0)
+                setattr(self.lho_constraints, f"Max{suit_name}", 0)
+                setattr(self.rho_constraints, f"Min{suit_name}", 0)
+                setattr(self.rho_constraints, f"Max{suit_name}", 0 if suit_index in shown_suits_rho else 13)
+            
+            # Update RHO constraints based on shown_suits_2
+            elif suit_index in shown_suits_rho:
+                setattr(self.rho_constraints, f"Min{suit_name}", 0)
+                setattr(self.rho_constraints, f"Max{suit_name}", 0)
+                setattr(self.lho_constraints, f"Min{suit_name}", 0)
+                setattr(self.lho_constraints, f"Max{suit_name}", 0 if suit_index in shown_suits_lho else 13)
+
+
     # Define a Python function to find a bid
-    def nextplay(self, player_i, shown_out_suits):
+    def nextplay(self, player_i, shown_out_suits, missing_cards):
         from BGADLL import Constraints, Macros, Card as PIMCCard
 
         try:
@@ -279,55 +331,8 @@ class BGADLL:
             print('Error Clear:', ex)
             #sys.exit(1)
         
-# for suit_index, constraints in zip([0, 1, 2, 3], [self.lho_constraints, self.rho_constraints]):
-#     for suit in range(4):
-#         if suit in shown_out_suits[suit_index]:
-#             setattr(constraints, f"Min{['Spades', 'Hearts', 'Diamonds', 'Clubs'][suit]}", 0)
-#             setattr(constraints, f"Max{['Spades', 'Hearts', 'Diamonds', 'Clubs'][suit]}", 0)
-
-        # As soon as we identify a void, we remove any restrictions on the other hand
-        # if both are void, the restrictions can be anything as there will be no cards available
-        if 0 in shown_out_suits[0]:
-            self.lho_constraints.MinSpades = 0
-            self.lho_constraints.MaxSpades = 0
-            self.rho_constraints.MinSpades = 0
-            self.rho_constraints.MaxSpades = 13
-        if 1 in shown_out_suits[0]:
-            self.lho_constraints.MinHearts = 0
-            self.lho_constraints.MaxHearts = 0
-            self.rho_constraints.MinHearts = 0
-            self.rho_constraints.MaxHearts = 13
-        if 2 in shown_out_suits[0]:
-            self.lho_constraints.MinDiamonds = 0
-            self.lho_constraints.MaxDiamonds = 0
-            self.rho_constraints.MinDiamonds = 0
-            self.rho_constraints.MaxDiamonds = 13
-        if 3 in shown_out_suits[0]:
-            self.lho_constraints.MinClubs = 0
-            self.lho_constraints.MaxClubs = 0
-            self.rho_constraints.MinClubs = 0
-            self.rho_constraints.MaxClubs = 13
-        if 0 in shown_out_suits[2]:
-            self.rho_constraints.MinSpades = 0
-            self.rho_constraints.MaxSpades = 0
-            self.lho_constraints.MinSpades = 0
-            self.lho_constraints.MaxSpades = 13
-        if 1 in shown_out_suits[2]:
-            self.rho_constraints.MinHearts = 0
-            self.rho_constraints.MaxHearts = 0
-            self.lho_constraints.MinHearts = 0
-            self.lho_constraints.MaxHearts = 13
-        if 2 in shown_out_suits[2]:
-            self.rho_constraints.MinDiamonds = 0
-            self.rho_constraints.MaxDiamonds = 0
-            self.lho_constraints.MinDiamonds = 0
-            self.lho_constraints.MaxDiamonds = 13
-        if 3 in shown_out_suits[2]:
-            self.rho_constraints.MinClubs = 0
-            self.rho_constraints.MaxClubs = 0
-            self.lho_constraints.MinClubs = 0
-            self.lho_constraints.MaxClubs = 13
-
+        self.update_voids(shown_out_suits)
+        self.update_missing_cards(missing_cards)
 
         if self.models.pimc_apriori_probability:
             hands = [self.northhand, self.southhand, self.easthand, self.westhand]
@@ -427,29 +432,21 @@ class BGADLL:
                 # If we found no playout we need to reevaluate without constraints
                 if count == 0:
 
-                    print(card)
-                    print("Trying without constraints")
-                    print("max_playout",self.max_playout)
-                    print(self.pimc.LegalMovesToString)
-                    print(f"Playouts: {self.pimc.Playouts}")
-                    print("Combinations:", self.pimc.Combinations)
-                    print("Examined:", self.pimc.Examined)
-                    print(self.northhand.ToString(), self.southhand.ToString())
-                    print(self.opposHand.ToString(), self.current_trick.ListAsString())
-                    print("min tricks",self.mintricks)
-                    print("Voids",shown_out_suits)
-                    print("East (RHO)", self.rho_constraints.ToString())
-                    print("West (LHO)", self.lho_constraints.ToString())
-                    print("Trump:",trump)
-                    print("Current trick",self.current_trick.ListAsString())
-                    print("Previous tricks",self.previous_tricks.ListAsString())
+                    print(f"{Fore.YELLOW}PIMC did not find any playouts. Trying without constraints{Fore.RESET} {self.pimc.LegalMovesToString}")
+                    if self.verbose:
+                        print(f"max_playouts: {self.max_playouts} Playouts: {self.pimc.Playouts} Combinations: {self.pimc.Combinations} Examined: {self.pimc.Examined}")
+                        print(self.northhand.ToString(), self.southhand.ToString(), self.opposHand.ToString(), self.current_trick.ListAsString())
+                        print("Trump:",trump,"Tricks taken",self.tricks_taken,"min tricks",self.mintricks)
+                        print("Voids",shown_out_suits)
+                        print("East (RHO)", self.rho_constraints.ToString(),"West (LHO)", self.lho_constraints.ToString())
+                    #print("Current trick",self.current_trick.ListAsString())
+                    #print("Previous tricks",self.previous_tricks.ListAsString())
                     if self.lho_constraints.MaxHCP == 99:
-                        print("Loop calling PIMC")
+                        print(f"{Fore.RED}Loop calling PIMC{Fore.RESET}")
                         sys.exit(1)
                     self.lho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 99)
                     self.rho_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 99)
-                    print("Trying without constraints")
-                    card_result = self.nextplay(player_i, shown_out_suits)
+                    card_result = self.nextplay(player_i, shown_out_suits, missing_cards)
                     # Reset max HCP so next call will work
                     self.lho_constraints.MaxHCP = 37
                     self.rho_constraints.MaxHCP = 37
@@ -502,7 +499,7 @@ class BGADLL:
             msg = f"LHO: {self.lho_constraints.ToString()}|RHO: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
             if self.verbose:
                 print("Tricks")
-                print(results)
+                print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>2}' for x in v[:10])}..." for k, v in results.items()))
                 print("score_by_tricks_taken")
                 print(self.score_by_tricks_taken)
             real_scores = calculate.calculate_score(results, self.tricks_taken, player_i, self.score_by_tricks_taken)
@@ -511,18 +508,17 @@ class BGADLL:
             else:
                 if self.verbose:
                     print("Real scores")
-                    print(real_scores)
+                    print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>5}' for x in v[:10])}..." for k, v in real_scores.items()))
                 card_ev = calculate.calculate_imp_score(real_scores)
 
             card_result = {}
             for key in card_ev.keys():
                 card_result[key] = (round(e_tricks[key], 2), round(card_ev[key],2), making[key], msg)
                 if self.verbose:
-                    print(f'{key} {round(e_tricks[key],3):0.3f} {round(card_ev[key],2):5.2f} {round(making[key],3):0.3f}')
+                    print(f'{Card.from_code(key)} {round(e_tricks[key],3):0.3f} {round(card_ev[key],2):5.2f} {round(making[key],3):0.3f}')
                         
 
         if self.verbose:
-            print(card_result)
             print(f"Returning {len(card_result)} from PIMC nextplay")
 
         return card_result

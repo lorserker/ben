@@ -1,29 +1,33 @@
-import sys
 import os
-import traceback
+import sys
 import platform
-import socket
-
 os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ["GRPC_VERBOSITY"] = "ERROR"
-os.environ["GLOG_minloglevel"] = "3"
+os.environ["GLOG_minloglevel"] = "2"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-# Set logging level to suppress warnings
-#logging.getLogger().setLevel(logging.CRITICAL)
-import shelve
-import tensorflow as tf
-
-# Configure absl logging to suppress logs
-from absl import logging, app
-# Suppress Abseil logs
-logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
-logging.set_verbosity(logging.FATAL)
-logging.set_stderrthreshold(logging.FATAL)
-
+import logging
+import traceback
+import util
+# Intil fixed in Keras, this is needed to remove a wrong warning
 import warnings
 warnings.filterwarnings("ignore")
+
+# Set logging level to suppress warnings
+logging.getLogger().setLevel(logging.ERROR)
+
+# Configure absl logging to suppress logs
+import absl.logging
+# Suppress Abseil logs
+absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
+absl.logging.set_verbosity(absl.logging.FATAL)
+absl.logging.set_stderrthreshold(absl.logging.FATAL)
+
+import tensorflow as tf
+
+import socket
+import shelve
 
 import ipaddress
 import argparse
@@ -47,6 +51,17 @@ from colorama import Fore, Back, Style, init
 init()
 
 SEATS = ['North', 'East', 'South', 'West']
+
+def handle_exception(e):
+    sys.stderr.write(f"{str(e)}\n")
+    traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+    traceback_lines = "".join(traceback_str).splitlines()
+    file_traceback = []
+    for line in reversed(traceback_lines):
+        if line.startswith("  File"):
+            file_traceback.append(line.strip()) 
+    if file_traceback:
+        sys.stderr.write(f"{Fore.RED}{'\n'.join(file_traceback)}\n{Fore.RESET}")
 
 class TMClient:
 
@@ -127,32 +142,27 @@ class TMClient:
 
         await self.receive_line()
         
+
     async def connect(self, host, port):
         try:
-            # Resolve the hostname to an IP address
-            resolved_ip = socket.gethostbyname(host)
-            print(f"Resolved {host} to {resolved_ip}")
-            self.reader, self.writer = await asyncio.open_connection(host, port)
-            self._is_connected = True
-            print(f"Connected to {host}:{port}")
-        except Exception as e:
-            print(f"Failed to connect to {host}:{port} - {e}")            
-            traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
-            traceback_lines = "".join(traceback_str).splitlines()
-            file_traceback = None
-            for line in reversed(traceback_lines):
-                if line.startswith("  File"):
-                    file_traceback = line
-                    break
-            if file_traceback:
-                print(file_traceback)  # This will print the last section starting with "File"
+            # Check if the host is already an IP address
+            ipaddress.ip_address(host)
+            resolved_ip = host  # It's already an IP address
+        except ValueError:
+            try:
+                # Not a valid IP, resolve it as a hostname
+                resolved_ip = socket.gethostbyname(host)
+                print(f"Resolved hostname '{host}' to IP: {resolved_ip}")
+            except Exception as e:
+                print(f"Failed to connect to {host}:{port} - {e}")            
+                handle_exception(e)
+                self._is_connected = False
+                print(Style.RESET_ALL)
+                sys.exit(1)
 
-            self._is_connected = False
-            print(Style.RESET_ALL)
-            sys.exit()
-
-
-        print('connected')
+        self.reader, self.writer = await asyncio.open_connection(resolved_ip, port)
+        self._is_connected = True
+        print(f"Connected to {host}:{port}")
 
         await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18')
 
@@ -695,19 +705,26 @@ class TMClient:
     async def send_ready(self):
         await self.send_message(f'{self.seat} ready to start')
 
-    async def receive_deal(self, restart=False):
+    async def receive_deal(self):
         np.random.seed(42)
 
-        #If we are restarting a match we will receive 
-        # 'Board number 1. Dealer North. Neither vulnerable. \r\n'
-        if restart:
-            deal_line_1 = "start of board"
-        else:
+        deal_line_1 = await self.receive_line()
+
+        while deal_line_1.lower() != "start of board":
+            await self.send_message(f'{self.seat} ready to start')
             deal_line_1 = await self.receive_line()
+            if deal_line_1 is None or deal_line_1 == "":
+                print("Empty response from TM, terminating")
+                sys.exit(1)
 
         while deal_line_1.lower() == "start of board":
             await self.send_message(f'{self.seat} ready for deal')
             deal_line_1 = await self.receive_line()
+
+        if "number" not in deal_line_1:
+            # Restart so we get the hand next
+            print("Protocol error - expecting board number", deal_line_1)
+            raise ValueError("Deal not received")
 
         pattern = r'Board number (\d+)\.'
 
@@ -728,11 +745,8 @@ class TMClient:
             print("Deal not received", deal_line_2)
             raise ValueError("Deal not received")
         
-        if deal_line_2.lower() == "start of board":
-            # Restart so we get the hand next
-            deal_line_2 = await self.receive_line()
         hand_str = TMClient.parse_hand(deal_line_2)
-
+        
         dealer_i = 'NESW'.index(match.groupdict()['dealer'][0])
         vuln_str = match.groupdict()['vuln']
         assert vuln_str in {'Neither', 'N/S', 'E/W', 'Both'}
@@ -770,6 +784,14 @@ class TMClient:
             # Stop the event loop to terminate the application
             print(Style.RESET_ALL)
             sys.exit()
+        except Exception as ex:
+            print(f'Error: {str(ex)}')
+            # Handle the error gracefully, such as logging it or notifying the user
+            # Close the connection (in case it's not already closed)
+            self._is_connected = False
+            # Stop the event loop to terminate the application
+            print(Style.RESET_ALL)
+            sys.exit()
 
     async def receive_line(self) -> str:
         try:
@@ -786,7 +808,14 @@ class TMClient:
                 sys.exit(0)
             return msg
         except ConnectionAbortedError as ex:
-            print(f'Match terminated: {str(ex)}')    
+            print(f'Match terminated:\n {str(ex)}\n')    
+            # Close the connection (in case it's not already closed)
+            self._is_connected = False
+            # Stop the event loop to terminate the application
+            print(Style.RESET_ALL)
+            sys.exit(0)
+        except Exception as ex:
+            print(f'Match terminated:\n {str(ex)}\n')    
             # Close the connection (in case it's not already closed)
             self._is_connected = False
             # Stop the event loop to terminate the application
@@ -835,6 +864,15 @@ def validate_ip_or_hostname(value):
 
     raise argparse.ArgumentTypeError(f"Invalid IP address or hostname: {value}")
 
+# Custom function to convert string to boolean
+def str_to_bool(value):
+    if value.lower() in ['true', '1', 't', 'y', 'yes']:
+        return True
+    elif value.lower() in ['false', '0', 'f', 'n', 'no']:
+        return False
+    raise ValueError("Invalid boolean value")
+
+
 #  Examples of how to start the table manager
 # python table_manager_client.py --name BEN --seat North
 # python table_manager_client.py --name BEN --seat South
@@ -850,9 +888,10 @@ async def main():
     parser.add_argument("--name", required=True, help="Name in Table Manager")
     parser.add_argument("--seat", required=True, help="Where to sit (North, East, South or West)")
     parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
-    parser.add_argument("--biddingonly", type=bool, default=False, help="Only bid, no play")
-    parser.add_argument("--matchpoint", type=bool, default=None, help="Playing match point")
-    parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
+    parser.add_argument("--biddingonly", type=str_to_bool, default=False, help="Only bid, no play")
+    parser.add_argument("--nosearch", type=str_to_bool, default=False, help="Just use neural network")
+    parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
+    parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()
 
@@ -864,16 +903,28 @@ async def main():
     matchpoint = args.matchpoint
     verbose = args.verbose
     biddingonly = args.biddingonly
+    nosearch = args.nosearch
 
-    np.set_printoptions(precision=2, suppress=True)
+    np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()}{Fore.RESET}')  
+    print("BEN_HOME=",os.getenv('BEN_HOME'))
+
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py")
+    if util.is_pyinstaller_executable():
+        print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
+    else:
+        print(f"Running in a standard Python environment: {platform.python_version()}")
+
+    print(f"Python version: {sys.version}{Fore.RESET}")
+
+    print(f'Loading configuration.')  
 
     configuration = conf.load(configfile)
-    # Print the PythonNet version
-    import clr
-    import Python.Runtime
-    sys.stderr.write(f"pythonnet {Python.Runtime.PythonEngine.Version}\n") 
+        
+    if sys.platform == 'win32':
+        # Print the PythonNet version
+        sys.stderr.write(f"PythonNet: {util.get_pythonnet_version()}\n") 
+        sys.stderr.write(f"{util.check_dotnet_version()}\n") 
 
     sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
     try:
@@ -887,31 +938,59 @@ async def main():
             from nn.models import Models
 
     models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
-    print("Config:", configfile)
-    print("System:", models.name)
-    if models.use_bba:
-        print("Using BBA for bidding")
-    else:
-        print("Model:   ", models.bidder_model.model_path)
-        print("Opponent:", models.opponent_model.model_path)
-    if matchpoint:
-        models.matchpoint = True
-    if models.matchpoint:
-        print("Matchpoint mode on")
-    else:
-        print("Playing IMPS mode")
 
     if sys.platform != 'win32':
         print("Disabling PIMC/BBA/SuitC as platform is not win32")
         models.pimc_use_declaring = False
         models.pimc_use_defending = False
+        models.use_bba = False
+        models.use_bba_to_count_aces = False
         models.use_suitc = False
+        
+    print("Config:", configfile)
+    print("System:", models.name)
+
+    if models.use_bba:
+        print("Using BBA for bidding")
+    else:
+        print("Model:   ", models.bidder_model.model_path)
+        print("Opponent:", models.opponent_model.model_path)
+
+    if models.use_bba or models.use_bba_to_count_aces:
+        print("BBA enabled")    
+        from bba.BBA import BBABotBid
+        bot = BBABotBid(None, None ,None, None, None, None, None, verbose)
+
+    if models.use_suitc:
+        print("SuitC enabled")
+        from suitc.SuitC import SuitCLib
+        suitc = SuitCLib(verbose)
+
+    if models.pimc_use_declaring or models.pimc_use_defending:
+        print("PIMC enabled")
+        from pimc.PIMC import BGADLL
+        pimc = BGADLL(None, None, None, None, None, None, verbose)
+        from pimc.PIMCDef import BGADefDLL
+        pimcdef = BGADefDLL(None, None, None, None, None, None, None, verbose)
+
+    from ddsolver import ddsolver
+    print("DDSolver enabled")
+    dds = ddsolver.DDSolver()
 
     # Not supported by TM, so no need to calculate
     models.claim = False
 
-    from ddsolver import ddsolver
-    dds = ddsolver.DDSolver()
+    if matchpoint:
+        models.matchpoint = True
+
+    if nosearch:
+        print("Simulation disabled")
+        models.search_threshold = -1
+
+    if models.matchpoint:
+        print("Matchpoint mode on")
+    else:
+        print("Playing IMPS mode")
 
     client = TMClient(name, seat, models, Sample.from_conf(configuration, verbose), dds, verbose)
     print(f"Connecting to {host}:{port}")
@@ -956,20 +1035,19 @@ if __name__ == "__main__":
     try:
         loop.run_until_complete(main())
         loop.run_forever()
+    except ConnectionRefusedError:
+        sys.stderr.write(f"{Fore.RED}Connection refused. Is the server running?{Fore.RESET}")
+        sys.exit(1)
+    except OSError as e:
+        sys.stderr.write(f"{Fore.RED}Table manager teminated{Fore.RESET}\n")
+        handle_exception(e)
+        sys.exit(1)
     except KeyboardInterrupt:
         pass
     except ValueError as e:
-        print("Error in configuration - typical the models do not match the configuration.")
-        print(e)
-        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
-        traceback_lines = "".join(traceback_str).splitlines()
-        file_traceback = None
-        for line in reversed(traceback_lines):
-            if line.startswith("  File"):
-                file_traceback = line
-                break
-        if file_traceback:
-            print(file_traceback)  # This will print the last section starting with "File"
+        sys.stderr.write(f"{Fore.RED}Error in configuration or communication - typical the models do not match the configuration.{Fore.RESET}\n")
+        handle_exception(e)
+        sys.exit(1)
     finally:
         loop.run_until_complete(loop.shutdown_asyncgens())
         loop.close()

@@ -140,9 +140,9 @@ def load(fin):
                 if dealer != None:
                     dealnumber += 1
                     encoded_str_deal = encode_board(transform_hand(hands_nesw), dealer, vulnerable, dealnumber)
-                    # Do we have the board all ready, then discard it with a message
+                    # Do we have the board already, then discard it with a message
                     if encoded_str_deal in boards:
-                        print("Repeated",hands_nesw)
+                        print("Repeated so being ignored:",hands_nesw)
                     else:
                         boards.add(encoded_str_deal)      
                     auction_lines = []

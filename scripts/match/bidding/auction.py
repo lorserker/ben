@@ -1,5 +1,7 @@
 import sys
 import os
+import platform
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 os.environ["GRPC_VERBOSITY"] = "ERROR"

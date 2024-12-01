@@ -1,6 +1,7 @@
 import sys
 import datetime
 import os
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers, callbacks, initializers, losses
@@ -48,7 +49,7 @@ if len(sys.argv) < 2:
 bin_dir = sys.argv[1]
 print(sys.argv)
 
-system = "bidding"
+system = "Contract"
 if len(sys.argv) > 2:
     system = sys.argv[2]
 
@@ -63,12 +64,12 @@ n_examples = X_train.shape[0]
 n_contract = y_train.shape[1]
 n_ftrs = X_train.shape[1]
 
-output_dim_bool1 = z_train.shape[1]
+output_dim_doubled = z_train.shape[1]
 output_dim_tricks = u_train.shape[1]
 output_dim_contract = y_train.shape[1]
 
-batch_size = 128  
-buffer_size = 10000
+batch_size = 256 
+buffer_size = 100000
 epochs = 50  
 learning_rate = 0.0005
 keep = 0.8
@@ -84,7 +85,7 @@ print("Examples for training:   ", n_examples)
 print("Model path:              ", model_name )
 print("-------------------------")
 print("Size input hand:         ", n_ftrs)
-print("Size output doubled:     ", output_dim_bool1)
+print("Size output doubled:     ", output_dim_doubled)
 print("Size output tricks:      ", output_dim_tricks)
 print("Size output contract:    ", output_dim_contract)
 print("-------------------------")
@@ -113,19 +114,19 @@ def build_model(input_shape, lstm_size, n_layers):
     x = layers.Dense(64, activation='tanh', kernel_initializer='truncated_normal')(x)
     
     contract_output = layers.Dense(output_dim_contract, activation='softmax', name='contract_output')(x)
-    bool1_output = layers.Dense(output_dim_bool1, activation='sigmoid', name='bool1_output')(x)
+    doubled_output = layers.Dense(output_dim_doubled, activation='sigmoid', name='doubled_output')(x)
     tricks_output = layers.Dense(output_dim_tricks, activation='sigmoid', name='tricks_output')(x)
     
-    model = models.Model(inputs=inputs, outputs=[contract_output, bool1_output, tricks_output])
+    model = models.Model(inputs=inputs, outputs=[contract_output, doubled_output, tricks_output])
     model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate),
                   loss={
                       'contract_output': losses.CategoricalCrossentropy(),
-                      'bool1_output': losses.BinaryCrossentropy(),
+                      'doubled_output': losses.BinaryCrossentropy(),
                       'tricks_output': losses.BinaryCrossentropy()
                   },
                   metrics={
                       'contract_output': 'accuracy',
-                      'bool1_output': 'accuracy',
+                      'doubled_output': 'accuracy',
                       'tricks_output': 'accuracy',
                   })
     print(model.summary())
@@ -134,13 +135,13 @@ def build_model(input_shape, lstm_size, n_layers):
     print("Reading input")
     def data_generator(X, y, z, u):
         for xi, yi, zi, ui in zip(X, y, z, u):
-            yield (xi, {'contract_output': yi, 'bool1_output': zi, 'tricks_output': ui})
+            yield (xi, {'contract_output': yi, 'doubled_output': zi, 'tricks_output': ui})
 
     output_signature = (
         tf.TensorSpec(shape=(n_ftrs,), dtype=X_train.dtype),
         {
             'contract_output': tf.TensorSpec(shape=(output_dim_contract,), dtype=y_train.dtype),
-            'bool1_output': tf.TensorSpec(shape=(1,), dtype=z_train.dtype),
+            'doubled_output': tf.TensorSpec(shape=(output_dim_doubled,), dtype=z_train.dtype),
             'tricks_output': tf.TensorSpec(shape=(output_dim_tricks,), dtype=u_train.dtype)
         }
     )

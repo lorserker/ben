@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import re
 import hashlib
@@ -257,3 +258,108 @@ def get_possible_cards(hand, current_trick):
     cards = suits[suitlead]
     result = check_sequence(cards, suitlead)
     return result
+
+def load_dotnet_assembly(assembly_path, verbose = False):
+    """
+    Loads a .NET assembly dynamically, supporting both Pythonnet <3.x (AddReference)
+    and Pythonnet 3.x (clr_loader).
+    
+    Parameters:
+        assembly_path (str): The path to the .NET assembly without the `.dll` extension.
+    
+    Returns:
+        The loaded assembly reference or raises an exception on failure.
+    """
+    try:
+        import clr
+        if verbose:
+            print(f"Loading {assembly_path}")
+        if hasattr(clr, "AddReference"):
+            # Pythonnet < 3.x or Anaconda version
+            try:
+                clr.AddReference(assembly_path)
+            except Exception:
+                print("Failed to load .NET assembly using clr.AddReference - trying with full path")
+                clr.AddReference(assembly_path + '.dll')
+            if verbose:
+                print("Loaded .NET assembly using clr.AddReference")
+            return None  # Assembly types can be imported directly in this mode
+        else:
+            # Pythonnet 3.x
+            from clr_loader import get_coreclr
+            from pythonnet import set_runtime
+            runtime = get_coreclr()
+            set_runtime(runtime)
+
+            import System
+            load_context = System.Runtime.Loader.AssemblyLoadContext.Default
+            loaded_assembly = load_context.LoadFromAssemblyPath(assembly_path)
+            if verbose:
+                print("Loaded .NET assembly using clr_loader")
+            return loaded_assembly
+    except Exception as e:
+        raise RuntimeError(f"Failed to load .NET assembly '{assembly_path}': {e}")
+
+
+def get_pythonnet_version():
+    try:
+        import pkg_resources
+        return pkg_resources.get_distribution("pythonnet").version
+    except Exception:
+        # Fall back to runtime version if pip metadata is missing
+        try:
+            import Python.Runtime
+            return Python.Runtime.PythonEngine.Version
+        except ImportError:
+            return None
+
+def setup_clr():
+    try:
+        import clr
+        # Detect if AddReference is available
+        if hasattr(clr, "AddReference"):
+            print("Using AddReference for Pythonnet < 3.0.0 or Anaconda version")
+            clr.AddReference("System")
+        else:
+            print("Using clr-loader for Pythonnet >= 3.0.0")
+            from clr_loader import get_coreclr
+            from pythonnet import set_runtime
+            runtime = get_coreclr()
+            set_runtime(runtime)
+    except ImportError:
+        print("Pythonnet is not installed.")
+        sys.exit(1)
+
+import winreg
+
+def check_dotnet_version():
+    try:
+        # Open the registry key
+        reg_path = r"SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full"
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, reg_path)
+        release, _ = winreg.QueryValueEx(key, "Release")
+        
+        # Mapping release numbers to versions
+        version_map = {
+            528040: "4.8",
+            461808: "4.7.2",
+            394802: "4.6.2",
+        }
+        for rel, ver in version_map.items():
+            if release >= rel:
+                return f".NET Framework {ver} is installed."
+        return "A version of .NET Framework is installed but could not be determined."
+    except FileNotFoundError:
+        return ".NET Framework is not installed."
+
+
+def is_pyinstaller_executable():
+    # Check for _MEIPASS attribute (specific to PyInstaller)
+    if hasattr(sys, '_MEIPASS'):
+        return True
+    
+    # Check if the current executable is the main PyInstaller executable
+    if getattr(sys, 'frozen', False) and os.path.exists(sys.executable):
+        return True
+
+    return False

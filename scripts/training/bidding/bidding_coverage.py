@@ -195,7 +195,7 @@ if __name__ == '__main__':
     sys.stderr.write(f"Filtered_deals {len(filtered_deals)}\n")
     sys.stderr.write(f"Removed {len(lines) // 2 - len(filtered_deals)} deals where the same bidding was seen more than {max_occurrences} times.\n")
     
-    # The second training dataset is random deals, and we just use the bidding sequences we don't allready have
+    # The second training dataset is random deals, and we just use the bidding sequences we don't already have
     if infnm2:
         max_occurrences = 2
         with open(infnm2, 'r') as file:

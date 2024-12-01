@@ -26,26 +26,25 @@ class BatchPlayer:
     def init_model(self):
         graph = self.sess.graph
 
-        seq_in = graph.get_tensor_by_name('seq_in:0')  #  we always give the whole sequence from the beginning. shape = (batch_size, n_tricks, n_features)
-        keep_prob = graph.get_tensor_by_name('keep_prob:0')
-        out_card_logit = graph.get_tensor_by_name('out_card_logit:0')  #  shows which card it would play at each trick. (but we only care about the card for last trick)
+        self.seq_in = graph.get_tensor_by_name('seq_in:0')  #  we always give the whole sequence from the beginning. shape = (batch_size, n_tricks, n_features)
+        self.keep_prob = graph.get_tensor_by_name('keep_prob:0')
+        self.out_card_logit = graph.get_tensor_by_name('out_card_logit:0')  #  shows which card it would play at each trick. (but we only care about the card for last trick)
 
-        p_keep = 1.0
+        self.p_keep = 1.0
 
-        def pred_fun(x):
-            result = None
-            with self.graph.as_default():
-                card_logit = self.sess.run(out_card_logit, feed_dict={seq_in: x, keep_prob: p_keep})
-                result = self.reshape_card_logit(card_logit, x)
-            return result
+    def pred_fun(self,x):
+        result = None
+        with self.graph.as_default():
+            card_logit = self.sess.run(self.out_card_logit, feed_dict={self.seq_in: x, self.keep_prob: self.p_keep})
+            result = self.reshape_card_logit(card_logit, x)
+        return result
 
-        return pred_fun
 
     def reshape_card_logit(self, card_logit, x):
         return softmax(card_logit.reshape((x.shape[0], x.shape[1], 32)), axis=2)
 
     def next_cards_softmax(self, x):
-        result = self.model(x)[:,-1,:]
+        result = self.pred_fun(x)[:,-1,:]
         return result
 
 

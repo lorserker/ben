@@ -9,7 +9,7 @@ os.environ["GLOG_minloglevel"] = "2"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import logging
 import traceback
-
+import util
 # Intil fixed in Keras, this is needed to remove a wrong warning
 import warnings
 warnings.filterwarnings("ignore")
@@ -45,6 +45,25 @@ from colorama import Fore, Back, Style, init
 
 init()
 
+# Custom function to convert string to boolean
+def str_to_bool(value):
+    if value.lower() in ['true', '1', 't', 'y', 'yes']:
+        return True
+    elif value.lower() in ['false', '0', 'f', 'n', 'no']:
+        return False
+    raise ValueError("Invalid boolean value")
+
+def handle_exception(e):
+    sys.stderr.write(f"{str(e)}\n")
+    traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+    traceback_lines = "".join(traceback_str).splitlines()
+    file_traceback = []
+    for line in reversed(traceback_lines):
+        if line.startswith("  File"):
+            file_traceback.append(line.strip()) 
+    if file_traceback:
+        sys.stderr.write(f"{Fore.RED}{'\n'.join(file_traceback)}\n{Fore.RESET}")
+
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
     return os.getcwd()
@@ -61,10 +80,10 @@ parser = argparse.ArgumentParser(description="Game server")
 parser.add_argument("--boards", default="", help="Filename for boards")
 parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
 parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
-parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
+parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=4443, help="Port for appserver")
 parser.add_argument("--auto", type=bool, default=False, help="BEN bids and plays all 4 hands")
-parser.add_argument("--playonly", type=bool, default=False, help="Only play, no bidding")
+parser.add_argument("--playonly", type=str_to_bool, default=False, help="Only play, no bidding")
 parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 
 args = parser.parse_args()
@@ -76,6 +95,81 @@ auto = args.auto
 play_only = args.playonly
 seed = args.seed
 boards = []
+
+np.set_printoptions(precision=2, suppress=True, linewidth=200)
+
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py")
+if util.is_pyinstaller_executable():
+    print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
+else:
+    print(f"Running in a standard Python environment: {platform.python_version()}")
+
+print(f"Python version: {sys.version}{Fore.RESET}")
+
+print(f'Loading configuration.')  
+
+configuration = conf.load(configfile)
+    
+if sys.platform == 'win32':
+    # Print the PythonNet version
+    sys.stderr.write(f"PythonNet: {util.get_pythonnet_version()}\n") 
+    sys.stderr.write(f"{util.check_dotnet_version()}\n") 
+
+sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
+try:
+    if (configuration["models"]['tf_version'] == "2"):
+        from nn.models_tf2 import Models
+    else: 
+        # Default to version 1. of Tensorflow
+        from nn.models import Models
+except KeyError:
+        # Default to version 1. of Tensorflow
+        from nn.models import Models
+
+models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+
+if sys.platform != 'win32':
+    print("Disabling PIMC/BBA/SuitC as platform is not win32")
+    models.pimc_use_declaring = False
+    models.pimc_use_defending = False
+    models.use_bba = False
+    models.use_bba_to_count_aces = False
+    models.use_suitc = False
+    
+print("Config:", configfile)
+print("System:", models.name)
+
+if models.use_bba:
+    print("Using BBA for bidding")
+else:
+    print("Model:   ", models.bidder_model.model_path)
+    print("Opponent:", models.opponent_model.model_path)
+
+if models.matchpoint:
+    print("Matchpoint mode on")
+else:
+    print("Playing IMPS mode")
+
+if models.use_bba or models.use_bba_to_count_aces:
+    print("BBA enabled")    
+    from bba.BBA import BBABotBid
+    bot = BBABotBid(None, None ,None, None, None, None, None, None)
+
+if models.use_suitc:
+    print("SuitC enabled")
+    from suitc.SuitC import SuitCLib
+    suitc = SuitCLib(verbose)
+
+if models.pimc_use_declaring or models.pimc_use_defending:
+    print("PIMC enabled")
+    from pimc.PIMC import BGADLL
+    pimc = BGADLL(None, None, None, None, None, None, None)
+    from pimc.PIMCDef import BGADefDLL
+    pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
+
+from ddsolver import ddsolver
+print("DDSolver enabled")
+dds = ddsolver.DDSolver()
 
 if args.boards:
     filename = args.boards
@@ -107,49 +201,6 @@ if args.boardno:
 if random:
     print("Playing random deals or deals from the client")
 
-np.set_printoptions(precision=2, suppress=True, linewidth=240)
-
-print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()}{Fore.RESET}')  
-
-configuration = conf.load(configfile)
-
-sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
-try:
-    if (configuration["models"]['tf_version'] == "2"):
-        from nn.models_tf2 import Models
-    else: 
-        # Default to version 1. of Tensorflow
-        from nn.models import Models
-except KeyError:
-        # Default to version 1. of Tensorflow
-        from nn.models import Models
-
-models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
-
-# Override any configuration of claim, as it is included in the UI
-models.claim = True
-
-if sys.platform != 'win32':
-    print("Disabling PIMC/BBA/SuitC as platform is not win32")
-    models.pimc_use_declaring = False
-    models.pimc_use_defending = False
-    models.use_bba = False
-    models.use_bba_to_count_aces = False
-    models.use_suitc = False
-
-print("Config:", configfile)
-print("System:", models.name)
-if models.use_bba:
-    print("Using BBA for bidding")
-else:
-    print("Model:   ", models.bidder_model.model_path)
-    print("Opponent:", models.opponent_model.model_path)
-if models.matchpoint:
-    print("Matchpoint mode on")
-else:
-    print("Playing IMPS mode")
-
-
 def worker(driver):
     print('worker', driver)
     asyncio.new_event_loop().run_until_complete(driver.run())
@@ -157,9 +208,6 @@ def worker(driver):
 
 async def handler(websocket, path, board_no, seed):
     print('{} Got websocket connection'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
-
-    from ddsolver import ddsolver
-    dds = ddsolver.DDSolver()
 
     driver = game.Driver(models, human.WebsocketFactory(websocket, verbose), Sample.from_conf(configuration, verbose), seed, dds, verbose)
     play_only = False
@@ -237,20 +285,11 @@ async def handler(websocket, path, board_no, seed):
         print('User left')
     except ValueError as e:
         print("Error in configuration - typical the models do not match the configuration.")
-        print(e)
-        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
-        traceback_lines = "".join(traceback_str).splitlines()
-        file_traceback = None
-        for line in reversed(traceback_lines):
-            if line.startswith("  File"):
-                file_traceback = line
-                break
-        if file_traceback:
-            print(file_traceback)  # This will print the last section starting with "File"
-        sys.exit(0)
+        handle_exception(e)
+        sys.exit(1)
 
 async def main():
-    print("Listening on port: ",port)
+    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Listening on port: {port}{Fore.RESET}\n")
     start_server = websockets.serve(functools.partial(handler, board_no=board_no, seed=seed), "0.0.0.0", port, 
         ping_timeout=60,  # 60 seconds timeout for pings
         close_timeout=60  # 60 seconds timeout for closing the connection
@@ -259,17 +298,8 @@ async def main():
         await start_server
     except Exception as e:
         print("Error in server.")
-        print(e)
-        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
-        traceback_lines = "".join(traceback_str).splitlines()
-        file_traceback = None
-        for line in reversed(traceback_lines):
-            if line.startswith("  File"):
-                file_traceback = line
-                break
-        if file_traceback:
-            print(file_traceback)  # This will print the last section starting with "File"
-        sys.exit(0)
+        handle_exception(e)
+        sys.exit(1)
 
 if __name__ == "__main__":
     print(Back.BLACK)
@@ -281,17 +311,8 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         pass
     except Exception as e:
-        print(e)
-        traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
-        traceback_lines = "".join(traceback_str).splitlines()
-        file_traceback = None
-        for line in reversed(traceback_lines):
-            if line.startswith("  File"):
-                file_traceback = line
-                break
-        if file_traceback:
-            print(file_traceback)  # This will print the last section starting with "File"
-        sys.exit(0)
+        handle_exception(e)
+        sys.exit(1)
     finally:
         loop.close()
         print(Style.RESET_ALL)

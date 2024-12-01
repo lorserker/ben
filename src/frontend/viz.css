@@ -3,6 +3,8 @@
     width: 540px;
     min-height: 540px;
     background-color: #beecef;
+    padding: 2px;
+    margin: 2px;
 }
 
 #north {

@@ -1,6 +1,11 @@
 import sys
 import datetime
 import os
+os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+# Set logging level to suppress warnings
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_NUMA_ENABLED'] = '0'
 import numpy as np
 import logging
 import tensorflow as tf
@@ -11,9 +16,7 @@ import time
 import psutil
 import GPUtil
 
-# Set logging level to suppress warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ['TF_NUMA_ENABLED'] = '0'
+sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
 
 # Redirect standard output and error
 logging.getLogger('tensorflow').disabled = True
@@ -69,7 +72,7 @@ n_dim_shape = SHAPE_train.shape[2]
 
 batch_size = 256  
 buffer_size =  25600
-epochs = 100  
+epochs = 100
 learning_rate = 0.0005
 keep = 0.8
 steps_per_epoch = n_examples // batch_size

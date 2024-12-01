@@ -15,3 +15,12 @@ pyinstaller "..\\scripts\\training\\bidding\\bidding_binary.py" --onefile --path
 pyinstaller "..\\scripts\\training\\bidding\\bidding_nn.py" --onefile --path=..\src 
 pyinstaller "..\\scripts\\training\\bidding_info\\binfo_binary.py" --onefile --path=..\src 
 pyinstaller "..\\scripts\\training\\bidding_info\\binfo_nn.py" --onefile --path=..\src 
+
+
+python -m PyInstaller table_manager_client.spec --noconfirm
+python -m PyInstaller game.spec --noconfirm
+python -m PyInstaller gameapi.spec --noconfirm
+python -m PyInstaller gameserver.spec --noconfirm
+python -m PyInstaller appserver.spec --noconfirm
+python -m PyInstaller TMCGui.spec --noconfirm
+python -m PyInstaller BENGui.spec --noconfirm

@@ -39,16 +39,12 @@ def find_last_occurrence(arr, target):
     raise ValueError(f"Could not find the last occurrence of '{target}' within the array.")
 
 
-def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, play_status, who, verbose):
+def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, missing_cards, play_status, who, verbose):
     if verbose:
-        print(f"select_right_card_for_play for player {player_i} {hand_str} {play_status}")
+        print(f"select_right_card_for_play for player {player_i} {hand_str} Play status: {play_status}")
     if len(candidate_cards) == 1:
         return candidate_cards[0].card, who
     
-    if verbose:
-        for card in candidate_cards:
-            print(card)
-
     if play_status == "Discard":
         # As we dont give count, just discard smallest if dummy
         # consider other rules in trump
@@ -148,13 +144,14 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
                     if len(suits_westeast) < 2:
                         if verbose:
-                            print("Opponents got at most 1 card in the suit, no calculations")
+                            print("Opponents got at most one card in the suit, no calculations")
+                        return candidate_cards[0].card, who 
+                    if len(suits_westeast) > 6 and "SHDC"[interesting_suit] != contract[1]:
+                        if verbose:
+                            print("Opponents got more cards in the suit than us, no calculations")
                         return candidate_cards[0].card, who 
                     from suitc.SuitC import SuitCLib
                     suitc = SuitCLib(False)
-                    if verbose: 
-                        print(f"SuitC: {suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
-
 
                     card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
                     suitc_card = None
@@ -167,7 +164,11 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                             #print(play['Plays'][0]['Tricks'])
                             #print("Tricks", play['Plays'][0]['Tricks'], " Max: ",max(len(suits_north),len(suits_south)))
                             if play['Plays'][0]['Tricks'] == max(len(suits_north),len(suits_south)):
-                                return candidate_cards[0].card, who
+                                if play['Plays'][0]['Percentage'] == 100:
+                                    print(f"SuitC dropped as we can take all tricks {current_count} {original_count} ")
+                                    return candidate_cards[0].card, who
+                            # We can have more than one play for MAX
+                            # So currently we are then selecting lowest card. Should that be different
                             if "MAX" in play["OptimumPlayFor"]:
                                 if len(play["GameTree"]) > 0:
                                     suitc_card = play["GameTree"]["T"]
@@ -201,11 +202,11 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                             else:
                                 if models.double_dummy:
                                     if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
-                                        if candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.1:
+                                        if candidate_card.expected_tricks_dd and candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.1:
                                             return candidate_card.card, "SuitC-DD"
                                 else:
                                     if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
-                                        if candidate_card.expected_tricks_sd > candidate_cards[0].expected_tricks_sd - 0.1:
+                                        if candidate_card.expected_tricks_sd and candidate_card.expected_tricks_sd > candidate_cards[0].expected_tricks_sd - 0.1:
                                             return candidate_card.card, "SuitC-SD"
                 return candidate_cards[0].card, who
     

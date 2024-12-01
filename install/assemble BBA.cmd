@@ -1,0 +1,50 @@
+python -m PyInstaller table_manager_client.spec --noconfirm
+python -m PyInstaller TMCGui.spec --noconfirm
+
+robocopy ..\BBA\CC "BBA\BBA\CC" BBA-21GF.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" BBA-SAYC.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" BEN-21GF.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" BEN-Sayc.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" BlueChip-Sayc.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" GIB-21GF.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" GIB-BBO.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" Lia-21GF.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" Q-Plus 21GF.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" RoboSayc.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" Shark-Sayc.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" WBridge5-Sayc.bbsa
+
+robocopy ..\src\config\BBA "BBA\config" BBA-21GF.conf
+robocopy ..\src\config\BBA "BBA\config" BBA-SAYC.conf
+robocopy ..\src\config\BBA "BBA\config" BEN-21GF.conf
+robocopy ..\src\config\BBA "BBA\config" BEN-Sayc.conf
+robocopy ..\src\config\BBA "BBA\config" BlueChip-Sayc.conf
+robocopy ..\src\config\BBA "BBA\config" GIB-21GF.conf
+robocopy ..\src\config\BBA "BBA\config" GIB-BBO.conf
+robocopy ..\src\config\BBA "BBA\config" Lia-21GF.conf
+robocopy ..\src\config\BBA "BBA\config" Q-Plus 21GF.conf
+robocopy ..\src\config\BBA "BBA\config" RoboSayc.conf
+robocopy ..\src\config\BBA "BBA\config" Shark-Sayc.conf
+robocopy ..\src\config\BBA "BBA\config" WBridge5-Sayc.conf
+
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E righty*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E lefty*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Lead-*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E dummy_*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E decl_*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E BEN-*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Blue*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E GIB-*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Lia-*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Q-Plus*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Shark-*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E RoboSayc-*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E WBridge5-*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Contract_*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E SD_*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E RPDD_*
+robocopy dist\TMCGUI "BBA" /E
+robocopy dist\table_manager_client "BBA" /E
+robocopy dist\table_manager_client\_internal\bin "BBA\bin" /E
+robocopy ..\src\nn "BBA\nn" *tf2.py*
+

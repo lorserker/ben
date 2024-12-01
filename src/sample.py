@@ -195,13 +195,41 @@ class Sample:
             print(f"Found {len(accepted_samples)} samples for bidding. Quality={quality}, Samplings={samplings}, Auction{auction_so_far}")
         
         if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and len(auction_so_far) >= 8:
-            print(f"{Fore.RED}Quality {quality:.2f} too low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}")
+            print(f"{Fore.RED}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}")
             print(f"{Fore.RED}Skipping last bidding round{Fore.RESET}")
-            auction_so_far = auction_so_far[:-4]
+            auction_so_far_copy = auction_so_far.copy()
+            auction_so_far_copy = auction_so_far_copy[:-4]
             needed_samples = needed_samples / 4
             # Consider transferring found samples, but we also need score and quality then
             accepted_samples = []
-            return self.generate_samples_iterative(auction_so_far, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples)
+            return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples)
+
+
+        if self.sample_previous_round_if_needed and quality < self.bid_accept_threshold_bidding and len(auction_so_far) >= 8:
+            print(f"{Fore.RED}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}")
+            print(f"{Fore.RED}Skipping their doubles{Fore.RESET}")
+            auction_updated = False
+            auction_so_far_copy = auction_so_far.copy()
+            # Replace every second 'X' starting from the last
+            count = 0
+            for i in range(len(auction_so_far) - 1, -1, -1):  # Iterate backwards
+                if auction_so_far[i] == 'X':
+                    count += 1
+                    if count % 2 == 1:  # Replace only every second 'X'
+                        auction_updated = True
+                        auction_so_far_copy[i] = 'PASS'
+                else:
+                    if auction_so_far_copy[i] != 'PASS':
+                        break
+            if auction_updated:
+                print(f"{Fore.RED}Updated auction {auction_so_far_copy}{Fore.RESET}")
+                needed_samples = needed_samples / 4
+                # Consider transferring found samples, but we also need score and quality then
+                accepted_samples = []
+                return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples)
+            else:
+                print(f"{Fore.RED}Could not update auction {auction_so_far}{Fore.RESET}")
+            # Was there a X or XX we can replace with P, then just try again
 
         return accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings
 
@@ -374,7 +402,7 @@ class Sample:
     def get_bidding_info(self, n_steps, auction, nesw_i, hand, vuln, models):
         assert n_steps > 0, "n_steps should be greater than zero"
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, models, models.n_cards_bidding)
-        p_hcp, p_shp = models.binfo_model.model(A)
+        p_hcp, p_shp = models.binfo_model.pred_fun(A)
         if tf.is_tensor(p_hcp):
             p_hcp = p_hcp.numpy()
             p_shp = p_shp.numpy()
@@ -406,7 +434,7 @@ class Sample:
             X[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, position-1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
 
             # Predict bids based on the model for the specific position
-            sample_bids, _ = model.model_seq(X)
+            sample_bids, _ = model.pred_fun_seq(X)
             # Check if sample_bids is a TensorFlow tensor
             if tf.is_tensor(sample_bids):
                 sample_bids = sample_bids.numpy()
@@ -631,7 +659,7 @@ class Sample:
 
             A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models, models.n_cards_bidding)
 
-            p_hcp, p_shp = models.binfo_model.model(A)
+            p_hcp, p_shp = models.binfo_model.pred_fun(A)
             if tf.is_tensor(p_hcp):
                 p_hcp = p_hcp.numpy()
                 p_shp = p_shp.numpy()
@@ -814,7 +842,7 @@ class Sample:
 
         A = binary.get_auction_binary_sampling(n_steps, auction, lead_index, handbidding, vuln, models, models.n_cards_bidding)
 
-        p_hcp, p_shp = binfo_model.model(A)
+        p_hcp, p_shp = binfo_model.pred_fun(A)
         if tf.is_tensor(p_hcp):
             p_hcp = p_hcp.numpy()
             p_shp = p_shp.numpy()
@@ -823,9 +851,9 @@ class Sample:
         b[:, 3:] = p_shp.reshape((-1, n_steps, 12))[:, -1, :].reshape((-1, 12))
 
         if (contract[1] == "N"):
-            lead_softmax = models.lead_nt_model.model(x, b)
+            lead_softmax = models.lead_nt_model.pred_fun(x, b)
         else:
-            lead_softmax = models.lead_suit_model.model(x, b)
+            lead_softmax = models.lead_suit_model.pred_fun(x, b)
         if self.lead_accept_threshold_suit:
             # We count the probability for each suit
             quartile_probabilities = []
@@ -882,9 +910,9 @@ class Sample:
 
         actual_bids, _ = bidding.get_bid_ids(auction, nesw_i, n_steps)
         if partner:
-            sample_bids, _ = models.bidder_model.model_seq(X)
+            sample_bids, _ = models.bidder_model.pred_fun_seq(X)
         else:
-            sample_bids, _ = models.opponent_model.model_seq(X)
+            sample_bids, _ = models.opponent_model.pred_fun_seq(X)
         if tf.is_tensor(sample_bids):
             sample_bids = sample_bids.numpy()
         sample_bids = sample_bids.reshape((sample_hands.shape[0], n_steps, -1))
@@ -1189,7 +1217,7 @@ class Sample:
 
         A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models, models.n_cards_bidding)
 
-        p_hcp, p_shp = models.binfo_model.model(A)
+        p_hcp, p_shp = models.binfo_model.pred_fun(A)
 
         if tf.is_tensor(p_hcp):
             p_hcp = p_hcp.numpy()
@@ -1333,7 +1361,7 @@ class Sample:
             # Depending on suit or NT we must select the right model
             # 0-3 is for NT 4-7 is for suit
             # When the player is instantiated the right model is selected, but here we get it from the configuration
-            p_cards = models.player_models[p_i+playermodelindex].model(states[p_i][:, :n_tricks_pred, :])
+            p_cards = models.player_models[p_i+playermodelindex].pred_fun(states[p_i][:, :n_tricks_pred, :])
             if tf.is_tensor(p_cards):
                 p_cards = p_cards.numpy()
             card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]

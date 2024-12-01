@@ -2,6 +2,7 @@
 import clr
 import sys
 import os
+import util
 
 sys.path.append("..")
 from src.objects import BidResp
@@ -11,7 +12,10 @@ from colorama import Fore, Back, Style, init
 init()
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
-BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+if BEN_HOME == '.':
+    BIN_FOLDER = os.getcwd().replace(os.path.sep + "src","")+ os.path.sep + 'bin'
+else:
+    BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':
     EPBot_LIB = 'EPBot86'
 elif sys.platform == 'darwin':
@@ -20,8 +24,6 @@ else:
     EPBot_LIB = 'N/A'
 
 EPBot_PATH = os.path.join(BIN_FOLDER, EPBot_LIB)
-
-#The error you're encountering suggests that the info_meaning property is not directly accessible as an attribute in the EPBot class. Instead, you should use the get_info_meaning and set_info_meaning methods that are automatically generated for properties with a getter and setter in .NET.
 
 
 class BBABotBid: 
@@ -35,25 +37,32 @@ class BBABotBid:
     SCORING_IMP = 1
 
     def __init__(self, ns_system, ew_system, position, hand, vuln, dealer, scoring_matchpoint, verbose):
+
+
+        self.verbose = verbose
+        # Load the .NET assembly
         try:
-            # Load the .NET assembly and import the types and classes from the assembly
-            try:
-                clr.AddReference(EPBot_PATH)
-            except Exception as ex:
-                # Try loading with .dll extension
-                clr.AddReference(EPBot_PATH+'.dll')
+            util.load_dotnet_assembly(EPBot_PATH)
             from EPBot86 import EPBot
-            print(f"EPBot Version (DLL): {EPBot().version()}")
+            # Load the .NET assembly and import the types and classes from the assembly
+            if self.verbose:
+                print(f"EPBot Version (DLL): {EPBot().version()}")
         except Exception as ex:
             # Provide a message to the user if the assembly is not found
             print(f"{Fore.RED}Error: Unable to load EPBot86.dll. Make sure the DLL is in the ./bin directory")
             print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
             print(f"Make sure the dll is not writeprotected{Fore.RESET}")
             print('Error:', ex)
-            raise ex
-        self.verbose = verbose
+            sys.exit(1)
+        if ew_system == None and ns_system == None:  
+            return
+        if ew_system == '-1' or ns_system == '-1':  
+            print(f"{Fore.RED}Error: No CC defined for BBA{Fore.RESET}")
+            sys.exit(1)
         self.ns_system = ns_system
         self.ew_system = ew_system
+        self.ns = -1
+        self.ew = -1
         self.vuln = vuln
         self.hand_str = hand.split('.')
         self.hand_str.reverse()
@@ -62,10 +71,10 @@ class BBABotBid:
             print(f"BBA Version (DLL): {self.player.version()}")
         self.dealer = dealer
         self.position = position
+        self.conventions_ns, self.conventions_ew = self.load_ccs()
         # Set system types for NS and EW
-        self.player.set_system_type(self.C_NS,int(ns_system))
-        self.player.set_system_type(self.C_WE,int(ew_system))
-        self.conventions_ns, self.conventions_ew = self.load_ccs(ns_system, ew_system)
+        self.player.set_system_type(self.C_NS,int(self.ns))
+        self.player.set_system_type(self.C_WE,int(self.ew))
         if self.verbose:
             # This is what we play
             print("System NS:", self.player.system_name(0))
@@ -108,20 +117,19 @@ class BBABotBid:
     async def async_bid(self, auction, alert=None):
         return self.bid(auction)
 
-    def load_ccs(self, ns_system, ew_system):
+    def load_ccs(self):
         # Initialize the dictionary to store the conventions
         conventions_ew = {}
 
         # Open the file and process each line
-        with open(f'./config/{ew_system}ew.bbsa', 'r') as file:
+        with open(self.ew_system, 'r') as file:
             for i, line in enumerate(file):
                 # Split the line into key and value
                 key, value = line.strip().split(' = ')
                 # Special case for the first line (System type)
                 if i == 0 and key == "System type":
                     cc = int(value)  # Store the value as an integer
-                    if cc != ew_system:
-                        print(f"{Fore.YELLOW}CC for EW has not the expected system type {cc} != {ew_system}. Using {ew_system}. {Style.RESET_ALL}")
+                    self.ew = cc
                 else:
                     # Convert other values to boolean (1 -> True, 0 -> False)
                     conventions_ew[key] = bool(int(value))
@@ -129,7 +137,7 @@ class BBABotBid:
         conventions_ns = {}
 
         # Open the file and process each line
-        with open(f'./config/{ns_system}ns.bbsa', 'r') as file:
+        with open(self.ns_system, 'r') as file:
             for i, line in enumerate(file):
                 # Split the line into key and value
                 key, value = line.strip().split(' = ')
@@ -137,8 +145,7 @@ class BBABotBid:
                 # Special case for the first line (System type)
                 if i == 0 and key == "System type":
                     cc = int(value)  # Store the value as an integer
-                    if cc != ns_system:
-                        print(f"{Fore.YELLOW}CC for NS has not the expected system type {cc} != {ns_system}. Using {ns_system}.{Style.RESET_ALL}")
+                    self.ns = cc
                 else:
                     # Convert other values to boolean (1 -> True, 0 -> False)
                     conventions_ns[key] = bool(int(value))

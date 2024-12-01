@@ -487,11 +487,11 @@ def frontend():
 
 @app.route('/api')
 def index():
-    return template('api')
+    return template('api.tpl')
 
 @app.route('/gib')
 def index():
-    return template('gib')
+    return template('gib.tpl')
 
 @app.route('/api/deals/<deal_id>')
 def deal_data(deal_id):

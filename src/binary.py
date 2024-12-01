@@ -412,7 +412,7 @@ def get_shape_for_lead(auction, hand, vuln, contract, models, n_cards):
 
     A = get_auction_binary_sampling(n_steps, auction, lead_index, hand, vuln, models, models.n_cards_bidding)
 
-    p_hcp, p_shp = models.binfo_model.model(A)
+    p_hcp, p_shp = models.binfo_model.pred_fun(A)
     if tf.is_tensor(p_hcp):
         p_hcp = p_hcp.numpy()
         p_shp = p_shp.numpy()

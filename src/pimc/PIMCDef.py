@@ -1,5 +1,5 @@
 import traceback
-import clr
+import util
 import sys
 import os
 import math
@@ -13,7 +13,10 @@ sys.path.append("..")
 from colorama import Fore, Back, Style, init
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
-BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+if BEN_HOME == '.':
+    BIN_FOLDER = 'bin'
+else:
+    BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 if sys.platform == 'win32':
     BGADLL_LIB = 'BGADLL'
 elif sys.platform == 'darwin':
@@ -28,12 +31,8 @@ class BGADefDLL:
 
     def __init__(self, models, northhand, southhand, contract, is_decl_vuln, player_i, sampler, verbose):
         try:
-           # Load the .NET assembly and import the types and classes from the assembly
-            try:
-                clr.AddReference(BGADLL_PATH)
-            except Exception as ex:
-                # Try loading with .dll extension
-                clr.AddReference(BGADLL_PATH+'.dll')
+            # Load the .NET assembly and import the types and classes from the assembly
+            util.load_dotnet_assembly(BGADLL_PATH)
             from BGADLL import PIMCDef, Hand, Constraints, Extensions, Play
 
         except Exception as ex:
@@ -45,6 +44,8 @@ class BGADefDLL:
             print("Make sure the dll is not write protected")
             print(f"*****************************************************************************{Fore.RESET}")
             sys.exit(1)
+        if models == None:   
+            return
 
         self.models = models       
         self.sampler = sampler     
@@ -64,6 +65,10 @@ class BGADefDLL:
         # Constraint are Clubs, Diamonds ending with hcp
         self.partner_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
         self.declarer_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
+        self.already_shown_partner = [0,0,0,0]
+        self.already_shown_declarer = [0,0,0,0]
+        self.already_shown_hcp_partner = 0
+        self.already_shown_hcp_declarer = 0
         self.suit = bidding.get_strain_i(contract)
         self.mintricks = 13 - (int(contract[0]) + 6) + 1
         self.contract = contract
@@ -93,10 +98,16 @@ class BGADefDLL:
         if self.verbose:
             print("mintricks",self.mintricks)
             print("tricks_taken",self.tricks_taken)
-
+            
     def set_shape_constraints(self, min_partner, max_partner, min_declarer, max_declarer, quality):
+
+        # Perhaps we should add a constraint on max shape for a passed hand
+        # Opening lead might set some constraints on length in suit
+        # ie leading an unsupported king in an unbid suit is normally single or double
         if self.constraints_updated:
-            return
+            if not self.models.pimc_constraints_each_trick:
+                print(f"{Fore.RED}Constraints already set{Fore.RESET}")
+                return
 
         # Perhaps we should have a larger margin, depending on the bidding from this hand
         # if no bids, the hand can have a very long suits without having bid
@@ -108,28 +119,15 @@ class BGADefDLL:
             margin_declarer = self.models.pimc_margin_suit_bad_samples
             margin_partner = self.models.pimc_margin_suit_bad_samples
 
-        # Perhaps we should use another margin for trump
-
-        allready_shown_partner = [0,0,0,0]
-        allready_shown_partner[0] = 13 - self.partner_constraints.MaxSpades
-        allready_shown_partner[1] = 13 - self.partner_constraints.MaxHearts
-        allready_shown_partner[2] = 13 - self.partner_constraints.MaxDiamonds
-        allready_shown_partner[3] = 13 - self.partner_constraints.MaxClubs
-        allready_shown_declarer = [0,0,0,0]
-        allready_shown_declarer[0] = 13 - self.declarer_constraints.MaxSpades
-        allready_shown_declarer[1] = 13 - self.declarer_constraints.MaxHearts
-        allready_shown_declarer[2] = 13 - self.declarer_constraints.MaxDiamonds
-        allready_shown_declarer[3] = 13 - self.declarer_constraints.MaxClubs
-
         if self.verbose:
-            print("allready_shown_declarer",allready_shown_declarer)
-            print("allready_shown_partner",allready_shown_partner)
+            print("already_shown_declarer", self.already_shown_declarer)
+            print("already_shown_partner", self.already_shown_partner)
 
         for i in range(4):
-            min_partner[i] = max(min_partner[i] - margin_partner - allready_shown_partner[i], 0)
-            max_partner[i] = min(max_partner[i] + margin_partner - allready_shown_partner[i], 13)
-            min_declarer[i] = max(min_declarer[i] - margin_declarer - allready_shown_declarer[i], 0)
-            max_declarer[i] = min(max_declarer[i] + margin_declarer - allready_shown_declarer[i], 13)
+            min_partner[i] = max(min_partner[i] - margin_partner - self.already_shown_partner[i], 0)
+            max_partner[i] = min(max_partner[i] + margin_partner - self.already_shown_partner[i], 13)
+            min_declarer[i] = max(min_declarer[i] - margin_declarer - self.already_shown_declarer[i], 0)
+            max_declarer[i] = min(max_declarer[i] + margin_declarer - self.already_shown_declarer[i], 13)
 
         if self.verbose:
             print(min_partner, max_partner, min_declarer, max_declarer)
@@ -161,20 +159,19 @@ class BGADefDLL:
         # Perhaps we should add a constraint on max hcp for a passed hand
         if self.constraints_updated:
             return
-        allready_shown_declarer = 37 - self.declarer_constraints.MaxHCP
-        allready_shown_partner = 37 - self.partner_constraints.MaxHCP
+        #  Constraints are for the remaining tricks and input if for full samples, so we subtract previous played card
         if self.verbose:
             print(min_partner, max_partner, min_declarer, max_declarer, quality)
-            print("allready_shown_d",allready_shown_declarer)
-            print("allready_shown_p",allready_shown_partner)
+            print("already_shown_d",self.already_shown_hcp_declarer)
+            print("already_shown_p",self.already_shown_hcp_partner)
         if quality:
             margin = self.models.pimc_margin_hcp
         else:
             margin = self.models.pimc_margin_hcp_bad_samples
-        self.declarer_constraints.MinHCP = max(min_declarer-margin-allready_shown_declarer, 0)
-        self.declarer_constraints.MaxHCP = min(max_declarer+margin-allready_shown_declarer, 37)
-        self.partner_constraints.MinHCP = max(min_partner-margin-allready_shown_partner, 0)
-        self.partner_constraints.MaxHCP = min(max_partner+margin-allready_shown_partner, 37)
+        self.declarer_constraints.MinHCP = max(min_declarer-margin-self.already_shown_hcp_declarer, 0)
+        self.declarer_constraints.MaxHCP = min(max_declarer+margin-self.already_shown_hcp_declarer, 37)
+        self.partner_constraints.MinHCP = max(min_partner-margin-self.already_shown_hcp_partner, 0)
+        self.partner_constraints.MaxHCP = min(max_partner+margin-self.already_shown_hcp_partner, 37)
 
         if self.verbose:
             print("set_hcp_constraints")
@@ -234,16 +231,23 @@ class BGADefDLL:
         from BGADLL import Card as PIMCCard
         self.current_trick.Add(PIMCCard(card))
         self.opposHand.Remove(PIMCCard(card))
+        suit = real_card.suit
+
         if playedBy == 1:
             self.dummyhand.Remove(PIMCCard(card))
         if playedBy == self.player_i:
             self.defendinghand.Remove(PIMCCard(card))
         if (playedBy == 0 and self.player_i == 2):
             self.partnerhand.Add(PIMCCard(card))
+            self.already_shown_hcp_partner += self.calculate_hcp(real_card.rank)
+            self.already_shown_partner[suit] += 1
+
         if (playedBy == 2 and self.player_i == 0):
             self.partnerhand.Add(PIMCCard(card))
         if (playedBy == 3):
             self.declarerhand.Add(PIMCCard(card))
+            self.already_shown_hcp_declarer += self.calculate_hcp(real_card.rank)
+            self.already_shown_declarer[suit] += 1
 
         # We will update constraints with samples after the opening lead
         if not openinglead:
@@ -267,8 +271,58 @@ class BGADefDLL:
             # For now, let's return None
             return None
 
+    def update_missing_cards(self, missing_cards):
+        # Define suits mapping
+        suits = {
+            0: "Spades",
+            1: "Hearts",
+            2: "Diamonds",
+            3: "Clubs"
+        }
+        for i, suit in suits.items():
+            value = int(missing_cards[i])
+            # Update declarer constraints with minimum values
+            if value < getattr(self.declarer_constraints, f"Min{suit}"):
+                setattr(self.declarer_constraints, f"Min{suit}", value)
+            if value < getattr(self.declarer_constraints, f"Max{suit}"):
+                setattr(self.declarer_constraints, f"Max{suit}", int(value))
+            # Update partner constraints with minimum values
+            if value < getattr(self.partner_constraints, f"Min{suit}"):
+                setattr(self.partner_constraints, f"Min{suit}", value)
+            if value < getattr(self.partner_constraints, f"Max{suit}"):
+                setattr(self.partner_constraints, f"Max{suit}", value)
+            
+    def update_voids(self,shown_out_suits):
+        # Define suits mapping
+        suits = {
+            0: "Spades",
+            1: "Hearts",
+            2: "Diamonds",
+            3: "Clubs"
+        }
+
+        # Convert shown_out_suits[0] and shown_out_suits[2] to sets for O(1) lookup
+        shown_suits_lho = set(shown_out_suits[0])
+        shown_suits_rho = set(shown_out_suits[2])
+
+        # Iterate over all suits
+        for suit_index, suit_name in suits.items():
+            # Update LHO constraints based on shown_suits_0
+            if suit_index in shown_suits_lho:
+                setattr(self.declarer_constraints, f"Min{suit_name}", 0)
+                setattr(self.declarer_constraints, f"Max{suit_name}", 0)
+                setattr(self.declarer_constraints, f"Min{suit_name}", 0)
+                setattr(self.declarer_constraints, f"Max{suit_name}", 0 if suit_index in shown_suits_rho else 13)
+            
+            # Update RHO constraints based on shown_suits_2
+            elif suit_index in shown_suits_rho:
+                setattr(self.partner_constraints, f"Min{suit_name}", 0)
+                setattr(self.partner_constraints, f"Max{suit_name}", 0)
+                setattr(self.partner_constraints, f"Min{suit_name}", 0)
+                setattr(self.partner_constraints, f"Max{suit_name}", 0 if suit_index in shown_suits_lho else 13)
+
     # Define a Python function to find a bid
-    def nextplay(self, player_i, shown_out_suits):
+    def nextplay(self, player_i, shown_out_suits, missing_cards):
         from BGADLL import Constraints, Macros, Card as PIMCCard
 
         try:
@@ -281,53 +335,9 @@ class BGADefDLL:
             raise Exception("player_i must be equal to self.player_i")
         
 
-        # Declarer
-        idx = 3
-        # Partner
-        if self.player_i == 0:
-            idx1 = 2
-        else:
-            idx1 = 0
-        if 0 in shown_out_suits[idx]:
-            self.declarer_constraints.MinSpades = 0
-            self.declarer_constraints.MaxSpades = 0
-            self.partner_constraints.MinSpades = 0
-            self.partner_constraints.MaxSpades = 13
-        if 1 in shown_out_suits[idx]:
-            self.declarer_constraints.MinHearts = 0
-            self.declarer_constraints.MaxHearts = 0
-            self.partner_constraints.MinHearts = 0
-            self.partner_constraints.MaxHearts = 13
-        if 2 in shown_out_suits[idx]:
-            self.declarer_constraints.MinDiamonds = 0
-            self.declarer_constraints.MaxDiamonds = 0
-            self.partner_constraints.MinDiamonds = 0
-            self.partner_constraints.MaxDiamonds = 13
-        if 3 in shown_out_suits[idx]:
-            self.declarer_constraints.MinClubs = 0
-            self.declarer_constraints.MaxClubs = 0
-            self.partner_constraints.MinClubs = 0
-            self.partner_constraints.MaxClubs = 13
-        if 0 in shown_out_suits[idx1]:
-            self.partner_constraints.MinSpades = 0
-            self.partner_constraints.MaxSpades = 0
-            self.declarer_constraints.MinSpades = 0
-            self.declarer_constraints.MaxSpades = 13
-        if 1 in shown_out_suits[idx1]:
-            self.partner_constraints.MinHearts = 0
-            self.partner_constraints.MaxHearts = 0
-            self.declarer_constraints.MinHearts = 0
-            self.declarer_constraints.MaxHearts = 13
-        if 2 in shown_out_suits[idx1]:
-            self.partner_constraints.MinDiamonds = 0
-            self.partner_constraints.MaxDiamonds = 0
-            self.declarer_constraints.MinDiamonds = 0
-            self.declarer_constraints.MaxDiamonds = 13
-        if 3 in shown_out_suits[idx1]:
-            self.partner_constraints.MinClubs = 0
-            self.partner_constraints.MaxClubs = 0
-            self.declarer_constraints.MinClubs = 0
-            self.declarer_constraints.MaxClubs = 13
+        
+        self.update_voids(shown_out_suits)
+        self.update_missing_cards(missing_cards)
 
         if self.models.pimc_apriori_probability:
             hands = [self.dummyhand, self.defendinghand, self.declarerhand, self.partnerhand]
@@ -429,30 +439,23 @@ class BGADefDLL:
                 # If we found no playout we need to reevaluate without constraints
                 if count == 0:
 
-                    print(card)
-                    print("Trying without constraints")
-                    print("max_playout",self.max_playout)
-                    print(self.pimc.LegalMovesToString)
-                    print(f"Playouts: {self.pimc.Playouts}")
-                    print("Combinations:", self.pimc.Combinations)
-                    print("Examined:", self.pimc.Examined)
-                    print(self.dummyhand.ToString(), self.defendinghand.ToString())
-                    print(self.opposHand.ToString(), self.current_trick.ListAsString())
-                    print("min tricks",self.mintricks)
-                    print("Voids",shown_out_suits)
-                    print(Macros.Player.West if player_i == 0 else Macros.Player.East)
-                    print("self.player_i",self.player_i)
-                    print("Over dummy", self.player_i == 2)
-                    print("Declarer", self.declarer_constraints.ToString())
-                    print("Partner", self.partner_constraints.ToString())
-                    print("Trump:",trump)
-                    print("Other hands",self.declarerhand.ToString(), self.partnerhand.ToString())
+                    print(f"{Fore.YELLOW}PIMCDef did not find any playouts. Trying without constraints{Fore.RESET} {self.pimc.LegalMovesToString}")
+                    if self.verbose:
+                        print(f"Max_playout: {self.max_playout} Playouts: {self.pimc.Playouts} Combinations: {self.pimc.Combinations} Examined:{self.pimc.Examined}")
+                        print(self.dummyhand.ToString(), self.defendinghand.ToString(), self.opposHand.ToString(), self.current_trick.ListAsString())
+                        print("Trump:",trump, "min tricks",self.mintricks)
+                        print("Voids",shown_out_suits)
+                        print(Macros.Player.West if player_i == 0 else Macros.Player.East)
+                        print("self.player_i",self.player_i)
+                        print("Over dummy", self.player_i == 2)
+                        print("Declarer", self.declarer_constraints.ToString(), "Partner", self.partner_constraints.ToString())               
+                        print("Other hands",self.declarerhand.ToString(), self.partnerhand.ToString())
                     if self.declarer_constraints.MaxHCP == 99:
-                        print("Loop calling PIMC")
+                        print(f"{Fore.RED}Loop calling PIMCDef{Fore.RESET}")
                         sys.exit(1)
                     self.partner_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 99)
                     self.declarer_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 99)
-                    card_result = self.nextplay(player_i, shown_out_suits)
+                    card_result = self.nextplay(player_i, shown_out_suits, missing_cards)
                     # Reset max HCP so next call will work
                     self.partner_constraints.MaxHCP = 37
                     self.declarer_constraints.MaxHCP = 37
@@ -488,7 +491,7 @@ class BGADefDLL:
 
                     # Second element is the score. We need to calculate it
                     score = (sum(self.score_by_tricks_taken[entry.Item1 + self.tricks_taken] * entry.Item2 for entry in output) / total_weight) if total_weight > 0 else 0
-                    msg = f"LHO: {self.lho_constraints.ToString()}|RHO: {self.rho_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+                    msg = f"Decl: {self.declarer_constraints.ToString()}|Partner: {self.partner_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
 
                     card_result[card52] = (round(tricks_avg, 2), round(score), round(making_probability, 2), msg)
                     if self.verbose:
@@ -503,24 +506,28 @@ class BGADefDLL:
 
         if self.models.use_real_imp_or_mp:
             msg = f"Decl: {self.declarer_constraints.ToString()}|Partner: {self.partner_constraints.ToString()}|{self.pimc.Combinations} - {self.pimc.Examined} - {self.pimc.Playouts}"
+            if self.verbose:
+                print("Tricks")
+                print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>2}' for x in v[:10])}..." for k, v in results.items()))
+                print("score_by_tricks_taken")
+                print(self.score_by_tricks_taken)
             real_scores = calculate.calculate_score(results, self.tricks_taken, self.player_i, self.score_by_tricks_taken)
             if self.models.matchpoint:
                 card_ev = calculate.calculate_mp_score(real_scores)
             else:
                 if self.verbose:
                     print("Real scores")
-                    print(real_scores)
+                    print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>5}' for x in v[:10])}..." for k, v in real_scores.items()))
                 card_ev = calculate.calculate_imp_score(real_scores)
 
             card_result = {}
             for key in card_ev.keys():
                 card_result[key] = (round(e_tricks[key], 2), round(card_ev[key],2), making[key], msg)
                 if self.verbose:
-                    print(f'{key} {round(e_tricks[key],3):0.3f} {round(card_ev[key],2):5.2f} {round(making[key],3):0.3f}')
+                    print(f'{Card.from_code(key)} {round(e_tricks[key],3):0.3f} {round(card_ev[key],2):5.2f} {round(making[key],3):0.3f}')
                         
 
         if self.verbose:
-            print(card_result)
             print(f"Returning {len(card_result)} from PIMCDef nextplay")
 
         return card_result

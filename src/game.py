@@ -2,33 +2,33 @@ import os
 import sys
 import platform
 os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
-# Just disables the warnings from tensorflow
+# Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
-os.environ["GRPC_VERBOSITY"] = "error"
-os.environ["GLOG_minloglevel"] = "3"
+os.environ["GRPC_VERBOSITY"] = "ERROR"
+os.environ["GLOG_minloglevel"] = "2"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
-import asyncio
 import logging
-import compare
-import scoring
-
+import traceback
+import util
 # Intil fixed in Keras, this is needed to remove a wrong warning
 import warnings
 warnings.filterwarnings("ignore")
 
-
 # Set logging level to suppress warnings
-logging.getLogger().setLevel(logging.CRITICAL)
+logging.getLogger().setLevel(logging.ERROR)
 
 # Configure absl logging to suppress logs
-#import absl.logging
+import absl.logging
 # Suppress Abseil logs
-#absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
-#absl.logging.set_verbosity(absl.logging.FATAL)
-#absl.logging.set_stderrthreshold(absl.logging.FATAL)
+absl.logging.get_absl_handler().python_handler.stream = open(os.devnull, 'w')
+absl.logging.set_verbosity(absl.logging.FATAL)
+absl.logging.set_stderrthreshold(absl.logging.FATAL)
 
-# This import is only to help PyInstaller when generating the executables
 import tensorflow as tf
+
+import asyncio
+import compare
+import scoring
 
 import pprint
 import time
@@ -56,6 +56,17 @@ from util import calculate_seed, get_play_status, get_singleton, get_possible_ca
 from colorama import Fore, Back, Style, init
 
 init()
+
+def handle_exception(e):
+    sys.stderr.write(f"{str(e)}\n")
+    traceback_str = traceback.format_exception(type(e), e, e.__traceback__)
+    traceback_lines = "".join(traceback_str).splitlines()
+    file_traceback = []
+    for line in reversed(traceback_lines):
+        if line.startswith("  File"):
+            file_traceback.append(line.strip()) 
+    if file_traceback:
+        sys.stderr.write(f"{Fore.RED}{'\n'.join(file_traceback)}\n{Fore.RESET}")
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -94,7 +105,7 @@ class Driver:
         self.channel = factory.create_channel()
 
         if seed is not None:
-            print(f"Setting seed={seed}")
+            print(f"Setting seed = {seed}")
             np.random.seed(seed)
             tf.random.set_seed(seed)
 
@@ -126,7 +137,7 @@ class Driver:
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
-        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, "", self.ns, self.ew,  32)
+        self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, "", self.ns, self.ew,  self.models.n_cards_bidding)
 
         if bidding_only != "False":
             auction_part = auction_str.split(' ')
@@ -160,7 +171,7 @@ class Driver:
         # Now you can use hash_integer as a seed
         hash_integer = calculate_seed(deal_str)
         if self.verbose:
-            print("Setting seed (Full deal)=",hash_integer)
+            print("Setting seed (Full deal) =",hash_integer)
         np.random.seed(hash_integer)
 
 
@@ -827,6 +838,9 @@ class Driver:
             current_trick.append(card32)
             current_trick52.append(card52)
             card_play[player_i].append(card52)
+            # Just updating to create better validation
+            for card_player in card_players:
+                card_player.set_real_card_played(card52, player_i)
 
         await self.confirmer.confirm()
 
@@ -963,6 +977,15 @@ def random_deal_source():
     while True:
         yield random_deal_board()
 
+# Custom function to convert string to boolean
+def str_to_bool(value):
+    if value.lower() in ['true', '1', 't', 'y', 'yes']:
+        return True
+    elif value.lower() in ['false', '0', 'f', 'n', 'no']:
+        return False
+    raise ValueError("Invalid boolean value")
+
+
 async def main():
     random = True
     #For some strange reason parameters parsed to the handler must be an array
@@ -973,17 +996,17 @@ async def main():
     # Get the path to the config file
     config_path = get_execution_path()
 
-    parser = argparse.ArgumentParser(description="Game server")
+    parser = argparse.ArgumentParser(description="BEN Game server")
     parser.add_argument("--boards", default="", help="Filename for configuration")
-    parser.add_argument("--auto", type=bool, default=False, help="Continue without user confirmation. If a file is provided it will stop at end of file")
+    parser.add_argument("--auto", type=str_to_bool, default=False, help="Continue without user confirmation. If a file is provided it will stop at end of file")
     parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
     parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
-    parser.add_argument("--playonly", type=bool, default=False, help="Just play, no bidding")
+    parser.add_argument("--playonly", type=str_to_bool, default=False, help="Just play, no bidding")
     parser.add_argument("--biddingonly", default="False", help="Just bidding, no play, can be True, NS or EW")
     parser.add_argument("--outputpbn", default="", help="Save each board to this PBN file")
     parser.add_argument("--paronly", default=0, type=int, help="only record deals with this IMP difference from par")
-    parser.add_argument("--facit", default=False, type=bool, help="Calcualte score for the bidding from facit")
-    parser.add_argument("--verbose", type=bool, default=False, help="Output samples and other information during play")
+    parser.add_argument("--facit", default=False, type=str_to_bool, help="Calcualte score for the bidding from facit")
+    parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
     parser.add_argument("--seed", type=int, default=-1, help="Seed for random")
 
     args = parser.parse_args()
@@ -1002,6 +1025,84 @@ async def main():
     facit_score = None
     boards = []
     event = ""
+
+    np.set_printoptions(precision=2, suppress=True, linewidth=200)
+
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py")
+    if util.is_pyinstaller_executable():
+        print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
+    else:
+        print(f"Running in a standard Python environment: {platform.python_version()}")
+
+    print(f"Python version: {sys.version}{Fore.RESET}")
+
+    print(f'Loading configuration.')  
+
+    configuration = conf.load(configfile)
+        
+    if sys.platform == 'win32':
+        # Print the PythonNet version
+        sys.stderr.write(f"PythonNet: {util.get_pythonnet_version()}\n") 
+        sys.stderr.write(f"{util.check_dotnet_version()}\n") 
+
+    sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
+    try:
+        if (configuration["models"]['tf_version'] == "2"):
+            from nn.models_tf2 import Models
+        else: 
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
+    except KeyError:
+            # Default to version 1. of Tensorflow
+            from nn.models import Models
+
+    models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+    
+    if sys.platform != 'win32':
+        print("Disabling PIMC/BBA/SuitC as platform is not win32")
+        models.pimc_use_declaring = False
+        models.pimc_use_defending = False
+        models.use_bba = False
+        models.use_bba_to_count_aces = False
+        models.use_suitc = False
+        
+    print("Config:", configfile)
+    print("System:", models.name)
+
+    if models.use_bba:
+        print("Using BBA for bidding")
+    else:
+        print("Model:   ", models.bidder_model.model_path)
+        print("Opponent:", models.opponent_model.model_path)
+
+    if facit:
+            print("Playing Bidding contest")
+    else:
+        if models.matchpoint:
+            print("Matchpoint mode on")
+        else:
+            print("Playing IMPS mode")
+
+    if models.use_bba or models.use_bba_to_count_aces:
+        print("BBA enabled")    
+        from bba.BBA import BBABotBid
+        bot = BBABotBid(None, None ,None, None, None, None, None, None)
+
+    if models.use_suitc:
+        print("SuitC enabled")
+        from suitc.SuitC import SuitCLib
+        suitc = SuitCLib(verbose)
+
+    if models.pimc_use_declaring or models.pimc_use_defending:
+        print("PIMC enabled")
+        from pimc.PIMC import BGADLL
+        pimc = BGADLL(None, None, None, None, None, None, None)
+        from pimc.PIMCDef import BGADefDLL
+        pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
+
+    from ddsolver import ddsolver
+    print("DDSolver enabled")
+    dds = ddsolver.DDSolver()
 
     if args.boards:
         filename = args.boards
@@ -1036,56 +1137,6 @@ async def main():
         event = "Random deals"
         print("Playing random deals or deals from the client")
  
-    np.set_printoptions(precision=2, suppress=True, linewidth=200)
-
-    print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Loading configuration. Python {platform.python_version()}{Fore.RESET}')  
-
-    configuration = conf.load(configfile)
-        
-    # Print the PythonNet version
-    import clr
-    import Python.Runtime
-    sys.stderr.write(f"pythonnet {Python.Runtime.PythonEngine.Version}\n") 
-    sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
-    try:
-        if (configuration["models"]['tf_version'] == "2"):
-            from nn.models_tf2 import Models
-        else: 
-            # Default to version 1. of Tensorflow
-            from nn.models import Models
-    except KeyError:
-            # Default to version 1. of Tensorflow
-            from nn.models import Models
-
-    models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
-    
-    if sys.platform != 'win32':
-        print("Disabling PIMC/BBA/SuitC as platform is not win32")
-        models.pimc_use_declaring = False
-        models.pimc_use_defending = False
-        models.use_bba = False
-        models.use_suitc = False
-        
-    print("Config:", configfile)
-    print("System:", models.name)
-
-    if models.use_bba:
-        print("Using BBA for bidding")
-    else:
-        print("Model:   ", models.bidder_model.model_path)
-        print("Opponent:", models.opponent_model.model_path)
-
-    if facit:
-            print("Playing Bidding contest")
-    else:
-        if models.matchpoint:
-            print("Matchpoint mode on")
-        else:
-            print("Playing IMPS mode")
-
-    from ddsolver import ddsolver
-    dds = ddsolver.DDSolver()
-
 
     driver = Driver(models, human.ConsoleFactory(), Sample.from_conf(configuration, verbose), seed, dds, verbose)
 
@@ -1232,7 +1283,7 @@ async def main():
 
         print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Board played in {time.time() - t_start:0.1f} seconds.{Fore.RESET}')  
         if not auto:
-            user_input = input("\n Q to quit or any other key for next deal ")
+            user_input = input("\n Q to quit or any other key for next deal.\n ")
             if user_input.lower() == "q":
                 break
         else:
@@ -1245,6 +1296,10 @@ if __name__ == '__main__':
     asyncio.set_event_loop(loop)
     try:
         loop.run_until_complete(main())
+    except ValueError as e:
+        sys.stderr.write(f"{Fore.RED}Error in configuration or communication - typical the models do not match the configuration.{Fore.RESET}\n")
+        handle_exception(e)
+        sys.exit(1)
     except KeyboardInterrupt:
         pass
     finally:
