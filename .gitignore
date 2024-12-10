@@ -114,7 +114,9 @@ src/test.py
 BBA/Boards
 install/dist
 install/BEN
-install/BEN*.zip
 install/MvsM
 install/BBA/
 install/*.zip
+src/TMCGUI.settings.json
+install/BENAll
+scripts/match/bidding/BEN-Sayc

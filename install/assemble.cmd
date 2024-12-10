@@ -5,15 +5,18 @@ python -m PyInstaller gameserver.spec --noconfirm
 python -m PyInstaller appserver.spec --noconfirm
 python -m PyInstaller TMCGui.spec --noconfirm
 python -m PyInstaller BENGui.spec --noconfirm
+python -m PyInstaller BEN.spec --noconfirm
 
-robocopy ..\src\config "BEN\config" /E
-robocopy ..\BBA\CC "BEN\BBA\CC" /E
-robocopy ..\models "BEN\models" /E 
-robocopy dist\game "BEN" /E
-robocopy dist\gameapi "BEN" /E
-robocopy dist\gameserver "BEN" /E
-robocopy dist\appserver "BEN" /E
-robocopy dist\TMCGUI "BEN" /E
-robocopy dist\BENGUI "BEN" /E
-robocopy dist\table_manager_client "BEN" /E
-robocopy ..\src\nn "BEN\nn" *tf2.py*
+robocopy ..\src\config "BENAll\config" /E
+robocopy ..\BBA\CC "BENAll\BBA\CC" /E
+robocopy ..\models "BENAll\models" /E 
+robocopy dist\game "BENAll" /E
+robocopy dist\gameapi "BENAll" /E
+robocopy dist\gameserver "BENAll" /E
+robocopy dist\appserver "BENAll" /E
+robocopy dist\TMCGUI "BENAll" /E
+robocopy dist\BENGUI "BENAll" /E
+robocopy dist\BEN "BENAll" /E
+robocopy dist\table_manager_client "BENAll" /E
+robocopy ..\src\nn "BENAll\nn" *tf2.py*
+robocopy ..\bin "BENAll\bin" /E

@@ -1,6 +1,7 @@
 rem Must run in anaconda BEN configuration
 set BEN_HOME=D:\github\ben\
 call match 0.05 default_nosearch set0010.txt gamedb1
+call match BEN-Sayc BEN-21GF set0010.txt gamedb1
 rem call match 0.10 default_nosearch set0010.txt gamedb2
 rem call match 0.20 default_nosearch set0010.txt gamedb3
 

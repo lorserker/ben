@@ -1,6 +1,4 @@
-import math
 import time
-import pprint
 import sys
 import numpy as np
 import tensorflow as tf
@@ -105,7 +103,13 @@ class BotBid:
         if not self.models.check_final_contract:
             return False
 
-        # We did not rescue bid before our 3rd bid        
+        if self.models.tf_version == 1:
+            sys.stderr.write("Rescue bid not supported for TF 1.x\n")
+            return False
+
+        # We did not rescue bid before our 3rd bid     
+        # We should look at how the bidding continues, as we can't expect partner to bid
+        # Could be a sequence like this 1D-3C-X-4C with A97.AT63.AT8652.
         if my_bid_no < 3:
             return False
 
@@ -363,7 +367,9 @@ class BotBid:
                             print("Adjusted for double", adjust)
                 else:
                     # Just a general adjustment of doubles
-                    if candidate.bid == "X" and candidate.insta_score < 0.5:
+                    # First round doubles are not included
+                    no_bids  = binary.get_number_of_bids(auction) 
+                    if candidate.bid == "X" and candidate.insta_score < 0.5 and no_bids > 4:
                         adjust -= self.models.adjust_X
                         if self.verbose:
                             print("Adjusted for double if insta_score to low", adjust)
@@ -486,27 +492,59 @@ class BotBid:
                     continue
                 X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, sample[(self.seat + 2) % 4], self.models.n_cards_bidding)
                 # Perhaps we should collect all samples, and just make one call to the neural network
-                contract_id, doubled, tricks, score = self.models.contract_model.pred_fun(X)
-                if tf.is_tensor(score):
-                    score = score.numpy()
-                if tf.is_tensor(tricks):
-                    tricks = tricks.numpy()
+                contracts = self.models.contract_model.pred_fun(X)
+                if tf.is_tensor(contracts):
+                    contracts = contracts.numpy()
+                score = 0
+                result = {}
+                for i in range(len(contracts[0])):
+                    # We should make calculations on this, so 4H, %h or even 6H is added, if tricks are fin
+                    if contracts[0][i] > 0.3:
+                        y = np.zeros(5)
+                        suit = bidding.ID2BID[i][1]
+                        strain_i = 'NSHDC'.index(suit)
+                        y[strain_i] = 1
+                        Xt = [np.concatenate((X[0], y), axis=0)]
+                        nn_tricks = self.models.trick_model.pred_fun(Xt)
+                        nn_tricks = nn_tricks.numpy()
+                        max_tricks = None
+                        for j in range(14):
+                            trick_score = 0
+                            if nn_tricks[0][j] > 0.2:
+                                if bidding.ID2BID[i] in result:
+                                    # Append new data to the existing entry
+                                    result[bidding.ID2BID[i]]["Tricks"].append(j)
+                                    result[bidding.ID2BID[i]]["Percentage"].append(round(float(nn_tricks[0][j]), 2))
+                                else:
+                                    # Create a new entry
+                                    result[bidding.ID2BID[i]] = {
+                                        "score": round(float(contracts[0][i]), 2),
+                                        "Tricks": [j],
+                                        "Percentage": [round(float(nn_tricks[0][j]), 2)]
+                                    }   
+                                if nn_tricks[0][j] > trick_score:
+                                    trick_score = nn_tricks[0][j]
+                                    max_tricks = j
+                        if contracts[0][i] > score and not max_tricks is None:
+                            score = contracts[0][i]
+                            contract_id = i
+                            tricks = max_tricks
+                            contract = bidding.ID2BID[contract_id] 
 
-                contract_id = int(contract_id)
-                doubled = bool(doubled)
-                contract = bidding.ID2BID[contract_id] 
+
+                if self.verbose:
+                    print(result)                    
+
                 if score < self.models.min_bidding_trust_for_sample_when_rescue:
                     if self.verbose:
                         print(self.hand_str, [sample[(self.seat + 2) % 4]])
-                        print(f"Skipping sample below level{self.models.min_bidding_trust_for_sample_when_rescue} {contract}{'X' if doubled else ''}-{tricks} score {score:.3f}")
+                        print(f"Skipping sample below level{self.models.min_bidding_trust_for_sample_when_rescue} {contract}-{tricks} score {score:.3f}")
                     continue
 
                 while not bidding.can_bid(contract, auction) and contract_id < 35:
                     contract_id += 5
                     contract = bidding.ID2BID[contract_id] 
                     
-                if self.verbose: 
-                    print(contract, doubled, tricks)
                 # If game bid in major do not bid 5 of that major 
                 if current_contract == "4H" and contract == "5H":
                     if self.verbose:
@@ -546,9 +584,8 @@ class BotBid:
                 if bidding.can_bid(contract, auction):
                     result = {"contract": contract, "tricks": tricks}
                     level = int(contract[0])
-                    # Consider autodouble any contract going down
-                    if tricks >= level + 6:
-                        doubled = False
+                    # If we go down we assume we are doubled
+                    doubled = tricks < level + 6
                     score = scoring.score(contract + ("X" if doubled else ""), self.vuln, tricks)
                     if self.verbose:
                         print(result, score)
@@ -556,7 +593,7 @@ class BotBid:
                         alternatives[contract] = []
                     alternatives[contract].append({"score": score, "tricks": tricks})
                     
-            # Only if at least 75 of the samples suggest bidding check the score for the rescue bid
+            # Only if at least 75% of the samples suggest bidding check the score for the rescue bid
             # print(len(alternatives), min(len(samples), self.models.max_samples_checked))
             total_entries = sum(len(entries) for entries in alternatives.values())
             if total_entries > 0.75 * min(len(samples), self.models.max_samples_checked):
@@ -736,11 +773,11 @@ class BotBid:
 
         # After preempts the model is lacking some bidding, so we will try to get a second bid
         if no_bids < 4 and no_bids > 0:
-            if bidding.BID2ID[auction[0]] > 14:
+            if bidding.BID2ID[auction[-1]] > 14:
                 min_candidates = 2
                 if self.verbose:
                     print("Extra candidate after opponents preempt might be needed")
-                elif no_bids > 1 and bidding.BID2ID[auction[1]] > 14:
+                elif no_bids > 1 and bidding.BID2ID[auction[-2]] > 14:
                     if self.verbose:
                         print("Extra candidate might be needed after partners preempt/bid over preempt")
 
@@ -1554,19 +1591,9 @@ class CardPlayer:
 
     def find_and_update_constraints(self, players_states, quality, player_i):
         # Based on player states we should be able to find min max for suits and hcps, and add that before calling PIMC
-        # print("Updating constraints", player_i)
-        if player_i == 1:
-            idx1 = 0
-            idx2 = 2
-        if player_i == 0:
-            idx1 = 2
-            idx2 = 3
-        if player_i == 2:
-            idx1 = 0
-            idx2 = 3
-        if player_i == 3:
-            idx1 = 0
-            idx2 = 2
+        #print("Updating constraints", player_i)
+        idx1 = 2 if player_i == 0 else 0
+        idx2 = 3 if player_i % 2 == 0 else 2
         h1 = []
         h3 = []
         s1 = []
@@ -1574,7 +1601,6 @@ class CardPlayer:
         for i in range(players_states[0].shape[0]):
             h1.append(binary.get_hcp(hand = np.array(players_states[idx1][i, 0, :32].astype(int)).reshape(1,32)))
             s1.append(binary.get_shape(hand = np.array(players_states[idx1][i, 0, :32].astype(int)).reshape(1,32))[0])
-            #print(hand_to_str(players_states[idx1][i,0,:32].astype(int)))
             h3.append(binary.get_hcp(hand = np.array(players_states[idx2][i, 0, :32].astype(int)).reshape(1,32)))
             s3.append(binary.get_shape(hand = np.array(players_states[idx2][i, 0, :32].astype(int)).reshape(1,32))[0])
             #print(hand_to_str(players_states[idx2][i,0,:32].astype(int)))
@@ -1788,8 +1814,8 @@ class CardPlayer:
         if self.models.use_real_imp_or_mp:
             if self.verbose:
                 print(f"Probabilities: [{', '.join(f'{x:>6.2f}' for x in probabilities_list[:10])}...]")
-                print("DD Result")
-                print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>2}' for x in v[:10])}..." for k, v in dd_solved.items()))
+                self.dds.print_dd_results(dd_solved)
+
             # print("Calculated scores")
             real_scores = calculate.calculate_score(dd_solved, self.n_tricks_taken, self.player_i, self.score_by_tricks_taken)
             if self.verbose:

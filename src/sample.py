@@ -185,18 +185,17 @@ class Sample:
                 step = self.sample_boards_for_auction_step * 3
 
         if current_count == 0:
-            print(f"{Fore.RED}No samples found for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}")
+            sys.stderr.write(f"{Fore.RED}No samples found for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}\n")
 
         # Convert list of arrays into a single array along the first dimension
         quality = -1 if current_count == 0 else quality / current_count
         accepted_samples = np.concatenate(accepted_samples, axis=0)
         sorted_scores = np.concatenate(sorted_scores, axis=0)
         if self.verbose:
-            print(f"Found {len(accepted_samples)} samples for bidding. Quality={quality}, Samplings={samplings}, Auction{auction_so_far}")
+            print(f"Found {len(accepted_samples)} samples for bidding. Quality={quality}, Samplings={samplings}, Auction={auction_so_far}")
         
         if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and len(auction_so_far) >= 8:
-            print(f"{Fore.RED}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}")
-            print(f"{Fore.RED}Skipping last bidding round{Fore.RESET}")
+            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping last bidding round{Fore.RESET}\n")
             auction_so_far_copy = auction_so_far.copy()
             auction_so_far_copy = auction_so_far_copy[:-4]
             needed_samples = needed_samples / 4
@@ -206,8 +205,8 @@ class Sample:
 
 
         if self.sample_previous_round_if_needed and quality < self.bid_accept_threshold_bidding and len(auction_so_far) >= 8:
-            print(f"{Fore.RED}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}")
-            print(f"{Fore.RED}Skipping their doubles{Fore.RESET}")
+            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping their doubles{Fore.RESET}\n")
+            # Was there a X or XX we can replace with P, then just try again
             auction_updated = False
             auction_so_far_copy = auction_so_far.copy()
             # Replace every second 'X' starting from the last
@@ -221,15 +220,16 @@ class Sample:
                 else:
                     if auction_so_far_copy[i] != 'PASS':
                         break
-            if auction_updated:
-                print(f"{Fore.RED}Updated auction {auction_so_far_copy}{Fore.RESET}")
-                needed_samples = needed_samples / 4
-                # Consider transferring found samples, but we also need score and quality then
-                accepted_samples = []
-                return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples)
-            else:
-                print(f"{Fore.RED}Could not update auction {auction_so_far}{Fore.RESET}")
-            # Was there a X or XX we can replace with P, then just try again
+            # It was a double in last bidding round, and changing that to pass will end the bidding
+            if not bidding.auction_over(auction_so_far_copy):
+                if auction_updated:
+                    sys.stderr.write(f"{Fore.YELLOW}Updated auction {auction_so_far_copy}{Fore.RESET}\n")
+                    needed_samples = needed_samples / 4
+                    # Consider transferring found samples, but we also need score and quality then
+                    accepted_samples = []
+                    return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples)
+                else:
+                    sys.stderr.write(f"{Fore.YELLOW}Could not update auction {auction_so_far}{Fore.RESET}\n")
 
         return accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings
 
@@ -1183,6 +1183,25 @@ class Sample:
                         play_scores = play_scores[sorted_min_bid_scores > self.bid_extend_play_threshold]
                         sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_extend_play_threshold]
                         # Limit to just the minimum needed
+
+                        # Randomize the samples even though they are bad 
+                        combined_scores = sorted_min_bid_scores + lead_scores + play_scores
+                        # Normalize combined scores to sum to 1 (this forms probabilities for sampling)
+                        probabilities = combined_scores / np.sum(combined_scores)
+                        # Perform weighted random permutation
+                        random_indices = rng.choice(
+                            np.arange(bidding_states[0].shape[0]),  # Indices to choose from
+                            size=bidding_states[0].shape[0],        # Number of samples
+                            replace=False,                    # No replacement (a permutation)
+                            p=probabilities                   # Probabilities for weighted randomness
+                        )
+                        #random_indices = rng.permutation(bidding_states[0].shape[0])
+                        bidding_states = [state[random_indices] for state in bidding_states]
+                        sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
+                        lead_scores = lead_scores[random_indices]
+                        play_scores = play_scores[random_indices]
+
+                        # And now select the minimum number required
                         bidding_states = [state[:self.min_sample_hands_play_bad] for state in bidding_states]
                         sorted_min_bid_scores = sorted_min_bid_scores[:self.min_sample_hands_play_bad]
                         lead_scores = lead_scores[:self.min_sample_hands_play_bad]

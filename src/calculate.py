@@ -99,6 +99,9 @@ def calculate_imp_score( data):
     num_plays = len(keys)
     num_samples = check_array_lengths(data)
 
+    if num_plays == 1:
+        scores[keys[0]] = 0
+        return scores
     # Compare each array with all others
     for i in range(num_plays):
         for j in range(num_plays):

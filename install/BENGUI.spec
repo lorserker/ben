@@ -5,7 +5,7 @@ a = Analysis(
     ['..\\src\\BENGUI.py'],
     pathex=[],
     binaries=[],
-    datas=[],
+    datas=[('..\\src\\logo.png', '.'), ('..\\src\\ben.ico', '.')],    
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -32,6 +32,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='..\\src\\ben.ico',
 )
 coll = COLLECT(
     exe,

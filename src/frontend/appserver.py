@@ -317,6 +317,7 @@ def index():
     rotate = request.forms.get('R')
     visible = request.forms.get('V')
     matchpoint = request.forms.get('M')
+    play = request.forms.get('Play')
     player = ""
     if north: player += "&N=x"
     if east: player += "&E=x"
@@ -330,6 +331,7 @@ def index():
     if rotate: player += "&R=x"
     if visible: player += "&V=x"
     if matchpoint: player += "&M=x"
+    if play: player += f"&Play=True"
     dealtext = request.forms.get('dealtext')
     if dealtext:
         dealer = request.forms.get('dealer')
@@ -354,7 +356,7 @@ def index():
 
         deal = " ".join(deal)
         print(deal)
-        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
+        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
     
     dealpbn = request.forms.get('dealpbn')
     if dealpbn:
@@ -362,7 +364,7 @@ def index():
             dealpbn = request.forms.get('dealpbn')
             dealer, vulnerable, deal, board_no = parse_pbn(dealpbn.splitlines())
             print(deal)
-            url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
+            url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
         except Exception as e:
             error_message = f'Error parsing PBN-input. {e}'
             print(error_message)
@@ -375,7 +377,7 @@ def index():
         dealbsol = request.forms.get('dealbsol')
         dealer, vulnerable, deal, board_no = parse_bsol(dealbsol)
         print(deal)
-        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
+        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
 
     deallin = request.forms.get('deallin')
     if deallin:
@@ -398,22 +400,20 @@ def index():
 
         deal = " ".join(deal)
         print(deal)
-        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
+        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
 
     dealbba = request.forms.get('dealbba')
     if dealbba:
         hand, dealer, vulnerable, board_no = decode_board(dealbba)
         deal_as_str = hand_as_string(hand)
-        url = f'/app/bridge.html?deal=(%27{deal_as_str}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}'
+        url = f'/app/bridge.html?deal=(%27{deal_as_str}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
     if url:
         redirect(url)
     else:
         board_no = request.forms.get('board')
-        redirect(f"/app/bridge.html?board_no={board_no}{player}&server={server}")
-    
+        redirect(f"/app/bridge.html?board_no={board_no}{player}&server={server}&play={play}")
 
-@app.route('/home')
-def home():
+def read_deals():
     deals = []
     with shelve.open(DB_NAME) as db:
         deal_items = sorted(list(db.items()), key=lambda x: x[1]['timestamp'], reverse=True)
@@ -468,8 +468,17 @@ def home():
                     'feedback':feedback,
                     'quality': quality
                 })
+    return deals
 
-    return template('home.tpl', deals=deals)
+@app.route('/home')
+def home():
+    deals = read_deals()
+    return template('home.tpl', deals=deals, play=False)
+
+@app.route('/play')
+def home():
+    deals = read_deals()
+    return template('home.tpl', deals=deals, play=True)
 
 @app.route('/app/<filename>')
 def frontend(filename):

@@ -27,6 +27,7 @@ absl.logging.set_verbosity(absl.logging.FATAL)
 absl.logging.set_stderrthreshold(absl.logging.FATAL)
 
 import tensorflow as tf
+import scoring
 
 
 from gevent.pywsgi import WSGIServer
@@ -174,7 +175,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                 if verbose:
                     print("play_status", play_status)
 
-                if play_status == "Forced":
+                if play_status == "Forced" and models.autoplaysingleton:
                     card = get_singleton(card_players[player_i].hand52,current_trick52)
                     card_resp = CardResp(
                         card=Card.from_code(card),
@@ -817,7 +818,7 @@ def play():
         if (decl_i + 3) % 4 == position_i:
             cardplayer = 2
         if cardplayer == 1:
-            result = {"message": "Called as dummy or with wrong dealer"}
+            result = {"message": "Called as dummy or with wrong dealer / seat"}
             print(result)
             return json.dumps(result)
 
@@ -989,32 +990,37 @@ def contract():
         # And finally we deduct our position
         position_i = dealer_enum[seat]
         X = get_binary_contract(position_i, vuln, hand_str, dummy_str, models.n_cards_bidding)
+        result = {}
         with model_lock_bid:
             if verbose:
                 print(position_i, vuln, hand_str, dummy_str)
-            contract_id, doubled, tricks, score = models.contract_model.pred_fun(X)
-            if tf.is_tensor(contract_id):
-                contract_id = contract_id.numpy()
-                doubled = doubled.numpy()
-                tricks = tricks.numpy()
-                score = score.numpy()
-            contract = bidding.ID2BID[contract_id] + ("X" if doubled else "") 
-            result = {"contract": contract,
-                    "tricks": str(tricks),
-                    "score": str(round(score, 3)), # score
-                    }
-            # New call to get top 3 tricks
-            top_k_indices_tricks, top_k_probs_tricks = models.contract_model.get_top_k_tricks(X)
-            if verbose:
-                print(top_k_indices_tricks, top_k_probs_tricks)
+                print(X)
+            contract_id = models.contract_model.pred_fun(X)
+            contract_id = contract_id.numpy()
+            for i in range(len(contract_id[0])):
+                if contract_id[0][i] > 0.05:
+                    y = np.zeros(5)
+                    suit = bidding.ID2BID[i][1]
+                    strain_i = 'NSHDC'.index(suit)
+                    y[strain_i] = 1
+                    Xt = [np.concatenate((X[0], y), axis=0)]
+                    tricks = models.trick_model.pred_fun(Xt)
+                    tricks = tricks.numpy()
+                    for j in range(14):
+                        if tricks[0][j] > 0.05:
+                            if bidding.ID2BID[i] in result:
+                                # Append new data to the existing entry
+                                result[bidding.ID2BID[i]]["Tricks"].append(j)
+                                result[bidding.ID2BID[i]]["Percentage"].append(round(float(tricks[0][j]), 2))
+                            else:
+                                # Create a new entry
+                                result[bidding.ID2BID[i]] = {
+                                    "score": round(float(contract_id[0][i]), 2),
+                                    "Tricks": [j],
+                                    "Percentage": [round(float(tricks[0][j]), 2)]
+                                }                    
 
-            # New call to get top 3 contracts
-            top_k_indices_oh, top_k_probs_oh = models.contract_model.get_top_k_oh(X, k=3)
-            if verbose:
-                print(top_k_indices_oh, top_k_probs_oh)
-                print(result)
             print(f'Request took {(time.time() - t_start):0.2f} seconds')       
-
         return json.dumps(result)    
     except Exception as e:
         print(e)

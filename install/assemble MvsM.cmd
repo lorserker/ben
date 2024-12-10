@@ -16,11 +16,14 @@ robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Q-Plus*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Shark-*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E RoboSayc-*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E WBridge5-*
-robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Contract_*
+robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Contract*
+robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Trick*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E SD_*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E RPDD_*
 robocopy dist\TMCGUI "MvsM" /E
 robocopy dist\table_manager_client "MvsM" /E
 robocopy dist\table_manager_client\_internal\bin "MvsM\bin" /E
 robocopy ..\src\nn "MvsM\nn" *tf2.py*
-
+robocopy ..\bin "MvsM\bin" /E
+copy ..\src\ben.ico "MvsM"
+copy ..\src\logo.png "MvsM"

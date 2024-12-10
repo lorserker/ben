@@ -51,7 +51,7 @@ def load_pbn(fin):
                 inside_auction_section = False
             else:
                 # Convert bids
-                line = line.strip().replace('.','').replace("NT","N").replace("Pass","P").replace("Double","X").replace("Redouble","XX").replace('AP','P P P')
+                line = line.strip().upper().replace('.','').replace("NT","N").replace("PASS","P").replace("DOUBLE","X").replace("REDOUBLE","XX").replace('AP','P P P')
                 # Remove extra spaces
                 line = re.sub(r'\s+', ' ', line)
                 # update alerts
@@ -272,7 +272,7 @@ if __name__ == '__main__':
     auctions = []
     k = 0
 
-    file_path = Path("example.pbn")
+    file_path = Path(infnm1)
     file_extension = file_path.suffix
     if file_extension == ".pbn":
         with open(infnm1, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding

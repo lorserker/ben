@@ -9,7 +9,12 @@ from binary import get_hcp, calculate_median
 import scoring
 import calculate
 from bidding import bidding
-sys.path.append("..")
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Calculate the parent directory
+parent_dir = os.path.join(script_dir, "../..")
+# Add the parent directory to sys.path
+sys.path.append(parent_dir)
 from colorama import Fore, Back, Style, init
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
@@ -32,7 +37,7 @@ class BGADefDLL:
     def __init__(self, models, northhand, southhand, contract, is_decl_vuln, player_i, sampler, verbose):
         try:
             # Load the .NET assembly and import the types and classes from the assembly
-            util.load_dotnet_assembly(BGADLL_PATH)
+            util.load_dotnet_framework_assembly(BGADLL_PATH, verbose)
             from BGADLL import PIMCDef, Hand, Constraints, Extensions, Play
 
         except Exception as ex:
@@ -124,10 +129,25 @@ class BGADefDLL:
             print("already_shown_partner", self.already_shown_partner)
 
         for i in range(4):
-            min_partner[i] = max(min_partner[i] - margin_partner - self.already_shown_partner[i], 0)
-            max_partner[i] = min(max_partner[i] + margin_partner - self.already_shown_partner[i], 13)
-            min_declarer[i] = max(min_declarer[i] - margin_declarer - self.already_shown_declarer[i], 0)
-            max_declarer[i] = min(max_declarer[i] + margin_declarer - self.already_shown_declarer[i], 13)
+            # If samples show 5-card+ we only reduce by 1 
+            if min_partner[i] >= 5:
+                min_partner[i] = max(min_partner[i] - margin_partner - self.already_shown_partner[i], 0)
+            else: 
+                min_partner[i] = max(min_partner[i] - margin_partner - self.already_shown_partner[i], 0)
+            # If samples show 2-card- we only increase by 1 
+            if max_partner[i] <= 2:
+                max_partner[i] = min(max_partner[i] + margin_partner - self.already_shown_partner[i], 13)
+            else: 
+                max_partner[i] = min(max_partner[i] + margin_partner - self.already_shown_partner[i], 13)
+            if min_declarer[i] >= 5:
+                min_declarer[i] = max(min_declarer[i] - margin_declarer - self.already_shown_declarer[i], 0)
+            else: 
+                min_declarer[i] = max(min_declarer[i] - margin_declarer - self.already_shown_declarer[i], 0)
+            if max_declarer[i] <= 2:
+                max_declarer[i] = min(max_declarer[i] + margin_declarer - self.already_shown_declarer[i], 13)
+            else: 
+                max_declarer[i] = min(max_declarer[i] + margin_declarer - self.already_shown_declarer[i], 13)
+
 
         if self.verbose:
             print(min_partner, max_partner, min_declarer, max_declarer)
@@ -237,6 +257,7 @@ class BGADefDLL:
             self.dummyhand.Remove(PIMCCard(card))
         if playedBy == self.player_i:
             self.defendinghand.Remove(PIMCCard(card))
+
         if (playedBy == 0 and self.player_i == 2):
             self.partnerhand.Add(PIMCCard(card))
             self.already_shown_hcp_partner += self.calculate_hcp(real_card.rank)
@@ -244,6 +265,9 @@ class BGADefDLL:
 
         if (playedBy == 2 and self.player_i == 0):
             self.partnerhand.Add(PIMCCard(card))
+            self.already_shown_hcp_partner += self.calculate_hcp(real_card.rank)
+            self.already_shown_partner[suit] += 1
+
         if (playedBy == 3):
             self.declarerhand.Add(PIMCCard(card))
             self.already_shown_hcp_declarer += self.calculate_hcp(real_card.rank)
@@ -381,7 +405,7 @@ class BGADefDLL:
             print("Previous tricks",self.previous_tricks.ListAsString())
             print("Other hands",self.declarerhand.ToString(), self.partnerhand.ToString())
             print("Strategy",self.models.pimc_use_fusion_strategy)
-            sys.exit(1) 
+            raise ex
         
         trump = self.find_trump(self.suit)
         if self.verbose:

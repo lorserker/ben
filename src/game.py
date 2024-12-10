@@ -591,7 +591,7 @@ class Driver:
                     print('play status', play_status)
 
                 if isinstance(card_players[player_i], bots.CardPlayer):
-                    if play_status == "Forced":
+                    if play_status == "Forced" and self.models.autoplaysingleton:
                         card = get_singleton(card_players[player_i].hand52,current_trick52)
                         card_resp = CardResp(
                             card=Card.from_code(card),
@@ -629,6 +629,7 @@ class Driver:
                         rollout_states = []
                         bidding_scores = []
                         lead_scores = []
+                        play_scores = []
                         c_hcp = -1
                         c_shp = -1
                         quality = 1
@@ -1164,7 +1165,7 @@ async def main():
             rdeal = random_deal_board(boardno)
 
             # example of to use a fixed deal
-            # rdeal = ('QJ972.54.KQ7.AT8 KT53.KT9.JT93.72 6.Q863.A85.Q6543 A84.AJ72.642.KJ9', 'S N-S')
+            rdeal = ('T962.86.K742.643 KJ43.Q9.QT9.T852 .AJT7532.AJ8.QJ7 AQ875.K4.653.AK9', 'N E-W')
 
             print(f"Playing Board: {rdeal}")
             driver.set_deal(None, *rdeal, False, bidding_only=biddingonly)

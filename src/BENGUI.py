@@ -6,7 +6,7 @@ import subprocess
 import threading
 import time
 import queue
-from colorama import Fore, Style, init, AnsiToWin32
+from colorama import Fore, Style, init
 
 # Initialize colorama for ANSI color handling on Windows
 init()
@@ -23,7 +23,8 @@ class TableManagerApp(tk.Tk):
         super().__init__()
 
         # Window configuration
-        self.title("BEN server Interface v0.8")
+        self.iconbitmap("ben.ico")
+        self.title("BEN server Interface. v0.8.3")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 

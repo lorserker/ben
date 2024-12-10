@@ -2,6 +2,7 @@ import sys
 import datetime
 import os
 os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
+os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras import layers, models, optimizers, callbacks, initializers, losses
@@ -55,17 +56,15 @@ if len(sys.argv) > 2:
 
 
 # Load training data
-X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
-y_train = np.load(os.path.join(bin_dir, 'y.npy'), mmap_mode='r')
-z_train = np.load(os.path.join(bin_dir, 'z.npy'), mmap_mode='r')
-u_train = np.load(os.path.join(bin_dir, 'u.npy'), mmap_mode='r')
+X_train = np.load(os.path.join(bin_dir, 'x.npy'))
+y_train = np.load(os.path.join(bin_dir, 'y.npy'))
+
+print(X_train.shape)
 
 n_examples = X_train.shape[0]
 n_contract = y_train.shape[1]
 n_ftrs = X_train.shape[1]
 
-output_dim_doubled = z_train.shape[1]
-output_dim_tricks = u_train.shape[1]
 output_dim_contract = y_train.shape[1]
 
 batch_size = 256 
@@ -85,14 +84,10 @@ print("Examples for training:   ", n_examples)
 print("Model path:              ", model_name )
 print("-------------------------")
 print("Size input hand:         ", n_ftrs)
-print("Size output doubled:     ", output_dim_doubled)
-print("Size output tricks:      ", output_dim_tricks)
 print("Size output contract:    ", output_dim_contract)
 print("-------------------------")
 print("dtype X_train:           ", X_train.dtype)
 print("dtype y_train:           ", y_train.dtype)
-print("dtype z_train:           ", z_train.dtype)
-print("dtype u_train:           ", u_train.dtype)
 print("-------------------------")
 print("Batch size:              ", batch_size)
 print("buffer_size:             ", buffer_size)
@@ -114,41 +109,33 @@ def build_model(input_shape, lstm_size, n_layers):
     x = layers.Dense(64, activation='tanh', kernel_initializer='truncated_normal')(x)
     
     contract_output = layers.Dense(output_dim_contract, activation='softmax', name='contract_output')(x)
-    doubled_output = layers.Dense(output_dim_doubled, activation='sigmoid', name='doubled_output')(x)
-    tricks_output = layers.Dense(output_dim_tricks, activation='sigmoid', name='tricks_output')(x)
     
-    model = models.Model(inputs=inputs, outputs=[contract_output, doubled_output, tricks_output])
+    model = models.Model(inputs=inputs, outputs=contract_output)
     model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate),
                   loss={
                       'contract_output': losses.CategoricalCrossentropy(),
-                      'doubled_output': losses.BinaryCrossentropy(),
-                      'tricks_output': losses.BinaryCrossentropy()
                   },
                   metrics={
                       'contract_output': 'accuracy',
-                      'doubled_output': 'accuracy',
-                      'tricks_output': 'accuracy',
                   })
     print(model.summary())
 
 # Create datasets
     print("Reading input")
-    def data_generator(X, y, z, u):
-        for xi, yi, zi, ui in zip(X, y, z, u):
-            yield (xi, {'contract_output': yi, 'doubled_output': zi, 'tricks_output': ui})
+    def data_generator(X, y):
+        for xi, yi in zip(X, y):
+            yield (xi, {'contract_output': yi})
 
     output_signature = (
         tf.TensorSpec(shape=(n_ftrs,), dtype=X_train.dtype),
         {
             'contract_output': tf.TensorSpec(shape=(output_dim_contract,), dtype=y_train.dtype),
-            'doubled_output': tf.TensorSpec(shape=(output_dim_doubled,), dtype=z_train.dtype),
-            'tricks_output': tf.TensorSpec(shape=(output_dim_tricks,), dtype=u_train.dtype)
         }
     )
 
     print("Shuffling input")
     train_dataset = tf.data.Dataset.from_generator(
-        lambda: data_generator(X_train, y_train, z_train, u_train),
+        lambda: data_generator(X_train, y_train),
         output_signature=output_signature
     )
     

@@ -126,7 +126,7 @@ class TMClient:
         self.decl_i = bidding.get_decl_i(self.contract)
         auction_str = "-".join(auction).replace('PAD_START-', '').replace('PASS','P')
 
-        print(f'{Fore.LIGHTGREEN_EX}{datetime.datetime.now().strftime("%H:%M:%S")} Bidding:   {auction_str}{Fore.RESET}')
+        print(f'{Fore.LIGHTGREEN_EX}{datetime.datetime.now().strftime("%H:%M:%S")} Bidding: {auction_str} {self.contract}{Fore.RESET}')
         if (self.verbose):
             print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Contract {self.contract}')
 

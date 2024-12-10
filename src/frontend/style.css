@@ -58,6 +58,10 @@ body {
     max-width: 96%;
     gap: 10px; /* Add spacing between grid items */}
 
+.hidden {
+    display: none;
+}
+    
 #north, #south {
     grid-column: span 3;
     padding-top: 10px;

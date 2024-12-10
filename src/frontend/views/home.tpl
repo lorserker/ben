@@ -40,7 +40,7 @@
     <h1>Play with BEN</h1>
 </div>
 
-<div class="container">
+<div class="container {{ 'hidden' if play else '' }}">
     <h2>Use this server: </h2>
     <div class="content">
         <label for="board">Server:</label>
@@ -59,7 +59,7 @@
     </div>
 
 
-<div class="container">
+<div class="container {{ 'hidden' if play else '' }}">
   <h2>Play this deal: </h2>
 
   <div class="content">
@@ -81,7 +81,7 @@
             <option value="E-W">EW</option>
             <option value="Both">Both</option>
         </select><br>
-        <label for="deal">Deal in this format: J2.QJ53.T8754.84 64.K62.Q62.AJT65 KQ985.A.A93.K732 AT73.T9874.KJ.Q9:</label>
+        <label for="deal">Deal in this format: <br>J2.QJ53.T8754.84 64.K62.Q62.AJT65 KQ985.A.A93.K732 AT73.T9874.KJ.Q9:</label><br>
         <textarea id="deal" name="dealtext" cols="40"></textarea><br>
         <button type="submit" class="submit-button" data-form="form1" onclick="return validateForm(event, 'deal')">Play from text</button>    
     </form>
@@ -127,8 +127,17 @@
         <button type="submit" class="submit-button" data-form="form5">Play random</button>    
     </form>
     </div>
+    </div>
 </div>
+
+<div class="container {{ 'hidden' if not play else '' }}">
+    <form id="form5">
+        <label for="board">Board:</label>
+        <input type="text" name="board"><br>
+        <button type="submit" class="submit-button" data-form="form5">Play</button>    
+    </form>
 </div>
+
 
 <div class="container">
   <h2>Settings</h2>

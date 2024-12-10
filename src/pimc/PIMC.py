@@ -9,7 +9,12 @@ from binary import get_hcp, calculate_median
 import scoring
 import calculate
 from bidding import bidding
-sys.path.append("..")
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Calculate the parent directory
+parent_dir = os.path.join(script_dir, "../..")
+# Add the parent directory to sys.path
+sys.path.append(parent_dir)
 from colorama import Fore, Back, Style, init
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
@@ -32,7 +37,7 @@ class BGADLL:
     def __init__(self, models, northhand, southhand, contract, is_decl_vuln, sampler, verbose):
         try:
             # Load the .NET assembly and import the types and classes from the assembly
-            util.load_dotnet_assembly(BGADLL_PATH)
+            util.load_dotnet_framework_assembly(BGADLL_PATH, verbose)
 
             from BGADLL import PIMC, Hand, Play, Constraints, Extensions, Card as PIMCCard
 
@@ -127,10 +132,25 @@ class BGADLL:
             print("RHO", min_rho, max_rho)
 
         for i in range(4):
-            min_lho[i] = max(min_lho[i] - margin - self.already_shown_lho[i], 0)
-            max_lho[i] = min(max_lho[i] + margin - self.already_shown_lho[i], 13)
-            min_rho[i] = max(min_rho[i] - margin - self.already_shown_rho[i], 0)
-            max_rho[i] = min(max_rho[i] + margin - self.already_shown_rho[i], 13)
+            # If samples show 5-card+ we only reduce by 1 
+            if min_lho[i] >= 5:
+                min_lho[i] = max(min_lho[i] - 1 - self.already_shown_lho[i], 0)
+            else: 
+                min_lho[i] = max(min_lho[i] - margin - self.already_shown_lho[i], 0)
+            # If samples show 2-card- we only increase by 1 
+            if max_rho[i] <= 2:
+                max_lho[i] = min(max_lho[i] + 1 - self.already_shown_lho[i], 13)
+            else:
+                max_lho[i] = min(max_lho[i] + margin - self.already_shown_lho[i], 13)
+            if min_rho[i] >= 5:
+                min_rho[i] = max(min_rho[i] - 1 - self.already_shown_rho[i], 0)
+            else:
+                min_rho[i] = max(min_rho[i] - margin - self.already_shown_rho[i], 0)
+            if max_rho[i] <= 2:
+                max_rho[i] = min(max_rho[i] + 1 - self.already_shown_rho[i], 13)
+            else:
+                max_rho[i] = min(max_rho[i] + margin - self.already_shown_rho[i], 13)
+
 
         if self.verbose:
             print("LHO", min_lho, max_lho)
@@ -374,7 +394,7 @@ class BGADLL:
             print("Previous tricks",self.previous_tricks.ListAsString())
             print("Other hands",self.easthand.ToString(), self.westhand.ToString())
             print("Strategy",self.models.pimc_use_fusion_strategy)
-            sys.exit(1) 
+            raise ex 
 
         trump = self.find_trump(self.suit)
         if self.verbose:
@@ -434,7 +454,7 @@ class BGADLL:
 
                     print(f"{Fore.YELLOW}PIMC did not find any playouts. Trying without constraints{Fore.RESET} {self.pimc.LegalMovesToString}")
                     if self.verbose:
-                        print(f"max_playouts: {self.max_playouts} Playouts: {self.pimc.Playouts} Combinations: {self.pimc.Combinations} Examined: {self.pimc.Examined}")
+                        print(f"max_playouts: {self.max_playout} Playouts: {self.pimc.Playouts} Combinations: {self.pimc.Combinations} Examined: {self.pimc.Examined}")
                         print(self.northhand.ToString(), self.southhand.ToString(), self.opposHand.ToString(), self.current_trick.ListAsString())
                         print("Trump:",trump,"Tricks taken",self.tricks_taken,"min tricks",self.mintricks)
                         print("Voids",shown_out_suits)

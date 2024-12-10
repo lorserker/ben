@@ -113,7 +113,13 @@
         const rotate = urlParams.get('R')
         const visible = urlParams.get('V')
         const playonly = urlParams.get('P')
+        const play = urlParams.get('Play')
         const matchpoint = urlParams.get('M')
+        if (play) {
+            home = '/play'
+        } else {
+            home = '/home'
+        }
         let server = urlParams.get('server')
         if (!server) server = '3'
         let no_human = !north && !east && !south && !west
@@ -130,6 +136,7 @@
         if (rotate) player += "&R=x"
         if (visible) player += "&V=x"
         if (matchpoint) player += "&M=x"
+        if (play) player += "&Play=True"
         if (playonly) player += "&P=" + playonly 
         var queryString = ""
         var ws

@@ -259,11 +259,8 @@ def get_possible_cards(hand, current_trick):
     result = check_sequence(cards, suitlead)
     return result
 
-def load_dotnet_assembly(assembly_path, verbose = False):
-    """
-    Loads a .NET assembly dynamically, supporting both Pythonnet <3.x (AddReference)
-    and Pythonnet 3.x (clr_loader).
-    
+def load_dotnet_framework_assembly(assembly_path, verbose = False):
+    """    
     Parameters:
         assembly_path (str): The path to the .NET assembly without the `.dll` extension.
     
@@ -274,31 +271,46 @@ def load_dotnet_assembly(assembly_path, verbose = False):
         import clr
         if verbose:
             print(f"Loading {assembly_path}")
-        if hasattr(clr, "AddReference"):
-            # Pythonnet < 3.x or Anaconda version
-            try:
-                clr.AddReference(assembly_path)
-            except Exception:
-                print("Failed to load .NET assembly using clr.AddReference - trying with full path")
-                clr.AddReference(assembly_path + '.dll')
-            if verbose:
-                print("Loaded .NET assembly using clr.AddReference")
-            return None  # Assembly types can be imported directly in this mode
-        else:
-            # Pythonnet 3.x
-            from clr_loader import get_coreclr
-            from pythonnet import set_runtime
-            runtime = get_coreclr()
-            set_runtime(runtime)
-
-            import System
-            load_context = System.Runtime.Loader.AssemblyLoadContext.Default
-            loaded_assembly = load_context.LoadFromAssemblyPath(assembly_path)
-            if verbose:
-                print("Loaded .NET assembly using clr_loader")
-            return loaded_assembly
+        # Pythonnet < 3.x or Anaconda version
+        try:
+            clr.AddReference(assembly_path)
+        except Exception:
+            print("Failed to load .NET assembly using clr.AddReference - trying with full path")
+            clr.AddReference(assembly_path + '.dll')
+        if verbose:
+            print("Loaded .NET assembly using clr.AddReference")
+        return None  # Assembly types can be imported directly in this mode
     except Exception as e:
+        print(f"Failed to load .NET Framework assembly '{assembly_path}': {e}")
         raise RuntimeError(f"Failed to load .NET assembly '{assembly_path}': {e}")
+
+def load_dotnet_core_assembly(assembly_path, verbose = False):
+    """  
+    Parameters:
+        assembly_path (str): The path to the .NET assembly without the `.dll` extension.
+    
+    Returns:
+        The loaded assembly reference or raises an exception on failure.
+    """
+    try:
+        import clr
+        if verbose:
+            print(f"Loading {assembly_path}")
+        # Pythonnet 3.x
+        from clr_loader import get_coreclr
+        from pythonnet import set_runtime
+        runtime = get_coreclr()
+        set_runtime(runtime)
+
+        import System
+        load_context = System.Runtime.Loader.AssemblyLoadContext.Default
+        loaded_assembly = load_context.LoadFromAssemblyPath(assembly_path)
+        if verbose:
+            print("Loaded .NET Core assembly using clr_loader")
+        return loaded_assembly
+    except Exception as e:
+        print(f"Failed to load .NET Core assembly '{assembly_path}': {e}")
+        raise RuntimeError(f"Failed to load .NET Core assembly '{assembly_path}': {e}")
 
 
 def get_pythonnet_version():

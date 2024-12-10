@@ -868,9 +868,9 @@
                 return;
             }
 
-            bidding = bidding.replace(/-/g, '');
             bidding = bidding.replace(/XX/g, 'Rd');
             bidding = bidding.replace(/X/g, 'Db');
+            bidding = bidding.replace(/-/g, '');
             // Replace 'P' with '--'
             bidding = bidding.replace(/P/g, '--');
 
@@ -937,7 +937,31 @@
                     displayBid(data);
                 }
                 if (action == 'contract') {
-                    document.getElementById('result').innerText = `BEN Suggest: ${data.contract} with ${data.tricks} tricks`;
+                    document.getElementById('result').innerText = 'BEN Suggest:';
+                    for (var key in data) {
+                        if (data.hasOwnProperty(key)) {
+                            var entry = data[key];
+                            var div = document.createElement('div');
+                            // Ensure Tricks and Percentages are arrays of the same length
+                            var tricks = Array.isArray(entry.Tricks) ? entry.Tricks : [];
+                            var percentages = Array.isArray(entry.Percentage) ? entry.Percentage : [];
+
+                            // Pair tricks with percentages, then sort by percentage descending
+                            var tricksWithPercentages = tricks.map((trick, index) => {
+                                return { trick: trick, percentage: percentages[index] };
+                            }).sort((a, b) => b.percentage - a.percentage); // Sort by percentage descending
+
+                            // Format tricks with percentages
+                            var tricksFormatted = tricksWithPercentages.map(item => {
+                                return `${item.trick} (${item.percentage})`; // Explicitly format as string
+                            }).join(', ');
+
+                            div.innerHTML = `
+                                Contract: ${key} (Score: ${entry.score} Tricks: ${tricksFormatted})
+                            `;
+                            document.getElementById('result').appendChild(div);
+                        }
+                    }
                 }
                 if (action == 'explain') {
                     document.getElementById('result').innerText = `Mening: ${data.explanation}`;

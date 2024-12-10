@@ -1,15 +1,21 @@
 
-import clr
 import sys
 import os
 import util
 
-sys.path.append("..")
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Calculate the parent directory
+parent_dir = os.path.join(script_dir, "../..")
+# Add the parent directory to sys.path
+sys.path.append(parent_dir)
 from src.objects import BidResp
 from bidding import bidding
 from colorama import Fore, Back, Style, init
 
+
 init()
+
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'
 if BEN_HOME == '.':
@@ -42,7 +48,7 @@ class BBABotBid:
         self.verbose = verbose
         # Load the .NET assembly
         try:
-            util.load_dotnet_assembly(EPBot_PATH)
+            util.load_dotnet_framework_assembly(EPBot_PATH, verbose)
             from EPBot86 import EPBot
             # Load the .NET assembly and import the types and classes from the assembly
             if self.verbose:

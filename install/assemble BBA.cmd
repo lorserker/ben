@@ -14,18 +14,18 @@ robocopy ..\BBA\CC "BBA\BBA\CC" RoboSayc.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" Shark-Sayc.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" WBridge5-Sayc.bbsa
 
-robocopy ..\src\config\BBA "BBA\config" BBA-21GF.conf
-robocopy ..\src\config\BBA "BBA\config" BBA-SAYC.conf
-robocopy ..\src\config\BBA "BBA\config" BEN-21GF.conf
-robocopy ..\src\config\BBA "BBA\config" BEN-Sayc.conf
-robocopy ..\src\config\BBA "BBA\config" BlueChip-Sayc.conf
-robocopy ..\src\config\BBA "BBA\config" GIB-21GF.conf
-robocopy ..\src\config\BBA "BBA\config" GIB-BBO.conf
-robocopy ..\src\config\BBA "BBA\config" Lia-21GF.conf
-robocopy ..\src\config\BBA "BBA\config" Q-Plus 21GF.conf
-robocopy ..\src\config\BBA "BBA\config" RoboSayc.conf
-robocopy ..\src\config\BBA "BBA\config" Shark-Sayc.conf
-robocopy ..\src\config\BBA "BBA\config" WBridge5-Sayc.conf
+robocopy ..\src\config "BBA\config" BBA-21GF.conf
+robocopy ..\src\config "BBA\config" BBA-SAYC.conf
+robocopy ..\src\config "BBA\config" BEN-21GF.conf
+robocopy ..\src\config "BBA\config" BEN-Sayc.conf
+robocopy ..\src\config "BBA\config" BlueChip-Sayc.conf
+robocopy ..\src\config "BBA\config" GIB-21GF.conf
+robocopy ..\src\config "BBA\config" GIB-BBO.conf
+robocopy ..\src\config "BBA\config" Lia-21GF.conf
+robocopy ..\src\config "BBA\config" Q-Plus 21GF.conf
+robocopy ..\src\config "BBA\config" RoboSayc.conf
+robocopy ..\src\config "BBA\config" Shark-Sayc.conf
+robocopy ..\src\config "BBA\config" WBridge5-Sayc.conf
 
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E righty*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E lefty*
@@ -40,11 +40,14 @@ robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Q-Plus*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Shark-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E RoboSayc-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E WBridge5-*
-robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Contract_*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E SD_*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E RPDD_*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Contract*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Trick*
 robocopy dist\TMCGUI "BBA" /E
 robocopy dist\table_manager_client "BBA" /E
 robocopy dist\table_manager_client\_internal\bin "BBA\bin" /E
 robocopy ..\src\nn "BBA\nn" *tf2.py*
-
+robocopy ..\bin "BBA\bin" /E
+copy ..\src\ben.ico "BBA"
+copy ..\src\logo.png "BBA"

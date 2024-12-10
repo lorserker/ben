@@ -1,7 +1,8 @@
 import sys
 import ctypes
 from typing import Dict, List
-
+from collections import Counter
+from objects import Card
 from ddsolver import dds
 from colorama import Fore, Back, Style, init
 
@@ -165,3 +166,27 @@ class DDSolver:
         def fun(card_results):
             return {card:round(sum(1 for x in values if x >= tricks_needed)/len(values),3) for card, values in card_results.items()}
         return fun
+
+    def print_dd_results(self, dd_solved, print_result=True):
+        print("DD Result")
+        print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>2}' for x in v[:10])}..." for k, v in dd_solved.items()))
+
+        # Create a new dictionary to store sorted counts for each key
+        sorted_counts_dict = {}
+
+        # Loop through the dictionary and process each key-value pair
+        for key, array in dd_solved.items():
+            # Use Counter to count the occurrences of each element
+            element_count = Counter(array)
+            
+            # Sort the counts by frequency in descending order
+            sorted_counts = sorted(element_count.items(), key=lambda x: x[1], reverse=True)
+            
+            # Store the sorted result in the new dictionary
+            sorted_counts_dict[key] = sorted_counts
+
+        # Print the sorted counts for each key
+        for key, sorted_counts in sorted_counts_dict.items():
+            print(f"Sorted counts for {Card.from_code(int(key))}:")
+            for value, count in sorted_counts:
+                print(f"  Tricks: {value}, Count: {count}")

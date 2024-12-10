@@ -1,6 +1,11 @@
 import sys
 import os
-sys.path.append("..")
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Calculate the parent directory
+parent_dir = os.path.join(script_dir, "../..")
+# Add the parent directory to sys.path
+sys.path.append(parent_dir)
 from colorama import Fore, Back, Style, init
 
 BEN_HOME = os.getenv('BEN_HOME') or '..'

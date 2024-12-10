@@ -7,12 +7,11 @@ from nn.player import BatchPlayer, BatchPlayerLefty
 from nn.bid_info import BidInfo
 from nn.leader import Leader
 from nn.lead_singledummy import LeadSingleDummy
-from nn.contract import Contract
 
 
 class Models:
 
-    def __init__(self, name, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, 
+    def __init__(self, name, tf_version, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, trick_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, 
                  no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count, min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
                  lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, trust_NN, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
                  double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, 
@@ -25,12 +24,14 @@ class Models:
                  factor_to_translate_to_mp, factor_to_translate_to_imp, suppress_warnings
                  ):
         self.name = name
+        self.tf_version = tf_version
         self.model_version = model_version
         self.n_cards_bidding = n_cards_bidding
         self.n_cards_play = n_cards_play
         self.bidder_model = bidder_model
         self.opponent_model = opponent_model
         self.contract_model = contract_model
+        self.trick_model = trick_model
         self.binfo_model = binfo_model
         self.lead_suit_model = lead_suit_model
         self.lead_nt_model = lead_nt_model
@@ -126,6 +127,7 @@ class Models:
         if base_path is None:
             base_path = os.getenv('BEN_HOME') or '..'
         name = conf.get('models', 'name', fallback="BEN")
+        tf_version = conf.getint('models', 'tf_version', fallback=2)
         model_version = conf.getint('models', 'model_version', fallback=2)
         n_cards_bidding = conf.getint('models', 'n_cards_bidding', fallback=32)
         n_cards_play = conf.getint('models', 'n_cards_play', fallback=32)
@@ -159,7 +161,7 @@ class Models:
         min_bidding_trust_for_sample_when_rescue = conf.getfloat('bidding','min_bidding_trust_for_sample_when_rescue',fallback=0.5)
         max_estimated_score = conf.getint('bidding', 'max_estimated_score', fallback=300)
         use_biddingquality = conf.getboolean('bidding', 'use_biddingquality', fallback=False)
-        check_final_contract = conf.getboolean('bidding', 'check_final_contract', fallback=False)
+        check_final_contract = False
         max_samples_checked = conf.getint('bidding', 'max_samples_checked', fallback=10)
         use_probability = conf.getboolean('bidding', 'use_probability', fallback=False)
         sample_hands_for_review = conf.getint('sampling', 'sample_hands_for_review', fallback=200)
@@ -248,7 +250,8 @@ class Models:
                 opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['opponent']),alert_supported=alert_supported)
             else:
                 opponent_model = Bidder('opponent', os.path.join(base_path, conf['bidding']['bidder']),alert_supported=alert_supported)
-        contract_model=Contract(os.path.join(base_path, conf['contract']['contract']))
+        contract_model=None
+        trick_model=None
         binfo_model=BidInfo(os.path.join(base_path, conf['bidding']['info']))
         if verbose:
             print(f"Loaded contract and bidding info models")
@@ -273,12 +276,14 @@ class Models:
 
         return cls(
             name=name,
+            tf_version=tf_version,
             model_version=model_version,
             n_cards_bidding=n_cards_bidding,
             n_cards_play=n_cards_play,
             bidder_model=bidder_model,
             opponent_model=opponent_model,
             contract_model=contract_model,
+            trick_model=trick_model,
             binfo_model=binfo_model,
             lead_suit_model=lead_suit_model,
             lead_nt_model=lead_nt_model,

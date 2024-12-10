@@ -3,9 +3,9 @@
 
 a = Analysis(
     ['..\\src\\TMCGUI.py'],
-    pathex=[],
+    pathex=['..\\src'],
     binaries=[],
-    datas=[],
+    datas=[('..\\src\\tmcgui\\images\\bid', 'tmcgui\\images\\bid'),('..\\src\\tmcgui\\images', 'tmcgui\\images'),('..\\src\\tmcgui\\images\\deck\\width 100', 'tmcgui\\images\\deck\\width 100'),('..\\src\\logo.png', '.'), ('..\\src\\ben.ico', '.')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
@@ -32,6 +32,7 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon='..\\src\\ben.ico',
 )
 coll = COLLECT(
     exe,
