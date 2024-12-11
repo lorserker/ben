@@ -97,9 +97,8 @@ class BotBid:
     def evaluate_rescue_bid(self, auction, passout, samples, candidate_bid, quality, my_bid_no ):
         # check configuration
         if self.verbose:
-            print("Checking if we should evaluate rescue bid", self.models.check_final_contract, len(samples))
-            print("Auction",auction, passout)
-            print("Candidate", candidate_bid, quality)
+            print("Checking if we should evaluate rescue bid", self.models.check_final_contract, "Samples:",len(samples))
+            print("Auction",auction, "Passout?" ,passout,"Candidate bid", candidate_bid.bid, "Sample quality: ",quality)
         if not self.models.check_final_contract:
             return False
 
@@ -138,7 +137,7 @@ class BotBid:
             return True
 
         if candidate_bid.expected_score is None:
-            # We will prepare data for calculating recue bid
+            # We will prepare data for calculating rescue bid
             return True
 
         # We only evaluate if the score is below a certain value, so if simulation give a score above this we do not try to rescue
@@ -231,7 +230,7 @@ class BotBid:
                 hands_np_as_pbn = self.translate_hands(hands_np, self.hand_str, sample_count)
             for candidate in candidates:
                 if self.verbose:
-                    print(f" {candidate.bid.ljust(4)} {candidate.insta_score:.3f} Samples: {len(hands_np)}")
+                    print(f"Bid: {candidate.bid.ljust(4)} {candidate.insta_score:.3f}")
                 auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np)
 
                 t_start = time.time()
@@ -269,9 +268,9 @@ class BotBid:
                         
                         # Format the average tricks string
                         average_tricks_str = ", ".join(map(str, average_tricks))
-                        samples[idx] += f" \n {auc} ({average_tricks_str}) "
+                        samples[idx] += f" | {auc} ({average_tricks_str}) "
                     else:
-                        samples[idx] += f" \n {auc}"
+                        samples[idx] += f" | {auc}"
 
                 if self.verbose:
                     print("tricks", np.mean(decoded_tricks))
@@ -499,7 +498,7 @@ class BotBid:
                 result = {}
                 for i in range(len(contracts[0])):
                     # We should make calculations on this, so 4H, %h or even 6H is added, if tricks are fin
-                    if contracts[0][i] > 0.3:
+                    if contracts[0][i] > 0.2:
                         y = np.zeros(5)
                         suit = bidding.ID2BID[i][1]
                         strain_i = 'NSHDC'.index(suit)
@@ -532,14 +531,18 @@ class BotBid:
                             contract = bidding.ID2BID[contract_id] 
 
 
-                if self.verbose:
-                    print(result)                    
 
                 if score < self.models.min_bidding_trust_for_sample_when_rescue:
-                    if self.verbose:
-                        print(self.hand_str, [sample[(self.seat + 2) % 4]])
-                        print(f"Skipping sample below level{self.models.min_bidding_trust_for_sample_when_rescue} {contract}-{tricks} score {score:.3f}")
+                    #if self.verbose:
+                    #    print(self.hand_str, [sample[(self.seat + 2) % 4]])
+                    #    if score == 0:
+                    #        print(f"No obvious rescue contract")
+                    #    else:
+                    #        print(f"Skipping sample below level: {self.models.min_bidding_trust_for_sample_when_rescue} {contract} {tricks} score {score:.3f}")
                     continue
+
+                if self.verbose:
+                    print(result)                    
 
                 while not bidding.can_bid(contract, auction) and contract_id < 35:
                     contract_id += 5
@@ -587,8 +590,8 @@ class BotBid:
                     # If we go down we assume we are doubled
                     doubled = tricks < level + 6
                     score = scoring.score(contract + ("X" if doubled else ""), self.vuln, tricks)
-                    if self.verbose:
-                        print(result, score)
+                    #if self.verbose:
+                    #    print(result, score)
                     if contract not in alternatives:
                         alternatives[contract] = []
                     alternatives[contract].append({"score": score, "tricks": tricks})
@@ -1283,7 +1286,7 @@ class BotLead:
                 opening_lead = candidate_cards[0].card.code()
 
         if self.verbose:
-            print("Samples quality:", quality)
+            print(f"Samples quality: {quality:.3f}")
             for card in candidate_cards:
                 print(card)
         if opening_lead % 8 == 7:
@@ -1427,7 +1430,7 @@ class BotLead:
                 if (k != 3): 
                     hand_str += '.'
             if self.verbose:
-                print("Opening lead being examined: ", Card.from_code(opening_lead52), n_accepted)
+                print("Opening lead being examined: ", Card.from_code(opening_lead52), n_accepted, end="")
             t_start = time.time()
             hands_pbn = []
             for i in range(n_accepted):
@@ -1702,7 +1705,7 @@ class CardPlayer:
                 pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
                 if self.verbose:
                     print("PIMCDef result:")
-                    print("\n".join(f"{Card.from_code(k)}:\n{v}" for k, v in pimc_resp_cards.items()))
+                    print("\n".join(f"{Card.from_code(k)}: {v}" for k, v in pimc_resp_cards.items()))
 
                 assert pimc_resp_cards is not None, "PIMCDef result is None"
                 if self.models.pimc_ben_dd_defending:
@@ -1938,7 +1941,6 @@ class CardPlayer:
                 msg=msg + (f"|trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
             ))
 
-
         if self.models.use_real_imp_or_mp:
             if self.models.matchpoint:
                 candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (x[1].expected_score_mp, x[1].expected_tricks_dd, x[1].insta_score, -x[0]), reverse=True)
@@ -1954,7 +1956,7 @@ class CardPlayer:
 
         if self.verbose:
             for i in range(len(candidate_cards)):
-                print(candidate_cards[i].card, f"{candidate_cards[i].insta_score}:.3f", candidate_cards[i].expected_tricks_dd, round(5*candidate_cards[i].p_make_contract, 1), candidate_cards[i].expected_score_dd, int(candidate_cards[i].expected_tricks_dd * 10) / 10)
+                print(candidate_cards[i].card, f"{candidate_cards[i].insta_score:.3f}", candidate_cards[i].expected_tricks_dd, round(5 * candidate_cards[i].p_make_contract, 1), int(candidate_cards[i].expected_tricks_dd * 10) / 10)
 
         if self.models.matchpoint:
             if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:

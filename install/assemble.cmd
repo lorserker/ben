@@ -20,3 +20,5 @@ robocopy dist\BEN "BENAll" /E
 robocopy dist\table_manager_client "BENAll" /E
 robocopy ..\src\nn "BENAll\nn" *tf2.py*
 robocopy ..\bin "BENAll\bin" /E
+copy ..\src\ben.ico "BENAll"
+copy ..\src\logo.png "BENAll"

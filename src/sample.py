@@ -169,7 +169,7 @@ class Sample:
         step = self.sample_boards_for_auction_step
         extend_samples = False
         while samplings < sample_boards_for_auction and current_count <= needed_samples:
-            new_samples, new_sorted_scores, p_hcp, p_shp, new_quality = self.sample_cards_auction(auction_so_far, turn_to_bid, hand_str, vuln, step, rng, models, p_hcp, p_shp, extend_samples )
+            new_samples, new_sorted_scores, p_hcp, p_shp, new_quality = self.sample_cards_auction(auction_so_far, turn_to_bid, hand_str, vuln, step, rng, models, p_hcp, p_shp, extend_samples, self.verbose and current_count == 0)
             current_count += new_samples.shape[0]
             quality += new_quality * new_samples.shape[0]
             # Accumulate the samples and scores
@@ -235,7 +235,7 @@ class Sample:
 
     def sample_cards_vec(self, n_samples, c_hcp, c_shp, my_hand, rng, n_cards=32):
         if self.verbose:
-            print("sample_cards_vec generating", n_samples, rng.bit_generator.state['state']['state'])
+            print("sample_cards_vec generating", n_samples, "Seed:", rng.bit_generator.state['state']['state'])
             t_start = time.time()
         deck = np.ones(n_cards, dtype=int)
         cards_in_suit = n_cards // 4
@@ -298,11 +298,9 @@ class Sample:
 
 
         if self.verbose:
-            print("Missing HCP   :", missing_hcp)
-            print("Expected HCP  :",r_hcp[0])
-            print("Expected Shape:",r_shp[0])
-            print(f"hcp_reduction_factor:{hcp_reduction_factor}  {self.hcp_reduction_factor}")            
-            print(f"shp_reduction_factor:{shp_reduction_factor}  {self.shp_reduction_factor}")            
+            print("Missing HCP   :", missing_hcp,"Expected HCP  :",r_hcp[0],"Expected Shape:","".join(map(str, r_shp[0])),
+                  f"hcp_reduction_factor:{hcp_reduction_factor}  {self.hcp_reduction_factor}",
+                  f"shp_reduction_factor:{shp_reduction_factor}  {self.shp_reduction_factor}")            
 
         # all AK's in the same hand
         # vectorize has an overhead
@@ -357,8 +355,8 @@ class Sample:
             #    print("Loop counter >= 76")
             #    break  #
 
-        if self.verbose:
-            print("Loops to deal the hands", loop_counter)
+        #if self.verbose:
+        #    print("Loops to deal the hands", loop_counter)
 
         if self.use_bidding_info:
 
@@ -466,11 +464,11 @@ class Sample:
         return lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho
 
         
-    def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, n_samples, rng, models, old_c_hcp, old_c_shp, extend_samples = True):
+    def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, n_samples, rng, models, old_c_hcp, old_c_shp, extend_samples = True, verbose = False):
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_steps = binary.calculate_step_bidding_info(auction)
         bids = 4 if models.model_version >= 2 else 3
-        if self.verbose:
+        if verbose:
             print("sample_cards_auction, nsteps=", n_steps)
             print("NS: ", models.ns, "EW: ", models.ew, "Auction: ", auction)
             print("hand", hand_str)
@@ -489,22 +487,16 @@ class Sample:
 
         # Consider saving the generated boards, and add the result from previous sampling to this output
         n_samples = lho_pard_rho.shape[0]
-        if self.verbose:
+        if verbose:
             print(f"n_samples {n_samples} from bidding info")
 
         n_steps = binary.calculate_step_bidding(auction)
-        if self.verbose:
-            print("n_steps", n_steps)
 
         #print(auction)
 
         index = 0 if models.model_version == 0 or models.ns == -1 else 2
             
         size = 7 + models.n_cards_bidding + index + bids*40
-
-        
-        if self.verbose:
-            print("get_bid_ids", n_steps, auction)
         
         # Initialize the players list with a loop to get bid information for each position
         players = []
@@ -578,7 +570,7 @@ class Sample:
             #    print(i, distances[i], hand_to_str(lho_pard_rho[i, 0:1, :], models.n_cards_bidding), round(abs_diff_lho,3), hand_to_str(lho_pard_rho[i, 1:2, :], models.n_cards_bidding),round(abs_diff_partner,3), hand_to_str(lho_pard_rho[i, 2:3, :], models.n_cards_bidding),round(abs_diff_rho,3))
 
             # Normalize the total distance to a scale between 0 and 100
-            if self.verbose:
+            if verbose:
                 print("Max distance", max_distance, lho_bid_count, pard_bid_count, rho_bid_count)
             scaled_distance_A = ((max_distance - distances) / max_distance)
             #print("scaled_distance_A", scaled_distance_A)
@@ -605,32 +597,32 @@ class Sample:
         sorted_samples = sorted_samples[sorted_scores >= 0]
         sorted_scores = sorted_scores[sorted_scores >= 0]
 
-        if self.verbose:
+        if verbose:
             print("Samples after bidding distance: ", len(sorted_samples), " Threshold: ")
         if len(sorted_scores) == 0:
             return sorted_samples, sorted_scores, c_hcp, c_shp, -1
 
         # How much to trust the bidding for the samples
         accepted_samples = sorted_samples[sorted_scores >= self.bidding_threshold_sampling]
-        if self.verbose:
+        if verbose:
             print("Samples after bidding filtering: ", len(accepted_samples), " Threshold: ", self.bidding_threshold_sampling)
 
         # If we havent found enough samples, just return the minimum number from configuration
         if (len(accepted_samples) < self._min_sample_hands_auction) and extend_samples:
             if self.use_distance:
-                if self.verbose:
+                if verbose:
                     print(f"Only found {len(sorted_samples[sorted_scores >= self.bid_accept_threshold_bidding])} {self._min_sample_hands_auction}")
             else:
-                if self.verbose:
+                if verbose:
                     print(f"Only found {len(accepted_samples)} {self._min_sample_hands_auction}")
             accepted_samples = sorted_samples[:self._min_sample_hands_auction]
 
         if len(accepted_samples) == 0:
-            if self.verbose:
+            if verbose:
                 print(f"No samples found. Extend={extend_samples}")
             return accepted_samples, [], c_hcp, c_shp, -1
         
-        if self.verbose:
+        if verbose:
             print("Returning", len(accepted_samples), extend_samples)
         sorted_scores = sorted_scores[:len(accepted_samples)]
         quality = np.mean(sorted_scores)
@@ -652,6 +644,7 @@ class Sample:
         h1_passive = all(item in {"PASS", "PAD_START"} for item in auction[h_1_nesw::4])
         h2_passive = all(item in {"PASS", "PAD_START"} for item in auction[h_2_nesw::4])
 
+        #print(f"h1_passive: {h1_passive}, h2_passive: {h2_passive}")
         use_bidding_info_stats = self.use_bidding_info and not (h1_passive and h2_passive)
 
         if use_bidding_info_stats:
@@ -680,8 +673,6 @@ class Sample:
             # we need to count the hcp missing and compare it to stats
 
             missing_hcp = 40 - (binary.get_hcp(hand)[0] + binary.get_hcp(binary.parse_hand_f(models.n_cards_bidding)(public_hand_str))[0])
-            if self.verbose:
-                print("missing_hcp:", missing_hcp)
             if missing_hcp > 0:
                 hcp_reduction_factor = round(self.hcp_reduction_factor * np.sum(p_hcp) / missing_hcp, 2)
             else:
@@ -690,7 +681,7 @@ class Sample:
             shp_reduction_factor = self.shp_reduction_factor
 
             if self.verbose:
-                print("hcp_reduction_factor",hcp_reduction_factor, "shp_reduction_factor" ,shp_reduction_factor)
+                print("missing_hcp:", missing_hcp, "hcp_reduction_factor",hcp_reduction_factor, "shp_reduction_factor" ,shp_reduction_factor)
 
             # acknowledge all played cards
             for i, cards in enumerate(cards_played):
@@ -711,7 +702,7 @@ class Sample:
             r_shp = np.zeros((n_samples, 2, 4)) + p_shp
         else:
             if self.verbose:
-                print("We do not use the bidding info")
+                print(f"We do not use the bidding info. Opponents passive={h1_passive and h2_passive}")
             shp_reduction_factor = 0
             hcp_reduction_factor = 0
             # we do not use the bidding info
@@ -889,10 +880,7 @@ class Sample:
     def get_bid_scores(self, nesw_i, partner, auction, vuln, sample_hands, models):
         n_steps = binary.calculate_step_bidding(auction)
         if self.verbose:
-            print(f"{Fore.YELLOW}sample hand {hand_to_str(sample_hands[0])}{Fore.RESET}")
-            print("n_step", n_steps)
-            print("auction", auction)
-            print("nesw_i", nesw_i)
+            print(f"Get bid scores for samples. First hand {hand_to_str(sample_hands[0])}")
 
         # convert the deck if different for play and bidding
         if models.n_cards_play != models.n_cards_bidding:
@@ -936,8 +924,8 @@ class Sample:
         hand_bidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_samples = self.sample_hands_play
         contract = bidding.get_contract(auction)
-        if self.verbose:
-            print(f"Called init_rollout_states_iterative {n_samples} - Contract {contract} - Player {player_i}")
+        #if self.verbose:
+        #    print(f"Called init_rollout_states_iterative {n_samples} - Contract {contract} - Player {player_i}")
 
         leader_i = (player_i - len(current_trick)) % 4
         # Dummy is always 1
@@ -1282,12 +1270,10 @@ class Sample:
 
     def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states, bid_scores):
         if self.verbose:
-            print("validate_opening_lead_for_sample")
-            print("lead_accept_threshold", self.lead_accept_threshold)
-            print("lead_accept_threshold_partner_trust", self.lead_accept_threshold_partner_trust)
-            print("min_sample_hands_play", self.min_sample_hands_play)
-            print("lead_accept_threshold_suit",self.lead_accept_threshold_suit)
-            print("lead_accept_threshold_honors",self.lead_accept_threshold_honors)
+            print("validate_opening_lead_for_sample:", "lead_accept_threshold:", self.lead_accept_threshold, 
+                  "lead_accept_threshold_partner_trust:", self.lead_accept_threshold_partner_trust,
+                  "min_sample_hands_play:", self.min_sample_hands_play, "lead_accept_threshold_suit:", self.lead_accept_threshold_suit, 
+                  "lead_accept_threshold_honors:", self.lead_accept_threshold_honors)
         # Only make the test if opening leader (0) is hidden
         # The primary idea is to filter away hands, that lead the Q as it denies the K
         lead_scores = np.zeros(states[0].shape[0])
@@ -1334,6 +1320,7 @@ class Sample:
     # Check that the play until now is expected with the samples
     # In principle we do this to eliminated hands, where the card played is inconsistent with the sample
     # We should probably only validate partner as he follow our rules (what is in the neural net)
+    # But it will also help us in eleminating hands, where the play would be illogical
     def validate_play_until_now(self, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states, bidding_scores, models, contract, lead_scores):
         # If they don't cover they dont have that card
         # Should be implemented as a logical rule TODO
@@ -1373,17 +1360,22 @@ class Sample:
                 print(f"cards_played by {p_i} {cards_played}")
             # We have 11 rounds of play in the neural network, but might have only 10 for Lefty
             if p_i == 0 and not models.opening_lead_included:
-                n_tricks_pred = trick_i + len(card_played_current_trick)
+                n_tricks_pred = trick_i + len(card_played_current_trick) - 1
             else:
                 n_tricks_pred = trick_i + len(card_played_current_trick)
                 
             # Depending on suit or NT we must select the right model
             # 0-3 is for NT 4-7 is for suit
             # When the player is instantiated the right model is selected, but here we get it from the configuration
+            # print("trick_i", trick_i, "len(card_played_current_trick)", len(card_played_current_trick), "n_tricks_pred", n_tricks_pred)
             p_cards = models.player_models[p_i+playermodelindex].pred_fun(states[p_i][:, :n_tricks_pred, :])
             if tf.is_tensor(p_cards):
                 p_cards = p_cards.numpy()
             card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]
+            #print(card_scores.shape)
+            #x = states[p_i][:, :n_tricks_pred, :]
+            #for i in range(max(10,x.shape[0])):
+            #    print(hand_to_str(x[i,0,0:32],models.n_cards_play), card_scores[i, :])
             # The opening lead is validated elsewhere, so we just change the score to 1 for all samples
             if p_i == 0 and models.opening_lead_included:
                 card_scores[:, 0] = 1
@@ -1391,6 +1383,7 @@ class Sample:
 
             min_play_scores = np.minimum(min_play_scores, np.min(card_scores, axis=1))
             
+        #print(f"card_scores combined {min_play_scores}")
         # Trust in the play until now
         play_accept_threshold = self.play_accept_threshold
 

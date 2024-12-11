@@ -629,7 +629,7 @@
                 html += `
                     <h3 class="samples"  onclick="toggleSamples('sampleLines${bids}')"><strong>Samples(${data.samples.length}):</strong></h3>
                     <div id="sampleLines${bids}" class="hidden">
-                    <ul>${data.samples.map(sample => `<li>${sample.replace(/\n/g,"<br>")}</li>`).join('')}</ul>
+                    <ul>${data.samples.map(sample => `<li>${sample.replace(/\|/g,"<br>")}</li>`).join('')}</ul>
                     </div>
                     `;
                 bids += 1;
@@ -791,7 +791,7 @@
                 html += `
                     <h3 class="samples"  onclick="toggleSamples('sampleLines${bids}')"><strong>Samples(${data.samples.length}):</strong></h3>
                     <div id="sampleLines${bids}" class="hidden">
-                    <ul>${data.samples.map(sample => `<li>${sample.replace(/\n/g,"<br>")}</li>`).join('')}</ul>
+                    <ul>${data.samples.map(sample => `<li>${sample.replace(/\|/g," - ")}</li>`).join('')}</ul>
                     </div>
                     `;
                 bids += 1;

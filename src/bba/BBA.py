@@ -2,7 +2,7 @@
 import sys
 import os
 import util
-
+from threading import Lock
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Calculate the parent directory
@@ -34,6 +34,34 @@ EPBot_PATH = os.path.join(BIN_FOLDER, EPBot_LIB)
 
 class BBABotBid: 
 
+    _dll_loaded = None  # Class-level attribute to store the DLL singleton
+    _lock = Lock()      # Lock to ensure thread-safe initialization
+
+    @classmethod
+    def get_dll(cls, verbose = False):
+        """Access the loaded DLL classes."""
+        if cls._dll_loaded is None:
+            with cls._lock:  # Ensure only one thread can enter this block at a time
+                if cls._dll_loaded is None:  # Double-checked locking
+                    try:
+                        util.load_dotnet_framework_assembly(EPBot_PATH, verbose)
+                        from EPBot86 import EPBot
+                        # Load the .NET assembly and import the types and classes from the assembly
+                        if verbose:
+                            print(f"EPBot Version (DLL): {EPBot().version()}")
+                        cls._dll_loaded = {
+                            "EPBot": EPBot,
+                        }
+                    except Exception as ex:
+                        # Provide a message to the user if the assembly is not found
+                        print(f"{Fore.RED}Error: Unable to load EPBot86.dll. Make sure the DLL is in the ./bin directory")
+                        print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
+                        print(f"Make sure the dll is not writeprotected{Fore.RESET}")
+                        print('Error:', ex)
+                        sys.exit(1)
+        return cls._dll_loaded
+    
+
     # Define constants for system types and conventions 
     C_NS = 0
     C_WE = 1
@@ -45,21 +73,10 @@ class BBABotBid:
     def __init__(self, ns_system, ew_system, position, hand, vuln, dealer, scoring_matchpoint, verbose):
 
 
+        dll = BBABotBid.get_dll(verbose)  # Retrieve the loaded DLL classes through the singleton
+        EPBot = dll["EPBot"]
         self.verbose = verbose
         # Load the .NET assembly
-        try:
-            util.load_dotnet_framework_assembly(EPBot_PATH, verbose)
-            from EPBot86 import EPBot
-            # Load the .NET assembly and import the types and classes from the assembly
-            if self.verbose:
-                print(f"EPBot Version (DLL): {EPBot().version()}")
-        except Exception as ex:
-            # Provide a message to the user if the assembly is not found
-            print(f"{Fore.RED}Error: Unable to load EPBot86.dll. Make sure the DLL is in the ./bin directory")
-            print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
-            print(f"Make sure the dll is not writeprotected{Fore.RESET}")
-            print('Error:', ex)
-            sys.exit(1)
         if ew_system == None and ns_system == None:  
             return
         if ew_system == '-1' or ns_system == '-1':  

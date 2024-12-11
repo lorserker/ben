@@ -500,7 +500,7 @@ class PlayInfo {
             html += `
                     <h3 class="samples" onclick="toggleSamples('sampleLinesPlay')"><strong>Samples(${this.data['samples'].length}):</strong></h3>
                     <div id="sampleLinesPlay" class="hidden">
-                    <ul>${this.data.samples.map(sample => `<li>${sample.replace(/\n/g, "<br>")}</li>`).join('')}</ul>
+                    <ul>${this.data.samples.map(sample => `<li>${sample.replace(/\|/g, "<br>")}</li>`).join('')}</ul>
                     </div>
                     `
         }

@@ -216,7 +216,9 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
                 if verbose:
+                    print(f"{Fore.LIGHTCYAN_EX}")
                     pprint.pprint(card_resp.to_dict(), width=200)
+                    print(f"{Fore.RESET}")
             
                 return card_resp, player_i
 
@@ -629,7 +631,7 @@ def bid():
 
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
-            logger.info(f"Calulations bid: {calculations}")
+            logger.info(f"Calulations bid: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
@@ -688,7 +690,7 @@ def lead():
         result = card_resp.to_dict()
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction,  "lead":result}
-            logger.info(f"Calulations lead: {calculations}")
+            logger.info(f"Calulations lead: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
@@ -832,7 +834,7 @@ def play():
         result["MP_or_IMP"] = models.use_real_imp_or_mp
         if record: 
             calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
-            logger.info(f"Calulations play: {calculations}")
+            logger.info(f"Calulations play: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
@@ -930,7 +932,7 @@ def cuebid():
     result = {"bid": bid.bid.replace("PASS","Pass"), "alert": explanation, "artificial" : bid.alert}
     if record: 
         calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "turn":turn, "auction":auction, "bid":bid.to_dict()}
-        logger.info(f"Calulations cuebid: {calculations}")
+        logger.info(f"Calulations cuebid: {json.dumps(calculations)}")
 
     print(f'Request took {(time.time() - t_start):0.2f} seconds')       
     return json.dumps(result),200

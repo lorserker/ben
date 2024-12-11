@@ -276,7 +276,9 @@ class Driver:
 
         if self.verbose: 
             for card_resp in self.card_responses:
+                print(f"{Fore.LIGHTCYAN_EX}")
                 pprint.pprint(card_resp.to_dict(), width=200)
+                print(f"{Fore.RESET}")
 
         
         self.card_play = await self.play(self.contract, self.strain_i, self.decl_i, self.auction, opening_lead52)
@@ -685,10 +687,10 @@ class Driver:
                     card_resp.hcp = c_hcp
                     card_resp.shape = c_shp
                     if self.verbose:
+                        print(f"{Fore.LIGHTCYAN_EX}")
                         pprint.pprint(card_resp.to_dict(), width=200)
+                        print(f"{Fore.RESET}")
                     
-                    if self.verbose:
-                        print(f"{Fore.LIGHTCYAN_EX}{card_resp} selected by human{Fore.RESET}")
                     await asyncio.sleep(0.01)
 
                 self.card_responses.append(card_resp)
@@ -886,7 +888,7 @@ class Driver:
         if self.human[(decl_i + 1) % 4]:
             card_resp = await self.factory.create_human_leader().async_lead()
             if self.verbose:
-                print(f"{Fore.LIGHTCYAN_EX}{card_resp} selected by human{Fore.RESET}")
+                print(f"{Fore.LIGHTCYAN_EX}{card_resp.card} selected by human{Fore.RESET}")
         else:
             bot_lead = AsyncBotLead(
                 [self.vuln_ns, self.vuln_ew], 
@@ -1165,9 +1167,9 @@ async def main():
             rdeal = random_deal_board(boardno)
 
             # example of to use a fixed deal
-            rdeal = ('T962.86.K742.643 KJ43.Q9.QT9.T852 .AJT7532.AJ8.QJ7 AQ875.K4.653.AK9', 'N E-W')
+            # rdeal = ('T962.86.K742.643 KJ43.Q9.QT9.T852 .AJT7532.AJ8.QJ7 AQ875.K4.653.AK9', 'N E-W')
 
-            print(f"Playing Board: {rdeal}")
+            print(f"{Fore.CYAN}Playing Board: {rdeal}{Fore.RESET}")
             driver.set_deal(None, *rdeal, False, bidding_only=biddingonly)
         else:
             rdeal = boards[board_no[0]]['deal']

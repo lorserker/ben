@@ -1,4 +1,5 @@
 import sys
+import os
 import numpy as np
 import re
 import hashlib
@@ -259,6 +260,25 @@ def get_possible_cards(hand, current_trick):
     result = check_sequence(cards, suitlead)
     return result
 
+def check_file_blocked(file_path):
+    blocked_path = file_path + ":Zone.Identifier"
+    if os.path.exists(blocked_path):
+        print(f"The file {file_path} is blocked.")
+        sys.exit(1)
+
+
+def check_file_access(file_path):
+    try:
+        # Check if the file exists
+        if not os.path.exists(file_path):
+            print(f"The file {file_path} does not exist.")
+            sys.exit(1)
+        check_file_blocked(file_path)
+
+    except Exception as e:
+        print(f"Error checking file access: {e}")
+        return False
+    
 def load_dotnet_framework_assembly(assembly_path, verbose = False):
     """    
     Parameters:
@@ -267,6 +287,7 @@ def load_dotnet_framework_assembly(assembly_path, verbose = False):
     Returns:
         The loaded assembly reference or raises an exception on failure.
     """
+    check_file_access(assembly_path + '.dll')
     try:
         import clr
         if verbose:

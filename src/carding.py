@@ -165,7 +165,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                             #print("Tricks", play['Plays'][0]['Tricks'], " Max: ",max(len(suits_north),len(suits_south)))
                             if play['Plays'][0]['Tricks'] == max(len(suits_north),len(suits_south)):
                                 if play['Plays'][0]['Percentage'] == 100:
-                                    print(f"SuitC dropped as we can take all tricks {current_count} {original_count} ")
+                                    if verbose:
+                                        print(f"SuitC dropped as we can take all tricks {current_count} {original_count} ")
                                     return candidate_cards[0].card, who
                             # We can have more than one play for MAX
                             # So currently we are then selecting lowest card. Should that be different

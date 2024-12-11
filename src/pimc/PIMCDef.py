@@ -2,6 +2,7 @@ import traceback
 import util
 import sys
 import os
+from threading import Lock
 import math
 from objects import Card
 import time
@@ -34,24 +35,55 @@ BGADLL_PATH = os.path.join(BIN_FOLDER, BGADLL_LIB)
 
 class BGADefDLL:
 
-    def __init__(self, models, northhand, southhand, contract, is_decl_vuln, player_i, sampler, verbose):
-        try:
-            # Load the .NET assembly and import the types and classes from the assembly
-            util.load_dotnet_framework_assembly(BGADLL_PATH, verbose)
-            from BGADLL import PIMCDef, Hand, Constraints, Extensions, Play
+    _dll_loaded = None  # Class-level attribute to store the DLL singleton
+    _lock = Lock()      # Lock to ensure thread-safe initialization
 
-        except Exception as ex:
-            # Provide a message to the user if the assembly is not found
-            print(f"{Fore.RED}Error:", ex)
-            print("*****************************************************************************")
-            print("Error: Unable to load BGADLL.dll. Make sure the DLL is in the ./bin directory")
-            print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
-            print("Make sure the dll is not write protected")
-            print(f"*****************************************************************************{Fore.RESET}")
-            sys.exit(1)
+    @classmethod
+    def get_dll(cls, verbose = False):
+        """Access the loaded DLL classes."""
+        if cls._dll_loaded is None:
+            with cls._lock:  # Ensure only one thread can enter this block at a time
+                if cls._dll_loaded is None:  # Double-checked locking
+                    try:
+                        # Load the .NET assembly and import the types and classes from the assembly
+                        util.load_dotnet_framework_assembly(BGADLL_PATH, verbose)
+
+                        from BGADLL import PIMCDef, Hand, Play, Constraints, Extensions, Macros, Card
+
+                        cls._dll_loaded = {
+                            "PIMCDef": PIMCDef,
+                            "Hand": Hand,
+                            "Play": Play,
+                            "Constraints": Constraints,
+                            "Extensions": Extensions,
+                            "Macros": Macros,
+                            "PIMCCard": Card
+                        }
+
+                    except Exception as ex:
+                        # Provide a message to the user if the assembly is not found
+                        print(f"{Fore.RED}Error: {ex}")
+                        print("*****************************************************************************")
+                        print("Error: Unable to load BGADLL.dll. Make sure the DLL is in the ./bin directory")
+                        print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
+                        print("Make sure the dll is not write protected")
+                        print(f"*****************************************************************************{Fore.RESET}")
+                        sys.exit(1)
+        return cls._dll_loaded
+    
+    def __init__(self, models, northhand, southhand, contract, is_decl_vuln, player_i, sampler, verbose):
+        dll = BGADefDLL.get_dll(verbose)  # Retrieve the loaded DLL classes through the singleton
+        if dll is None:
+            raise RuntimeError("Failed to load BGADLL. Please ensure it is properly initialized.")
         if models == None:   
             return
 
+        # Access classes from the DLL
+        PIMCDef = dll["PIMCDef"]
+        Hand = dll["Hand"]
+        Play = dll["Play"]
+        Constraints = dll["Constraints"]
+        Extensions = dll["Extensions"]        
         self.models = models       
         self.sampler = sampler     
         self.max_playout = models.pimc_max_playouts
@@ -67,6 +99,7 @@ class BGADefDLL:
         self.opposHand = self.full_deck.Except(self.dummyhand.Union(self.defendinghand))
         self.current_trick = Play()
         self.previous_tricks = Play()
+
         # Constraint are Clubs, Diamonds ending with hcp
         self.partner_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
         self.declarer_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 37)
@@ -93,7 +126,8 @@ class BGADefDLL:
         return hcp_values.get(rank, 0)
 
     def reset_trick(self):
-        from BGADLL import Play
+        dll = BGADefDLL.get_dll()  # Access the loaded DLL singleton
+        Play = dll["Play"]      # Retrieve the Play class from the DLL
         self.previous_tricks.AddRange(self.current_trick)
         self.current_trick = Play()
 
@@ -149,8 +183,8 @@ class BGADefDLL:
                 max_declarer[i] = min(max_declarer[i] + margin_declarer - self.already_shown_declarer[i], 13)
 
 
-        if self.verbose:
-            print(min_partner, max_partner, min_declarer, max_declarer)
+        #if self.verbose:
+        #    print(min_partner, max_partner, min_declarer, max_declarer)
 
         self.partner_constraints.MinSpades = int(min_partner[0])
         self.partner_constraints.MinHearts = int(min_partner[1])
@@ -182,8 +216,8 @@ class BGADefDLL:
         #  Constraints are for the remaining tricks and input if for full samples, so we subtract previous played card
         if self.verbose:
             print(min_partner, max_partner, min_declarer, max_declarer, quality)
-            print("already_shown_d",self.already_shown_hcp_declarer)
-            print("already_shown_p",self.already_shown_hcp_partner)
+            print("already_shown_declarer",self.already_shown_hcp_declarer)
+            print("already_shown_partner",self.already_shown_hcp_partner)
         if quality:
             margin = self.models.pimc_margin_hcp
         else:
@@ -248,7 +282,8 @@ class BGADefDLL:
             print(f"Setting card {real_card} played by {playedBy} for PIMCDef")
 
         card = real_card.symbol_reversed()
-        from BGADLL import Card as PIMCCard
+        dll = BGADefDLL.get_dll()       # Access the loaded DLL singleton
+        PIMCCard = dll["PIMCCard"]       # Retrieve the Card class from the DLL
         self.current_trick.Add(PIMCCard(card))
         self.opposHand.Remove(PIMCCard(card))
         suit = real_card.suit
@@ -278,7 +313,8 @@ class BGADefDLL:
             self.update_constraints(playedBy, real_card)
 
     def find_trump(self, value):
-        from BGADLL import Macros
+        dll = BGADefDLL.get_dll()       # Access the loaded DLL singleton
+        Macros = dll["Macros"]       # Retrieve the Card class from the DLL
         if value == 4:
             return Macros.Trump.Club
         elif value == 3:
@@ -375,8 +411,7 @@ class BGADefDLL:
             print("Voids:", shown_out_suits)
             print(Macros.Player.West if player_i == 0 else Macros.Player.East)
             print("Over dummy", self.player_i == 2)
-            print("Tricks taken", self.tricks_taken)
-            print("min tricks",self.mintricks)
+            print("Tricks taken:", self.tricks_taken, "Tricks needed:",self.mintricks)
             print("Declarer",self.declarer_constraints.ToString())
             print("Partner",self.partner_constraints.ToString())
             print("Autoplay",self.autoplay)
@@ -397,8 +432,7 @@ class BGADefDLL:
             print(Macros.Player.West if player_i == 0 else Macros.Player.East)
             print("self.player_i",self.player_i)
             print("Over dummy", self.player_i == 2)
-            print("Tricks taken", self.tricks_taken)
-            print("min tricks",self.mintricks)
+            print("Tricks taken:", self.tricks_taken, "Tricks needed:",self.mintricks)
             print("Declarer",self.declarer_constraints.ToString())
             print("Partner",self.partner_constraints.ToString())
             print("Current trick",self.current_trick.ListAsString())
@@ -467,7 +501,7 @@ class BGADefDLL:
                     if self.verbose:
                         print(f"Max_playout: {self.max_playout} Playouts: {self.pimc.Playouts} Combinations: {self.pimc.Combinations} Examined:{self.pimc.Examined}")
                         print(self.dummyhand.ToString(), self.defendinghand.ToString(), self.opposHand.ToString(), self.current_trick.ListAsString())
-                        print("Trump:",trump, "min tricks",self.mintricks)
+                        print("Trump:",trump,"Tricks taken:",self.tricks_taken,"Tricks needed:",self.mintricks)
                         print("Voids",shown_out_suits)
                         print(Macros.Player.West if player_i == 0 else Macros.Player.East)
                         print("self.player_i",self.player_i)
@@ -546,7 +580,7 @@ class BGADefDLL:
 
             card_result = {}
             for key in card_ev.keys():
-                card_result[key] = (round(e_tricks[key], 2), round(card_ev[key],2), making[key], msg)
+                card_result[key] = (round(e_tricks[key], 2), round(card_ev[key],2), round(making[key]), msg)
                 if self.verbose:
                     print(f'{Card.from_code(key)} {round(e_tricks[key],3):0.3f} {round(card_ev[key],2):5.2f} {round(making[key],3):0.3f}')
                         
