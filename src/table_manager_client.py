@@ -105,12 +105,12 @@ class TMClient:
             'models': self.models.name
         }
 
-    async def run(self, biddingonly):
+    async def run(self, biddingonly, restart):
 
         self.bid_responses = []
         self.card_responses = []
 
-        self.dealer_i, self.vuln_ns, self.vuln_ew, self.hand_str = await self.receive_deal()
+        self.dealer_i, self.vuln_ns, self.vuln_ew, self.hand_str = await self.receive_deal(restart)
 
         auction = await self.bidding()
 
@@ -648,6 +648,9 @@ class TMClient:
         card_resp_parts = card_resp.strip().split()
         if self.verbose:
             print("card_resp_parts", card_resp_parts)
+        if card_resp.lower() == "start of board":
+            raise RestartLogicException(card_resp)
+
         assert card_resp_parts[0] == SEATS[player_i], f"Received {card_resp_parts} - was expecting card for {SEATS[player_i]}"
         if (player_i + 2) % 4 == self.player_i:
             who = self.partner
@@ -674,6 +677,9 @@ class TMClient:
         bid_resp = await self.receive_line()
         bid_resp_parts = bid_resp.strip().split()
 
+        if bid_resp.lower() == "start of board":
+            raise RestartLogicException(bid_resp)
+
         assert bid_resp_parts[0] == SEATS[player_i], f"Received {bid_resp} - was expecting bid for {SEATS[player_i]} - restart client"
 
         # This is to prevent the client failing, when receiving an alert
@@ -699,18 +705,22 @@ class TMClient:
             msg_ready = f'{self.seat} ready for dummy'
             await self.send_message(msg_ready)
             line = await self.receive_line()
-            if (line == "Start of board"):
-                return None
+            if (line.lower() == "start of board"):
+                raise RestartLogicException(line)
+
             # Dummy's cards : S A Q T 8 2. H K 7. D K 5 2. C A 7 6.
             return TMClient.parse_hand(line)
 
     async def send_ready(self):
         await self.send_message(f'{self.seat} ready to start')
 
-    async def receive_deal(self):
+    async def receive_deal(self, restart):
         np.random.seed(42)
 
-        deal_line_1 = await self.receive_line()
+        if restart:
+            deal_line_1 = "Start of Board"
+        else:
+            deal_line_1 = await self.receive_line()
 
         while deal_line_1.lower() != "start of board":
             await self.send_message(f'{self.seat} ready to start')
@@ -874,6 +884,9 @@ def str_to_bool(value):
         return False
     raise ValueError("Invalid boolean value")
 
+class RestartLogicException(Exception):
+    """Custom exception to signal a restart of the main application logic."""
+    pass
 
 #  Examples of how to start the table manager
 # python table_manager_client.py --name BEN --seat North
@@ -1003,10 +1016,14 @@ async def main():
         await client.send_ready()
 
     shelf_filename = f"{config_path}/{seat}-{name}"
-
+    restart = False
     while client.is_connected:
         t_start = time.time()
-        restart =await client.run(biddingonly)
+        try:
+            await client.run(biddingonly, restart)
+        except RestartLogicException as e:
+            print(f"{Fore.CYAN}{datetime.datetime.now():%H:%M:%S} Communication restarted from Table Manager{Fore.RESET}")
+            restart = True
         # The deal just played is saved for later review
         # if bidding only we do not save the deal
         if restart:
