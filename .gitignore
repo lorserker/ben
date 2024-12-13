@@ -120,3 +120,4 @@ install/*.zip
 src/TMCGUI.settings.json
 install/BENAll
 scripts/match/bidding/BEN-Sayc
+src/log.txt

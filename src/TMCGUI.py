@@ -13,11 +13,14 @@ import pygame
 from pygame.locals import QUIT
 from pathlib import Path
 from tmcgui.table import Table
-from tmcgui.drawing_func import redraw_bidding, redraw_playing, redraw_score
+from tmcgui.drawing_func import redraw_bidding, redraw_playing
 from tmcgui.bid import Bid
 from tmcgui.card import Card
 from tmcgui.player import Player
 import json
+import win32gui
+import win32con
+import win32process
 
 # Initialize colorama for ANSI color handling on Windows
 init()
@@ -32,7 +35,7 @@ CONFIG_FILE = "TMCGUI.settings.json"
 # Constants
 WIDTH, HEIGHT = 1200, 1000
 WHITE = (255, 255, 255)
-
+update_lock = threading.Lock()
 direction_map = {
     "South": 0,
     "West": 1,
@@ -47,7 +50,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("Table Manager Interface. v0.8.3")
+        self.title("Table Manager Interface. v0.8.3.1")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -80,9 +83,14 @@ class TableManagerApp(tk.Tk):
             if options:
                 self.output_text.tag_configure(color, **options)
 
-        self.process = None
+        self.processes = []
+        self.terminate_flag = False
+        self.seats = None
         self.output_queue = queue.Queue()
-
+        # Bind the close event of the Tkinter window
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
+        # Get the main window handle
+        self.hwnd = win32gui.GetForegroundWindow()
         self.pygame_visible = False
 
     def setup_pygame(self):
@@ -97,10 +105,7 @@ class TableManagerApp(tk.Tk):
 
 
         self.font = pygame.font.SysFont("Arial", 32)
-        self.font2 = pygame.font.SysFont("Arial", 64)
         self.pygame_visible = False
-        # Bind the close event of the Tkinter window
-        self.protocol("WM_DELETE_WINDOW", self.on_close)
         top_right_x, top_right_y = self.get_top_right_corner()
         os.environ['SDL_VIDEO_WINDOW_POS'] = f"{top_right_x+100},{top_right_y+100}"
 
@@ -111,13 +116,20 @@ class TableManagerApp(tk.Tk):
             return False
         return True
 
+    def validate_name(self):
+        name = self.inputs["Name:"].get()
+        if name == "":
+            messagebox.showerror("Error", "Please enter name!")
+            return False
+        return True
+
     def validate_config(self):
         config = self.config_entry.get()
         if config == "":
             messagebox.showerror("Error", "Please select a configuration file!")
             return False
         elif not os.path.isfile(config):
-            messagebox.showerror("Error", f"The file '{config}' does not exist!")
+            messagebox.showerror("Error", f"The file '{config}' does not exist! Use the browse button to select a valid file.")
             return False
         return True
 
@@ -153,7 +165,7 @@ class TableManagerApp(tk.Tk):
 
             # Entry or Combobox for each input field (in column 1)
             if label_text == "Seat:":
-                entry = ttk.Combobox(col_frames[1], values=["", "North", "East", "South", "West"])
+                entry = ttk.Combobox(col_frames[1], values=["", "North", "East", "South", "West", "NS", "EW", "NESW"])
                 entry.set(default)
             else:
                 entry = ttk.Entry(col_frames[1])
@@ -169,8 +181,9 @@ class TableManagerApp(tk.Tk):
         config_label = ttk.Label(col_frames[2], text="Config:")
         config_label.grid(row=0, column=0, padx=5, pady=5, sticky="w")
 
+        config_file = self.settings.get("config", "")
         self.config_entry = ttk.Entry(col_frames[2], width=25)
-        self.config_entry.insert(0, "config/default.conf")
+        self.config_entry.insert(0, config_file)
         self.config_entry.grid(row=1, column=0, padx=5, pady=5)
 
         # Browse button for Config in column 3
@@ -192,7 +205,16 @@ class TableManagerApp(tk.Tk):
 
         # Verbose checkbox and buttons (Start/Stop) in column 4
         self.detached_checkbox = tk.BooleanVar(value=False)
-        ttk.Checkbutton(col_frames[3], text="Detached", variable=self.detached_checkbox).grid(row=1, column=0, sticky="w", padx=5, pady=5)
+        # Callback function to enable or disable the button
+        def update_button_state():
+            if self.detached_checkbox.get():
+                self.start_button.config(state="normal")  # Enable button
+            else:
+                if len(self.processes) > 0:
+                    self.start_button.config(state="disabled")  # Disable button
+                else:
+                    self.start_button.config(state="normal")  # Enable button
+        ttk.Checkbutton(col_frames[3], text="Detached", variable=self.detached_checkbox,command=update_button_state).grid(row=1, column=0, sticky="w", padx=5, pady=5)
 
         # Move Start and Stop buttons to column 4
         self.start_button = ttk.Button(col_frames[3], text="Start BEN client", command=self.start_ben_client)
@@ -202,43 +224,18 @@ class TableManagerApp(tk.Tk):
         button_width = 21
         
         self.stop_button = ttk.Button(col_frames[3], text="Stop BEN client", command=self.stop_application, state="disabled")
-        #self.stop_button.grid(row=3, column=0, padx=5, pady=5)
+        self.stop_button.grid(row=3, column=0, padx=5, pady=5)
 
-        # Move Start and Stop buttons to column 4
-        self.start_button = ttk.Button(col_frames[5], text="Start Table Manager", command=self.start_tm_window, width=button_width)
-        self.start_button.grid(row=0, column=0, padx=5, pady=5)
-
-        # Move Start and Stop buttons to column 4
-        self.start_button = ttk.Button(col_frames[5], text="Start RoboBridge client", command=self.start_robobridge_window, width=button_width)
-        self.start_button.grid(row=1, column=0, padx=5, pady=5)
-
-        # Move Start and Stop buttons to column 4
-        self.start_button = ttk.Button(col_frames[5], text="Start WBridge5 client", command=self.start_wbridge5_window, width=button_width)
-        self.start_button.grid(row=2, column=0, padx=5, pady=5)
-
-        # Move Start and Stop buttons to column 4
-        self.start_button = ttk.Button(col_frames[5], text="Start Q-Plus client", command=self.start_qplus_window, width=button_width)
-        self.start_button.grid(row=3, column=0, padx=5, pady=5)
-
-        # Move Start and Stop buttons to column 4
-        self.start_button = ttk.Button(col_frames[5], text="Start Powershark client", command=self.start_shark_window, width=button_width)
-        self.start_button.grid(row=4, column=0, padx=5, pady=5)
-
-        # Move Start and Stop buttons to column 4
-        self.start_button = ttk.Button(col_frames[5], text="Start Lia client", command=self.start_lia_window, width=button_width)
-        self.start_button.grid(row=5, column=0, padx=5, pady=5)
-
-        # Move Start and Stop buttons to column 4
-        self.start_button = ttk.Button(col_frames[5], text="Start Blue Chip client", command=self.start_bc_window, width=button_width)
-        self.start_button.grid(row=6, column=0, padx=5, pady=5)
-
-        # Move Start and Stop buttons to column 4
-        self.start_button = ttk.Button(col_frames[5], text="Start TM Mediator", command=self.start_tmmediator_window, width=button_width)
-        self.start_button.grid(row=7, column=0, padx=5, pady=5)
-
-        # Move Start and Stop buttons to column 4
-        self.start_button = ttk.Button(col_frames[5], text="Start GIB client", command=self.start_gib_window, width=button_width)
-        self.start_button.grid(row=8, column=0, padx=5, pady=5)
+        # Create and place the buttons without storing them
+        ttk.Button(col_frames[5], text="Start Table Manager", command=self.start_tm_window, width=button_width).grid(row=0, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start RoboBridge client", command=self.start_robobridge_window, width=button_width).grid(row=1, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start WBridge5 client", command=self.start_wbridge5_window, width=button_width).grid(row=2, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Q-Plus client", command=self.start_qplus_window, width=button_width).grid(row=3, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Powershark client", command=self.start_shark_window, width=button_width).grid(row=4, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Lia client", command=self.start_lia_window, width=button_width).grid(row=5, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Blue Chip client", command=self.start_bc_window, width=button_width).grid(row=6, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start TM Mediator", command=self.start_tmmediator_window, width=button_width).grid(row=7, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start GIB client", command=self.start_gib_window, width=button_width).grid(row=8, column=0, padx=5, pady=5)
 
         # Add "Save Log" button
         self.save_log_button = ttk.Button(col_frames[3], text="Save Log", command=self.save_log)
@@ -315,7 +312,7 @@ class TableManagerApp(tk.Tk):
         # Get the current path from the Config entry field
         current_path = self.config_entry.get()
         # Extract the directory
-        initial_dir = os.path.dirname(current_path) if os.path.isdir(os.path.dirname(current_path)) else "."
+        initial_dir = os.path.dirname(current_path) if os.path.isdir(os.path.dirname(current_path)) else "config"
 
         # Open file dialog with the initial directory
         file_path = filedialog.askopenfilename(
@@ -330,9 +327,13 @@ class TableManagerApp(tk.Tk):
             self.config_entry.insert(0, rel_path)
             self.inputs["Name:"].delete(0, tk.END)
             self.inputs["Name:"].insert(0,  os.path.basename(rel_path).split(".")[0])
+            self.settings["config"] = rel_path
+            self.settings["name"] = self.inputs["Name:"].get()
+            self.save_settings()
+
 
     def start_tm_window(self):
-                # Create a new window (Toplevel)
+        # Create a new window (Toplevel)
         exe_path = self.settings.get("TM_file", "")
 
         modal_window = tk.Toplevel(self)
@@ -348,19 +349,26 @@ class TableManagerApp(tk.Tk):
 
         # Set window position at cursor
         modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
+
+        # Introduction text
+        introduction_text = "Start Table Manager, select boards and start the table. Then start the clients."
+        tk.Label(modal_window, text=introduction_text, anchor="w", padx=10, pady=10).grid(
+            row=0, column=0, columnspan=2, sticky="w"
+        )
+
         # Label above the entry field
         tk.Label(modal_window, text="Table Manager Executable:", anchor="w").grid(
-            row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
+            row=1, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
         )
 
         # Wider entry field for better readability
         entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry1.grid(row=1, column=0, padx=10, pady=5, sticky="w")
+        entry1.grid(row=2, column=0, padx=10, pady=5, sticky="w")
         entry1.insert(0, exe_path)
 
         # Browse button beside the entry field
         browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
-        browse_button.grid(row=1, column=1, padx=10, pady=5)
+        browse_button.grid(row=2, column=1, padx=10, pady=5)
         # Add a submit button
         def on_submit():
             # Get values from the entry fields
@@ -372,7 +380,7 @@ class TableManagerApp(tk.Tk):
             
         # Add a submit button, centered below the input
         submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
-        submit_button.grid(row=2, column=0, columnspan=3, pady=20)
+        submit_button.grid(row=3, column=0, columnspan=3, pady=20)
 
         # Adjust modal window size and center it
         modal_window.update_idletasks()
@@ -384,463 +392,205 @@ class TableManagerApp(tk.Tk):
 
         # Wait for the modal window to be closed
         self.wait_window(modal_window)
+
+    def create_modal_window(self, title, exe_setting_key, label_text, on_submit_callback, additional_fields=None, introduction_text=None):
+        """Helper method to create a modal window."""
+        exe_path = self.settings.get(exe_setting_key, "")
+
+        # Create modal window
+        modal_window = tk.Toplevel(self)
+        modal_window.title(title)
+        modal_window.transient(self)
+        modal_window.grab_set()
+
+        # Position window at cursor
+        cursor_x = self.winfo_pointerx()
+        cursor_y = self.winfo_pointery()
+        offset_x = 50  # Adjust horizontal offset as needed
+        offset_y = 30  # Adjust vertical offset as needed
+        modal_window.geometry(f"+{cursor_x + offset_x}+{cursor_y + offset_y}")
+        
+        # Introduction text
+        tk.Label(modal_window, text=introduction_text, anchor="w", padx=10, pady=10).grid(
+            row=0, column=0, columnspan=2, sticky="w"
+        )
+        # Executable label and entry field
+        tk.Label(modal_window, text=label_text, anchor="w").grid(
+            row=1, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
+        )
+        entry = ttk.Entry(modal_window, width=60)
+        entry.grid(row=2, column=0, padx=10, pady=5, sticky="w")
+        entry.insert(0, exe_path)
+
+        # Browse button
+        ttk.Button(modal_window, text="Browse", 
+                command=lambda: self.browse_executable(exe_path, entry)).grid(
+            row=2, column=1, padx=10, pady=5
+        )
+
+        # Additional fields
+        if additional_fields:
+            for i, (label, field_type) in enumerate(additional_fields):
+                tk.Label(modal_window, text=label, anchor="w").grid(
+                    row=3 + i, column=0, padx=10, pady=5, sticky="w"
+                )
+                if field_type == 'entry':
+                    ttk.Entry(modal_window, width=50).grid(
+                        row=3 + i, column=1, padx=10, pady=5
+                    )
+                elif field_type == 'checkbox':
+                    ttk.Checkbutton(modal_window).grid(
+                        row=3 + i, column=1, padx=10, pady=5
+                    )
+
+        # Submit button
+        submit_button = ttk.Button(modal_window, text="Start", command=lambda: on_submit_callback(entry, modal_window))
+        submit_button.grid(row=4 + len(additional_fields) if additional_fields else 3, column=0, columnspan=2, pady=20)
+
+        # Adjust and center window
+        modal_window.update_idletasks()
+        window_width = modal_window.winfo_width()
+        window_height = modal_window.winfo_height()
+        center_x = cursor_x + offset_x - window_width // 2
+        center_y = cursor_y + offset_y - window_height // 2
+        modal_window.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
+        self.wait_window(modal_window)
+
     def start_robobridge_window(self):
-                # Create a new window (Toplevel)
-        exe_path = self.settings.get("Robo_file", "")
-
-        modal_window = tk.Toplevel(self)
-        modal_window.title("Start Robobridge")
-
-        # Make the window modal
-        modal_window.transient(self)  # Make it appear above the main window
-        modal_window.grab_set()  # Prevent interaction with other windows
-        
-        # Get cursor position
-        cursor_x = self.winfo_pointerx()
-        cursor_y = self.winfo_pointery()
-
-        # Set window position at cursor
-        modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
-        # Label above the entry field
-        tk.Label(modal_window, text="Robobridge Executable:", anchor="w").grid(
-            row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-
-        # Wider entry field for better readability
-        entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry1.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        entry1.insert(0, exe_path)
-
-        # Browse button beside the entry field
-        browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
-        browse_button.grid(row=1, column=1, padx=10, pady=5)
-
-        tk.Label(modal_window, text="Seat:", anchor="w").grid(
-            row=2, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-        seat = ttk.Combobox(modal_window, values=["", "North", "East", "South", "West"])
-        seat.grid(row=3, column=1, padx=10, pady=5)
-
-        exe_path = self.settings.get("Robo_file_param", "")
-        tk.Label(modal_window, text="ConventionCards:", anchor="w").grid(
-            row=4, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-        # Wider entry field for better readability
-        entry2 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry2.grid(row=5, column=0, padx=10, pady=5, sticky="w")
-        entry2.insert(0, exe_path)
-
-        # Add a submit button
-        def on_submit():
-            host = self.inputs["Host:"].get()
-            if not host:
-                host = "127.0.0.1"
-            port = self.inputs["Port:"].get()
-            if not port:    
-                port = "2000"
-            matchpoint = self.matchpoint.get()
-            param = f"seat={seat.get()}&port={port}&ipaddress={host}&networkname=RoboBridge&{entry2.get()}"
-            if matchpoint:
-                param += f"&match=oairs"
-            # Get values from the entry fields
-            exe_path = entry1.get()
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
             self.settings["Robo_file"] = exe_path
-            self.settings["Robo_file_param"] = entry2.get()
+            # Additional logic for RoboBridge-specific parameters
             self.save_settings()
-            self.start_appl(exe_path, [param])
-            modal_window.destroy()  # Close the modal window
-            
-        # Add a submit button, centered below the input
-        submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
-        submit_button.grid(row=6, column=0, columnspan=3, pady=20)
+            self.start_appl(exe_path, ["specific_params"])
+            modal_window.destroy()
 
-        # Adjust modal window size and center it
-        modal_window.update_idletasks()
-        modal_window.geometry(
-            f"{modal_window.winfo_width()}x{modal_window.winfo_height()}+"
-            f"{modal_window.winfo_pointerx() - modal_window.winfo_width() // 2}+"
-            f"{modal_window.winfo_pointery() - modal_window.winfo_height() // 2}"
+        introduction_text = "It is recopmleted to create a command file with the commands to start RoboBridge clients."
+        self.create_modal_window(
+            "Start Robobridge",
+            "Robo_file",
+            "Robobridge Executable:",
+            on_submit,
+            introduction_text
         )
 
-        # Wait for the modal window to be closed
-        self.wait_window(modal_window)
     def start_wbridge5_window(self):
-                # Create a new window (Toplevel)
-        exe_path = self.settings.get("wbridge5_file", "")
-
-        modal_window = tk.Toplevel(self)
-        modal_window.title("Start WBridge5")
-
-        # Make the window modal
-        modal_window.transient(self)  # Make it appear above the main window
-        modal_window.grab_set()  # Prevent interaction with other windows
-        
-        # Get cursor position
-        cursor_x = self.winfo_pointerx()
-        cursor_y = self.winfo_pointery()
-
-        # Set window position at cursor
-        modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
-        # Label above the entry field
-        tk.Label(modal_window, text="WBridge5 Executable:", anchor="w").grid(
-            row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-
-        # Wider entry field for better readability
-        entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry1.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        entry1.insert(0, exe_path)
-
-        # Browse button beside the entry field
-        browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
-        browse_button.grid(row=1, column=1, padx=10, pady=5)
-        # Add a submit button
-        def on_submit():
-            # Get values from the entry fields
-            exe_path = entry1.get()
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
             self.settings["wbridge5_file"] = exe_path
             self.save_settings()
-            parms = []
-            parms.append("Autoconnect")
-            port = self.inputs["Port:"].get()
-            if not port:    
-                port = "2000"
-            parms.append(port)
-            self.start_appl(exe_path, parms)
-            modal_window.destroy()  # Close the modal window
-            
-        # Add a submit button, centered below the input
-        submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
-        submit_button.grid(row=2, column=0, columnspan=3, pady=20)
+            self.start_appl(exe_path, ["Autoconnect", "port_param"])
+            modal_window.destroy()
 
-        # Adjust modal window size and center it
-        modal_window.update_idletasks()
-        modal_window.geometry(
-            f"{modal_window.winfo_width()}x{modal_window.winfo_height()}+"
-            f"{modal_window.winfo_pointerx() - modal_window.winfo_width() // 2}+"
-            f"{modal_window.winfo_pointery() - modal_window.winfo_height() // 2}"
+        introduction_text = "WBridge5 will connect to any empty seat starting from South. Only works with Bridge Moniteur"
+        self.create_modal_window(
+            "Start WBridge5",
+            "wbridge5_file",
+            "WBridge5 Executable:",
+            on_submit
         )
 
-        # Wait for the modal window to be closed
-        self.wait_window(modal_window)
     def start_qplus_window(self):
-                # Create a new window (Toplevel)
-        exe_path = self.settings.get("QPlus_file", "")
-
-        modal_window = tk.Toplevel(self)
-        modal_window.title("Start Q-Plus Bridge")
-
-        # Make the window modal
-        modal_window.transient(self)  # Make it appear above the main window
-        modal_window.grab_set()  # Prevent interaction with other windows
-        
-        # Get cursor position
-        cursor_x = self.winfo_pointerx()
-        cursor_y = self.winfo_pointery()
-
-        # Set window position at cursor
-        modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
-        # Label above the entry field
-        tk.Label(modal_window, text="Q-Plus Bridge Executable:", anchor="w").grid(
-            row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-
-        # Wider entry field for better readability
-        entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry1.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        entry1.insert(0, exe_path)
-
-        # Browse button beside the entry field
-        browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
-        browse_button.grid(row=1, column=1, padx=10, pady=5)
-        # Add a submit button
-        def on_submit():
-            # Get values from the entry fields
-            exe_path = entry1.get()
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
             self.settings["QPlus_file"] = exe_path
             self.save_settings()
             self.start_appl(exe_path)
-            modal_window.destroy()  # Close the modal window
-            
-        # Add a submit button, centered below the input
-        submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
-        submit_button.grid(row=2, column=0, columnspan=3, pady=20)
+            modal_window.destroy()
 
-        # Adjust modal window size and center it
-        modal_window.update_idletasks()
-        modal_window.geometry(
-            f"{modal_window.winfo_width()}x{modal_window.winfo_height()}+"
-            f"{modal_window.winfo_pointerx() - modal_window.winfo_width() // 2}+"
-            f"{modal_window.winfo_pointery() - modal_window.winfo_height() // 2}"
+        introduction_text = "You will have to manually connect the clients to the table manager"
+        self.create_modal_window(
+            "Start Q-Plus Bridge",
+            "QPlus_file",
+            "Q-Plus Bridge Executable:",
+            on_submit,
+            introduction_text=introduction_text
         )
 
-        # Wait for the modal window to be closed
-        self.wait_window(modal_window)
     def start_shark_window(self):
-                # Create a new window (Toplevel)
-        exe_path = self.settings.get("Shark_file", "")
-
-        modal_window = tk.Toplevel(self)
-        modal_window.title("Start Powershark")
-
-        # Make the window modal
-        modal_window.transient(self)  # Make it appear above the main window
-        modal_window.grab_set()  # Prevent interaction with other windows
-        
-        # Get cursor position
-        cursor_x = self.winfo_pointerx()
-        cursor_y = self.winfo_pointery()
-
-        # Set window position at cursor
-        modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
-        # Label above the entry field
-        tk.Label(modal_window, text="Powershark Executable:", anchor="w").grid(
-            row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-
-        # Wider entry field for better readability
-        entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry1.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        entry1.insert(0, exe_path)
-
-        # Browse button beside the entry field
-        browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
-        browse_button.grid(row=1, column=1, padx=10, pady=5)
-        # Add a submit button
-        def on_submit():
-            # Get values from the entry fields
-            exe_path = entry1.get()
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
             self.settings["Shark_file"] = exe_path
             self.save_settings()
             self.start_appl(exe_path)
-            modal_window.destroy()  # Close the modal window
-            
-        # Add a submit button, centered below the input
-        submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
-        submit_button.grid(row=2, column=0, columnspan=3, pady=20)
+            modal_window.destroy()
 
-        # Adjust modal window size and center it
-        modal_window.update_idletasks()
-        modal_window.geometry(
-            f"{modal_window.winfo_width()}x{modal_window.winfo_height()}+"
-            f"{modal_window.winfo_pointerx() - modal_window.winfo_width() // 2}+"
-            f"{modal_window.winfo_pointery() - modal_window.winfo_height() // 2}"
+        introduction_text = "You will have to manually connect the clients to the table manager"
+        self.create_modal_window(
+            "Start Powershark",
+            "Shark_file",
+            "Powershark Executable:",
+            on_submit,
+            introduction_text=introduction_text
         )
 
-        # Wait for the modal window to be closed
-        self.wait_window(modal_window)
     def start_lia_window(self):
-                # Create a new window (Toplevel)
-        exe_path = self.settings.get("Lia_file", "")
-
-        modal_window = tk.Toplevel(self)
-        modal_window.title("Start Lia")
-
-        # Make the window modal
-        modal_window.transient(self)  # Make it appear above the main window
-        modal_window.grab_set()  # Prevent interaction with other windows
-        
-        # Get cursor position
-        cursor_x = self.winfo_pointerx()
-        cursor_y = self.winfo_pointery()
-
-        # Set window position at cursor
-        modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
-        # Label above the entry field
-        tk.Label(modal_window, text="Lia Executable:", anchor="w").grid(
-            row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-
-        # Wider entry field for better readability
-        entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry1.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        entry1.insert(0, exe_path)
-
-        # Browse button beside the entry field
-        browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
-        browse_button.grid(row=1, column=1, padx=10, pady=5)
-        # Add a submit button
-        def on_submit():
-            # Get values from the entry fields
-            exe_path = entry1.get()
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
             self.settings["Lia_file"] = exe_path
             self.save_settings()
             self.start_appl(exe_path)
-            modal_window.destroy()  # Close the modal window
-            
-        # Add a submit button, centered below the input
-        submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
-        submit_button.grid(row=2, column=0, columnspan=3, pady=20)
+            modal_window.destroy()
 
-        # Adjust modal window size and center it
-        modal_window.update_idletasks()
-        modal_window.geometry(
-            f"{modal_window.winfo_width()}x{modal_window.winfo_height()}+"
-            f"{modal_window.winfo_pointerx() - modal_window.winfo_width() // 2}+"
-            f"{modal_window.winfo_pointery() - modal_window.winfo_height() // 2}"
+        introduction_text = "You will have to manually connect the clients to the table manager"
+        self.create_modal_window(
+            "Start Lia",
+            "Lia_file",
+            "Lia Executable:",
+            on_submit,
+            introduction_text=introduction_text
         )
 
-        # Wait for the modal window to be closed
-        self.wait_window(modal_window)
     def start_bc_window(self):
-                # Create a new window (Toplevel)
-        exe_path = self.settings.get("BC_file", "")
-
-        modal_window = tk.Toplevel(self)
-        modal_window.title("Start Blue Chip")
-
-        # Make the window modal
-        modal_window.transient(self)  # Make it appear above the main window
-        modal_window.grab_set()  # Prevent interaction with other windows
-        
-        # Get cursor position
-        cursor_x = self.winfo_pointerx()
-        cursor_y = self.winfo_pointery()
-
-        # Set window position at cursor
-        modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
-        # Label above the entry field
-        tk.Label(modal_window, text="Blue Chip Executable:", anchor="w").grid(
-            row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-
-        # Wider entry field for better readability
-        entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry1.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        entry1.insert(0, exe_path)
-
-        # Browse button beside the entry field
-        browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
-        browse_button.grid(row=1, column=1, padx=10, pady=5)
-        # Add a submit button
-        def on_submit():
-            # Get values from the entry fields
-            exe_path = entry1.get()
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
             self.settings["BC_file"] = exe_path
             self.save_settings()
             self.start_appl(exe_path)
-            modal_window.destroy()  # Close the modal window
-            
-        # Add a submit button, centered below the input
-        submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
-        submit_button.grid(row=2, column=0, columnspan=3, pady=20)
+            modal_window.destroy()
 
-        # Adjust modal window size and center it
-        modal_window.update_idletasks()
-        modal_window.geometry(
-            f"{modal_window.winfo_width()}x{modal_window.winfo_height()}+"
-            f"{modal_window.winfo_pointerx() - modal_window.winfo_width() // 2}+"
-            f"{modal_window.winfo_pointery() - modal_window.winfo_height() // 2}"
+        introduction_text = "You will have to manually connect the clients to the table manager"
+        self.create_modal_window(
+            "Start Blue Chip",
+            "BC_file",
+            "Blue Chip Executable:",
+            on_submit,
+            introduction_text=introduction_text
         )
-
-        # Wait for the modal window to be closed
-        self.wait_window(modal_window)
     def start_tmmediator_window(self):
-                # Create a new window (Toplevel)
-        exe_path = self.settings.get("TMMediator_file", "")
-
-        modal_window = tk.Toplevel(self)
-        modal_window.title("Start TMMediator")
-
-        # Make the window modal
-        modal_window.transient(self)  # Make it appear above the main window
-        modal_window.grab_set()  # Prevent interaction with other windows
-        
-        # Get cursor position
-        cursor_x = self.winfo_pointerx()
-        cursor_y = self.winfo_pointery()
-
-        # Set window position at cursor
-        modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
-        # Label above the entry field
-        tk.Label(modal_window, text="TMMediator Executable:", anchor="w").grid(
-            row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-
-        # Wider entry field for better readability
-        entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry1.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        entry1.insert(0, exe_path)
-
-        # Browse button beside the entry field
-        browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
-        browse_button.grid(row=1, column=1, padx=10, pady=5)
-        # Add a submit button
-        def on_submit():
-            # Get values from the entry fields
-            exe_path = entry1.get()
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
             self.settings["TMMediator_file"] = exe_path
             self.save_settings()
             self.start_appl(exe_path)
-            modal_window.destroy()  # Close the modal window
-            
-        # Add a submit button, centered below the input
-        submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
-        submit_button.grid(row=2, column=0, columnspan=3, pady=20)
+            modal_window.destroy()
 
-        # Adjust modal window size and center it
-        modal_window.update_idletasks()
-        modal_window.geometry(
-            f"{modal_window.winfo_width()}x{modal_window.winfo_height()}+"
-            f"{modal_window.winfo_pointerx() - modal_window.winfo_width() // 2}+"
-            f"{modal_window.winfo_pointery() - modal_window.winfo_height() // 2}"
+        introduction_text = "TMMediator is used for Blue Chip, and maps the Blue Chip Ports to the default table manager ports."
+        self.create_modal_window(
+            "Start TMMediator",
+            "TMMediator_file",
+            "TMMediator Executable:",
+            on_submit,
+            introduction_text=introduction_text
         )
 
-        # Wait for the modal window to be closed
-        self.wait_window(modal_window)
     def start_gib_window(self):
-                # Create a new window (Toplevel)
-        exe_path = self.settings.get("GIB_file", "")
-
-        modal_window = tk.Toplevel(self)
-        modal_window.title("Start GIB")
-
-        # Make the window modal
-        modal_window.transient(self)  # Make it appear above the main window
-        modal_window.grab_set()  # Prevent interaction with other windows
-        
-        # Get cursor position
-        cursor_x = self.winfo_pointerx()
-        cursor_y = self.winfo_pointery()
-
-        # Set window position at cursor
-        modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
-        # Label above the entry field
-        tk.Label(modal_window, text="GIB Executable:", anchor="w").grid(
-            row=0, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
-        )
-
-        # Wider entry field for better readability
-        entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
-        entry1.grid(row=1, column=0, padx=10, pady=5, sticky="w")
-        entry1.insert(0, exe_path)
-
-        # Browse button beside the entry field
-        browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
-        browse_button.grid(row=1, column=1, padx=10, pady=5)
-        # Add a submit button
-        def on_submit():
-            # Get values from the entry fields
-            exe_path = entry1.get()
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
             self.settings["GIB_file"] = exe_path
             self.save_settings()
             self.start_appl(exe_path)
-            modal_window.destroy()  # Close the modal window
-            
-        # Add a submit button, centered below the input
-        submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
-        submit_button.grid(row=2, column=0, columnspan=3, pady=20)
+            modal_window.destroy()
 
-        # Adjust modal window size and center it
-        modal_window.update_idletasks()
-        modal_window.geometry(
-            f"{modal_window.winfo_width()}x{modal_window.winfo_height()}+"
-            f"{modal_window.winfo_pointerx() - modal_window.winfo_width() // 2}+"
-            f"{modal_window.winfo_pointery() - modal_window.winfo_height() // 2}"
+        introduction_text = "It is recommended to create a command file with the commands to start GIB clients."
+        self.create_modal_window(
+            "Start GIB",
+            "GIB_file",
+            "GIB Executable:",
+            on_submit,
+            introduction_text=introduction_text
         )
 
-        # Wait for the modal window to be closed
-        self.wait_window(modal_window)
     def start_appl(self, exe_path, paramlist=[]):
 
         try:           
@@ -855,7 +605,7 @@ class TableManagerApp(tk.Tk):
 
             # Start the selected application in detached mode (no output capture)
             creation_flags = subprocess.CREATE_NEW_CONSOLE
-            self.process = subprocess.Popen(
+            subprocess.Popen(
                 cmd,
                 stdout=None,  # No output capture
                 stderr=None,
@@ -868,8 +618,15 @@ class TableManagerApp(tk.Tk):
         except Exception as e:
             self.display_output(f"Error starting application: {str(e)}\n", "red")
 
+    def bring_to_focus(self):
+        if self.hwnd:
+            win32gui.ShowWindow(self.hwnd, win32con.SW_RESTORE)  # Restore if minimized
+            win32gui.SetForegroundWindow(self.hwnd)  # Bring to foreground
+
     def start_ben_client(self):
         # Disable start button, enable stop button
+        if not self.validate_name():
+            return
         if not self.validate_seat():
             return
         if not self.validate_config():
@@ -889,20 +646,10 @@ class TableManagerApp(tk.Tk):
         nosearch = self.nosearch.get()
         verbose = self.verbose.get()
 
-        def read_output(stream, queue, color=None):
-            while True:
-                if stream and not stream.closed:
-                    output = stream.readline()
-                if not output:
-                    break
-                # Add the output to the queue with color
-                queue.put((output, color))
-            stream.close()
-
-
-        def run_process():
+        def run_process(seat, delay=None):
             try:
-                self.display_output("\nStarting application...\n", "green")
+                time.sleep(delay)  # Wait for the specified delay if any
+                self.display_output("\nStarting table manager client for seat " + str(seat) + "...\n", "green")
                 # Check if table_manager_client.exe exists
                 exe_path = 'table_manager_client.exe'
 
@@ -914,14 +661,12 @@ class TableManagerApp(tk.Tk):
                         "python", "table_manager_client.py"]
 
                 # Add arguments conditionally
+                cmd.extend(["--name", str(name)])
+                cmd.extend(["--seat", str(seat)])
                 if host:  
                     cmd.extend(["--host", str(host)])
                 if port:  
                     cmd.extend(["--port", str(port)])
-                if name:  
-                    cmd.extend(["--name", str(name)])
-                if seat:  
-                    cmd.extend(["--seat", str(seat)])
                 if config:
                     cmd.extend(["--config", config])
                 if bidding_only:
@@ -938,7 +683,7 @@ class TableManagerApp(tk.Tk):
                     cmd = ["cmd", "/k"] + cmd  # Prepend cmd /k to keep the console open
                     # Detached mode: Open in a new console, no output capture
                     creation_flags = subprocess.CREATE_NEW_CONSOLE
-                    self.process = subprocess.Popen(
+                    process = subprocess.Popen(
                         cmd,
                         stdout=None,  # Direct output to the new console
                         stderr=None,
@@ -946,50 +691,82 @@ class TableManagerApp(tk.Tk):
                         creationflags=creation_flags,
                     )
                     self.display_output("Running in detached mode (new console opened).\n", "green")
+                    self.processes.append((process, subprocess.CREATE_NEW_CONSOLE))  # Add the process to the array
+                            # Bring the main app back to focus
+                    self.after(100, self.bring_to_focus)
                 else:
                     # Hide the console window when launching the background process
-                    creation_flags = 0
-                    self.process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=False, env=env, creationflags=creation_flags)
-                    
+                    creation_flags = subprocess.CREATE_NO_WINDOW
+                    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=False, env=env, creationflags=creation_flags)
+                    def read_stream(stream, output_queue, seat, color=None):
+                        try:
+                            for line in iter(stream.readline, ''):
+                                output_queue.put((line, seat, color))
+                            stream.close()
+                        except Exception as e:
+                            if not self.terminate_flag:
+                                self.display_output(f"\nError reading {color} stream: {str(e)}\n", "red")
+
+
                     # Start threads to read stdout and stderr
-                    stdout_thread = threading.Thread(target=read_output, args=(self.process.stdout, self.output_queue), daemon=True)
-                    stderr_thread = threading.Thread(target=read_output, args=(self.process.stderr, self.output_queue, "yellow"), daemon=True)
+                    stdout_thread = threading.Thread(target=read_stream, args=(process.stdout, self.output_queue, seat), daemon=True)
+                    stderr_thread = threading.Thread(target=read_stream, args=(process.stderr, self.output_queue, seat, "yellow"), daemon=True)
         
                     stdout_thread.start()
                     stderr_thread.start()
 
+                    self.processes.append((process, creation_flags))  # Add the process to the array
                     # Process the output queue
                     while True:
                         try:
-                            line, color = self.output_queue.get(timeout=0.5)  # Timeout allows checking process status
+                            line, seat, color = self.output_queue.get(timeout=0.5)  # Timeout allows checking process status
+                            if self.terminate_flag:
+                                break  # Exit loop if termination flag is set
                             decoded_line = line.decode('utf-8', errors='replace')  # Decode bytes to string
                             self.display_output(decoded_line, color=color)
                             if self.pygame_visible:
-                                self.update_window(decoded_line)
+                                try:
+                                    with update_lock:  # Ensure only one thread updates the window at a time
+                                        self.update_window(decoded_line, seat)
+                                except Exception as e:
+                                    self.display_output(f"\nError updating window: {str(e)}\n", "red")
+                                    print(decoded_line)
                         except queue.Empty:
-                            if self.process is not None:
-                                if self.process.poll() is not None:
+                            if process is not None:
+                                if process.poll() is not None:
                                     break  # Exit when the process has finished
                             time.sleep(0.1)
 
                     # Wait for threads to finish
                     stdout_thread.join()
-                    stderr_thread.join()
-
-                    # Handle process exit status
-                    if self.process.returncode != 0:
-                        self.display_output(f"\nApplication terminated with error code: {self.process.returncode}\n", "red")
+                    stderr_thread.join()                    
 
             except Exception as e:
                 self.display_output(f"\nError starting the application. Error: {str(e)}\n", "red")
             finally:
-                self.process = None
                 # Toggle buttons back after termination
                 self.start_button.config(state="normal")
                 self.table_button.config(state="normal")
                 self.stop_button.config(state="disabled")
+        
+        # Mapping for combined seats
+        combined_seats = {
+            "North": ["North"],
+            "East": ["East"],
+            "South": ["South"],
+            "Weat": ["West"],
+            "NS": ["North", "South"],
+            "EW": ["East", "West"],
+            "NESW": ["North", "East", "South", "West"]
+        }
+        self.seats = combined_seats[seat]
+        self.terminate_flag = False
+        # Expand combined parameters into individual calls
+        for index, single_seat in enumerate(combined_seats[seat]):
+            # Introduce a slight delay to stagger the start of each thread
+            delay = 1 * (index)  # Increasing delay as threads are started
+            threading.Thread(target=run_process, args=(single_seat,delay), daemon=True).start()
 
-        threading.Thread(target=run_process, daemon=True).start()
 
     def parse_hand(self,s):
         # Translate hand from Tablemanager format to pygame format
@@ -1017,8 +794,9 @@ class TableManagerApp(tk.Tk):
             print(ex)
             print(f"Protocol error. Received {s} - Expected a hand")
 
-    def update_window(self, text):
-
+    def update_window(self, text, seat):
+        if not self.pygame_visible:
+            return
         pattern = r'^\d{2}:\d{2}:\d{2}$'
         tokens = text.split()
         if len(tokens) < 2:
@@ -1031,10 +809,10 @@ class TableManagerApp(tk.Tk):
             return
         if "trick" in text:
             # Count cards in the 4 hands
-            #print(len(self.table.board.west), self.table.board.west)
-            #print(len(self.table.board.north), self.table.board.north)
-            #print(len(self.table.board.east), self.table.board.east)
-            #print(len(self.table.board.south), self.table.board.south)
+            # print(len(self.table.board.west), self.table.board.west)
+            # print(len(self.table.board.north), self.table.board.north)
+            # print(len(self.table.board.east), self.table.board.east)
+            # print(len(self.table.board.south), self.table.board.south)
             return
         #print(tokens)
         if "seated" in text:
@@ -1042,12 +820,13 @@ class TableManagerApp(tk.Tk):
             seat = direction_map[tokens[2]]
             self.user = Player(tokens[3])
             # We are at the bottoom
-            self.user.position = seat
-            if self.screen:
-                self.table.set_player(self.user.position,self.user.username)
-                redraw_bidding(self.screen, self.font, [], self.table, self.table.board, self.user, self.table.board.available_bids, self.table.board.special_bids)
+            self.user.position = 0
+            self.table.set_player(seat,self.user.username)
+            #self.table.set_player(self.user.position,self.user.username)
+            #redraw_sitting(self.screen, self.font, self.table, self.user)
+            redraw_bidding(self.screen, self.font, self.table, self.user)
         if "Teams" in text:
-            #print("Updating teams")
+            #print("Updating teams", text)
             ns_team = tokens[6].replace('"','')
             if '/' in ns_team:
                 north, south = ns_team.split('/')
@@ -1063,9 +842,7 @@ class TableManagerApp(tk.Tk):
                 west = east = ew_team
             self.table.set_player(1,west)
             self.table.set_player(3,east)
-
-            if self.screen:
-                redraw_bidding(self.screen, self.font, [], self.table, self.table.board, self.user, self.table.board.available_bids, self.table.board.special_bids)
+            redraw_bidding(self.screen, self.font, self.table, self.user)
         if "cards" in text:
             #print("Updating cards")
             hand = ' '.join(tokens[2:-1])
@@ -1084,6 +861,7 @@ class TableManagerApp(tk.Tk):
                     self.table.board.north = hand
                 if self.dummy_i == 3:
                     self.table.board.east = hand
+                redraw_playing(self.screen, self.font, self.table, self.user)
             else:
                 player_id = direction_map[player]
                 if player_id == 0:
@@ -1094,10 +872,11 @@ class TableManagerApp(tk.Tk):
                     self.table.board.north = hand
                 if player_id == 3:
                     self.table.board.east = hand
-            if self.screen:
-                redraw_bidding(self.screen, self.font, [], self.table, self.table.board, self.user, self.table.board.available_bids, self.table.board.special_bids)
+                redraw_bidding(self.screen, self.font, self.table, self.user)
         # Board number 1. Dealer North. Neither vulnerable.  
         if "number" in text:
+            if seat != self.seats[0]:
+                return
             #print("Updating board")
             number = int(tokens[4].replace('.',''))
             self.table.next_board(number)
@@ -1112,40 +891,45 @@ class TableManagerApp(tk.Tk):
             self.dummy_i = -1
             self.declarer_i = -1
             #print(number, dealer, vuln, self.table.board.auction)
-            if self.screen:
-                redraw_bidding(self.screen, self.font, [], self.table, self.table.board, self.user, self.table.board.available_bids, self.table.board.special_bids)
+            redraw_bidding(self.screen, self.font, self.table, self.user)
         if "doubles" in text:
+            if seat != self.seats[0]:
+                return
             #print("Updating bidding X")
             bid = 'X'
             self.table.board.bidding.append(Bid(bid))
             self.table.board.auction.append(bid)
             # We must check for bidding ended so wew can update contract
-            if self.screen:
-                redraw_bidding(self.screen, self.font, [], self.table, self.table.board, self.user, self.table.board.available_bids, self.table.board.special_bids)
+            redraw_bidding(self.screen, self.font, self.table, self.user)
         if "redoubles" in text:
+            if seat != self.seats[0]:
+                return
             #print("Updating bidding XX")
             bid = 'XX'
             self.table.board.bidding.append(Bid(bid))
             self.table.board.auction.append(bid)
             # We must check for bidding ended so wew can update contract
-            if self.screen:
-                redraw_bidding(self.screen, self.font, [], self.table, self.table.board, self.user, self.table.board.available_bids, self.table.board.special_bids)
+            redraw_bidding(self.screen, self.font, self.table, self.user)
         if "asses" in text:
+            if seat != self.seats[0]:
+                return
             #print("Updating bidding P")
             bid = 'PASS'
             self.table.board.bidding.append(Bid(bid))
             self.table.board.auction.append(bid)
             # We must check for bidding ended so wew can update contract
-            if self.screen:
-                redraw_bidding(self.screen, self.font, [], self.table, self.table.board, self.user, self.table.board.available_bids, self.table.board.special_bids)
+            redraw_bidding(self.screen, self.font, self.table, self.user)
         if "bids" in text:
+            if seat != self.seats[0]:
+                return
             bid = tokens[4].replace("NT",'N')
             #print("Updating bidding", bid)
             self.table.board.bidding.append(Bid(bid))
             self.table.board.auction.append(bid)
-            if self.screen:
-                redraw_bidding(self.screen, self.font, [], self.table, self.table.board, self.user, self.table.board.available_bids, self.table.board.special_bids)
+            redraw_bidding(self.screen, self.font, self.table, self.user)
         if "Bidding:" in text:
+            if seat != self.seats[0]:
+                return
             #print(text)
             self.contract = tokens[3]
             self.declarer_i = 'SWNE'.index(self.contract[-1])
@@ -1157,9 +941,11 @@ class TableManagerApp(tk.Tk):
             self.table.board.winning_bid = self.contract[:-1]
             self.table.board.declarer = (self.declarer_i, self.table.board.winning_side, None)
             self.table.board.dummy = self.dummy_i
-            redraw_playing(self.screen, self.font, self.font2, [], self.table, self.table.board, self.user)
+            redraw_playing(self.screen, self.font, self.table, self.user)
 
         if "plays" in text:
+            if seat != self.seats[0]:
+                return
             player = tokens[2]
             player_id = direction_map[player]
             card = tokens[4]
@@ -1167,44 +953,68 @@ class TableManagerApp(tk.Tk):
             card = card[::-1]
             card = Card(card.replace("A","14").replace("K","13").replace("Q","12").replace("J","11").replace("T","10"))
 
-            if player_id == 0 and player_id != self.dummy_i and player_id != self.user.position:
+            if player_id == 0 and player_id != self.dummy_i and "South" not in self.seats:
                 if len(self.table.board.south) > 0:
                     self.table.board.south.pop(0)
                 self.table.board.south.append(card)
                 #print(player_id, self.table.board.south)
-            if player_id == 1 and player_id != self.dummy_i and player_id != self.user.position:
+            if player_id == 1 and player_id != self.dummy_i and "West" not in self.seats:
                 if len(self.table.board.west) > 0:
                     self.table.board.west.pop(0)
                 self.table.board.west.append(card)
                 #print(player_id, self.table.board.west)
-            if player_id == 2 and player_id != self.dummy_i and player_id != self.user.position:
+            if player_id == 2 and player_id != self.dummy_i  and "North" not in self.seats:
                 if len(self.table.board.north) > 0:
                     self.table.board.north.pop(0)
                 self.table.board.north.append(card)
                 #print(player_id, self.table.board.north)
-            if player_id == 3 and player_id != self.dummy_i and player_id != self.user.position:
+            if player_id == 3 and player_id != self.dummy_i  and "East" not in self.seats:
                 if len(self.table.board.east) > 0:
                     self.table.board.east.pop(0)
                 self.table.board.east.append(card)
                 #print(player_id, self.table.board.east)
             #print("Updating play", card)
             self.table.board.turn = player_id
-            if self.screen:
-                self.table.board.make_move(card.symbol)
-                redraw_playing(self.screen, self.font, self.font2, [], self.table, self.table.board, self.user)
+            self.table.board.make_move(card.symbol)
+            redraw_playing(self.screen, self.font, self.table, self.user)
 
     def stop_application(self):
+        self.terminate_flag = True
         self.display_output("Stopping application...\n", "green")
-        if self.process:
-            self.process.terminate()
-            self.process.stdout.close()  # Close the stdout pipe to avoid hanging
-            self.process.stderr.close()  # Close the stderr pipe to avoid hanging
-            self.process = None
+        time.sleep(3)
 
-        # Enable start button, disable stop button
-        self.start_button.config(state="normal")
-        self.stop_button.config(state="disabled")
-        self.display_output("Application stopped\n", "green")
+        try:
+            for process, flags in self.processes:
+                if process is not None:
+                    if flags == subprocess.CREATE_NEW_CONSOLE:
+                        # Detached process
+                        self.display_output(f"Detached process: PID={process.pid} Please close it manually.\n", "yellow")
+                        # Optionally, notify the user to close it manually
+                    else:
+                        # Non-detached process
+                        self.display_output(f"Terminating process: PID={process.pid}\n", "green")
+                        try:
+                            process.terminate()  # Terminate the process
+                            process.wait(timeout=1)  # Ensure it exits
+                        except subprocess.TimeoutExpired:
+                                self.display_output(f"Process PID={process.pid} did not terminate in time. Killing it...\n", "yellow")
+                                process.kill()  # Forcefully terminate if needed
+                        except Exception as e:
+                            self.display_output(f"Error terminating process PID={process.pid}: {e}\n", "red")
+                        finally:
+                            if process.stdout:
+                                process.stdout.close()  # Avoid hanging
+                            if process.stderr:
+                                process.stderr.close()
+        finally:
+            self.processes.clear()  # Clear the list of processes
+
+            # Enable start button, disable stop button
+            self.start_button.config(state="normal")
+            self.table_button.config(state="normal")
+            self.stop_button.config(state="disabled")
+            self.display_output("Application stopped\n", "green")
+            self.processes = []  # Clear the array after stopping all processes
 
     def display_output(self, text, color=None):
         """
@@ -1220,9 +1030,47 @@ class TableManagerApp(tk.Tk):
         self.output_text.configure(state="disabled")  # Disable editing
         self.output_text.see("end")  # Scroll to the end
 
+    def show_closing_popup(self):
+        popup = tk.Toplevel()
+        popup.title("Closing")
+
+        # Get dimensions of the main application window
+        root_x = self.winfo_rootx()
+        root_y = self.winfo_rooty()
+        root_width = self.winfo_width()
+        root_height = self.winfo_height()
+
+        # Define the popup size
+        popup_width = 300
+        popup_height = 100
+
+        # Calculate the center position
+        center_x = root_x + (root_width // 2) - (popup_width // 2)
+        center_y = root_y + (root_height // 2) - (popup_height // 2)
+
+        # Set the geometry for the popup
+        popup.geometry(f"{popup_width}x{popup_height}+{center_x}+{center_y}")
+        tk.Label(popup, text="Closing application...", font=("Arial", 14)).pack(pady=20)
+        popup.geometry("300x100")
+        popup.update()  # Force display of the popup
+        return popup
+
     def on_close(self):
+        self.terminate_flag = True
         self.running = False
-        sys.exit()
+        popup = self.show_closing_popup()
+        time.sleep(0.5)
+        if self.pygame_visible: 
+            self.pygame_visible = False  # Update the state once the thread finishes
+            threading.Thread(target=self.waitForPygameQuit).start()
+        self.stop_application()
+        self.settings["host"] = self.inputs["Host:"].get()
+        self.settings["port"] = self.inputs["Port:"].get()
+        self.settings["config"] = self.config_entry.get()
+        self.save_settings()
+        # Hide the closing popup
+        popup.destroy()
+        sys.exit(0)
 
     def save_log(self):
         try:
@@ -1250,7 +1098,6 @@ class TableManagerApp(tk.Tk):
         pygame.display.set_mode((self.screen_width, self.screen_height))
 
         # Get the position of the tkinter window and set pygame window beside it
-        tkinter_position = self.root.winfo_geometry()
         x_position = self.root.winfo_x() + self.root.winfo_width()
         y_position = self.root.winfo_y()
 
@@ -1320,18 +1167,14 @@ class TableManagerApp(tk.Tk):
 
         self.table = Table(0)
         # South is zero, and then clockwise
-        #self.table.set_player(0,"Player")
-        #self.table.set_player(1,"Player")
-        #self.table.set_player(2,"Player")
-        #self.table.set_player(3,"Player")
         self.user = Player("")
         self.user.position = 0
         board_no = -1
         self.running = True
         self.table.next_board(board_no)
         self.table.board.dealer = -1
-        self.table.board.available_bids = None
-        redraw_bidding(self.screen, self.font, [], self.table, self.table.board, self.user, self.table.board.available_bids, self.table.board.special_bids)
+        self.table.board.available_bids = {}
+        redraw_bidding(self.screen, self.font, self.table, self.user)
         while self.running:
 
             # Handle events

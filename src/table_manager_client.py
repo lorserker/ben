@@ -749,6 +749,8 @@ class TMClient:
         # "South's cards : S K J 9 3. H K 7 6. D A J. C A Q 8 7. \r\n"
         # "North's cards : S 9 3. H -. D J 7 5. C A T 9 8 6 4 3 2."
         deal_line_2 = await self.receive_line()
+        if deal_line_2.lower() == "start of board":
+            raise RestartLogicException(deal_line_2)
 
         rx_dealer_vuln = r'(?P<dealer>[a-zA-Z]+?)\.\s(?P<vuln>.+?)\svulnerable'
         match = re.search(rx_dealer_vuln, deal_line_1)

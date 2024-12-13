@@ -1,3 +1,5 @@
+import sys
+import traceback
 import pygame
 import os
 from pathlib import Path
@@ -78,7 +80,6 @@ def draw_cards(win, font, table, board, user):
     :param win: pygame Surface instance
     :param font: pygame Surface instance
     :param table: Table instance
-    :param board: Board instance
     :param user: Player instance
     :return: None
     """
@@ -120,22 +121,18 @@ def draw_cards(win, font, table, board, user):
         board.draw_hand(win, hand, i, is_my_hand)
 
 
-def redraw_bidding(win, font, buttons, table, board, user, normal_bids, special_bids):
+def redraw_bidding(win, font, table, user):
     """
     Drawing all elements during bidding phase.
     :param win: pygame Surface instance
     :param font: pygame Surface instance
-    :param font2: pygame Surface instance
-    :param buttons: list
     :param table: Table instance
-    :param board: Board instance
     :param user: Player instance
-    :param normal_bids: dictionary
-    :param special_bids: list
     :return: None
     """
     # Drawing seats
     redraw_sitting(win, font, table, user)
+    board = table.board
     # Drawing board info
     if board.id > 0:
         board_text = font.render(f"Deal {board.id}", 1, (0, 0, 0))
@@ -143,47 +140,6 @@ def redraw_bidding(win, font, buttons, table, board, user, normal_bids, special_
 
     # Drawing cards
     draw_cards(win, font, table, board, user)
-    # Drawing bidding box, when it's user turn
-    if board.turn == user.position and normal_bids != None:
-        last_x = 0
-        for i, bids in enumerate(normal_bids.items()):
-            # Drawing level bids sequentially
-            x = 835 + i * 38
-            y = 850
-            rect = (x, y, 35, 35)
-            bids[0].rect = rect
-            bids[0].rect = (x, y, 35, 35)
-            text = font.render(bids[0].bid, 1, (0, 0, 0))
-            # Marking active the level bid by light green color
-            if bids[0].active:
-                pygame.draw.rect(win, (49, 224, 105), rect)
-            else:
-                pygame.draw.rect(win, (255, 255, 255), rect)
-            win.blit(text, (round(x + rect[2] / 2 - text.get_width() / 2), round(y + rect[3] / 2 - text.get_height() / 2)))
-            last_x = x
-            # Drawing denomination bids for specific level bid
-            if bids[0].active:
-                for j, suitbid in enumerate(bids[1]):
-                    image = eval(suitbid.bid)
-                    x = 835 + j * 38
-                    y = 890
-                    rect = (x, y, 35, 35)
-                    suitbid.rect = rect
-                    pygame.draw.rect(win, (255, 255, 255), rect)
-                    win.blit(image, (round(x + rect[2] / 2 - image.get_width() / 2), round(y + rect[3] / 2 - image.get_height() / 2)))
-        # Drawing special bids like fold and double/redouble
-        for j, b in enumerate(special_bids):
-            if last_x:
-                x = last_x + 38 + j * 45
-            else:
-                x = 835 + j * 45
-            y = 850
-            rect = (x, y, 42, 35)
-            b.rect = rect
-            pygame.draw.rect(win, (255, 255, 255), rect)
-            text = font.render(b.text, 1, (0, 0, 0))
-            win.blit(text, (round(x + rect[2] / 2 - text.get_width() / 2),
-                            round(y + rect[3] / 2 - text.get_height() / 2)))
 
     # Drawing bidding table rotated for client
     seats_rotation = [(1, "W"), (2, "N"), (3, "E"), (0, "S")]
@@ -202,14 +158,8 @@ def redraw_bidding(win, font, buttons, table, board, user, normal_bids, special_
     # Drawing called bids
     for i, b in enumerate(board.bidding):
         if b:
-            row = ((board.dealer) + i) // 4
-            # South is dealer)
-            if (board.dealer == 0):
-                row = (i+2) // 4
-            if (board.dealer == 2):
-                row = (i+1) // 4
-            if (board.dealer == 3):
-                row = (i+2) // 4
+
+            row = 0 if i < [1, 4, 3, 2][board.dealer] else (i - [1, 4, 3, 2][board.dealer]) // 4 + 1
             y = 345 + (row) * 35 + 19
             if (b.bid == "X" or b.bid == "XX"):
                 x = (((board.dealer - 1) + i) % 4 - 1.5) * 60
@@ -231,27 +181,22 @@ def redraw_bidding(win, font, buttons, table, board, user, normal_bids, special_
                 x = (((board.dealer - 1) + i) % 4 - 1.5) * 60
                 text = font.render(b.bid.replace("PASS","P"), 1, (0, 0, 0))                 
                 win.blit(text, (round(win.get_width() / 2 + x - text.get_width() / 2), round(y - text.get_height() / 2)))
-    # Buttons
-    for btn in buttons:
-        btn.draw(win)
     # Updating pygame window
     pygame.display.update()
 
 
-def redraw_playing(win, font, font2, buttons, table, board, user):
+def redraw_playing(win, font, table, user):
     """
     Drawing all elements during playing phase.
     :param win: pygame Surface instance
     :param font: pygame Surface instance
-    :param font2: pygame Surface instance
-    :param buttons: list
     :param table: Table instance
-    :param board: Board instance
     :param user: Player instance
     :return: None
     """
     # Drawing seats
     redraw_sitting(win, font, table, user)
+    board = table.board
     # Drawing table status
     # game_ready_text = font2.render("Game", 1, (0, 0, 0))
     #win.blit(game_ready_text, (round(win.get_width() / 2 - game_ready_text.get_width() / 2),
@@ -277,54 +222,23 @@ def redraw_playing(win, font, font2, buttons, table, board, user):
     win.blit(tricks_text, (920, 840))
 
     # Drawing the trick
-    for i, p in enumerate(table.players):
-        card = i
-        i -= user.position
-        if i < 0:
-            i += 4
-        if board.trick[card]:
-            # Rotating the trick to client
-            if i == 0:
-                board.trick[card].draw(win, round(win.get_width() / 2 - 50), 600, True)
-            elif i == 2:
-                board.trick[card].draw(win, round(win.get_width() / 2 - 50), 330, True)
-            elif i == 1:
-                board.trick[card].draw(win, 400, round(win.get_height() / 2 - 153 / 2), True)
-            else:
-                board.trick[card].draw(win, 700, round(win.get_height() / 2 - 153 / 2), True)
-    # Buttons
-    for btn in buttons:
-        btn.draw(win)
+    if board.trick:
+        for i, p in enumerate(table.players):
+            card = i
+            i -= user.position
+            if i < 0:
+                i += 4
+            if board.trick[card]:
+                # Rotating the trick to client
+                if i == 0:
+                    board.trick[card].draw(win, round(win.get_width() / 2 - 50), 600, True)
+                elif i == 2:
+                    board.trick[card].draw(win, round(win.get_width() / 2 - 50), 330, True)
+                elif i == 1:
+                    board.trick[card].draw(win, 400, round(win.get_height() / 2 - 153 / 2), True)
+                else:
+                    board.trick[card].draw(win, 700, round(win.get_height() / 2 - 153 / 2), True)
     # Updating pygame window
     pygame.display.update()
 
 
-def redraw_score(win, font, font2, buttons, table, board, user):
-    """
-    Drawing score after finished board.
-    :param win: pygame Surface instance
-    :param font: pygame Surface instance
-    :param font2: pygame Surface instance
-    :param buttons: list
-    :param table: Table instance
-    :param board: Board instance
-    :param user: Player instance
-    :return: None
-    """
-    # Drawing seats
-    redraw_sitting(win, font, table, user)
-    # Drawing title with table ID
-    table_text = font2.render(f"Board {table.id}", 1, (0, 0, 0))
-    win.blit(table_text, (round(win.get_width() / 2 - table_text.get_width() / 2), 10))
-    # Drawing score
-    if not board.declarer:
-        score_text = font2.render("Pass out", 1, (0, 0, 0))
-    else:
-        if board.declarer[1] == [0, 2]:
-            score_text = font2.render(f"NS {board.result}, {board.score}", 1, (0, 0, 0))
-        else:
-            score_text = font2.render(f"EW {board.result}, {board.score}", 1, (0, 0, 0))
-    win.blit(score_text, (round(win.get_width() / 2 - score_text.get_width() / 2),
-                          round(win.get_height() / 2 - score_text.get_height() / 2)))
-    # Updating pygame window
-    pygame.display.update()

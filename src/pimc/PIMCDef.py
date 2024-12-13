@@ -17,12 +17,17 @@ parent_dir = os.path.join(script_dir, "../..")
 # Add the parent directory to sys.path
 sys.path.append(parent_dir)
 from colorama import Fore, Back, Style, init
-
-BEN_HOME = os.getenv('BEN_HOME') or '..'
-if BEN_HOME == '.':
-    BIN_FOLDER = 'bin'
+if "src" in script_dir and "pimc" in script_dir: 
+    # We are running inside the src/pimc directory
+    BIN_FOLDER = parent_dir + os.path.sep + 'bin'
 else:
-    BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+
+    BEN_HOME = os.getenv('BEN_HOME')
+    if BEN_HOME == '.':
+        BIN_FOLDER = 'bin'
+    else:
+        BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+
 if sys.platform == 'win32':
     BGADLL_LIB = 'BGADLL'
 elif sys.platform == 'darwin':

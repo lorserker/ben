@@ -3,6 +3,8 @@ import sys
 import os
 import util
 from threading import Lock
+
+
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Calculate the parent directory
@@ -13,15 +15,19 @@ from src.objects import BidResp
 from bidding import bidding
 from colorama import Fore, Back, Style, init
 
-
 init()
 
-
-BEN_HOME = os.getenv('BEN_HOME') or '..'
-if BEN_HOME == '.':
-    BIN_FOLDER = os.getcwd().replace(os.path.sep + "src","")+ os.path.sep + 'bin'
+if "src" in script_dir and "bba" in script_dir: 
+    # We are running inside the src/pimc directory
+    BIN_FOLDER = parent_dir + os.path.sep + 'bin'
 else:
-    BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+
+    BEN_HOME = os.getenv('BEN_HOME')
+    if BEN_HOME == '.':
+        BIN_FOLDER = 'bin'
+    else:
+        BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+
 if sys.platform == 'win32':
     EPBot_LIB = 'EPBot86'
 elif sys.platform == 'darwin':
