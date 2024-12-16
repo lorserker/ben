@@ -462,16 +462,16 @@ class TableManagerApp(tk.Tk):
             self.settings["Robo_file"] = exe_path
             # Additional logic for RoboBridge-specific parameters
             self.save_settings()
-            self.start_appl(exe_path, ["specific_params"])
+            self.start_appl(exe_path)
             modal_window.destroy()
 
-        introduction_text = "It is recopmleted to create a command file with the commands to start RoboBridge clients."
+        introduction_text = "It is recommended to create a command file with the commands to start RoboBridge clients."
         self.create_modal_window(
             "Start Robobridge",
             "Robo_file",
             "Robobridge Executable:",
             on_submit,
-            introduction_text
+            introduction_text=introduction_text
         )
 
     def start_wbridge5_window(self):
@@ -487,7 +487,8 @@ class TableManagerApp(tk.Tk):
             "Start WBridge5",
             "wbridge5_file",
             "WBridge5 Executable:",
-            on_submit
+            on_submit,
+            introduction_text=introduction_text
         )
 
     def start_qplus_window(self):
@@ -1070,7 +1071,8 @@ class TableManagerApp(tk.Tk):
         self.save_settings()
         # Hide the closing popup
         popup.destroy()
-        sys.exit(0)
+        self.quit()
+
 
     def save_log(self):
         try:

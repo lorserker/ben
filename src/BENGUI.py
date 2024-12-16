@@ -7,7 +7,7 @@ import threading
 import time
 import queue
 from colorama import Fore, Style, init
-
+import sys
 # Initialize colorama for ANSI color handling on Windows
 init()
 
