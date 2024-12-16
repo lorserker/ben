@@ -479,7 +479,7 @@ class TableManagerApp(tk.Tk):
             exe_path = entry.get()
             self.settings["wbridge5_file"] = exe_path
             self.save_settings()
-            self.start_appl(exe_path, ["Autoconnect", "port_param"])
+            self.start_appl(exe_path, ["Autoconnect", "2000"])
             modal_window.destroy()
 
         introduction_text = "WBridge5 will connect to any empty seat starting from South. Only works with Bridge Moniteur"

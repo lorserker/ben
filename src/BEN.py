@@ -25,7 +25,7 @@ class BridgeApp:
     def __init__(self, root):
         self.root = root
         self.root.iconbitmap("ben.ico")
-        self.root.title("Bridge with BEN. v0.8.3.1")
+        self.root.title("Bridge with BEN. v0.8.3.2")
         self.root.geometry("1000x1000")
 
         # Center the window
@@ -70,6 +70,19 @@ class BridgeApp:
 
         self.output_text = tk.Text(root, wrap="word", state="disabled", height=16, width=80, bg="black", fg="white")
         self.output_text.pack(side="left", fill="both", expand=True, padx=10, pady=10)
+
+        # Define color tags for ANSI escape codes
+        self.output_text.tag_configure("red", foreground="#FF7F50")
+        self.output_text.tag_configure("green", foreground="#90EE90")
+        self.output_text.tag_configure("blue", foreground="#ADD8E6")
+        self.output_text.tag_configure("yellow", foreground="#FFD700")
+        self.output_text.tag_configure("reset", foreground="black")
+        self.output_text.configure(bg="#303030", fg="white")
+
+        # Scrollbar for the output
+        scrollbar = ttk.Scrollbar(root, orient="vertical", command=self.output_text.yview)
+        self.output_text.configure(yscrollcommand=scrollbar.set)
+        scrollbar.pack(side="right", fill="y")
 
         # Verbose checkbox and buttons (Start/Stop) in column 4
         self.detached_checkbox = tk.BooleanVar(value=False)
