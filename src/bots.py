@@ -467,15 +467,14 @@ class BotBid:
 
 
         if self.verbose:
-            print(f"{Fore.LIGHTCYAN_EX}{candidates[0].bid} selected by {who} and sampling{Fore.RESET}")
+            print(f"{Fore.LIGHTCYAN_EX}{candidates[0].bid} selected by {who} {"and sampling" if sample_count > 0 else ""}{Fore.RESET}")
 
-        if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], quality, self.my_bid_no):    
+        if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], quality, self.my_bid_no) and not candidates[0].who == "BBA":    
 
             # We will avoid rescuing if we have a score of max_estimated_score or more
             t_start = time.time()
             alternatives = {}
             current_contract = bidding.get_contract(auction)
-            isdoubled = current_contract[-1] == "X" 
             current_contract = current_contract[0:2]
             if self.verbose:
                 print("check_final_contract, current_contract", current_contract)
@@ -710,7 +709,7 @@ class BotBid:
             if kc_resp != None:
                 if self.verbose:
                     print("Keycards: ", kc_resp)
-                return [CandidateBid(bid=kc_resp.bid, insta_score=1, alert = True)], False
+                return [CandidateBid(bid=kc_resp.bid, insta_score=1, alert = True, who="BBA")], False
 
         bid_softmax, alerts = self.next_bid_np(auction)
 
@@ -895,6 +894,7 @@ class BotBid:
 
     def bidding_rollout(self, auction_so_far, candidate_bid, hands_np):
         auction = [*auction_so_far, candidate_bid]
+        auction_length = len(auction)
         #print("auction: ", auction)
         n_samples = hands_np.shape[0]
         if self.verbose:
@@ -910,17 +910,22 @@ class BotBid:
         for i, bid in enumerate(auction):
             auction_np[:,i] = bidding.BID2ID[bid]
 
-        bid_i = len(auction) - 1
-        turn_i = len(auction) % 4
+        bid_i = 0 
+        turn_i = auction_length % 4
 
+        #print(hand_to_str(hands_np[0,turn_i,:], self.models.n_cards_bidding))
+        
+        #X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models, self.models.n_cards_bidding)
+        #print(X[0])
+        #print("turn_i", turn_i)
         # Now we bid each sample to end of auction
-        while not np.all(auction_np[:,bid_i] == bidding.BID2ID['PAD_END']):
+        while not np.all(auction_np[:,auction_length -1 + bid_i] == bidding.BID2ID['PAD_END']):
             #print("bidding_rollout - n_steps_vals: ", n_steps_vals, " turn_i: ", turn_i, " bid_i: ", bid_i, " auction: ", auction)
             X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models, self.models.n_cards_bidding)
-            if turn_i % 2 == 0:
-                x_bid_np, _ = self.models.bidder_model.pred_fun_seq(X)
-            else:
+            if bid_i % 2 == 0:
                 x_bid_np, _ = self.models.opponent_model.pred_fun_seq(X)
+            else:
+                x_bid_np, _ = self.models.bidder_model.pred_fun_seq(X)
             
             if self.models.model_version < 3:
                 x_bid_np = x_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
@@ -957,15 +962,15 @@ class BotBid:
                             bid_np[i][bid] = 0
                             
 
-                        assert bid_i <= 60, f'Auction to long {bid_i} {auction} {auction_np[i]}'
+                        assert auction_length - 1 + bid_i <= 60, f'Auction to long {bid_i} {auction} {auction_np[i]}'
                     else:
                         bid_np[i][1] = 1
 
-            bid_i += 1
             #print("Adding", bidding.ID2BID[np.argmax(bid_np, axis=1)])
             #print("Adding", np.argmax(bid_np, axis=1))
             #print(bid_np)
-            auction_np[:,bid_i] = np.argmax(bid_np, axis=1)
+            auction_np[:,auction_length + bid_i] = np.argmax(bid_np, axis=1)
+            bid_i += 1
             n_steps_vals[turn_i] += 1
             turn_i = (turn_i + 1) % 4
         assert len(auction_np) > 0

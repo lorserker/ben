@@ -86,6 +86,7 @@ parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output s
 parser.add_argument("--port", type=int, default=4443, help="Port for appserver")
 parser.add_argument("--auto", type=bool, default=False, help="BEN bids and plays all 4 hands")
 parser.add_argument("--playonly", type=str_to_bool, default=False, help="Only play, no bidding")
+parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
 parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 
 args = parser.parse_args()
@@ -95,12 +96,13 @@ verbose = args.verbose
 port = args.port
 auto = args.auto
 play_only = args.playonly
+matchpoint = args.matchpoint
 seed = args.seed
 boards = []
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.4")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -146,6 +148,9 @@ if models.use_bba:
 else:
     print("Model:   ", models.bidder_model.model_path)
     print("Opponent:", models.opponent_model.model_path)
+
+if matchpoint is not None:
+    models.matchpoint = matchpoint
 
 if models.matchpoint:
     print("Matchpoint mode on")
@@ -298,8 +303,13 @@ async def main():
         )
     try:
         await start_server
+    except OSError as e:
+        if e.errno == 10048:
+            print("Port is already in use.  - Wait or terminate the process.")
+        else:
+            raise
     except Exception as e:
-        print("Error in server.")
+        print("Error starting server.")
         handle_exception(e)
         sys.exit(1)
 

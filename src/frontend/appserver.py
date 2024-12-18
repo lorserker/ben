@@ -22,7 +22,7 @@ import re
 
 
 app = Bottle()
-os.getcwd()
+script_dir = os.path.dirname(os.path.abspath(__file__))
 
 BUNDLE_TEMP_DIR = ''
 
@@ -278,19 +278,6 @@ def validdeal(board, direction):
     return hands
 
 
-parser = argparse.ArgumentParser(description="Appserver")
-parser.add_argument("--host", default="localhost", help="Hostname for appserver")
-parser.add_argument("--port", type=int, default=8080, help="Port for appserver")
-parser.add_argument("--db", default="../gamedb", help="Db for appserver")
-
-args = parser.parse_args()
-
-port = args.port
-DB_NAME = os.getcwd() + "/" + args.db
-print("Reading deals from: "+DB_NAME)
-
-script_dir = os.path.dirname(os.path.abspath(__file__))
-
 @app.route('/')
 def index(): 
     return template('index.tpl') 
@@ -317,7 +304,8 @@ def index():
     rotate = request.forms.get('R')
     visible = request.forms.get('V')
     matchpoint = request.forms.get('M')
-    play = request.forms.get('Play')
+    play = request.forms.get('play')
+    print("play",play)
     player = ""
     if north: player += "&N=x"
     if east: player += "&E=x"
@@ -331,7 +319,6 @@ def index():
     if rotate: player += "&R=x"
     if visible: player += "&V=x"
     if matchpoint: player += "&M=x"
-    if play: player += f"&Play=True"
     dealtext = request.forms.get('dealtext')
     if dealtext:
         dealer = request.forms.get('dealer')
@@ -549,7 +536,24 @@ def save_deal():
         print("Invalid data received")
         raise HTTPError(400, "Invalid data received")
     
-host = args.host
-print(f'http://{host}:{port}/home')
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Appserver")
+    if "frontend" in script_dir:
+        DB_NAME = os.path.abspath(os.path.join(os.getcwd(), "../gamedb"))
+    else:
+        DB_NAME = os.path.abspath(os.path.join(os.getcwd(), "gamedb"))
+    parser.add_argument("--host", default="127.0.0.1", help="Hostname for appserver")
+    parser.add_argument("--port", type=int, default=8080, help="Port for appserver")
+    parser.add_argument("--db", default=DB_NAME, help="Db for appserver")
 
-run(app, host=host, port=port, server='gevent', log=None)
+    args = parser.parse_args()
+
+    DB_NAME =  args.db
+    print("Reading deals from: "+DB_NAME)
+
+    host = args.host
+    port = args.port
+
+    # Start the server
+    run(app, host=host, port=port, server='gevent', log=None)    
+

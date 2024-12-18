@@ -21,6 +21,8 @@ import json
 import win32gui
 import win32con
 import win32process
+import psutil
+import signal
 
 # Initialize colorama for ANSI color handling on Windows
 init()
@@ -43,6 +45,21 @@ direction_map = {
     "East": 3,
 }
 
+def is_process_running(process_name):
+    """
+    Check if there is any running process that contains the given name.
+    """
+    for proc in psutil.process_iter(['name', 'exe', 'cmdline']):
+        try:
+            # Check if process name matches
+            if process_name in (proc.info['name'] or '') or \
+               process_name in (proc.info['exe'] or '') or \
+               process_name in ' '.join(proc.info['cmdline'] or []):
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
 
 class TableManagerApp(tk.Tk):
     def __init__(self):
@@ -50,7 +67,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("Table Manager Interface. v0.8.3.1")
+        self.title("Table Manager Interface. v0.8.4")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -84,11 +101,14 @@ class TableManagerApp(tk.Tk):
                 self.output_text.tag_configure(color, **options)
 
         self.processes = []
+        # Bind the close event of the Tkinter window
+        self.protocol("WM_DELETE_WINDOW", self.on_exit)
+        # Register signal handlers for termination
+        signal.signal(signal.SIGINT, self.terminate)
+        signal.signal(signal.SIGTERM, self.terminate)
         self.terminate_flag = False
         self.seats = None
-        self.output_queue = queue.Queue()
-        # Bind the close event of the Tkinter window
-        self.protocol("WM_DELETE_WINDOW", self.on_close)
+
         # Get the main window handle
         self.hwnd = win32gui.GetForegroundWindow()
         self.pygame_visible = False
@@ -191,9 +211,9 @@ class TableManagerApp(tk.Tk):
         browse_button.grid(row=2, column=0, padx=5, pady=5)
 
         # Checkboxes (Bidding Only, Match Point) in column 3
-        self.bidding_only = tk.BooleanVar(value=False)
-        self.nosearch = tk.BooleanVar(value=False)
-        self.matchpoint = tk.BooleanVar(value=False)
+        self.bidding_only = tk.BooleanVar(value=self.settings.get("bidding_only", False))
+        self.nosearch = tk.BooleanVar(value=self.settings.get("nosearch", False))
+        self.matchpoint = tk.BooleanVar(value=self.settings.get("matchpoint", False))
 
         ttk.Checkbutton(col_frames[2], text="Bidding Only", variable=self.bidding_only).grid(row=3, column=0, sticky="w", padx=5, pady=5)
         ttk.Checkbutton(col_frames[2], text="No simulation", variable=self.nosearch).grid(row=4, column=0, sticky="w", padx=5, pady=5)
@@ -210,10 +230,12 @@ class TableManagerApp(tk.Tk):
             if self.detached_checkbox.get():
                 self.start_button.config(state="normal")  # Enable button
             else:
-                if len(self.processes) > 0:
-                    self.start_button.config(state="disabled")  # Disable button
-                else:
-                    self.start_button.config(state="normal")  # Enable button
+                self.start_button.config(state="normal")  # Enable button
+                for process, flags in self.processes:
+                    if process is not None:
+                        if flags != subprocess.CREATE_NEW_CONSOLE:
+                            self.start_button.config(state="disabled")  # Disable button
+
         ttk.Checkbutton(col_frames[3], text="Detached", variable=self.detached_checkbox,command=update_button_state).grid(row=1, column=0, sticky="w", padx=5, pady=5)
 
         # Move Start and Stop buttons to column 4
@@ -647,8 +669,11 @@ class TableManagerApp(tk.Tk):
         nosearch = self.nosearch.get()
         verbose = self.verbose.get()
 
+        self.reset_output_text()
+        
         def run_process(seat, delay=None):
             try:
+                output_queue = queue.Queue()
                 time.sleep(delay)  # Wait for the specified delay if any
                 self.display_output("\nStarting table manager client for seat " + str(seat) + "...\n", "green")
                 # Check if table_manager_client.exe exists
@@ -664,6 +689,7 @@ class TableManagerApp(tk.Tk):
                 # Add arguments conditionally
                 cmd.extend(["--name", str(name)])
                 cmd.extend(["--seat", str(seat)])
+                cmd.extend(["--matchpoint", str(matchpoint)])
                 if host:  
                     cmd.extend(["--host", str(host)])
                 if port:  
@@ -674,8 +700,6 @@ class TableManagerApp(tk.Tk):
                     cmd.extend(["--biddingonly", str(bidding_only)])
                 if nosearch:
                     cmd.extend(["--nosearch", str(nosearch)])
-                if matchpoint:
-                    cmd.extend(["--matchpoint", str(matchpoint)])
                 if verbose:
                     cmd.extend(["--verbose", str(verbose)])
 
@@ -699,19 +723,22 @@ class TableManagerApp(tk.Tk):
                     # Hide the console window when launching the background process
                     creation_flags = subprocess.CREATE_NO_WINDOW
                     process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=False, env=env, creationflags=creation_flags)
+
                     def read_stream(stream, output_queue, seat, color=None):
                         try:
                             for line in iter(stream.readline, ''):
-                                output_queue.put((line, seat, color))
-                            stream.close()
-                        except Exception as e:
-                            if not self.terminate_flag:
-                                self.display_output(f"\nError reading {color} stream: {str(e)}\n", "red")
+                                if line.strip():  # Only put non-empty lines
+                                    output_queue.put((line, seat, color))
+                        except Exception:
+                            if process.poll() is not None:
+                                if any(p[0] == process for p in self.processes):
+                                    self.processes.remove((process, creation_flags))
+                                    self.display_output(f"\nProcess terminated. \n", "red")
 
 
                     # Start threads to read stdout and stderr
-                    stdout_thread = threading.Thread(target=read_stream, args=(process.stdout, self.output_queue, seat), daemon=True)
-                    stderr_thread = threading.Thread(target=read_stream, args=(process.stderr, self.output_queue, seat, "yellow"), daemon=True)
+                    stdout_thread = threading.Thread(target=read_stream, args=(process.stdout, output_queue, seat, "green"), daemon=True)
+                    stderr_thread = threading.Thread(target=read_stream, args=(process.stderr, output_queue, seat, "yellow"), daemon=True)
         
                     stdout_thread.start()
                     stderr_thread.start()
@@ -720,7 +747,7 @@ class TableManagerApp(tk.Tk):
                     # Process the output queue
                     while True:
                         try:
-                            line, seat, color = self.output_queue.get(timeout=0.5)  # Timeout allows checking process status
+                            line, seat, color = output_queue.get(timeout=0.1)  # Timeout allows checking process status
                             if self.terminate_flag:
                                 break  # Exit loop if termination flag is set
                             decoded_line = line.decode('utf-8', errors='replace')  # Decode bytes to string
@@ -739,8 +766,14 @@ class TableManagerApp(tk.Tk):
                             time.sleep(0.1)
 
                     # Wait for threads to finish
-                    stdout_thread.join()
-                    stderr_thread.join()                    
+                    stdout_thread.join(timeout=2)
+                    stderr_thread.join(timeout=2)
+
+                    # Ensure streams are closed
+                    if process.stdout:
+                        process.stdout.close()
+                    if process.stderr:
+                        process.stderr.close()
 
             except Exception as e:
                 self.display_output(f"\nError starting the application. Error: {str(e)}\n", "red")
@@ -1017,6 +1050,14 @@ class TableManagerApp(tk.Tk):
             self.display_output("Application stopped\n", "green")
             self.processes = []  # Clear the array after stopping all processes
 
+    def reset_output_text(self):
+        """
+        Clears all content from the output Text widget.
+        """
+        self.output_text.configure(state="normal")  # Temporarily enable editing
+        self.output_text.delete("1.0", "end")  # Delete all text from line 1, character 0 to the end
+        self.output_text.configure(state="disabled")  # Disable editing again
+
     def display_output(self, text, color=None):
         """
         Appends text to the output Text widget with an optional color.
@@ -1056,7 +1097,7 @@ class TableManagerApp(tk.Tk):
         popup.update()  # Force display of the popup
         return popup
 
-    def on_close(self):
+    def on_exit(self):
         self.terminate_flag = True
         self.running = False
         popup = self.show_closing_popup()
@@ -1068,6 +1109,11 @@ class TableManagerApp(tk.Tk):
         self.settings["host"] = self.inputs["Host:"].get()
         self.settings["port"] = self.inputs["Port:"].get()
         self.settings["config"] = self.config_entry.get()
+        # Checkboxes (Bidding Only, Match Point) in column 3
+        self.settings["bidding_only"] =self.bidding_only.get()
+        self.settings["nosearch"] =self.nosearch.get()
+        self.settings["matchpoint"] =self.matchpoint.get()
+
         self.save_settings()
         # Hide the closing popup
         popup.destroy()
@@ -1159,6 +1205,12 @@ class TableManagerApp(tk.Tk):
         top_right_y = y
 
         return top_right_x, top_right_y
+
+    def terminate(self, signum, frame):
+        """
+        Terminate the application and clean up resources.
+        """
+        self.on_exit()        
 
     # Initialize Pygame
     def runPygameLoop(self):

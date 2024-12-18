@@ -125,16 +125,7 @@ class BBABotBid:
         else:
             self.player.scoring = self.SCORING_IMP
 
-        if vuln[0] and vuln[1]:
-            self.vuln = 3
-        if vuln[0] and not vuln[1]:
-            self.vuln = 2
-        if not vuln[0] and vuln[1]:
-            self.vuln = 1
-        if not vuln[0] and not vuln[1]:
-            self.vuln = 0
-
-        self.vuln = 0
+        self.vuln = vuln[0] * 2 + vuln[1]
 
 
     #system_type:
@@ -185,9 +176,9 @@ class BBABotBid:
         # Did partner ask for keycards
         if len(auction) > 1:
             if auction[-2] == "4N":
-                explanation = self.explain(auction[:-1])
+                explanation, alert = self.explain(auction[:-1])
                 if self.verbose:
-                    print(explanation)
+                    print(explanation, alert)
                 if "Blackwood" in explanation:
                     return self.bid(auction)
         return None
@@ -205,27 +196,20 @@ class BBABotBid:
             #print("set_bid",((k) % 4, bidid))
             self.player.set_bid((k) % 4, bidid)
 
-        #new_bid = self.player.get_bid()
-        #print("get_bid",new_bid)
 
-        #self.player.interpret_bid(new_bid)
-        # Get information from Player(position) about the interpreted player
-        #meaning = self.player.get_info_meaning(self.C_INTERPRETED)
-        #print("interpret_bid",meaning)
         lastbid = bidding.BID2ID[auction[-1]]
         if lastbid < 5:
             lastbid = lastbid - 2
-        #print("interpret_bid",lastbid)
-        # Interpret the potential bid
+
         self.player.interpret_bid(lastbid)
         # Get information from Player(position) about the interpreted player
         meaning = self.player.get_info_meaning(self.C_INTERPRETED)
         if meaning is None: meaning = ""
+        bba_alert = self.player.info_alerting(self.C_INTERPRETED)
+            
         info = self.player.get_info_feature(self.C_INTERPRETED)
-        minhcp = info[102]
-        maxhcp = info[103]
-        forcing = info[112]
-        alert = info[144] == 1
+        minhcp = info[402]
+        maxhcp = info[403]
         if minhcp > 0:
             if maxhcp < 37:
                 meaning += f" ({minhcp}-{maxhcp} hcp)"
@@ -233,8 +217,13 @@ class BBABotBid:
                 meaning += f" ({minhcp}+ hcp)"
         elif maxhcp < 37:
             meaning += f" ({maxhcp}- hcp)"
-        #print(f"Bid: {auction[-1]}={meaning} {'*' if alert else ''}")
-        return f"{meaning}"
+        forcing = info[411]
+        game_forcing = info[443]
+        if forcing > lastbid:
+            meaning += f" F1"
+        if game_forcing:
+            meaning += f" GF"
+        return f"{meaning}", bba_alert
 
     # Define a Python function to find a bid
     def bid(self, auction):

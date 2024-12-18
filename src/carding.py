@@ -231,10 +231,48 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                 print("card selected", card)
             return Card.from_code(card), who
     # If we are dummy and playing a pip, just play lowest
+    if player_i == 1 and play_status == "Follow":
+        return select_lowest_card_dynamic(candidate_cards), who
+
     if verbose:
         print("No lead rules actual, playing top of candidate list", candidate_cards[0].card)
     return candidate_cards[0].card, who
 
+def select_lowest_card_dynamic(candidates):
+    # Get the top card and its suit
+    top_card = candidates[0]
+    top_suit = top_card.card.suit  # Adjusted for Card class
+
+    # Get all attributes from the top card except `None`, `card`, and `msg`
+    comparison_keys = {
+        attr: getattr(top_card, attr)
+        for attr in dir(top_card)
+        if not callable(getattr(top_card, attr)) 
+           and not attr.startswith("_") 
+           and getattr(top_card, attr) is not None 
+           and attr not in {"card", "msg"}  # Exclude `card` and `msg`
+    }
+
+    # Filter candidates matching criteria
+    def matches_criteria(candidate):
+        # Same suit as the top card
+        if candidate.card.suit != top_suit:
+            return False
+        # Compare all attributes present in the top card
+        for key, value in comparison_keys.items():
+            if getattr(candidate, key, None) != value:
+                return False
+        return True
+
+    matching_cards = [
+        candidate.card for candidate in candidates if matches_criteria(candidate)
+    ]
+    
+    # Sort by card rank using Card.RANKS
+    matching_cards.sort(key=lambda card: card.rank, reverse=True)
+    
+    # Return the lowest card
+    return matching_cards[0] if matching_cards else None
 
 def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
     if verbose:

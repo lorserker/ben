@@ -362,6 +362,7 @@ parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output s
 parser.add_argument("--port", type=int, default=8085, help="Port for appserver")
 parser.add_argument("--record", type=str_to_bool, default=True, help="Recording of responses")
 parser.add_argument("--seed", type=int, default=42, help="Seed for random")
+parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
 
 args = parser.parse_args()
 
@@ -369,11 +370,12 @@ configfile = args.config
 verbose = args.verbose
 port = args.port
 record = args.record
+matchpoint = args.matchpoint
 seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.4")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -426,6 +428,9 @@ if models.use_bba:
 else:
     print("Model:   ", models.bidder_model.model_path)
     print("Opponent:", models.opponent_model.model_path)
+
+if matchpoint is not None:
+    models.matchpoint = matchpoint
 
 if models.matchpoint:
     print("Matchpoint mode on")
@@ -617,7 +622,6 @@ def bid():
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
         with model_lock_bid:
             bid = hint_bot.bid(auction)
-        print("Bidding: ",bid.bid, "Alert" if bid.alert else "")
         result = bid.to_dict()
         if explain:
             from bba.BBA import BBABotBid
@@ -625,10 +629,13 @@ def bid():
                 print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
             bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, mp, verbose)
             auction.append(bid.bid)
-            result["explanation"] = bot.explain(auction)
+            explanation, alert = bot.explain(auction)
+            result["explanation"] = explanation
+            bid.alert = alert
             if verbose:
-                print("explanation: ",result["explanation"])
+                print("explanation: ",explanation, "alert: ",alert)
 
+        print("Bidding: ",bid.bid, "Alert" if bid.alert else "")
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
             logger.info(f"Calulations bid: {json.dumps(calculations)}")
@@ -922,14 +929,15 @@ def cuebid():
         bid = hint_bot.bid(auction)
     result = bid.to_dict()
     explanation = ""
+    aler = False
     if explain:
         auction.append(bid.bid)
         if models.use_bba:
-            explanation = hint_bot.explain(auction)
+            explanation, alert = hint_bot.explain(auction)
         else:
-            explanation = hint_bot.bbabot.explain(auction)
+            explanation, alert = hint_bot.bbabot.explain(auction)
         result["explanation"] = explanation
-    result = {"bid": bid.bid.replace("PASS","Pass"), "alert": explanation, "artificial" : bid.alert}
+    result = {"bid": bid.bid.replace("PASS","Pass"), "alert": explanation, "artificial" : alert}
     if record: 
         calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "turn":turn, "auction":auction, "bid":bid.to_dict()}
         logger.info(f"Calulations cuebid: {json.dumps(calculations)}")
@@ -965,9 +973,9 @@ def explain():
 
     auction = create_auction(bids, dealer_i)
 
-    explanation = bot.explain(auction)
+    explanation, alert = bot.explain(auction)
     
-    result = {"explanation": explanation} # explaination
+    result = {"explanation": explanation, "Alert": alert} # explaination
     print(f'Request took {(time.time() - t_start):0.2f} seconds')       
 
     return json.dumps(result)

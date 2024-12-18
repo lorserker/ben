@@ -346,6 +346,10 @@ function includeCheckboxValues(event) {
         const inputField = document.getElementById('name');
         formData.append('name', inputField.value);
 
+        const play = {{ 'true' if play else 'false' }};
+        if (play === true) {
+            formData.append('play', 'True');
+        }        
         // Append dropdown selected value
         const dropdown = document.getElementById('T');
         formData.append('T', dropdown.value);

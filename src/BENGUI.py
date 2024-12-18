@@ -8,6 +8,8 @@ import time
 import queue
 from colorama import Fore, Style, init
 import sys
+import signal
+
 # Initialize colorama for ANSI color handling on Windows
 init()
 
@@ -24,7 +26,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("BEN server Interface. v0.8.3")
+        self.title("BEN server Interface. v0.8.4")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -56,7 +58,12 @@ class TableManagerApp(tk.Tk):
                 self.output_text.tag_configure(color, **options)
 
         self.process = None
-        self.output_queue = queue.Queue()
+        self.protocol("WM_DELETE_WINDOW", self.on_exit)
+        # Register signal handlers for termination
+        signal.signal(signal.SIGINT, self.terminate)
+        signal.signal(signal.SIGTERM, self.terminate)
+
+        
     def create_widgets(self):
         # Frame for input fields
         input_frame = ttk.Frame(self)
@@ -99,10 +106,12 @@ class TableManagerApp(tk.Tk):
         self.bidding_only = tk.BooleanVar(value=False)
         self.play_only = tk.BooleanVar(value=False)
         self.facit = tk.BooleanVar(value=False)
+        self.matchpoint = tk.BooleanVar(value=False)
 
         ttk.Checkbutton(col_frames[2], text="Bidding Only", variable=self.bidding_only).grid(row=4, column=0, sticky="w", padx=5, pady=5)
         ttk.Checkbutton(col_frames[2], text="Play Only", variable=self.play_only).grid(row=5, column=0, sticky="w", padx=5, pady=5)
         ttk.Checkbutton(col_frames[2], text="Facit", variable=self.facit).grid(row=6, column=0, sticky="w", padx=5, pady=5)
+        ttk.Checkbutton(col_frames[2], text="Matchpoint", variable=self.matchpoint).grid(row=6, column=0, sticky="w", padx=5, pady=5)
 
         # Config field (Label and Entry in column 3)
         config_label = ttk.Label(col_frames[3], text="Config:")
@@ -271,22 +280,16 @@ class TableManagerApp(tk.Tk):
         playonly = self.play_only.get()
         bidding_only = self.bidding_only.get()
         facit = self.facit.get()
+        matchpoint = self.matchpoint.get()
         verbose = self.verbose.get()
         api = self.api.get()
         server = self.server.get()
 
-        def read_output(stream, queue, color=None):
-            while True:
-                if stream and not stream.closed:
-                    output = stream.readline()
-                if not output:
-                    break
-                # Add the output to the queue with color
-                queue.put((output, color))
-            stream.close()
+        self.reset_output_text()
 
         def run_process():
             try:
+                output_queue = queue.Queue()
                 self.display_output("\nStarting application...\n", "green")
                 # Hide the console window when launching the background process
                 creation_flags = 0
@@ -310,6 +313,7 @@ class TableManagerApp(tk.Tk):
                     cmd = ["python", script]
 
                 # Add arguments conditionally
+                cmd.extend(["--matchpoint", str(matchpoint)])
                 if boards:
                     cmd.extend(["--boards", boards])  
                 if auto:
@@ -335,11 +339,21 @@ class TableManagerApp(tk.Tk):
                 if port: 
                     cmd.extend(["--port", str(port)])
 
-                self.process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=False, env=env, creation_flags=creation_flags)
+                self.process = subprocess.Popen(cmd, stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=False, env=env, creationflags=creation_flags)
+
+                def read_stream(stream, output_queue, color=None):
+                    try:
+                        for line in iter(stream.readline, ''):
+                            if line.strip():  # Only put non-empty lines
+                                output_queue.put((line, color))
+                    except Exception:
+                        if self.process.poll() is not None:
+                            self.process = None
+                            self.display_output(f"\nProcess terminated. \n", "red")
 
                 # Start threads to read stdout and stderr
-                stdout_thread = threading.Thread(target=read_output, args=(self.process.stdout, self.output_queue), daemon=True)
-                stderr_thread = threading.Thread(target=read_output, args=(self.process.stderr, self.output_queue, "yellow"), daemon=True)
+                stdout_thread = threading.Thread(target=read_stream, args=(self.process.stdout, output_queue), daemon=True)
+                stderr_thread = threading.Thread(target=read_stream, args=(self.process.stderr, output_queue, "yellow"), daemon=True)
     
                 stdout_thread.start()
                 stderr_thread.start()
@@ -347,7 +361,7 @@ class TableManagerApp(tk.Tk):
                 # Process the output queue
                 while True:
                     try:
-                        line, color = self.output_queue.get(timeout=0.5)  # Timeout allows checking process status
+                        line, color = output_queue.get(timeout=0.5)  # Timeout allows checking process status
                         decoded_line = line.decode('utf-8', errors='replace')  # Decode bytes to string
                         self.display_output(decoded_line, color=color)
                     except queue.Empty:
@@ -357,8 +371,14 @@ class TableManagerApp(tk.Tk):
                         time.sleep(0.1)
 
                 # Wait for threads to finish
-                stdout_thread.join()
-                stderr_thread.join()
+                stdout_thread.join(timeout=2)
+                stderr_thread.join(timeout=2)
+
+                # Ensure streams are closed
+                if self.process.stdout:
+                    self.process.stdout.close()
+                if self.process.stderr:
+                    self.process.stderr.close()
 
                 # Handle process exit status
                 if self.process.returncode != 0:
@@ -393,6 +413,14 @@ class TableManagerApp(tk.Tk):
         self.stop_button.config(state="disabled")
         self.display_output("Application stopped\n", "green")
 
+    def reset_output_text(self):
+        """
+        Clears all content from the output Text widget.
+        """
+        self.output_text.configure(state="normal")  # Temporarily enable editing
+        self.output_text.delete("1.0", "end")  # Delete all text from line 1, character 0 to the end
+        self.output_text.configure(state="disabled")  # Disable editing again
+
     def display_output(self, text, color=None):
         """
         Appends text to the output Text widget with an optional color.
@@ -407,6 +435,20 @@ class TableManagerApp(tk.Tk):
         self.output_text.configure(state="disabled")  # Disable editing
         self.output_text.see("end")  # Scroll to the end
 
+    def terminate(self, signum, frame):
+        """
+        Terminate the application and clean up resources.
+        """
+        self.on_exit()        
+
+    def on_exit(self):
+        print("Closing application...")
+        #popup = self.show_closing_popup()
+        #self.save_settings()
+        self.stop_application()
+        # Hide the closing popup
+        #popup.destroy()
+        self.quit()
 
 if __name__ == "__main__":
     app = TableManagerApp()

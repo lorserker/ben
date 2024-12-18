@@ -1011,6 +1011,7 @@ async def main():
     parser.add_argument("--outputpbn", default="", help="Save each board to this PBN file")
     parser.add_argument("--paronly", default=0, type=int, help="only record deals with this IMP difference from par")
     parser.add_argument("--facit", default=False, type=str_to_bool, help="Calcualte score for the bidding from facit")
+    parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
     parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
     parser.add_argument("--seed", type=int, default=-1, help="Seed for random")
 
@@ -1026,6 +1027,7 @@ async def main():
         seed = np.random.SeedSequence().generate_state(1)[0]
     outputpbn = args.outputpbn
     paronly = args.paronly
+    matchpoint = args.matchpoint
     facit = args.facit
     facit_score = None
     boards = []
@@ -1033,7 +1035,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.4")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1083,6 +1085,8 @@ async def main():
     if facit:
             print("Playing Bidding contest")
     else:
+        if matchpoint is not None:
+            models.matchpoint = matchpoint
         if models.matchpoint:
             print("Matchpoint mode on")
         else:

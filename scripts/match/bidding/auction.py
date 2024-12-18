@@ -42,6 +42,9 @@ from bidding import bidding
 from sample import Sample
 import uuid
 import shelve
+from colorama import Fore, Back, Style, init
+
+init()
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -100,6 +103,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     verbose = args.verbose
 
+    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.4{Fore.RESET}\n")
     sys.stderr.write(f'NS = {args.bidderNS}\n')
     sys.stderr.write(f'EW = {args.bidderEW}\n')    
     sys.stderr.write(f'DB = {args.db}\n')

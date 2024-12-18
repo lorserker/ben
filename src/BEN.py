@@ -10,6 +10,8 @@ import threading
 import os
 import json
 import queue
+import psutil
+import signal
 
 # Set up environment for UTF-8 encoding
 env = os.environ.copy()
@@ -21,11 +23,29 @@ env['PATH'] = os.path.dirname(__file__) + ';' + os.environ['PATH']
 CONFIG_FILE = "TMCGUI.settings.json"
 update_lock = threading.Lock()
 
+gameserver_name = "gameserver"
+appserver_name = "appserver"
+
+def is_process_running(process_name):
+    """
+    Check if there is any running process that contains the given name.
+    """
+    for proc in psutil.process_iter(['name', 'exe', 'cmdline']):
+        try:
+            # Check if process name matches
+            if process_name in (proc.info['name'] or '') or \
+               process_name in (proc.info['exe'] or '') or \
+               process_name in ' '.join(proc.info['cmdline'] or []):
+                return True
+        except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
+            pass
+    return False
+
 class BridgeApp:
     def __init__(self, root):
         self.root = root
         self.root.iconbitmap("ben.ico")
-        self.root.title("Bridge with BEN. v0.8.3.2")
+        self.root.title("Bridge with BEN. v0.8.4")
         self.root.geometry("1000x1000")
 
         # Center the window
@@ -92,7 +112,6 @@ class BridgeApp:
 
         self.processes = []
         self.terminate_flag = False
-        self.output_queue = queue.Queue()
         # Handle close event
         root.protocol("WM_DELETE_WINDOW", self.on_exit)
 
@@ -103,6 +122,9 @@ class BridgeApp:
         self.settings["gameport"] = str(self.gameport)
         self.settings["boardport"] = str(self.boardport)
         self.save_settings()
+        # Register signal handlers for termination
+        signal.signal(signal.SIGINT, self.terminate)
+        signal.signal(signal.SIGTERM, self.terminate)
 
     def load_settings(self):
         """Load settings from the configuration file."""
@@ -144,8 +166,10 @@ class BridgeApp:
         return popup
 
     def on_exit(self):
+        print("Closing application...")
         popup = self.show_closing_popup()
         self.save_settings()
+        self.stop_server()
         # Hide the closing popup
         popup.destroy()
         self.root.quit()
@@ -156,9 +180,18 @@ class BridgeApp:
             self.ben_server_running = False
             self.board_manager_running = False
         else:
+            self.reset_output_text()
             self.start_server()
             self.ben_server_running = True
             self.board_manager_running = True
+
+    def reset_output_text(self):
+        """
+        Clears all content from the output Text widget.
+        """
+        self.output_text.configure(state="normal")  # Temporarily enable editing
+        self.output_text.delete("1.0", "end")  # Delete all text from line 1, character 0 to the end
+        self.output_text.configure(state="disabled")  # Disable editing again
 
     def display_output(self, text, color=None):
         """
@@ -166,6 +199,8 @@ class BridgeApp:
         :param text: The text to display.
         :param color: The tag name (e.g., "red", "green", etc.) for the text color.
         """
+        # Normalize line endings
+        text = text.replace("\r\n", "\n").replace("\r", "\n")
         self.output_text.configure(state="normal")  # Enable editing temporarily
         if color and color in self.output_text.tag_names():
             self.output_text.insert("end", text, color)  # Apply the color tag
@@ -177,25 +212,24 @@ class BridgeApp:
     def start_server(self):
 
         def run_process(name, port, delay=None):
+            output_queue = queue.Queue()
             try:
                 time.sleep(delay)  # Wait for the specified delay if any
                 self.display_output("\nStarting " + str(name) + "...\n", "green")
-                # Check if table_manager_client.exe exists
-                exe_path = name + ".exe"
+
+                exe_path = f"{name}.exe"
+                cwd, cmd = None, []
 
                 if os.path.exists(exe_path):
-                    cwd = None
                     cmd = [exe_path]
                 else:
                     # Fallback to running table_manager_client.py with python if exe is not found
                     if name == "appserver":
                         cwd = os.getcwd() + "\\frontend\\"
-                        cmd = [
-                            "python", name+".py"]
+                        cmd = ["python", name+".py"]
                     else:
                         cwd = os.getcwd()
-                        cmd = [
-                            "python", name+".py"]
+                        cmd = ["python", name+".py"]
 
                 cmd.extend(["--port", str(port)])
                 if name == "gameserver":
@@ -216,7 +250,7 @@ class BridgeApp:
                         cmd.extend(["--port", str(port)])
 
                     self.display_output("Running in detached mode (new console opened).\n", "green")
-                    self.processes.append((process, subprocess.CREATE_NEW_CONSOLE))  # Add the process to the array
+                    self.processes.append((process, subprocess.CREATE_NEW_CONSOLE, name))  # Add the process to the array
                             # Bring the main app back to focus
                     self.after(100, self.bring_to_focus)
                 else:
@@ -226,25 +260,26 @@ class BridgeApp:
                     def read_stream(stream, output_queue, color=None):
                         try:
                             for line in iter(stream.readline, ''):
-                                output_queue.put((line, color))
-                            stream.close()
-                        except Exception as e:
-                            if not self.terminate_flag:
-                                self.display_output(f"\nError reading {color} stream: {str(e)}\n", "red")
-
+                                if line.strip():  # Only put non-empty lines
+                                    output_queue.put((line, color))
+                        except Exception:
+                            if process.poll() is not None:
+                                if any(p[0] == process for p in self.processes):
+                                    self.processes.remove((process, creation_flags, name))
+                                    self.display_output(f"\nProcess terminated. \n", "red")
 
                     # Start threads to read stdout and stderr
-                    stdout_thread = threading.Thread(target=read_stream, args=(process.stdout, self.output_queue), daemon=True)
-                    stderr_thread = threading.Thread(target=read_stream, args=(process.stderr, self.output_queue, "yellow"), daemon=True)
+                    stdout_thread = threading.Thread(target=read_stream, args=(process.stdout, output_queue), daemon=True)
+                    stderr_thread = threading.Thread(target=read_stream, args=(process.stderr, output_queue, "yellow"), daemon=True)
         
                     stdout_thread.start()
                     stderr_thread.start()
 
-                    self.processes.append((process, creation_flags))  # Add the process to the array
+                    self.processes.append((process, creation_flags, name))  # Add the process to the array
                     # Process the output queue
                     while True:
                         try:
-                            line,  color = self.output_queue.get(timeout=0.5)  # Timeout allows checking process status
+                            line,  color = output_queue.get(timeout=0.1)  # Timeout allows checking process status
                             if self.terminate_flag:
                                 break  # Exit loop if termination flag is set
                             decoded_line = line.decode('utf-8', errors='replace')  # Decode bytes to string
@@ -256,86 +291,61 @@ class BridgeApp:
                             time.sleep(0.1)
 
                     # Wait for threads to finish
-                    stdout_thread.join()
-                    stderr_thread.join()                    
+                    stdout_thread.join(timeout=2)
+                    stderr_thread.join(timeout=2)
+
+                    # Ensure streams are closed
+                    if process.stdout:
+                        process.stdout.close()
+                    if process.stderr:
+                        process.stderr.close()
 
             except Exception as e:
                 self.display_output(f"\nError starting the application. Error: {str(e)}\n", "red")
         
         self.terminate_flag = False
-        threading.Thread(target=run_process, args=("gameserver",self.gameport,0), daemon=True).start()
-        threading.Thread(target=run_process, args=("appserver",self.boardport, 1), daemon=True).start()
-
-
-    def stop_server(self, name, port):
-        self.terminate_flag = True
-        self.display_output("Stopping application...\n", "green")
-        time.sleep(3)
-
-        try:
-            for process, flags in self.processes:
-                if process is not None:
-                    if flags == subprocess.CREATE_NEW_CONSOLE:
-                        # Detached process
-                        self.display_output(f"Detached process: PID={process.pid} Please close it manually.\n", "yellow")
-                        # Optionally, notify the user to close it manually
-                    else:
-                        # Non-detached process
-                        self.display_output(f"Terminating process: PID={process.pid}\n", "green")
-                        try:
-                            process.terminate()  # Terminate the process
-                            process.wait(timeout=1)  # Ensure it exits
-                        except subprocess.TimeoutExpired:
-                                self.display_output(f"Process PID={process.pid} did not terminate in time. Killing it...\n", "yellow")
-                                process.kill()  # Forcefully terminate if needed
-                        except Exception as e:
-                            self.display_output(f"Error terminating process PID={process.pid}: {e}\n", "red")
-                        finally:
-                            if process.stdout:
-                                process.stdout.close()  # Avoid hanging
-                            if process.stderr:
-                                process.stderr.close()
-        finally:
-            self.processes.clear()  # Clear the list of processes
-
-            # Enable start button, disable stop button
-            self.display_output("Application stopped\n", "green")
-            self.processes = []  # Clear the array after stopping all processes
-        print(f"{name} on port {port} stopped.")
+        threading.Thread(target=run_process, args=(gameserver_name,self.gameport,0), daemon=True).start()
+        threading.Thread(target=run_process, args=(appserver_name,self.boardport, 3), daemon=True).start()
 
     def stop_server(self):
         self.terminate_flag = True
         self.display_output("Stopping application...\n", "green")
-        time.sleep(3)
+        time.sleep(0.5)
 
         try:
-            for process, flags in self.processes:
+            for process, flags, name in self.processes:
                 if process is not None:
                     if flags == subprocess.CREATE_NEW_CONSOLE:
                         # Detached process
                         self.display_output(f"Detached process: PID={process.pid} Please close it manually.\n", "yellow")
                         # Optionally, notify the user to close it manually
                     else:
-                        # Non-detached process
-                        self.display_output(f"Terminating process: PID={process.pid}\n", "green")
-                        try:
-                            process.terminate()  # Terminate the process
-                            process.wait(timeout=1)  # Ensure it exits
-                        except subprocess.TimeoutExpired:
-                                self.display_output(f"Process PID={process.pid} did not terminate in time. Killing it...\n", "yellow")
-                                process.kill()  # Forcefully terminate if needed
-                        except Exception as e:
-                            self.display_output(f"Error terminating process PID={process.pid}: {e}\n", "red")
-                        finally:
-                            if process.stdout:
-                                process.stdout.close()  # Avoid hanging
-                            if process.stderr:
-                                process.stderr.close()
+                        if is_process_running(name):
+                            # Non-detached process
+                            self.display_output(f"Terminating process: PID={process.pid}\n", "green")
+                            try:
+                                process.terminate()  # Terminate the process
+                                process.wait(timeout=1)  # Ensure it exits
+                            except subprocess.TimeoutExpired:
+                                    self.display_output(f"Process PID={process.pid} did not terminate in time. Killing it...\n", "yellow")
+                                    process.kill()  # Forcefully terminate if needed
+                            except Exception as e:
+                                self.display_output(f"Error terminating process PID={process.pid}: {e}\n", "red")
+                            finally:
+                                if process.stdout:
+                                    process.stdout.close()  # Avoid hanging
+                                if process.stderr:
+                                    process.stderr.close()
+                        else:
+                            self.display_output(f"Process {name} is not running.\n", "yellow")
         finally:
             self.processes.clear()  # Clear the list of processes
 
             self.display_output("Application stopped\n", "green")
             self.processes = []  # Clear the array after stopping all processes
+            self.ben_server_button.config(text="Start BEN Server and board manager", bg="green", fg="white")
+            self.ben_server_running = False
+            self.play_button.config(state="disabled", bg="red", fg="black")
 
     def on_play(self):
         webbrowser.open(f"http://localhost:{self.boardport}/play")
@@ -345,9 +355,23 @@ class BridgeApp:
             sock.settimeout(1)
             return sock.connect_ex((host, port)) == 0
 
-    def update_buttons(self):
-        # Update BEN Server button
-        if self.is_port_open("localhost", self.gameport) and self.is_port_open("localhost", self.boardport):
+    def check_ports_threaded(self):
+        """Run port checks in a separate thread and update the UI accordingly."""
+        def threaded_task():
+            gameserver_running = is_process_running(gameserver_name)
+            appserver_running = is_process_running(appserver_name)
+            ports_open = all([
+                self.is_port_open("localhost", self.gameport),
+                self.is_port_open("localhost", self.boardport)
+            ])
+            self.update_ui(gameserver_running, appserver_running, ports_open)
+
+        # Run the task in a separate thread
+        threading.Thread(target=threaded_task, daemon=True).start()
+
+    def update_ui(self, gameserver_running, appserver_running, ports_open):
+        """Update the UI based on the port and process checks."""
+        if gameserver_running and appserver_running and ports_open:
             self.ben_server_button.config(text="Stop BEN Servers", bg="red", fg="black")
             self.ben_server_running = True
         else:
@@ -360,11 +384,18 @@ class BridgeApp:
         else:
             self.play_button.config(state="disabled", bg="red", fg="black")
 
+    def update_buttons(self):
+        """Schedule periodic updates using a threaded approach."""
+        self.check_ports_threaded()
         self.root.after(2000, self.update_buttons)
-
     def on_about(self):
         messagebox.showinfo("About", "Play with BEN. Version 0.8.3.1")
 
+    def terminate(self, signum, frame):
+        """
+        Terminate the application and clean up resources.
+        """
+        self.on_exit()        
 
 def splash_screen():
     splash = tk.Toplevel()
@@ -388,8 +419,6 @@ def splash_screen():
 
     splash.update()
     return splash  # Keep a reference to the image
-
-
 
 def main():
     root = tk.Tk()

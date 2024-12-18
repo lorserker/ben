@@ -926,7 +926,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.4")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -997,8 +997,8 @@ async def main():
     # Not supported by TM, so no need to calculate
     models.claim = False
 
-    if matchpoint:
-        models.matchpoint = True
+    if matchpoint is not None:
+        models.matchpoint = matchpoint
 
     if nosearch:
         print("Simulation disabled")

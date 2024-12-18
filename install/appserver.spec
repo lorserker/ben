@@ -28,6 +28,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
+    exclude_binaries=True,
     name='appserver',
     debug=False,
     bootloader_ignore_signals=False,

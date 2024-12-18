@@ -178,19 +178,17 @@ def check_dotnet_versions():
     else:
         return "No .NET Framework versions found."
 
-print(check_dotnet_versions())
-
-
-
 print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} check_configuration.py - Version 0.8.4")
 if is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
     print(f"Running in a standard Python environment: {platform.python_version()}")
 
 print(f"Python version: {sys.version}{Fore.RESET}")
+
+print(check_dotnet_versions())
 
 if sys.platform == 'win32':
     # Print the PythonNet version

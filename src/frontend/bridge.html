@@ -113,7 +113,7 @@
         const rotate = urlParams.get('R')
         const visible = urlParams.get('V')
         const playonly = urlParams.get('P')
-        const play = urlParams.get('Play')
+        const play = urlParams.get('play')
         const matchpoint = urlParams.get('M')
         if (play) {
             home = '/play'
@@ -136,7 +136,7 @@
         if (rotate) player += "&R=x"
         if (visible) player += "&V=x"
         if (matchpoint) player += "&M=x"
-        if (play) player += "&Play=True"
+        if (play) player += "&play=True"
         if (playonly) player += "&P=" + playonly 
         var queryString = ""
         var ws
@@ -616,9 +616,9 @@
                     reloadLink = updateQueryParam('board_no', String(Number(board_no) + 1));
                     window.location.href = reloadLink
                 }
-                else window.location.href = '/home';
+                else window.location.href = home;
             }
-            else window.location.href = '/home';            
+            else window.location.href = home;            
         }
 
         function updateQueryParam(param, value) {
