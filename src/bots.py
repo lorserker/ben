@@ -467,7 +467,7 @@ class BotBid:
 
 
         if self.verbose:
-            print(f"{Fore.LIGHTCYAN_EX}{candidates[0].bid} selected by {who} {"and sampling" if sample_count > 0 else ""}{Fore.RESET}")
+            print(f"{Fore.LIGHTCYAN_EX}{candidates[0].bid} selected by {who} {'and sampling' if sample_count > 0 else ''}{Fore.RESET}")
 
         if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], quality, self.my_bid_no) and not candidates[0].who == "BBA":    
 
