@@ -6,7 +6,7 @@ import numpy as np
 from objects import Card
 import deck52
 import binary
-
+from util import save_for_suitc
 from colorama import Fore, Back, Style, init
 
 init()
@@ -151,9 +151,9 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                             print("Opponents got more cards in the suit than us, no calculations")
                         return candidate_cards[0].card, who 
                     from suitc.SuitC import SuitCLib
-                    suitc = SuitCLib(False)
+                    suitc = SuitCLib(verbose)
 
-                    card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}")
+                    card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}", trump = "SHDC"[interesting_suit] == contract[1])
                     suitc_card = None
                     try:
                         response_dict = json.loads(card)
@@ -209,6 +209,11 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                     if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
                                         if candidate_card.expected_tricks_sd and candidate_card.expected_tricks_sd > candidate_cards[0].expected_tricks_sd - 0.1:
                                             return candidate_card.card, "SuitC-SD"
+                            if verbose:
+                                print("SuitC candidate card worse than best DD cards")
+                                print("SuitC card", candidate_card)
+                                print("DD card", candidate_cards[0])
+                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays)
                 return candidate_cards[0].card, who
     
     if original_count == current_count:
@@ -293,7 +298,7 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
             # From touching honors lead the highest
             # From bad suit lead 2nd highest
             hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
-            if suit_length < 4 or hcp_in_suit < 2:
+            if suit_length < 4 or hcp_in_suit < 1:
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
             else:
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)

@@ -76,22 +76,19 @@ class BBABotBid:
     SCORING_MATCH_POINTS = 0
     SCORING_IMP = 1
 
-    def __init__(self, ns_system, ew_system, position, hand, vuln, dealer, scoring_matchpoint, verbose):
+    def __init__(self, our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose):
 
 
         dll = BBABotBid.get_dll(verbose)  # Retrieve the loaded DLL classes through the singleton
         EPBot = dll["EPBot"]
         self.verbose = verbose
-        # Load the .NET assembly
-        if ew_system == None and ns_system == None:  
+        # We just needed toLoad the .NET assembly
+        if position == None:  
             return
-        if ew_system == '-1' or ns_system == '-1':  
-            print(f"{Fore.RED}Error: No CC defined for BBA{Fore.RESET}")
-            sys.exit(1)
-        self.ns_system = ns_system
-        self.ew_system = ew_system
-        self.ns = -1
-        self.ew = -1
+        self.our_system_file = our_system_file
+        self.their_system_file = their_system_file
+        self.our_system = -1
+        self.their_system = -1
         self.vuln = vuln
         self.hand_str = hand.split('.')
         self.hand_str.reverse()
@@ -100,24 +97,34 @@ class BBABotBid:
             print(f"BBA Version (DLL): {self.player.version()}")
         self.dealer = dealer
         self.position = position
-        self.conventions_ns, self.conventions_ew = self.load_ccs()
+
+        self.our_conventions, self.their_conventions = self.load_ccs()
         # Set system types for NS and EW
-        self.player.set_system_type(self.C_NS,int(self.ns))
-        self.player.set_system_type(self.C_WE,int(self.ew))
+        if self.position % 2 == 0:
+            self.we = self.C_NS
+            self.they = self.C_WE
+        else:
+            self.we = self.C_WE
+            self.they = self.C_NS
+
+        self.player.set_system_type(self.we,int(self.our_system))
+        self.player.set_system_type(self.they,int(self.their_system))
         if self.verbose:
             # This is what we play
-            print("System NS:", self.player.system_name(0))
-            print("System EW:", self.player.system_name(1))
+            print(f"Our system: {self.our_system_file}")
+            print(f"Their system: {self.their_system_file}")
+            print("Our System   :", self.player.system_name(self.we))
+            print("Their System :", self.player.system_name(self.they))
 
          # Iterate through the conventions array and set conventions for a player at a specific position
-        for convention, selected in self.conventions_ns.items():
+        for convention, selected in self.our_conventions.items():
             if selected:
-                self.player.set_conventions(self.C_NS, convention, True)
+                self.player.set_conventions(self.we, convention, True)
 
          # Iterate through the conventions array and set conventions for a player at a specific position
-        for convention, selected in self.conventions_ew.items():
+        for convention, selected in self.their_conventions.items():
             if selected:
-                self.player.set_conventions(self.C_WE, convention, True)
+                self.player.set_conventions(self.they, convention, True)
 
         # Set scoring type
         if scoring_matchpoint == True:
@@ -139,25 +146,25 @@ class BBABotBid:
 
     def load_ccs(self):
         # Initialize the dictionary to store the conventions
-        conventions_ew = {}
+        their_conventions = {}
 
         # Open the file and process each line
-        with open(self.ew_system, 'r') as file:
+        with open(self.their_system_file, 'r') as file:
             for i, line in enumerate(file):
                 # Split the line into key and value
                 key, value = line.strip().split(' = ')
                 # Special case for the first line (System type)
                 if i == 0 and key == "System type":
                     cc = int(value)  # Store the value as an integer
-                    self.ew = cc
+                    self.their_system = cc
                 else:
                     # Convert other values to boolean (1 -> True, 0 -> False)
-                    conventions_ew[key] = bool(int(value))
+                    their_conventions[key] = bool(int(value))
 
-        conventions_ns = {}
+        our_conventions = {}
 
         # Open the file and process each line
-        with open(self.ns_system, 'r') as file:
+        with open(self.our_system_file, 'r') as file:
             for i, line in enumerate(file):
                 # Split the line into key and value
                 key, value = line.strip().split(' = ')
@@ -165,11 +172,11 @@ class BBABotBid:
                 # Special case for the first line (System type)
                 if i == 0 and key == "System type":
                     cc = int(value)  # Store the value as an integer
-                    self.ns = cc
+                    self.our_system = cc
                 else:
                     # Convert other values to boolean (1 -> True, 0 -> False)
-                    conventions_ns[key] = bool(int(value))
-        return conventions_ns, conventions_ew
+                    our_conventions[key] = bool(int(value))
+        return our_conventions, their_conventions
 
 
     def is_key_card_ask(self, auction):
@@ -180,6 +187,12 @@ class BBABotBid:
                 if self.verbose:
                     print(explanation, alert)
                 if "Blackwood" in explanation:
+                    return self.bid(auction)
+            if auction[-2] == "4C":
+                explanation, alert = self.explain(auction[:-1])
+                if self.verbose:
+                    print(explanation, alert)
+                if "Gerber" in explanation:
                     return self.bid(auction)
         return None
         
@@ -240,7 +253,6 @@ class BBABotBid:
                 bidid = bidid - 2
             #print("set_bid",(k % 4, bidid))
             self.player.set_bid(k % 4, bidid)
-
 
         #print("get_bid()")
         new_bid = self.player.get_bid()

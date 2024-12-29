@@ -9,10 +9,8 @@ class Contract:
         self.model = self.load_model()
 
     def load_model(self):
-        # Load the TensorFlow 2.x saved model
-        model = load_model(self.model_path)
-        return model
-
+        return load_model(self.model_path, compile=False)
+    
     @tf.function(input_signature=[tf.TensorSpec(shape=[None, 50], dtype=tf.float16)])
     def pred_fun(self,x):
         input_tensor = tf.cast(x, dtype=tf.float16)

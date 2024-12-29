@@ -89,7 +89,7 @@
         <div id="bidding" class="grid-item"></div>
     </div>
 
-    <div><a href="/home">Home</a></div>
+    <div><a id="homeLink" href="/home">Home</a></div>
 
     <div id="auctionstr"></div>
 
@@ -120,6 +120,7 @@
         } else {
             home = '/home'
         }
+        document.getElementById("homeLink").href = home;
         let server = urlParams.get('server')
         if (!server) server = '3'
         let no_human = !north && !east && !south && !west

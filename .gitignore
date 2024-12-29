@@ -121,3 +121,5 @@ src/TMCGUI.settings.json
 install/BENAll
 scripts/match/bidding/BEN-Sayc
 src/log.txt
+scripts/training/contract/jax
+src/suitc.txt

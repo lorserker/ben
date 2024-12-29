@@ -11,13 +11,11 @@ class BatchPlayer:
         self.model = self.load_model()
 
     def load_model(self):
-        model = load_model(self.model_path)
-        return model
+        return load_model(self.model_path, compile=False)
 
     @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, 298], dtype=tf.float16)])
     def pred_fun(self, x):
-        input_tensor = tf.cast(x, dtype=tf.float16)
-        card_logit = self.model(input_tensor, training=False)
+        card_logit = self.model(x, training=False)
         return card_logit
 
     def next_cards_softmax(self, x):

@@ -367,24 +367,27 @@ class BGADefDLL:
         }
 
         # Convert shown_out_suits[0] and shown_out_suits[2] to sets for O(1) lookup
-        shown_suits_lho = set(shown_out_suits[0])
-        shown_suits_rho = set(shown_out_suits[2])
+        if self.player_i == 0:
+            shown_suits_partner = set(shown_out_suits[2])
+        else:
+            shown_suits_partner = set(shown_out_suits[0])
+        shown_suits_declarer = set(shown_out_suits[3])
 
         # Iterate over all suits
         for suit_index, suit_name in suits.items():
             # Update LHO constraints based on shown_suits_0
-            if suit_index in shown_suits_lho:
+            if suit_index in shown_suits_declarer:
                 setattr(self.declarer_constraints, f"Min{suit_name}", 0)
                 setattr(self.declarer_constraints, f"Max{suit_name}", 0)
                 setattr(self.declarer_constraints, f"Min{suit_name}", 0)
-                setattr(self.declarer_constraints, f"Max{suit_name}", 0 if suit_index in shown_suits_rho else 13)
+                setattr(self.declarer_constraints, f"Max{suit_name}", 0 if suit_index in shown_suits_declarer else 13)
             
             # Update RHO constraints based on shown_suits_2
-            elif suit_index in shown_suits_rho:
+            elif suit_index in shown_suits_partner:
                 setattr(self.partner_constraints, f"Min{suit_name}", 0)
                 setattr(self.partner_constraints, f"Max{suit_name}", 0)
                 setattr(self.partner_constraints, f"Min{suit_name}", 0)
-                setattr(self.partner_constraints, f"Max{suit_name}", 0 if suit_index in shown_suits_lho else 13)
+                setattr(self.partner_constraints, f"Max{suit_name}", 0 if suit_index in shown_suits_partner else 13)
 
     # Define a Python function to find a bid
     def nextplay(self, player_i, shown_out_suits, missing_cards):
@@ -398,9 +401,7 @@ class BGADefDLL:
 
         if player_i != self.player_i:
             raise Exception("player_i must be equal to self.player_i")
-        
-
-        
+               
         self.update_voids(shown_out_suits)
         self.update_missing_cards(missing_cards)
 

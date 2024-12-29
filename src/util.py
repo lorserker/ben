@@ -3,6 +3,7 @@ import os
 import numpy as np
 import re
 import hashlib
+import json
 
 from typing import NamedTuple, List
 
@@ -12,6 +13,12 @@ from binary import get_cards_from_binary_hand, get_binary_hand_from_cards
 def save_for_training(deal, auction):
     with open("training.ben", "a") as file:
         file.write(deal + " #" + auction + "\n")
+
+def save_for_suitc(suits_north, suits_south, candidate_card1, candidate_card2, optimum_plays):
+    with open("suitc.txt", "a") as file:
+        file.write(suits_north + " " + suits_south + "\n")
+        file.write(str(candidate_card1) + "\n" + str(candidate_card2) + "\n")
+        file.write(json.dumps(optimum_plays) + "\n")
 
 VULN = {
     'None': [False, False],

@@ -3,6 +3,9 @@
 
 	<head> 
     <meta charset="utf-8">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
 		<title>BEN - The open source bridge engine</title> 
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <link rel="stylesheet" href="/app/style.css">
@@ -37,7 +40,7 @@
 	</head> 
 <body> 
 <div class="center">
-    <h1>Play with BEN</h1>
+    <h1>Play with BEN. Version 0.8.4.1.1</h1>
 </div>
 
 <div class="container {{ 'hidden' if play else '' }}">

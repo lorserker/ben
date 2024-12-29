@@ -50,11 +50,13 @@ class SuitCLib:
             sys.exit(1)
         self.verbose = verbose
     
-    def calculate(self, input, east_vacant=None, west_vacant=None ):
+    def calculate(self, input, east_vacant=None, west_vacant=None, trump = False ):
         # -F5 is combines the effect of -F1 and -F4, -F7 combines all 3 options.
         # -ls2 limits the entries to 2 should be calculated
         # -ls is most important when the hand to lead has length
-        input_str = "-Ls -ls1 -c100 "
+        input_str = "-Ls -c100 "
+        if not trump:
+            input_str += "-ls1 "
         if east_vacant:
 
             input_str +=f'-wv{west_vacant} '

@@ -5,6 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BEN - The oracle</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="/app/style.css">
     <link rel="stylesheet" href="/app/viz.css">
@@ -34,7 +37,9 @@
 
         
         <textarea id="importInput" rows="10" cols="64"></textarea>
-        <button onclick="processPbnInput()">Parse data as PBN</button>&nbsp;&nbsp;&nbsp;<button onclick="processLinFile()">Parse data as LIN</button><br><br>
+        <button onclick="processPbnInput()">Parse data as PBN</button>&nbsp;&nbsp;&nbsp;
+        <button onclick="processLinFile()">Parse data as LIN</button><br><br>
+
         <div id="parsedData" style="display: hidden"></div>
 
         <input type="checkbox" id="old_server" data-default="false"><label for="old_server">Old model</label><br>
@@ -193,6 +198,14 @@
                     document.getElementById('dummyInput').value += '.'
                 }
             }
+            // Get the checkbox element
+            const checkbox = document.getElementById('format');
+            
+            // Set the checkbox to true (checked)
+            checkbox.checked = false;
+
+            // Optional: Update the data-default attribute if needed
+            checkbox.setAttribute('data-default', 'false');
 
         }
 
@@ -496,6 +509,14 @@
                 }
                 
             });
+            // Get the checkbox element
+            const checkbox = document.getElementById('format');
+            
+            // Set the checkbox to true (checked)
+            checkbox.checked = true;
+
+            // Optional: Update the data-default attribute if needed
+            checkbox.setAttribute('data-default', 'true');
             //displayParsedData(parsedData);
         }
 

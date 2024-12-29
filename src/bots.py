@@ -51,8 +51,8 @@ class BotBid:
             from bba.BBA import BBABotBid
             # Initialize the BBABotBid instance with required parameters
             self._bbabot_instance = BBABotBid(
-                self.models.bba_ns,
-                self.models.bba_ew,
+                self.models.bba_our_cc,
+                self.models.bba_their_cc,
                 self.seat,
                 self.hand_str,
                 self.vuln,
@@ -755,7 +755,6 @@ class BotBid:
                 bid_softmax[bid_i] = 0
             return candidates, False
         
-
         no_bids  = binary.get_number_of_bids(auction) 
         passout = False
         if no_bids > 3 and auction[-2:] == ['PASS', 'PASS']:
@@ -821,6 +820,17 @@ class BotBid:
 
         if self.verbose:
             print("\n".join(str(bid) for bid in candidates))
+
+        if self.models.consult_bba:
+            bid_resp = self.bbabot.bid(auction)
+            for candidate in candidates:
+                if candidate.bid == bid_resp.bid:
+                    candidate.alert = bid_resp.alert
+                    candidate.adjustment = 0.2
+                    break
+            else:
+                print(f"{Fore.CYAN}Adding BBA bid as candidate: {bid_resp.bid} Alert: { bid_resp.alert}{Fore.RESET}")
+                candidates.append(CandidateBid(bid=bid_resp.bid, insta_score=0.2, alert = bid_resp.alert))
 
         return candidates, passout
 
@@ -943,6 +953,7 @@ class BotBid:
                     if not bidding.auction_over(auction):
                         bid = np.argmax(bid_np[i])
                         # if Pass returned after the bidding really is over
+                        # print("bid_np[i][bid]: ", bid_np[i][bid])
                         if (bid == 2 and bidding.auction_over(auction)):
                             sys.stderr.write(str(auction))
                             sys.stderr.write(f" Pass not valid as auction is over: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
@@ -1128,12 +1139,23 @@ class BotBid:
         n_samples = len(contracts)
         scores_by_trick = np.zeros((n_samples, 14))
         for i, contract in enumerate(contracts):
-            if contract != "pass":
-                scores_by_trick[i] = scoring.contract_scores_by_trick(contract, tuple(self.vuln))
+            if contract.lower() != "pass":
                 decl_i = 'NESW'.index(contract[-1])
+                level = int(contract[0])
                 if (turn_to_bid + decl_i) % 2 == 1:
+                    tricks_needed = level + 6
                     # the other side is playing the contract
-                    scores_by_trick[i,:] *= -1
+                    scores_by_trick[i] = -scoring.contract_scores_by_trick(contract, tuple(self.vuln))
+                    # If going more than 3 down, we just score for three down
+                    # This is just used when simulating their bidding
+                    if 'X' not in contract:
+                        for j in range(0, tricks_needed - 2):
+                            scores_by_trick[i,j] = scores_by_trick[i, tricks_needed - 2]
+                else:
+                    scores_by_trick[i] = scoring.contract_scores_by_trick(contract, tuple(self.vuln))
+                    if level >= 6:
+                        for j in range(0, 2):
+                            scores_by_trick[i,j+12] -= 200
             else:
                 scores_by_trick[i] = 0
         return np.sum(decl_tricks_softmax * scores_by_trick, axis=1)

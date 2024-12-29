@@ -1,5 +1,6 @@
 import numpy as np
 from tensorflow import keras
+from tensorflow.keras.models import load_model
 
 class LeadSingleDummy:
 
@@ -8,8 +9,7 @@ class LeadSingleDummy:
         self.model = self.load_model()
 
     def load_model(self):
-        model = keras.models.load_model(self.model_path)
-        return model
+        return load_model(self.model_path, compile=False)
 
     def pred_fun(self, x):
         result = self.model.predict(x,verbose=0)

@@ -1,5 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 	<head> 
     <meta charset="utf-8">
 		<title>BEN - The open source bridge engine</title> 

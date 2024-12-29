@@ -37,6 +37,7 @@ def is_process_running(process_name):
                process_name in (proc.info['exe'] or '') or \
                process_name in ' '.join(proc.info['cmdline'] or []):
                 return True
+
         except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess):
             pass
     return False
@@ -45,7 +46,7 @@ class BridgeApp:
     def __init__(self, root):
         self.root = root
         self.root.iconbitmap("ben.ico")
-        self.root.title("Bridge with BEN. v0.8.4")
+        self.root.title("Bridge with BEN. v0.8.4.1")
         self.root.geometry("1000x1000")
 
         # Center the window
@@ -108,7 +109,7 @@ class BridgeApp:
         self.detached_checkbox = tk.BooleanVar(value=False)
 
         # Check servers periodically
-        self.root.after(2000, self.update_buttons)
+        self.check_ports_threaded()
 
         self.processes = []
         self.terminate_flag = False
@@ -166,7 +167,6 @@ class BridgeApp:
         return popup
 
     def on_exit(self):
-        print("Closing application...")
         popup = self.show_closing_popup()
         self.save_settings()
         self.stop_server()
@@ -266,7 +266,7 @@ class BridgeApp:
                             if process.poll() is not None:
                                 if any(p[0] == process for p in self.processes):
                                     self.processes.remove((process, creation_flags, name))
-                                    self.display_output(f"\nProcess terminated. \n", "red")
+                                    self.display_output(f"\nProcess {name} terminated. \n", "red")
 
                     # Start threads to read stdout and stderr
                     stdout_thread = threading.Thread(target=read_stream, args=(process.stdout, output_queue), daemon=True)
@@ -274,7 +274,6 @@ class BridgeApp:
         
                     stdout_thread.start()
                     stderr_thread.start()
-
                     self.processes.append((process, creation_flags, name))  # Add the process to the array
                     # Process the output queue
                     while True:
@@ -309,11 +308,12 @@ class BridgeApp:
 
     def stop_server(self):
         self.terminate_flag = True
-        self.display_output("Stopping application...\n", "green")
+        self.thread_running = False
+        self.display_output("Stopping applications...\n", "green")
         time.sleep(0.5)
 
         try:
-            for process, flags, name in self.processes:
+            for process, flags, name in list(self.processes):
                 if process is not None:
                     if flags == subprocess.CREATE_NEW_CONSOLE:
                         # Detached process
@@ -341,11 +341,10 @@ class BridgeApp:
         finally:
             self.processes.clear()  # Clear the list of processes
 
-            self.display_output("Application stopped\n", "green")
-            self.processes = []  # Clear the array after stopping all processes
-            self.ben_server_button.config(text="Start BEN Server and board manager", bg="green", fg="white")
-            self.ben_server_running = False
-            self.play_button.config(state="disabled", bg="red", fg="black")
+        self.display_output("Applications stopped\n", "green")
+        self.ben_server_button.config(text="Start BEN Server and board manager", bg="green", fg="white")
+        self.ben_server_running = False
+        self.play_button.config(state="disabled", bg="red", fg="black")
 
     def on_play(self):
         webbrowser.open(f"http://localhost:{self.boardport}/play")
@@ -357,14 +356,20 @@ class BridgeApp:
 
     def check_ports_threaded(self):
         """Run port checks in a separate thread and update the UI accordingly."""
+        self.thread_running = True
         def threaded_task():
-            gameserver_running = is_process_running(gameserver_name)
-            appserver_running = is_process_running(appserver_name)
-            ports_open = all([
-                self.is_port_open("localhost", self.gameport),
-                self.is_port_open("localhost", self.boardport)
-            ])
-            self.update_ui(gameserver_running, appserver_running, ports_open)
+            while self.thread_running:
+                gameserver_running = is_process_running(gameserver_name)
+                appserver_running = is_process_running(appserver_name)
+                ports_open = all([
+                    self.is_port_open("localhost", self.gameport),
+                    self.is_port_open("localhost", self.boardport)
+                ])
+                self.update_ui(gameserver_running, appserver_running, ports_open)
+                if gameserver_running and appserver_running:
+                    time.sleep(10)
+                else:
+                    time.sleep(1)
 
         # Run the task in a separate thread
         threading.Thread(target=threaded_task, daemon=True).start()
@@ -384,12 +389,8 @@ class BridgeApp:
         else:
             self.play_button.config(state="disabled", bg="red", fg="black")
 
-    def update_buttons(self):
-        """Schedule periodic updates using a threaded approach."""
-        self.check_ports_threaded()
-        self.root.after(2000, self.update_buttons)
     def on_about(self):
-        messagebox.showinfo("About", "Play with BEN. Version 0.8.3.1")
+        messagebox.showinfo("About", "Play with BEN. Version 0.8.4.1")
 
     def terminate(self, signum, frame):
         """

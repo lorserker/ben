@@ -375,7 +375,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.4")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.4.1")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -392,7 +392,7 @@ if sys.platform == 'win32':
     sys.stderr.write(f"PythonNet: {util.get_pythonnet_version()}\n") 
     sys.stderr.write(f"{util.check_dotnet_version()}\n") 
 
-sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
+sys.stderr.write(f"Loading tensorflow {tf.__version__} - Keras version: {tf.keras.__version__}\n")
 try:
     if (configuration["models"]['tf_version'] == "2"):
         from nn.models_tf2 import Models
@@ -403,7 +403,7 @@ except KeyError:
         # Default to version 1. of Tensorflow
         from nn.models import Models
 
-models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""), verbose)
 if verbose:
     print("Loading sampler")
 sampler = Sample.from_conf(configuration, verbose)
@@ -417,6 +417,7 @@ if sys.platform != 'win32':
     models.pimc_use_declaring = False
     models.pimc_use_defending = False
     models.use_bba = False
+    models.consult_bba = False
     models.use_bba_to_count_aces = False
     models.use_suitc = False
     
@@ -440,7 +441,7 @@ else:
 if models.use_bba or models.use_bba_to_count_aces:
     print("BBA enabled")    
     from bba.BBA import BBABotBid
-    bot = BBABotBid(None, None ,None, None, None, None, None, None)
+    bot = BBABotBid(None, None, None, None, None, None, None, None)
 
 if models.use_suitc:
     print("SuitC enabled")
@@ -617,7 +618,7 @@ def bid():
             print("Auction: ",auction)
         if models.use_bba:
             from bba.BBA import BBABotBid
-            hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, mp, verbose)
+            hint_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand, vuln, dealer_i, mp, verbose)
         else:
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
         with model_lock_bid:
@@ -626,8 +627,8 @@ def bid():
         if explain:
             from bba.BBA import BBABotBid
             if verbose:
-                print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-            bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, mp, verbose)
+                print("models.bba_our_cc", models.bba_our_cc, "models.bba_their_cc", models.bba_their_cc)
+            bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand, vuln, dealer_i, mp, verbose)
             auction.append(bid.bid)
             explanation, alert = bot.explain(auction)
             result["explanation"] = explanation
@@ -922,7 +923,7 @@ def cuebid():
 
     if models.use_bba:
         from bba.BBA import BBABotBid
-        hint_bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
+        hint_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
     else:
         hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
     with model_lock_bid:
@@ -965,8 +966,8 @@ def explain():
     dealer = request.args.get("dealer")
     dealer_i = dealer_enum[dealer]
     if verbose:
-        print("models.bba_ns", models.bba_ns, "models.bba_ew", models.bba_ew)
-    bot = BBABotBid(models.bba_ns, models.bba_ew, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, mp, verbose)
+        print("models.bba_our_cc", models.bba_our_cc, "models.bba_their_cc", models.bba_their_cc)
+    bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, mp, verbose)
     ctx = request.args.get("ctx")
     # Split the string into chunks of every second character
     bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]

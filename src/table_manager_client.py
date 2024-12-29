@@ -195,7 +195,7 @@ class TMClient:
 
         if self.models.use_bba:
             from bba.BBA import BBABotBid            
-            bot = BBABotBid(self.models.bba_ns, self.models.bba_ew ,self.player_i,self.hand_str,vuln, self.dealer_i, self.models.matchpoint, self.verbose)
+            bot = BBABotBid(self.models.bba_our_cc, self.models.bba_their_cc ,self.player_i,self.hand_str,vuln, self.dealer_i, self.models.matchpoint, self.verbose)
         else:
             bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.dds, self.verbose)
 
@@ -809,8 +809,8 @@ class TMClient:
 
     async def receive_line(self) -> str:
         try:
-            print('{} receiving: '.format(datetime.datetime.now().strftime("%H:%M:%S")), end='')
             message = await self.reader.readline()
+            print('{} receiving: '.format(datetime.datetime.now().strftime("%H:%M:%S")), end='')
             msg = message.decode().replace('\r', '').replace('\n', '')
             if msg.startswith('Timing'):
                 msg = msg.replace('E/W','\n                             E/W') + "        "
@@ -926,7 +926,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.4")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.4.1")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -943,7 +943,7 @@ async def main():
         sys.stderr.write(f"PythonNet: {util.get_pythonnet_version()}\n") 
         sys.stderr.write(f"{util.check_dotnet_version()}\n") 
 
-    sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
+    sys.stderr.write(f"Loading tensorflow {tf.__version__} - Keras version: {tf.keras.__version__}\n")
     try:
         if (configuration["models"]['tf_version'] == "2"):
             from nn.models_tf2 import Models
@@ -961,6 +961,7 @@ async def main():
         models.pimc_use_declaring = False
         models.pimc_use_defending = False
         models.use_bba = False
+        models.consult_bba = False
         models.use_bba_to_count_aces = False
         models.use_suitc = False
         

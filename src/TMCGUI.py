@@ -60,6 +60,12 @@ def is_process_running(process_name):
             pass
     return False
 
+def global_error_handler(exception_type, exception_value, traceback, widget):
+    """Handle uncaught exceptions in tkinter callbacks."""
+    messagebox.showerror("Unexpected Error", f"An error occurred:\n{exception_value}\n")
+
+# Override the default tkinter exception handling
+tk.Tk.report_callback_exception = global_error_handler
 
 class TableManagerApp(tk.Tk):
     def __init__(self):
@@ -67,7 +73,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("Table Manager Interface. v0.8.4")
+        self.title("Table Manager Interface. v0.8.4.1")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -729,11 +735,14 @@ class TableManagerApp(tk.Tk):
                             for line in iter(stream.readline, ''):
                                 if line.strip():  # Only put non-empty lines
                                     output_queue.put((line, seat, color))
-                        except Exception:
+                        except (ValueError, BufferError) as e:
+                            # Handle known, acceptable exceptions as normal process termination
+                            self.display_output(f"\nProcess finished normally.\n", "green")
+                        except Exception as e:
                             if process.poll() is not None:
                                 if any(p[0] == process for p in self.processes):
                                     self.processes.remove((process, creation_flags))
-                                    self.display_output(f"\nProcess terminated. \n", "red")
+                                    self.display_output(f"\nProcess terminated. {e}\n", "red")
 
 
                     # Start threads to read stdout and stderr
@@ -788,7 +797,7 @@ class TableManagerApp(tk.Tk):
             "North": ["North"],
             "East": ["East"],
             "South": ["South"],
-            "Weat": ["West"],
+            "West": ["West"],
             "NS": ["North", "South"],
             "EW": ["East", "West"],
             "NESW": ["North", "East", "South", "West"]
@@ -798,7 +807,7 @@ class TableManagerApp(tk.Tk):
         # Expand combined parameters into individual calls
         for index, single_seat in enumerate(combined_seats[seat]):
             # Introduce a slight delay to stagger the start of each thread
-            delay = 1 * (index)  # Increasing delay as threads are started
+            delay = 2 * (index)  # Increasing delay as threads are started
             threading.Thread(target=run_process, args=(single_seat,delay), daemon=True).start()
 
 

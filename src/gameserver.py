@@ -36,7 +36,7 @@ import human
 import conf
 import functools
 import numpy as np
-from websockets.exceptions import ConnectionClosedOK
+from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
 from sample import Sample
 from urllib.parse import parse_qs, urlparse
 from pbn2ben import load
@@ -102,7 +102,7 @@ boards = []
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.4")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.4.1")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -119,7 +119,7 @@ if sys.platform == 'win32':
     sys.stderr.write(f"PythonNet: {util.get_pythonnet_version()}\n") 
     sys.stderr.write(f"{util.check_dotnet_version()}\n") 
 
-sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
+sys.stderr.write(f"Loading tensorflow {tf.__version__} - Keras version: {tf.keras.__version__}\n")
 try:
     if (configuration["models"]['tf_version'] == "2"):
         from nn.models_tf2 import Models
@@ -137,6 +137,7 @@ if sys.platform != 'win32':
     models.pimc_use_declaring = False
     models.pimc_use_defending = False
     models.use_bba = False
+    models.consult_bba = False
     models.use_bba_to_count_aces = False
     models.use_suitc = False
     
@@ -288,7 +289,7 @@ async def handler(websocket, path, board_no, seed):
         if not random and len(boards) > 0:
             board_no[0] = (board_no[0] + 1) % len(boards)
 
-    except ConnectionClosedOK  as ex:
+    except (ConnectionClosedOK, ConnectionClosedError, ConnectionAbortedError):
         print('User left')
     except ValueError as e:
         print("Error in configuration - typical the models do not match the configuration.")

@@ -305,7 +305,6 @@ def index():
     visible = request.forms.get('V')
     matchpoint = request.forms.get('M')
     play = request.forms.get('play')
-    print("play",play)
     player = ""
     if north: player += "&N=x"
     if east: player += "&E=x"
@@ -508,16 +507,23 @@ def delete_deal(deal_id):
     if not is_valid_deal_id(deal_id):
         print("Invalid deal ID")
         raise HTTPError(400, "Invalid deal ID")
-    if port != 8888 and host != "localhost":
+    if host != "localhost":
         print("Port not valid")
-        raise HTTPError(401, "Not Auth")
+        raise HTTPError(401, f"Not Auth {host}")
     try:
         db = shelve.open(DB_NAME)
         db.pop(deal_id)
         db.close()
         print("Returning to home")
 
-        redirect('/home')
+        # Get the referrer URL to redirect back to the same page
+        referrer = request.headers.get('Referer')
+        if referrer:
+            print("Redirecting to referrer:", referrer)
+            return redirect(referrer)
+        else:
+            print("No referrer found, redirecting to default /home")
+            return redirect('/home')  # Default fallback
     except KeyError:
         print("Deal not found")
         raise HTTPError(404, "Deal not found")
@@ -542,7 +548,7 @@ if __name__ == "__main__":
         DB_NAME = os.path.abspath(os.path.join(os.getcwd(), "../gamedb"))
     else:
         DB_NAME = os.path.abspath(os.path.join(os.getcwd(), "gamedb"))
-    parser.add_argument("--host", default="127.0.0.1", help="Hostname for appserver")
+    parser.add_argument("--host", default="localhost", help="Hostname for appserver")
     parser.add_argument("--port", type=int, default=8080, help="Port for appserver")
     parser.add_argument("--db", default=DB_NAME, help="Db for appserver")
 

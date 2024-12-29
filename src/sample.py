@@ -65,7 +65,7 @@ def player_to_nesw_i(player_i, contract):
 
 class Sample:
 
-    def __init__(self, lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, bid_accept_play_threshold, 
+    def __init__(self, lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, play_accept_threshold_partner, min_play_accept_threshold_samples, bid_accept_play_threshold, 
                  bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, sample_boards_for_auction_opening_lead, 
                  sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, 
                  hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose):
@@ -75,6 +75,7 @@ class Sample:
         self.lead_accept_threshold_partner_trust = lead_accept_threshold_partner_trust
         self.bidding_threshold_sampling = bidding_threshold_sampling
         self.play_accept_threshold = play_accept_threshold
+        self.play_accept_threshold_partner = play_accept_threshold_partner
         self.min_play_accept_threshold_samples = min_play_accept_threshold_samples
         self.bid_accept_play_threshold = bid_accept_play_threshold
         self.bid_accept_threshold_bidding = bid_accept_threshold_bidding
@@ -110,6 +111,7 @@ class Sample:
         lead_accept_threshold_partner_trust = float(conf['sampling']['lead_accept_threshold_partner_trust'])
         bidding_threshold_sampling = float(conf['sampling']['bidding_threshold_sampling'])
         play_accept_threshold = float(conf['sampling']['play_accept_threshold'])
+        play_accept_threshold_partner = float(conf['sampling'].get('play_accept_threshold_partner', play_accept_threshold))
         min_play_accept_threshold_samples = conf.getint('sampling','min_play_accept_threshold_samples',fallback=20)
         bid_accept_play_threshold = float(conf['sampling']['bid_accept_play_threshold'])
         bid_accept_threshold_bidding = float(conf['sampling']['bid_accept_threshold_bidding'])
@@ -135,7 +137,7 @@ class Sample:
         hcp_reduction_factor = conf.getfloat('sampling', 'hcp_reduction_factor', fallback=0.9)
         shp_reduction_factor = conf.getfloat('sampling', 'shp_reduction_factor', fallback=0.5)
         sample_previous_round_if_needed = conf.getboolean('sampling', 'sample_previous_round_if_needed', fallback=False)        
-        return cls(lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, min_play_accept_threshold_samples, 
+        return cls(lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold, play_accept_threshold_partner, min_play_accept_threshold_samples, 
                    bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, 
                    sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, 
                    exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose)
@@ -192,7 +194,7 @@ class Sample:
         accepted_samples = np.concatenate(accepted_samples, axis=0)
         sorted_scores = np.concatenate(sorted_scores, axis=0)
         if self.verbose:
-            print(f"Found {len(accepted_samples)} samples for bidding. Quality={quality}, Samplings={samplings}, Auction={auction_so_far}")
+            print(f"Found {len(accepted_samples)} samples for bidding. Quality={quality:.2f}, Samplings={samplings}, Auction={auction_so_far}")
         
         if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and len(auction_so_far) >= 8:
             sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping last bidding round{Fore.RESET}\n")
@@ -1277,6 +1279,7 @@ class Sample:
         # Only make the test if opening leader (0) is hidden
         # The primary idea is to filter away hands, that lead the Q as it denies the K
         lead_scores = np.zeros(states[0].shape[0])
+        # Opening leader is in first seat (0)
         if (hidden_1_i == 0 or hidden_2_i == 0): 
             # Here we should probably remove leads that should not be possible.
             # But impossible lead should get a very low score from the neural network, so perhaps it is overkill
@@ -1294,11 +1297,10 @@ class Sample:
                 lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead)
                 if tf.is_tensor(lead_scores):
                     lead_scores = lead_scores.numpy()
+
                 while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
                     # We are RHO and trust partners lead
-                    #print("Reducing threshold")
                     lead_accept_threshold *= 0.5
-                    #print(lead_accept_threshold)
 
                 # If we did not find 2 samples we ignore the test for opening lead
                 if np.sum(lead_scores >= lead_accept_threshold) > 1:
@@ -1332,12 +1334,17 @@ class Sample:
         # Select playing models based on NT orsuit
         playermodelindex = 0 if strain_i == 0 else 4
 
+        # Trust in the play until now
+        play_accept_threshold = self.play_accept_threshold
+
         for p_i in [hidden_1_i, hidden_2_i]:
 
             if trick_i == 0 and p_i == 0:
                 continue
             # We will not test declarer
             if p_i == 3:
+                # We are defending, so we trust our partner
+                play_accept_threshold = self.play_accept_threshold_partner 
                 continue
             card_played_current_trick = []
             for i, card in enumerate(current_trick):
@@ -1379,13 +1386,11 @@ class Sample:
             # The opening lead is validated elsewhere, so we just change the score to 1 for all samples
             if p_i == 0 and models.opening_lead_included:
                 card_scores[:, 0] = 1
-            #print(card_scores)
+            #print(f"card_scores {card_scores.flatten()}")
 
             min_play_scores = np.minimum(min_play_scores, np.min(card_scores, axis=1))
             
         #print(f"card_scores combined {min_play_scores}")
-        # Trust in the play until now
-        play_accept_threshold = self.play_accept_threshold
 
         if self.verbose:
             print(f"Found deals above play threshold: {np.sum(min_play_scores > play_accept_threshold)} play_accept_threshold={play_accept_threshold}")
@@ -1393,7 +1398,7 @@ class Sample:
         while np.sum(min_play_scores > play_accept_threshold) < self.min_play_accept_threshold_samples and play_accept_threshold > 0:
             play_accept_threshold -= 0.01
             #print(f"play_accept_threshold {play_accept_threshold:0.3f} reduced")
-
+        
         s_accepted = min_play_scores > play_accept_threshold
 
         states = [state[s_accepted] for state in states]

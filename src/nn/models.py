@@ -13,7 +13,7 @@ class Models:
 
     def __init__(self, name, tf_version, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, trick_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, 
                  no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count, min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_ns, bba_ew, use_bba, use_bba_to_count_aces, estimator, claim, trust_NN, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
+                 lead_accept_nn, ns, ew, bba_our_cc, bba_their_cc, use_bba, consult_bba, use_bba_to_count_aces, estimator, claim, trust_NN, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
                  double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, 
                  pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
                  pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples, pimc_bidding_quality,
@@ -52,9 +52,10 @@ class Models:
         self._lead_accept_nn = lead_accept_nn
         self.ns = ns
         self.ew = ew
-        self.bba_ns = bba_ns
-        self.bba_ew = bba_ew
+        self.bba_our_cc = bba_our_cc
+        self.bba_their_cc = bba_their_cc
         self.use_bba = use_bba
+        self.consult_bba = consult_bba
         self.use_bba_to_count_aces = use_bba_to_count_aces
         self.estimator = estimator
         self.claim = claim
@@ -171,8 +172,6 @@ class Models:
         double_dummy = conf.getboolean('lead', 'double_dummy', fallback=False)
         lead_from_pips_nt = conf.get('lead', 'lead_from_pips_nt', fallback="random")
         lead_from_pips_suit = conf.get('lead', 'lead_from_pips_suit', fallback="random")
-        use_bba = conf.getboolean('models', 'use_bba', fallback=False)
-        use_bba_to_count_aces = conf.getboolean('models', 'use_bba_to_count_aces', fallback=False)
         matchpoint = conf.getboolean('models', 'matchpoint', fallback=False)
         estimator = conf.get('eval', 'estimator', fallback="sde")
         double_dummy_calculator = conf.getboolean('eval', 'double_dummy_calculator', fallback=False)
@@ -227,10 +226,17 @@ class Models:
         use_real_imp_or_mp_bidding = conf.getboolean('eval', 'use_real_imp_or_mp_bidding', fallback=False)
         use_real_imp_or_mp_opening_lead = conf.getboolean('lead', 'use_real_imp_or_mp_opening_lead', fallback=False)
         suppress_warnings = conf.getboolean('models', 'suppress_warnings', fallback=True)
-        bba_ns = os.path.join(base_path,conf.get('models', 'bba_ns', fallback='ns'))
-        bba_ew = os.path.join(base_path,conf.get('models', 'bba_ew', fallback='ew'))
+        use_bba = conf.getboolean('models', 'use_bba', fallback=False)
+        consult_bba = conf.getboolean('models', 'consult_bba', fallback=False)
+        use_bba_to_count_aces = conf.getboolean('models', 'use_bba_to_count_aces', fallback=False)
+        bba_our_cc =conf.get('models', 'bba_our_cc', fallback=None)
+        if bba_our_cc:
+            bba_our_cc = os.path.join(base_path, bba_our_cc)
+        bba_their_cc =conf.get('models', 'bba_their_cc', fallback=None)
+        if bba_their_cc:
+            bba_their_cc = os.path.join(base_path, bba_their_cc)
         if verbose:
-            print(f"loaded bba_ns and bba_ew as {bba_ns} and {bba_ew}")
+            print(f"loaded bba_our_cc and bba_their_cc as {bba_our_cc} and {bba_their_cc}")
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
         if model_version == 0:
             ns = -1
@@ -304,9 +310,10 @@ class Models:
             lead_accept_nn=lead_accept_nn,
             ns=ns,
             ew=ew,
-            bba_ns=bba_ns,
-            bba_ew=bba_ew,
+            bba_our_cc=bba_our_cc,
+            bba_their_cc=bba_their_cc,
             use_bba=use_bba,
+            consult_bba=consult_bba,
             use_bba_to_count_aces=use_bba_to_count_aces,
             estimator=estimator,
             claim=claim,

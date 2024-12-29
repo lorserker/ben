@@ -917,7 +917,7 @@ class Driver:
         for i, level in enumerate(self.human):
             if self.models.use_bba:
                 from bba.BBA import BBABotBid
-                players.append(BBABotBid(self.models.bba_ns, self.models.bba_ew, i, hands_str[i], vuln, self.dealer_i, self.models.matchpoint, self.verbose))
+                players.append(BBABotBid(self.models.bba_their_cc, self.models.bba_their_cc, i, hands_str[i], vuln, self.dealer_i, self.models.matchpoint, self.verbose))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
@@ -1035,7 +1035,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.4")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.4.1")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1052,7 +1052,7 @@ async def main():
         sys.stderr.write(f"PythonNet: {util.get_pythonnet_version()}\n") 
         sys.stderr.write(f"{util.check_dotnet_version()}\n") 
 
-    sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
+    sys.stderr.write(f"Loading tensorflow {tf.__version__} - Keras version: {tf.keras.__version__}\n")
     try:
         if (configuration["models"]['tf_version'] == "2"):
             from nn.models_tf2 import Models
@@ -1070,6 +1070,7 @@ async def main():
         models.pimc_use_declaring = False
         models.pimc_use_defending = False
         models.use_bba = False
+        models.consult_bba = False
         models.use_bba_to_count_aces = False
         models.use_suitc = False
         

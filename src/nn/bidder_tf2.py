@@ -14,7 +14,7 @@ class Bidder:
 
 
     def load_model(self):
-        return load_model(self.model_path)
+        return load_model(self.model_path, compile=False)
     
     # Wrapping the function with @tf.function to optimize for graph execution
     # @tf.function

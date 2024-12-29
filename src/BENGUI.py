@@ -26,7 +26,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("BEN server Interface. v0.8.4")
+        self.title("BEN server Interface. v0.8.4.1")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -346,6 +346,9 @@ class TableManagerApp(tk.Tk):
                         for line in iter(stream.readline, ''):
                             if line.strip():  # Only put non-empty lines
                                 output_queue.put((line, color))
+                    except (ValueError, BufferError) as e:
+                        # Handle known, acceptable exceptions as normal process termination
+                        self.display_output(f"\nProcess finished normally: {e.__class__.__name__}: {e}\n", "green")
                     except Exception:
                         if self.process.poll() is not None:
                             self.process = None

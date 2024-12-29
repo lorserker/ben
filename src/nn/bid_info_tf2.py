@@ -10,8 +10,7 @@ class BidInfo:
         self.model = self.load_model()
 
     def load_model(self):
-        model = load_model(self.model_path)
-        return model
+        return load_model(self.model_path, compile=False)
     
 
     @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, None], dtype=tf.float16)])
