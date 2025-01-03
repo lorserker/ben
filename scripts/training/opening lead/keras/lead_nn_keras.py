@@ -43,13 +43,13 @@ else:
 
 # Check for correct usage
 if len(sys.argv) < 2:
-    print("Usage: python bidding_nn_keras.py inputdirectory system")
+    print("Usage: python lead_nn_keras.py inputdirectory name")
     sys.exit(1)
 
 bin_dir = sys.argv[1]
 print(sys.argv)
 
-system = "bidding"
+system = "OpeningLead"
 if len(sys.argv) > 2:
     system = sys.argv[2]
 

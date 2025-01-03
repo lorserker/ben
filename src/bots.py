@@ -1902,6 +1902,89 @@ class CardPlayer:
         )
         return x.reshape(-1)
     
+    def calculate_sure_tricks(self, our_hands, missing_cards):
+        def suit_indices(suit_index):
+            """Returns the start and end indices for a suit."""
+            return suit_index * 13, (suit_index + 1) * 13
+
+        def extract_cards(hand, suit_index):
+            """Extracts cards for a suit from a hand."""
+            start, end = suit_indices(suit_index)
+            return [12 - i for i, value in enumerate(hand[start:end]) if value == 1]
+
+        def sure_tricks_in_suit(our_hand1, our_hand2, opponents_hand):
+            """Calculates the sure tricks in a single suit."""
+            our_cards = sorted(our_hand1 + our_hand2, reverse=True)  # Sorted in descending order
+            opponents_cards = sorted(opponents_hand, reverse=True)
+
+            max_tricks_possible = max(len(our_hand1), len(our_hand2))
+
+            if len(opponents_hand) > max_tricks_possible:
+                return -(len(opponents_hand) - max_tricks_possible) / 100
+
+            sure_tricks = 0
+            for our_card in our_cards:
+                if not opponents_cards:
+                    sure_tricks += 1
+                    if sure_tricks >= max_tricks_possible:
+                        break
+                    continue
+
+                opponent_lowest = opponents_cards.pop()
+                if opponent_lowest > our_card:
+                    break
+                else:
+                    sure_tricks += 1
+                    if sure_tricks >= max_tricks_possible:
+                        break
+
+            return sure_tricks / 100
+
+        results = {}
+
+        for suit_index in range(4):
+            # Extract cards for the current suit
+            our_hand1 = extract_cards(our_hands[0], suit_index)
+            our_hand2 = extract_cards(our_hands[1], suit_index)
+            opponents_hand = extract_cards(missing_cards, suit_index)
+
+            # Calculate sure tricks for the current suit
+            tricks = sure_tricks_in_suit(our_hand1, our_hand2, opponents_hand)
+            results[suit_index] = tricks
+
+        return results
+
+    def calculate_suit_adjust(self, leader_i, play_status, strain_i, trump_adjust, tricks52):
+        # Only for dummy and declarer
+        if leader_i % 2 != 1:
+            return [0,0,0,0]
+        # Only adjustment if we are on lead
+        if play_status != "Lead": 
+            return [0,0,0,0]
+        s = []
+        if self.models.use_suit_adjust:
+            played_cards = np.zeros(52)
+            remaining_cards = np.ones(52)
+            for i in range(len(tricks52)):
+                for J in range(4):
+                    played_cards[tricks52[i][J]] = 1
+            remaining_cards -= played_cards
+            remaining_cards -= self.hand52
+            remaining_cards -= self.public52
+            results = self.calculate_sure_tricks([self.hand52, self.public52], remaining_cards)
+        else:
+            results = [0,0,0,0]
+
+        for i in range(4):
+            if i + 1 == strain_i:
+                s.append(trump_adjust)
+                continue
+            s.append(results[i])
+            # removing last stopper gives penalty
+            # Playing suit, where we do not raise tricks for opponents are rewarded
+        return s
+        
+    # Trying to help BEN to know, when to draw trump, and when not to
     def calculate_trump_adjust(self, play_status):
         trump_adjust = 0
         # Only in suit contract and if we are on lead and we are declaring
@@ -1926,19 +2009,16 @@ class CardPlayer:
 
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards):
         t_start = time.time()
-        card_softmax = self.next_card_softmax(trick_i)
+        card_scores = self.next_card_softmax(trick_i)
         if self.verbose:
             print(f'Next card response time: {time.time() - t_start:0.4f}')
 
-        all_cards = np.arange(32)
-        ## This could be a parameter, but only used for display purposes
-        s_opt = card_softmax >= self.models.pimc_trust_NN
-
-        card_options, card_scores = all_cards[s_opt], card_softmax[s_opt]
-
-        card_nn = {c:s for c, s in zip(card_options, card_scores)}
+        # Create a lookup dictionary to find the scores
+        card_nn = {c: round(s, 3) for c, s in zip(np.arange(self.models.n_cards_play), card_scores)}
         
         trump_adjust = self.calculate_trump_adjust(play_status)
+
+        suit_adjust = self.calculate_suit_adjust(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
 
         candidate_cards = []
         
@@ -1949,23 +2029,23 @@ class CardPlayer:
             if insta_score < self.models.pimc_trust_NN:
                 continue
 
-            expected_score = round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0), 0)
+            expected_score = round(e_score + suit_adjust[card32 // 8])
 
             candidate_cards.insert(0,CandidateCard(
                 card=Card.from_code(card52),
                 insta_score=round(insta_score,3),
-                expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
+                expected_tricks_dd=round(e_tricks +  + suit_adjust[card32 // 8],3),
                 p_make_contract=e_make,
                 **({
-                    "expected_score_mp": expected_score
+                    "expected_score_mp": round(expected_score + suit_adjust[card32 // 8] * 100,2)
                 } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                 {
-                    "expected_score_imp": round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),2)
+                    "expected_score_imp": round(e_score + suit_adjust[card32 // 8],2)
                 } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                 {
-                    "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                    "expected_score_dd": e_score + suit_adjust[card32 // 8]
                 }),
-                msg=msg + (f"|trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
+                msg=msg + (f"|suit adjust={suit_adjust[card32 // 8]}" if  + suit_adjust[card32 // 8] != 0 else "")
             ))
 
         if self.models.use_real_imp_or_mp:
@@ -2023,23 +2103,20 @@ class CardPlayer:
                 if higher_cards == 0:
                     return 1
 
-        return round(card_nn.get(card32, 0),3)
+        return card_nn.get(card32, 0)
 
     def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards):
         t_start = time.time()
-        card_softmax = self.next_card_softmax(trick_i)
+        card_scores = self.next_card_softmax(trick_i)
         if self.verbose:
             print(f'Next card response time: {time.time() - t_start:0.4f}')
 
-        all_cards = np.arange(32)
-        ## This could be a parameter, but only used for display purposes
-        s_opt = card_softmax > 0.001
-
-        card_options, card_scores = all_cards[s_opt], card_softmax[s_opt]
-
-        card_nn = {c:s for c, s in zip(card_options, card_scores)}
+        # Create a lookup dictionary to find the scores
+        card_nn = {c: round(s, 3) for c, s in zip(np.arange(self.models.n_cards_play), card_scores)}
 
         trump_adjust = self.calculate_trump_adjust(play_status)
+
+        suit_adjust = self.calculate_suit_adjust(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
 
         candidate_cards = []
         
@@ -2050,44 +2127,44 @@ class CardPlayer:
             card32 = deck52.card52to32(card52)
             card=Card.from_code(card52)
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
-            # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
-            expected_score =round(e_score+ (trump_adjust * 20 if (card32 // 8) + 1 == self.strain_i else 0),0)
             # Ignore cards bot suggested by the NN
             if insta_score < self.models.trust_NN:
                 continue
+            # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
+            expected_score =round(e_score+ 20 * suit_adjust[card32 // 8],0)
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
                 candidate_cards.insert(0, CandidateCard(
                     card=card,
                     insta_score=insta_score,
-                    expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
+                    expected_tricks_dd=round(e_tricks + suit_adjust[card32 // 8],3),
                     p_make_contract=e_make,
                     **({
-                        "expected_score_mp": expected_score
+                        "expected_score_mp": round(expected_score + suit_adjust[card32 // 8] * 100,2)
                     } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_imp": round(e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),2)
+                        "expected_score_imp": round(e_score + suit_adjust[card32 // 8],2)
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                        "expected_score_dd": e_score + suit_adjust[card32 // 8]
                     }),
-                    msg= (f"trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
+                    msg= (f"|suit adjust={suit_adjust[card32 // 8]}" if suit_adjust[card32 // 8] != 0 else "")
                 ))
             else:
                 candidate_cards.append(CandidateCard(
                     card=card,
                     insta_score=insta_score,
-                    expected_tricks_dd=round(e_tricks + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0),3),
+                    expected_tricks_dd=round(e_tricks + suit_adjust[card32 // 8],3),
                     p_make_contract=e_make,
                     **({
                         "expected_score_mp": expected_score
                     } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_imp": round(e_score + (trump_adjust*2 if (card32 // 8) + 1 == self.strain_i else 0),2)
+                        "expected_score_imp": round(e_score + 2 * suit_adjust[card32 // 8],2)
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_dd": e_score + (trump_adjust if (card32 // 8) + 1 == self.strain_i else 0)
+                        "expected_score_dd": e_score + suit_adjust[card32 // 8]
                     }),
-                    msg= (f"trump adjust={trump_adjust}" if trump_adjust != 0 and (card32 // 8) + 1 == self.strain_i else "")
+                    msg= (f"trump adjust={suit_adjust[card32 // 8]}" if suit_adjust[card32 // 8] != 0  else "")
                 ))
             current_card = card52
             current_insta_score = insta_score

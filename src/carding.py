@@ -38,6 +38,16 @@ def find_last_occurrence(arr, target):
 
     raise ValueError(f"Could not find the last occurrence of '{target}' within the array.")
 
+def count_entries(hand_str):
+    suits = hand_str.split(".")
+    entry_values = {'A': 1, 'K': 1, 'Q': 0.5}
+
+    total_entries = 0
+    for suit in suits:
+        for card in suit:
+            total_entries += entry_values.get(card, 0)
+    
+    return max(round(total_entries),1)    
 
 def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, missing_cards, play_status, who, verbose):
     if verbose:
@@ -152,8 +162,9 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                         return candidate_cards[0].card, who 
                     from suitc.SuitC import SuitCLib
                     suitc = SuitCLib(verbose)
-
-                    card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}", trump = "SHDC"[interesting_suit] == contract[1])
+                    # We just use a simple version of entries
+                    entries = count_entries(hand_str)
+                    card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}", trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
                     suitc_card = None
                     try:
                         response_dict = json.loads(card)
@@ -195,25 +206,25 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                             # Only play SuitC if not losing to much DD
                             if models.use_real_imp_or_mp:
                                 if models.matchpoint:
-                                    if candidate_card.expected_score_mp > candidate_cards[0].expected_score_mp - 1:
+                                    if candidate_card.expected_score_mp >= candidate_cards[0].expected_score_mp - 4:
                                         return candidate_card.card, "SuitC-MP"
                                 else:
-                                    if candidate_card.expected_score_imp > candidate_cards[0].expected_score_imp - 0.1:
+                                    if candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 0.4:
                                         return candidate_card.card, "SuitC-Imp"
                             else:
                                 if models.double_dummy:
-                                    if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
-                                        if candidate_card.expected_tricks_dd and candidate_card.expected_tricks_dd > candidate_cards[0].expected_tricks_dd - 0.1:
+                                    if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
+                                        if candidate_card.expected_tricks_dd and candidate_card.expected_tricks_dd >= candidate_cards[0].expected_tricks_dd - 0.2:
                                             return candidate_card.card, "SuitC-DD"
                                 else:
-                                    if candidate_card.p_make_contract > candidate_cards[0].p_make_contract - 0.05:
-                                        if candidate_card.expected_tricks_sd and candidate_card.expected_tricks_sd > candidate_cards[0].expected_tricks_sd - 0.1:
+                                    if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
+                                        if candidate_card.expected_tricks_sd and candidate_card.expected_tricks_sd >= candidate_cards[0].expected_tricks_sd - 0.2:
                                             return candidate_card.card, "SuitC-SD"
                             if verbose:
                                 print("SuitC candidate card worse than best DD cards")
                                 print("SuitC card", candidate_card)
                                 print("DD card", candidate_cards[0])
-                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays)
+                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays, hand_str, dummy_str)
                 return candidate_cards[0].card, who
     
     if original_count == current_count:

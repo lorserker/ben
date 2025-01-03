@@ -18,3 +18,4 @@ pythonnet
 bottle_session
 flask
 flask_cors
+psutil==5.9.0

@@ -18,10 +18,10 @@ class Models:
                  pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
                  pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples, pimc_bidding_quality,
                  use_adjustment, adjust_NN, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
-                 use_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
+                 use_suitc, force_suitc,suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
                  use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead,check_final_contract, max_samples_checked,  
                  alert_supported, alert_threshold,
-                 factor_to_translate_to_mp, factor_to_translate_to_imp, suppress_warnings
+                 factor_to_translate_to_mp, factor_to_translate_to_imp, use_suit_adjust, suppress_warnings
                  ):
         self.name = name
         self.tf_version = tf_version
@@ -107,6 +107,7 @@ class Models:
         self.adjust_min1_by = adjust_min1_by
         self.adjust_min2_by = adjust_min2_by
         self.use_suitc = use_suitc
+        self.force_suitc = force_suitc
         self.suitc_sidesuit_check = suitc_sidesuit_check
         self.draw_trump_reward=draw_trump_reward
         self.draw_trump_penalty=draw_trump_penalty
@@ -119,6 +120,7 @@ class Models:
         self.alert_threshold = alert_threshold
         self.factor_to_translate_to_mp = factor_to_translate_to_mp
         self.factor_to_translate_to_imp = factor_to_translate_to_imp
+        self.use_suit_adjust = use_suit_adjust
         self.suppress_warnings = suppress_warnings
 
 
@@ -215,10 +217,12 @@ class Models:
         adjust_min2_by = conf.getint('adjustments', 'adjust_min2_by', fallback=200)
         factor_to_translate_to_mp = conf.getint('adjustments', 'factor_to_translate_to_mp', fallback=10)
         factor_to_translate_to_imp = conf.getint('adjustments', 'factor_to_translate_to_imp', fallback=25)
+        use_suit_adjust = conf.getboolean('adjustments', 'use_suit_adjust', fallback=False)
 
         opening_lead_included = conf.getboolean('cardplay', 'opening_lead_included', fallback=False)
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'use_biddingquality_in_eval', fallback=False)
         use_suitc = conf.getboolean('cardplay', 'use_suitc', fallback=False)
+        force_suitc = conf.getboolean('cardplay', 'force_suitc', fallback=False)
         suitc_sidesuit_check = conf.getboolean('cardplay', 'suitc_sidesuit_check', fallback=False)
         draw_trump_reward = conf.getfloat('cardplay', 'draw_trump_reward', fallback=0.25)
         draw_trump_penalty = conf.getfloat('cardplay', 'draw_trump_penalty', fallback=0.25)
@@ -368,7 +372,9 @@ class Models:
             adjust_min2_by=adjust_min2_by,
             factor_to_translate_to_mp=factor_to_translate_to_mp,
             factor_to_translate_to_imp=factor_to_translate_to_imp,
+            use_suit_adjust=use_suit_adjust,
             use_suitc=use_suitc,
+            force_suitc=force_suitc,
             suitc_sidesuit_check=suitc_sidesuit_check,
             draw_trump_reward=draw_trump_reward,
             draw_trump_penalty=draw_trump_penalty,

@@ -49,7 +49,7 @@ def decode_card(card32):
     return 'SHDC'[suit_i] + 'AKQJT98x'[card_i]
 
 # Load the trained model
-model_path =  'model/Suit_2024-11-03-E100.keras'  # Replace with your model path
+model_path =  'model/NT_2024-12-31-E010.keras'  # Replace with your model path
 model = tf.keras.models.load_model(model_path)
 
 bin_dir = 'lead_keras_suit'
@@ -93,15 +93,11 @@ expanded_last_param = np.repeat(last_param, target_shape, axis=0)
 y_pred = remove_cards_not_in_hand(y_pred, X_sample[:, 10:42], expanded_last_param)
 
 for i in range(n_samples):
-    #print(hand_to_str(X_sample[i,10:42]), end=" ")
     if predicted_label[i] != actual_label[i]:
         if y_pred[i][actual_label[i]] < 0.05:
             print( f"{colorama.Fore.RED}{hand_to_str(X_sample[i,10:42])} Wrong prediction {decode_card(predicted_label[i])} {y_pred[i][predicted_label[i]]:.3f} {decode_card(actual_label[i])} {y_pred[i][actual_label[i]]:.3f} {colorama.Style.RESET_ALL}")
             wrong_predictions += 1
-        #else:
-        #    print( f"{colorama.Fore.LIGHTMAGENTA_EX}{hand_to_str(X_sample[i,10:42])} Wrong prediction {predicted_label[i]} {y_pred[i][predicted_label[i]]:.3f} {actual_label[i]} {y_pred[i][actual_label[i]]:.3f} {colorama.Style.RESET_ALL}")
-        right_predictions += 1
-    #else:
-        #print(f"{colorama.Fore.GREEN}Right prediction {predicted_label[i]} {y_pred[i][predicted_label[i]]:.3f}" + colorama.Style.RESET_ALL)
+        else:
+            right_predictions += 1
 
 print(f"Correct predictions: {right_predictions} of {n_samples} - wrong {wrong_predictions}")
