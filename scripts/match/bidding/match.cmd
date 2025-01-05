@@ -3,12 +3,13 @@ set model1=%1
 set model2=%2
 set boards=%3
 set db=%4
+set directory=%5
 
-python auction.py --bidderNS=config/%model1%.conf --bidderEW=config/%model2%.conf --set=%boards% --db=%db% > .\%model1%\auctionsNS.json
-python auction.py --bidderNS=config/%model2%.conf --bidderEW=config/%model1%.conf --set=%boards% --db=%db% > .\%model1%\auctionsEW.json
+python auction.py --bidderNS=config/%directory%%model1%.conf --bidderEW=config/%directory%%model2%.conf --set=%boards% --db=%db% > .\%model1%\auctionsNS.json
+python auction.py --bidderNS=config/%directory%%model2%.conf --bidderEW=config/%directory%%model1%.conf --set=%boards% --db=%db% > .\%model1%\auctionsEW.json
 
-type ".\%model1%\auctionsNS.json" | python lead.py --bidder=config/%model2%.conf > .\%model1%\leads1.json
-type ".\%model1%\auctionsEW.json" | python lead.py --bidder=config/%model1%.conf > .\%model1%\leads2.json
+type ".\%model1%\auctionsNS.json" | python lead.py --bidder=config/%directory%%model2%.conf > .\%model1%\leads1.json
+type ".\%model1%\auctionsEW.json" | python lead.py --bidder=config/%directory%%model1%.conf > .\%model1%\leads2.json
 
 type ".\%model1%\leads1.json" | python score.py > .\%model1%\results1.json  
 type ".\%model1%\leads2.json" | python score.py > .\%model1%\results2.json  

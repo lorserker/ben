@@ -7,7 +7,7 @@
 
 [Event "##CTC_mayjun20"]
 [Site "##BEN"]
-[Date "##2024.12.06"]
+[Date "##2025.01.05"]
 [BCFlags "801f"]
 [Board "1"]
 [West "Facit"]
@@ -207,8 +207,8 @@ Facit Score:     2\nRunning Score:  20
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "N"]
-1H PASS PASS 1S
-3C PASS 4H PASS
+2C PASS 2D PASS
+2H PASS 4H PASS
 PASS PASS 
 [Play ""]
 [Hidden "EW"]
@@ -285,14 +285,13 @@ Facit Score:     7\nRunning Score:  47
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "E"]
-PASS PASS PASS 1C
-PASS 1D PASS 1H
-PASS 1S PASS 2C
-PASS 2N PASS 3N
+PASS 1D PASS 2C
+PASS 2N PASS 3H
+PASS 3S PASS 3N
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\nScore Table:
+{\n\n\n\nScore Table:
 
  3N       8\n E1\dX     8\n 4N       5\n 4\s       5\n 5\c       3\n 2N       3\n 3\s       2\n 4\c       1\n\n\n\n\n
 
@@ -398,12 +397,11 @@ Facit Score:    10\nRunning Score:  75
 [Auction "E"]
 PASS 1D PASS 1S
 PASS 2H PASS 3C
-PASS 3D PASS 3S
 PASS 3N PASS 6N
 PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\nScore Table:
+{\n\n\n\nScore Table:
 
  6N      10\n 6\d       6\n 7N       5\n 4N       4\n 7\d       4\n 6\s       3\n 6\h       3\n 5\s       2\n 5\h       2\n 5\d       1\n\n\n
 
@@ -500,18 +498,18 @@ Facit Score:     4\nRunning Score:  96
 [Dealer "E"]
 [Vulnerable "NS"]
 [Deal "N:A53.AQ987.J54.Q7 QT6.J642.AT.8654 987..KQ8762.AKT9 KJ42.KT53.93.J32"]
-[Declarer "S"]
+[Declarer "N"]
 [Contract "3N"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "E"]
 PASS 1D PASS 1H
 PASS 2C PASS 2S
-PASS 3N PASS PASS
-PASS 
+PASS 3D PASS 3N
+PASS PASS PASS 
 [Play ""]
 [Hidden "EW"]
-{\n\n\n\n\nScore Table:
+{\n\n\n\nScore Table:
 
  5\d      10\n 4\d       6\n 2N       4\n 6\d       3\n 3N       2\n\n\n\n\n\n\n\n
 

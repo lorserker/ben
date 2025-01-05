@@ -185,3 +185,18 @@ def get_bid_ids(auction, player_i, n_steps):
         i = i + 4
 
     return np.array(result), actual_bids
+
+def get_partner_suit(seat, auction):
+    partner_seat = (seat + 2) % 4
+    for i in range(len(auction)):
+        if i % 4 == partner_seat:
+            call = auction[i]
+            if is_contract(call):
+                return "SHDCN".index(call[1])
+            else:
+                # Need to find if it was a lead directing double
+                if call == 'X':
+                    call = auction[i]
+                    if is_contract(call):
+                        if call[0] > 1:
+                            return "SHDCN".index(call[1])

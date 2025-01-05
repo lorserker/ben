@@ -113,12 +113,9 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
     for trick in tricks52:
         for card in trick:
             if card // 13 == interesting_suit:
-                #print(suits[interesting_suit])
                 c = RANKS[card % 13]
                 if c in suits[interesting_suit]:
-                    #print("found", c, card)
                     current_count -= 1
-                    break
                 else:
                     discards += c
 
@@ -127,11 +124,12 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             if (player_i  == 1 or player_i == 3) and play_status == "Lead":
                 # We only use SuitC the first time the suit is played 
                 # but allow 3 discards / rufs in the suit
-                if current_count + 2 >= original_count and models.use_suitc:
+                if current_count + 2 >= original_count and len(discards) < 3 and models.use_suitc:
                     if verbose:
                         print("SuitC activated")
                         print("discards", discards)
                         print("current_count", current_count)
+                        print("original_count", original_count)
                         print("tricks52",tricks52)
                     # For dummy just take lowest card. Could be stressing opponents by taking highest of touching cards.
                     #print("First card for dummy", candidate_cards[0].card)
@@ -225,6 +223,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                 print("SuitC card", candidate_card)
                                 print("DD card", candidate_cards[0])
                             save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays, hand_str, dummy_str)
+                            if models.force_suitc:
+                                return candidate_card.card, "SuitC-Forced"
                 return candidate_cards[0].card, who
     
     if original_count == current_count:

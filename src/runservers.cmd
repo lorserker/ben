@@ -10,22 +10,14 @@ timeout /t 10 /nobreak >nul
 rem start "TF2 Api internal :8085" python gameapi.py --config config\default_TF2.conf --host 0.0.0.0
 start "TF2 Api internal :8085 (API)" python gameapi.py --config config\GIB-BBO.conf --host 0.0.0.0
 timeout /t 10 /nobreak >nul
-start "Default Api :8088" python gameapi.py --host 0.0.0.0 --config config\default_Api.conf --port 8088
-timeout /t 10 /nobreak >nul
 start "BEN 2/1" python gameserver.py --config config\BEN-21GF.conf --port 4440
 timeout /t 10 /nobreak >nul
 start "BEN SAYC" python gameserver.py --config config\BEN-SAYC.conf --port 4441
 timeout /t 10 /nobreak >nul
-start "SAYC UCBC" python gameserver.py --config "..\UCBC 2024\Conf\UCBC2024src.conf" --port 4442
+start "TF2 GIB" python gameserver.py --config config\GIB-BBO.conf --port 4442
 timeout /t 10 /nobreak >nul
-start "Default" python gameserver.py --config config\default.conf --port 4443
+start "Default (GIB-BBO)" python gameserver.py --config config\default.conf --port 4443
 timeout /t 10 /nobreak >nul
-start "BBA" python gameserver.py --config config\BBA-21GF.conf --port 4444
+start "BBA 2/1" python gameserver.py --config config\BBA-21GF.conf --port 4444
 timeout /t 10 /nobreak >nul
-start "muppet" python gameserver.py --config config\muppet.conf --port 4445
-timeout /t 10 /nobreak >nul
-start "Jack Sayc" python gameserver.py --config config\jacksayc.conf --port 4446
-timeout /t 10 /nobreak >nul
-start "TF2 GIB" python gameserver.py --config config\GIB-BBO.conf --port 4447
-timeout /t 10 /nobreak >nul
-start "TF2 Jackos" python gameserver.py --config config\muppet_TF2.conf --port 4448
+start "BBA Sayc" python gameserver.py --config config\BBA-Sayc.conf --port 4445

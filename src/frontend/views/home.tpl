@@ -40,7 +40,7 @@
 	</head> 
 <body> 
 <div class="center">
-    <h1>Play with BEN. Version 0.8.4.1.1</h1>
+    <h1>Play with BEN. Version 0.8.4.2.1</h1>
 </div>
 
 <div class="container {{ 'hidden' if play else '' }}">
@@ -50,13 +50,10 @@
         <select id="server" name="server">
             <option value="0">BEN 2/1</option>
             <option value="1">BEN SAYC</option>
-            <option value="2">SAYC-WBridge5</option>
+            <option value="2">GIB-BBO</option>
             <option value="3">Default (21GF)</option>
-            <option value="4">BBA 2/1 (GIB)</option>
-            <option value="5">Jackos (muppet)</option>
-            <option value="6">Jack SAYC</option>
-            <option value="7">GIB - TF2</option>
-            <option value="8">Jackos - TF2</option>
+            <option value="4">BBA 2/1</option>
+            <option value="5">BBA Sayc</option>
         </select><br>
         </div>
     </div>

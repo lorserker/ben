@@ -829,7 +829,7 @@ class BotBid:
                     candidate.adjustment = 0.2
                     break
             else:
-                print(f"{Fore.CYAN}Adding BBA bid as candidate: {bid_resp.bid} Alert: { bid_resp.alert}{Fore.RESET}")
+                sys.stderr.write(f"{Fore.CYAN}Adding BBA bid as candidate: {bid_resp.bid} Alert: { bid_resp.alert}{Fore.RESET}\n")
                 candidates.append(CandidateBid(bid=bid_resp.bid, insta_score=0.2, alert = bid_resp.alert))
 
         return candidates, passout
@@ -1213,6 +1213,16 @@ class BotLead:
         expected_score_dd = None
         expected_score_mp = None
         expected_score_imp = None
+
+        # Consider adding reward to lead partner's suit
+        # Consider penalty for leading from bad combionations (Singleton King, J9xx, etc)
+        # https://kwbridge.com/leads.htm
+        suit_adjust = [0,0,0,0]
+        #print(self.seat, auction)
+        partnersuit = bidding.get_partner_suit(self.seat, auction)
+        if partnersuit != None and partnersuit < 4:
+            suit_adjust[partnersuit] = 0.5
+
         if len(accepted_samples) > 0:
             if self.verbose:
                 print("scores_by_trick", scores_by_trick)
@@ -1252,13 +1262,15 @@ class BotLead:
                     expected_tricks_sd=expected_tricks_sd,
                     expected_tricks_dd=expected_tricks_dd,
                     p_make_contract=np.mean(tricks[:,i,1]),
-                    expected_score_sd = expected_score_sd,
-                    expected_score_dd = expected_score_dd,
-                    expected_score_mp = expected_score_mp,
-                    expected_score_imp = expected_score_imp
+                    expected_score_sd = expected_score_sd if expected_score_sd is None else expected_score_sd + suit_adjust[int(card_i) // 8],
+                    expected_score_dd = expected_score_dd if expected_score_dd is None else expected_score_dd + suit_adjust[int(card_i) // 8],
+                    expected_score_mp = expected_score_mp if expected_score_mp is None else expected_score_mp + 10 * (suit_adjust[int(card_i) // 8]),
+                    expected_score_imp = expected_score_imp if expected_score_imp is None else expected_score_imp + suit_adjust[int(card_i) // 8],
+                    msg= f"suit adjust={suit_adjust[int(card_i) // 8]}" if suit_adjust[int(card_i) // 8] != 0 else ""
                 ))
 
-        else:        
+        else:
+            # We do not have any samples, so we will just use the neural network        
             for i, card_i in enumerate(lead_card_indexes):
                 candidate_cards.append(CandidateCard(
                     card=Card.from_code(int(card_i), xcards=True),
@@ -1269,14 +1281,16 @@ class BotLead:
                     expected_score_sd = expected_score_sd,
                     expected_score_dd = expected_score_dd,
                     expected_score_mp = expected_score_mp,
-                    expected_score_imp = expected_score_imp
+                    expected_score_imp = expected_score_imp,
+                    msg = ""
                 ))
 
         candidate_cards = sorted(candidate_cards, key=lambda c: c.insta_score, reverse=True)
 
+        # We will always take the card suggested by the neural network if it is above the threshold
         if candidate_cards[0].insta_score > self.models.lead_accept_nn:
             opening_lead = candidate_cards[0].card.code() 
-            who = "lead_accept_nn"
+            who = "NN - best"
         else:
             # If our sampling of the hands from the aution is bad.
             # We should probably try to find better samples, but for now, we just trust the neural network
@@ -2045,7 +2059,7 @@ class CardPlayer:
                 {
                     "expected_score_dd": e_score + suit_adjust[card32 // 8]
                 }),
-                msg=msg + (f"|suit adjust={suit_adjust[card32 // 8]}" if  + suit_adjust[card32 // 8] != 0 else "")
+                msg=msg + (f"|suit adjust={suit_adjust[card32 // 8]}" if suit_adjust[card32 // 8] != 0 else "")
             ))
 
         if self.models.use_real_imp_or_mp:
