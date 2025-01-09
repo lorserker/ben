@@ -92,7 +92,7 @@ class Sample:
         self.min_sample_hands_play = min_sample_hands_play
         self.min_sample_hands_play_bad = min_sample_hands_play_bad
         self.sample_boards_for_play = sample_boards_for_play
-        self.use_bidding_info = use_biddinginfo
+        self.use_biddinginfo = use_biddinginfo
         self.use_distance = use_distance
         self.no_samples_when_no_search = no_samples_when_no_search
         self.exclude_samples = exclude_samples
@@ -273,15 +273,14 @@ class Sample:
         small_out_i = np.zeros((n_samples, len(small_out_i_list)), dtype=int)
         small_out_i[:, :] = np.array(small_out_i_list)
 
+        # calculate missing hcp
+        missing_hcp = 40 - binary.get_hcp(np.array([my_hand]))[0]
 
-        if self.use_bidding_info:
+        if self.use_biddinginfo:
             #c_hcp = (lambda x: 4 * x + 10)(p_hcp.copy())
             c_shp = c_shp.reshape((3, 4))
             r_hcp = np.zeros((n_samples, 3)) + c_hcp
             r_shp = np.zeros((n_samples, 3, 4)) + c_shp
-
-            # calculate missing hcp
-            missing_hcp = 40 - binary.get_hcp(np.array([my_hand]))[0]
 
             if missing_hcp > 0:
                 hcp_reduction_factor = round(self.hcp_reduction_factor * np.sum(r_hcp[0]) / missing_hcp,2)
@@ -323,7 +322,7 @@ class Sample:
 
             cards_received[s_all[can_receive_cards], receivers[can_receive_cards]] += 1
             lho_pard_rho[s_all[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
-            if self.use_bidding_info:
+            if self.use_biddinginfo:
                 r_hcp[s_all[can_receive_cards], receivers[can_receive_cards]] -= 3 * hcp_reduction_factor
                 r_shp[s_all[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // cards_in_suit] -= self.shp_reduction_factor
             js[can_receive_cards] += 1
@@ -360,7 +359,7 @@ class Sample:
         #if self.verbose:
         #    print("Loops to deal the hands", loop_counter)
 
-        if self.use_bidding_info:
+        if self.use_biddinginfo:
 
             # re-apply constraints
             # This is in principle just to reduce the number of samples for performance
@@ -647,7 +646,7 @@ class Sample:
         h2_passive = all(item in {"PASS", "PAD_START"} for item in auction[h_2_nesw::4])
 
         #print(f"h1_passive: {h1_passive}, h2_passive: {h2_passive}")
-        use_bidding_info_stats = self.use_bidding_info and not (h1_passive and h2_passive)
+        use_bidding_info_stats = self.use_biddinginfo and not (h1_passive and h2_passive)
 
         if use_bidding_info_stats:
             n_steps = binary.calculate_step_bidding_info(auction)
@@ -1301,6 +1300,12 @@ class Sample:
                 while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
                     # We are RHO and trust partners lead
                     lead_accept_threshold *= 0.5
+                    if lead_accept_threshold < 0.001:
+                        if self.verbose:
+                            print("Skipping validation of opening lead as no samples above threshold")           
+                        sys.stderr.write("Skipping validation of opening lead as no samples above threshold\n") 
+                        sys.stderr.write(f"lead_scores: {lead_scores}\n") 
+                        return states, bid_scores, lead_scores
 
                 # If we did not find 2 samples we ignore the test for opening lead
                 if np.sum(lead_scores >= lead_accept_threshold) > 1:

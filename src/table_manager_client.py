@@ -210,6 +210,10 @@ class TMClient:
                 if (self.verbose):
                     pprint.pprint(bid_resp.samples, width=80)
                 auction.append(bid_resp.bid)
+                if self.models.consult_bba:
+                    explanation, alert = bot.explain(auction)
+                    bid_resp.explanation = explanation
+                    bid_resp.alert = alert
                 self.bid_responses.append(bid_resp)
                 await self.send_own_bid(bid_resp.bid, bid_resp.alert)
             else:
@@ -926,7 +930,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.4.2")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.4.3")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

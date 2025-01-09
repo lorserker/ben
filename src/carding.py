@@ -80,21 +80,28 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             # Currently no specific rule for defenders
             pass
 
-    # If the first card is better then don't evaluate
-    if hasattr(candidate_cards[0], 'p_make_contract'):
-        if candidate_cards[0].p_make_contract > candidate_cards[1].p_make_contract + 0.05:
-            return candidate_cards[0].card, who
-    if hasattr(candidate_cards[0], 'expected_tricks_dd'):
-        if candidate_cards[0].expected_tricks_dd > candidate_cards[1].expected_tricks_dd + 0.5:
-            return candidate_cards[0].card, who
+    # Perhaps this should be removed, second card can be from another suit, so not sure difference make sense
+    if not models.force_suitc:
+            # If the first card is better then don't evaluate
+        if hasattr(candidate_cards[0], 'p_make_contract'):
+            if candidate_cards[0].p_make_contract > candidate_cards[1].p_make_contract + 0.1:
+                return candidate_cards[0].card, who
+        if hasattr(candidate_cards[0], 'expected_tricks_dd'):
+            if candidate_cards[0].expected_tricks_dd > candidate_cards[1].expected_tricks_dd + 1:
+                return candidate_cards[0].card, who
+        
+        if hasattr(candidate_cards[0], 'expected_score_mp') and candidate_cards[0].expected_score_mp is not None:
+            if candidate_cards[0].expected_score_mp > candidate_cards[1].expected_score_mp + 5:
+                return candidate_cards[0].card, who
+        if hasattr(candidate_cards[0], 'expected_score_imp') and candidate_cards[0].expected_score_imp is not None:
+            if candidate_cards[0].expected_score_imp > candidate_cards[1].expected_score_imp + 1:
+                return candidate_cards[0].card, who
     
-    if hasattr(candidate_cards[0], 'expected_score_mp') and candidate_cards[0].expected_score_mp is not None:
-        if candidate_cards[0].expected_score_mp > candidate_cards[1].expected_score_mp + 5:
-            return candidate_cards[0].card, who
-    if hasattr(candidate_cards[0], 'expected_score_imp') and candidate_cards[0].expected_score_imp is not None:
-        if candidate_cards[0].expected_score_imp > candidate_cards[1].expected_score_imp + 0.2:
-            return candidate_cards[0].card, who
-    
+    interesting_suit = candidate_cards[0].card.suit
+    #print("interesting_suit", interesting_suit)
+    if verbose:
+        print(f"Checking SuitC: {models.use_suitc} {contract}  {models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]}")
+
     if player_i == 3 and not models.use_suitc:
         # For declarer pick a random card, when touching honors and NN is equal (Will not happen in practice)
         #print("First card for declarer", candidate_cards[0].card)
@@ -103,8 +110,6 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
         #print("play_status", play_status)
         return candidate_cards[0].card, who       
 
-    interesting_suit = candidate_cards[0].card.suit
-    #print("interesting_suit", interesting_suit)
     suits = hand_str.split('.')
     original_count = len(suits[interesting_suit])
     current_count  = original_count

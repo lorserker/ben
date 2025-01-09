@@ -219,23 +219,25 @@ class BBABotBid:
         meaning = self.player.get_info_meaning(self.C_INTERPRETED)
         if meaning is None: meaning = ""
         bba_alert = self.player.info_alerting(self.C_INTERPRETED)
-            
+
         info = self.player.get_info_feature(self.C_INTERPRETED)
-        minhcp = info[402]
-        maxhcp = info[403]
-        if minhcp > 0:
-            if maxhcp < 37:
-                meaning += f" ({minhcp}-{maxhcp} hcp)"
-            else:
-                meaning += f" ({minhcp}+ hcp)"
-        elif maxhcp < 37:
-            meaning += f" ({maxhcp}- hcp)"
-        forcing = info[411]
-        game_forcing = info[443]
-        if forcing > lastbid:
-            meaning += f" F1"
-        if game_forcing:
-            meaning += f" GF"
+        if not bba_alert:   
+            minhcp = info[402]
+            maxhcp = info[403]
+            if minhcp > 0:
+                if maxhcp < 37:
+                    meaning += f" ({minhcp}-{maxhcp} hcp)"
+                else:
+                    meaning += f" ({minhcp}+ hcp)"
+            elif maxhcp < 37:
+                meaning += f" ({maxhcp}- hcp)"
+        # forcing = info[411]
+        # game_forcing = info[443]
+        # if forcing > lastbid:
+        #     meaning += f" F1"
+        # if game_forcing:
+        #     meaning += f" GF"
+        # print(f"{meaning}", bba_alert)
         return f"{meaning}", bba_alert
 
     # Define a Python function to find a bid

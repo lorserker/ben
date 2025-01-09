@@ -62,6 +62,11 @@ class BotBid:
             )
         return self._bbabot_instance
     
+    def explain(self, auction):
+        if self.bbabot is None:
+            return None, False
+        return self.bbabot.explain(auction)
+    
     def get_bid_number_for_player_to_bid(self, auction):
         hand_i = len(auction) % 4
         i = hand_i

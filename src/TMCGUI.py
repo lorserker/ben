@@ -73,7 +73,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("Table Manager Interface. v0.8.4.2")
+        self.title("Table Manager Interface. v0.8.4.3")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -507,7 +507,7 @@ class TableManagerApp(tk.Tk):
             exe_path = entry.get()
             self.settings["wbridge5_file"] = exe_path
             self.save_settings()
-            self.start_appl(exe_path, ["Autoconnect", "2000"])
+            self.start_appl(exe_path)
             modal_window.destroy()
 
         introduction_text = "WBridge5 will connect to any empty seat starting from South. Only works with Bridge Moniteur"
@@ -828,7 +828,7 @@ class TableManagerApp(tk.Tk):
             for suit, cards_in_suit in zip(suits, suit_parts):
                 for card in cards_in_suit:
                     # Prepend the suit to each card and add to the result
-                    cards.append(Card(f"{suit}{card.replace("A","14").replace("K","13").replace("Q","12").replace("J","11").replace("T","10")}"))
+                    cards.append(Card(f'{suit}{card.replace("A","14").replace("K","13").replace("Q","12").replace("J","11").replace("T","10")}'))
             
             return cards
 

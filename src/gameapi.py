@@ -375,7 +375,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.4.2")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.4.3")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -623,7 +623,6 @@ def bid():
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
         with model_lock_bid:
             bid = hint_bot.bid(auction)
-        result = bid.to_dict()
         if explain:
             from bba.BBA import BBABotBid
             if verbose:
@@ -631,12 +630,13 @@ def bid():
             bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand, vuln, dealer_i, mp, verbose)
             auction.append(bid.bid)
             explanation, alert = bot.explain(auction)
-            result["explanation"] = explanation
+            bid.explanation = explanation
             bid.alert = alert
             if verbose:
                 print("explanation: ",explanation, "alert: ",alert)
 
         print("Bidding: ",bid.bid, "Alert" if bid.alert else "")
+        result = bid.to_dict()
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
             logger.info(f"Calulations bid: {json.dumps(calculations)}")
