@@ -36,9 +36,11 @@ else:
 if sys.platform == 'win32':
     DDS_LIB = 'dds.dll'
 elif sys.platform == 'darwin':
-    DDS_LIB = 'darwin/libdds.so'
+    DDS_LIB = 'darwin/libdds.2.9.0.dylib'
 else:  # linux
     DDS_LIB = 'libdds.so'
+
+print(sys.platform)
 
 try:
     DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)
