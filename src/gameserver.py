@@ -102,7 +102,7 @@ boards = []
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.4.3")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.5")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -138,6 +138,7 @@ if sys.platform != 'win32':
     models.pimc_use_defending = False
     models.use_bba = False
     models.consult_bba = False
+    models.use_bba_rollouts = False
     models.use_bba_to_count_aces = False
     models.use_suitc = False
     
@@ -158,7 +159,7 @@ if models.matchpoint:
 else:
     print("Playing IMPS mode")
 
-if models.use_bba or models.use_bba_to_count_aces:
+if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or models.use_bba_rollout:
     print("BBA enabled")    
     from bba.BBA import BBABotBid
     bot = BBABotBid(None, None ,None, None, None, None, None, None)

@@ -375,7 +375,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.4.3")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.5")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -418,6 +418,7 @@ if sys.platform != 'win32':
     models.pimc_use_defending = False
     models.use_bba = False
     models.consult_bba = False
+    models.use_bba_rollout = False
     models.use_bba_to_count_aces = False
     models.use_suitc = False
     
@@ -438,7 +439,7 @@ if models.matchpoint:
 else:
     print("Playing IMPS mode")
 
-if models.use_bba or models.use_bba_to_count_aces:
+if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or models.use_bba_rollout:
     print("BBA enabled")    
     from bba.BBA import BBABotBid
     bot = BBABotBid(None, None, None, None, None, None, None, None)
@@ -635,11 +636,11 @@ def bid():
             if verbose:
                 print("explanation: ",explanation, "alert: ",alert)
 
-        print("Bidding: ",bid.bid, "Alert" if bid.alert else "")
+        print("Bidding: ",bid.bid, "Alert" if bid.alert else "", bid.explanation if bid.explanation else "")
         result = bid.to_dict()
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
-            logger.info(f"Calulations bid: {json.dumps(calculations)}")
+            logger.info(f"Calculations bid: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
@@ -698,7 +699,7 @@ def lead():
         result = card_resp.to_dict()
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction,  "lead":result}
-            logger.info(f"Calulations lead: {json.dumps(calculations)}")
+            logger.info(f"Calculations lead: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
@@ -842,7 +843,7 @@ def play():
         result["MP_or_IMP"] = models.use_real_imp_or_mp
         if record: 
             calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
-            logger.info(f"Calulations play: {json.dumps(calculations)}")
+            logger.info(f"Calculations play: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         return json.dumps(result)
     except Exception as e:
@@ -941,7 +942,7 @@ def cuebid():
     result = {"bid": bid.bid.replace("PASS","Pass"), "alert": explanation, "artificial" : alert}
     if record: 
         calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "turn":turn, "auction":auction, "bid":bid.to_dict()}
-        logger.info(f"Calulations cuebid: {json.dumps(calculations)}")
+        logger.info(f"Calculations cuebid: {json.dumps(calculations)}")
 
     print(f'Request took {(time.time() - t_start):0.2f} seconds')       
     return json.dumps(result),200

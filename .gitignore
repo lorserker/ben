@@ -124,3 +124,4 @@ src/log.txt
 scripts/training/contract/jax
 src/suitc.txt
 BBA/CC/*.txt
+BBA/output*

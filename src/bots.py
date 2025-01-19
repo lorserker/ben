@@ -1,3 +1,5 @@
+import hashlib
+import json
 import time
 import sys
 import numpy as np
@@ -66,6 +68,9 @@ class BotBid:
         if self.bbabot is None:
             return None, False
         return self.bbabot.explain(auction)
+
+    def bid_hand(self, auction, hand):    
+        return self.bbabot.bid_hand(auction, hand)
     
     def get_bid_number_for_player_to_bid(self, auction):
         hand_i = len(auction) % 4
@@ -178,13 +183,14 @@ class BotBid:
             # deck = 'N:' + ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) if j != self.seat else hand_str for j, hand in enumerate(hands_np[i]))
             # We want to rotate the hands such that the hand_str comes first, and the remaining hands follow in their original order, wrapping around. 
             # This is to ensure that we get the same DD results for a rotateded deal.
-            deck = 'N:' + ' '.join(
+            deck = ' '.join(
                 hand_str if j == 0 else deck52.handxxto52str(hands_np[i][(j + self.seat) % 4], self.models.n_cards_bidding)
                 for j in range(4)
             )
-
+            deck =deck52.convert_cards(deck,0, hand_str, self.rng, self.models.n_cards_bidding)
+            deck = 'N:' + deck52.reorder_hand(deck)
             # Create PBN including pips
-            hands_pbn.append(deck52.convert_cards(deck,0, hand_str, self.rng, self.models.n_cards_bidding))
+            hands_pbn.append(deck)
 
         return hands_pbn
 
@@ -236,7 +242,7 @@ class BotBid:
             for candidate in candidates:
                 if self.verbose:
                     print(f"Bid: {candidate.bid.ljust(4)} {candidate.insta_score:.3f}")
-                auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np)
+                auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np, hands_np_as_pbn)
 
                 t_start = time.time()
 
@@ -246,7 +252,7 @@ class BotBid:
                 decl_tricks_softmax3 = None
                 
                 if self.models.double_dummy_calculator:
-                    contracts, decl_tricks_softmax1 = self.expected_tricks_dd(hands_np_as_pbn, auctions_np, self.hand_str, sample_count)
+                    contracts, decl_tricks_softmax1 = self.expected_tricks_dd(hands_np_as_pbn, auctions_np, candidate.bid)
                     ev = self.expected_score(len(auction) % 4, contracts, decl_tricks_softmax1)
                     ev_scores[candidate.bid] = ev
                     decoded_tricks = np.argmax(decl_tricks_softmax1, axis=1)
@@ -379,7 +385,7 @@ class BotBid:
                             print("Adjusted for double if insta_score to low", adjust)
 
                 # The problem is that with a low score for X the expected bidding can be very wrong
-                if candidate.bid == "X" and candidate.insta_score < 0.01:
+                if candidate.bid == "X" and candidate.insta_score < 0.1:
                     adjust -= 2*self.models.adjust_X
                     if self.verbose:
                         print("Adjusted for very low score in NN", adjust)
@@ -445,11 +451,16 @@ class BotBid:
             if self.verbose:
                 print(f"Estimating took {(time.time() - t_start):0.4f} seconds")
         else:
-            who = "NN" if candidates[0].who is None else candidates[0].who
             n_steps = binary.calculate_step_bidding_info(auction)
             p_hcp, p_shp = self.sampler.get_bidding_info(n_steps, auction, self.seat, self.hand_bidding, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
+            if sample_count == 0 and generate_samples:
+                if self.models.consult_bba:
+                    bid_resp = self.bbabot.bid(auction)
+                    candidates.insert(0, CandidateBid(bid=bid_resp.bid, insta_score=-1, alert = True, who="BBA", explanation=bid_resp.explanation))
+                
+            who = "NN" if candidates[0].who is None else candidates[0].who
             if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], quality, self.my_bid_no):    
                 if self.verbose:
                     print("Updating samples with expected score")    
@@ -459,7 +470,7 @@ class BotBid:
                     auction_np[:,i] = bidding.BID2ID[bid]
 
                 hands_np_as_pbn = self.translate_hands(hands_np, self.hand_str, sample_count)
-                contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np_as_pbn, auction_np, self.hand_str, sample_count)
+                contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np_as_pbn, auction_np)
                 decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
                 if self.verbose:
                     print("tricks", np.mean(decoded_tricks))
@@ -637,14 +648,15 @@ class BotBid:
                     # Now we have found a possible resuce bid, so we need to check the samples with that contract
                     if self.verbose:
                         print("Evaluating", max_count_contract)
+                    no_hands = len(hands_np_as_pbn[:self.models.max_samples_checked])
                     new_auction = auction.copy()
                     new_auction.append(max_count_contract)
-                    auction_np = np.ones((len(samples), 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
+                    auction_np = np.ones((no_hands, 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
                     for i, bid in enumerate(new_auction):
                         auction_np[:,i] = bidding.BID2ID[bid]
 
-                    # Simulate the hands
-                    contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np_as_pbn[:self.models.max_samples_checked], auction_np, self.hand_str, self.models.max_samples_checked)
+                    # Calculate score for the hands
+                    contracts, decl_tricks_softmax = self.expected_tricks_dd(hands_np_as_pbn[:self.models.max_samples_checked], auction_np)
                     decoded_tricks = np.argmax(decl_tricks_softmax, axis=1)
                     if self.verbose:
                         print("tricks", np.mean(decoded_tricks))
@@ -665,7 +677,7 @@ class BotBid:
                     if (expected_score > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
 
                         candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
-                                                    expected_score=contract_average_scores[max_count_contract], expected_tricks=expected_tricks, adjust=0, alert = False)
+                                                    expected_score=contract_average_scores[max_count_contract], expected_tricks=expected_tricks, adjust=0, alert = False, who="Rescue")
                         candidates.insert(0, candidatebid)
                         who = "Rescue"
                         sys.stderr.write(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}\n")
@@ -680,7 +692,7 @@ class BotBid:
                 print("No rescue bid evaluated")
 
         # We return the bid with the highest expected score or highest adjusted score 
-        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=quality, alert = bool(candidates[0].alert), explanation=None)
+        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=quality, alert = bool(candidates[0].alert), explanation=candidates[0].explanation)
     
     def do_rollout(self, auction, candidates, max_candidate_score, sample_count):
         if candidates[0].insta_score > max_candidate_score:
@@ -704,7 +716,7 @@ class BotBid:
 
         if sample_count == 0:
             if self.verbose:
-                print("We found no samples, so will just trust the NN")
+                print("We found no samples, so will just trust the NN or BBA")
             return False
         return True
 
@@ -714,7 +726,7 @@ class BotBid:
             if kc_resp != None:
                 if self.verbose:
                     print("Keycards: ", kc_resp)
-                return [CandidateBid(bid=kc_resp.bid, insta_score=1, alert = True, who="BBA")], False
+                return [CandidateBid(bid=kc_resp.bid, insta_score=1, alert = True, who="BBA", explanation=kc_resp.explanation)], False
 
         bid_softmax, alerts = self.next_bid_np(auction)
 
@@ -821,21 +833,25 @@ class BotBid:
                 if candidate.bid == 'PASS':
                     break
             else:
-                candidates.append(CandidateBid(bid=bidding.ID2BID[2], insta_score=0.1, alert = None))
+                candidates.append(CandidateBid(bid=bidding.ID2BID[2], insta_score=0.1, alert = None, Who = "Config"))
 
         if self.verbose:
             print("\n".join(str(bid) for bid in candidates))
-
+    
         if self.models.consult_bba:
             bid_resp = self.bbabot.bid(auction)
+            
+            if self.verbose:
+                print("BBA suggests: ", bid_resp.bid)
+            # If BBA suggest Pass, then we should probably not double
             for candidate in candidates:
                 if candidate.bid == bid_resp.bid:
                     candidate.alert = bid_resp.alert
-                    candidate.adjustment = 0.2
+                    candidate.explanation = bid_resp.explanation
                     break
             else:
                 sys.stderr.write(f"{Fore.CYAN}Adding BBA bid as candidate: {bid_resp.bid} Alert: { bid_resp.alert}{Fore.RESET}\n")
-                candidates.append(CandidateBid(bid=bid_resp.bid, insta_score=0.2, alert = bid_resp.alert))
+                candidates.append(CandidateBid(bid=bid_resp.bid, insta_score=0.2, alert = bid_resp.alert, who="BBA", explanation=bid_resp.explanation))
 
         return candidates, passout
 
@@ -907,92 +923,98 @@ class BotBid:
         #print(f"{Fore.BLUE}Fetching random generator for bid {self.hash_integer}{Style.RESET_ALL}")
         return np.random.default_rng(self.hash_integer)
 
-    def bidding_rollout(self, auction_so_far, candidate_bid, hands_np):
-        auction = [*auction_so_far, candidate_bid]
-        auction_length = len(auction)
-        #print("auction: ", auction)
+    def bidding_rollout(self, auction_so_far, candidate_bid, hands_np, hands_np_as_pbn):
+        t_start = time.time()
         n_samples = hands_np.shape[0]
         if self.verbose:
             print("bidding_rollout - n_samples: ", n_samples)
         assert n_samples > 0
-        
-        n_steps_vals = [0, 0, 0, 0]
-        for i in range(1, 5):
-            n_steps_vals[(len(auction_so_far) % 4 + i) % 4] = self.get_bid_number_for_player_to_bid(auction_so_far + ['?'] * i)  
-        
-        # initialize auction vector
+        auction = [*auction_so_far, candidate_bid]
         auction_np = np.ones((n_samples, 64), dtype=np.int32) * bidding.BID2ID['PAD_END']
         for i, bid in enumerate(auction):
             auction_np[:,i] = bidding.BID2ID[bid]
+        if self.models.use_bba_rollout: 
+            for i in range(hands_np.shape[0]):
+                bba_auction = self.bbabot.bid_hand(auction, hands_np_as_pbn[i])
+                for j, bid in enumerate(bba_auction):
+                    auction_np[i,j] = bidding.BID2ID[bid]
 
-        bid_i = 0 
-        turn_i = auction_length % 4
-
-        #print(hand_to_str(hands_np[0,turn_i,:], self.models.n_cards_bidding))
-        
-        #X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models, self.models.n_cards_bidding)
-        #print(X[0])
-        #print("turn_i", turn_i)
-        # Now we bid each sample to end of auction
-        while not np.all(auction_np[:,auction_length -1 + bid_i] == bidding.BID2ID['PAD_END']):
-            #print("bidding_rollout - n_steps_vals: ", n_steps_vals, " turn_i: ", turn_i, " bid_i: ", bid_i, " auction: ", auction)
-            X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models, self.models.n_cards_bidding)
-            if bid_i % 2 == 0:
-                x_bid_np, _ = self.models.opponent_model.pred_fun_seq(X)
-            else:
-                x_bid_np, _ = self.models.bidder_model.pred_fun_seq(X)
+        else:
+            auction_length = len(auction)
+            n_steps_vals = [0, 0, 0, 0]
+            for i in range(1, 5):
+                n_steps_vals[(len(auction_so_far) % 4 + i) % 4] = self.get_bid_number_for_player_to_bid(auction_so_far + ['?'] * i)  
             
-            if self.models.model_version < 3:
-                x_bid_np = x_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
-            else:
-                x_bid_np = x_bid_np.numpy()
+            # initialize auction vector
+
+            bid_i = 0 
+            turn_i = auction_length % 4
+
+            #print(hand_to_str(hands_np[0,turn_i,:], self.models.n_cards_bidding))
+            
+            #X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models, self.models.n_cards_bidding)
+            #print(X[0])
+            #print("turn_i", turn_i)
+            # Now we bid each sample to end of auction
+            while not np.all(auction_np[:,auction_length -1 + bid_i] == bidding.BID2ID['PAD_END']):
+                #print("bidding_rollout - n_steps_vals: ", n_steps_vals, " turn_i: ", turn_i, " bid_i: ", bid_i, " auction: ", auction)
+                X = binary.get_auction_binary_sampling(n_steps_vals[turn_i], auction_np, turn_i, hands_np[:,turn_i,:], self.vuln, self.models, self.models.n_cards_bidding)
+                if bid_i % 2 == 0:
+                    x_bid_np, _ = self.models.opponent_model.pred_fun_seq(X)
+                else:
+                    x_bid_np, _ = self.models.bidder_model.pred_fun_seq(X)
                 
-            bid_np = x_bid_np[:,-1,:]
-            assert bid_np.shape[1] == 40
-            # We can get invalid bids back from the neural network, so we need to filter those away first
-            invalid_bids = True
-            while invalid_bids:
-                invalid_bids = False
-                for i in range(n_samples):
-                    auction = bidding.get_auction_as_list(auction_np[i])
-                    if not bidding.auction_over(auction):
-                        bid = np.argmax(bid_np[i])
-                        # if Pass returned after the bidding really is over
-                        # print("bid_np[i][bid]: ", bid_np[i][bid])
-                        if (bid == 2 and bidding.auction_over(auction)):
-                            sys.stderr.write(str(auction))
-                            sys.stderr.write(f" Pass not valid as auction is over: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                if self.models.model_version < 3:
+                    x_bid_np = x_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
+                else:
+                    x_bid_np = x_bid_np.numpy()
+                    
+                bid_np = x_bid_np[:,-1,:]
+                assert bid_np.shape[1] == 40
+                # We can get invalid bids back from the neural network, so we need to filter those away first
+                invalid_bids = True
+                while invalid_bids:
+                    invalid_bids = False
+                    for i in range(n_samples):
+                        auction = bidding.get_auction_as_list(auction_np[i])
+                        if not bidding.auction_over(auction):
+                            bid = np.argmax(bid_np[i])
+                            # if Pass returned after the bidding really is over
+                            # print("bid_np[i][bid]: ", bid_np[i][bid])
+                            if (bid == 2 and bidding.auction_over(auction)):
+                                sys.stderr.write(str(auction))
+                                sys.stderr.write(f" Pass not valid as auction is over: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                                bid_np[i][1] = 1
+                            # Pass is always allowed
+                            if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
+                                invalid_bids = True
+                                deal = ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) for hand in hands_np[i,:,:])
+                                deal = deck52.convert_cards(deal,0, "", self.rng, self.models.n_cards_bidding)
+                                deal = deck52.reorder_hand(deal)
+                                deal = "NESW"[self.dealer] + " " +find_vuln_text(self.vuln) + ' ' + deal
+                                if not self.models.suppress_warnings:
+                                    save_for_training(deal, '-'.join(auction).replace('PASS', 'P'))
+                                    sys.stderr.write(f"{Fore.RED}Sampling: {'-'.join(auction_so_far).replace('PASS', 'P').replace('PAD_START-', '').replace('PAD_START', 'Opening')} with this deal {deal} ")
+                                    sys.stderr.write(f"to avoid this auction {'-'.join(auction).replace('PASS', 'P')}\n{Style.RESET_ALL}")
+                                    sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                                bid_np[i][bid] = 0
+                                
+
+                            assert auction_length - 1 + bid_i <= 60, f'Auction to long {bid_i} {auction} {auction_np[i]}'
+                        else:
                             bid_np[i][1] = 1
-                        # Pass is always allowed
-                        if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
-                            invalid_bids = True
-                            deal = ' '.join(deck52.handxxto52str(hand,self.models.n_cards_bidding) for hand in hands_np[i,:,:])
-                            deal = deck52.convert_cards(deal,0, "", self.rng, self.models.n_cards_bidding)
-                            deal = deck52.reorder_hand(deal)
-                            deal = "NESW"[self.dealer] + " " +find_vuln_text(self.vuln) + ' ' + deal
-                            if not self.models.suppress_warnings:
-                                save_for_training(deal, '-'.join(auction).replace('PASS', 'P'))
-                                sys.stderr.write(f"{Fore.RED}Sampling: {'-'.join(auction_so_far).replace('PASS', 'P').replace('PAD_START-', '').replace('PAD_START', 'Opening')} with this deal {deal} ")
-                                sys.stderr.write(f"to avoid this auction {'-'.join(auction).replace('PASS', 'P')}\n{Style.RESET_ALL}")
-                                sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
-                            bid_np[i][bid] = 0
-                            
 
-                        assert auction_length - 1 + bid_i <= 60, f'Auction to long {bid_i} {auction} {auction_np[i]}'
-                    else:
-                        bid_np[i][1] = 1
-
-            #print("Adding", bidding.ID2BID[np.argmax(bid_np, axis=1)])
-            #print("Adding", np.argmax(bid_np, axis=1))
-            #print(bid_np)
-            auction_np[:,auction_length + bid_i] = np.argmax(bid_np, axis=1)
-            bid_i += 1
-            n_steps_vals[turn_i] += 1
-            turn_i = (turn_i + 1) % 4
-        assert len(auction_np) > 0
+                #print("Adding", bidding.ID2BID[np.argmax(bid_np, axis=1)])
+                #print("Adding", np.argmax(bid_np, axis=1))
+                #print(bid_np)
+                auction_np[:,auction_length + bid_i] = np.argmax(bid_np, axis=1)
+                bid_i += 1
+                n_steps_vals[turn_i] += 1
+                turn_i = (turn_i + 1) % 4
+            assert len(auction_np) > 0
         
         if self.verbose:
-            print("bidding_rollout - finished ",auction_np.shape)
+            print(f"bidding_rollout {candidate_bid} - finished {(time.time() - t_start):0.4f}",auction_np.shape)
         
         return auction_np
     
@@ -1107,11 +1129,14 @@ class BotBid:
         decl_tricks_softmax = self.models.sd_model_no_lead.pred_fun(X_sd)
         return contracts, decl_tricks_softmax
 
-    def expected_tricks_dd(self, hands_np_as_pbn, auctions_np, hand_str, n_samples):
+    def expected_tricks_dd(self, hands_np_as_pbn, auctions_np, bid = None):
+        n_samples = auctions_np.shape[0]
+        assert len(hands_np_as_pbn) == n_samples
         decl_tricks_softmax = np.zeros((n_samples, 14), dtype=np.int32)
         contracts = []
         t_start = time.time()
-
+        
+        sum = 0
         for i in range(n_samples):
             sample_auction = [bidding.ID2BID[bid_i] for bid_i in list(auctions_np[i, :]) if bid_i != 1]
             contract = bidding.get_contract(sample_auction)
@@ -1132,11 +1157,12 @@ class BotBid:
 
             # It will probably improve performance if all is calculated in one go
             dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1)
-
+            sum += dd_solved["max"][0]
             decl_tricks_softmax[i,13 - dd_solved["max"][0]] = 1
 
         if self.verbose:
             print(f'dds took: {(time.time() - t_start):0.4f}')
+            print("sum", bid, sum)
         return contracts, decl_tricks_softmax
         
 
@@ -1228,6 +1254,19 @@ class BotLead:
         if partnersuit != None and partnersuit < 4:
             suit_adjust[partnersuit] = 0.5
 
+        # penalty for leading trump with a singleton
+        strain_i = bidding.get_strain_i(contract)
+        if strain_i > 0 and strain_i < 5:
+            suit_adjust[strain_i - 1] -= 0.2
+            trumps = self.hand_str.split('.')[strain_i - 1]
+            if trumps == 'A' :   
+                suit_adjust[strain_i - 1] -= 0.2
+            if trumps == 'K' :   
+                suit_adjust[strain_i - 1] -= 0.5
+            if trumps == 'Q' :   
+                suit_adjust[strain_i - 1] -= 0.2
+
+
         if len(accepted_samples) > 0:
             if self.verbose:
                 print("scores_by_trick", scores_by_trick)
@@ -1238,7 +1277,7 @@ class BotLead:
                 real_scores = calculate.calculate_score(dd_solved, 0, 0, scores_by_trick)
                 if self.verbose:
                     print("Real scores")
-                    print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>5}' for x in v[:10])}..." for k, v in real_scores.items()))
+                    print("\n".join(f"{Card.from_code(int(k), xcards=True)}: [{', '.join(f'{x:>5}' for x in v[:10])}..." for k, v in real_scores.items()))
                 if self.models.matchpoint:
                     expected_score_mp_arr = calculate.calculate_mp_score(real_scores)
                 else:
@@ -1695,7 +1734,7 @@ class CardPlayer:
         merged_cards = {}
 
         if quality < self.models.pimc_bidding_quality:
-            weight = 1 - weight
+            weight = 0.5
 
         for card52, (e_tricks, e_score, e_make) in dd_resp.items():
             pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card52]
@@ -1843,7 +1882,7 @@ class CardPlayer:
             print("Samples:", n_samples, " Solving:",len(hands_pbn))
         
         dd_solved = self.dds.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
-        #print(dd_solved)
+        
         # if defending the target is another
         level = int(self.contract[0])
         if self.player_i % 2 == 1:
@@ -2001,6 +2040,8 @@ class CardPlayer:
             s.append(results[i])
             # removing last stopper gives penalty
             # Playing suit, where we do not raise tricks for opponents are rewarded
+        if self.verbose:
+            print("Suit adjust", s)
         return s
         
     # Trying to help BEN to know, when to draw trump, and when not to
@@ -2036,9 +2077,8 @@ class CardPlayer:
         card_nn = {c: round(s, 3) for c, s in zip(np.arange(self.models.n_cards_play), card_scores)}
         
         trump_adjust = self.calculate_trump_adjust(play_status)
-
+    
         suit_adjust = self.calculate_suit_adjust(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
-
         candidate_cards = []
         
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
@@ -2047,7 +2087,10 @@ class CardPlayer:
             # Ignore cards not suggested by the NN
             if insta_score < self.models.pimc_trust_NN:
                 continue
-
+            # If we can take rest we don't adjust, then NN will decide if equal
+            # Another option could be to resample the hands without restrictions
+            if e_tricks == 13 - trick_i:
+                suit_adjust[card32 // 8] = 0
             expected_score = round(e_score + suit_adjust[card32 // 8])
 
             candidate_cards.insert(0,CandidateCard(
@@ -2150,7 +2193,7 @@ class CardPlayer:
             if insta_score < self.models.trust_NN:
                 continue
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
-            expected_score =round(e_score+ 20 * suit_adjust[card32 // 8],0)
+            expected_score = round(e_score + 20 * suit_adjust[card32 // 8],0)
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
                 candidate_cards.insert(0, CandidateCard(
                     card=card,

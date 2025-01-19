@@ -1,3 +1,4 @@
+from collections import Counter
 import traceback
 import util
 import sys
@@ -389,9 +390,35 @@ class BGADefDLL:
                 setattr(self.partner_constraints, f"Min{suit_name}", 0)
                 setattr(self.partner_constraints, f"Max{suit_name}", 0 if suit_index in shown_suits_partner else 13)
 
+    def print_dd_results(self, dd_solved, print_result=True):
+        print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>2}' for x in v[:10])}..." for k, v in dd_solved.items()))
+
+        # Create a new dictionary to store sorted counts for each key
+        sorted_counts_dict = {}
+
+        # Loop through the dictionary and process each key-value pair
+        for key, array in dd_solved.items():
+            # Use Counter to count the occurrences of each element
+            element_count = Counter(array)
+            
+            # Sort the counts by frequency in descending order
+            sorted_counts = sorted(element_count.items(), key=lambda x: x[1], reverse=True)
+            
+            # Store the sorted result in the new dictionary
+            sorted_counts_dict[key] = sorted_counts
+
+        # Print the sorted counts for each key
+        for key, sorted_counts in sorted_counts_dict.items():
+            print(f"Sorted counts for {Card.from_code(int(key))}:")
+            for value, count in sorted_counts:
+                print(f"  Tricks: {value}, Count: {count}")
+
     # Define a Python function to find a bid
     def nextplay(self, player_i, shown_out_suits, missing_cards):
-        from BGADLL import Constraints, Macros, Card as PIMCCard
+        t_start = time.time()
+        dll = BGADefDLL.get_dll()       # Access the loaded DLL singleton
+        Constraints = dll["Constraints"]       # Retrieve the Card class from the DLL
+        Macros = dll["Macros"]       # Retrieve the Card class from the DLL
 
         try:
             self.pimc.Clear()
@@ -575,6 +602,7 @@ class BGADefDLL:
                 print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>2}' for x in v[:10])}..." for k, v in results.items()))
                 print("score_by_tricks_taken")
                 print(self.score_by_tricks_taken)
+                self.print_dd_results(results)
             real_scores = calculate.calculate_score(results, self.tricks_taken, self.player_i, self.score_by_tricks_taken)
             if self.models.matchpoint:
                 card_ev = calculate.calculate_mp_score(real_scores)
@@ -593,6 +621,7 @@ class BGADefDLL:
 
         if self.verbose:
             print(f"Returning {len(card_result)} from PIMCDef nextplay")
+            print(f'PIMC response time: {time.time() - t_start:0.4f}')
 
         return card_result
     

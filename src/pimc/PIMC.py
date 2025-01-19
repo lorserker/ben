@@ -407,6 +407,7 @@ class BGADLL:
 
     # Define a Python function to find a bid
     def nextplay(self, player_i, shown_out_suits, missing_cards):
+        t_start = time.time()
         dll = BGADLL.get_dll()       # Access the loaded DLL singleton
         Constraints = dll["Constraints"]       # Retrieve the Card class from the DLL
         Macros = dll["Macros"]       # Retrieve the Card class from the DLL
@@ -607,6 +608,6 @@ class BGADLL:
 
         if self.verbose:
             print(f"Returning {len(card_result)} from PIMC nextplay")
-
+            print(f'PIMC response time: {time.time() - t_start:0.4f}')
         return card_result
     

@@ -356,7 +356,7 @@ class Driver:
         notes = []
         for i, b in enumerate(self.bid_responses, start=1):
             pbn_str += b.bid
-            if b.alert or b.explanation != None:
+            if b.alert or (b.explanation != None and b.explanation != ""):
                 pbn_str += f" ={alerts}="
                 note = f'[Note "{alerts}:'
                 note += ' Alert.' if b.alert else ''
@@ -647,7 +647,7 @@ class Driver:
                                 self.claimed = 0
                                 self.conceed = True
                                 self.trick_winners = trick_won_by
-                                print(f"Contract: {self.contract} Accepted conceed")
+                                print(f"Contract: {self.contract} Accepted conceed½")
                                 return
 
                         if (str(card_resp.card).startswith("Claim")) :
@@ -917,7 +917,7 @@ class Driver:
         for i, level in enumerate(self.human):
             if self.models.use_bba:
                 from bba.BBA import BBABotBid
-                players.append(BBABotBid(self.models.bba_their_cc, self.models.bba_their_cc, i, hands_str[i], vuln, self.dealer_i, self.models.matchpoint, self.verbose))
+                players.append(BBABotBid(self.models.bba_our_cc, self.models.bba_their_cc, i, hands_str[i], vuln, self.dealer_i, self.models.matchpoint, self.verbose))
             elif level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
@@ -925,6 +925,15 @@ class Driver:
                 bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
                 players.append(bot)
 
+        if self.models.use_bba or self.models.use_bba_to_count_aces or self.models.consult_bba or self.models.use_bba_rollout:
+            print("Using BBA CC's")
+            print(self.models.bba_our_cc)
+            print(self.models.bba_their_cc)
+            if self.verbose:
+                print("Our conventions")
+                print("\n".join([convention for convention, selected in players[0].our_conventions.items() if selected]))
+                print("Their conventions")
+                print("\n".join([convention for convention, selected in players[0].their_conventions.items() if selected]))
         auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
@@ -960,7 +969,7 @@ class Driver:
                     await asyncio.sleep(0.1)
                 else :
                     self.bid_responses.append(bid_resp)
-
+                    print(bid_resp)
                     auction.append(bid_resp.bid)
                     bid_no += 1
 
@@ -1035,7 +1044,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.4.3")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.5")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1071,6 +1080,7 @@ async def main():
         models.pimc_use_defending = False
         models.use_bba = False
         models.consult_bba = False
+        models.use_bba_rollout = False
         models.use_bba_to_count_aces = False
         models.use_suitc = False
         
@@ -1093,7 +1103,7 @@ async def main():
         else:
             print("Playing IMPS mode")
 
-    if models.use_bba or models.use_bba_to_count_aces:
+    if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or models.use_bba_rollout:
         print("BBA enabled")    
         from bba.BBA import BBABotBid
         bot = BBABotBid(None, None ,None, None, None, None, None, None)

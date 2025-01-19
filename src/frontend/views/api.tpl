@@ -81,6 +81,7 @@
                     
         <button onclick="callAPI('bid')">Ask BEN for bid</button>&nbsp;&nbsp;
         <button onclick="callAPI('play')">Ask BEN for play</button><br><br>
+        <button onclick="callAPI('lead')">Ask BEN for lead</button><br><br>
         <button onclick="callAPI('contract')">Ask BEN for contract</button>&nbsp;&nbsp;
         <button onclick="callAPI('explain')">Explain last bid</button><br><br>
         <div id="result"></div><br><br>
@@ -231,7 +232,7 @@
                     let vulOptions = document.querySelectorAll("#vulInput option");
                     for (const element of vulOptions) {
                         if (element.text == value) {
-                            element.setAttribute("selected", "");
+                            element.selected = true;
                             break;
                         }
                     }
@@ -465,16 +466,19 @@
                 if (tokens[0] === '[Vulnerable') {
                     currentBlock = { key: 'Vulnerable ', value: extractValue(line) };
                     parsedData.push(currentBlock);
+                    document.getElementById("vulInput").value = currentBlock.value;
+
                     // Select the option node with text equal to "All"
                     let vulOptions = document.querySelectorAll("#vulInput option");
-                    for (const element of vulOptions) {
-                        if (element.text == currentBlock.value) {
-                            // Remove 'selected' from all options
-                            vulOptions.forEach(opt => opt.removeAttribute("selected"));
-                            
-                            // Set 'selected' on the matching option
-                            element.setAttribute("selected", "true");
-                            break;                        
+                    for (const option of vulOptions) {
+                        // Check if the visible text matches
+                        if (option.text === currentBlock.value) {
+                            // Set 'selected' property on the matching option
+                            option.selected = true;
+                            break;  // No need to continue the loop after a match
+                        } else {
+                            // Ensure other options are not selected
+                            option.selected = false;
                         }
                     }
                 } 
@@ -613,7 +617,7 @@
                 explanation = ` (${data.explanation})`;
             }
             let html = `<br>
-                <p class="bid"><strong>Bid:</strong> ${data.bid}${alerted} ${explanation} ${data.who !== undefined ? ' by ' + data.who : ''}</p>
+                <p class="bid"><strong>Bid:</strong> ${data.bid}${alerted} ${explanation} ${data.who !== undefined ? ' by ' + data.who : '' }</p>
                 `;
             if (data.candidates && data.candidates.length > 0)
                 html += `

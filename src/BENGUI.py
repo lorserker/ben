@@ -26,7 +26,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("BEN server Interface. v0.8.4.3")
+        self.title("BEN server Interface. v0.8.5")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 

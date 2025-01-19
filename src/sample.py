@@ -1,3 +1,4 @@
+import hashlib
 import sys
 import time
 
@@ -33,18 +34,14 @@ def get_small_out_i(small_out):
 
 def distr_vec(x, rng):
     xpos = np.maximum(x, 0) + 0.1
-    pvals = xpos / np.sum(xpos, axis=1, keepdims=True)
-
+    pvals = xpos / (np.sum(xpos, axis=1, keepdims=True) + 1e-10)
     p_cumul = np.cumsum(pvals, axis=1)
-
-    indexes = np.zeros(pvals.shape[0], dtype=np.int32)
+    
     rnd = rng.random(pvals.shape[0])
-
-    for k in range(p_cumul.shape[1]):
-        indexes = indexes + (rnd > p_cumul[:, k])
-
+    
+    # Vectorized computation of indexes
+    indexes = np.sum(rnd[:, None] > p_cumul, axis=1)
     return indexes
-
 
 def distr2_vec(x1, x2, rng):
     x1pos = np.maximum(x1, 0) + 0.1
@@ -518,9 +515,9 @@ class Sample:
         if total_bid_count == 0:
             # No bidding yet, so we just return the first samples
             quality = 1
-            sorted_scores = np.ones(self.sample_hands_auction)
+            bidding_scores = np.ones(self.sample_hands_auction)
             accepted_samples = lho_pard_rho[:self.sample_hands_auction]
-            return accepted_samples, sorted_scores, c_hcp, c_shp, quality
+            return accepted_samples, bidding_scores, c_hcp, c_shp, quality
 
 
         # Sort players by bid_count in descending order
@@ -543,9 +540,9 @@ class Sample:
             )
             #print(f"Processed bidding for player {player['position']} lho_pard_rho shape", lho_pard_rho.shape)
             if lho_pard_rho.shape[0] == 0:
-                sorted_scores = []
+                bidding_scores = []
                 quality = -1
-                return lho_pard_rho, sorted_scores, c_hcp, c_shp, quality
+                return lho_pard_rho, bidding_scores, c_hcp, c_shp, quality
 
         
         min_scores = np.ones(lho_pard_rho.shape[0])
@@ -578,7 +575,7 @@ class Sample:
 
             # Get the indices that would sort min_scores in descending order
             sorted_indices = np.argsort(scaled_distance_A)[::-1]
-            sorted_scores = scaled_distance_A[sorted_indices]
+            bidding_scores = scaled_distance_A[sorted_indices]
         else:
             min_scores = np.minimum(min_scores_rho, min_scores)
             min_scores = np.minimum(min_scores_partner, min_scores)
@@ -586,25 +583,25 @@ class Sample:
             # Get the indices that would sort min_scores in descending order
             sorted_indices = np.argsort(min_scores)[::-1]
             # Extract scores based on the sorted indices
-            sorted_scores = min_scores[sorted_indices]
+            bidding_scores = min_scores
 
         #print("sorted_indices",sorted_indices)
         #print("sorted_scores",sorted_scores)
 
         # Reorder the original lho_pard_rho array based on the sorted indices
-        sorted_samples = lho_pard_rho[sorted_indices]
+        samples = lho_pard_rho[sorted_indices]
 
         # We remove the samples with negative scores
-        sorted_samples = sorted_samples[sorted_scores >= 0]
-        sorted_scores = sorted_scores[sorted_scores >= 0]
+        samples = samples[bidding_scores >= 0]
+        bidding_scores = bidding_scores[bidding_scores >= 0]
 
         if verbose:
-            print("Samples after bidding distance: ", len(sorted_samples), " Threshold: ")
-        if len(sorted_scores) == 0:
-            return sorted_samples, sorted_scores, c_hcp, c_shp, -1
+            print("Samples after bidding distance: ", len(samples))
+        if len(bidding_scores) == 0:
+            return samples, bidding_scores, c_hcp, c_shp, -1
 
         # How much to trust the bidding for the samples
-        accepted_samples = sorted_samples[sorted_scores >= self.bidding_threshold_sampling]
+        accepted_samples = samples[bidding_scores >= self.bidding_threshold_sampling]
         if verbose:
             print("Samples after bidding filtering: ", len(accepted_samples), " Threshold: ", self.bidding_threshold_sampling)
 
@@ -612,29 +609,30 @@ class Sample:
         if (len(accepted_samples) < self._min_sample_hands_auction) and extend_samples:
             if self.use_distance:
                 if verbose:
-                    print(f"Only found {len(sorted_samples[sorted_scores >= self.bid_accept_threshold_bidding])} {self._min_sample_hands_auction}")
+                    print(f"Only found {len(samples[bidding_scores >= self.bid_accept_threshold_bidding])} {self._min_sample_hands_auction}")
             else:
                 if verbose:
                     print(f"Only found {len(accepted_samples)} {self._min_sample_hands_auction}")
-            accepted_samples = sorted_samples[:self._min_sample_hands_auction]
+            accepted_samples = samples[:self._min_sample_hands_auction]
 
         if len(accepted_samples) == 0:
             if verbose:
                 print(f"No samples found. Extend={extend_samples}")
             return accepted_samples, [], c_hcp, c_shp, -1
         
+        #accepted_samples = accepted_samples[top_indices_sorted]
+        bidding_scores = bidding_scores[:len(accepted_samples)]
+        quality = np.mean(bidding_scores)
         if verbose:
-            print("Returning", len(accepted_samples), extend_samples)
-        sorted_scores = sorted_scores[:len(accepted_samples)]
-        quality = np.mean(sorted_scores)
+            print("Returning", len(accepted_samples), extend_samples, quality, bidding_scores.shape[0])
 
-        return accepted_samples, sorted_scores, c_hcp, c_shp, quality
+        return accepted_samples, bidding_scores, c_hcp, c_shp, quality
 
     # shuffle the cards between the 2 hidden hands
-    def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, public_hand_str,vuln, known_nesw, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
+    def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, public_hand_str, vuln, known_nesw, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         if self.verbose:    
-            print(f"Called shuffle_cards_bidding_info {n_samples} - {rng.bit_generator.state['state']['state']}")
+            print(f"{Fore.YELLOW}Called shuffle_cards_bidding_info {n_samples} - {rng.bit_generator.state['state']['state']}{Fore.RESET}")
 
         # This is a constant and should probably be define globally
         card_hcp = [4, 3, 2, 1, 0, 0, 0, 0] * 4
@@ -651,7 +649,20 @@ class Sample:
         if use_bidding_info_stats:
             n_steps = binary.calculate_step_bidding_info(auction)
 
+            if self.verbose:
+                print("auction", auction)
+                print("n_steps", n_steps)
+                print("known_nesw", known_nesw)
+                print("hand", hand_str)
+                print("vuln", vuln)
+                print("n_cards_bidding", models.n_cards_bidding)
             A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models, models.n_cards_bidding)
+            #print(f"{Fore.YELLOW}Created A {rng.bit_generator.state['state']['state']}{Fore.RESET}")
+            #print(A.shape)
+            #for i in range(A.shape[1]):
+            #    arr_bytes = A[:,i,:].tobytes()  # Convert the array to bytes
+            #    print(f"{Fore.YELLOW}Hash of A{i}: {hashlib.sha256(arr_bytes).hexdigest()} {Fore.RESET}")  # Compute a SHA-256 hashhashlib.sha256(arr_bytes).hexdigest() 
+            #print(A[:,0,:])
 
             p_hcp, p_shp = models.binfo_model.pred_fun(A)
             if tf.is_tensor(p_hcp):
@@ -682,7 +693,7 @@ class Sample:
             shp_reduction_factor = self.shp_reduction_factor
 
             if self.verbose:
-                print("missing_hcp:", missing_hcp, "hcp_reduction_factor",hcp_reduction_factor, "shp_reduction_factor" ,shp_reduction_factor)
+                print("P_hcp",np.sum(p_hcp),"missing_hcp:", missing_hcp, "hcp_reduction_factor",hcp_reduction_factor, "shp_reduction_factor" ,shp_reduction_factor)
 
             # acknowledge all played cards
             for i, cards in enumerate(cards_played):
@@ -770,6 +781,7 @@ class Sample:
             js[s_all_r[can_receive_cards]] += 1
 
         js = np.zeros(n_samples, dtype=int)
+        loop = 0
         while True:
             s_all_r = s_all[js < small_out_i.shape[1]]
             if len(s_all_r) == 0:
@@ -785,9 +797,13 @@ class Sample:
             h1_h2[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards]] += 1
             r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // cards_in_suit] -= shp_reduction_factor
             js[s_all_r[can_receive_cards]] += 1
-
+            loop += 1
+        #print("Loop counter", loop)
+        #print(f"{Fore.YELLOW} h1_h2 completed - {rng.bit_generator.state['state']['state']}{Fore.RESET}")
         assert np.sum(h1_h2) == n_samples * np.sum(n_cards_to_receive)
 
+        #arr_bytes = h1_h2.tobytes()  # Convert the array to bytes
+        #print(f"{Fore.YELLOW}Hash of h1_h2 after small: {hashlib.sha256(arr_bytes).hexdigest()} {Fore.RESET}")  # Compute a SHA-256 hashhashlib.sha256(arr_bytes).hexdigest() 
         return h1_h2, use_bidding_info_stats
 
     def get_opening_lead_scores(self, auction, vuln, models, handsamples, opening_lead_card):

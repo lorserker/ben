@@ -4,7 +4,7 @@ python game.py --conf ./config/GIB-BBO.conf --auto True --biddingonly NS --board
 
 
 
-python game.py --conf ./config/BBA-2over1.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-ResultBBA21.pbn
-python game.py --conf ./config/BBA-SAYC.conf   --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-ResultBBASayc.pbn
-python game.py --conf ./config/BBA-2over1.conf --auto True --biddingonly NS --boards ../Challenges/oct13_feb23_nov23_jun24.pbn --facit True --outputpbn ../Challenges/Results/oct13_feb23_nov23_jun24-BBA8663.pbn
-python game.py --conf ./config/BBA-2over1.conf --auto True --biddingonly NS --boards ../Challenges/pav_second120.pbn --facit True --outputpbn ../Challenges/Results/pav_second120-ResultBBA21.pbn
+python game.py --conf ./config/BBA-21GF.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-ResultBBA21.pbn
+python game.py --conf ./config/BBA-SAYC.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-ResultBBASayc.pbn
+python game.py --conf ./config/BBA-21GF.conf --auto True --biddingonly NS --boards ../Challenges/oct13_feb23_nov23_jun24.pbn --facit True --outputpbn ../Challenges/Results/oct13_feb23_nov23_jun24-BBA8663.pbn
+python game.py --conf ./config/BBA-21GF.conf --auto True --biddingonly NS --boards ../Challenges/pav_second120.pbn --facit True --outputpbn ../Challenges/Results/pav_second120-ResultBBA21.pbn

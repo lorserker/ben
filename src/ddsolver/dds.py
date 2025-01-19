@@ -40,8 +40,6 @@ elif sys.platform == 'darwin':
 else:  # linux
     DDS_LIB = 'libdds.so'
 
-print(sys.platform)
-
 try:
     DDS_PATH = os.path.join(BIN_FOLDER, DDS_LIB)
     #print("Loading DDS:",DDS_PATH)

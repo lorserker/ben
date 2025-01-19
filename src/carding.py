@@ -38,16 +38,21 @@ def find_last_occurrence(arr, target):
 
     raise ValueError(f"Could not find the last occurrence of '{target}' within the array.")
 
-def count_entries(hand_str):
+def count_entries(hand_str, interesting_suit, played_cards):
+    #print("Played cards", played_cards)
     suits = hand_str.split(".")
     entry_values = {'A': 1, 'K': 1, 'Q': 0.5}
 
     total_entries = 0
-    for suit in suits:
-        for card in suit:
-            total_entries += entry_values.get(card, 0)
-    
-    return max(round(total_entries),1)    
+    for i, suit in enumerate(suits):
+        if i != interesting_suit:
+            for card in suit:
+                if card in played_cards[i]:
+                    continue
+                total_entries += entry_values.get(card, 0)
+
+    #print("Total entries", total_entries, hand_str, interesting_suit)
+    return round(total_entries)    
 
 def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, missing_cards, play_status, who, verbose):
     if verbose:
@@ -166,7 +171,14 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     from suitc.SuitC import SuitCLib
                     suitc = SuitCLib(verbose)
                     # We just use a simple version of entries
-                    entries = count_entries(hand_str)
+                    
+                    played_cards = [[], [], [], []]
+                    for trick in tricks52:
+                        for card in trick:
+                            played_cards[card // 13].append(RANKS[card % 13])   
+
+                    entries = count_entries(hand_str, interesting_suit, played_cards)
+
                     card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}", trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
                     suitc_card = None
                     try:

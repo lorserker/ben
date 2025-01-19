@@ -58,7 +58,6 @@ class SuitCLib:
         if not trump:
             input_str += f"-ls{entries} "
         if east_vacant:
-
             input_str +=f'-wv{west_vacant} '
             input_str +=f'-ev{east_vacant} '
         input_str += input

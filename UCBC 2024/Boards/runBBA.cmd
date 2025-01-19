@@ -14,10 +14,9 @@ set "CC=%~1"
 for /L %%i in (1,1,6) do (
     set "input_file=.\input_%%i.bba"
     set "output_file=D:\GitHub\ben\BBA\output_%%i"
-    
-    set "command=start "BBA" /D . BBA.exe  --ARCHIVE_FILE !output_file! --AUTOBID --HAND !input_file! --CC1 "D:\GitHub\ben\UCBC 2024\BBA convention cards\!CC!.bbsa" --CC2 "D:\GitHub\ben\UCBC 2024\BBA convention cards\!CC!.bbsa" --DD 0 --SD 1 --TEAM1 0 --TEAM2 0"
+    del D:\GitHub\ben\BBA\output_%%i.pbn /q
+    set "command=start "BBA" /D . BBA.exe --ARCHIVE_FILE !output_file! --AUTOBID --HAND !input_file! --CC1 "D:\GitHub\ben\BBA\CC\!CC!.bbsa" --CC2 "D:\GitHub\ben\BBA\CC\!CC!.bbsa" --DD 0 --SD 1"
     echo !command!
-    
     !command!
     echo BBA Started for input file %%i
     timeout /t 2 /nobreak >nul

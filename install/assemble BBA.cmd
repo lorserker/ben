@@ -1,6 +1,7 @@
 python -m PyInstaller table_manager_client.spec --noconfirm
 python -m PyInstaller TMCGui.spec --noconfirm
 
+robocopy ..\BBA\CC "BBA\BBA\CC" Acol.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" BBA-21GF.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" BBA-SAYC.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" BEN-21GF.bbsa
@@ -9,23 +10,26 @@ robocopy ..\BBA\CC "BBA\BBA\CC" BlueChip-Sayc.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" GIB-21GF.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" GIB-BBO.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" Lia-21GF.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" Micro Bridge 13.4.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" Q-Plus 21GF.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" RoboSayc.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" Shark-Sayc.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" WBridge5-Sayc.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" WJ.bbsa
 
 robocopy ..\src\config "BBA\config" BBA-21GF.conf
 robocopy ..\src\config "BBA\config" BBA-SAYC.conf
 robocopy ..\src\config "BBA\config" BEN-21GF.conf
 robocopy ..\src\config "BBA\config" BEN-Sayc.conf
-robocopy ..\src\config "BBA\config" BlueChip-Sayc.conf
-robocopy ..\src\config "BBA\config" GIB-21GF.conf
 robocopy ..\src\config "BBA\config" GIB-BBO.conf
-robocopy ..\src\config "BBA\config" Lia-21GF.conf
-robocopy ..\src\config "BBA\config" Q-Plus 21GF.conf
-robocopy ..\src\config "BBA\config" RoboSayc.conf
-robocopy ..\src\config "BBA\config" Shark-Sayc.conf
-robocopy ..\src\config "BBA\config" WBridge5-Sayc.conf
+
+robocopy ..\src\config "BBA\config\Robots" BlueChip-Sayc.conf
+robocopy ..\src\config "BBA\config\Robots" GIB-21GF.conf
+robocopy ..\src\config "BBA\config\Robots" Lia-21GF.conf
+robocopy ..\src\config "BBA\config\Robots" Q-Plus 21GF.conf
+robocopy ..\src\config "BBA\config\Robots" RoboSayc.conf
+robocopy ..\src\config "BBA\config\Robots" Shark-Sayc.conf
+robocopy ..\src\config "BBA\config\Robots" WBridge5-Sayc.conf
 
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E righty*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E lefty*

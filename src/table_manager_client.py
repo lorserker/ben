@@ -208,21 +208,22 @@ class TMClient:
                 # now it's this player's turn to bid
                 bid_resp = bot.bid(auction)
                 if (self.verbose):
-                    pprint.pprint(bid_resp.samples, width=80)
+                    print(bid_resp)
                 auction.append(bid_resp.bid)
+                # We read the explanations from BBA
                 if self.models.consult_bba:
                     explanation, alert = bot.explain(auction)
                     bid_resp.explanation = explanation
                     bid_resp.alert = alert
                 self.bid_responses.append(bid_resp)
-                await self.send_own_bid(bid_resp.bid, bid_resp.alert)
+                await self.send_own_bid(bid_resp)
             else:
                 # just wait for the other player's bid
-                bid, alert = await self.receive_bid_for(player_i)
+                bid, alert, explanation = await self.receive_bid_for(player_i)
                 if (player_i + 2) % 4 == self.player_i:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.partner, quality=None, alert=alert, explanation=None)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.partner, quality=None, alert=alert, explanation=explanation)
                 else:
-                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None, alert=alert, explanation=None)
+                    bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None, alert=alert, explanation=explanation)
                 self.bid_responses.append(bid_resp)
                 auction.append(bid)
 
@@ -401,7 +402,8 @@ class TMClient:
 
                     # if card_resp is None, we have to rollout
                     if card_resp == None:
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        vuln = [self.vuln_ns, self.vuln_ew]
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, vuln, self.models, card_players[player_i].get_random_generator())
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
                         card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
                         card_resp.hcp = c_hcp
@@ -625,8 +627,8 @@ class TMClient:
         msg_card = f'{seat} plays {card_symbol[::-1]}'
         await self.send_message(msg_card)
 
-    async def send_own_bid(self, bid, alert):
-        bid = bid.replace('N', 'NT')
+    async def send_own_bid(self, bid_resp):
+        bid = bid_resp.bid.replace('N', 'NT')
         msg_bid = f'{SEATS[self.player_i]} bids {bid}'
         if bid == 'PASS':
             msg_bid = f'{SEATS[self.player_i]} passes'
@@ -634,8 +636,10 @@ class TMClient:
             msg_bid = f'{SEATS[self.player_i]} doubles'
         elif bid == 'XX':
             msg_bid = f'{SEATS[self.player_i]} redoubles'
-        if alert:
-            msg_bid += ' Alert.'
+        if bid_resp.alert:
+            msg_bid += ' Alert. *' + bid_resp.explanation
+        elif bid_resp.explanation:
+            msg_bid += ' Infos. ' + bid_resp.explanation
         await self.send_message(msg_bid)
 
     async def receive_card_play_for(self, player_i, trick_i):
@@ -692,13 +696,26 @@ class TMClient:
         else:
             bid = bid_resp_parts[1].upper()
 
-        alert = bid_resp_parts[-1] == "Alert."
+        explanation = None
+        alert = False
+        # Check for the presence of "Alert." or "Infos."
+        if "Alert." in bid_resp_parts:
+            # Find the index of "Alert."
+            index = bid_resp_parts.index("Alert.")
+            # Get all parts after "Alert."
+            explanation = ' '.join(bid_resp_parts[index + 1:])
+            alert = True
+        elif "Infos." in bid_resp_parts:
+            # Find the index of "Infos."
+            index = bid_resp_parts.index("Infos.")
+            # Get all parts after "Infos."
+            explanation = ' '.join(bid_resp_parts[index + 1:])
 
         return {
             'PASSES': 'PASS',
             'DOUBLES': 'X',
             'REDOUBLES': 'XX'
-        }.get(bid, bid), alert
+        }.get(bid, bid), alert, explanation
 
     async def receive_dummy(self):
         dummy_i = (self.decl_i + 2) % 4
@@ -930,7 +947,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.4.3")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.5")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -966,6 +983,7 @@ async def main():
         models.pimc_use_defending = False
         models.use_bba = False
         models.consult_bba = False
+        models.use_bba_rollout = False
         models.use_bba_to_count_aces = False
         models.use_suitc = False
         
@@ -978,7 +996,7 @@ async def main():
         print("Model:   ", models.bidder_model.model_path)
         print("Opponent:", models.opponent_model.model_path)
 
-    if models.use_bba or models.use_bba_to_count_aces:
+    if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or models.use_bba_rollout:
         print("BBA enabled")    
         from bba.BBA import BBABotBid
         bot = BBABotBid(None, None ,None, None, None, None, None, verbose)

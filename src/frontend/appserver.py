@@ -342,7 +342,7 @@ def index():
 
         deal = " ".join(deal)
         print(deal)
-        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
+        url = f"/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}" + (f"&play={play}" if play else "")
     
     dealpbn = request.forms.get('dealpbn')
     if dealpbn:
@@ -350,7 +350,7 @@ def index():
             dealpbn = request.forms.get('dealpbn')
             dealer, vulnerable, deal, board_no = parse_pbn(dealpbn.splitlines())
             print(deal)
-            url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
+            url = f"/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}" + (f"&play={play}" if play else "")
         except Exception as e:
             error_message = f'Error parsing PBN-input. {e}'
             print(error_message)
@@ -363,7 +363,7 @@ def index():
         dealbsol = request.forms.get('dealbsol')
         dealer, vulnerable, deal, board_no = parse_bsol(dealbsol)
         print(deal)
-        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
+        url = f"/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}" + (f"&play={play}" if play else "")
 
     deallin = request.forms.get('deallin')
     if deallin:
@@ -386,18 +386,18 @@ def index():
 
         deal = " ".join(deal)
         print(deal)
-        url = f'/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
+        url = f"/app/bridge.html?deal=(%27{deal}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}" + (f"&play={play}" if play else "")
 
     dealbba = request.forms.get('dealbba')
     if dealbba:
         hand, dealer, vulnerable, board_no = decode_board(dealbba)
         deal_as_str = hand_as_string(hand)
-        url = f'/app/bridge.html?deal=(%27{deal_as_str}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}&play={play}'
+        url = f"/app/bridge.html?deal=(%27{deal_as_str}%27, %27{dealer} {vulnerable}%27){player}&board_no={board_no}&server={server}" + (f"&play={play}" if play else "")
     if url:
         redirect(url)
     else:
         board_no = request.forms.get('board')
-        redirect(f"/app/bridge.html?board_no={board_no}{player}&server={server}&play={play}")
+        redirect(f"/app/bridge.html?board_no={board_no}{player}&server={server}" + (f"&play={play}" if play else ""))
 
 def read_deals():
     deals = []

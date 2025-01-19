@@ -249,7 +249,7 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
 
     return X_padded
 
-def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, models, n_cards):
+def  get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, models, n_cards):
     assert (len(hand.shape) == 2)
     assert (hand.shape[1] == n_cards)
 
@@ -288,25 +288,25 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
     while step_i < n_steps:
         #print(step_i, bid_i, n_steps)
         if bid_i - 4 >= 0:
-            my_bid = auction[:, bid_i - 4]
+            my_bid = auction[:, bid_i - 4][0]
             #print("Me", bidding.ID2BID[my_bid])
         else:
             my_bid = bidding.BID2ID['PAD_START']
             #print("Me", bidding.ID2BID[my_bid])
         if bid_i - 3 >= 0:
-            lho_bid = auction[:, bid_i - 3]
+            lho_bid = auction[:, bid_i - 3][0]
             #print("LHO", bidding.ID2BID[lho_bid])
         else:
             lho_bid = bidding.BID2ID['PAD_START']
             #print("LHO", bidding.ID2BID[lho_bid])
         if bid_i - 2 >= 0:
-            partner_bid = auction[:, bid_i - 2]
+            partner_bid = auction[:, bid_i - 2][0]
             #print("PAR", bidding.ID2BID[partner_bid])
         else:
             partner_bid = bidding.BID2ID['PAD_START']
             #print("PAR", bidding.ID2BID[partner_bid])
         if bid_i - 1 >= 0:
-            rho_bid = auction[:, bid_i - 1]
+            rho_bid = auction[:, bid_i - 1][0]
             #print("RHO", bidding.ID2BID[rho_bid])
         else:
             rho_bid = bidding.BID2ID['PAD_START']
@@ -337,7 +337,7 @@ def get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mod
     else:
         X_padded = np.pad(X, padding_width, mode='constant', constant_values=(models.ns))
         X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(models.ew))
-        
+    
     return X_padded
 
 def get_number_of_bids(auction):
