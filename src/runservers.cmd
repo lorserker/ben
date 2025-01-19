@@ -2,7 +2,7 @@ cd frontend
 start "App Server - Local" python appserver.py --host 0.0.0.0
 cd ..
 timeout /t 10 /nobreak >nul
-start "App Server - Local on port :8081" python appserver.py --port 8081
+start "App Server - Local on port :8081" python appserverold.py --port 8081
 timeout /t 10 /nobreak >nul
 rem Used from BBO 
 start "TF2 Api external :80 (BBO)" python gameapi.py --config config\GIB-BBO.conf --port 80 --host 0.0.0.0

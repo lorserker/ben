@@ -105,7 +105,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
     interesting_suit = candidate_cards[0].card.suit
     #print("interesting_suit", interesting_suit)
     if verbose:
-        print(f"Checking SuitC: {models.use_suitc} {contract}  {models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]}")
+        print(f'Checking SuitC: {models.use_suitc} {contract}  {models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]}')
 
     if player_i == 3 and not models.use_suitc:
         # For declarer pick a random card, when touching honors and NN is equal (Will not happen in practice)
