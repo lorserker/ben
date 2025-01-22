@@ -134,7 +134,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             if (player_i  == 1 or player_i == 3) and play_status == "Lead":
                 # We only use SuitC the first time the suit is played 
                 # but allow 3 discards / rufs in the suit
-                if current_count + 2 >= original_count and len(discards) < 3 and models.use_suitc:
+                suits_north = dummy_str.split('.')[interesting_suit]
+                if current_count + 2 >= original_count and len(discards) < 3 and models.use_suitc and len(suits_north) + original_count > 6:
                     if verbose:
                         print("SuitC activated")
                         print("discards", discards)
@@ -143,7 +144,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                         print("tricks52",tricks52)
                     # For dummy just take lowest card. Could be stressing opponents by taking highest of touching cards.
                     #print("First card for dummy", candidate_cards[0].card)
-                    suits_north = dummy_str.split('.')[interesting_suit]
+                    
                     suits_south = suits[interesting_suit]
                     #suits_west = ""
                     #suits_east = ""

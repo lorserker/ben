@@ -102,18 +102,17 @@ def hand32to52str(hand32):
     return card_string
 
 def handxxto52str(handxx, n_cards=32):
-    x = handxx.reshape((4, n_cards // 4))
     full_symbols = 'AKQJT98765432'
-    suits = []
-    for i in range(4):
-        s = ''
-        for j in range((n_cards // 4) - 1):
-            if x[i, j] > 0:
-                s += full_symbols[j]
-        s += 'x' * int(x[i, (n_cards // 4) - 1])
-        suits.append(s)
-    card_string = '.'.join(suits)
-    return card_string
+    x = handxx.reshape((4, n_cards // 4))
+    
+    suits = [
+        ''.join(
+            full_symbols[j] if x[i, j] > 0 else ''
+            for j in range(n_cards // 4 - 1)
+        ) + 'x' * int(x[i, n_cards // 4 - 1])
+        for i in range(4)
+    ]
+    return '.'.join(suits)
 
 def reorder_hand(hands_string):
     # Define the order of the cards

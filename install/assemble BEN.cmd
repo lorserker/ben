@@ -16,7 +16,7 @@ copy ..\src\config\BEN-Sayc.conf "BEN\config\default.conf" /Y
 if not exist "BEN\BBA" mkdir "BEN\BBA"
 if not exist "BEN\BBA\CC" mkdir "BEN\BBA\CC"
 copy ..\BBA\CC\BEN-SAYC.bbsa "BEN\BBA\CC\BEN-SAYC.bbsa" /Y
-copy ..\models\TF2models\BEN-Sayc-8712_2024-11-29-E49.keras "BEN\models\TF2Models" /Y 
+copy ..\models\TF2models\BEN-Sayc-8724_2025-01-20-E54.keras "BEN\models\TF2Models" /Y 
 copy ..\models\TF2models\BEN-SaycInfo-8712_2024-11-29-E71.keras "BEN\models\TF2Models" /Y
 copy ..\src\logo.png "BEN"
 copy ..\src\ben.ico "BEN"

@@ -190,10 +190,15 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                 # if play status = follow 
                 # and all out cards are equal value (like JT9)
                 # the play lowest if defending and highest if declaring
+                # and a possible trick
+                # Perhaps we should make it random
                 if play_status == "Follow":
-                    result = get_possible_cards(card_players[player_i].hand52,current_trick52)
-                    if result[0] != -1:
-                        card = result[0] if player_i == 3 else result[1]
+                    high, low = get_possible_cards(card_players[player_i].hand52,current_trick52)
+                    if high != -1:
+                        if player_i == 3: 
+                            card = high 
+                        else: 
+                            card = low
                         card_resp = CardResp(
                             card=Card.from_code(card),
                             candidates=[],

@@ -2090,7 +2090,10 @@ class CardPlayer:
             # If we can take rest we don't adjust, then NN will decide if equal
             # Another option could be to resample the hands without restrictions
             if e_tricks == 13 - trick_i:
-                suit_adjust[card32 // 8] = 0
+                # Calculate valid claim cards
+                if card32 // 8 != self.strain_i - 1:
+                    suit_adjust[card32 // 8] = 0
+            
             expected_score = round(e_score + suit_adjust[card32 // 8])
 
             candidate_cards.insert(0,CandidateCard(

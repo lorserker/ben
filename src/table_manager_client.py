@@ -174,21 +174,30 @@ class TMClient:
         await self.send_message(f'{self.seat} ready for teams')
 
 
-        opponents = await self.receive_line()
+        match_details = await self.receive_line()
         
         # Regular expression pattern to match text in quotes
-        pattern = r'"([^"]*?)"'
+        pattern = r'N/S : "([^"]+)" E/W : "([^"]+)"(?:.*?Playing (\w+))?'   
         # Find all matches in the string
-        matches = re.findall(pattern, opponents)
+        details = re.findall(pattern, match_details)
 
+        ns_name, ew_name, imp = details[0]  # Unpack the tuple
         # Extracted text from the second set of quotes
-        if len(matches) > 1:
+        if len(details) > 1:
             if self.seat == "North" or self.seat == "South":
-                self.partner = matches[0]
-                self.opponents = matches[1]
+                self.partner = ns_name
+                self.opponents = ew_name
             else:
-                self.partner = matches[1]
-                self.opponents = matches[0]
+                self.partner = ew_name
+                self.opponents = ns_name
+        
+        # Perhaps we should use the IMP/MP from table manager
+        print(f"IMP/MP: {imp}")
+        if self.models.matchpoint:
+            if imp == "IMP":
+                print("Using MP configuration")
+                sys.exit(1)
+                
 
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
