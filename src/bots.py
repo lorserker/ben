@@ -10,6 +10,7 @@ import deck52
 import calculate
 import scoring
 
+from claim import Claimer
 from objects import BidResp, CandidateBid, Card, CardResp, CandidateCard
 from bidding import bidding
 from collections import defaultdict
@@ -1609,6 +1610,8 @@ class CardPlayer:
         self.init_x_play(binary.parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
         self.dds = ddsolver
         self.sampler = sampler
+        self.claimer = Claimer(self.verbose, self.dds)
+
         # If we don't get a hand, the class is just used for recording
         if hand_str != "...":
             self.sample_hands_for_review = models.sample_hands_for_review
@@ -1754,7 +1757,6 @@ class CardPlayer:
     
     def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores):
         t_start = time.time()
-        current_trick = [deck52.card52to32(c) for c in current_trick52]
         samples = []
 
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
@@ -1779,12 +1781,12 @@ class CardPlayer:
             assert pimc_resp_cards is not None, "PIMC result is None"
             if self.models.pimc_ben_dd_declaring:
                 #print(pimc_resp_cards)
-                dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+                dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                 #print(dd_resp_cards)
                 merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", self.models.pimc_ben_dd_declaring_weight, quality)
             else:
                 merged_card_resp = pimc_resp_cards
-            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards)            
+            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)            
         else:
             if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
                 pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
@@ -1795,16 +1797,16 @@ class CardPlayer:
                 assert pimc_resp_cards is not None, "PIMCDef result is None"
                 if self.models.pimc_ben_dd_defending:
                     #print(pimc_resp_cards)
-                    dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+                    dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                     #print(dd_resp_cards)
                     merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef", self.models.pimc_ben_dd_defending_weight, quality)
                 else:
                     merged_card_resp = pimc_resp_cards
-                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards)            
+                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)            
                 
             else:
-                dd_resp_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
-                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards)
+                dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)
 
         if self.verbose:
             print(f'Play card response time: {time.time() - t_start:0.4f}')
@@ -1933,15 +1935,18 @@ class CardPlayer:
                     card_ev = calculate.get_card_ev(dd_solved, self.n_tricks_taken, self.player_i, self.score_by_tricks_taken)
 
         card_result = {}
+        claim_cards = []
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key], making[key])
+            if card_tricks[key] == 13 - trick_i:
+                claim_cards.append(key)
             if self.verbose:
                 print(f'{deck52.decode_card(key)} {card_tricks[key]:0.3f} {card_ev[key]:5.2f} {making[key]:0.2f}')
 
         if self.verbose:
             print(f'dds took: {(time.time() - t_start):0.4f}')
 
-        return card_result
+        return card_result, claim_cards
     
     
     def next_card_softmax(self, trick_i):
@@ -2067,8 +2072,24 @@ class CardPlayer:
                         trump_adjust = trump_adjust / 2
         return trump_adjust
 
-    def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards):
+    def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits):
         t_start = time.time()
+        if claim_cards is not None and len(claim_cards):
+            # DD we could claim, so let us check if one card is better
+            bad_play = self.claimer.claimcheck(
+                strain_i=self.strain_i,
+                player_i=self.player_i,
+                hands52=[self.hand52, self.public52],
+                tricks52=tricks52,
+                claim_cards=claim_cards,
+                shown_out_suits=shown_out_suits,
+                missing_cards=missing_cards,
+                current_trick=current_trick,
+                n_samples=50
+            )
+        else:
+            bad_play = []
+
         card_scores = self.next_card_softmax(trick_i)
         if self.verbose:
             print(f'Next card response time: {time.time() - t_start:0.4f}')
@@ -2093,7 +2114,8 @@ class CardPlayer:
                 # Calculate valid claim cards
                 if card32 // 8 != self.strain_i - 1:
                     suit_adjust[card32 // 8] = 0
-            
+            if card52 in bad_play:
+                suit_adjust[card32 // 8] = -1            
             expected_score = round(e_score + suit_adjust[card32 // 8])
 
             candidate_cards.insert(0,CandidateCard(
