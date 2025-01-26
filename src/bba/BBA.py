@@ -276,7 +276,7 @@ class BBABotBid:
         # We are to make a bid, so we can use the position
         if self.verbose:
             print(auction)
-            print("new_hand", self.position, self.hand_str, self.dealer, self.vuln_nsew)
+            print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
         self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
         position = self.dealer
@@ -325,7 +325,6 @@ class BBABotBid:
         return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA", quality=None, alert = bba_alert, explanation=meaning)
 
     def bid_hand(self, auction, deal):
-        #print(auction, deal)
         # To get deterministic result the hand is always North
         position = 0
         dealer = ((self.dealer - self.position) + 4) % 4 
@@ -375,5 +374,7 @@ class BBABotBid:
 
             position = (position + 1) % 4
         
+        if self.verbose: 
+            print(deal,bba_auction)
         return bba_auction
 

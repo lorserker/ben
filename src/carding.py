@@ -38,18 +38,25 @@ def find_last_occurrence(arr, target):
 
     raise ValueError(f"Could not find the last occurrence of '{target}' within the array.")
 
-def count_entries(hand_str, interesting_suit, played_cards):
+def count_entries(hand_str, interesting_suit, played_cards, trump):
     #print("Played cards", played_cards)
     suits = hand_str.split(".")
     entry_values = {'A': 1, 'K': 1, 'Q': 0.5}
 
     total_entries = 0
     for i, suit in enumerate(suits):
-        if i != interesting_suit:
+        # Any trump can be an entry
+        if i == "SHDCN".index(trump):
             for card in suit:
                 if card in played_cards[i]:
                     continue
-                total_entries += entry_values.get(card, 0)
+                total_entries += 1
+        else:
+            if i != interesting_suit:
+                for card in suit:
+                    if card in played_cards[i]:
+                        continue
+                    total_entries += entry_values.get(card, 0)
 
     #print("Total entries", total_entries, hand_str, interesting_suit)
     return round(total_entries)    
@@ -120,16 +127,19 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
     current_count  = original_count
     #print("original_count", original_count, suits[interesting_suit])
     discards = ""
+    suit_played = False
     for trick in tricks52:
-        for card in trick:
+        for card_index, card in enumerate(trick):
             if card // 13 == interesting_suit:
+                if card_index == 0:
+                    suit_played = True
                 c = RANKS[card % 13]
                 if c in suits[interesting_suit]:
                     current_count -= 1
                 else:
                     discards += c
 
-    if models.use_suitc:
+    if models.use_suitc and not suit_played:
         if contract[1] == "N" or models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]:
             if (player_i  == 1 or player_i == 3) and play_status == "Lead":
                 # We only use SuitC the first time the suit is played 
@@ -178,7 +188,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                         for card in trick:
                             played_cards[card // 13].append(RANKS[card % 13])   
 
-                    entries = count_entries(hand_str, interesting_suit, played_cards)
+                    entries = count_entries(hand_str, interesting_suit, played_cards, contract[1])
 
                     card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}", trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
                     suitc_card = None

@@ -646,7 +646,7 @@ class TMClient:
         elif bid == 'XX':
             msg_bid = f'{SEATS[self.player_i]} redoubles'
         if bid_resp.alert:
-            msg_bid += ' Alert. *' + bid_resp.explanation
+            msg_bid += ' Alert. ' + bid_resp.explanation
         elif bid_resp.explanation:
             msg_bid += ' Infos. ' + bid_resp.explanation
         await self.send_message(msg_bid)
