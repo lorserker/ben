@@ -989,7 +989,7 @@
                     }
                 }
                 if (action == 'explain') {
-                    document.getElementById('result').innerText = `Mening: ${data.explanation}`;
+                    document.getElementById('result').innerText = `Meaning: ${data.explanation}`;
                 }
                 if ((action == 'play') || (action == 'lead')) {
                     const declarer = findDeclarer(bidding)

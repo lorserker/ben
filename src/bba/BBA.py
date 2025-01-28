@@ -229,34 +229,36 @@ class BBABotBid:
         return None
         
     def explain(self, auction):
-        our_seat = (len(auction) - 1) % 4
-        self.players[0].new_hand(our_seat, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+        if self.verbose:
+            print(auction)
+            print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+
+#        for player in range(4):
+        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
         # We bid up to the bid we want explained
         position = self.dealer
-        for k in range(len(auction)-1):
+        for k in range(len(auction)):
             bidid = bidding.BID2ID[auction[k]]
             if bidid < 2:
                 continue
             if bidid < 5:
                 bidid = bidid - 2
-            self.players[0].set_bid((position) % 4, bidid)
-            position += 1
+            for player in range(4):
+                self.players[player].set_bid(position, bidid)
+            #meaning = self.players[self.position].get_info_meaning(position)
+            position = (position + 1) % 4 
 
-        lastbid = bidding.BID2ID[auction[-1]]
-        if lastbid < 5:
-            lastbid = lastbid - 2
 
         # Now ask for the bid we want explained
-        self.players[0].interpret_bid(lastbid)
+        position = (position  + 3) % 4
         # Get information from Player(position) about the interpreted bid
-        meaning = self.players[0].get_info_meaning(self.C_INTERPRETED)
+        meaning = self.players[self.position].get_info_meaning(position)
         if meaning is None: meaning = ""
-        if meaning.strip() == "calculated bid": meaning = ""
-        if meaning.strip() == "bidable suit": meaning = ""
-        bba_alert = self.players[0].get_info_alerting(self.C_INTERPRETED)
-
-        info = self.players[0].get_info_feature(self.C_INTERPRETED)
+        #if meaning.strip() == "calculated bid": meaning = ""
+        #if meaning.strip() == "bidable suit": meaning = ""
+        bba_alert = self.players[self.position].get_info_alerting(position)
+        info = self.players[self.position].get_info_feature(position)
         if not bba_alert and meaning != "":   
             minhcp = info[402]
             maxhcp = info[403]

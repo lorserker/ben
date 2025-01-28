@@ -2192,8 +2192,24 @@ class CardPlayer:
 
         return card_nn.get(card32, 0)
 
-    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards):
+    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits):
         t_start = time.time()
+        if claim_cards is not None and len(claim_cards):
+            # DD we could claim, so let us check if one card is better
+            bad_play = self.claimer.claimcheck(
+                strain_i=self.strain_i,
+                player_i=self.player_i,
+                hands52=[self.hand52, self.public52],
+                tricks52=tricks52,
+                claim_cards=claim_cards,
+                shown_out_suits=shown_out_suits,
+                missing_cards=missing_cards,
+                current_trick=current_trick,
+                n_samples=50
+            )
+        else:
+            bad_play = []
+
         card_scores = self.next_card_softmax(trick_i)
         if self.verbose:
             print(f'Next card response time: {time.time() - t_start:0.4f}')
@@ -2217,6 +2233,14 @@ class CardPlayer:
             # Ignore cards bot suggested by the NN
             if insta_score < self.models.trust_NN:
                 continue
+            # If we can take rest we don't adjust, then NN will decide if equal
+            # Another option could be to resample the hands without restrictions
+            if e_tricks == 13 - trick_i:
+                # Calculate valid claim cards
+                if card32 // 8 != self.strain_i - 1:
+                    suit_adjust[card32 // 8] = 0
+            if card52 in bad_play:
+                suit_adjust[card32 // 8] = -1            
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
             expected_score = round(e_score + 20 * suit_adjust[card32 // 8],0)
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):

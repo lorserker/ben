@@ -636,17 +636,6 @@ def bid():
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
         with model_lock_bid:
             bid = hint_bot.bid(auction)
-        if explain:
-            from bba.BBA import BBABotBid
-            if verbose:
-                print("models.bba_our_cc", models.bba_our_cc, "models.bba_their_cc", models.bba_their_cc)
-            bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand, vuln, dealer_i, mp, verbose)
-            auction.append(bid.bid)
-            explanation, alert = bot.explain(auction)
-            bid.explanation = explanation
-            bid.alert = alert
-            if verbose:
-                print("explanation: ",explanation, "alert: ",alert)
 
         print("Bidding: ",bid.bid, "Alert" if bid.alert else "", bid.explanation if bid.explanation else "")
         result = bid.to_dict()
