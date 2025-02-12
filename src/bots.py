@@ -2095,7 +2095,11 @@ class CardPlayer:
                 current_trick=current_trick,
                 n_samples=50
             )
+            if self.verbose:
+                print(f"Claim cards: {claim_cards}, Bad claim cards {bad_play}")
         else:
+            if self.verbose:
+                print("No claim cards")
             bad_play = []
 
         card_scores = self.next_card_softmax(trick_i)
@@ -2171,7 +2175,7 @@ class CardPlayer:
             else:
                 who = "BEN-IMP" 
             
-        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, missing_cards, play_status, who, self.verbose)
+        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, missing_cards, play_status, who, claim_cards,self.verbose)
         best_card_resp = CardResp(
             card=right_card,
             candidates=candidate_cards,

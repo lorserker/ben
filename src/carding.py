@@ -61,7 +61,7 @@ def count_entries(hand_str, interesting_suit, played_cards, trump):
     #print("Total entries", total_entries, hand_str, interesting_suit)
     return round(total_entries)    
 
-def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, missing_cards, play_status, who, verbose):
+def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str, dummy_str, player_i, tricks52, current_trick, missing_cards, play_status, who, claim_cards, verbose):
     if verbose:
         print(f"select_right_card_for_play for player {player_i} {hand_str} Play status: {play_status}")
     if len(candidate_cards) == 1:
@@ -229,6 +229,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                         print(f"SuitC found: {suit_str}{suitc_card}")
                     # Only play the card from SuitC if it was a candidate
                     for candidate_card in candidate_cards:
+                        if claim_cards is not None and candidate_card.card.code() not in claim_cards:
+                            continue
                         if candidate_card.card.symbol() == f"{suit_str}{suitc_card}":
                             # Only play SuitC if not losing to much DD
                             if models.use_real_imp_or_mp:
