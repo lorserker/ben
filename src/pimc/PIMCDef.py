@@ -221,7 +221,6 @@ class BGADefDLL:
             return
         #  Constraints are for the remaining tricks and input if for full samples, so we subtract previous played card
         if self.verbose:
-            print(min_partner, max_partner, min_declarer, max_declarer, quality)
             print("already_shown_declarer",self.already_shown_hcp_declarer)
             print("already_shown_partner",self.already_shown_hcp_partner)
         if quality:

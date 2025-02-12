@@ -380,7 +380,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.5")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.5.1")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -511,12 +511,18 @@ def get_random_generator(hand):
     hash_integer  = calculate_seed(hand)         
     return np.random.default_rng(hash_integer)
 
-def replace_x(input_str, rng, n_cards):
+def replace_x(input_str, rng, dummy, cards, n_cards):
     # Function to replace 'x' in a section with unique digits
-    def replace_in_section(section):
+    def replace_in_section(suit, section, dummy, cards):
         digits_used = set()  # To keep track of used digits in this section
+        for cards in cards:
+            if cards[0] == "SHDC"[suit]:
+                if cards[1].isdigit():
+                    digits_used.add(str(cards[1]))
+        for char in dummy:  
+            if char.isdigit():
+                digits_used.add(char)
         result = []
-        
         for char in section:
             if char == 'X':
                 # Generate a unique digit not already used in this section
@@ -532,10 +538,12 @@ def replace_x(input_str, rng, n_cards):
 
     # Split the input into sections by '.'
     sections = input_str.split('.')
-
-    # Replace 'x' in each section with unique digits
-    replaced_sections = [replace_in_section(section) for section in sections]
-
+    dummy_sections = dummy.split('.')
+    # Replace 'x' in each section using the corresponding dummy section and pass the index
+    replaced_sections = [
+        replace_in_section(index, section, dummy_section, cards) 
+        for index, (section, dummy_section) in enumerate(zip(sections, dummy_sections))
+    ]    
     # Join the sections back with '.'
     return '.'.join(replaced_sections)
 
@@ -601,9 +609,9 @@ def bid():
         hand = request.args.get("hand").replace('_','.').upper()
         if 'X' in hand:
             if '8' in hand or '9' in hand:
-                hand = replace_x(hand,get_random_generator(hand), models.n_cards_play)
+                hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_play)
             else:
-                hand = replace_x(hand,get_random_generator(hand), models.n_cards_bidding)
+                hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_bidding)
         seat = request.args.get("seat")
         # Then vulnerability
         v = request.args.get("vul")
@@ -666,9 +674,9 @@ def lead():
         hand = request.args.get("hand").replace('_','.').upper()
         if 'X' in hand:
             if '8' in hand or '9' in hand:
-                hand = replace_x(hand,get_random_generator(hand), models.n_cards_play)
+                hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_play)
             else:
-                hand = replace_x(hand,get_random_generator(hand), models.n_cards_bidding)
+                hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_bidding)
             print(hand)
         seat = request.args.get("seat")
         # Then vulnerability
@@ -691,9 +699,11 @@ def lead():
             print(result)
             return json.dumps(result)
 
+        # Find ace and kings
+        aceking = {}
         hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, dds, verbose)
         with model_lock_play:
-            card_resp = hint_bot.find_opening_lead(auction)
+            card_resp = hint_bot.find_opening_lead(auction, aceking)
         user = request.args.get("user")
         #card_resp.who = user
         print("Leading:", card_resp.card.symbol())
@@ -725,6 +735,20 @@ def play():
         # First we extract the hands and seat
         hand_str = request.args.get("hand").replace('_','.')
         dummy_str = request.args.get("dummy").replace('_','.')
+        played = request.args.get("played")
+        cards = [played[i:i+2] for i in range(0, len(played), 2)]
+        #print(played)
+        #print(cards, len(cards))
+        if len(cards) > 51:
+            result = {"message": "Game is over, no cards to play"}
+            print(result)
+            return json.dumps(result)
+        if 'X' in hand_str:
+            if '8' in hand_str or '9' in hand_str:
+                hand_str = replace_x(hand_str,get_random_generator(hand_str), dummy_str, cards, models.n_cards_play)
+            else:
+                hand_str = replace_x(hand_str,get_random_generator(hand_str), dummy_str, cards, models.n_cards_bidding)
+            print(hand_str)
         if hand_str == dummy_str:
             result = {"message":"Hand and dummy are identical"}
             print(result)
@@ -735,7 +759,6 @@ def play():
             print(result)
             return json.dumps(result)
         
-        played = request.args.get("played")
         seat = request.args.get("seat")
         # Then vulnerability
         v = request.args.get("vul")
@@ -749,13 +772,6 @@ def play():
         ctx = request.args.get("ctx")
         # Split the string into chunks of every second character
         bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
-        cards = [played[i:i+2] for i in range(0, len(played), 2)]
-        #print(played)
-        #print(cards, len(cards))
-        if len(cards) > 51:
-            result = {"message": "Game is over, no cards to play"}
-            print(result)
-            return json.dumps(result)
         # Validate number of cards played according to position
         auction = create_auction(bids, dealer_i)
         contract = bidding.get_contract(auction)
@@ -989,11 +1005,11 @@ def contract():
         t_start = time.time()
         # First we extract the hands and seat
         hand_str = request.args.get("hand").replace('_','.')
-        if 'X' in hand_str:
-            hand_str = replace_x(hand_str,get_random_generator(hand_str), models.n_cards_bidding)
         dummy_str = request.args.get("dummy").replace('_','.')
+        if 'X' in hand_str:
+            hand_str = replace_x(hand_str,get_random_generator(hand_str), dummy_str, [], models.n_cards_bidding)
         if 'X' in dummy_str:
-            dummy_str = replace_x(dummy_str,get_random_generator(dummy_str), models.n_cards_bidding)
+            dummy_str = replace_x(dummy_str,get_random_generator(dummy_str), hand_str, [], models.n_cards_bidding)
         seat = request.args.get("seat")
         # Then vulnerability
         v = request.args.get("vul")

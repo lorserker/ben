@@ -51,6 +51,8 @@ class BBABotBid:
         if cls._dll_loaded is None:
             with cls._lock:  # Ensure only one thread can enter this block at a time
                 if cls._dll_loaded is None:  # Double-checked locking
+                    if EPBot_LIB == 'N/A':
+                        raise RuntimeError("EPBot86.dll is not available on this platform.")
                     try:
                         load_dotnet_framework_assembly(EPBot_PATH, verbose)
                         from EPBot86 import EPBot
@@ -228,6 +230,54 @@ class BBABotBid:
                     return self.bid(auction)
         return None
         
+    def find_aces(self, auction):
+        if self.verbose:
+            print(auction)
+            print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+
+#        for player in range(4):
+        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+
+        result = {}
+        # We bid up to the bid we want explained
+        position = self.dealer
+        for k in range(len(auction)):
+            bidid = bidding.BID2ID[auction[k]]
+            if bidid < 2:
+                continue
+            if bidid < 5:
+                bidid = bidid - 2
+            self.players[self.position].set_bid(position, bidid)
+            position = (position + 1) % 4 
+
+        #meaning = self.players[self.position].get_info_meaning(position)
+        queen = None
+
+        info = self.players[self.position].get_info_feature(self.position)
+        trump = info[424]
+        #print("position",self.position,"trump",trump)
+        info_lho = self.players[self.position].get_info_feature((self.position + 1) % 4 )
+        honors_lho = self.players[self.position].get_info_honors((self.position + 1) % 4 )
+        info_pard = self.players[self.position].get_info_feature((self.position + 2) % 4 )
+        honors_pard = self.players[self.position].get_info_honors((self.position + 2) % 4 )
+        info_rho = self.players[self.position].get_info_feature((self.position + 3) % 4 )
+        honors_rho = self.players[self.position].get_info_honors((self.position + 3) % 4 )
+
+        aces = info_pard[406]
+        kings = info_pard[407]
+        # C=0, D=1, H=2, S=3, N=4
+        #if trump < 4:    
+        # print(trump)
+        if trump < 4:
+            queen = honors_pard[trump] == 4
+            # Order is not S, H, D, C, NT
+            trump = 3 - trump
+        #print("trump, aces, kings, queen", trump, aces,kings, queen)
+        if (aces > -1 or kings > -1 or queen):
+            result[1] = (trump, aces, kings, queen)
+
+        return result
+
     def explain(self, auction):
         if self.verbose:
             print(auction)

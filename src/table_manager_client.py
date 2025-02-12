@@ -134,7 +134,11 @@ class TMClient:
             print(f'{datetime.datetime.now().strftime("%H:%M:%S")} Ready to start new board')
             return
 
-        opening_lead_card = await self.opening_lead(auction)
+        aceking = {}
+        if self.bot.bbabot is not None:
+            aceking = self.bot.bbabot.find_aces(auction)
+
+        opening_lead_card = await self.opening_lead(auction, aceking)
         opening_lead52 = Card.from_symbol(opening_lead_card).code()
 
         if self.player_i != (self.decl_i + 2) % 4:
@@ -192,7 +196,7 @@ class TMClient:
                 self.opponents = ns_name
         
         # Perhaps we should use the IMP/MP from table manager
-        print(f"IMP/MP: {imp}")
+        # print(f"IMP/MP: {imp}")
         if self.models.matchpoint:
             if imp == "IMP":
                 print("Using MP configuration")
@@ -202,11 +206,7 @@ class TMClient:
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
 
-        if self.models.use_bba:
-            from bba.BBA import BBABotBid            
-            bot = BBABotBid(self.models.bba_our_cc, self.models.bba_their_cc ,self.player_i,self.hand_str,vuln, self.dealer_i, self.models.matchpoint, self.verbose)
-        else:
-            bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.dds, self.verbose)
+        self.bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.dds, self.verbose)
 
         auction = ['PAD_START'] * self.dealer_i
 
@@ -215,13 +215,13 @@ class TMClient:
         while not bidding.auction_over(auction):
             if player_i == self.player_i:
                 # now it's this player's turn to bid
-                bid_resp = bot.bid(auction)
+                bid_resp = self.bot.bid(auction)
                 if (self.verbose):
                     print(bid_resp)
                 auction.append(bid_resp.bid)
                 # We read the explanations from BBA
                 if self.models.consult_bba:
-                    explanation, alert = bot.explain(auction)
+                    explanation, alert = self.bot.explain(auction)
                     bid_resp.explanation = explanation
                     bid_resp.alert = alert
                 self.bid_responses.append(bid_resp)
@@ -240,7 +240,7 @@ class TMClient:
 
         return auction
 
-    async def opening_lead(self, auction):
+    async def opening_lead(self, auction, aceking):
 
         contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)
@@ -260,7 +260,7 @@ class TMClient:
                 self.dds,
                 self.verbose
             )
-            card_resp = bot_lead.find_opening_lead(auction)
+            card_resp = bot_lead.find_opening_lead(auction, aceking)
             self.card_responses.append(card_resp)
             card_symbol = card_resp.card.symbol()
 
@@ -956,7 +956,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.5")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.5.1")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

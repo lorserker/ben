@@ -214,7 +214,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                     print("SuitC found no gametree")
                                     return candidate_cards[0].card, who
                                 #print("card", card)
-                    except:
+                    except Exception as ex:
+                        sys.stderr.write(f"{Fore.RED}{ex}{Fore.RESET}\n")
                         sys.stderr.write(f"{Fore.RED}SuitC failed: {card} Input:{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}{Fore.RESET}\n")
                         return candidate_cards[0].card, who
                     if suitc_card is None:

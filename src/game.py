@@ -89,8 +89,8 @@ class AsyncBotBid(bots.BotBid):
         return self.bid(auction)
 
 class AsyncBotLead(bots.BotLead):
-    async def async_opening_lead(self, auction):
-        return self.find_opening_lead(auction)
+    async def async_opening_lead(self, auction, aceking):
+        return self.find_opening_lead(auction, aceking)
 
 class AsyncCardPlayer(bots.CardPlayer):
     async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores):
@@ -231,9 +231,14 @@ class Driver:
 
         print('{1} Bidding took {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         
+        aceking = {}
+        if self.models.use_bba_to_count_aces:
+            if self.bot.bbabot is not None:
+                aceking = self.bot.bbabot.find_aces(self.auction)
+
         print("trick 1")
 
-        opening_lead52 = (await self.opening_lead(self.auction))
+        opening_lead52 = (await self.opening_lead(self.auction, aceking))
 
         if str(opening_lead52.card).startswith("Conceed"):
 
@@ -876,7 +881,7 @@ class Driver:
         return card_play
 
     
-    async def opening_lead(self, auction):
+    async def opening_lead(self, auction, aceking):
 
         contract = bidding.get_contract(auction)
         decl_i = bidding.get_decl_i(contract)
@@ -900,7 +905,7 @@ class Driver:
                 self.dds,
                 self.verbose
             )
-            card_resp = await bot_lead.async_opening_lead(auction)
+            card_resp = await bot_lead.async_opening_lead(auction, aceking)
 
         await asyncio.sleep(0.01)
 
@@ -915,25 +920,20 @@ class Driver:
         hint_bots = [None, None, None, None]
 
         for i, level in enumerate(self.human):
-            if self.models.use_bba:
-                from bba.BBA import BBABotBid
-                players.append(BBABotBid(self.models.bba_our_cc, self.models.bba_their_cc, i, hands_str[i], vuln, self.dealer_i, self.models.matchpoint, self.verbose))
-            elif level == 1:
+            if level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
             else:
-                bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
-                players.append(bot)
+                self.bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
+                players.append(self.bot)
 
         if self.models.use_bba or self.models.use_bba_to_count_aces or self.models.consult_bba or self.models.use_bba_rollout:
-            print("Using BBA CC's")
-            print(self.models.bba_our_cc)
-            print(self.models.bba_their_cc)
+            print(f"Using BBA CC's {self.models.bba_our_cc} and {self.models.bba_their_cc}")
             if self.verbose:
                 print("Our conventions")
-                print("\n".join([convention for convention, selected in players[0].our_conventions.items() if selected]))
+                print("\n".join([convention for convention, selected in players[0].bbabot.our_conventions.items() if selected]))
                 print("Their conventions")
-                print("\n".join([convention for convention, selected in players[0].their_conventions.items() if selected]))
+                print("\n".join([convention for convention, selected in players[0].bbabot.their_conventions.items() if selected]))
         auction = ['PAD_START'] * self.dealer_i
 
         player_i = self.dealer_i
@@ -1043,7 +1043,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.5")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.5.1")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

@@ -224,7 +224,6 @@ class BGADLL:
             return
         #  Constraints are for the remaining tricks and input if for full samples, so we subtract previous played card
         if self.verbose:
-            print(min_lho, max_lho, min_rho, max_rho, quality)
             print("already_shown_lho",self.already_shown_hcp_lho)
             print("already_shown_rho",self.already_shown_hcp_rho)
         

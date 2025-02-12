@@ -29,6 +29,8 @@ from ctypes import c_wchar_p, c_int, POINTER, create_unicode_buffer, byref, cast
 
 class SuitCLib:
     def __init__(self, verbose):
+        if SuitCLib == 'N/A':
+            raise RuntimeError("SuitCLib.dll is not available on this platform.")
         try:
             if verbose:
                 print(f"loading {SuitCLib_PATH}")
@@ -54,12 +56,13 @@ class SuitCLib:
         # -F5 is combines the effect of -F1 and -F4, -F7 combines all 3 options.
         # -ls2 limits the entries to 2 should be calculated
         # -ls is most important when the hand to lead has length
-        input_str = "-Ls -c100 "
+        input_str = " -Ls -u -c100 "
         if not trump:
             input_str += f"-ls{entries} "
         if east_vacant:
             input_str +=f'-wv{west_vacant} '
             input_str +=f'-ev{east_vacant} '
+        #input_str = ""
         input_str += input
         input_length = len(input_str)
         if self.verbose:

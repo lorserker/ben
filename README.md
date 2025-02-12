@@ -32,6 +32,7 @@ For __Mac M1/M2__ users: you need to install [Homebrew](https://brew.sh/) if you
 On __Amazon__, there is an image Public_Ben_Bot_V1.2 for starting an instance of BEN. After starting the instance just log in and execute [start_ben_bot_screens.sh].
 
 For __Ubuntu__ users: You might have to compile libdds.so and might have to install libboost using `sudo apt install libboost-thread-dev` 
+another option could be to try this first: `sudo apt-get install libdds-dev` as it should install all you need.
 
 ### Running the Web App
 

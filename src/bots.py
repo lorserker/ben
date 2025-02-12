@@ -201,6 +201,8 @@ class BotBid:
             error_message = f"Dealer {self.dealer}, auction {auction}, and seat {self.seat} do not match!"
             raise ValueError(error_message)
 
+        if self.models.use_bba:
+            return self.bbabot.bid(auction)
         # Reseed the rng, so that we get the same result each time in this situation
         # We should perhaps add current auction to the seed
         self.rng = self.get_random_generator()
@@ -292,7 +294,7 @@ class BotBid:
                 # Calculate the mean of the expected score
                 expected_score = np.mean(ev)
                 if self.verbose:
-                    print(ev)
+                    print("ev",ev)
 
                 adjust = 0
 
@@ -449,7 +451,6 @@ class BotBid:
             if self.verbose:
                 for idx, candidate in enumerate(ev_candidates):
                     print(f"{idx}: {candidate}")
-            if self.verbose:
                 print(f"Estimating took {(time.time() - t_start):0.4f} seconds")
         else:
             n_steps = binary.calculate_step_bidding_info(auction)
@@ -892,7 +893,13 @@ class BotBid:
         # Reset randomizer
         self.rng = self.get_random_generator()
 
-        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction_so_far, turn_to_bid, self.sampler.sample_boards_for_auction, self.sampler.sample_hands_auction, self.rng, self.hand_str, self.vuln, self.models, [])
+        aceking = {}
+        if self.models.use_bba_to_count_aces:
+            if self.bbabot is not None:
+                aceking = self.bbabot.find_aces(auction_so_far)
+
+
+        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction_so_far, turn_to_bid, self.sampler.sample_boards_for_auction, self.sampler.sample_hands_auction, self.rng, self.hand_str, self.vuln, self.models, [], aceking)
 
         # We have more samples, than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick random
@@ -1180,14 +1187,14 @@ class BotBid:
                     scores_by_trick[i] = -scoring.contract_scores_by_trick(contract, tuple(self.vuln))
                     # If going more than 3 down, we just score for three down
                     # This is just used when simulating their bidding
-                    if 'X' not in contract:
-                        for j in range(0, tricks_needed - 2):
-                            scores_by_trick[i,j] = scores_by_trick[i, tricks_needed - 2]
+                    #if 'X' not in contract:
+                    #    for j in range(0, tricks_needed - 2):
+                    #        scores_by_trick[i,j] = scores_by_trick[i, tricks_needed - 2]
                 else:
                     scores_by_trick[i] = scoring.contract_scores_by_trick(contract, tuple(self.vuln))
-                    if level >= 6:
-                        for j in range(0, 2):
-                            scores_by_trick[i,j+12] -= 200
+                    #if level >= 6:
+                    #    for j in range(0, 2):  
+                    #        scores_by_trick[i,j+12] -= 200
             else:
                 scores_by_trick[i] = 0
         return np.sum(decl_tricks_softmax * scores_by_trick, axis=1)
@@ -1229,12 +1236,12 @@ class BotLead:
         #print(f"{Fore.BLUE}Fetching random generator for lead {self.hash_integer}{Style.RESET_ALL}")
         return np.random.default_rng(self.hash_integer)
 
-    def find_opening_lead(self, auction):
+    def find_opening_lead(self, auction, aceking):
         # Validate input
         # We should check that auction match, that we are on lead
         t_start = time.time()
         lead_card_indexes, lead_softmax = self.get_opening_lead_candidates(auction)
-        accepted_samples, sorted_bidding_score, tricks, p_hcp, p_shp, quality = self.simulate_outcomes_opening_lead(auction, lead_card_indexes)
+        accepted_samples, sorted_bidding_score, tricks, p_hcp, p_shp, quality = self.simulate_outcomes_opening_lead(auction, lead_card_indexes, aceking)
         contract = bidding.get_contract(auction)
         scores_by_trick = scoring.contract_scores_by_trick(contract, tuple(self.vuln))
 
@@ -1439,7 +1446,7 @@ class BotLead:
 
         return candidates, lead_softmax
 
-    def simulate_outcomes_opening_lead(self, auction, lead_card_indexes):
+    def simulate_outcomes_opening_lead(self, auction, lead_card_indexes, aceking):
         t_start = time.time()
         contract = bidding.get_contract(auction)
 
@@ -1449,7 +1456,7 @@ class BotLead:
         # Reset randomizer
         self.rng = self.get_random_generator()
 
-        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction, lead_index, self.sampler.sample_boards_for_auction_opening_lead, self.sampler.sample_hands_opening_lead, self.rng, self.hand_str, self.vuln, self.models, [])
+        accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings = self.sampler.generate_samples_iterative(auction, lead_index, self.sampler.sample_boards_for_auction_opening_lead, self.sampler.sample_hands_opening_lead, self.rng, self.hand_str, self.vuln, self.models, [], aceking)
 
         if self.verbose:
             print(f"Generated samples: {accepted_samples.shape[0]} in {samplings} samples. Quality {quality:.2f}")
@@ -1770,6 +1777,7 @@ class CardPlayer:
                 lead_scores[i],
                 play_scores[i]
             ))
+        
         if quality < 0.1 and self.verbose:
             print("Bad Samples:")
             print(samples)
@@ -2318,7 +2326,6 @@ class CardPlayer:
                     if candidate_cards[0].expected_score_dd < 0 and candidate_cards2[0].expected_score_dd:
                         candidate_cards = candidate_cards2
                     who = "DD"
-                    print("Who", who)
                 else:
                     if self.models.matchpoint:
                         candidate_cards = sorted(enumerate(candidate_cards), key=lambda x: (round(x[1].expected_score_dd, 0), round(5*x[1].p_make_contract, 1), round(x[1].insta_score, 3), -x[0]), reverse=True)
