@@ -978,7 +978,6 @@ class Sample:
         if tf.is_tensor(sample_bids):
             sample_bids = sample_bids.numpy()
         sample_bids = sample_bids.reshape((sample_hands.shape[0], n_steps, -1))
-
         min_scores = np.ones(sample_hands.shape[0])
 
         # We check the bid for each bidding round
@@ -1155,12 +1154,12 @@ class Sample:
         sorted_indices = np.argsort(rounded_scores)[::-1]
 
         sorted_min_bid_scores = min_bid_scores[sorted_indices]
-        # print("sorted_min_bid_scores",sorted_min_bid_scores)
         # Sort second dimension within each array in states based on min_bid_scores
         bidding_states = [state[sorted_indices] for state in states]
         #print(bidding_states[0].shape[0])
+        valid_bidding_samples_good = np.sum(sorted_min_bid_scores > self.bidding_threshold_sampling)
         valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold)
-        #print(valid_bidding_samples, sample_boards_for_play)
+        print(valid_bidding_samples_good, valid_bidding_samples, sample_boards_for_play)
         if bidding_states[0].shape[0] > 200 and valid_bidding_samples > 10:
             # We drop the samples we are not going to use
             bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold/10] for state in bidding_states]
@@ -1175,9 +1174,9 @@ class Sample:
         if self.lead_accept_threshold > 0:
             bidding_states_ol, sorted_min_bid_scores_ol, lead_scores = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, bidding_states, sorted_min_bid_scores, samples)
             # Count how many samples we found matching the bidding
-            valid_bidding_samples = np.sum(sorted_min_bid_scores_ol > self.bidding_threshold_sampling)
+            valid_bidding_samples = np.sum(sorted_min_bid_scores_ol > self.bid_extend_play_threshold)
             if self.verbose:
-                print(f"Samples {bidding_states_ol[0].shape[0]} after checking lead. {valid_bidding_samples} valid samples")
+                print(f"Samples {bidding_states_ol[0].shape[0]} after checking lead. {valid_bidding_samples} possible samples")
             # We trust bidding more than opening lead
             if valid_bidding_samples > self.sample_hands_play / 2:
                 bidding_states, sorted_min_bid_scores = bidding_states_ol, sorted_min_bid_scores_ol
@@ -1192,9 +1191,9 @@ class Sample:
         if trick_i + 1 <= 11:
             bidding_states_play, sorted_min_bid_scores_play, lead_scores_play, play_scores = self.validate_play_until_now(player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, bidding_states, sorted_min_bid_scores, models, contract, lead_scores)
             # Count how many samples we found matching the bidding
-            valid_bidding_samples = np.sum(sorted_min_bid_scores_play > self.bidding_threshold_sampling)
+            valid_bidding_samples = np.sum(sorted_min_bid_scores_play > self.bid_extend_play_threshold)
             if self.verbose:
-                print(f"Samples {bidding_states_play[0].shape[0]} after checking play. {valid_bidding_samples} valid samples")
+                print(f"Samples {bidding_states_play[0].shape[0]} after checking play. {valid_bidding_samples} possible samples")
             # We trust bidding more than play
             if valid_bidding_samples > self.min_sample_hands_play:
                 bidding_states, sorted_min_bid_scores, lead_scores = bidding_states_play, sorted_min_bid_scores_play, lead_scores_play
@@ -1218,22 +1217,29 @@ class Sample:
             # This could probably be set based on number of deals matching or sorted
             if valid_bidding_samples >= self.sample_hands_play: 
                 #if self.verbose:
-                bidding_states = [state[sorted_min_bid_scores > self.bidding_threshold_sampling] for state in bidding_states]
-                lead_scores = lead_scores[sorted_min_bid_scores > self.bidding_threshold_sampling]
-                play_scores = play_scores[sorted_min_bid_scores > self.bidding_threshold_sampling]
-                sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bidding_threshold_sampling]
+                valid_mask = sorted_min_bid_scores > self.bidding_threshold_sampling    
+                bidding_states = [state[valid_mask] for state in bidding_states]
+                lead_scores = lead_scores[valid_mask]
+                play_scores = play_scores[valid_mask]
+                sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
                 # Randomize the samples, as we have to many
                 # As we have removed redundant samples we should probably multiply the score with the count of each sample
                 # Calculate a combined score for each entry
-                combined_scores = sorted_min_bid_scores + np.maximum(lead_scores,0) + np.maximum(play_scores,0)  
-                # Normalize combined scores to sum to 1 (this forms probabilities for sampling)
-                probabilities = combined_scores / np.sum(combined_scores)
+                min_bid_probabilities = sorted_min_bid_scores / np.sum(sorted_min_bid_scores) if np.sum(sorted_min_bid_scores) > 0 else np.zeros_like(sorted_min_bid_scores)
+                lead_probabilities = np.maximum(lead_scores, 0) / np.sum(np.maximum(lead_scores, 0)) if np.sum(np.maximum(lead_scores, 0)) > 0 else np.zeros_like(lead_scores)
+                play_probabilities = np.maximum(play_scores, 0) / np.sum(np.maximum(play_scores, 0)) if np.sum(np.maximum(play_scores, 0)) > 0 else np.zeros_like(play_scores)
+
+                # Combine probabilities by adding
+                combined_probabilities = min_bid_probabilities + lead_probabilities + play_probabilities
+
+                # Normalize the combined scores to sum to 1
+                combined_probabilities /= np.sum(combined_probabilities) if np.sum(combined_probabilities) > 0 else 1
                 # Perform weighted random permutation
                 random_indices = rng.choice(
                     np.arange(bidding_states[0].shape[0]),  # Indices to choose from
                     size=bidding_states[0].shape[0],        # Number of samples
-                    replace=False,                    # No replacement (a permutation)
-                    p=probabilities                   # Probabilities for weighted randomness
+                    replace=False,                          # No replacement (a permutation)
+                    p=combined_probabilities                # Probabilities for weighted randomness
                 )
                 #random_indices = rng.permutation(bidding_states[0].shape[0])
                 bidding_states = [state[random_indices] for state in bidding_states]
@@ -1255,41 +1261,59 @@ class Sample:
                     else:
                         if self.verbose:
                             sys.stderr.write(" Extending with samples below threshold\n")
-                        bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold] for state in bidding_states]
-                        lead_scores = lead_scores[sorted_min_bid_scores > self.bid_extend_play_threshold]
-                        play_scores = play_scores[sorted_min_bid_scores > self.bid_extend_play_threshold]
-                        sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_extend_play_threshold]
+
+                        valid_mask = sorted_min_bid_scores > self.bid_extend_play_threshold    
+                        # Count how many `True` values we have
+                        num_valid = valid_mask.sum()
+
+                        # If there are more than 200 valid entries, only keep the first 200 `True` values
+                        if num_valid > 200:
+                            # Find the first 200 `True` values and set all others to `False`
+                            valid_mask[valid_mask.cumsum() > 200] = False
+
+                        bidding_states = [state[valid_mask] for state in bidding_states]
+                        lead_scores = lead_scores[valid_mask]
+                        play_scores = play_scores[valid_mask]
+                        sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
 
                         # As we have removed redundant samples we should probably multiply the score with the count of each sample
                         # Randomize the samples even though they are bad 
-                        combined_scores = sorted_min_bid_scores + np.maximum(lead_scores,0) + np.maximum(play_scores,0)  
-                        # Normalize combined scores to sum to 1 (this forms probabilities for sampling)
-                        probabilities = combined_scores / np.sum(combined_scores)
-                        # Perform weighted random permutation
-                        random_indices = rng.choice(
-                            np.arange(bidding_states[0].shape[0]),  # Indices to choose from
-                            size=bidding_states[0].shape[0],        # Number of samples
-                            replace=False,                    # No replacement (a permutation)
-                            p=probabilities                   # Probabilities for weighted randomness
-                        )
-                        #random_indices = rng.permutation(bidding_states[0].shape[0])
-                        bidding_states = [state[random_indices] for state in bidding_states]
-                        sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
-                        lead_scores = lead_scores[random_indices]
-                        play_scores = play_scores[random_indices]
+                        # Normalize individual scores to avoid creating large intermediate arrays
+                        min_bid_probabilities = sorted_min_bid_scores / np.sum(sorted_min_bid_scores) if np.sum(sorted_min_bid_scores) > 0 else np.zeros_like(sorted_min_bid_scores)
+                        lead_probabilities = np.maximum(lead_scores, 0) / np.sum(np.maximum(lead_scores, 0)) if np.sum(np.maximum(lead_scores, 0)) > 0 else np.zeros_like(lead_scores)
+                        play_probabilities = np.maximum(play_scores, 0) / np.sum(np.maximum(play_scores, 0)) if np.sum(np.maximum(play_scores, 0)) > 0 else np.zeros_like(play_scores)
 
-                        # And now select the minimum number required
-                        bidding_states = [state[:self.min_sample_hands_play_bad] for state in bidding_states]
-                        sorted_min_bid_scores = sorted_min_bid_scores[:self.min_sample_hands_play_bad]
-                        lead_scores = lead_scores[:self.min_sample_hands_play_bad]
-                        play_scores = play_scores[:self.min_sample_hands_play_bad]
+                        # Combine probabilities by adding
+                        combined_probabilities = min_bid_probabilities + lead_probabilities + play_probabilities
+
+                        # Normalize the combined scores to sum to 1
+                        combined_probabilities /= np.sum(combined_probabilities) if np.sum(combined_probabilities) > 0 else 1
+                        
+                        # Determine the number of samples needed
+                        num_samples = min(self.min_sample_hands_play_bad, bidding_states[0].shape[0])  
+                        
+                        # Perform the weighted random permutation using argsort to avoid large intermediate arrays
+                        random_indices = rng.choice(
+                            np.arange(bidding_states[0].shape[0]),
+                            size=num_samples,  # Directly select only the required number
+                            replace=False,                    # No replacement (a permutation)
+                            p=combined_probabilities         # Probabilities for weighted randomness
+                        )
+
+                        # Apply random selection and truncation in one step
+                        bidding_states = [np.take(state, random_indices, axis=0) for state in bidding_states]
+                        sorted_min_bid_scores = np.take(sorted_min_bid_scores, random_indices, axis=0)
+                        lead_scores = np.take(lead_scores, random_indices, axis=0)
+                        play_scores = np.take(play_scores, random_indices, axis=0)
                 else:
                     if self.verbose:
                         print("Enough samples above threshold: ",self.bid_accept_play_threshold)
-                    bidding_states = [state[sorted_min_bid_scores > self.bid_accept_play_threshold] for state in bidding_states]
-                    lead_scores = lead_scores[sorted_min_bid_scores > self.bid_accept_play_threshold]
-                    play_scores = play_scores[sorted_min_bid_scores > self.bid_accept_play_threshold]
-                    sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_accept_play_threshold]
+
+                    valid_mask = sorted_min_bid_scores > self.bid_accept_play_threshold    
+                    bidding_states = [state[valid_mask] for state in bidding_states]
+                    lead_scores = lead_scores[valid_mask]
+                    play_scores = play_scores[valid_mask]
+                    sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
         
         bidding_states = [state[:min(bidding_states[0].shape[0],n_samples)] for state in bidding_states]
         sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
