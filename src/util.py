@@ -141,11 +141,11 @@ def convert_to_probability_with_weight(x, states, counts):
     
     # Calculate weights based on counts
     for i in range(states[0].shape[0]):
-        sample = '%s %s %s %s' % (
-            hand_to_str(states[0][i, 0, :32].astype(int)),
-            hand_to_str(states[1][i, 0, :32].astype(int)),
-            hand_to_str(states[2][i, 0, :32].astype(int)),
-            hand_to_str(states[3][i, 0, :32].astype(int)),
+        sample = (
+            tuple(states[0][i, 0, :32].astype(int)),
+            tuple(states[1][i, 0, :32].astype(int)),
+            tuple(states[2][i, 0, :32].astype(int)),
+            tuple(states[3][i, 0, :32].astype(int))                
         )
         
         # Ensure that you get a scalar count for each sample

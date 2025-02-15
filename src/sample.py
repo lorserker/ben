@@ -863,7 +863,7 @@ class Sample:
         #print(f"{Fore.YELLOW}Hash of h1_h2 after small: {hashlib.sha256(arr_bytes).hexdigest()} {Fore.RESET}")  # Compute a SHA-256 hashhashlib.sha256(arr_bytes).hexdigest() 
         return h1_h2, use_bidding_info_stats
 
-    def get_opening_lead_scores(self, auction, vuln, models, handsamples, opening_lead_card, samples):
+    def get_opening_lead_scores(self, auction, vuln, models, handsamples, opening_lead_card):
         assert(handsamples.shape[1] == models.n_cards_play)
         cards_in_suit = models.n_cards_play // 4
         #handsamples = handsamples[:1,:]
@@ -1101,25 +1101,32 @@ class Sample:
 
         unique_indices = np.ones(states[0].shape[0]).astype(bool)
 
-        # this is to see how many samples we actually have
-        samples = []
-        counts = defaultdict(int)  # Dictionary to store counts of each sample  
-        for i in range(states[0].shape[0]):
-            sample = '%s %s %s %s' % (
-                hand_to_str(states[0][i, 0, :32].astype(int)),
-                hand_to_str(states[1][i, 0, :32].astype(int)),
-                hand_to_str(states[2][i, 0, :32].astype(int)),
-                hand_to_str(states[3][i, 0, :32].astype(int)),
-            )
-            if sample in samples:
-                unique_indices[i] = False
-            else:
-                samples.append(sample)
-            
-            counts[sample] += 1 
+        def get_unique_samples(states):
+            counts = defaultdict(int)
+            samples = set()  # Use a set instead of a list for O(1) lookups
+            unique_indices = np.ones(states[0].shape[0], dtype=bool)  # Assuming this is a NumPy boolean mask
+
+            for i in range(states[0].shape[0]):
+                sample = (
+                    tuple(states[0][i, 0, :32].astype(int)),
+                    tuple(states[1][i, 0, :32].astype(int)),
+                    tuple(states[2][i, 0, :32].astype(int)),
+                    tuple(states[3][i, 0, :32].astype(int))                
+                )
+
+                if sample in samples:
+                    unique_indices[i] = False
+                else:
+                    samples.add(sample)  
+
+                counts[sample] += 1
+
+            return unique_indices, counts  # Returning counts only if needed
+
+        unique_indices, counts = get_unique_samples(states)
 
         # Use the unique_indices to filter player_states
-        states = [state[unique_indices] for state in states]
+        states = np.array(states)[:, unique_indices]
         if self.verbose:
             print(f"Unique states {states[0].shape[0]}")
 
@@ -1129,7 +1136,8 @@ class Sample:
             if np.sum(accept) < n_samples:
                 accept = np.ones_like(accept).astype(bool)
 
-            states = [state[accept] for state in states]
+            states = np.array(states)[:, accept]
+
         else:
             c_hcp, c_shp = None, None
         
@@ -1155,15 +1163,17 @@ class Sample:
 
         sorted_min_bid_scores = min_bid_scores[sorted_indices]
         # Sort second dimension within each array in states based on min_bid_scores
-        bidding_states = [state[sorted_indices] for state in states]
+        bidding_states = np.array(states)[:, sorted_indices]
+
         #print(bidding_states[0].shape[0])
         valid_bidding_samples_good = np.sum(sorted_min_bid_scores > self.bidding_threshold_sampling)
-        valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold)
-        print(valid_bidding_samples_good, valid_bidding_samples, sample_boards_for_play)
-        if bidding_states[0].shape[0] > 200 and valid_bidding_samples > 10:
+        #valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold)
+        #print(valid_bidding_samples_good, valid_bidding_samples, sample_boards_for_play)
+        if bidding_states[0].shape[0] > 200 and valid_bidding_samples_good > 10:
             # We drop the samples we are not going to use
-            bidding_states = [state[sorted_min_bid_scores > self.bid_extend_play_threshold/10] for state in bidding_states]
-            sorted_min_bid_scores = sorted_min_bid_scores[sorted_min_bid_scores > self.bid_extend_play_threshold/10]
+            mask = sorted_min_bid_scores > self.bid_extend_play_threshold/2
+            bidding_states = np.array(bidding_states)[:, mask]
+            sorted_min_bid_scores = sorted_min_bid_scores[mask]
         assert bidding_states[0].shape[0] > 0, "No samples after checking bidding"
 
         if self.verbose:
@@ -1172,7 +1182,7 @@ class Sample:
         # reject samples inconsistent with the opening lead
         # We will only check opening lead if we have a lot of samples, as we can't trust other will follow the same lead rules
         if self.lead_accept_threshold > 0:
-            bidding_states_ol, sorted_min_bid_scores_ol, lead_scores = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, bidding_states, sorted_min_bid_scores, samples)
+            bidding_states_ol, sorted_min_bid_scores_ol, lead_scores = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, bidding_states, sorted_min_bid_scores)
             # Count how many samples we found matching the bidding
             valid_bidding_samples = np.sum(sorted_min_bid_scores_ol > self.bid_extend_play_threshold)
             if self.verbose:
@@ -1218,7 +1228,8 @@ class Sample:
             if valid_bidding_samples >= self.sample_hands_play: 
                 #if self.verbose:
                 valid_mask = sorted_min_bid_scores > self.bidding_threshold_sampling    
-                bidding_states = [state[valid_mask] for state in bidding_states]
+                bidding_states = np.array(bidding_states)[:, valid_mask]
+
                 lead_scores = lead_scores[valid_mask]
                 play_scores = play_scores[valid_mask]
                 sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
@@ -1241,8 +1252,7 @@ class Sample:
                     replace=False,                          # No replacement (a permutation)
                     p=combined_probabilities                # Probabilities for weighted randomness
                 )
-                #random_indices = rng.permutation(bidding_states[0].shape[0])
-                bidding_states = [state[random_indices] for state in bidding_states]
+                bidding_states = np.array(bidding_states)[:, random_indices]
                 sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
                 lead_scores = lead_scores[random_indices]
                 play_scores = play_scores[random_indices]
@@ -1255,6 +1265,7 @@ class Sample:
                             sys.stderr.write(" We did not find any good samples\n")
                         # We just take top three as we really have no idea about what the bidding means
                         bidding_states = [state[:self.min_sample_hands_play_bad] for state in bidding_states]
+
                         sorted_min_bid_scores = sorted_min_bid_scores[:self.min_sample_hands_play_bad]
                         lead_scores = lead_scores[:self.min_sample_hands_play_bad]
                         play_scores = play_scores[:self.min_sample_hands_play_bad]
@@ -1271,7 +1282,8 @@ class Sample:
                             # Find the first 200 `True` values and set all others to `False`
                             valid_mask[valid_mask.cumsum() > 200] = False
 
-                        bidding_states = [state[valid_mask] for state in bidding_states]
+                        bidding_states = np.array(bidding_states)[:, valid_mask]
+
                         lead_scores = lead_scores[valid_mask]
                         play_scores = play_scores[valid_mask]
                         sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
@@ -1379,7 +1391,7 @@ class Sample:
 
         return accept, c_hcp, c_shp.flatten()
 
-    def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states, bid_scores, samples):
+    def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states, bid_scores):
         if self.verbose:
             print("validate_opening_lead_for_sample:", "lead_accept_threshold:", self.lead_accept_threshold, 
                   "lead_accept_threshold_partner_trust:", self.lead_accept_threshold_partner_trust,
@@ -1403,7 +1415,7 @@ class Sample:
                     lead_accept_threshold = self.lead_accept_threshold
 
                 opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
-                lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead, samples)
+                lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead)
                 if tf.is_tensor(lead_scores):
                     lead_scores = lead_scores.numpy()
 
@@ -1418,9 +1430,10 @@ class Sample:
 
                 # If we did not find 2 samples we ignore the test for opening lead
                 if np.sum(lead_scores >= lead_accept_threshold) > 1:
-                    states = [state[lead_scores > lead_accept_threshold] for state in states]
-                    bid_scores = bid_scores[lead_scores > lead_accept_threshold]
-                    lead_scores = lead_scores[lead_scores > lead_accept_threshold]
+                    mask = lead_scores > lead_accept_threshold
+                    states = np.array(states)[:, mask]
+                    bid_scores = bid_scores[mask]
+                    lead_scores = lead_scores[mask]
                 else:
                     if self.verbose:
                         print("Skipping validation of opening as only 1 or less samples")            
@@ -1528,7 +1541,7 @@ class Sample:
         
         s_accepted = min_play_scores > play_accept_threshold
 
-        states = [state[s_accepted] for state in states]
+        states = np.array(states)[:, s_accepted]
         lead_scores = lead_scores[s_accepted]
         bidding_scores = bidding_scores[s_accepted]
         min_play_scores = min_play_scores[s_accepted]
