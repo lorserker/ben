@@ -190,7 +190,7 @@ class HumanCardPlayer:
         self.level = level
         self.strain_i = strain_i
 
-        self.x_play = np.zeros((1, 13, 298))
+        self.x_play = np.zeros((1, 13, 298),dtype=np.int8)
         BinaryInput(self.x_play[:,0,:]).set_player_hand(self.hand)
         BinaryInput(self.x_play[:,0,:]).set_public_hand(public_hand)
         self.x_play[:,0,292] = level

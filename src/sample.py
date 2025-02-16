@@ -1051,7 +1051,7 @@ class Sample:
 
             hidden_hand1, hidden_hand2 = h1_h2[:, 0], h1_h2[:, 1]
 
-            states = [np.zeros((hidden_hand1.shape[0], 13, 298)) for _ in range(4)]
+            states = [np.zeros((hidden_hand1.shape[0], 13, 298),dtype=np.int8) for _ in range(4)]
             # we can reuse the x_play array from card_players except the player's hand
             for k in range(4):
                 for i in range(trick_i + 1):
@@ -1091,7 +1091,7 @@ class Sample:
         else:
             # In cheat mode all cards are known
             known_nesw = player_to_nesw_i(player_i, contract)
-            states = [np.zeros((1, 13, 298)) for _ in range(4)]
+            states = [np.zeros((1, 13, 298),dtype=np.int8) for _ in range(4)]
             for k in range(4):
                 for i in range(13):
                     states[k][0, i, :32] = card_players[k].x_play[0, i, :32]
@@ -1186,7 +1186,7 @@ class Sample:
             # Count how many samples we found matching the bidding
             valid_bidding_samples = np.sum(sorted_min_bid_scores_ol > self.bid_extend_play_threshold)
             if self.verbose:
-                print(f"Samples {bidding_states_ol[0].shape[0]} after checking lead. {valid_bidding_samples} possible samples")
+                print(f"Samples {bidding_states_ol[0].shape[0]} after checking lead. {valid_bidding_samples} possible samples. After validation: {bidding_states_ol[0].shape[0]}")
             # We trust bidding more than opening lead
             if valid_bidding_samples > self.sample_hands_play / 2:
                 bidding_states, sorted_min_bid_scores = bidding_states_ol, sorted_min_bid_scores_ol

@@ -1644,7 +1644,7 @@ class CardPlayer:
         return np.random.default_rng(self.hash_integer)
     
     def init_x_play(self, public_hand, level, strain_i):
-        self.x_play = np.zeros((1, 13, 298))
+        self.x_play = np.zeros((1, 13, 298), dtype=np.int8)
         binary.BinaryInput(self.x_play[:,0,:]).set_player_hand(self.hand32)
         binary.BinaryInput(self.x_play[:,0,:]).set_public_hand(public_hand)
         self.x_play[:,0,292] = level
@@ -2342,7 +2342,7 @@ class CardPlayer:
                     candidate_cards = [card for _, card in candidate_cards]
 
         # Select the right card
-        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, missing_cards, play_status, who, self.verbose)
+        right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, missing_cards, play_status, who, claim_cards,  self.verbose)
         best_card_resp = CardResp(
             card=right_card,
             candidates=candidate_cards,
