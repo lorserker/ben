@@ -572,7 +572,7 @@ class Sample:
         if total_bid_count == 0:
             # No bidding yet, so we just return the first samples
             quality = 1
-            bidding_scores = np.ones(self.sample_hands_auction)
+            bidding_scores = np.ones(self.sample_hands_auction, dtype=np.float32)
             accepted_samples = lho_pard_rho[:self.sample_hands_auction]
             return accepted_samples, bidding_scores, c_hcp, c_shp, quality
 
@@ -583,9 +583,9 @@ class Sample:
         players = [players[1], players[2], players[0]]
 
         # Initialize min scores arrays for each position
-        min_scores_lho = np.ones(lho_pard_rho.shape[0])
-        min_scores_partner = np.ones(lho_pard_rho.shape[0])
-        min_scores_rho = np.ones(lho_pard_rho.shape[0])
+        min_scores_lho = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
+        min_scores_partner = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
+        min_scores_rho = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
 
         # We will now validate the generated deals against the actual bidding.
         # We take one player at a time, and start with the most difficult one (based on number of bids)
@@ -602,7 +602,7 @@ class Sample:
                 return lho_pard_rho, bidding_scores, c_hcp, c_shp, quality
 
         
-        min_scores = np.ones(lho_pard_rho.shape[0])
+        min_scores = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
 
         max_distance = lho_bid_count + 2 * pard_bid_count + rho_bid_count  # Replace with the maximum possible distance in your context
         
@@ -978,7 +978,7 @@ class Sample:
         if tf.is_tensor(sample_bids):
             sample_bids = sample_bids.numpy()
         sample_bids = sample_bids.reshape((sample_hands.shape[0], n_steps, -1))
-        min_scores = np.ones(sample_hands.shape[0])
+        min_scores = np.ones(sample_hands.shape[0], dtype=np.float32)
 
         # We check the bid for each bidding round
         for i in range(n_steps):
@@ -1099,8 +1099,6 @@ class Sample:
         if self.verbose:
             print(f"players_states {states[0].shape[0]} trick {trick_i+1}")
 
-        unique_indices = np.ones(states[0].shape[0]).astype(bool)
-
         def get_unique_samples(states):
             counts = defaultdict(int)
             samples = set()  # Use a set instead of a list for O(1) lookups
@@ -1141,7 +1139,7 @@ class Sample:
         else:
             c_hcp, c_shp = None, None
         
-        min_bid_scores = np.ones(states[0].shape[0])
+        min_bid_scores = np.ones(states[0].shape[0], dtype=np.float32)
 
         # Loop the samples for each of the 2 hidden hands to check bidding
         # We should generally trust our partners bidding most
@@ -1191,9 +1189,9 @@ class Sample:
             if valid_bidding_samples > self.sample_hands_play / 2:
                 bidding_states, sorted_min_bid_scores = bidding_states_ol, sorted_min_bid_scores_ol
             else:  
-                lead_scores = -np.ones(bidding_states[0].shape[0])
+                lead_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
         else:  
-            lead_scores = -np.ones(bidding_states[0].shape[0])
+            lead_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
 
         assert bidding_states[0].shape[0] > 0, "No samples after opening lead"
 
@@ -1208,9 +1206,9 @@ class Sample:
             if valid_bidding_samples > self.min_sample_hands_play:
                 bidding_states, sorted_min_bid_scores, lead_scores = bidding_states_play, sorted_min_bid_scores_play, lead_scores_play
             else:
-                play_scores = -np.ones(bidding_states[0].shape[0])
+                play_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
         else:
-            play_scores = -np.ones(bidding_states[0].shape[0])
+            play_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
         if self.verbose:
             print(f"Samples {bidding_states[0].shape[0]} after checking the play. Trick {trick_i + 1}")
 
@@ -1399,7 +1397,7 @@ class Sample:
                   "lead_accept_threshold_honors:", self.lead_accept_threshold_honors)
         # Only make the test if opening leader (0) is hidden
         # The primary idea is to filter away hands, that lead the Q as it denies the K
-        lead_scores = np.zeros(states[0].shape[0])
+        lead_scores = np.zeros(states[0].shape[0], dtype=np.float32)
         # Opening leader is in first seat (0)
         if (hidden_1_i == 0 or hidden_2_i == 0): 
             # Here we should probably remove leads that should not be possible.
@@ -1456,7 +1454,7 @@ class Sample:
         if self.verbose:
             print("Validating play")
             print(trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states[0].shape[0])
-        min_play_scores = np.ones(states[0].shape[0])
+        min_play_scores = np.ones(states[0].shape[0], dtype=np.float32)
         strain_i = bidding.get_strain_i(contract)
         # Select playing models based on NT orsuit
         playermodelindex = 0 if strain_i == 0 else 4
