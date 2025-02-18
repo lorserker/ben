@@ -47,6 +47,7 @@ from deck52 import card52to32, decode_card, get_trick_winner_i, hand_to_str
 from bidding import bidding
 
 from colorama import Fore, Back, Style, init
+import gc
 
 init()
 
@@ -1082,6 +1083,7 @@ async def main():
                     db[deal["board_number"]+"-Open"] = deal
                 else:
                     db[deal["board_number"]+"-Closed"] = deal
+        gc.collect()
 
 def initialize_logging(argv):
     # Empty function just to initialize absl logging

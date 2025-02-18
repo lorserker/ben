@@ -42,6 +42,8 @@ from urllib.parse import parse_qs, urlparse
 from pbn2ben import load
 
 from colorama import Fore, Back, Style, init
+import gc
+import psutil
 
 init()
 
@@ -65,6 +67,12 @@ def handle_exception(e):
         sys.stderr.write(f"{Fore.RED}")
         sys.stderr.write('\n'.join(file_traceback)+'\n')
         sys.stderr.write(f"{Fore.RESET}")
+
+def log_memory_usage():
+    # Get system memory info
+    virtual_memory = psutil.virtual_memory()
+    available_memory = virtual_memory.available / (1024 ** 2)  # Convert bytes to MB
+    print(f"Available memory before request: {available_memory:.2f} MB")
 
 def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
@@ -290,6 +298,7 @@ async def handler(websocket, path, board_no, seed):
             np.random.seed(board_no[0]+1)
             driver.set_deal(board_no[0] + 1, rdeal, auction, play_only)
 
+    log_memory_usage()
     try:
         t_start = time.time()
         await driver.run(t_start)
@@ -297,6 +306,8 @@ async def handler(websocket, path, board_no, seed):
         print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Board played in {time.time() - t_start:0.1f} seconds.{Fore.RESET}')  
         if not random and len(boards) > 0:
             board_no[0] = (board_no[0] + 1) % len(boards)
+        gc.collect()
+        log_memory_usage()
 
     except (ConnectionClosedOK, ConnectionClosedError, ConnectionAbortedError):
         print('User left')

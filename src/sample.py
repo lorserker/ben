@@ -778,7 +778,7 @@ class Sample:
             r_hcp = np.ones((n_samples, 2))
             r_shp = np.ones((n_samples, 2, 4))
 
-        n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2])
+        n_cards_to_receive = np.array([len(hidden_cards) // 2, len(hidden_cards) - len(hidden_cards) // 2], dtype=int)
         h1_h2 = np.zeros((n_samples, 2, models.n_cards_play), dtype=int)
         cards_received = np.zeros((n_samples, 2), dtype=int)
 

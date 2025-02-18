@@ -54,6 +54,8 @@ from claim import Claimer
 from pbn2ben import load
 from util import calculate_seed, get_play_status, get_singleton, get_possible_cards
 from colorama import Fore, Back, Style, init
+import gc
+import psutil
 
 init()
 
@@ -998,6 +1000,12 @@ def str_to_bool(value):
         return False
     raise ValueError("Invalid boolean value")
 
+def log_memory_usage():
+    # Get system memory info
+    virtual_memory = psutil.virtual_memory()
+    available_memory = virtual_memory.available / (1024 ** 2)  # Convert bytes to MB
+    print(f"Available memory before request: {available_memory:.2f} MB")
+
 
 async def main():
     random = True
@@ -1315,6 +1323,8 @@ async def main():
         else:
             if args.boards and board_no[0] >= len(boards):
                 break
+        gc.collect()
+        log_memory_usage()
 
 if __name__ == '__main__':
     print(Back.BLACK)

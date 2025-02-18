@@ -1,5 +1,6 @@
 from gevent import monkey
 monkey.patch_all()
+import gc
 import os
 import sys
 import platform
@@ -28,7 +29,7 @@ absl.logging.set_stderrthreshold(absl.logging.FATAL)
 
 import tensorflow as tf
 import scoring
-
+import psutil
 
 from gevent.pywsgi import WSGIServer
 import datetime 
@@ -563,7 +564,6 @@ class SilentAbort(HTTPException):
     code = 444  # Non-standard code to terminate without response
     description = "No Response"
 
-@app.before_request
 def log_request_info():
     # Get the host from the request headers
     host = request.headers.get("Host", "").split(':')[0]  # Ignore port number if present
@@ -574,12 +574,27 @@ def log_request_info():
     if request.method == "POST":
         logger.info(f"Body: {request.get_data()}")
 
+def log_memory_usage():
+    # Get system memory info
+    virtual_memory = psutil.virtual_memory()
+    available_memory = virtual_memory.available / (1024 ** 2)  # Convert bytes to MB
+    print(f"Available memory before request: {available_memory:.2f} MB")
+
+@app.before_request
+def log_request_and_memory_info():
+    log_request_info()  # Call the request logging function
+    log_memory_usage()  # Call the memory usage logging function
 
 @app.after_request
 def log_response_info(response):
     if response.status == 444:  # SilentAbort code, ignore status
         return response
     logger.info(f"Response body: {response.status} {response.get_data()}")
+    # Get system memory info
+    gc.collect()  # Force garbage collection
+    virtual_memory = psutil.virtual_memory()
+    available_memory = virtual_memory.available / (1024 ** 2)  # Convert bytes to MB
+    print(f"Available memory after request: {available_memory:.2f} MB")
     return response
 
 
