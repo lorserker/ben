@@ -53,10 +53,15 @@ class SuitCLib:
         self.verbose = verbose
     
     def calculate(self, input, east_vacant=None, west_vacant=None, trump = False, entries = 1 ):
+        # if matchoint is true, then -M is used
+        # if verbose is true, then -a and -b is used
         # -F5 is combines the effect of -F1 and -F4, -F7 combines all 3 options.
         # -ls2 limits the entries to 2 should be calculated
         # -ls is most important when the hand to lead has length
-        input_str = " -Ls -u -c100 "
+        if self.verbose:
+            input_str = " -Ls -u -c100 -a -b "
+        else:
+            input_str = " -Ls -u -c100 "
         if not trump:
             input_str += f"-ls{entries} "
         if east_vacant:

@@ -1004,7 +1004,7 @@ def log_memory_usage():
     # Get system memory info
     virtual_memory = psutil.virtual_memory()
     available_memory = virtual_memory.available / (1024 ** 2)  # Convert bytes to MB
-    print(f"Available memory before request: {available_memory:.2f} MB")
+    print(f"Available memory: {available_memory:.2f} MB")
 
 
 async def main():
@@ -1323,6 +1323,8 @@ async def main():
         else:
             if args.boards and board_no[0] >= len(boards):
                 break
+        np.empty(0) 
+        log_memory_usage()
         gc.collect()
         log_memory_usage()
 
