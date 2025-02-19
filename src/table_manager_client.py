@@ -1083,6 +1083,7 @@ async def main():
                     db[deal["board_number"]+"-Open"] = deal
                 else:
                     db[deal["board_number"]+"-Closed"] = deal
+        np.empty(0) 
         gc.collect()
 
 def initialize_logging(argv):

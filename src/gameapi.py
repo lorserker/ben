@@ -591,6 +591,7 @@ def log_response_info(response):
         return response
     logger.info(f"Response body: {response.status} {response.get_data()}")
     # Get system memory info
+    np.empty(0) 
     gc.collect()  # Force garbage collection
     virtual_memory = psutil.virtual_memory()
     available_memory = virtual_memory.available / (1024 ** 2)  # Convert bytes to MB
