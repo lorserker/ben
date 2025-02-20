@@ -234,10 +234,11 @@ if __name__ == '__main__':
 
     if len(sys.argv) < 4:
         print("Usage: python bidding_binary_keras.py inputfile inputfile2 outputdirectory NS=<x> EW=<y> alternate=True n_cards=32 rotate=true alert_supported=True max_occurrences=<z>")
-        print("The input file is the BEN-format (First line with hands, and next line with the bidding).")
+        print("The input file is the BEN-format or PBN-format")
+        print("Use None if no inputfile2")
         print("alternate is signaling, that the input file has both open and closed room, so NS/EW will be alternated")
         print("n_cards is the number of cards in the deck")
-        print("Setting rotate to true will rotate all deals, so North is opener")
+        print("Setting rotate to true will rotate all deals, so North is first to bid")
         print("Setting alert_supported to true will record alert in the output")
         print("Setting max_occurrences will limit the number of boards per auction")
         sys.exit(1)
@@ -250,9 +251,9 @@ if __name__ == '__main__':
     out_dir = sys.argv[3]
 
     # Extract NS and EW values from command-line arguments if provided
-    ns = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), 0)
-    ew = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), 0)
-    n_cards = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("n_cards=")), 32)
+    ns = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("NS=")), 1)
+    ew = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("EW=")), 1)
+    n_cards = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("n_cards=")), 24)
     alternating = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("alternate=")), False)
     rotate = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("rotate=")), False)
     max_occurrences = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("max_occurrences=")), 99)
@@ -264,7 +265,7 @@ if __name__ == '__main__':
     max_occurrences = to_numeric(max_occurrences, 100)
     ns = to_numeric(ns)
     ew = to_numeric(ew)
-    n_cards = to_numeric(n_cards, 32)
+    n_cards = to_numeric(n_cards, 24)
 
     
     # Count the occurrences of each line

@@ -72,7 +72,7 @@ n_sequence = X_train.shape[1]
 n_ftrs = X_train.shape[2]
 n_bids = y_train.shape[2]
 
-n_cards = 24
+n_cards = X_train.shape[3] - 169
 
 batch_size = 512  
 buffer_size = 100000
