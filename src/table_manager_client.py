@@ -103,7 +103,8 @@ class TMClient:
             'seat': self.seat,
             'opponents': self.opponents,
             'partner': self.partner,
-            'models': self.models.name
+            'models': self.models.name,
+            'version': '0.8.6.0'
         }
 
     async def run(self, biddingonly, restart):
@@ -136,7 +137,7 @@ class TMClient:
             return
 
         aceking = {}
-        if self.bot.bbabot is not None:
+        if self.bot.bbabot is not None and self.models.use_bba_to_count_aces:
             aceking = self.bot.bbabot.find_aces(auction)
 
         opening_lead_card = await self.opening_lead(auction, aceking)
@@ -957,7 +958,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.5.1")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.0")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1014,26 +1015,27 @@ async def main():
         print("Opponent:", models.opponent_model.model_path)
 
     if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or models.use_bba_rollout:
-        print("BBA enabled")    
         from bba.BBA import BBABotBid
         bot = BBABotBid(None, None ,None, None, None, None, None, verbose)
+        print(f"BBA enabled. Version {bot.version()}")    
 
     if models.use_suitc:
-        print("SuitC enabled")
         from suitc.SuitC import SuitCLib
         suitc = SuitCLib(verbose)
+        print(f"SuitC enabled. Version {suitc.version()}")
 
     if models.pimc_use_declaring or models.pimc_use_defending:
-        print("PIMC enabled")
         from pimc.PIMC import BGADLL
         pimc = BGADLL(None, None, None, None, None, None, verbose)
         from pimc.PIMCDef import BGADefDLL
         pimcdef = BGADefDLL(None, None, None, None, None, None, None, verbose)
+        print(f"PIMC enabled. Version {pimc.version()}")
+        print(f"PIMCDef enabled. Version {pimcdef.version()}")
 
     from ddsolver import ddsolver
-    print("DDSolver enabled")
     dds = ddsolver.DDSolver()
-
+    print(f"DDSolver enabled. Version {dds.version()}")
+    
     # Not supported by TM, so no need to calculate
     models.claim = False
 

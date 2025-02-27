@@ -21,12 +21,16 @@ class DDSolver:
     # If zero, we not always find the score
     # If 2 transport tables ignore trump
  
-    def __init__(self, dds_mode=1):
-        sys.stderr.write(f"DDSolver being loaded version 2.9.0.0 - dds mode {dds_mode}\n")
+    def __init__(self, dds_mode=1, verbose=False):
+        if verbose:
+            sys.stderr.write(f"DDSolver being loaded version 2.9.0 - dds mode {dds_mode}\n")
         self.dds_mode = dds_mode
         self.bo = dds.boardsPBN()
         self.solved = dds.solvedBoards()
 
+    def version(self):  
+        return "2.9.0"
+    
     def calculatepar(self, hand, vuln, print_result=True):
         tableDealPBN = dds.ddTableDealPBN()
         table = dds.ddTableResults()
@@ -41,9 +45,8 @@ class DDSolver:
 
         if res != 1:
             error_message = dds.get_error_message(res)
-            print(f"Error Code: {res}, Error Message: {error_message}")
-            print(hand.encode('utf-8'))
-            return None
+            sys.stderr.write(f"Error Code: {res}, Error Message: {error_message}, Hand {hand.encode('utf-8')}\n")
+            raise Exception(error_message)
 
         pres = dds.parResults()
 
@@ -58,8 +61,7 @@ class DDSolver:
 
         if res != 1:
             error_message = dds.get_error_message(res)
-            print(f"{Fore.RED}Error Code: {res}, Error Message: {error_message}")
-            print(f"{hand.encode('utf-8')}{Style.RESET_ALL}")
+            sys.stderr.write(f"{Fore.RED}Error Code: {res}, Error Message: {error_message} {hand.encode('utf-8')}{Style.RESET_ALL}")
             return None
 
         par = ctypes.pointer(pres)

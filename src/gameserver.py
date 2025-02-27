@@ -110,7 +110,7 @@ boards = []
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.5.1")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.0")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -176,25 +176,26 @@ else:
     print("Playing IMPS mode")
 
 if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or models.use_bba_rollout:
-    print("BBA enabled")    
     from bba.BBA import BBABotBid
     bot = BBABotBid(None, None ,None, None, None, None, None, None)
+    print(f"BBA enabled. Version {bot.version()}")    
 
 if models.use_suitc:
-    print("SuitC enabled")
     from suitc.SuitC import SuitCLib
     suitc = SuitCLib(verbose)
+    print(f"SuitC enabled. Version {suitc.version()}")
 
 if models.pimc_use_declaring or models.pimc_use_defending:
-    print("PIMC enabled")
     from pimc.PIMC import BGADLL
     pimc = BGADLL(None, None, None, None, None, None, None)
     from pimc.PIMCDef import BGADefDLL
     pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
+    print(f"PIMC enabled. Version {pimc.version()}")
+    print(f"PIMCDef enabled. Version {pimcdef.version()}")
 
 from ddsolver import ddsolver
-print("DDSolver enabled")
 dds = ddsolver.DDSolver()
+print(f"DDSolver enabled. Version {dds.version()}")
 
 if args.boards:
     filename = args.boards

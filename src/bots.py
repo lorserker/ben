@@ -68,7 +68,7 @@ class BotBid:
     def explain(self, auction):
         if self.bbabot is None:
             return None, False
-        return self.bbabot.explain(auction)
+        return self.bbabot.explain_last_bid(auction)
 
     def bid_hand(self, auction, hand):    
         return self.bbabot.bid_hand(auction, hand)
@@ -224,17 +224,18 @@ class BotBid:
                 print(f"Sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
             hands_np, sorted_score, p_hcp, p_shp, quality = self.sample_hands_for_auction(auction, self.seat)
             for i in range(hands_np.shape[0]):
-                samples.append('%s %s %s %s %.5f' % (
+                deal = '%s %s %s %s - %.5f' % (
                     hand_to_str(hands_np[i,0,:],self.models.n_cards_bidding),
                     hand_to_str(hands_np[i,1,:],self.models.n_cards_bidding),
                     hand_to_str(hands_np[i,2,:],self.models.n_cards_bidding),
                     hand_to_str(hands_np[i,3,:],self.models.n_cards_bidding),
                     sorted_score[i]
-                ))
+                )
+                assert len(deal) == 77, f"Expected length of deal to be 77, got {len(deal)} {deal}" 
+                samples.append(deal)
             sample_count = hands_np.shape[0]
         else:
             sample_count = 0
-
 
         if self.do_rollout(auction, candidates, self.get_max_candidate_score(self.my_bid_no), sample_count):
             ev_candidates = []
@@ -282,7 +283,7 @@ class BotBid:
                         
                         # Format the average tricks string
                         average_tricks_str = ", ".join(map(str, average_tricks))
-                        samples[idx] += f" | {auc} ({average_tricks_str}) "
+                        samples[idx] += f" | {auc} ({average_tricks_str})"
                     else:
                         samples[idx] += f" | {auc}"
 
@@ -501,8 +502,8 @@ class BotBid:
                 sample = samples[i].split(" ")
                 if self.verbose:
                     #print(samples[i].split(" ")[(self.seat + 2) % 4])
-                    print(sample[(self.seat + 2) % 4], sample[4])
-                if float(sample[4]) < self.models.min_bidding_trust_for_sample_when_rescue:
+                    print(sample[(self.seat + 2) % 4], sample[5])
+                if float(sample[5]) < self.models.min_bidding_trust_for_sample_when_rescue:
                     if self.verbose: 
                         print("Skipping sample due to threshold", self.models.min_bidding_trust_for_sample_when_rescue)
                     continue
@@ -882,9 +883,9 @@ class BotBid:
         if self.models.model_version == 3:
             bid_np, alerts = self.models.bidder_model.pred_fun_seq(x)
             if self.models.alert_supported:
-                alerts = alerts.numpy()[0]
+                alerts = alerts[0]
                 alerts = alerts[-1:][0]
-            bid_np = bid_np.numpy()[0]
+            bid_np = bid_np[0]
             bid_np = bid_np[-1:][0]
         assert len(bid_np) == 40, "Wrong Result: " + str(bid_np.shape)
         return bid_np, alerts
@@ -1393,7 +1394,7 @@ class BotLead:
         if self.verbose:
             print(f"Accepted samples for opening lead: {accepted_samples.shape[0]}")
         for i in range(min(self.models.sample_hands_for_review, accepted_samples.shape[0])):
-            samples.append('%s %s %s %s %.5f' % (
+            samples.append('%s %s %s %s - %.5f' % (
                 hand_to_str(self.handplay),
                 hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
                 hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
@@ -1420,9 +1421,6 @@ class BotLead:
             lead_softmax = self.models.lead_nt_model.pred_fun(x_ftrs, b_ftrs)
         else:
             lead_softmax = self.models.lead_suit_model.pred_fun(x_ftrs, b_ftrs)
-
-        if tf.is_tensor(lead_softmax):
-            lead_softmax = lead_softmax.numpy()
 
         # We remove all cards suggested by NN not in hand, and rescale the softmax
         lead_softmax = follow_suit(lead_softmax, self.handplay, np.array([[0, 0, 0, 0]]))
@@ -1767,7 +1765,7 @@ class CardPlayer:
         samples = []
 
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
-            samples.append('%s %s %s %s | %.5f %.5f %.5f %.5f ' % (
+            samples.append('%s %s %s %s - %.5f %.5f %.5f %.5f ' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),
                 hand_to_str(players_states[1][i,0,:32].astype(int)),
                 hand_to_str(players_states[2][i,0,:32].astype(int)),
@@ -1964,8 +1962,6 @@ class CardPlayer:
         cards_softmax = self.playermodel.next_cards_softmax(self.x_play[:,:(trick_i + 1),:])
         assert cards_softmax.shape == (1, 32), f"Expected shape (1, 32), but got shape {cards_softmax.shape}"
 
-        if tf.is_tensor(cards_softmax):
-            cards_softmax = cards_softmax.numpy()
         x = follow_suit(
             cards_softmax,
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_player_hand(),
@@ -2065,7 +2061,7 @@ class CardPlayer:
             # Any outstanding trump?
             if self.models.draw_trump_reward > 0 and self.missing_cards[self.strain_i-1] > 0:
                 trump_adjust = self.models.draw_trump_reward
-            # Just to be sure we wont to show opps that they have no trump
+            # Just to be sure we won't show opps that they have no trump
             if self.models.draw_trump_penalty > 0 and self.missing_cards[self.strain_i-1] == 0:
                 trump_adjust = -self.models.draw_trump_penalty
             if self.verbose:
@@ -2115,6 +2111,7 @@ class CardPlayer:
         candidate_cards = []
         
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
+            adjust_card = suit_adjust[card52 // 13]
             card32 = deck52.card52to32(card52)
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
             # Ignore cards not suggested by the NN
@@ -2125,26 +2122,26 @@ class CardPlayer:
             if e_tricks == 13 - trick_i:
                 # Calculate valid claim cards
                 if card32 // 8 != self.strain_i - 1:
-                    suit_adjust[card32 // 8] = 0
+                    adjust_card = 0
             if card52 in bad_play:
-                suit_adjust[card32 // 8] = -1            
-            expected_score = round(e_score + suit_adjust[card32 // 8])
+                adjust_card = -0.2            
+            expected_score = round(e_score + adjust_card)
 
             candidate_cards.insert(0,CandidateCard(
                 card=Card.from_code(card52),
                 insta_score=round(insta_score,3),
-                expected_tricks_dd=round(e_tricks +  + suit_adjust[card32 // 8],3),
+                expected_tricks_dd=round(e_tricks + adjust_card,3),
                 p_make_contract=e_make,
                 **({
-                    "expected_score_mp": round(expected_score + suit_adjust[card32 // 8] * 100,2)
+                    "expected_score_mp": round(expected_score + adjust_card * 100,2)
                 } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                 {
-                    "expected_score_imp": round(e_score + suit_adjust[card32 // 8],2)
+                    "expected_score_imp": round(e_score + adjust_card,2)
                 } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                 {
                     "expected_score_dd": e_score + suit_adjust[card32 // 8]
                 }),
-                msg=msg + (f"|suit adjust={suit_adjust[card32 // 8]}" if suit_adjust[card32 // 8] != 0 else "")
+                msg=msg + (f"|suit adjust={adjust_card}" if adjust_card != 0 else "")
             ))
 
         if self.models.use_real_imp_or_mp:
@@ -2239,55 +2236,56 @@ class CardPlayer:
         current_insta_score = 0
         # Small cards come from DD, but if a sequence is present it is the highest card
         for card52, (e_tricks, e_score, e_make) in card_dd.items():
+            adjust_card = suit_adjust[card52 // 13]
             card32 = deck52.card52to32(card52)
-            card=Card.from_code(card52)
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
-            # Ignore cards bot suggested by the NN
-            if insta_score < self.models.trust_NN:
+            # Ignore cards not suggested by the NN
+            if insta_score < self.models.pimc_trust_NN:
                 continue
             # If we can take rest we don't adjust, then NN will decide if equal
             # Another option could be to resample the hands without restrictions
             if e_tricks == 13 - trick_i:
                 # Calculate valid claim cards
                 if card32 // 8 != self.strain_i - 1:
-                    suit_adjust[card32 // 8] = 0
+                    adjust_card = 0
             if card52 in bad_play:
-                suit_adjust[card32 // 8] = -1            
+                adjust_card = -0.2            
+            expected_score = round(e_score + adjust_card)            
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
             expected_score = round(e_score + 20 * suit_adjust[card32 // 8],0)
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
                 candidate_cards.insert(0, CandidateCard(
-                    card=card,
+                    card=Card.from_code(card52),
                     insta_score=insta_score,
-                    expected_tricks_dd=round(e_tricks + suit_adjust[card32 // 8],3),
+                    expected_tricks_dd=round(e_tricks + adjust_card,3),
                     p_make_contract=e_make,
                     **({
-                        "expected_score_mp": round(expected_score + suit_adjust[card32 // 8] * 100,2)
+                        "expected_score_mp": round(expected_score + adjust_card * 100,2)
                     } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_imp": round(e_score + suit_adjust[card32 // 8],2)
+                        "expected_score_imp": round(e_score + adjust_card,2)
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_dd": e_score + suit_adjust[card32 // 8]
+                        "expected_score_dd": e_score + adjust_card
                     }),
-                    msg= (f"|suit adjust={suit_adjust[card32 // 8]}" if suit_adjust[card32 // 8] != 0 else "")
+                    msg= (f"|suit adjust={adjust_card}" if suit_adjust[adjust_card] != 0 else "")
                 ))
             else:
                 candidate_cards.append(CandidateCard(
                     card=card,
                     insta_score=insta_score,
-                    expected_tricks_dd=round(e_tricks + suit_adjust[card32 // 8],3),
+                    expected_tricks_dd=round(e_tricks + adjust_card,3),
                     p_make_contract=e_make,
                     **({
                         "expected_score_mp": expected_score
                     } if self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_imp": round(e_score + 2 * suit_adjust[card32 // 8],2)
+                        "expected_score_imp": round(e_score + 2 * adjust_card,2)
                     } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
                     {
-                        "expected_score_dd": e_score + suit_adjust[card32 // 8]
+                        "expected_score_dd": e_score + adjust_card
                     }),
-                    msg= (f"trump adjust={suit_adjust[card32 // 8]}" if suit_adjust[card32 // 8] != 0  else "")
+                    msg= (f"trump adjust={adjust_card}" if suit_adjust[adjust_card] != 0  else "")
                 ))
             current_card = card52
             current_insta_score = insta_score

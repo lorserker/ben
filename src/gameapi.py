@@ -381,7 +381,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.5.1")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.0")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -453,25 +453,26 @@ else:
     print("Playing IMPS mode")
 
 if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or models.use_bba_rollout:
-    print("BBA enabled")    
     from bba.BBA import BBABotBid
     bot = BBABotBid(None, None, None, None, None, None, None, None)
+    print(f"BBA enabled. Version {bot.version()}")    
 
 if models.use_suitc:
-    print("SuitC enabled")
     from suitc.SuitC import SuitCLib
     suitc = SuitCLib(verbose)
+    print(f"SuitC enabled. Version {suitc.version()}")
 
 if models.pimc_use_declaring or models.pimc_use_defending:
-    print("PIMC enabled")
     from pimc.PIMC import BGADLL
     pimc = BGADLL(None, None, None, None, None, None, None)
     from pimc.PIMCDef import BGADefDLL
     pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
+    print(f"PIMC enabled. Version {pimc.version()}")
+    print(f"PIMCDef enabled. Version {pimcdef.version()}")
 
 from ddsolver import ddsolver
-print("DDSolver enabled")
 dds = ddsolver.DDSolver()
+print(f"DDSolver enabled. Version {dds.version()}")
 
 log_file_path = os.path.join(config_path, 'logs')
 if not os.path.exists(log_file_path):
@@ -717,6 +718,11 @@ def lead():
 
         # Find ace and kings
         aceking = {}
+        if models.use_bba_to_count_aces:
+            from bba.BBA import BBABotBid
+            bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position, hand, vuln, dealer_i, models.matchpoint, verbose)
+            aceking = bba_bot.find_aces(auction)
+
         hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, dds, verbose)
         with model_lock_play:
             card_resp = hint_bot.find_opening_lead(auction, aceking)
@@ -968,9 +974,9 @@ def cuebid():
     if explain:
         auction.append(bid.bid)
         if models.use_bba:
-            explanation, alert = hint_bot.explain(auction)
+            explanation, alert = hint_bot.explain_last_bid(auction)
         else:
-            explanation, alert = hint_bot.bbabot.explain(auction)
+            explanation, alert = hint_bot.bbabot.explain_last_bid(auction)
         result["explanation"] = explanation
     result = {"bid": bid.bid.replace("PASS","Pass"), "alert": explanation, "artificial" : alert}
     if record: 
@@ -1008,7 +1014,7 @@ def explain():
 
     auction = create_auction(bids, dealer_i)
 
-    explanation, alert = bot.explain(auction)
+    explanation, alert = bot.explain_last_bid(auction)
     
     result = {"explanation": explanation, "Alert": alert} # explaination
     print(f'Request took {(time.time() - t_start):0.2f} seconds')       

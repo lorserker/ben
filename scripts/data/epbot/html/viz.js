@@ -500,13 +500,8 @@ class PlayInfo {
                 html += '<br><strong>Sample quality:</strong> ' + this.data['quality']
             }
 
-            if ("samples" in this.data && this.data['samples'].length > 0) {
-                html += `
-                <h3 class="samples" onclick="toggleSamples('sampleLinesPlay')"><strong>Samples(${this.data['samples'].length}):</strong></h3>
-                <div id="sampleLinesPlay" class="hidden">
-                <ul>${this.data.samples.map(sample => `<li>${sample.replace(/\n/g, "<br>")}</li>`).join('')}</ul>
-                </div>
-                `
+            if ("samples" in this.data) {
+                html += generateSamplesTable(this.data.samples);
             }
 
             element.innerHTML = html

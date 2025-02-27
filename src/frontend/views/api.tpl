@@ -11,7 +11,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link rel="stylesheet" href="/app/style.css">
     <link rel="stylesheet" href="/app/viz.css">
- 
+    <script src="/app/samplesTable.js"></script>
+
     <!-- Include jQuery and jQuery UI -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
@@ -650,14 +651,8 @@
                     `;
                 }
             }
-            if (data.samples && data.samples.length > 0) {
-                html += `
-                    <h3 class="samples"  onclick="toggleSamples('sampleLines${bids}')"><strong>Samples(${data.samples.length}):</strong></h3>
-                    <div id="sampleLines${bids}" class="hidden">
-                    <ul>${data.samples.map(sample => `<li>${sample.replace(/\|/g,"<br>")}</li>`).join('')}</ul>
-                    </div>
-                    `;
-                bids += 1;
+            if ("samples" in data) {
+                html += generateSamplesTable(data.samples);
             }
             document.querySelector('#info').innerHTML = html + document.querySelector('#info').innerHTML
 
@@ -812,15 +807,11 @@
                     <br><p><strong>Sample quality: </strong>${data.quality}</p>
                     `;
                 }
-            if (data.samples && data.samples.length > 0) {
-                html += `
-                    <h3 class="samples"  onclick="toggleSamples('sampleLines${bids}')"><strong>Samples(${data.samples.length}):</strong></h3>
-                    <div id="sampleLines${bids}" class="hidden">
-                    <ul>${data.samples.map(sample => `<li>${sample.replace(/\|/g," - ")}</li>`).join('')}</ul>
-                    </div>
-                    `;
-                bids += 1;
+
+            if ("samples" in data) {
+                html += generateSamplesTable(data.samples);
             }
+
             document.querySelector('#info').innerHTML = html + document.querySelector('#info').innerHTML
         }
 

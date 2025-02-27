@@ -122,6 +122,11 @@ class BGADefDLL:
         self.constraints_updated = False
         self.verbose = verbose
 
+    def version(self):
+        dll = BGADefDLL.get_dll()  # Retrieve the loaded DLL classes through the singleton
+        PIMCDef = dll["PIMCDef"]
+        return PIMCDef().version()
+
     def calculate_hcp(self, rank):
         hcp_values = {
             0: 4,
@@ -613,7 +618,7 @@ class BGADefDLL:
 
             card_result = {}
             for key in card_ev.keys():
-                card_result[key] = (round(e_tricks[key], 2), round(card_ev[key],2), round(making[key]), msg)
+                card_result[key] = (round(e_tricks[key], 2), round(card_ev[key],2), round(making[key],3), msg)
                 if self.verbose:
                     print(f'{Card.from_code(key)} {round(e_tricks[key],3):0.3f} {round(card_ev[key],2):5.2f} {round(making[key],3):0.3f}')
                         

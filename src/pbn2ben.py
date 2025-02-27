@@ -96,7 +96,7 @@ if __name__ == '__main__':
             lines = file.readlines()
         
         with open('input.ben', 'w', encoding='utf-8') as file:  # Open the output file with UTF-8 encoding
-            boards = load(lines)
+            boards, score = load(lines)
             for board in boards:
                 file.write(board['deal'] + "\n" + board['auction'] + "\n")
             print("File input.ben generated")

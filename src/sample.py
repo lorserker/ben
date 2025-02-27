@@ -14,6 +14,7 @@ from configparser import ConfigParser
 from util import hand_to_str
 from collections import defaultdict
 from colorama import Fore, Back, Style, init
+from objects import Card
 
 init()
 
@@ -33,17 +34,23 @@ def get_small_out_i(small_out):
 
 
 def distr_vec(x, rng):
+
     xpos = np.maximum(x, 0) + 0.1
     pvals = xpos / (np.sum(xpos, axis=1, keepdims=True) + 1e-10)
     p_cumul = np.cumsum(pvals, axis=1)
     
+    # This kind of issue is common in probability distributions and Monte Carlo simulations 
+    # where floating-point precision can cause unexpected results.
+    # Ensure last column of p_cumul is exactly 1.0
+    p_cumul[:, -1] = 1.0  
+
     rnd = rng.random(pvals.shape[0])
     
     # Vectorized computation of indexes
     indexes = np.sum(rnd[:, None] > p_cumul, axis=1)
     return indexes
 
-def distr2_vec(x1, x2, rng):
+def distr_ak_vec(x1, x2, rng, verbose=False):
     x1pos = np.maximum(x1, 0) + 0.1
     x2pos = np.maximum(x2, 0) + 0.1
 
@@ -53,7 +60,9 @@ def distr2_vec(x1, x2, rng):
     pvals = pvals1 * pvals2
     pvals = pvals / np.sum(pvals, axis=1, keepdims=True)
 
-    return distr_vec(pvals,rng)
+    indexes = distr_vec(pvals,rng)
+
+    return indexes
 
 
 def player_to_nesw_i(player_i, contract):
@@ -64,7 +73,7 @@ class Sample:
 
     def __init__(self, lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold_opponents, play_accept_threshold_declarer, play_accept_threshold_partner, min_play_accept_threshold_samples, bid_accept_play_threshold, 
                  bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, sample_boards_for_auction_opening_lead, 
-                 sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, 
+                 sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, check_remaining_cards, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, 
                  hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.lead_accept_threshold_suit = lead_accept_threshold_suit
@@ -98,6 +107,7 @@ class Sample:
         self.hcp_reduction_factor = hcp_reduction_factor
         self.shp_reduction_factor = shp_reduction_factor
         self.sample_previous_round_if_needed = sample_previous_round_if_needed
+
         self.verbose = verbose
 
 
@@ -129,6 +139,7 @@ class Sample:
         min_sample_hands_play_bad = conf.getint('cardplay','min_sample_hands_play_bad',fallback=3)
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
+        check_remaining_cards = conf.getboolean('cardplay', 'check_remaining_cards', fallback=False)
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
         no_samples_when_no_search = conf.getboolean('sampling', 'no_samples_when_no_search', fallback=False)
         no_biddingquality_after_bid_count = conf.getint('bidding', 'no_biddingquality_after_bid_count', fallback=12)
@@ -137,7 +148,7 @@ class Sample:
         sample_previous_round_if_needed = conf.getboolean('sampling', 'sample_previous_round_if_needed', fallback=False)        
         return cls(lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold_opponents, play_accept_threshold_declarer, play_accept_threshold_partner, min_play_accept_threshold_samples, 
                    bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, 
-                   sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, use_distance, no_samples_when_no_search, 
+                   sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, check_remaining_cards, use_distance, no_samples_when_no_search, 
                    exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose)
 
     @property
@@ -322,7 +333,7 @@ class Sample:
         js = np.zeros(generate_samples, dtype=int)
         while np.min(js) < ak_out_i.shape[1]:
             cards = ak_out_i[s_all, js]
-            receivers = distr2_vec(r_shp[s_all, :, cards//cards_in_suit], r_hcp, rng)
+            receivers = distr_ak_vec(r_shp[s_all, :, cards//cards_in_suit], r_hcp, rng)
 
             can_receive_cards = cards_received[s_all, receivers] < 13
 
@@ -340,23 +351,30 @@ class Sample:
             if self.validate_aces_kings(lho_pard_rho[i, :, :], aceking, n_cards):
                 mask[i] = True
                 valid_aces_kings += 1
+            # We break when we have the needed samples
             if valid_aces_kings == n_samples:
                 break
                 
-        #print(generate_samples, np.sum(mask), valid_aces_kings, n_samples)
         valid_samples = np.sum(mask)
-        n_samples = valid_samples
+        # Probably a problem with aces if we find less than 100, so we just ignore it and take the first up til n_samples
+        # print("valid_aces_kings", valid_aces_kings, "valid_samples", valid_samples, "aceking", aceking, "n_samples", n_samples)
+        if valid_samples < 100:
+            mask = np.concatenate([
+                np.ones(n_samples, dtype=bool),
+                np.zeros(generate_samples - n_samples, dtype=bool)
+            ])
+        else:
+            n_samples = valid_samples
         lho_pard_rho = lho_pard_rho[mask, :, :]
         s_all = s_all[mask]
         s_all = np.arange(len(s_all))  # Reset indices to [0, 1, 2, ..., n_samples - 1]
         r_hcp = r_hcp[mask]
         r_shp = r_shp[mask]
         cards_received = cards_received[mask]
-        small_out_i = small_out_i[:valid_samples]
         # distribute small cards
-        js = np.zeros(valid_samples, dtype=int)
+        js = np.zeros(n_samples, dtype=int)
         loop_counter = 0
-        #check if trump queen is shown
+        s_all_r = s_all[js < small_out_i.shape[1]]
         while True:
             s_all_r = s_all[js < small_out_i.shape[1]]
             if len(s_all_r) == 0:
@@ -384,8 +402,8 @@ class Sample:
             #    print("Loop counter >= 76")
             #    break  #
 
-        #if self.verbose:
-        #    print("Loops to deal the hands", loop_counter)
+        if self.verbose:
+            print("Loops to deal the hands", loop_counter)
        
         if self.use_biddinginfo:
 
@@ -455,9 +473,6 @@ class Sample:
         assert n_steps > 0, "n_steps should be greater than zero"
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, models, models.n_cards_bidding)
         p_hcp, p_shp = models.binfo_model.pred_fun(A)
-        if tf.is_tensor(p_hcp):
-            p_hcp = p_hcp.numpy()
-            p_shp = p_shp.numpy()
 
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
         p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
@@ -487,9 +502,7 @@ class Sample:
 
             # Predict bids based on the model for the specific position
             sample_bids, _ = model.pred_fun_seq(X)
-            # Check if sample_bids is a TensorFlow tensor
-            if tf.is_tensor(sample_bids):
-                sample_bids = sample_bids.numpy()
+
             sample_bids = sample_bids.reshape((lho_pard_rho.shape[0], n_steps, -1))
 
             # Update min scores based on actual bids
@@ -542,6 +555,7 @@ class Sample:
 
         # Consider saving the generated boards, and add the result from previous sampling to this output
         n_samples = lho_pard_rho.shape[0]
+        assert n_samples > 0, "No samples found"
         if verbose:
             print(f"n_samples {n_samples} from bidding info")
 
@@ -722,9 +736,6 @@ class Sample:
             #print(A[:,0,:])
 
             p_hcp, p_shp = models.binfo_model.pred_fun(A)
-            if tf.is_tensor(p_hcp):
-                p_hcp = p_hcp.numpy()
-                p_shp = p_shp.numpy()
 
             p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
             p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
@@ -824,7 +835,12 @@ class Sample:
 
             js_r = js[s_all_r]
             cards = ak_out_i[s_all_r, js_r]
-            receivers = distr2_vec(r_shp[s_all_r, :, cards//cards_in_suit], r_hcp[s_all_r], rng)
+            receivers = distr_ak_vec(r_shp[s_all_r, :, cards//cards_in_suit], r_hcp[s_all_r], rng)
+
+            invalid_receivers = receivers[receivers >= cards_received.shape[1]]
+
+            if invalid_receivers.size > 0:
+                print(f"Invalid receivers indices: {invalid_receivers}, shape[1]={cards_received.shape[1]}")
 
             can_receive_cards = cards_received[s_all_r, receivers] < n_max_cards[s_all_r, receivers]
 
@@ -908,9 +924,6 @@ class Sample:
         A = binary.get_auction_binary_sampling(n_steps, auction, lead_index, handbidding, vuln, models, models.n_cards_bidding)
 
         p_hcp, p_shp = binfo_model.pred_fun(A)
-        if tf.is_tensor(p_hcp):
-            p_hcp = p_hcp.numpy()
-            p_shp = p_shp.numpy()
 
         b[:, :3] = p_hcp.reshape((-1, n_steps, 3))[:, -1, :].reshape((-1, 3))
         b[:, 3:] = p_shp.reshape((-1, n_steps, 12))[:, -1, :].reshape((-1, 12))
@@ -975,8 +988,7 @@ class Sample:
             sample_bids, _ = models.bidder_model.pred_fun_seq(X)
         else:
             sample_bids, _ = models.opponent_model.pred_fun_seq(X)
-        if tf.is_tensor(sample_bids):
-            sample_bids = sample_bids.numpy()
+
         sample_bids = sample_bids.reshape((sample_hands.shape[0], n_steps, -1))
         min_scores = np.ones(sample_hands.shape[0], dtype=np.float32)
 
@@ -1019,7 +1031,7 @@ class Sample:
             hidden_cards = get_all_hidden_cards(visible_cards)
             hidden_cards_no = len(hidden_cards)
             
-            assert hidden_cards_no <= 26, hidden_cards_no
+            assert hidden_cards_no <= 26, f"Number of missing cards {hidden_cards_no}is higher than 26"
 
             known_nesw = player_to_nesw_i(player_i, contract)
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
@@ -1154,10 +1166,10 @@ class Sample:
         # Perhaps this should be calculated more statistical, as we are just taking the bid with the highest score
         # This need to be updated to euclidian distance or logarithmic
         # Round min_bid_scores to 3 decimals
-        rounded_scores = np.round(min_bid_scores, 3)
+        min_bid_scores = np.round(min_bid_scores, 5)
 
         # Get the indices that would sort the rounded scores in descending order
-        sorted_indices = np.argsort(rounded_scores)[::-1]
+        sorted_indices = np.argsort(min_bid_scores)[::-1]
 
         sorted_min_bid_scores = min_bid_scores[sorted_indices]
         # Sort second dimension within each array in states based on min_bid_scores
@@ -1180,33 +1192,33 @@ class Sample:
         # reject samples inconsistent with the opening lead
         # We will only check opening lead if we have a lot of samples, as we can't trust other will follow the same lead rules
         if self.lead_accept_threshold > 0:
-            bidding_states_ol, sorted_min_bid_scores_ol, lead_scores = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, bidding_states, sorted_min_bid_scores)
+            bidding_states_ol, sorted_min_bid_scores_ol, lead_scores_ol, lead_scores = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, bidding_states, sorted_min_bid_scores)
             # Count how many samples we found matching the bidding
             valid_bidding_samples = np.sum(sorted_min_bid_scores_ol > self.bid_extend_play_threshold)
             if self.verbose:
                 print(f"Samples {bidding_states_ol[0].shape[0]} after checking lead. {valid_bidding_samples} possible samples. After validation: {bidding_states_ol[0].shape[0]}")
             # We trust bidding more than opening lead
             if valid_bidding_samples > self.sample_hands_play / 2:
-                bidding_states, sorted_min_bid_scores = bidding_states_ol, sorted_min_bid_scores_ol
-            else:  
-                lead_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
+                bidding_states, sorted_min_bid_scores, lead_scores = bidding_states_ol, sorted_min_bid_scores_ol, lead_scores_ol
+            #else:  
+            #    lead_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
         else:  
             lead_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
 
         assert bidding_states[0].shape[0] > 0, "No samples after opening lead"
 
-        # no play validation for the last tricks
+        # no play validation for the last tricks (Right or wrong?)
         if trick_i + 1 <= 11:
-            bidding_states_play, sorted_min_bid_scores_play, lead_scores_play, play_scores = self.validate_play_until_now(player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, bidding_states, sorted_min_bid_scores, models, contract, lead_scores)
+            bidding_states_play, sorted_min_bid_scores_play, lead_scores_play, play_scores_play, play_scores = self.validate_play_until_now(player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, bidding_states, sorted_min_bid_scores, models, contract, lead_scores)
             # Count how many samples we found matching the bidding
             valid_bidding_samples = np.sum(sorted_min_bid_scores_play > self.bid_extend_play_threshold)
             if self.verbose:
                 print(f"Samples {bidding_states_play[0].shape[0]} after checking play. {valid_bidding_samples} possible samples")
             # We trust bidding more than play
             if valid_bidding_samples > self.min_sample_hands_play:
-                bidding_states, sorted_min_bid_scores, lead_scores = bidding_states_play, sorted_min_bid_scores_play, lead_scores_play
-            else:
-                play_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
+                bidding_states, sorted_min_bid_scores, lead_scores, play_scores = bidding_states_play, sorted_min_bid_scores_play, lead_scores_play, play_scores_play
+            #else:
+            #    play_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
         else:
             play_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
         if self.verbose:
@@ -1219,8 +1231,18 @@ class Sample:
         if self.verbose:
             print("Bidding samples accepted: ",valid_bidding_samples)
 
+        if trick_i + 1 > 10 and self.check_remaining_cards:
+            # For the samples we have we will check if any of the remaining cards was the natural play at the previous trick
+            logical_play_scores = self.check_remaining_cards(player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, bidding_states, models, contract)
+            #print("logical_play_scores",logical_play_scores)
+        else:
+            logical_play_scores = np.ones(bidding_states[0].shape[0], dtype=np.float32)
+
+
         # With only few cards left we will not filter the samples according to the bidding.
-        if trick_i + 1 <= 11:
+        # We do find only unique, and when starting trick 11 we do not have more than 20 possible combinations
+        # As we are using probability for bidding, play etc it seems OK just to take what we have left
+        if trick_i + 1 <= 10:
             # trusting the bidding after sampling cards
             # This could probably be set based on number of deals matching or sorted
             if valid_bidding_samples >= self.sample_hands_play: 
@@ -1230,6 +1252,7 @@ class Sample:
 
                 lead_scores = lead_scores[valid_mask]
                 play_scores = play_scores[valid_mask]
+                logical_play_scores = logical_play_scores[valid_mask]
                 sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
                 # Randomize the samples, as we have to many
                 # As we have removed redundant samples we should probably multiply the score with the count of each sample
@@ -1254,6 +1277,7 @@ class Sample:
                 sorted_min_bid_scores = sorted_min_bid_scores[random_indices]
                 lead_scores = lead_scores[random_indices]
                 play_scores = play_scores[random_indices]
+                logical_play_scores = logical_play_scores[random_indices]
             else:            
                 # Count how many samples we found matching the bidding
                 valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
@@ -1284,6 +1308,7 @@ class Sample:
 
                         lead_scores = lead_scores[valid_mask]
                         play_scores = play_scores[valid_mask]
+                        logical_play_scores = logical_play_scores[valid_mask]
                         sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
 
                         # As we have removed redundant samples we should probably multiply the score with the count of each sample
@@ -1315,6 +1340,7 @@ class Sample:
                         sorted_min_bid_scores = np.take(sorted_min_bid_scores, random_indices, axis=0)
                         lead_scores = np.take(lead_scores, random_indices, axis=0)
                         play_scores = np.take(play_scores, random_indices, axis=0)
+                        logical_play_scores = np.take(logical_play_scores, random_indices, axis=0)
                 else:
                     if self.verbose:
                         print("Enough samples above threshold: ",self.bid_accept_play_threshold)
@@ -1323,19 +1349,21 @@ class Sample:
                     bidding_states = [state[valid_mask] for state in bidding_states]
                     lead_scores = lead_scores[valid_mask]
                     play_scores = play_scores[valid_mask]
+                    logical_play_scores = logical_play_scores[valid_mask]
                     sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
         
         bidding_states = [state[:min(bidding_states[0].shape[0],n_samples)] for state in bidding_states]
         sorted_min_bid_scores = sorted_min_bid_scores[:bidding_states[0].shape[0]]
         lead_scores = lead_scores[:bidding_states[0].shape[0]]
         play_scores = play_scores[:bidding_states[0].shape[0]]
+        logical_play_scores = logical_play_scores[:bidding_states[0].shape[0]]
         quality = round(np.mean(sorted_min_bid_scores),5)
 
         if self.verbose:
             print(f"Returning {min(bidding_states[0].shape[0],n_samples)} {quality:.5f}")
         assert bidding_states[0].shape[0] > 0, "No samples generated for play"
 
-        probability_of_occurence = convert_to_probability_with_weight(sorted_min_bid_scores, bidding_states, counts)
+        probability_of_occurence = convert_to_probability_with_weight(sorted_min_bid_scores, bidding_states, counts, logical_play_scores)
 
         return bidding_states, sorted_min_bid_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores
     
@@ -1346,10 +1374,6 @@ class Sample:
         A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models, models.n_cards_bidding)
 
         p_hcp, p_shp = models.binfo_model.pred_fun(A)
-
-        if tf.is_tensor(p_hcp):
-            p_hcp = p_hcp.numpy()
-            p_shp = p_shp.numpy()
 
         # Only take the result from the latest bidding round
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
@@ -1397,52 +1421,51 @@ class Sample:
                   "lead_accept_threshold_honors:", self.lead_accept_threshold_honors)
         # Only make the test if opening leader (0) is hidden
         # The primary idea is to filter away hands, that lead the Q as it denies the K
-        lead_scores = np.zeros(states[0].shape[0], dtype=np.float32)
+        lead_scores = -np.ones(states[0].shape[0], dtype=np.float32)
+        lead_scores_unfiltered = lead_scores.copy()
         # Opening leader is in first seat (0)
         if (hidden_1_i == 0 or hidden_2_i == 0): 
             # Here we should probably remove leads that should not be possible.
             # But impossible lead should get a very low score from the neural network, so perhaps it is overkill
+            if (hidden_2_i == 3):
+                # We are RHO and trust partners lead
+                lead_accept_threshold = self.lead_accept_threshold + self.lead_accept_threshold_partner_trust
+                if self.verbose:
+                    print(f"RHO and trust partners lead: {lead_accept_threshold:0.3f}")
+            else: 
+                # How much trust that opponents would have lead the actual card from the hand sampled
+                lead_accept_threshold = self.lead_accept_threshold
+
+            opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
+            lead_scores_unfiltered = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead)
+
             if states[0].shape[0] >= self.min_sample_hands_play:
-                if (hidden_2_i == 3):
-                    # We are RHO and trust partners lead
-                    lead_accept_threshold = self.lead_accept_threshold + self.lead_accept_threshold_partner_trust
-                    if self.verbose:
-                        print(f"RHO and trust partners lead: {lead_accept_threshold:0.3f}")
-                else: 
-                    # How much trust that opponents would have lead the actual card from the hand sampled
-                    lead_accept_threshold = self.lead_accept_threshold
-
-                opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
-                lead_scores = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead)
-                if tf.is_tensor(lead_scores):
-                    lead_scores = lead_scores.numpy()
-
-                while np.sum(lead_scores >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
+                while np.sum(lead_scores_unfiltered >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
                     # We are RHO and trust partners lead
                     lead_accept_threshold *= 0.5
                     if lead_accept_threshold < 0.001:
                         if self.verbose:
                             print("Skipping validation of opening lead as no samples above threshold")           
                             print(f"lead_scores: {lead_scores}\n") 
-                        return states, bid_scores, lead_scores
+                        return states, bid_scores, lead_scores, lead_scores_unfiltered
 
                 # If we did not find 2 samples we ignore the test for opening lead
-                if np.sum(lead_scores >= lead_accept_threshold) > 1:
-                    mask = lead_scores > lead_accept_threshold
+                if np.sum(lead_scores_unfiltered >= lead_accept_threshold) > 1:
+                    mask = lead_scores_unfiltered > lead_accept_threshold
                     states = np.array(states)[:, mask]
                     bid_scores = bid_scores[mask]
-                    lead_scores = lead_scores[mask]
+                    lead_scores = lead_scores_unfiltered[mask]
                 else:
                     if self.verbose:
-                        print("Skipping validation of opening as only 1 or less samples")            
+                        print("Skipping filtering of opening as only 1 or less samples")            
 
             else:
                 if self.verbose:
-                    print(f"Skipping validation of opening lead due to to few samples: {states[0].shape[0]} need {self.min_sample_hands_play}")            
+                    print(f"Skipping filtering of opening lead due to to few samples: {states[0].shape[0]} need {self.min_sample_hands_play}")            
         else:
             if self.verbose:
-                print("Opening lead not from hidden hand")            
-        return states, bid_scores, lead_scores
+                print("Opening lead not from hidden hand")         
+        return states, bid_scores, lead_scores, lead_scores_unfiltered
 
     # Check that the play until now is expected with the samples
     # In principle we do this to eliminated hands, where the card played is inconsistent with the sample
@@ -1455,6 +1478,7 @@ class Sample:
             print("Validating play")
             print(trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states[0].shape[0])
         min_play_scores = np.ones(states[0].shape[0], dtype=np.float32)
+
         strain_i = bidding.get_strain_i(contract)
         # Select playing models based on NT orsuit
         playermodelindex = 0 if strain_i == 0 else 4
@@ -1496,7 +1520,7 @@ class Sample:
 
             # No cards played except opening lead, so just return
             if len(cards_played) == 0:
-                return states, bidding_scores, lead_scores, min_play_scores
+                return states, bidding_scores, lead_scores, min_play_scores, min_play_scores
             
             if self.verbose:
                 print(f"cards_played by {p_i} {cards_played}")
@@ -1511,20 +1535,15 @@ class Sample:
             # When the player is instantiated the right model is selected, but here we get it from the configuration
             # print("trick_i", trick_i, "len(card_played_current_trick)", len(card_played_current_trick), "n_tricks_pred", n_tricks_pred)
             p_cards = models.player_models[p_i+playermodelindex].pred_fun(states[p_i][:, :n_tricks_pred, :])
-            if tf.is_tensor(p_cards):
-                p_cards = p_cards.numpy()
             card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]
-            #print(card_scores.shape)
-            #x = states[p_i][:, :n_tricks_pred, :]
-            #for i in range(max(10,x.shape[0])):
-            #    print(hand_to_str(x[i,0,0:32],models.n_cards_play), card_scores[i, :])
+
             # The opening lead is validated elsewhere, so we just change the score to 1 for all samples
             if p_i == 0 and models.opening_lead_included:
                 card_scores[:, 0] = 1
             #print(f"card_scores {card_scores.flatten()}")
 
             # Compute the average score along axis 1 (across columns)
-            avg_scores = np.min(card_scores, axis=1)  # Shape (439,) if shape is (439,3)
+            avg_scores = np.min(card_scores, axis=1)  
 
             min_play_scores = np.minimum(min_play_scores, avg_scores)
             
@@ -1533,15 +1552,87 @@ class Sample:
         if self.verbose:
             print(f"Found deals above play threshold: {np.sum(min_play_scores > play_accept_threshold)} play_accept_threshold={play_accept_threshold}")
 
+        min_play_scores_unfiltered = min_play_scores.copy()
+
         while np.sum(min_play_scores > play_accept_threshold) < self.min_play_accept_threshold_samples and play_accept_threshold > 0:
             play_accept_threshold -= 0.01
             #print(f"play_accept_threshold {play_accept_threshold:0.3f} reduced")
         
         s_accepted = min_play_scores > play_accept_threshold
-
         states = np.array(states)[:, s_accepted]
         lead_scores = lead_scores[s_accepted]
         bidding_scores = bidding_scores[s_accepted]
         min_play_scores = min_play_scores[s_accepted]
-        return states, bidding_scores, lead_scores, min_play_scores
+        return states, bidding_scores, lead_scores, min_play_scores, min_play_scores_unfiltered
+    
+    def check_remaining_cards(self, player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states, models, contract):
+        # If they don't cover they dont have that card
+        # Should be implemented as a logical rule TODO
+        if self.verbose:
+            print("check remaining cards")
+            print(trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states[0].shape[0])
+        logical_play_scores = np.ones(states[0].shape[0], dtype=np.float32)
+
+        strain_i = bidding.get_strain_i(contract)
+        # Select playing models based on NT orsuit
+        playermodelindex = 0 if strain_i == 0 else 4
+
+        # We should probably look at the positon the card is played in.
+        # as it is often more significant which card to follow, than wich card to play
+
+        for p_i in [hidden_1_i, hidden_2_i]:
+            # Opening lead is allready checked
+            if trick_i == 0 and p_i == 0:
+                continue
+            if player_i == 3:
+                play_accept_threshold = self.play_accept_threshold_opponents
+            else:
+                if p_i == 3:
+                    play_accept_threshold = self.play_accept_threshold_declarer
+                else:
+                    # We are defending, so we trust our partner
+                    play_accept_threshold = self.play_accept_threshold_partner 
+            if self.verbose:
+                print(f"Validating play for player {player_i} against player {p_i}. Threshold: {play_accept_threshold}" )
+
+            if play_accept_threshold == 0:
+                if self.verbose:
+                    print("Skipping validation of play as no threshold")
+                continue
+            card_played_current_trick = []
+            for i, card in enumerate(current_trick):
+                if (leader_i + i) % 4 == p_i:
+                    card_played_current_trick.append(card)
+
+            # We have 11 rounds of play in the neural network, but might have only 10 for Lefty
+            if p_i == 0 and not models.opening_lead_included:
+                n_tricks_pred = trick_i + len(card_played_current_trick) - 1
+            else:
+                n_tricks_pred = trick_i + len(card_played_current_trick)
+                
+            # Depending on suit or NT we must select the right model
+            # 0-3 is for NT 4-7 is for suit
+            # When the player is instantiated the right model is selected, but here we get it from the configuration
+            # print("trick_i", trick_i, "len(card_played_current_trick)", len(card_played_current_trick), "n_tricks_pred", n_tricks_pred)
+            p_cards = models.player_models[p_i+playermodelindex].pred_fun(states[p_i][:, :n_tricks_pred, :])
+
+            remaining_cards = states[p_i][:, trick_i, :32]
+            #print("remaining_cards",remaining_cards)
+            for i in range(remaining_cards.shape[0]):
+                #print('Remaining cards:', remaining_cards[i])
+                # We check only AKQJT
+                for j in range(4):
+                    for k in range(5):
+                        if remaining_cards[i][j*8+k] == 1:
+                            #print("Checking card", Card.from_code(j*8+k, xcards=True).symbol())
+                            for t in range(trick_i):
+                                if p_cards[i][t][j*8+k] > 0.9:
+                                    #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
+                                    logical_play_scores[i] -= 0.2
+                                    continue
+                                if p_cards[i][t][j*8+k] > 0.8:
+                                    #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
+                                    logical_play_scores[i] -= 0.1
+
+        return logical_play_scores
     

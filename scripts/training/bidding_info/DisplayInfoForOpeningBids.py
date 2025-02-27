@@ -27,10 +27,6 @@ def get_info_for_opening(hand, bid, models):
     A = binary.get_auction_binary(n_steps, auction, nesw_i, hand, vuln, models)
     p_hcp, p_shp = models.binfo_model.pred_fun(A)
 
-    if tf.is_tensor(p_hcp):
-        p_hcp = p_hcp.numpy()
-        p_shp = p_shp.numpy()
-
     p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
     p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
 

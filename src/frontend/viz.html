@@ -8,6 +8,7 @@
 
   <link rel="stylesheet" href="viz.css">
   <script src="viz.js"></script>  
+  <script src="samplesTable.js"></script>
 
 </head>
 
@@ -250,13 +251,9 @@
                                             `;
                                         }
                                     }
-                                    if (data.samples && data.samples.length > 0)
-                                        document.querySelector('#info').innerHTML += `
-                                            <h3 class="samples"  onclick="toggleSamples('sampleLines${i}')"><strong>Samples(${data.samples.length}):</strong></h3>
-                                            <div id="sampleLines${i}" class="hidden">
-                                            <ul>${data.samples.map(sample => `<li>${sample.replace(/\|/g,"<br>")}</li>`).join('')}</ul>
-                                            </div>
-                                            `;
+                                    if ("samples" in data) {
+                                        document.querySelector('#info').innerHTML += generateSamplesTable(data.samples);
+                                    }
                                     i += 1;
                                     }
                                 );

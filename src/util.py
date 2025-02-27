@@ -7,7 +7,6 @@ import json
 
 from typing import NamedTuple, List
 
-from bidding import bidding
 from binary import get_cards_from_binary_hand, get_binary_hand_from_cards
 
 def save_for_training(deal, auction):
@@ -133,7 +132,7 @@ def calculate_seed(input):
     hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
     return hash_integer
 
-def convert_to_probability_with_weight(x, states, counts):
+def convert_to_probability_with_weight(x, states, counts, logical_scores):
     """Compute weighted softmax values for each set of scores in x using counts."""
     
     # Initialize weights array with the correct shape
@@ -153,12 +152,15 @@ def convert_to_probability_with_weight(x, states, counts):
 
     # Apply weights to x before calculating probabilities
     # Ensure x is 2D: (num_samples, num_features) and weights is 1D: (num_samples,)
-    weighted_x = x * weights
-    sum_of_proba = np.sum(weighted_x, axis=0)
+    
+    weighted_x = x * weights * logical_scores
+
+    sum_of_proba = np.sum(weighted_x, axis=0) 
 
     # Avoid division by zero if sum_of_proba contains zeros
-    x = np.divide(weighted_x, sum_of_proba, out=np.zeros_like(weighted_x), where=sum_of_proba != 0)
-    return x
+    Y = np.divide(weighted_x, sum_of_proba, out=np.zeros_like(weighted_x), where=sum_of_proba != 0)
+
+    return Y
 
 def convert_to_probability(x):
     """Compute softmax values for each sets of scores in x."""

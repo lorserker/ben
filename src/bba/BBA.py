@@ -3,7 +3,6 @@ import sys
 import os
 from util import calculate_seed, load_dotnet_framework_assembly
 from threading import Lock
-import deck52
 import numpy as np
 
 
@@ -83,7 +82,6 @@ class BBABotBid:
 
     def __init__(self, our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose):
 
-
         dll = BBABotBid.get_dll(verbose)  # Retrieve the loaded DLL classes through the singleton
         EPBot = dll["EPBot"]
         self.verbose = verbose
@@ -97,6 +95,7 @@ class BBABotBid:
         self.our_system = -1
         self.their_system = -1
         self.vuln_nsew = vuln
+        assert len(hand) == 16, "Hand must have 13 cards and each suit delimited by ."
         self.hand_str = hand.split('.')
         self.hand_str.reverse()
         self.hash_integer = calculate_seed(hand)         
@@ -146,13 +145,17 @@ class BBABotBid:
             else:
                 self.players[position].scoring = self.SCORING_IMP
 
+    def version(self):
+        dll = BBABotBid.get_dll()  # Retrieve the loaded DLL classes through the singleton
+        EPBot = dll["EPBot"]
+        return EPBot().version()
+
     def bba_vul(self, vuln):
         return vuln[1] * 2 + vuln[0]
 
     def get_random_generator(self):
         #print(f"{Fore.BLUE}Fetching random generator for bid {self.hash_integer}{Style.RESET_ALL}")
         return np.random.default_rng(self.hash_integer)
-
 
     async def async_bid(self, auction, alert=None):
         return self.bid(auction)
@@ -205,108 +208,164 @@ class BBABotBid:
         # Did partner ask for keycards
         if len(auction) > 1:
             if auction[-2] == "4N":
-                explanation, alert = self.explain(auction[:-1])
+                explanation, alert = self.explain_last_bid(auction[:-1])
                 if self.verbose:
                     print(explanation, alert)
                 if "Blackwood" in explanation:
                     return self.bid(auction)
             if auction[-2] == "5N":
-                explanation, alert = self.explain(auction[:-1])
+                explanation, alert = self.explain_last_bid(auction[:-1])
                 if self.verbose:
                     print(explanation, alert)
                 if "King ask" in explanation:
                     return self.bid(auction)
             if auction[-2] == "4C":
-                explanation, alert = self.explain(auction[:-1])
+                explanation, alert = self.explain_last_bid(auction[:-1])
                 if self.verbose:
                     print(explanation, alert)
                 if "Gerber" in explanation:
                     return self.bid(auction)
             if auction[-2] == "5C":
-                explanation, alert = self.explain(auction[:-1])
+                explanation, alert = self.explain_last_bid(auction[:-1])
                 if self.verbose:
                     print(explanation, alert)
                 if "King ask" in explanation:
                     return self.bid(auction)
         return None
+
+    def find_info(self, auction):
+        if self.verbose:
+            print("Searching info for this auction: ", auction)
+            print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+
+        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+
+        arr_bids = []
+
+        for k in range(len(auction)):
+            bidid = bidding.BID2ID[auction[k]]
+            if bidid < 2:
+                continue
+            if bidid < 5:
+                bidid = bidid - 2
+            arr_bids.append(f"{bidid:02}")
+
+        info = {}
+        info["position"] = self.position
+        info["hand"] = self.hand_str
+        info["dealer"] = self.dealer
+        info["vuln"] = self.bba_vul(self.vuln_nsew)
+        info["arr_bids"] = arr_bids.copy()
+        info["auction"] = auction
+        # Extend with empty strings until length is 64
+        if self.verbose:
+            print("Bids sent to BBA", arr_bids)
+        arr_bids.extend([''] * (64 - len(arr_bids)))
+        self.players[self.position].set_arr_bids(arr_bids)
+
+        trump = 4
+        info["trump"] = trump
+        # Do we have a trump?
+        for i in range(4):
+            features = self.players[self.position].get_info_feature(i)
+            asking_bid = features[425]
+            if asking_bid > 0:
+                asker = i % 4
+                trump = features[424]
+                info["asking_bid"] = asking_bid
+                info["asker"] = asker
+                info["trump"] = trump
+
+        for i in range(8):
+            hand_info = {}
+            hand_info["player"] = i
+            features = self.players[self.position].get_info_feature(i)
+            hand_info["HCP"] =  F"{features[402]:02} - {features[403]:02}"
+            min_lengths = self.players[self.position].get_info_min_length(i)
+            max_lengths = self.players[self.position].get_info_max_length(i)
+            probable_lengths = self.players[self.position].get_info_probable_length(i)
+            strengths = self.players[self.position].get_info_strength(i)
+            stoppers = self.players[self.position].get_info_stoppers(i)
+            for j in range(3, -1, -1):
+                suit = "CDHS"[j]
+                hand_info[suit] = {
+                    "length": f"{min_lengths[j]} - {max_lengths[j]}",
+                    "probable_length": f"{probable_lengths[j]}",
+                    "stoppers": f"{stoppers[j]}",
+                    "strengths": f"{strengths[j]}",
+                }
+                asking_bid = features[425]
+            if trump != 4:
+                honors = self.players[self.position].get_info_honors(i)
+                hand_info["honors"] =  honors[trump]
+            hand_info["aces"] = features[406]
+            hand_info["kings"] = features[407]
+            #print(hand_info)
+            info[i] = hand_info
+
+        return info
         
     def find_aces(self, auction):
         if self.verbose:
-            print(auction)
+            print("Searching aces for this auction: ", auction)
             print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
-#        for player in range(4):
-        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
-
+        info = self.find_info(auction)
+        trump =info["trump"] 
         result = {}
-        # We bid up to the bid we want explained
-        position = self.dealer
-        for k in range(len(auction)):
-            bidid = bidding.BID2ID[auction[k]]
-            if bidid < 2:
-                continue
-            if bidid < 5:
-                bidid = bidid - 2
-            self.players[self.position].set_bid(position, bidid)
-            position = (position + 1) % 4 
+        if info["trump"] == 4:  
+            return result
+        
+        asker = info["asker"]
+        # 0 = LHO, 1 = Partner, 2 = RHO
+        lho = (self.position + 1) % 4
+        if asker != lho:
+            result[0] = (trump, info[lho]["aces"], info[lho]["kings"])
+        # For the partner we take the calculated information
+        partner = (self.position + 2) % 4 
+        if asker != partner:
+            # if we know something about partners aces we take the calculated information
+            if info[partner]["aces"] > -1:
+                partner += 4
+            result[1] = (trump, info[partner]["aces"], info[partner]["kings"])
+        rho = (self.position + 3) % 4
+        if asker != rho:
+            result[2] = (trump, info[rho]["aces"], info[rho]["kings"])
 
-        #meaning = self.players[self.position].get_info_meaning(position)
-        queen = None
-
-        info = self.players[self.position].get_info_feature(self.position)
-        trump = info[424]
-        #print("position",self.position,"trump",trump)
-        info_lho = self.players[self.position].get_info_feature((self.position + 1) % 4 )
-        honors_lho = self.players[self.position].get_info_honors((self.position + 1) % 4 )
-        info_pard = self.players[self.position].get_info_feature((self.position + 2) % 4 )
-        honors_pard = self.players[self.position].get_info_honors((self.position + 2) % 4 )
-        info_rho = self.players[self.position].get_info_feature((self.position + 3) % 4 )
-        honors_rho = self.players[self.position].get_info_honors((self.position + 3) % 4 )
-
-        aces = info_pard[406]
-        kings = info_pard[407]
-        # C=0, D=1, H=2, S=3, N=4
-        #if trump < 4:    
-        # print(trump)
-        if trump < 4:
-            queen = honors_pard[trump] == 4
-            # Order is not S, H, D, C, NT
-            trump = 3 - trump
-        #print("trump, aces, kings, queen", trump, aces,kings, queen)
-        if (aces > -1 or kings > -1 or queen):
-            result[1] = (trump, aces, kings, queen)
+        if self.verbose:
+            print("Information from BBA", result)
 
         return result
 
-    def explain(self, auction):
+    def explain_last_bid(self, auction):
         if self.verbose:
             print(auction)
             print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
-#        for player in range(4):
-        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
-
-        # We bid up to the bid we want explained
-        position = self.dealer
+        arr_bids = []
         for k in range(len(auction)):
             bidid = bidding.BID2ID[auction[k]]
             if bidid < 2:
                 continue
             if bidid < 5:
                 bidid = bidid - 2
-            for player in range(4):
-                self.players[player].set_bid(position, bidid)
-            #meaning = self.players[self.position].get_info_meaning(position)
-            position = (position + 1) % 4 
+            arr_bids.append(f"{bidid:02}")
 
+        no_bids = len(arr_bids)
+        position = (no_bids + self.dealer) % 4
+
+        self.players[self.position].new_hand(position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+
+        arr_bids.extend([''] * (64 - len(arr_bids)))
+        self.players[self.position].set_arr_bids(arr_bids)
 
         # Now ask for the bid we want explained
-        position = (position  + 3) % 4
+        position = (no_bids - 1 + self.dealer) % 4
         # Get information from Player(position) about the interpreted bid
         meaning = self.players[self.position].get_info_meaning(position)
         if meaning is None: meaning = ""
-        #if meaning.strip() == "calculated bid": meaning = ""
-        #if meaning.strip() == "bidable suit": meaning = ""
+        if meaning.strip() == "calculated bid": meaning = ""
+        if meaning.strip() == "bidable suit": meaning = ""
         bba_alert = self.players[self.position].get_info_alerting(position)
         info = self.players[self.position].get_info_feature(position)
         if not bba_alert and meaning != "":   
@@ -383,10 +442,12 @@ class BBABotBid:
 
         hands = deal.split(":")[1].split(' ') 
         bba_auction = auction.copy()
-        #print("dealer", self.dealer)
+        bba_hand = []
         for i in range(4):
             hand_str = hands[i].split('.')
+            bba_hand.append(hand_str.copy())
             hand_str.reverse()
+
             # The deal we get is always our hand first
             self.players[i].new_hand(i, hand_str, dealer, self.bba_vul(self.vuln_wethey))
 
@@ -409,7 +470,7 @@ class BBABotBid:
             position += 1
         
         # Now bid the hand to the end
-        # Always LHO"
+        # Always LHO" to start
         position = 1
         while passes < 3:
 
@@ -423,9 +484,10 @@ class BBABotBid:
             if new_bid < 5:
                 new_bid += 2
             bba_auction.append(bidding.ID2BID[new_bid])
-
+            if self.verbose:
+                print(f"BBABid in position {position}: {bidding.ID2BID[new_bid]} on {bba_hand[position]}" )
             position = (position + 1) % 4
-        
+
         if self.verbose: 
             print(deal,bba_auction)
         return bba_auction

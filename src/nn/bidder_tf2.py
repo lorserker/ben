@@ -19,7 +19,7 @@ class Bidder:
     # Wrapping the function with @tf.function to optimize for graph execution
     # @tf.function
     @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, None], dtype=tf.float16)])
-    def pred_fun_seq(self, x):
+    def pred_fun_tf(self, x):
         # Ensure that x is a tensor
         try:
             input_tensor = tf.cast(x, dtype=tf.float16)
@@ -34,4 +34,8 @@ class Bidder:
             alerts = 0
         return bids, alerts
 
+    def pred_fun_seq(self, x):
+            # Perform the model prediction (returns tensors)
+        bids, alerts = self.pred_fun_tf(x)
+        return bids.numpy(), alerts.numpy()
 

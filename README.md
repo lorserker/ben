@@ -151,10 +151,7 @@ that will connect to the table as North - the other seats can be taken similarly
 
 Below is a list of features which aren't implemented in this engine yet, but you would probably expect them from a bridge robot:
 
-- can't play any other system except 2/1 (see [convention card](convention_card.md))
-- can't configure the bidding system and the conventions (it just plays what it plays and assumes the opponents play that as well)
-- can't alert
-- can't explain bids or understand explanations of bids
+- can't understand explanations of bids
 - can't use or interpret defensive signals
 - can't claim or accept claims
 - it does reach good slams, but slam auctions are a bit weird
@@ -179,5 +176,8 @@ Below is a list of features which aren't implemented in this engine yet, but you
   howpublished = {\url{https://github.com/lorserker/ben}},
 }
 ```
-
+## Using Mac
 On Mac i use python3 and pip3
+
+## Discord
+You are welcome to join our Discord server "BEN the bridge engine" at https://discord.gg/9vaTn2Em 

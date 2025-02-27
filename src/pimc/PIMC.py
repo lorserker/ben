@@ -98,11 +98,11 @@ class BGADLL:
         self.pimc = PIMC(models.pimc_max_threads, self.models.pimc_verbose and verbose)
         self.pimc.Clear()
         self.full_deck = Extensions.Parse("AKQJT98765432.AKQJT98765432.AKQJT98765432.AKQJT98765432")
-        self.northhand = Extensions.Parse(northhand)
-        self.southhand = Extensions.Parse(southhand)
-        self.easthand = Hand()
-        self.westhand = Hand()
-        self.opposHand = self.full_deck.Except(self.northhand.Union(self.southhand))
+        self.dummyhand = Extensions.Parse(northhand)
+        self.declarerhand = Extensions.Parse(southhand)
+        self.rhohand = Hand()
+        self.lhohand = Hand()
+        self.opposHand = self.full_deck.Except(self.dummyhand.Union(self.declarerhand))
         self.current_trick = Play()
         self.previous_tricks = Play()
 
@@ -121,6 +121,11 @@ class BGADLL:
 
         self.constraints_updated = False
         self.verbose = verbose
+
+    def version(self):
+        dll = BGADLL.get_dll()  # Retrieve the loaded DLL classes through the singleton
+        PIMC = dll["PIMC"]
+        return PIMC().version()
 
     def calculate_hcp(self, rank):
         hcp_values = {
@@ -296,17 +301,17 @@ class BGADLL:
         suit = real_card.suit
 
         if (playedBy == 0):
-            self.westhand.Add(PIMCCard(card))
+            self.lhohand.Add(PIMCCard(card))
             self.already_shown_hcp_lho += self.calculate_hcp(real_card.rank)
             self.already_shown_lho[suit] += 1
         if (playedBy == 2):
-            self.easthand.Add(PIMCCard(card))
+            self.rhohand.Add(PIMCCard(card))
             self.already_shown_hcp_rho += self.calculate_hcp(real_card.rank)
             self.already_shown_rho[suit] += 1
         if (playedBy == 1):
-            self.northhand.Remove(PIMCCard(card))
+            self.dummyhand.Remove(PIMCCard(card))
         if (playedBy == 3):
-            self.southhand.Remove(PIMCCard(card))
+            self.declarerhand.Remove(PIMCCard(card))
         # We will update constraints with samples after the opening lead
         if not openinglead:
             self.update_constraints(playedBy, real_card)
@@ -421,13 +426,13 @@ class BGADLL:
         self.update_missing_cards(missing_cards)
 
         if self.models.pimc_apriori_probability:
-            hands = [self.northhand, self.southhand, self.easthand, self.westhand]
+            hands = [self.dummyhand, self.declarerhand, self.rhohand, self.lhohand]
         else:
-            hands = [self.northhand, self.southhand]
+            hands = [self.dummyhand, self.declarerhand]
 
         if self.verbose:
             print("player_i", player_i)
-            print(self.northhand.ToString(), self.southhand.ToString())
+            print(self.dummyhand.ToString(), self.declarerhand.ToString())
             print(self.opposHand.ToString(), self.current_trick.ListAsString())
             print("Voids:", shown_out_suits)
             print(Macros.Player.South if player_i == 3 else Macros.Player.North)
@@ -437,7 +442,8 @@ class BGADLL:
             print("Autoplay",self.autoplay)
             print("Current trick",self.current_trick.ListAsString())
             print("Previous tricks",self.previous_tricks.ListAsString())
-            print("Other hands",self.easthand.ToString(), self.westhand.ToString())
+            print("RHO hand", self.rhohand.ToString())
+            print("LHO hand", self.lhohand.ToString())
             print("Strategy",self.models.pimc_use_fusion_strategy)
             
         try:
@@ -447,7 +453,7 @@ class BGADLL:
             print(f"{Fore.RED}Error: {ex} {Fore.RESET}")
             print("max_playout",self.max_playout)
             print("player_i", player_i)
-            print(self.northhand.ToString(), self.southhand.ToString())
+            print(self.dummyhand.ToString(), self.declarerhand.ToString())
             print(self.opposHand.ToString(), self.current_trick.ListAsString())
             print("Voids:", shown_out_suits)
             print(Macros.Player.South if player_i == 3 else Macros.Player.North)
@@ -456,7 +462,8 @@ class BGADLL:
             print("West (LHO)",self.lho_constraints.ToString())
             print("Current trick",self.current_trick.ListAsString())
             print("Previous tricks",self.previous_tricks.ListAsString())
-            print("Other hands",self.easthand.ToString(), self.westhand.ToString())
+            print("RHO hand", self.rhohand.ToString())
+            print("LHO hand", self.lhohand.ToString())
             print("Strategy",self.models.pimc_use_fusion_strategy)
             raise ex 
 
@@ -519,7 +526,7 @@ class BGADLL:
                     print(f"{Fore.YELLOW}PIMC did not find any playouts. Trying without constraints{Fore.RESET} {self.pimc.LegalMovesToString}")
                     if self.verbose:
                         print(f"max_playouts: {self.max_playout} Playouts: {self.pimc.Playouts} Combinations: {self.pimc.Combinations} Examined: {self.pimc.Examined}")
-                        print(self.northhand.ToString(), self.southhand.ToString(), self.opposHand.ToString(), self.current_trick.ListAsString())
+                        print(self.dummyhand.ToString(), self.declarerhand.ToString(), self.opposHand.ToString(), self.current_trick.ListAsString())
                         print("Trump:",trump,"Tricks taken:",self.tricks_taken,"Tricks needed:",self.mintricks)
                         print("Voids",shown_out_suits)
                         print("East (RHO)", self.rho_constraints.ToString(),"West (LHO)", self.lho_constraints.ToString())

@@ -7,7 +7,7 @@
 
 [Event "##CTC_mayjun20"]
 [Site "##BEN"]
-[Date "##2025.01.29"]
+[Date "##2025.02.25"]
 [BCFlags "801f"]
 [Board "1"]
 [West "Facit"]
@@ -22,16 +22,15 @@
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "E"]
-PASS PASS PASS 2C =1=
-PASS 2D =2= PASS 2S
+PASS PASS PASS 2C
+PASS 2D =1= PASS 2S
 PASS 2N PASS 3S
 PASS 4S PASS PASS
 PASS 
-[Note "1: Alert. strong"]
-[Note "2: Alert. waiting"]
+[Note "1: Alert. waiting"]
 [Play ""]
 [Hidden "EW"]
-{\n\nScore Table:
+{\n\n\nScore Table:
 
  6\d      10\n 4\s       6\n 5\d       4\n 5\s       3\n 4\d       2\n 3\s       2\n 6\s       1\n\n\n\n\n\n
 
@@ -135,22 +134,26 @@ Facit Score:     6\nRunning Score:  18
 [Vulnerable "EW"]
 [Deal "N:AK92.A972.63.T82 J53.T4.QJT4.KJ63 Q7.KQ8653.A82.A7 T864.J.K975.Q954"]
 [Declarer "S"]
-[Contract "4H"]
+[Contract "6H"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "E"]
 PASS 1H =1= PASS 2N =2=
-PASS 3H PASS 4H
+PASS 3H PASS 3S =3=
+PASS 4D PASS 4N
+PASS 5C =4= PASS 6H
 PASS PASS PASS 
 [Note "1: 5+ !H (11-20 hcp)"]
 [Note "2: Alert. Jacoby 2NT"]
+[Note "3: Alert. Cue bid, a !S stopper"]
+[Note "4: Alert. A=0/5 or 3/5"]
 [Play ""]
 [Hidden "EW"]
-{\n\n\nScore Table:
+{Score Table:
 
  6\h      10\n 5\h       4\n 5N       2\n 6N       1\n\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  22
+Facit Score:    10\nRunning Score:  28
 }
 
 [BCFlags "801f"]
@@ -167,22 +170,20 @@ Facit Score:     4\nRunning Score:  22
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "S"]
-2C PASS 2N =1= PASS
-3S PASS 4N =2= PASS
-5D =3= PASS 5H PASS
-5S =4= PASS 7S PASS
+2C PASS 2N PASS
+3S PASS 4N =1= PASS
+5D =2= PASS 5H PASS
+6C PASS 7S PASS
 PASS PASS 
-[Note "1: balanced (7-21 hcp)"]
-[Note "2: Alert. Blackwood 0314, for !S"]
-[Note "3: Alert. A=1/5 or 4/5"]
-[Note "4: Alert. no !S queen"]
+[Note "1: Alert. Blackwood 0314, for !S"]
+[Note "2: Alert. A=1/5 or 4/5"]
 [Play ""]
 [Hidden "EW"]
-{Score Table:
+{\nScore Table:
 
  5N      10\n 5\s       6\n 6\s       3\n 6N       2\n\n\n\n\n\n\n\n\n
 
-Facit Score:     0\nRunning Score:  22
+Facit Score:     0\nRunning Score:  28
 }
 
 [BCFlags "801f"]
@@ -195,29 +196,28 @@ Facit Score:     0\nRunning Score:  22
 [Vulnerable "All"]
 [Deal "N:AQJT53.AKJ.5.T93 964.Q.KJ9742.654 K7.T98732..AKQJ8 82.654.AQT863.72"]
 [Declarer "S"]
-[Contract "6H"]
+[Contract "7H"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "W"]
 PASS 1S =1= PASS 2H =2=
 PASS 3H =3= PASS 4N =4=
 PASS 5C =5= PASS 5D =6=
-PASS 5H =7= PASS 6H
+PASS 6C PASS 7H
 PASS PASS PASS 
 [Note "1: 5+ !S (11-20 hcp)"]
-[Note "2: Strength Lawrence structure (13-29 hcp)"]
+[Note "2: Strength Lawrence structure (13+ hcp)"]
 [Note "3: strong support (14-20 hcp)"]
 [Note "4: Alert. Blackwood 0314, for !H"]
 [Note "5: Alert. A=0/5 or 3/5"]
-[Note "6: hearts queen ask (13-26 hcp)"]
-[Note "7: Alert. no !H queen"]
+[Note "6: hearts queen ask (13+ hcp)"]
 [Play ""]
 [Hidden "EW"]
 {Score Table:
 
  7\s      10\n 7\c       7\n 7\h       4\n 6\s       4\n 6\h       2\n 6\c       2\n 5\c       1\n 5\h       1\n 5\s       1\n\n\n\n
 
-Facit Score:     2\nRunning Score:  24
+Facit Score:     4\nRunning Score:  32
 }
 
 [BCFlags "801f"]
@@ -245,7 +245,7 @@ PASS PASS
 
  4\h      10\n 5\h       9\n 3\h       4\n\n\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score:  34
+Facit Score:    10\nRunning Score:  42
 }
 
 [BCFlags "801f"]
@@ -275,7 +275,7 @@ PASS
 
  3N      10\n 4\c       7\n 5\c       4\n 4\s       4\n 4\h       2\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score:  44
+Facit Score:    10\nRunning Score:  52
 }
 
 [BCFlags "801f"]
@@ -302,7 +302,7 @@ Facit Score:    10\nRunning Score:  44
 
  3\d      10\n 2\s      10\n 2\h       8\n 1N       7\n 4\d       6\n 3\s       6\n 2N       4\n 3\h       4\n 5\d       3\n 4\s       3\n 3N       3\n 4\h       1\n
 
-Facit Score:     7\nRunning Score:  51
+Facit Score:     7\nRunning Score:  59
 }
 
 [BCFlags "801f"]
@@ -331,7 +331,7 @@ PASS PASS PASS
 
  3N       8\n E1\dX     8\n 4N       5\n 4\s       5\n 5\c       3\n 2N       3\n 3\s       2\n 4\c       1\n\n\n\n\n
 
-Facit Score:     2\nRunning Score:  53
+Facit Score:     2\nRunning Score:  61
 }
 
 [BCFlags "801f"]
@@ -343,24 +343,25 @@ Facit Score:     2\nRunning Score:  53
 [Dealer "S"]
 [Vulnerable "EW"]
 [Deal "N:AKQ.Q8.AK8.AKT93 JT.JT72.JT9.J742 987654.A5.Q543.Q 32.K9643.762.865"]
-[Declarer "N"]
-[Contract "6N"]
+[Declarer "S"]
+[Contract "7S"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "S"]
-PASS PASS 3N =1= PASS
-4H =2= PASS 4S =3= PASS
-6N PASS PASS PASS
-[Note "1: NT style (25-27 hcp)"]
-[Note "2: transfer  (10- hcp)"]
-[Note "3: transfer completed (25-27 hcp)"]
+PASS PASS 2C PASS
+2S PASS 4N =1= PASS
+5D =2= PASS 5H PASS
+5N PASS 7S PASS
+PASS PASS 
+[Note "1: Alert. Blackwood 0314, for !S"]
+[Note "2: Alert. A=1/5 or 4/5"]
 [Play ""]
 [Hidden "EW"]
-{\n\nScore Table:
+{\nScore Table:
 
  7N      11\n 7\s      10\n 6N       6\n 6\s       5\n 7\d       3\n 7\c       3\n 5N       2\n 6\d       1\n 6\c       1\n 5\s       1\n\n\n
 
-Facit Score:     6\nRunning Score:  59
+Facit Score:    10\nRunning Score:  71
 }
 
 [BCFlags "801f"]
@@ -378,19 +379,21 @@ Facit Score:     6\nRunning Score:  59
 [ParScore "0"]
 [Auction "W"]
 PASS 1C =1= PASS 1S
-PASS 2S PASS 4N =2=
-PASS 5H =3= PASS 6S
+PASS 2S PASS 4C
+PASS 4D =2= PASS 4N =3=
+PASS 5H =4= PASS 6S
 PASS PASS PASS 
 [Note "1: 3+ !C (11-21 hcp)"]
-[Note "2: Alert. Blackwood 0314, for !S"]
-[Note "3: Alert. A=2/5 or 5/5, Q(S)=0"]
+[Note "2: Alert. Cue bid, a !D stopper"]
+[Note "3: Alert. Blackwood 0314, for !S"]
+[Note "4: Alert. A=2/5 or 5/5, Q(S)=0"]
 [Play ""]
 [Hidden "EW"]
-{\n\nScore Table:
+{Score Table:
 
  7\s      10\n 6\s       4\n 5\s       1\n\n\n\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score:  63
+Facit Score:     4\nRunning Score:  75
 }
 
 [BCFlags "801f"]
@@ -422,7 +425,7 @@ Facit Score:     4\nRunning Score:  63
 
  6N      10\n 6\h       7\n 6\d       7\n 5N       3\n 5\h       2\n 5\d       1\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score:  73
+Facit Score:    10\nRunning Score:  85
 }
 
 [BCFlags "801f"]
@@ -452,7 +455,7 @@ PASS PASS PASS
 
  6N      10\n 6\d       6\n 7N       5\n 4N       4\n 7\d       4\n 6\s       3\n 6\h       3\n 5\s       2\n 5\h       2\n 5\d       1\n\n\n
 
-Facit Score:    10\nRunning Score:  83
+Facit Score:    10\nRunning Score:  95
 }
 
 [BCFlags "801f"]
@@ -486,7 +489,7 @@ PASS PASS
 
  3N      10\n 4N       8\n 4\h       6\n 5\h       4\n 6N       1\n 6\h       1\n\n\n\n\n\n\n
 
-Facit Score:     1\nRunning Score:  84
+Facit Score:     1\nRunning Score:  96
 }
 
 [BCFlags "801f"]
@@ -505,20 +508,19 @@ Facit Score:     1\nRunning Score:  84
 [Auction "W"]
 PASS 1C =1= PASS 2S
 PASS 3C =2= PASS 3S
-PASS 4N =3= PASS 5C =4=
+PASS 4N PASS 5C =3=
 PASS 6S PASS PASS
 PASS 
 [Note "1: 3+ !C (11-21 hcp)"]
 [Note "2: Alert. "]
-[Note "3: Alert. Blackwood 0314, for !S"]
-[Note "4: Alert. A=0/5 or 3/5"]
+[Note "3: Alert. A=0/5 or 3/5"]
 [Play ""]
 [Hidden "EW"]
-{Score Table:
+{\nScore Table:
 
  S6N     10\n N6N      6\n 6\s       6\n 6\c       3\n S5N      3\n N5N      2\n 5\s       2\n 5\h       2\n 6\h       1\n 5\c       1\n\n\n
 
-Facit Score:     6\nRunning Score:  90
+Facit Score:     6\nRunning Score: 102
 }
 
 [BCFlags "801f"]
@@ -547,7 +549,7 @@ PASS PASS
 
  4\h      11\n 3\h       8\n 5\h       7\n 5\c       4\n 3\c       4\n 2N       4\n 4\c       3\n 3N       3\n 6\h       2\n 6N       2\n 6\c       2\n\n
 
-Facit Score:     4\nRunning Score:  94
+Facit Score:     4\nRunning Score: 106
 }
 
 [BCFlags "801f"]
@@ -574,7 +576,7 @@ PASS PASS PASS
 
  5\d      10\n 4\d       6\n 2N       4\n 6\d       3\n 3N       2\n\n\n\n\n\n\n\n
 
-Facit Score:     2\nRunning Score:  96
+Facit Score:     2\nRunning Score: 108
 }
 
 [BCFlags "801f"]
@@ -603,6 +605,6 @@ PASS PASS 1S =1= PASS
 
  4\s      10\n 3\s       4\n\n\n\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 106
+Facit Score:    10\nRunning Score: 118
 }
 

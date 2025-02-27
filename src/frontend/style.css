@@ -522,3 +522,35 @@ span.bba {
 .blinking-element {
     animation: blink 2s infinite; /* Change the duration as needed */
 }
+
+.deal-cell {
+    position: relative;
+    cursor: pointer;
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid black;
+    padding: 5px;
+    width: 150px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    text-align: left;
+    font-size: 12px;
+    z-index: 100;
+    white-space: nowrap;
+}
+
+.deal-cell:hover .tooltip {
+    display: block;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.right-align {
+    text-align: right !important;
+    padding-right: 10px;
+}
+

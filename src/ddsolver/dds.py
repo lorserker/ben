@@ -49,7 +49,7 @@ except:  # could be mac/linux on aarch64
         DDS_PATH = 'libdds.so' # use system lib from libdds-dev
         dds = cdll.LoadLibrary(DDS_PATH)
 
-sys.stderr.write(f"Loaded lib { os.path.basename(DDS_PATH)}\n")
+#sys.stderr.write(f"Loaded lib { os.path.basename(DDS_PATH)}\n")
 
 DDS_VERSION = 20700    
 

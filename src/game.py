@@ -350,7 +350,7 @@ class Driver:
                 pbn_str += '[Scoring "MP"]\n'
             else:
                 pbn_str += '[Scoring "IMP"]\n'
-            if self.contract is None:
+            if self.contract is not None:
                 if (self.contract[-1] == "N" or self.contract[-1] =="S"):
                     pbn_str += f'[Score "NS {scoring.score(self.contract, self.vuln_ns, self.tricks_taken)}"]\n'
                 else:
@@ -448,7 +448,8 @@ class Driver:
             'human': self.human,
             'opponents': "BEN",
             'partner': "BEN",
-            'model': self.models.name
+            'model': self.models.name,
+            'version': '0.8.6.0'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -1051,7 +1052,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.5.1")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.0")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1118,25 +1119,26 @@ async def main():
             print("Playing IMPS mode")
 
     if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or models.use_bba_rollout:
-        print("BBA enabled")    
         from bba.BBA import BBABotBid
         bot = BBABotBid(None, None ,None, None, None, None, None, None)
+        print(f"BBA enabled. Version {bot.version()}")    
 
     if models.use_suitc:
-        print("SuitC enabled")
         from suitc.SuitC import SuitCLib
         suitc = SuitCLib(verbose)
+        print(f"SuitC enabled. Version {suitc.version()}")
 
     if models.pimc_use_declaring or models.pimc_use_defending:
-        print("PIMC enabled")
         from pimc.PIMC import BGADLL
         pimc = BGADLL(None, None, None, None, None, None, None)
         from pimc.PIMCDef import BGADefDLL
         pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
+        print(f"PIMC enabled. Version {pimc.version()}")
+        print(f"PIMCDef enabled. Version {pimcdef.version()}")
 
     from ddsolver import ddsolver
-    print("DDSolver enabled")
     dds = ddsolver.DDSolver()
+    print(f"DDSolver enabled. Version {dds.version()}")
 
     if args.boards:
         filename = args.boards
@@ -1324,9 +1326,7 @@ async def main():
             if args.boards and board_no[0] >= len(boards):
                 break
         np.empty(0) 
-        log_memory_usage()
         gc.collect()
-        log_memory_usage()
 
 if __name__ == '__main__':
     print(Back.BLACK)

@@ -13,7 +13,7 @@ class Models:
 
     def __init__(self, name, tf_version, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, trick_model, binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, 
                  no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count, min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_our_cc, bba_their_cc, use_bba, consult_bba, use_bba_rollout, use_bba_to_count_aces, estimator, claim, trust_NN, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
+                 lead_accept_nn, ns, ew, bba_our_cc, bba_their_cc, use_bba, consult_bba, use_bba_rollout, use_bba_to_count_aces, estimator, claim, trust_NN, check_remaining_cards, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
                  double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_constraints, 
                  pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
                  pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples, pimc_bidding_quality,
@@ -61,6 +61,7 @@ class Models:
         self.estimator = estimator
         self.claim = claim
         self.trust_NN = trust_NN
+        self.check_remaining_cards = check_remaining_cards
         self.double_dummy = double_dummy
         self.lead_from_pips_nt = lead_from_pips_nt
         self.lead_from_pips_suit = lead_from_pips_suit
@@ -180,6 +181,7 @@ class Models:
         double_dummy_calculator = conf.getboolean('eval', 'double_dummy_calculator', fallback=False)
         claim = conf.getboolean('cardplay', 'claim', fallback=True)
         trust_NN = conf.getfloat('cardplay', 'trust_NN', fallback=0)
+        check_remaining_cards = conf.getboolean('cardplay', 'check_remaining_cards', fallback=False)
         pimc_verbose = conf.getboolean('pimc', 'pimc_verbose', fallback=True)
         pimc_use_declaring = conf.getboolean('pimc', 'pimc_use_declaring', fallback=False)
         pimc_use_defending = conf.getboolean('pimc', 'pimc_use_defending', fallback=False)
@@ -325,6 +327,7 @@ class Models:
             estimator=estimator,
             claim=claim,
             trust_NN=trust_NN,
+            check_remaining_cards=check_remaining_cards,
             double_dummy=double_dummy,
             lead_from_pips_nt=lead_from_pips_nt,
             lead_from_pips_suit=lead_from_pips_suit,

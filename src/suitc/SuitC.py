@@ -51,6 +51,10 @@ class SuitCLib:
             print(f"*****************************************************************************{Fore.RESET}")
             sys.exit(1)
         self.verbose = verbose
+
+    def version(self):
+        self.suitc.version.restype = ctypes.c_char_p
+        return self.suitc.version().decode('utf-8')
     
     def calculate(self, input, east_vacant=None, west_vacant=None, trump = False, entries = 1 ):
         # if matchoint is true, then -M is used
