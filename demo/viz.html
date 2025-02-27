@@ -149,7 +149,10 @@
 
         if (deal.data.model) {
             document.querySelector('#model').innerHTML = deal.data.model
-       }
+        }
+        if (deal.data.version) {
+            document.querySelector('#model').innerHTML += "<br>" +deal.data.version
+        }
 
 
         let i = 0

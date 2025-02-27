@@ -1626,6 +1626,10 @@ class Sample:
                         if remaining_cards[i][j*8+k] == 1:
                             #print("Checking card", Card.from_code(j*8+k, xcards=True).symbol())
                             for t in range(trick_i):
+                                if p_cards[i][t][j*8+k] > 0.95:
+                                    #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
+                                    logical_play_scores[i] -= 0.3
+                                    continue
                                 if p_cards[i][t][j*8+k] > 0.9:
                                     #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
                                     logical_play_scores[i] -= 0.2

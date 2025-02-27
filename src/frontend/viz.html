@@ -163,6 +163,9 @@
                                 if (deal.data.model) {
                                     document.querySelector('#model').innerHTML = deal.data.model
                                 }
+                                if (deal.data.version) {
+                                    document.querySelector('#model').innerHTML += "<br>" +deal.data.version
+                                }
                                 document.getElementById("boardno").innerHTML=deal.board_number()
                                 let auction = new Auction(log['dealer'], log['bids'])
                                 auction.render(document.getElementById("auction"))

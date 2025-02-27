@@ -19,6 +19,9 @@
 </head>
 
 <body>
+    <div class="center">
+        <h1>API for BEN. Version 0.8.6.0</h1>
+    </div>
     <div id="loader"></div> 
     <div id="dealdiv">
         <h1>Enter Board information</h1>
