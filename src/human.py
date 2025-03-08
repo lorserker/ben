@@ -140,7 +140,7 @@ class HumanLead:
     async def async_lead(self):
         card_str = input('opening lead: ').strip().upper()
 
-        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[], shape=-1, hcp=-1, quality=None, who = "Human")
+        return CardResp(card=Card.from_symbol(card_str), candidates=[], samples=[], shape=-1, hcp=-1, quality=None, who = "Human", claim = -1)
 
 
 class HumanLeadSocket:
@@ -159,9 +159,9 @@ class HumanLeadSocket:
                 human_card = await self.socket.recv()
 
                 if (str(human_card).startswith("Cl") or str(human_card).startswith("Co")) :
-                    return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = None)
+                    return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = None, claim = -1)
                 else:    
-                    return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = "Human")
+                    return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = "Human", claim = -1)
 
             except Exception as ex:
                 print(f"Exception receiving card ", ex)
@@ -226,7 +226,7 @@ class HumanCardPlayer:
         card = input('your play: ').strip().upper()
         return deck52.encode_card(card)
 
-    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores):
+    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores):
         candidates = []
         samples = []
 
@@ -235,9 +235,9 @@ class HumanCardPlayer:
         # claim and conceed both starts with a C
 
         if (str(human_card).startswith("C")) :
-            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = None)
+            return CardResp(card=human_card, candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = None, claim = -1)
         else:    
-            return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = "Human")
+            return CardResp(card=Card.from_code(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = "Human", claim = -1)
 
 
 class HumanCardPlayerSocket(HumanCardPlayer):

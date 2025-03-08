@@ -257,7 +257,7 @@ if __name__ == '__main__':
     alternating = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("alternate=")), False)
     rotate = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("rotate=")), False)
     max_occurrences = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("max_occurrences=")), 99)
-    alert_supported = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("alert_supported=")), True)
+    alert_supported = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("alert_supported=")), False)
     version = 3
     add_missing_vulns = False
     max_filler_occurrences = 0

@@ -109,8 +109,9 @@ class CandidateCard:
 
 class CardResp:
 
-    def __init__(self, card, candidates, samples, shape, hcp, quality, who):
+    def __init__(self, card, candidates, samples, shape, hcp, quality, who, claim):
         self.card = card
+        self.claim = claim
         self.candidates = candidates
         self.samples = samples
         self.shape = shape
@@ -119,7 +120,7 @@ class CardResp:
         self.who = who
 
     def __str__(self):
-        return f"CardResp(card={self.card}, candidates={self.candidates}, samples={self.samples}, shape={self.shape}, hcp={self.hcp}, quality={self.quality}, who={self.who})"
+        return f"CardResp(card={self.card}, candidates={self.candidates}, samples={self.samples}, shape={self.shape}, hcp={self.hcp}, quality={self.quality}, who={self.who}, claim={self.claim})"
     
     def convert_to_floats(self, array):
         return [round(float(value), 1) if float(value) != int(value) else int(value) for value in array]
@@ -147,6 +148,8 @@ class CardResp:
             result['quality'] = str(round(self.quality,4))
         if hcp_values and hcp_values != -1:
             result['hcp'] = hcp_values
+        if self.claim and self.claim != -1:
+            result['claim'] = self.claim
         if shape_values and shape_values != -1:    
             result['shape'] = shape_values
         if len(self.candidates) > 0:

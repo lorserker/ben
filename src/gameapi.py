@@ -185,7 +185,8 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                         shape=-1,
                         hcp=-1, 
                         quality=None,
-                        who="Forced"
+                        who="Forced",
+                        claim = -1
                     )
                     return card_resp, player_i
                 # if play status = follow 
@@ -207,17 +208,18 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                             shape=-1,
                             hcp=-1,
                             quality=None,
-                            who="Follow"
+                            who="Follow", 
+                            claim = -1
                         )                        
                         return card_resp, player_i
 
                 # No obvious play, so we roll out
-                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
+                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
                 assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
 
-                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
+                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
 
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
@@ -250,7 +252,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
             # update shown out state
             if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
                 shown_out_suits[player_i].add(current_trick[0] // 8)
-                discards[player_i].add(card32)
+                discards[player_i].add((trick_i,card32))
 
         # sanity checks after trick completed
         assert len(current_trick) == 4
@@ -381,7 +383,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.0")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.1")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -584,7 +586,7 @@ def log_memory_usage():
 @app.before_request
 def log_request_and_memory_info():
     log_request_info()  # Call the request logging function
-    log_memory_usage()  # Call the memory usage logging function
+    #log_memory_usage()  # Call the memory usage logging function
 
 @app.after_request
 def log_response_info(response):
@@ -618,6 +620,7 @@ def bid():
         if request.args.get("tournament"):
             mp = request.args.get("tournament").lower() == "mp"
             models.matchpoint = mp
+        details = request.args.get("details")
         if request.args.get("explain"):
             explain = request.args.get("explain").lower() == "true"
         else:
@@ -664,6 +667,12 @@ def bid():
 
         print("Bidding: ",bid.bid, "Alert" if bid.alert else "", bid.explanation if bid.explanation else "")
         result = bid.to_dict()
+        if not details:
+            if "candidates" in result: del result["candidates"]
+            if "samples" in result: del result["samples"]
+            if "shape" in result: del result["shape"]
+            if "hcp" in result: del result["hcp"]
+
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
             logger.info(f"Calculations bid: {json.dumps(calculations)}")
@@ -689,6 +698,7 @@ def lead():
             models.matchpoint = mp
         # First we extract our hand and seat
         hand = request.args.get("hand").replace('_','.').upper()
+        details = request.args.get("details")
         if 'X' in hand:
             if '8' in hand or '9' in hand:
                 hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_play)
@@ -730,6 +740,11 @@ def lead():
         #card_resp.who = user
         print("Leading:", card_resp.card.symbol())
         result = card_resp.to_dict()
+        if not details:
+            if "candidates" in result: del result["candidates"]
+            if "samples" in result: del result["samples"]
+            if "shape" in result: del result["shape"]
+            if "hcp" in result: del result["hcp"]
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction,  "lead":result}
             logger.info(f"Calculations lead: {json.dumps(calculations)}")
@@ -758,6 +773,7 @@ def play():
         hand_str = request.args.get("hand").replace('_','.')
         dummy_str = request.args.get("dummy").replace('_','.')
         played = request.args.get("played")
+        details = request.args.get("details")
         cards = [played[i:i+2] for i in range(0, len(played), 2)]
         #print(played)
         #print(cards, len(cards))
@@ -868,7 +884,7 @@ def play():
         if (decl_i + 3) % 4 == position_i:
             cardplayer = 2
         if cardplayer == 1:
-            result = {"message": "Called as dummy or with wrong dealer / seat"}
+            result = {"message": f"Called as dummy or with wrong dealer / seat {contract}"}
             print(result)
             return json.dumps(result)
 
@@ -877,6 +893,11 @@ def play():
             card_resp, player_i =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
         print("Playing:", card_resp.card.symbol())
         result = card_resp.to_dict()
+        if not details:
+            if "candidates" in result: del result["candidates"]
+            if "samples" in result: del result["samples"]
+            if "shape" in result: del result["shape"]
+            if "hcp" in result: del result["hcp"]
         result["player"] = player_i
         result["matchpoint"] = mp
         result["MP_or_IMP"] = models.use_real_imp_or_mp

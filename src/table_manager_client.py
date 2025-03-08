@@ -104,7 +104,7 @@ class TMClient:
             'opponents': self.opponents,
             'partner': self.partner,
             'models': self.models.name,
-            'version': '0.8.6.0'
+            'version': '0.8.6.1'
         }
 
     async def run(self, biddingonly, restart):
@@ -392,7 +392,8 @@ class TMClient:
                             shape=-1,
                             hcp=-1, 
                             quality=None,
-                            who="Forced"
+                            who="Forced",
+                            claim = -1
                         )
                     # if play status = follow 
                     # and all out cards are equal value (like JT9)
@@ -408,15 +409,16 @@ class TMClient:
                                 shape=-1,
                                 hcp=-1,
                                 quality=None,
-                                who="Follow"
+                                who="Follow",
+                                claim = -1
                             )                        
 
                     # if card_resp is None, we have to rollout
                     if card_resp == None:
                         vuln = [self.vuln_ns, self.vuln_ew]
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, vuln, self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, vuln, self.models, card_players[player_i].get_random_generator())
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
-                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
+                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
                         card_resp.hcp = c_hcp
                         card_resp.shape = c_shp
 
@@ -460,7 +462,7 @@ class TMClient:
                 # update shown out state
                 if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
                     shown_out_suits[player_i].add(current_trick[0] // 8)
-                    discards[player_i].add(card32)
+                    discards[player_i].add((trick_i,card32))
                         
 
             # sanity checks after trick completed
@@ -575,7 +577,8 @@ class TMClient:
                     shape=-1,
                     hcp=-1,
                     quality=None,
-                    who = "NN"
+                    who = "NN",
+                    claim = -1
                 )
                 self.card_responses.append(cr)
 
@@ -683,7 +686,8 @@ class TMClient:
             shape=-1,
             hcp=-1, 
             quality=None,
-            who=who
+            who=who,
+            claim = -1
         )
         self.card_responses.append(cr)
 
@@ -958,7 +962,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.0")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.1")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

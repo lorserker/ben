@@ -132,7 +132,7 @@ def calculate_seed(input):
     hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
     return hash_integer
 
-def convert_to_probability_with_weight(x, states, counts, logical_scores):
+def convert_to_probability_with_weight(x, states, counts, logical_scores, discard_scores):
     """Compute weighted softmax values for each set of scores in x using counts."""
     
     # Initialize weights array with the correct shape
@@ -153,7 +153,7 @@ def convert_to_probability_with_weight(x, states, counts, logical_scores):
     # Apply weights to x before calculating probabilities
     # Ensure x is 2D: (num_samples, num_features) and weights is 1D: (num_samples,)
     
-    weighted_x = x * weights * logical_scores
+    weighted_x = x * weights * logical_scores * discard_scores
 
     sum_of_proba = np.sum(weighted_x, axis=0) 
 

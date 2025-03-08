@@ -129,7 +129,7 @@ def main():
             dealer_i = 'NESW'.index(parts[0])
             vuln = {'N-S': (True, False), 'E-W': (False, True), 'None': (False, False), 'Both': (True, True)}
             vuln_ns, vuln_ew = vuln[parts[1]]
-            bidder_bots = [BotBid([vuln_ns, vuln_ew], hand, models, sampler, i, dealer_i, verbose) for i, hand in enumerate(hands)]
+            bidder_bots = [BotBid([vuln_ns, vuln_ew], hand, models, sampler, i, dealer_i, DD, verbose) for i, hand in enumerate(hands)]
     
             auction = ['PAD_START'] * dealer_i
 
@@ -155,6 +155,7 @@ def main():
                 auctions.append(f'{parts[2:3][0]:4} {get_hcp(hands[dealer_i]):2.0f} {hands[dealer_i]} {candidates[0].bid:4} {candidates[0].insta_score:.3f} {"VULN" if vuln[parts[1]][dealer_i % 2] else "NO"} {i+1}')
                 different += 1
                 key = parts[2:3][0]
+                print("key: ", key)
                 if candidates[0].bid != "PASS":
                     key = key + "->" + candidates[0].bid
                     if key in wrongs:
@@ -176,7 +177,7 @@ def main():
                     wrongs.update({parts[2:3][0]: 0})
                 continue
 
-            #print(rights, wrongs)
+        print(rights, wrongs)
 
         unique_sorted_keys = sorted(set(auctions))
 

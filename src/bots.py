@@ -1,5 +1,6 @@
 import hashlib
 import json
+import pprint
 import time
 import sys
 import numpy as np
@@ -1263,7 +1264,7 @@ class BotLead:
         if partnersuit != None and partnersuit < 4:
             suit_adjust[partnersuit] = 0.5
 
-        # penalty for leading trump with a singleton
+        # penalty for leading trump with a singleton honor
         strain_i = bidding.get_strain_i(contract)
         if strain_i > 0 and strain_i < 5:
             suit_adjust[strain_i - 1] -= 0.2
@@ -1275,6 +1276,10 @@ class BotLead:
             if trumps == 'Q' :   
                 suit_adjust[strain_i - 1] -= 0.2
 
+        # Adding reward for leading from a sequence
+
+        # Penalty for leading from Queen against slam
+        # Double dummy is not good enough to handle this
 
         if len(accepted_samples) > 0:
             if self.verbose:
@@ -1287,11 +1292,11 @@ class BotLead:
                 if self.verbose:
                     print("Real scores")
                     print("\n".join(f"{Card.from_code(int(k), xcards=True)}: [{', '.join(f'{x:>5}' for x in v[:10])}..." for k, v in real_scores.items()))
+
                 if self.models.matchpoint:
                     expected_score_mp_arr = calculate.calculate_mp_score(real_scores)
                 else:
                     expected_score_imp_arr = calculate.calculate_imp_score(real_scores)
-
 
             for i, card_i in enumerate(lead_card_indexes):
                 if self.models.use_real_imp_or_mp_opening_lead:
@@ -1394,25 +1399,40 @@ class BotLead:
         if self.verbose:
             print(f"Accepted samples for opening lead: {accepted_samples.shape[0]}")
         for i in range(min(self.models.sample_hands_for_review, accepted_samples.shape[0])):
-            samples.append('%s %s %s %s - %.5f' % (
+            # Extract scores for the current sample index i
+            k_values = {k: v[i] for k, v in real_scores.items()}
+
+            # Check if all values in k_values are the same
+            if len(set(k_values.values())) == 1:
+                k_str = ""  # All values are identical, so print an empty string
+            else:
+                k_str = " ".join(f"{Card.from_code(int(k), xcards=True)}:{score}" for k, score in k_values.items())  # Format normally
+
+            samples.append('%s %s %s %s - %.5f | %s' % (
                 hand_to_str(self.handplay),
                 hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
                 hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
                 hand_to_str(accepted_samples[i,2,:], self.models.n_cards_bidding),
-                sorted_bidding_score[i]
+                sorted_bidding_score[i],
+                k_str  # Include formatted key-value scores
             ))
 
-        if self.verbose:
-            print(' Opening lead found in {0:0.1f} seconds.'.format(time.time() - t_start))
-        return CardResp(
+        card_resp = CardResp(
             card=Card.from_code(opening_lead52),
             candidates=candidate_cards,
             samples=samples, 
             shape=p_shp,
             hcp=p_hcp,
             quality=quality,
-            who=who
+            who=who,
+            claim = -1
         )
+        if self.verbose:
+            print(' Opening lead found in {0:0.1f} seconds.'.format(time.time() - t_start))
+            print(f"{Fore.LIGHTCYAN_EX}")
+            pprint.pprint(card_resp.to_dict(), width=200)
+            print(f"{Fore.RESET}")
+        return card_resp
 
     def get_opening_lead_candidates(self, auction):
         x_ftrs, b_ftrs = binary.get_auction_binary_for_lead(auction, self.handbidding, self.handplay, self.vuln, self.dealer, self.models)
@@ -1461,7 +1481,7 @@ class BotLead:
             print(f'Now simulate on {min(accepted_samples.shape[0], self.sampler.sample_hands_opening_lead)} deals to find opening lead')
                 
 
-    # We have more samples than we want to calculate on
+        # We have more samples than we want to calculate on
         # They are sorted according to the bidding trust, but above our threshold, so we pick based on scores
         if accepted_samples.shape[0] > self.sampler.sample_hands_opening_lead:
             # Normalize the scores to create a probability distribution
@@ -1521,7 +1541,7 @@ class BotLead:
                 if (k != 3): 
                     hand_str += '.'
             if self.verbose:
-                print("Opening lead being examined: ", Card.from_code(opening_lead52), n_accepted, end="")
+                print(f"Opening lead being examined: {Card.from_code(opening_lead52)} {n_accepted} samples. " , end="")
             t_start = time.time()
             hands_pbn = []
             for i in range(n_accepted):
@@ -1760,12 +1780,12 @@ class CardPlayer:
 
         return merged_cards
     
-    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores):
+    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores):
         t_start = time.time()
         samples = []
 
         for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
-            samples.append('%s %s %s %s - %.5f %.5f %.5f %.5f ' % (
+            samples.append('%s %s %s %s - %.5f %.5f %.5f %.5f %.5f %.5f ' % (
                 hand_to_str(players_states[0][i,0,:32].astype(int)),
                 hand_to_str(players_states[1][i,0,:32].astype(int)),
                 hand_to_str(players_states[2][i,0,:32].astype(int)),
@@ -1773,7 +1793,9 @@ class CardPlayer:
                 bidding_scores[i],
                 probability_of_occurence[i],
                 lead_scores[i],
-                play_scores[i]
+                play_scores[i],
+                logical_play_scores[i],
+                discard_scores[i]
             ))
         
         if quality < 0.1 and self.verbose:
@@ -2180,7 +2202,8 @@ class CardPlayer:
             shape=-1,
             hcp=-1, 
             quality=quality,
-            who = who
+            who = who, 
+            claim = -1 if not claim_cards else 13 - trick_i
         )
         return best_card_resp
 
@@ -2268,11 +2291,11 @@ class CardPlayer:
                     {
                         "expected_score_dd": e_score + adjust_card
                     }),
-                    msg= (f"|suit adjust={adjust_card}" if suit_adjust[adjust_card] != 0 else "")
+                    msg= (f"|suit adjust={adjust_card}" if adjust_card != 0 else "")
                 ))
             else:
                 candidate_cards.append(CandidateCard(
-                    card=card,
+                    card=Card.from_code(card52),
                     insta_score=insta_score,
                     expected_tricks_dd=round(e_tricks + adjust_card,3),
                     p_make_contract=e_make,
@@ -2285,7 +2308,7 @@ class CardPlayer:
                     {
                         "expected_score_dd": e_score + adjust_card
                     }),
-                    msg= (f"trump adjust={adjust_card}" if suit_adjust[adjust_card] != 0  else "")
+                    msg= (f"trump adjust={adjust_card}" if adjust_card != 0  else "")
                 ))
             current_card = card52
             current_insta_score = insta_score
@@ -2348,7 +2371,8 @@ class CardPlayer:
             shape=-1,
             hcp=-1, 
             quality=quality,
-            who = who
+            who = who, 
+            claim = -1 if not claim_cards else 13 - trick_i
         )
 
         return best_card_resp

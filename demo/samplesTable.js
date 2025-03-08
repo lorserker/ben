@@ -11,7 +11,7 @@ function generateSamplesTable(samples, tableId = "sampleLinesPlay") {
 
     // Static headers and corresponding labels
     const staticHeaders = ["Deal"];
-    const probabilityLabels = ["Bid Match", "Deal Prob", "Lead Prob", "Play Match"];
+    const probabilityLabels = ["Bid Score", "Deal Prob", "Lead Prob", "Play Score", "Logic Score", "Discard Score"];
 
     // Construct table headers dynamically
     const headers = staticHeaders.map(h => `<th>${h}</th>`).join('') +

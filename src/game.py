@@ -95,8 +95,8 @@ class AsyncBotLead(bots.BotLead):
         return self.find_opening_lead(auction, aceking)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores):
-        return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
+    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores):
+        return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
     
     
 class Driver:
@@ -449,7 +449,7 @@ class Driver:
             'opponents': "BEN",
             'partner': "BEN",
             'model': self.models.name,
-            'version': '0.8.6.0'
+            'version': '0.8.6.1'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -610,7 +610,8 @@ class Driver:
                             shape=-1,
                             hcp=-1, 
                             quality=None,
-                            who="Forced"
+                            who="Forced", 
+                            claim = -1
                         )
                 # if play status = follow 
                 # and all out cards are equal value (like JT9)
@@ -626,13 +627,14 @@ class Driver:
                                 shape=-1,
                                 hcp=-1,
                                 quality=None,
-                                who="Follow"
+                                who="Follow", 
+                                claim = -1
                             )                        
 
                 # if card_resp is None, we have to rollout
                 if card_resp == None:    
                     if isinstance(card_players[player_i], bots.CardPlayer):
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
                     else: 
@@ -644,11 +646,13 @@ class Driver:
                         c_shp = -1
                         quality = 1
                         probability_of_occurence = []
+                        logical_play_scores = []
+                        discard_scores = []
                         
                     await asyncio.sleep(0.01)
 
                     while card_resp is None:
-                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
+                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
 
                         if (str(card_resp.card).startswith("Conceed")) :
                                 self.claimedbydeclarer = (player_i == 3) or (player_i == 1)
@@ -733,7 +737,7 @@ class Driver:
                 # update shown out state
                 if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
                     shown_out_suits[player_i].add(current_trick[0] // 8)
-                    discards[player_i].add(card32)
+                    discards[player_i].add((trick_i,card32))
 
             # sanity checks after trick completed
             assert len(current_trick) == 4
@@ -838,7 +842,7 @@ class Driver:
             card52 = int(np.nonzero(card_players[player_i].hand52)[0][0])
             card32 = card52to32(card52)
 
-            card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1, quality=None, who=who)
+            card_resp = CardResp(card=Card.from_code(card52), candidates=[], samples=[], shape=-1, hcp=-1, quality=None, who=who, claim = -1)
 
             await self.channel.send(json.dumps({
                 'message': 'card_played',
@@ -1052,7 +1056,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.0")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.1")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

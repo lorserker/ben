@@ -86,7 +86,7 @@ class CardByCard:
         bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, (decl_i + 1) % 4, self.dealer_i, self.dds, False)
 
         card_resp = bot_lead.find_opening_lead(self.padded_auction, {})
-        card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, card_resp.hcp, card_resp.shape, card_resp.quality,'')
+        card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, card_resp.hcp, card_resp.shape, card_resp.quality,'', claim = -1)
         self.card_responses.append(card_resp)
         self.cards[card_resp.card.symbol()] = card_resp
         type(self).card_eval(self.play[0], card_resp)
@@ -162,7 +162,8 @@ class CardByCard:
                             shape=-1,
                             hcp=-1, 
                             quality=None,
-                            who="Forced"
+                            who="Forced", 
+                            claim = -1
                         )
                     # if play status = follow 
                     # and all out cards are equal value (like JT9)
@@ -178,15 +179,16 @@ class CardByCard:
                                 shape=-1,
                                 hcp=-1,
                                 quality=None,
-                                who="Follow"
+                                who="Follow", 
+                                claim = -1
                             )                        
 
                     # if card_resp is None, we have to rollout
                     if card_resp == None:
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, self.padded_auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, self.padded_auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
 
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
-                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores)
+                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
                         card_resp.hcp = c_hcp
                         card_resp.shape = c_shp
 
@@ -220,7 +222,7 @@ class CardByCard:
                 # update shown out state
                 if card32 // 8 != current_trick[0] // 8:  # card is different suit than lead card
                     shown_out_suits[player_i].add(current_trick[0] // 8)
-                    discards[player_i].add(card32)
+                    discards[player_i].add((trick_i,card32))
 
             # sanity checks after trick completed
             assert len(current_trick) == 4

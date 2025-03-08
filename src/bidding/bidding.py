@@ -173,7 +173,7 @@ def get_decl_i(contract):
 def get_bid_ids(auction, player_i, n_steps):
     i = player_i
     result = []
-    actual_bids = 0
+    bid_no = 0
     while len(result) < n_steps:
         if i >= len(auction):
             result.append(BID2ID['PAD_END'])
@@ -181,10 +181,10 @@ def get_bid_ids(auction, player_i, n_steps):
         call = auction[i]
         if not (call == 'PAD_START' and len(result) == 0):
             result.append(BID2ID[call])
-            actual_bids = actual_bids + 1
+            bid_no = bid_no + 1
         i = i + 4
 
-    return np.array(result), actual_bids
+    return np.array(result), bid_no
 
 def get_partner_suit(seat, auction):
     partner_seat = (seat + 2) % 4

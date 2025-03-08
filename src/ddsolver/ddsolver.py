@@ -189,6 +189,6 @@ class DDSolver:
 
         # Print the sorted counts for each key
         for key, sorted_counts in sorted_counts_dict.items():
-            print(f"Sorted counts for {Card.from_code(int(key))}:")
+            print(f"Sorted counts for {Card.from_code(int(key))} DD:")
             for value, count in sorted_counts:
                 print(f"  Tricks: {value}, Count: {count}")

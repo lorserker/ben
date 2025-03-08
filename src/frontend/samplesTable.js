@@ -11,14 +11,14 @@ function generateSamplesTable(samples, tableId = "sampleLinesPlay") {
 
     // Static headers and corresponding labels
     const staticHeaders = ["Deal"];
-    const probabilityLabels = ["Bid Match", "Deal Prob", "Lead Prob", "Play Match"];
+    const probabilityLabels = ["Bid Score", "Deal Prob", "Lead Prob", "Play Score", "Logic Score", "Discard Score"];
 
     // Construct table headers dynamically
     const headers = staticHeaders.map(h => `<th>${h}</th>`).join('') +
                     probabilityLabels.slice(0, probabilityCount).map(h => `<th class="right-align">${h}</th>`).join('');
 
     // Generate table rows
-    const rows = samples.map(sample => {
+    const rows = samples.map((sample, index) => { 
         const parts = sample.split(" - ");
         const deal = parts[0];
 
@@ -38,6 +38,7 @@ function generateSamplesTable(samples, tableId = "sampleLinesPlay") {
 
         return `
             <tr>
+                <td class="row-index">${index + 1}</td>  <!-- Added row index here -->
                 <td class="deal-cell" data-deal="${deal}">
                     ${deal} 
                     ${biddingLines.length > 0 ? `<br><small>${biddingLines.join("<br>")}</small>` : ""}
@@ -55,7 +56,7 @@ function generateSamplesTable(samples, tableId = "sampleLinesPlay") {
         </h3>
         <div id="${tableId}" class="hidden">
             <table border="1">
-                <thead><tr>${headers}</tr></thead>
+                <thead><tr><th></th>${headers}</tr></thead>
                 <tbody>${rows}</tbody>
             </table>
         </div>

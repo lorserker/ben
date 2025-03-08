@@ -20,7 +20,7 @@
 
 <body>
     <div>
-        <h1>API for BEN. Version 0.8.6.0</h1>
+        <h1>API for BEN. Version 0.8.6.1</h1>
     </div>
     <div id="loader"></div> 
     <div id="dealdiv">
@@ -47,6 +47,7 @@
         <div id="parsedData" style="display: hidden"></div>
 
         <input type="checkbox" id="old_server" data-default="false"><label for="old_server">Old model</label><br>
+        <input type="checkbox" id="details" data-default="true" checked><label for="details">Details</label><br>
         <input type="checkbox" id="matchpoint" data-default="false"><label for="matchpoint">Matchpoint</label><br>
         <input type="checkbox" id="explain" data-default="false"><label for="explain">Explain bid</label><br>
     
@@ -906,12 +907,13 @@
             const hostname = window.location.hostname;
             const protocol = window.location.protocol;
             const old_server = document.getElementById('old_server').checked;
+            const details = document.getElementById('details').checked;
             let port = 8085
             if (old_server) {
                 port = 8088
             }
 
-            var url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&tournament=${matchpoint}&explain=${explain}&format=${format}`;
+            var url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&tournament=${matchpoint}&explain=${explain}&format=${format}&details=${details}`;
             if (action == "play")
                 url += `&dummy=${dummy}&played=${played}`;
             if (action == "contract")

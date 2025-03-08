@@ -73,7 +73,7 @@ class Sample:
 
     def __init__(self, lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold_opponents, play_accept_threshold_declarer, play_accept_threshold_partner, min_play_accept_threshold_samples, bid_accept_play_threshold, 
                  bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, sample_boards_for_auction_opening_lead, 
-                 sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, check_remaining_cards, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, 
+                 sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, check_remaining_cards, check_discard, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, 
                  hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.lead_accept_threshold_suit = lead_accept_threshold_suit
@@ -100,6 +100,8 @@ class Sample:
         self.min_sample_hands_play_bad = min_sample_hands_play_bad
         self.sample_boards_for_play = sample_boards_for_play
         self.use_biddinginfo = use_biddinginfo
+        self.check_remaining_card = check_remaining_cards
+        self.check_discard = check_discard
         self.use_distance = use_distance
         self.no_samples_when_no_search = no_samples_when_no_search
         self.exclude_samples = exclude_samples
@@ -139,7 +141,8 @@ class Sample:
         min_sample_hands_play_bad = conf.getint('cardplay','min_sample_hands_play_bad',fallback=3)
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
-        check_remaining_cards = conf.getboolean('cardplay', 'check_remaining_cards', fallback=False)
+        check_remaining_card = conf.getboolean('cardplay', 'check_remaining_cards', fallback=False)
+        check_discard = conf.getboolean('cardplay', 'check_discard', fallback=False)
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
         no_samples_when_no_search = conf.getboolean('sampling', 'no_samples_when_no_search', fallback=False)
         no_biddingquality_after_bid_count = conf.getint('bidding', 'no_biddingquality_after_bid_count', fallback=12)
@@ -148,7 +151,7 @@ class Sample:
         sample_previous_round_if_needed = conf.getboolean('sampling', 'sample_previous_round_if_needed', fallback=False)        
         return cls(lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold_opponents, play_accept_threshold_declarer, play_accept_threshold_partner, min_play_accept_threshold_samples, 
                    bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, 
-                   sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, check_remaining_cards, use_distance, no_samples_when_no_search, 
+                   sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, check_remaining_card, check_discard, use_distance, no_samples_when_no_search, 
                    exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose)
 
     @property
@@ -494,8 +497,10 @@ class Sample:
         actual_bids = player["actual_bids"]        
         if bid_count > 0:
             X = np.zeros((lho_pard_rho.shape[0], n_steps, size), dtype=np.float16)
+            # Create the input for bidding sequence - we use our hand and will overwrite it in next step
             A = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + position) % 4, hand, vuln, models, models.n_cards_bidding)
             X[:, :, :] = A
+            # Overwrite hand information withthe samples
             X[:, :, 7+index:7+models.n_cards_bidding+index] = lho_pard_rho[:, position-1:position, :]
             X[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, position-1, :]).reshape((-1, 1)) - 10) / 4
             X[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, position-1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
@@ -574,7 +579,8 @@ class Sample:
             players.append({
                 "position": i,
                 "bid_count": bid_count,
-                "actual_bids": actual_bids
+                "actual_bids": actual_bids,
+                "active": any(x > 2 for x in actual_bids)
             })
         lho_bid_count = players[0]["bid_count"]
         pard_bid_count = players[1]["bid_count"]
@@ -591,8 +597,6 @@ class Sample:
             return accepted_samples, bidding_scores, c_hcp, c_shp, quality
 
 
-        # Sort players by bid_count in descending order
-        #players.sort(key=lambda x: x["bid_count"], reverse=True)
         # Rearrange the players in the order [2, 3, 1]
         players = [players[1], players[2], players[0]]
 
@@ -603,11 +607,12 @@ class Sample:
 
         # We will now validate the generated deals against the actual bidding.
         # We take one player at a time, and start with the most difficult one (based on number of bids)
-        for player in players:            
+        for player in players:         
+            print(player)   
             # Call process_bidding for the current player, updating all `min_scores` arrays
             lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho = self.process_bidding(
                 player, lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho, 
-                auction, nesw_i, hand, vuln, models, index, actual_bids, n_steps, size, models.bidder_model if player["position"] == 1 else models.opponent_model, self.verbose
+                auction, nesw_i, hand, vuln, models, index, actual_bids, n_steps, size, models.bidder_model if player["position"] == 2 else models.opponent_model, self.verbose
             )
             #print(f"Processed bidding for player {player['position']} lho_pard_rho shape", lho_pard_rho.shape)
             if lho_pard_rho.shape[0] == 0:
@@ -998,14 +1003,14 @@ class Sample:
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
         return min_scores
     
-    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
+    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
         if self.verbose:
             print(f"Called init_rollout_states {self.sample_hands_play} - Contract {bidding.get_contract(auction)} - Player {player_i}")
-        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores = self.init_rollout_states_iterative(trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand_str, public_hand_str,vuln, models, rng)
+        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = self.init_rollout_states_iterative(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng)
 
-        return rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores
+        return rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores
     
-    def init_rollout_states_iterative(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
+    def init_rollout_states_iterative(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
         hand_bidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_samples = self.sample_hands_play
         contract = bidding.get_contract(auction)
@@ -1231,13 +1236,19 @@ class Sample:
         if self.verbose:
             print("Bidding samples accepted: ",valid_bidding_samples)
 
-        if trick_i + 1 > 10 and self.check_remaining_cards:
+        if trick_i + 1 > 10 and self.check_remaining_card:
             # For the samples we have we will check if any of the remaining cards was the natural play at the previous trick
             logical_play_scores = self.check_remaining_cards(player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, bidding_states, models, contract)
             #print("logical_play_scores",logical_play_scores)
         else:
             logical_play_scores = np.ones(bidding_states[0].shape[0], dtype=np.float32)
 
+        if self.check_discard:
+            # For the samples we have we will check if any of the discards was unnatural with the actual sample
+            discard_scores = self.check_discards(player_i, trick_i, current_trick, leader_i, player_cards_played, discards, hidden_1_i, hidden_2_i, bidding_states, models, contract)
+            #print("discard_scores",discard_scores)
+        else:
+            discard_scores = np.ones(bidding_states[0].shape[0], dtype=np.float32)
 
         # With only few cards left we will not filter the samples according to the bidding.
         # We do find only unique, and when starting trick 11 we do not have more than 20 possible combinations
@@ -1253,6 +1264,7 @@ class Sample:
                 lead_scores = lead_scores[valid_mask]
                 play_scores = play_scores[valid_mask]
                 logical_play_scores = logical_play_scores[valid_mask]
+                discard_scores = discard_scores[valid_mask]
                 sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
                 # Randomize the samples, as we have to many
                 # As we have removed redundant samples we should probably multiply the score with the count of each sample
@@ -1278,6 +1290,7 @@ class Sample:
                 lead_scores = lead_scores[random_indices]
                 play_scores = play_scores[random_indices]
                 logical_play_scores = logical_play_scores[random_indices]
+                discard_scores = discard_scores[random_indices]
             else:            
                 # Count how many samples we found matching the bidding
                 valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
@@ -1309,6 +1322,7 @@ class Sample:
                         lead_scores = lead_scores[valid_mask]
                         play_scores = play_scores[valid_mask]
                         logical_play_scores = logical_play_scores[valid_mask]
+                        discard_scores = discard_scores[valid_mask]
                         sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
 
                         # As we have removed redundant samples we should probably multiply the score with the count of each sample
@@ -1341,6 +1355,7 @@ class Sample:
                         lead_scores = np.take(lead_scores, random_indices, axis=0)
                         play_scores = np.take(play_scores, random_indices, axis=0)
                         logical_play_scores = np.take(logical_play_scores, random_indices, axis=0)
+                        discard_scores = np.take(discard_scores, random_indices, axis=0)
                 else:
                     if self.verbose:
                         print("Enough samples above threshold: ",self.bid_accept_play_threshold)
@@ -1350,6 +1365,7 @@ class Sample:
                     lead_scores = lead_scores[valid_mask]
                     play_scores = play_scores[valid_mask]
                     logical_play_scores = logical_play_scores[valid_mask]
+                    discard_scores = discard_scores[valid_mask]
                     sorted_min_bid_scores = sorted_min_bid_scores[valid_mask]
         
         bidding_states = [state[:min(bidding_states[0].shape[0],n_samples)] for state in bidding_states]
@@ -1357,15 +1373,16 @@ class Sample:
         lead_scores = lead_scores[:bidding_states[0].shape[0]]
         play_scores = play_scores[:bidding_states[0].shape[0]]
         logical_play_scores = logical_play_scores[:bidding_states[0].shape[0]]
+        discard_scores = discard_scores[:bidding_states[0].shape[0]]
         quality = round(np.mean(sorted_min_bid_scores),5)
 
         if self.verbose:
             print(f"Returning {min(bidding_states[0].shape[0],n_samples)} {quality:.5f}")
         assert bidding_states[0].shape[0] > 0, "No samples generated for play"
 
-        probability_of_occurence = convert_to_probability_with_weight(sorted_min_bid_scores, bidding_states, counts, logical_play_scores)
+        probability_of_occurence = convert_to_probability_with_weight(sorted_min_bid_scores, bidding_states, counts, logical_play_scores, discard_scores)
 
-        return bidding_states, sorted_min_bid_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores
+        return bidding_states, sorted_min_bid_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models):
         n_steps = binary.calculate_step_bidding_info(auction)
@@ -1584,21 +1601,6 @@ class Sample:
             # Opening lead is allready checked
             if trick_i == 0 and p_i == 0:
                 continue
-            if player_i == 3:
-                play_accept_threshold = self.play_accept_threshold_opponents
-            else:
-                if p_i == 3:
-                    play_accept_threshold = self.play_accept_threshold_declarer
-                else:
-                    # We are defending, so we trust our partner
-                    play_accept_threshold = self.play_accept_threshold_partner 
-            if self.verbose:
-                print(f"Validating play for player {player_i} against player {p_i}. Threshold: {play_accept_threshold}" )
-
-            if play_accept_threshold == 0:
-                if self.verbose:
-                    print("Skipping validation of play as no threshold")
-                continue
             card_played_current_trick = []
             for i, card in enumerate(current_trick):
                 if (leader_i + i) % 4 == p_i:
@@ -1639,4 +1641,65 @@ class Sample:
                                     logical_play_scores[i] -= 0.1
 
         return logical_play_scores
-    
+
+    def check_discards(self, player_i, trick_i, current_trick, leader_i, player_cards_played, discards, hidden_1_i, hidden_2_i, states, models, contract):
+        # If they don't cover they dont have that card
+        # Should be implemented as a logical rule TODO
+        if self.verbose:
+            print("check discards")
+            print("discards", discards)
+            print(trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states[0].shape[0])
+        discard_scores = np.ones(states[0].shape[0], dtype=np.float32)
+
+        strain_i = bidding.get_strain_i(contract)
+        # Select playing models based on NT orsuit
+        playermodelindex = 0 if strain_i == 0 else 4
+
+        # We should probably look at the positon the card is played in.
+        # as it is often more significant which card to follow, than wich card to play
+
+        for p_i in [hidden_1_i, hidden_2_i]:
+            # Opening lead is allready checked
+            if trick_i == 0 and p_i == 0:
+                continue
+            if discards[p_i] == set():
+                continue
+            card_played_current_trick = []
+            for i, card in enumerate(current_trick):
+                if (leader_i + i) % 4 == p_i:
+                    card_played_current_trick.append(card)
+
+            # We have 11 rounds of play in the neural network, but might have only 10 for Lefty
+            if p_i == 0 and not models.opening_lead_included:
+                n_tricks_pred = trick_i + len(card_played_current_trick) - 1
+            else:
+                n_tricks_pred = trick_i + len(card_played_current_trick)
+                
+            # Depending on suit or NT we must select the right model
+            # 0-3 is for NT 4-7 is for suit
+            # When the player is instantiated the right model is selected, but here we get it from the configuration
+            # print("trick_i", trick_i, "len(card_played_current_trick)", len(card_played_current_trick), "n_tricks_pred", n_tricks_pred)
+            p_cards = models.player_models[p_i+playermodelindex].pred_fun(states[p_i][:, :n_tricks_pred, :])
+
+            # Check if opponent would have ruffed
+            if strain_i != 0:
+                remaining_cards = states[p_i][:, trick_i, :32]
+                for trick, card in discards[p_i]:
+                    suit = card // 8 + 1
+                    if suit == strain_i:
+                        # If ruffed we do not see it as a discard
+                        # We could check if the hand contains lower trump if ruffed with a honor
+                        continue 
+                    for i in range(remaining_cards.shape[0]):
+                        nn_card = np.argmax(p_cards[i][trick])
+                        if nn_card == card:
+                            continue
+                        if (nn_card // 8) + 1 == strain_i:
+                            # nn would have trumped it
+                            discard_scores[i] = 1 - p_cards[i][trick][nn_card]
+                            #print(f"{Card.from_code(nn_card, xcards=True).symbol()} should have been played {p_cards[i][trick][nn_card]:0.3f} at trick {trick+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
+
+            # If discarding AKQ or J the hand would normally have the card below
+            # If discard the hand would not give up a stopper. Like dropping a small from Kx, Qxx etc.
+
+        return discard_scores

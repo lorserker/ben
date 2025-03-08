@@ -48,6 +48,7 @@ class Claimer:
             # if we have a card lower than a missing card we swap it with the lovest hidden card in that suit
             hidden_for_suit = [c for c in hidden_cards if c >= i * 13 and c < (i + 1) * 13]
             #print("suit", i, hidden_for_suit)
+
             for j in range(13):
                 card52 = i * 13 + j
                 # Do not transfer cards if played in current trick
@@ -58,6 +59,10 @@ class Claimer:
                     if len(hidden_for_suit) == 0 or card52 < hidden_for_suit[0]: 
                         hands[0][card52] = 1
                     else:
+                        # Never swap to a higher card
+                        if hidden_for_suit[-1] < card52:
+                            hands[0][card52] = 1
+                            continue
                         hands[0][hidden_for_suit[-1]] = 1
                         for k in range(len(hidden_cards)):
                             if hidden_cards[k] == hidden_for_suit[-1]:
@@ -70,6 +75,10 @@ class Claimer:
                     if len(hidden_for_suit) == 0 or card52 < hidden_for_suit[0]: 
                         hands[index_for_dummy][card52] = 1
                     else:
+                        # Never swap to a higher card
+                        if hidden_for_suit[-1] < card52:
+                            hands[index_for_dummy][card52] = 1
+                            continue
                         hands[index_for_dummy][hidden_for_suit[-1]] = 1
                         for k in range(len(hidden_cards)):
                             if hidden_cards[k] == hidden_for_suit[-1]:
@@ -77,8 +86,10 @@ class Claimer:
                                 break  # Stop after the first replacement
                         hidden_for_suit = hidden_for_suit[:-1]
 
-        hands_pbn = ['N:' + ' '.join([deck52.deal_to_str(hand) for hand in hands])]
-
+        if self.verbose:
+            hands_pbn = ['N:' + ' '.join([deck52.deal_to_str(hand) for hand in hands])]
+            print("Claiming for player", player_i, hands_pbn)
+        
         hands[0] = deck52.deal_to_str(hands[0])
         hands[index_for_dummy] = deck52.deal_to_str(hands[index_for_dummy])
 
@@ -110,7 +121,7 @@ class Claimer:
                 hands[1] = deck52.deal_to_str(_hand_from_cards(52, remaining_cards))
             sampled_hands_pbn.append('N:' + ' '.join(hands))
 
-        #print(sampled_hands_pbn)
+        #print('\n'.join(sampled_hands_pbn))
         dd_solved = self.dd.solve(strain_i, (4 - len(current_trick)) % 4, current_trick, sampled_hands_pbn, 3)
         # Filter keys where all values in the list are equal
         equal_value_keys = {key: values[0] for key, values in dd_solved.items() if all(value == values[0] for value in values)}

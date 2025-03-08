@@ -40,7 +40,7 @@
 	</head> 
 <body> 
 <div class="center">
-    <h1>Play with BEN. Version 0.8.6.0</h1>
+    <h1>Play with BEN. Version 0.8.6.1</h1>
 </div>
 
 <div class="container {{ 'hidden' if play else '' }}">
