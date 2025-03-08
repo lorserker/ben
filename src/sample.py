@@ -608,7 +608,6 @@ class Sample:
         # We will now validate the generated deals against the actual bidding.
         # We take one player at a time, and start with the most difficult one (based on number of bids)
         for player in players:         
-            print(player)   
             # Call process_bidding for the current player, updating all `min_scores` arrays
             lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho = self.process_bidding(
                 player, lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho, 
