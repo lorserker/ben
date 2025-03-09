@@ -1801,6 +1801,9 @@ class CardPlayer:
         if quality < 0.1 and self.verbose:
             print("Bad Samples:")
             print(samples)
+            
+        # When play_status is discard, it might be a good idea to use PIMC even if it is not enabled
+                    
         if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
             pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
             if self.verbose:
