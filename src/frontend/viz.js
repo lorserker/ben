@@ -497,7 +497,8 @@ class PlayInfo {
 
 
         if ("samples" in this.data) {
-            html += generateSamplesTable(this.data.samples);
+            html += generateSamplesTable(thisdata.samples, bids);
+            bids += 1;
         }
 
         element.innerHTML = html

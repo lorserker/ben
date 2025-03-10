@@ -484,8 +484,6 @@ class BBABotBid:
             if new_bid < 5:
                 new_bid += 2
             bba_auction.append(bidding.ID2BID[new_bid])
-            if self.verbose:
-                print(f"BBABid in position {position}: {bidding.ID2BID[new_bid]} on {bba_hand[position]}" )
             position = (position + 1) % 4
 
         if self.verbose: 

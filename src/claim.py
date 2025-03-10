@@ -143,9 +143,8 @@ class Claimer:
             bad_plays = [key for key in non_max_keys if key in claim_cards]
         else:
             # None of the cards give same result for all combinations
-            # print(dd_solved)
             # So we just ignore our claimcheck
-            bad_plays = []
+            bad_plays = claim_cards
 
 
         if self.verbose:

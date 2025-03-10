@@ -20,7 +20,7 @@
 
 <body>
     <div>
-        <h1>API for BEN. Version 0.8.6.1</h1>
+        <h1>API for BEN. Version 0.8.6.2</h1>
     </div>
     <div id="loader"></div> 
     <div id="dealdiv">
@@ -656,7 +656,8 @@
                 }
             }
             if ("samples" in data) {
-                html += generateSamplesTable(data.samples);
+                html += generateSamplesTable(data.samples, bids);
+                bids += 1;
             }
             document.querySelector('#info').innerHTML = html + document.querySelector('#info').innerHTML
 
@@ -813,7 +814,8 @@
                 }
 
             if ("samples" in data) {
-                html += generateSamplesTable(data.samples);
+                html += generateSamplesTable(data.samples, bids);
+                bids += 1;
             }
 
             document.querySelector('#info').innerHTML = html + document.querySelector('#info').innerHTML

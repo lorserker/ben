@@ -1,8 +1,9 @@
-function generateSamplesTable(samples, tableId = "sampleLinesPlay") {
+function generateSamplesTable(samples, id) {
     if (!samples || samples.length === 0) {
         return '';
     }
 
+    tableId = "sampleLinesPlay" + id
     // Determine number of probability columns from the first sample
     const firstParts = samples[0].trim().split(" - ");
     const hasBidding = firstParts[1]?.includes("|");

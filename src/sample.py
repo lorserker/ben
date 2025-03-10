@@ -1294,9 +1294,9 @@ class Sample:
                 # Count how many samples we found matching the bidding
                 valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_accept_play_threshold)
                 if valid_bidding_samples < self.min_sample_hands_play: 
-                    if np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold) == 0:
+                    if np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold) < self.min_sample_hands_play_bad:
                         if self.verbose:
-                            sys.stderr.write(" We did not find any good samples\n")
+                            sys.stderr.write(" We did not find enough good samples\n")
                         # We just take top three as we really have no idea about what the bidding means
                         bidding_states = [state[:self.min_sample_hands_play_bad] for state in bidding_states]
 

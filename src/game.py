@@ -449,7 +449,7 @@ class Driver:
             'opponents': "BEN",
             'partner': "BEN",
             'model': self.models.name,
-            'version': '0.8.6.1'
+            'version': '0.8.6.2'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -1056,7 +1056,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.1")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.2")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

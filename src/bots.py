@@ -1262,7 +1262,7 @@ class BotLead:
         #print(self.seat, auction)
         partnersuit = bidding.get_partner_suit(self.seat, auction)
         if partnersuit != None and partnersuit < 4:
-            suit_adjust[partnersuit] = 0.5
+            suit_adjust[partnersuit] += 0.5
 
         # penalty for leading trump with a singleton honor
         strain_i = bidding.get_strain_i(contract)
@@ -1276,10 +1276,25 @@ class BotLead:
             if trumps == 'Q' :   
                 suit_adjust[strain_i - 1] -= 0.2
 
-        # Adding reward for leading from a sequence
-
+        level = int(contract[0])
         # Penalty for leading from Queen against slam
         # Double dummy is not good enough to handle this
+        if level >= 6:
+            suits = self.hand_str.split('.')
+            for i, suit in enumerate(suits):
+                if not suit:  # Skip empty suits
+                    continue
+        
+                first_card = suit[0]  # Get the first card in the suit
+        
+                if first_card == 'Q':
+                    if 'J' not in suit:
+                        suit_adjust[i] -= 1
+                if first_card == 'J':
+                    if 'T' not in suit:
+                        suit_adjust[i] -= 0.5
+        # Adding reward for leading from a sequence
+
 
         if len(accepted_samples) > 0:
             if self.verbose:
@@ -2103,7 +2118,7 @@ class CardPlayer:
 
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits):
         t_start = time.time()
-        if claim_cards is not None and len(claim_cards):
+        if claim_cards is not None and len(claim_cards) > 0:
             # DD we could claim, so let us check if one card is better
             bad_play = self.claimer.claimcheck(
                 strain_i=self.strain_i,
@@ -2116,12 +2131,11 @@ class CardPlayer:
                 current_trick=current_trick,
                 n_samples=50
             )
-            if self.verbose:
-                print(f"Claim cards: {claim_cards}, Bad claim cards {bad_play}")
+            claim_cards = [card for card in claim_cards if card not in bad_play]
         else:
-            if self.verbose:
-                print("No claim cards")
             bad_play = []
+        if self.verbose:
+            print(f"Claim cards after check: {claim_cards}, Bad claim cards {bad_play}")
 
         card_scores = self.next_card_softmax(trick_i)
         if self.verbose:
@@ -2229,7 +2243,7 @@ class CardPlayer:
 
     def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits):
         t_start = time.time()
-        if claim_cards is not None and len(claim_cards):
+        if claim_cards is not None and len(claim_cards) > 0:
             # DD we could claim, so let us check if one card is better
             bad_play = self.claimer.claimcheck(
                 strain_i=self.strain_i,
@@ -2242,8 +2256,12 @@ class CardPlayer:
                 current_trick=current_trick,
                 n_samples=50
             )
+            claim_cards = [card for card in claim_cards if card not in bad_play]
         else:
             bad_play = []
+
+        if self.verbose:
+            print(f"Claim cards after check: {claim_cards}, Bad claim cards {bad_play}")
 
         card_scores = self.next_card_softmax(trick_i)
         if self.verbose:

@@ -217,7 +217,7 @@
 
                                 document.querySelector('#solver').innerHTML = solverContent;
 
-                                let i = 0
+                                let bids = 0
                                 log['bids'].forEach(data => {
                                     document.querySelector('#info').innerHTML += `
                                         <p class="bid"><strong>Bid:</strong> ${data.bid}${data.alert=="True"? "*":""} ${data.who !== undefined? ' by ' + data.who : ''} ${data.explanation !== undefined ? data.explanation : ''}</p>
@@ -255,9 +255,9 @@
                                         }
                                     }
                                     if ("samples" in data) {
-                                        document.querySelector('#info').innerHTML += generateSamplesTable(data.samples);
+                                        document.querySelector('#info').innerHTML += generateSamplesTable(data.samples, bids);
+                                        bids = +1
                                     }
-                                    i += 1;
                                     }
                                 );
 
