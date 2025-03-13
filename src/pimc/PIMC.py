@@ -121,6 +121,7 @@ class BGADLL:
 
         self.constraints_updated = False
         self.verbose = verbose
+        self.trump = self.find_trump(self.suit)
 
     def version(self):
         dll = BGADLL.get_dll()  # Retrieve the loaded DLL classes through the singleton
@@ -176,6 +177,9 @@ class BGADLL:
         #    print("RHO", min_rho, max_rho)
 
         for i in range(4):
+            if i == self.trump:
+                # We will not change constraints on trump suit
+                continue
             # If samples show 5-card+ we only reduce by 1 
             if min_lho[i] >= 5:
                 min_lho[i] = max(min_lho[i] - 1 - self.already_shown_lho[i], 0)
@@ -467,9 +471,8 @@ class BGADLL:
             print("Strategy",self.models.pimc_use_fusion_strategy)
             raise ex 
 
-        trump = self.find_trump(self.suit)
         if self.verbose:
-            print("Trump:",trump)
+            print("Trump:",self.trump)
             print("mintricks",self.mintricks)
             
         card_result = {}
@@ -485,7 +488,7 @@ class BGADLL:
 
         start_time = time.time()
         try:
-            self.pimc.Evaluate(trump)
+            self.pimc.Evaluate(self.trump)
         except Exception as ex:
             print('Error BeginEvaluate:', ex)
             sys.exit(1)
@@ -527,7 +530,7 @@ class BGADLL:
                     if self.verbose:
                         print(f"max_playouts: {self.max_playout} Playouts: {self.pimc.Playouts} Combinations: {self.pimc.Combinations} Examined: {self.pimc.Examined}")
                         print(self.dummyhand.ToString(), self.declarerhand.ToString(), self.opposHand.ToString(), self.current_trick.ListAsString())
-                        print("Trump:",trump,"Tricks taken:",self.tricks_taken,"Tricks needed:",self.mintricks)
+                        print("Trump:",self.trump,"Tricks taken:",self.tricks_taken,"Tricks needed:",self.mintricks)
                         print("Voids",shown_out_suits)
                         print("East (RHO)", self.rho_constraints.ToString(),"West (LHO)", self.lho_constraints.ToString())
                     #print("Current trick",self.current_trick.ListAsString())

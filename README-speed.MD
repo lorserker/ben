@@ -96,6 +96,8 @@ But to improve the play we have also added a new play engine Perfect Information
 # Are we using PIMC as declarer or defender? 
 pimc_use_declaring = True
 pimc_use_defending = True
+# Use PIMC when discarding
+pimc_use_discarding = False
 # Max wait time for results from PIMC in seconds
 pimc_wait = 3
 # When should PIMC kick in

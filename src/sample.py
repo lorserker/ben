@@ -208,15 +208,6 @@ class Sample:
         if self.verbose:
             print(f"Found {len(accepted_samples)} samples for bidding. Quality={quality:.2f}, Samplings={samplings}, Auction={auction_so_far}")
         
-        if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and len(auction_so_far) >= 8:
-            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping last bidding round{Fore.RESET}\n")
-            auction_so_far_copy = auction_so_far.copy()
-            auction_so_far_copy = auction_so_far_copy[:-4]
-            needed_samples = needed_samples / 4
-            # Consider transferring found samples, but we also need score and quality then
-            accepted_samples = []
-            return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples, aceking)
-
 
         if self.sample_previous_round_if_needed and quality < self.bid_accept_threshold_bidding and len(auction_so_far) >= 8:
             sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping their doubles{Fore.RESET}\n")
@@ -244,6 +235,15 @@ class Sample:
                     return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples, aceking)
                 else:
                     sys.stderr.write(f"{Fore.YELLOW}Could not update auction {auction_so_far}{Fore.RESET}\n")
+
+        if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and len(auction_so_far) >= 12:
+            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping last bidding round{Fore.RESET}\n")
+            auction_so_far_copy = auction_so_far.copy()
+            auction_so_far_copy = auction_so_far_copy[:-4]
+            needed_samples = needed_samples / 4
+            # Consider transferring found samples, but we also need score and quality then
+            accepted_samples = []
+            return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples, aceking)
 
         return accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings
 

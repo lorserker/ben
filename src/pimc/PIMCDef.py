@@ -1,4 +1,3 @@
-from collections import Counter
 import traceback
 import util
 import sys
@@ -10,6 +9,8 @@ import time
 from binary import get_hcp, calculate_median
 import scoring
 import calculate
+from collections import Counter
+
 from bidding import bidding
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -37,7 +38,6 @@ else:
     BGADLL_LIB = 'N/A'
 
 BGADLL_PATH = os.path.join(BIN_FOLDER, BGADLL_LIB)
-
 
 class BGADefDLL:
 
@@ -90,8 +90,8 @@ class BGADefDLL:
         Play = dll["Play"]
         Constraints = dll["Constraints"]
         Extensions = dll["Extensions"]        
-        self.models = models       
-        self.sampler = sampler     
+        self.models = models
+        self.sampler = sampler
         self.max_playout = models.pimc_max_playouts
         self.wait = models.pimc_wait
         self.autoplay = models.autoplaysingleton
@@ -121,6 +121,7 @@ class BGADefDLL:
         self.player_i = player_i
         self.constraints_updated = False
         self.verbose = verbose
+        self.trump = self.find_trump(self.suit)
 
     def version(self):
         dll = BGADefDLL.get_dll()  # Retrieve the loaded DLL classes through the singleton
@@ -174,6 +175,14 @@ class BGADefDLL:
             print("already_shown_partner", self.already_shown_partner)
 
         for i in range(4):
+            if min_declarer[i] >= 5:
+                min_declarer[i] = max(min_declarer[i] - margin_declarer - self.already_shown_declarer[i], 0)
+            else: 
+                min_declarer[i] = max(min_declarer[i] - margin_declarer - self.already_shown_declarer[i], 0)
+            if max_declarer[i] <= 2:
+                max_declarer[i] = min(max_declarer[i] + margin_declarer - self.already_shown_declarer[i], 13)
+            else: 
+                max_declarer[i] = min(max_declarer[i] + margin_declarer - self.already_shown_declarer[i], 13)
             # If samples show 5-card+ we only reduce by 1 
             if min_partner[i] >= 5:
                 min_partner[i] = max(min_partner[i] - margin_partner - self.already_shown_partner[i], 0)
@@ -184,14 +193,6 @@ class BGADefDLL:
                 max_partner[i] = min(max_partner[i] + margin_partner - self.already_shown_partner[i], 13)
             else: 
                 max_partner[i] = min(max_partner[i] + margin_partner - self.already_shown_partner[i], 13)
-            if min_declarer[i] >= 5:
-                min_declarer[i] = max(min_declarer[i] - margin_declarer - self.already_shown_declarer[i], 0)
-            else: 
-                min_declarer[i] = max(min_declarer[i] - margin_declarer - self.already_shown_declarer[i], 0)
-            if max_declarer[i] <= 2:
-                max_declarer[i] = min(max_declarer[i] + margin_declarer - self.already_shown_declarer[i], 13)
-            else: 
-                max_declarer[i] = min(max_declarer[i] + margin_declarer - self.already_shown_declarer[i], 13)
 
 
         #if self.verbose:
@@ -478,9 +479,8 @@ class BGADefDLL:
             print("Strategy",self.models.pimc_use_fusion_strategy)
             raise ex
         
-        trump = self.find_trump(self.suit)
         if self.verbose:
-            print("Trump:",trump)
+            print("Trump:",self.trump)
             print("mintricks",self.mintricks)
 
         card_result = {}
@@ -496,7 +496,7 @@ class BGADefDLL:
             
         start_time = time.time()
         try:
-            self.pimc.Evaluate(trump)
+            self.pimc.Evaluate(self.trump)
         except Exception as ex:
             print('Error BeginEvaluate:', ex)
             sys.exit(1)
@@ -538,7 +538,7 @@ class BGADefDLL:
                     if self.verbose:
                         print(f"Max_playout: {self.max_playout} Playouts: {self.pimc.Playouts} Combinations: {self.pimc.Combinations} Examined:{self.pimc.Examined}")
                         print(self.dummyhand.ToString(), self.defendinghand.ToString(), self.opposHand.ToString(), self.current_trick.ListAsString())
-                        print("Trump:",trump,"Tricks taken:",self.tricks_taken,"Tricks needed:",self.mintricks)
+                        print("Trump:",self.trump,"Tricks taken:",self.tricks_taken,"Tricks needed:",self.mintricks)
                         print("Voids",shown_out_suits)
                         print(Macros.Player.West if player_i == 0 else Macros.Player.East)
                         print("self.player_i",self.player_i)

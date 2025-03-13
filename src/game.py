@@ -449,7 +449,7 @@ class Driver:
             'opponents': "BEN",
             'partner': "BEN",
             'model': self.models.name,
-            'version': '0.8.6.2'
+            'version': '0.8.6.3'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -1035,6 +1035,7 @@ async def main():
     parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
     parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
     parser.add_argument("--seed", type=int, default=-1, help="Seed for random")
+    parser.add_argument("--db", default="paronly", help="Db for board records")
 
     args = parser.parse_args()
 
@@ -1053,10 +1054,11 @@ async def main():
     facit_score = None
     boards = []
     event = ""
+    DB_NAME =  args.db
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.2")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.3")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1303,9 +1305,9 @@ async def main():
 
         if biddingonly == "False":
             if paronly <= imps:
-                with shelve.open(f"{config_path}/paronlydb") as db:
+                with shelve.open(f"{config_path}/{DB_NAME}") as db:
                     deal = driver.to_dict()
-                    print(f"{datetime.datetime.now():%H:%M:%S} Saving Board: {driver.hands} in {config_path}/paronlydb")
+                    print(f"{datetime.datetime.now():%H:%M:%S} Saving Board: {driver.hands} in {config_path}/{DB_NAME}")
                     db[uuid.uuid4().hex] = deal
 
         if outputpbn != "":

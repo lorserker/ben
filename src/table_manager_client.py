@@ -104,7 +104,7 @@ class TMClient:
             'opponents': self.opponents,
             'partner': self.partner,
             'models': self.models.name,
-            'version': '0.8.6.2'
+            'version': '0.8.6.3'
         }
 
     async def run(self, biddingonly, restart):
@@ -189,14 +189,15 @@ class TMClient:
 
         ns_name, ew_name, imp = details[0]  # Unpack the tuple
         # Extracted text from the second set of quotes
-        if len(details) > 1:
+        if len(details[0]) > 1:
             if self.seat == "North" or self.seat == "South":
                 self.partner = ns_name
                 self.opponents = ew_name
             else:
                 self.partner = ew_name
                 self.opponents = ns_name
-        
+        if self.verbose:
+            print(f"Partner: {self.partner}, Opponents: {self.opponents}")        
         # Perhaps we should use the IMP/MP from table manager
         # print(f"IMP/MP: {imp}")
         if self.models.matchpoint:
@@ -962,7 +963,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.2")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.3")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

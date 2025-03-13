@@ -314,9 +314,9 @@ class BotBid:
                 if hands_np.shape[0] == self.sampler.min_sample_hands_auction:
                     # We only have the minimum number of samples, so they are often of bad quality
                     # So we add more trust to the NN
-                    adjust += self.models.adjust_NN_Few_Samples*candidate.insta_score
+                    adjust += self.models.adjust_NN_Few_Samples * candidate.insta_score
                 else:
-                    adjust += self.models.adjust_NN*candidate.insta_score
+                    adjust += self.models.adjust_NN * candidate.insta_score
 
                 if self.verbose:
                     print("Adjust for trust in NN", adjust)
@@ -435,15 +435,19 @@ class BotBid:
                                 ev_candidates_mp_imp.append(ev_c)
 
                 if self.models.matchpoint:
-                    # Ajust is in points, we need to change it to some percentage
+                    if self.verbose:
+                        print(f"Sorting for MP {expected_score}")
                     candidates = sorted(ev_candidates_mp_imp, key=lambda c: (c.expected_mp + c.adjust, round(c.insta_score, 2)), reverse=True)
                 else:
-                    # Ajust is in points, we need to change it to some imps
+                    if self.verbose:
+                        print(f"Sorting for IMP {expected_score}")
                     candidates = sorted(ev_candidates_mp_imp, key=lambda c: (c.expected_imp + c.adjust, round(c.insta_score, 2)), reverse=True)
                 ev_candidates = ev_candidates_mp_imp
             else:
                 # If the samples are bad we just trust the neural network
                 if self.models.use_biddingquality  and quality < self.sampler.bidding_threshold_sampling:
+                    if self.verbose:
+                        print(f"Bidding quality to bad, so we select using NN {quality} - {self.sampler.bidding_threshold_sampling}")
                     candidates = sorted(ev_candidates, key=lambda c: (c.insta_score, c.expected_score + c.adjust), reverse=True)
                 else:
                     candidates = sorted(ev_candidates, key=lambda c: (c.expected_score + c.adjust, round(c.insta_score, 2)), reverse=True)
@@ -462,7 +466,13 @@ class BotBid:
             if sample_count == 0 and generate_samples:
                 if self.models.consult_bba:
                     bid_resp = self.bbabot.bid(auction)
-                    candidates.insert(0, CandidateBid(bid=bid_resp.bid, insta_score=-1, alert = True, who="BBA", explanation=bid_resp.explanation))
+                    found = False
+                    for candidate in candidates:
+                        if candidate.bid == bid_resp.bid:
+                            found = True
+                            break
+                    if not found:
+                        candidates.insert(0, CandidateBid(bid=bid_resp.bid, insta_score=-1, alert = True, who="BBA", explanation=bid_resp.explanation))
                 
             who = "NN" if candidates[0].who is None else candidates[0].who
             if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], quality, self.my_bid_no):    
@@ -1410,27 +1420,37 @@ class BotLead:
         else:
             opening_lead52 = deck52.card32to52(opening_lead)
 
-        samples = []
+        samples1 = []
+        samples2 = []
         if self.verbose:
             print(f"Accepted samples for opening lead: {accepted_samples.shape[0]}")
-        for i in range(min(self.models.sample_hands_for_review, accepted_samples.shape[0])):
+        for i in range(accepted_samples.shape[0]):
             # Extract scores for the current sample index i
             k_values = {k: v[i] for k, v in real_scores.items()}
 
             # Check if all values in k_values are the same
             if len(set(k_values.values())) == 1:
                 k_str = ""  # All values are identical, so print an empty string
+                samples1.append('%s %s %s %s - %.5f | %s' % (
+                    hand_to_str(self.handplay),
+                    hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
+                    hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
+                    hand_to_str(accepted_samples[i,2,:], self.models.n_cards_bidding),
+                    sorted_bidding_score[i],
+                    k_str  # Include formatted key-value scores
+                ))
             else:
                 k_str = " ".join(f"{Card.from_code(int(k), xcards=True)}:{score}" for k, score in k_values.items())  # Format normally
+                samples2.append('%s %s %s %s - %.5f | %s' % (
+                    hand_to_str(self.handplay),
+                    hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
+                    hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
+                    hand_to_str(accepted_samples[i,2,:], self.models.n_cards_bidding),
+                    sorted_bidding_score[i],
+                    k_str  # Include formatted key-value scores
+                ))
 
-            samples.append('%s %s %s %s - %.5f | %s' % (
-                hand_to_str(self.handplay),
-                hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
-                hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
-                hand_to_str(accepted_samples[i,2,:], self.models.n_cards_bidding),
-                sorted_bidding_score[i],
-                k_str  # Include formatted key-value scores
-            ))
+        samples = (samples2 + samples1)[:self.models.sample_hands_for_review]
 
         card_resp = CardResp(
             card=Card.from_code(opening_lead52),
@@ -1818,41 +1838,44 @@ class CardPlayer:
             print(samples)
             
         # When play_status is discard, it might be a good idea to use PIMC even if it is not enabled
-                    
-        if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
-            pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
-            if self.verbose:
-                print("PIMC result:")
-                print("\n".join(f"{Card.from_code(k)}: {v}" for k, v in pimc_resp_cards.items()))
-            assert pimc_resp_cards is not None, "PIMC result is None"
-            if self.models.pimc_ben_dd_declaring:
-                #print(pimc_resp_cards)
-                dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
-                #print(dd_resp_cards)
-                merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", self.models.pimc_ben_dd_declaring_weight, quality)
-            else:
-                merged_card_resp = pimc_resp_cards
-            card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)            
-        else:
-            if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
+        if play_status == "discard" and not self.models.pimc_use_discard:
+            dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+            card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)
+        else:                    
+            if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
                 pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
                 if self.verbose:
-                    print("PIMCDef result:")
+                    print("PIMC result:")
                     print("\n".join(f"{Card.from_code(k)}: {v}" for k, v in pimc_resp_cards.items()))
-
-                assert pimc_resp_cards is not None, "PIMCDef result is None"
-                if self.models.pimc_ben_dd_defending:
+                assert pimc_resp_cards is not None, "PIMC result is None"
+                if self.models.pimc_ben_dd_declaring:
                     #print(pimc_resp_cards)
                     dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                     #print(dd_resp_cards)
-                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef", self.models.pimc_ben_dd_defending_weight, quality)
+                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", self.models.pimc_ben_dd_declaring_weight, quality)
                 else:
                     merged_card_resp = pimc_resp_cards
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)            
-                
             else:
-                dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
-                card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)
+                if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
+                    pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
+                    if self.verbose:
+                        print("PIMCDef result:")
+                        print("\n".join(f"{Card.from_code(k)}: {v}" for k, v in pimc_resp_cards.items()))
+
+                    assert pimc_resp_cards is not None, "PIMCDef result is None"
+                    if self.models.pimc_ben_dd_defending:
+                        #print(pimc_resp_cards)
+                        dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+                        #print(dd_resp_cards)
+                        merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef", self.models.pimc_ben_dd_defending_weight, quality)
+                    else:
+                        merged_card_resp = pimc_resp_cards
+                    card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)            
+                    
+                else:
+                    dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+                    card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)
 
         if self.verbose:
             print(f'Play card response time: {time.time() - t_start:0.4f}')
@@ -1924,7 +1947,7 @@ class CardPlayer:
         if self.verbose:
             print('10 first samples:')
             print('\n'.join(hands_pbn[:10]))
-
+        
         t_start = time.time()
         if self.verbose:
             print("Samples:", n_samples, " Solving:",len(hands_pbn))
@@ -2156,6 +2179,8 @@ class CardPlayer:
             # Ignore cards not suggested by the NN
             if insta_score < self.models.pimc_trust_NN:
                 continue
+            if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
+                adjust_card += 0.5            
             # If we can take rest we don't adjust, then NN will decide if equal
             # Another option could be to resample the hands without restrictions
             if e_tricks == 13 - trick_i:
@@ -2163,7 +2188,7 @@ class CardPlayer:
                 if card32 // 8 != self.strain_i - 1:
                     adjust_card = 0
             if card52 in bad_play:
-                adjust_card = -0.2            
+                adjust_card += -0.2            
             expected_score = round(e_score + adjust_card)
 
             candidate_cards.insert(0,CandidateCard(
@@ -2237,7 +2262,7 @@ class CardPlayer:
                                 higher_cards -=1
                 # When playing the last 5 tricks we add priority to winners, and do not trust the neural network
                 if higher_cards == 0:
-                    return 1
+                    return max(card_nn.get(card32, 0), 0.5)
 
         return card_nn.get(card32, 0)
 
@@ -2286,6 +2311,8 @@ class CardPlayer:
             # Ignore cards not suggested by the NN
             if insta_score < self.models.pimc_trust_NN:
                 continue
+            if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
+                adjust_card += 0.5            
             # If we can take rest we don't adjust, then NN will decide if equal
             # Another option could be to resample the hands without restrictions
             if e_tricks == 13 - trick_i:
@@ -2293,7 +2320,7 @@ class CardPlayer:
                 if card32 // 8 != self.strain_i - 1:
                     adjust_card = 0
             if card52 in bad_play:
-                adjust_card = -0.2            
+                adjust_card += -0.2            
             expected_score = round(e_score + adjust_card)            
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
             expected_score = round(e_score + 20 * suit_adjust[card32 // 8],0)

@@ -180,7 +180,7 @@ def check_dotnet_versions():
 
 print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} check_configuration.py - Version 0.8.6.2")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} check_configuration.py - Version 0.8.6.3")
 if is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:

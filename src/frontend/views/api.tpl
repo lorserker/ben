@@ -20,7 +20,7 @@
 
 <body>
     <div>
-        <h1>API for BEN. Version 0.8.6.2</h1>
+        <h1>API for BEN. Version 0.8.6.3</h1>
     </div>
     <div id="loader"></div> 
     <div id="dealdiv">
@@ -87,6 +87,7 @@
         <button onclick="callAPI('bid')">Ask BEN for bid</button>&nbsp;&nbsp;
         <button onclick="callAPI('play')">Ask BEN for play</button><br><br>
         <button onclick="callAPI('lead')">Ask BEN for lead</button><br><br>
+        <button onclick="callAPI('claim')">Claim</button><br><br>
         <button onclick="callAPI('contract')">Ask BEN for contract</button>&nbsp;&nbsp;
         <button onclick="callAPI('explain')">Explain last bid</button><br><br>
         <div id="result"></div><br><br>
@@ -916,7 +917,7 @@
             }
 
             var url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&tournament=${matchpoint}&explain=${explain}&format=${format}&details=${details}`;
-            if (action == "play")
+            if (action == "play" || action == "claim")
                 url += `&dummy=${dummy}&played=${played}`;
             if (action == "contract")
                 url += `&dummy=${dummy}`;
@@ -988,6 +989,9 @@
                 }
                 if (action == 'explain') {
                     document.getElementById('result').innerText = `Meaning: ${data.explanation}`;
+                }
+                if (action == 'claim') {
+                    document.getElementById('result').innerText = `Response: ${data.result}`;
                 }
                 if ((action == 'play') || (action == 'lead')) {
                     const declarer = findDeclarer(bidding)

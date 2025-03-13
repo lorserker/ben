@@ -151,7 +151,7 @@ class BBABotBid:
         return EPBot().version()
 
     def bba_vul(self, vuln):
-        return vuln[1] * 2 + vuln[0]
+        return vuln[1] + vuln[0] * 2
 
     def get_random_generator(self):
         #print(f"{Fore.BLUE}Fetching random generator for bid {self.hash_integer}{Style.RESET_ALL}")
@@ -447,9 +447,13 @@ class BBABotBid:
             hand_str = hands[i].split('.')
             bba_hand.append(hand_str.copy())
             hand_str.reverse()
-
+            if self.position % 2 == 0:  # N (0) and S (2)
+                bba_vuln = self.bba_vul([self.vuln_wethey[0], self.vuln_wethey[1]])
+            else:
+                bba_vuln = self.bba_vul([self.vuln_wethey[1], self.vuln_wethey[0]])
             # The deal we get is always our hand first
-            self.players[i].new_hand(i, hand_str, dealer, self.bba_vul(self.vuln_wethey))
+            # First bid is opponent so we switch vulnerability
+            self.players[i].new_hand(i, hand_str, dealer, bba_vuln) 
 
         # Update bidding until now
         passes = 0
@@ -488,5 +492,6 @@ class BBABotBid:
 
         if self.verbose: 
             print(deal,bba_auction)
+        
         return bba_auction
 

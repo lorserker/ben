@@ -64,6 +64,7 @@ import conf
 import numpy as np
 from sample import Sample
 from util import get_play_status, get_singleton, get_possible_cards, calculate_seed
+from claim import Claimer
 
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
@@ -86,7 +87,7 @@ def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
     return os.getcwd()
 
-def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, cardplayer_i, verbose):
+def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, cardplayer_i, claim, verbose):
     
     level = int(contract[0])
     is_decl_vuln = [vuln_ns, vuln_ew, vuln_ns, vuln_ew][decl_i]
@@ -151,7 +152,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
 
     card_players[0].hand52[opening_lead52] -= 1
     card_i = 0
-
+    deck = x = np.ones((52))
     for trick_i in range(13):
         if trick_i != 0 and verbose:
             print(f"trick {trick_i+1} lead:{leader_i}")
@@ -164,6 +165,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                 # To get the state right we ask for the play when using Tf.2X
                 if verbose:
                     print('skipping opening lead for ',player_i)
+                deck[opening_lead52] -= 1
                 for i, card_player in enumerate(card_players):
                     card_player.set_real_card_played(opening_lead52, player_i)
                     card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=0, card=opening_lead)
@@ -171,6 +173,36 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
 
             card_i += 1
             if card_i >= len(play):
+                if claim:
+                    claimer = Claimer(verbose, dds)
+                    for i in range(52):
+                        if deck[i] != 0: 
+                            for j in range(4):
+                                if card_players[j].hand52[i] != 0:
+                                  deck[i] -= 1  
+                    #We need to find the missing cards and distribute between the 2 hidden hands
+                    canclaim = claimer.claimapi(
+                        strain_i=strain_i,
+                        player_i=player_i,
+                        hands52=[card_player.hand52 for card_player in card_players],
+                        n_samples=1,
+                        hidden_cards=deck,
+                        current_trick=current_trick52
+                    )
+                    if (claim <= canclaim):
+                        # player_i is relative to declarer
+                        claimedbydeclarer = (player_i == 3) or (player_i == 1)
+                        if claimedbydeclarer:
+                            msg = f"Contract: {contract} Accepted declarers claim of {claim} tricks"
+                        else:
+                            msg = f"Contract: {contract} Accepted opponents claim of {claim} tricks"
+                    else:
+                        if claimedbydeclarer:
+                            msg = f"Declarer claimed {claim} tricks - rejected {canclaim}"
+                        else:
+                            msg = f"Opponents claimed {claim} tricks - rejected {canclaim}"
+                    return None, player_i, msg
+
                 assert (player_i == cardplayer_i or (player_i == 1 and cardplayer_i == 3)), f"Cardplay order is not correct {play} {player_i} {cardplayer_i} (or another player to play a card)"
                 play_status = get_play_status(card_players[player_i].hand52,current_trick52, strain_i)
                 if verbose:
@@ -188,7 +220,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                         who="Forced",
                         claim = -1
                     )
-                    return card_resp, player_i
+                    return card_resp, player_i, play_status
                 # if play status = follow 
                 # and all out cards are equal value (like JT9)
                 # the play lowest if defending and highest if declaring
@@ -211,7 +243,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                             who="Follow", 
                             claim = -1
                         )                        
-                        return card_resp, player_i
+                        return card_resp, player_i, play_status
 
                 # No obvious play, so we roll out
                 rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
@@ -228,10 +260,11 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                     pprint.pprint(card_resp.to_dict(), width=200)
                     print(f"{Fore.RESET}")
             
-                return card_resp, player_i
+                return card_resp, player_i, "Calculated"
 
             card52 = Card.from_symbol(play[card_i]).code()
-            #print(play[card_i], card52, card_i, player_i, cardplayer_i)
+            # print(play[card_i], card52, card_i, player_i, cardplayer_i)
+            deck[card52] -= 1
             card32 = deck52.card52to32(card52)
 
             for card_player in card_players:
@@ -383,7 +416,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.2")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.3")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -823,47 +856,7 @@ def play():
             play_pbn_format = False
 
         if play_pbn_format:
-            tricks = []
-            current_trick = []
-            # Use a loop to group every 4 cards as a trick
-            for i in range(0, len(cards), 4):
-                ct = cards[i:i+4]
-                for card in cards[i:i+4]:
-                    current_trick.append(deck52.encode_card(card))
-                if len(ct) == 4:
-                    tricks.append(current_trick)
-                    current_trick = []
-
-            def print_trick(trick):
-                for card in trick:
-                    card = deck52.decode_card(card)
-                    print(card, end=" ")
-                print()
-
-            if len(tricks) > 0:
-                ordered_tricks = [tricks[0]]
-                for i in range(1, len(tricks)):
-                    previous_ordered_trick = ordered_tricks[-1]
-                    winner_index_in_ordered = deck52.get_trick_winner_i(previous_ordered_trick,  (strain_i - 1) % 5)
-                    # Map winner's position back to the original trick's positions
-                    original_trick = tricks[i - 1]
-                    winner_card = previous_ordered_trick[winner_index_in_ordered]
-                    winner_index_in_original = original_trick.index(winner_card)
-                    
-                    # Rotate the next trick to start with the winner's position in the original order
-                    next_trick = tricks[i]
-                    reordered_trick = next_trick[winner_index_in_original:] + next_trick[:winner_index_in_original]
-                    ordered_tricks.append(reordered_trick)
-
-                pbn_cards = []
-                for trick in ordered_tricks:
-                    for card in trick:
-                        card = deck52.decode_card(card)
-                        pbn_cards.append(card)
-                
-                cards = pbn_cards
-                for card in current_trick:
-                    cards.append(deck52.decode_card(card))
+            cards = extract_from_pbn(cards, strain_i)
 
         # Hand is following N,E,S,W
         hands = ['...', '...', '...', '...']
@@ -890,15 +883,15 @@ def play():
 
         #print(hands)
         with model_lock_play:
-            card_resp, player_i =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, verbose)
-        print("Playing:", card_resp.card.symbol())
+            card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, False, verbose)
+        print("Playing:", card_resp.card.symbol(), msg)
         result = card_resp.to_dict()
         if not details:
             if "candidates" in result: del result["candidates"]
             if "samples" in result: del result["samples"]
             if "shape" in result: del result["shape"]
             if "hcp" in result: del result["hcp"]
-        result["player"] = player_i
+        result["player"] = cardplayer
         result["matchpoint"] = mp
         result["MP_or_IMP"] = models.use_real_imp_or_mp
         if record: 
@@ -1100,6 +1093,139 @@ def contract():
         error_message = "An error occurred: {}".format(str(e))
         return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
 
+@app.route('/claim')
+def claim():
+    try:
+        t_start = time.time()
+        claim = request.args.get("tricks")
+        # First we extract the hands and seat
+        hand_str = request.args.get("hand").replace('_','.')
+        dummy_str = request.args.get("dummy").replace('_','.')
+        played = request.args.get("played")
+        details = request.args.get("details")
+        cards = [played[i:i+2] for i in range(0, len(played), 2)]
+        #print(played)
+        #print(cards, len(cards))
+        if len(cards) > 51:
+            result = {"message": "Game is over, no claim"}
+            print(result)
+            return json.dumps(result)
+        if hand_str == dummy_str:
+            result = {"message":"Hand and dummy are identical"}
+            print(result)
+            return json.dumps(result)
+
+        if "" == dummy_str:
+            result = {"message":"No dummy provided"}
+            print(result)
+            return json.dumps(result)
+        
+        seat = request.args.get("seat")
+        # Then vulnerability
+        v = request.args.get("vul")
+        vuln = []
+        vuln.append('@v' in v)
+        vuln.append('@V' in v)
+        # And finally the bidding, where we deduct dealer and our position
+        dealer = request.args.get("dealer")
+        dealer_i = dealer_enum[dealer]
+        position_i = dealer_enum[seat]
+        ctx = request.args.get("ctx")
+        # Split the string into chunks of every second character
+        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+        # Validate number of cards played according to position
+        auction = create_auction(bids, dealer_i)
+        contract = bidding.get_contract(auction)
+        decl_i = bidding.get_decl_i(contract)
+        strain_i = bidding.get_strain_i(contract)
+        user = request.args.get("user")
+        play_pbn_format = request.args.get("format")
+        if request.args.get("format"):
+            play_pbn_format = request.args.get("format").lower() == "true"
+        else:
+            play_pbn_format = False
+
+        if play_pbn_format:
+            cards = extract_from_pbn(cards, strain_i)
+
+        # Hand is following N,E,S,W
+        hands = ['...', '...', '...', '...']
+        hands[position_i] = hand_str
+        if ((decl_i + 2) % 4) == position_i:
+            # We are dummy
+            hands[decl_i] = dummy_str
+        else:        
+            hands[(decl_i + 2) % 4] = dummy_str
+
+        # Are we declaring
+        if decl_i == position_i:
+            cardplayer = 3
+        if decl_i == (position_i + 2) % 4:
+            cardplayer = 1
+        if (decl_i + 1) % 4 == position_i:
+            cardplayer = 0
+        if (decl_i + 3) % 4 == position_i:
+            cardplayer = 2
+        if cardplayer == 1:
+            result = {"message": f"Called as dummy or with wrong dealer / seat {contract}"}
+            print(result)
+            return json.dumps(result)
+
+        #print(hands)
+        if not claim:
+            claim = 13 - len(cards) // 4
+        result = {"tricks": claim}
+        with model_lock_play:
+            card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, claim, verbose)
+        result["result"] = msg
+        if record: 
+            calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result, "claim":claim}
+            logger.info(f"Calculations play: {json.dumps(calculations)}")
+        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        return json.dumps(result)
+    except Exception as e:
+        print(e)
+        handle_exception(e)
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify({"error": error_message}), 400 
+
+def extract_from_pbn(cards, strain_i):
+    tricks = []
+    current_trick = []
+            # Use a loop to group every 4 cards as a trick
+    for i in range(0, len(cards), 4):
+        ct = cards[i:i+4]
+        for card in cards[i:i+4]:
+            current_trick.append(deck52.encode_card(card))
+        if len(ct) == 4:
+            tricks.append(current_trick)
+            current_trick = []
+
+    if len(tricks) > 0:
+        ordered_tricks = [tricks[0]]
+        for i in range(1, len(tricks)):
+            previous_ordered_trick = ordered_tricks[-1]
+            winner_index_in_ordered = deck52.get_trick_winner_i(previous_ordered_trick,  (strain_i - 1) % 5)
+                    # Map winner's position back to the original trick's positions
+            original_trick = tricks[i - 1]
+            winner_card = previous_ordered_trick[winner_index_in_ordered]
+            winner_index_in_original = original_trick.index(winner_card)
+                    
+                    # Rotate the next trick to start with the winner's position in the original order
+            next_trick = tricks[i]
+            reordered_trick = next_trick[winner_index_in_original:] + next_trick[:winner_index_in_original]
+            ordered_tricks.append(reordered_trick)
+
+        pbn_cards = []
+        for trick in ordered_tricks:
+            for card in trick:
+                card = deck52.decode_card(card)
+                pbn_cards.append(card)
+                
+        cards = pbn_cards
+        for card in current_trick:
+            cards.append(deck52.decode_card(card))
+    return cards # HTTP status code 500 for internal server error
 
 if __name__ == "__main__":
     print(Back.BLACK)
