@@ -57,6 +57,9 @@ from colorama import Fore, Back, Style, init
 import gc
 import psutil
 
+import faulthandler
+faulthandler.enable()
+
 init()
 
 def handle_exception(e):
@@ -449,7 +452,7 @@ class Driver:
             'opponents': "BEN",
             'partner': "BEN",
             'model': self.models.name,
-            'version': '0.8.6.3'
+            'version': '0.8.6.4'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -1058,7 +1061,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.3")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.4")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

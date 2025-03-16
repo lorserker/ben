@@ -183,9 +183,9 @@ class CandidateBid:
         expected_tricks = f"{self.expected_tricks:5.2f}" if self.expected_tricks is not None else "---"
         adjust_str = f"{self.adjust:4.2f}" if self.adjust is not None else "---"
         alert_str = "alertable" if self.alert else "  "
-        who_str = f"who={self.who})" if self.who is not None else ""
-        explanation_str = f"who={self.explanation})" if self.explanation is not None else ""
-        return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, expected_mp={expected_mp_str}, expected_imp={expected_imp_str}, expected_tricks={expected_tricks}, adjust={adjust_str}, alert={alert_str} {who_str} {explanation_str})"
+        who_str = f", who={self.who}" if self.who is not None else ""
+        explanation_str = f", Explain={self.explanation})" if self.explanation is not None else ""
+        return f"CandidateBid(bid={bid_str}, insta_score={insta_score_str}, expected_score={expected_score_str}, expected_mp={expected_mp_str}, expected_imp={expected_imp_str}, expected_tricks={expected_tricks}, adjust={adjust_str}, alert={alert_str}{who_str}{explanation_str})"
 
     def with_expected_score(self, expected_score, expected_tricks, adjust):
         #print("Updating candidate bid",expected_score, expected_tricks, adjust)
@@ -229,7 +229,7 @@ class CandidateBid:
             result['who'] = self.who
 
         if self.explanation is not None:
-            result['who'] = self.explanation
+            result['explanation'] = self.explanation
 
         return result
 

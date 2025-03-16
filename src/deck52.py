@@ -103,6 +103,7 @@ def hand32to52str(hand32):
 
 def handxxto52str(handxx, n_cards=32):
     full_symbols = 'AKQJT98765432'
+    assert handxx.size == 4 * (n_cards // 4), f"Unexpected handxx size: {handxx.shape}"
     x = handxx.reshape((4, n_cards // 4))
     
     suits = [

@@ -20,7 +20,7 @@
 
 <body>
     <div>
-        <h1>API for BEN. Version 0.8.6.3</h1>
+        <h1>API for BEN. Version 0.8.6.4</h1>
     </div>
     <div id="loader"></div> 
     <div id="dealdiv">
@@ -629,16 +629,22 @@
                 html += `
                     <p><strong>Candidates:</strong>
                     <ul>
-                        ${data.candidates.map(candidate => `
-                            <li>
-                                Bid: ${candidate.call.replace("PASS","P").padStart(2, ' ')},
-                                ${candidate.expected_score !== undefined ? `Expected score: ${candidate.expected_score},` : ''}
-                                ${candidate.expected_mp !== undefined ? `Expected MP: ${candidate.expected_mp},` : ''}
-                                ${candidate.expected_imp !== undefined ? `Expected IMP: ${candidate.expected_imp},` : ''}
-                                ${candidate.insta_score !== undefined ? `NN Score: ${candidate.insta_score},` : ''}
-                                ${candidate.adjustment !== undefined ? `Adjusted: ${candidate.adjustment}` : ''}
-                            </li>                               
-                        `).join('')}
+                        ${data.candidates.map(candidate => {
+                            let bid = candidate.call.replace("PASS", "P"); // Replace only once
+                            // Helper function to ensure numbers are 5 characters wide
+                            const formatNumber = (num) => String(num).padStart(5, ' ');
+
+                            return `
+                                <li>
+                                    Bid: ${bid.length === 1 ? '&nbsp;' + bid : bid}
+                                    ${candidate.expected_score !== undefined ? `, Expected score: ${formatNumber(candidate.expected_score)}` : ''}
+                                    ${candidate.expected_mp !== undefined ? `, Expected MP: ${formatNumber(candidate.expected_mp)}` : ''}
+                                    ${candidate.expected_imp !== undefined ? `, Expected IMP: ${formatNumber(candidate.expected_imp)}` : ''}
+                                    ${candidate.who !== undefined ? `, NN Score: ${candidate.who}&nbsp;&nbsp` : candidate.insta_score !== undefined ? `, NN Score: ${formatNumber(candidate.insta_score)}` : ''}
+                                    ${candidate.adjustment !== undefined ? `, Adjusted: ${candidate.adjustment}` : ''}
+                                </li>                               
+                            `.replace(/\n\s+/g, ''); // Removes newlines + extra spaces;
+                        }).join('')}
                     </ul></p>
                     `;
             if (data.hcp && (data.hcp != -1)) {

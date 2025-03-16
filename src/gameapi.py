@@ -416,7 +416,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.3")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.4")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -698,7 +698,7 @@ def bid():
         with model_lock_bid:
             bid = hint_bot.bid(auction)
 
-        print("Bidding: ",bid.bid, "Alert" if bid.alert else "", bid.explanation if bid.explanation else "")
+        print("Bidding: ",bid.bid, "Alert" if bid.alert else "", bid.explanation if bid.explanation else "", f"by {bid.who}" if bid.who else "")
         result = bid.to_dict()
         if not details:
             if "candidates" in result: del result["candidates"]

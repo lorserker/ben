@@ -1,6 +1,7 @@
 import hashlib
 import sys
 import time
+import math
 
 import numpy as np
 import tensorflow as tf
@@ -15,6 +16,7 @@ from util import hand_to_str
 from collections import defaultdict
 from colorama import Fore, Back, Style, init
 from objects import Card
+import itertools
 
 init()
 
@@ -73,7 +75,7 @@ class Sample:
 
     def __init__(self, lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold_opponents, play_accept_threshold_declarer, play_accept_threshold_partner, min_play_accept_threshold_samples, bid_accept_play_threshold, 
                  bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, sample_boards_for_auction_opening_lead, 
-                 sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, check_remaining_cards, check_discard, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, 
+                 sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, max_unknown_cards_for_sampling, use_biddinginfo, check_remaining_cards, check_discard, use_distance, no_samples_when_no_search, exclude_samples, no_biddingqualitycheck_after_bid_count, 
                  hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose):
         self.lead_accept_threshold = lead_accept_threshold
         self.lead_accept_threshold_suit = lead_accept_threshold_suit
@@ -99,6 +101,7 @@ class Sample:
         self.min_sample_hands_play = min_sample_hands_play
         self.min_sample_hands_play_bad = min_sample_hands_play_bad
         self.sample_boards_for_play = sample_boards_for_play
+        self.max_unknown_cards_for_sampling = max_unknown_cards_for_sampling
         self.use_biddinginfo = use_biddinginfo
         self.check_remaining_card = check_remaining_cards
         self.check_discard = check_discard
@@ -140,6 +143,7 @@ class Sample:
         min_sample_hands_play = int(conf['cardplay']['min_sample_hands_play'])
         min_sample_hands_play_bad = conf.getint('cardplay','min_sample_hands_play_bad',fallback=3)
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
+        max_unknown_cards_for_sampling = int(conf['cardplay']['max_unknown_cards_for_sampling'])
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
         check_remaining_card = conf.getboolean('cardplay', 'check_remaining_cards', fallback=False)
         check_discard = conf.getboolean('cardplay', 'check_discard', fallback=False)
@@ -151,7 +155,7 @@ class Sample:
         sample_previous_round_if_needed = conf.getboolean('sampling', 'sample_previous_round_if_needed', fallback=False)        
         return cls(lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold_opponents, play_accept_threshold_declarer, play_accept_threshold_partner, min_play_accept_threshold_samples, 
                    bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, 
-                   sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, use_biddinginfo, check_remaining_card, check_discard, use_distance, no_samples_when_no_search, 
+                   sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, max_unknown_cards_for_sampling, use_biddinginfo, check_remaining_card, check_discard, use_distance, no_samples_when_no_search, 
                    exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose)
 
     @property
@@ -703,6 +707,79 @@ class Sample:
 
         return accepted_samples, bidding_scores, c_hcp, c_shp, quality
 
+
+    def count_combinations(self, n, k):
+        if k > n - k:  # Use the property that C(n, k) == C(n, n-k)
+            k = n - k
+        return math.factorial(n) // (math.factorial(k) * math.factorial(n - k))
+
+    def shuffle_cards(self, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
+        if self.verbose:    
+            print(f"{Fore.YELLOW}Called shuffle_cards - {rng.bit_generator.state['state']['state']}{Fore.RESET}")
+
+        #print("h_1_nesw", h_1_nesw)
+        #print("h_2_nesw", h_2_nesw)
+        cards_in_suit = models.n_cards_play // 4
+        cards_for_h1 = len(hidden_cards) // 2
+        # distribute all cards of suits which are known to have shown out
+        cards_shownout_suits = []
+        for i, suits in enumerate(shown_out_suits):
+            for suit in suits:
+                for card in filter(lambda x: x // cards_in_suit == suit, hidden_cards):
+                    if i == 1:
+                        cards_for_h1 -= 1
+                    cards_shownout_suits.append(card)
+
+        cards_to_shuffle = [c for c in hidden_cards if c not in cards_shownout_suits]
+
+        #print("cards_shownout_suits", cards_shownout_suits)
+
+        #print("cards_to_shuffle", cards_to_shuffle)
+
+        n_samples = self.count_combinations(len(cards_to_shuffle), cards_for_h1)
+        h1_h2 = np.zeros((n_samples, 2, models.n_cards_play), dtype=int)
+
+        # distribute the known cards
+        for i, suits in enumerate(shown_out_suits):
+            for suit in suits:
+                for card in filter(lambda x: x // cards_in_suit == suit, hidden_cards):
+                    #print(f"card: {card}, suit: {suit}, i: {i}")
+                    if i == 0:
+                        h1_h2[:, 1, card] += 1
+                    if i == 1:
+                        h1_h2[:, 0, card] += 1
+
+        def split_into_two(arr, k):
+            n = len(arr)
+            result = []
+            
+            # Generate all possible combinations of size k from the array
+            for comb in itertools.combinations(arr, k):
+                remaining = list(set(arr) - set(comb))  # The complement set
+                result.append((list(comb), remaining))  # Add the combination and its complement            
+            return result
+
+        cards = np.arange(len(cards_to_shuffle))
+        #print(f"Create combinations with {cards_for_h1} cards for h1. Hidden cards: {len(cards_to_shuffle)}. Combinations: {n_samples} ")
+        combinations = split_into_two(cards, cards_for_h1)
+        assert len(combinations) == n_samples, f"Expected {n_samples} combinations, got {len(combinations)}"
+
+        for i,comb in enumerate(combinations):
+            for j in range(cards_for_h1):
+                h1_h2[i, 0, cards_to_shuffle[comb[0][j]]] += 1
+            for j in range(len(cards_to_shuffle) - cards_for_h1):
+                h1_h2[i, 1, cards_to_shuffle[comb[1][j]]] += 1
+
+
+        for i in range(h1_h2.shape[0]):
+            sample = ('%s %s' % (
+                hand_to_str(h1_h2[i,0,:32].astype(int)),
+                hand_to_str(h1_h2[i,1,:32].astype(int)),
+            ))
+            #print(sample)
+
+        return h1_h2, False
+
     # shuffle the cards between the 2 hidden hands
     def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, public_hand_str, vuln, known_nesw, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
@@ -811,9 +888,15 @@ class Sample:
                         p_shp[other_hand_i, suit] -= shp_reduction_factor
                     cards_shownout_suits.append(card)
 
+        # With only 10 cards left we don't want to bias hcp and just sample all cards at once
         hidden_cards = [c for c in hidden_cards if c not in cards_shownout_suits]
-        ak_cards = [c for c in hidden_cards if c in {0, 1, 8, 9, 16, 17, 24, 25}]
-        small_cards = [c for c in hidden_cards if c not in {0, 1, 8, 9, 16, 17, 24, 25}]
+        if len(hidden_cards) > 10:
+            ak_cards = [c for c in hidden_cards if c in {0, 1, 8, 9, 16, 17, 24, 25}]
+            small_cards = [c for c in hidden_cards if c not in {0, 1, 8, 9, 16, 17, 24, 25}]
+        else:
+            ak_cards = []
+            small_cards = hidden_cards
+        #print("hidden_cards", hidden_cards)
 
         ak_out_i = np.zeros((n_samples, len(ak_cards)), dtype=int)
         # Fill all samples with the missing AK
@@ -831,6 +914,7 @@ class Sample:
 
         js = np.zeros(n_samples, dtype=int)
         # Distribute AK
+        loop = 0
         while True:
             s_all_r = s_all[js < ak_out_i.shape[1]]
             if len(s_all_r) == 0:
@@ -856,6 +940,8 @@ class Sample:
                 r_hcp[s_all_r[can_receive_cards], receivers[can_receive_cards]] -= 3 * hcp_reduction_factor
                 r_shp[s_all_r[can_receive_cards], receivers[can_receive_cards], cards[can_receive_cards] // cards_in_suit] -= shp_reduction_factor
             js[s_all_r[can_receive_cards]] += 1
+            loop += 1
+        #print("Loop counter", loop)
 
         js = np.zeros(n_samples, dtype=int)
         loop = 0
@@ -1002,6 +1088,18 @@ class Sample:
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
         return min_scores
     
+    def required_samples(self, X, max_samples, confidence=0.9999):
+        """Compute the number of samples needed to see all X combinations with a given confidence."""
+        if X <= 0:
+            raise ValueError("X must be a positive integer.")
+        
+        gamma = 0.5772156649  # Euler-Mascheroni constant
+        H_X = math.log(X) + gamma  # Approximate harmonic number
+        ln_term = math.log(1 / (1 - confidence))  # Log term for probability adjustment
+
+        return min(math.ceil(X * (math.log(X) + H_X + ln_term)), max_samples)
+
+
     def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
         if self.verbose:
             print(f"Called init_rollout_states {self.sample_hands_play} - Contract {bidding.get_contract(auction)} - Player {player_i}")
@@ -1035,38 +1133,47 @@ class Sample:
             hidden_cards = get_all_hidden_cards(visible_cards)
             hidden_cards_no = len(hidden_cards)
             
-            assert hidden_cards_no <= 26, f"Number of missing cards {hidden_cards_no}is higher than 26"
+            assert hidden_cards_no <= 26, f"Number of missing cards {hidden_cards_no} is higher than 26"
 
             known_nesw = player_to_nesw_i(player_i, contract)
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
             h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
-            sample_boards_for_play = self.sample_boards_for_play
-            # if hidden_cards_no < 12:
-            # sample_boards_for_play = sample_boards_for_play *10
-            # if hidden_cards_no < 7:
-            #     sample_boards_for_play = sample_boards_for_play // 4
-            # The more cards we know the less samples are needed to 
             # With 7 cards left we can generate all possible combinations
-            # This should probably be iterative, so we dfon't have to create 5.000 samples for 7 cards
-            h1_h2, use_bidding_info_stats = self.shuffle_cards_bidding_info(
-                sample_boards_for_play,
-                auction,
-                hand_str,
-                public_hand_str,
-                vuln,
-                known_nesw,
-                h_1_nesw,
-                h_2_nesw,
-                current_trick,
-                hidden_cards,
-                [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
-                [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
-                rng,
-                models
-            )
+            if hidden_cards_no <= self.max_unknown_cards_for_sampling:
+                h1_h2, use_bidding_info_stats = self.shuffle_cards(
+                    h_1_nesw,
+                    h_2_nesw,
+                    current_trick,
+                    hidden_cards,
+                    [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
+                    [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
+                    rng,
+                    models
+                )
+            else:
+                sample_boards_for_play = self.sample_boards_for_play
+                # The more cards we know the less samples are needed to 
+                # This should probably be iterative, so we don't have to create 5.000 samples for 7 cards
+                # sample_boards_for_play = self.required_samples(hidden_cards_no, sample_boards_for_play)
+                h1_h2, use_bidding_info_stats = self.shuffle_cards_bidding_info(
+                    sample_boards_for_play,
+                    auction,
+                    hand_str,
+                    public_hand_str,
+                    vuln,
+                    known_nesw,
+                    h_1_nesw,
+                    h_2_nesw,
+                    current_trick,
+                    hidden_cards,
+                    [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
+                    [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
+                    rng,
+                    models
+                )
 
             hidden_hand1, hidden_hand2 = h1_h2[:, 0], h1_h2[:, 1]
-
+            #print("hidden_hand1, hidden_hand2", hidden_hand1, hidden_hand2)
             states = [np.zeros((hidden_hand1.shape[0], 13, 298),dtype=np.int8) for _ in range(4)]
             # we can reuse the x_play array from card_players except the player's hand
             for k in range(4):
@@ -1140,7 +1247,8 @@ class Sample:
         unique_indices, counts = get_unique_samples(states)
 
         # Use the unique_indices to filter player_states
-        states = np.array(states)[:, unique_indices]
+        states = [state[unique_indices] for state in states]
+        
         if self.verbose:
             print(f"Unique states {states[0].shape[0]}")
 
@@ -1183,7 +1291,7 @@ class Sample:
         valid_bidding_samples_good = np.sum(sorted_min_bid_scores > self.bidding_threshold_sampling)
         #valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold)
         #print(valid_bidding_samples_good, valid_bidding_samples, sample_boards_for_play)
-        if bidding_states[0].shape[0] > 200 and valid_bidding_samples_good > 10:
+        if bidding_states[0].shape[0] > 2 * self.sample_hands_play and valid_bidding_samples_good > 10:
             # We drop the samples we are not going to use
             mask = sorted_min_bid_scores > self.bid_extend_play_threshold/2
             bidding_states = np.array(bidding_states)[:, mask]

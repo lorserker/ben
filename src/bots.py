@@ -467,11 +467,17 @@ class BotBid:
                 if self.models.consult_bba:
                     bid_resp = self.bbabot.bid(auction)
                     found = False
-                    for candidate in candidates:
+                    for i, candidate in enumerate(candidates):
                         if candidate.bid == bid_resp.bid:
+                            if self.verbose:
+                                print(f"BBA bid {bid_resp.bid} is in candidates")
+                            # Move the found candidate to the first position
+                            candidates.insert(0, candidates.pop(i))
                             found = True
                             break
                     if not found:
+                        if self.verbose:
+                            print(f"Adding BBA bid {bid_resp.bid} to candidates")
                         candidates.insert(0, CandidateBid(bid=bid_resp.bid, insta_score=-1, alert = True, who="BBA", explanation=bid_resp.explanation))
                 
             who = "NN" if candidates[0].who is None else candidates[0].who
@@ -864,7 +870,7 @@ class BotBid:
                     candidate.explanation = bid_resp.explanation
                     break
             else:
-                sys.stderr.write(f"{Fore.CYAN}Adding BBA bid as candidate: {bid_resp.bid} Alert: { bid_resp.alert}{Fore.RESET}\n")
+                sys.stderr.write(f"{Fore.CYAN}Adding BBA bid as candidate: {bid_resp.bid} Alert: { bid_resp.alert} Explaination: {bid_resp.explanation}{Fore.RESET}\n")
                 candidates.append(CandidateBid(bid=bid_resp.bid, insta_score=0.2, alert = bid_resp.alert, who="BBA", explanation=bid_resp.explanation))
 
         return candidates, passout
@@ -1774,24 +1780,24 @@ class CardPlayer:
 
     def check_pimc_constraints(self, trick_i, players_states, quality):
         # If we are declarer and PIMC enabled - use PIMC
-        self.pimc_declaring = self.models.pimc_use_declaring and trick_i  >= (self.models.pimc_start_trick_declarer - 1)
-        self.pimc_defending = self.models.pimc_use_defending and trick_i  >= (self.models.pimc_start_trick_defender - 1)
+        self.pimc_declaring = self.models.pimc_use_declaring and trick_i >= (self.models.pimc_start_trick_declarer - 1) and trick_i < (self.models.pimc_stop_trick_declarer - 1)
+        self.pimc_defending = self.models.pimc_use_defending and trick_i >= (self.models.pimc_start_trick_defender - 1) and trick_i < (self.models.pimc_stop_trick_defender - 1)
         if not self.pimc_defending and not self.pimc_declaring:
             return
         if self.models.pimc_constraints:
             if self.models.pimc_constraints_each_trick:
                 self.find_and_update_constraints(players_states, quality,self.player_i)
             else:
+                if self.pimc.constraints_updated:
+                    return
                 if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
-                    if trick_i >= (self.models.pimc_start_trick_declarer - 1) and not self.pimc.constraints_updated:
-                        if self.verbose:
-                            print("Declaring", self.pimc_declaring, self.player_i, trick_i)
-                        self.find_and_update_constraints(players_states, quality,self.player_i)
+                    if self.verbose:
+                        print("Declaring", self.pimc_declaring, self.player_i, trick_i)
+                    self.find_and_update_constraints(players_states, quality,self.player_i)
                 if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
-                    if trick_i >= (self.models.pimc_start_trick_defender - 1) and not self.pimc.constraints_updated:
-                        if self.verbose:
-                            print("Defending", self.pimc_declaring, self.player_i, trick_i)
-                        self.find_and_update_constraints(players_states, quality,self.player_i)
+                    if self.verbose:
+                        print("Defending", self.pimc_defending, self.player_i, trick_i)
+                    self.find_and_update_constraints(players_states, quality,self.player_i)
 
     def merge_candidate_cards(self, pimc_resp, dd_resp, engine, weight, quality):
         merged_cards = {}
