@@ -2050,29 +2050,31 @@ class CardPlayer:
 
         def sure_tricks_in_suit(our_hand1, our_hand2, opponents_hand):
             """Calculates the sure tricks in a single suit."""
-            our_cards = sorted(our_hand1 + our_hand2, reverse=True)  # Sorted in descending order
-            opponents_cards = sorted(opponents_hand, reverse=True)
-
             max_tricks_possible = max(len(our_hand1), len(our_hand2))
+            our_cards = sorted(our_hand1 + our_hand2, reverse=True)  # Sorted in descending order
+            if our_cards == []:
+                return 0
+            opponents_cards = sorted(opponents_hand, reverse=True)
+            if opponents_cards == []:
+                return max_tricks_possible / 100
 
-            if len(opponents_hand) > max_tricks_possible:
-                return -(len(opponents_hand) - max_tricks_possible) / 100
 
             sure_tricks = 0
+            opponent_highest = opponents_cards.pop(0)
+            # Perhaps we should count possible tricks
             for our_card in our_cards:
-                if not opponents_cards:
-                    sure_tricks += 1
-                    if sure_tricks >= max_tricks_possible:
-                        break
-                    continue
-
-                opponent_lowest = opponents_cards.pop()
-                if opponent_lowest > our_card:
+                
+                # Card 
+                if opponent_highest > our_card:
                     break
                 else:
                     sure_tricks += 1
                     if sure_tricks >= max_tricks_possible:
                         break
+
+            # We do not want to create tricks for the opponents
+            if len(opponents_hand)/2 > max_tricks_possible:
+                return (sure_tricks-(len(opponents_hand)/2 - max_tricks_possible)) / 100
 
             return sure_tricks / 100
 
@@ -2090,8 +2092,10 @@ class CardPlayer:
 
         return results
 
-    def calculate_suit_adjust(self, leader_i, play_status, strain_i, trump_adjust, tricks52):
-        # Only for dummy and declarer
+    def calculate_suit_adjust_for_nt(self, leader_i, play_status, strain_i, trump_adjust, tricks52):
+        # Only for dummy and declarer snd NT
+        if self.strain_i != 0:
+            return [0,0,0,0]
         if leader_i % 2 != 1:
             return [0,0,0,0]
         # Only adjustment if we are on lead
@@ -2175,7 +2179,7 @@ class CardPlayer:
         
         trump_adjust = self.calculate_trump_adjust(play_status)
     
-        suit_adjust = self.calculate_suit_adjust(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
+        suit_adjust = self.calculate_suit_adjust_for_nt(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
         candidate_cards = []
         
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
@@ -2303,7 +2307,7 @@ class CardPlayer:
 
         trump_adjust = self.calculate_trump_adjust(play_status)
 
-        suit_adjust = self.calculate_suit_adjust(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
+        suit_adjust = self.calculate_suit_adjust_for_nt(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
 
         candidate_cards = []
         
@@ -2362,7 +2366,7 @@ class CardPlayer:
                     {
                         "expected_score_dd": e_score + adjust_card
                     }),
-                    msg= (f"trump adjust={adjust_card}" if adjust_card != 0  else "")
+                    msg= (f"|suit adjust={adjust_card}" if adjust_card != 0  else "")
                 ))
             current_card = card52
             current_insta_score = insta_score
