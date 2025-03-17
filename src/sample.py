@@ -143,7 +143,7 @@ class Sample:
         min_sample_hands_play = int(conf['cardplay']['min_sample_hands_play'])
         min_sample_hands_play_bad = conf.getint('cardplay','min_sample_hands_play_bad',fallback=3)
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
-        max_unknown_cards_for_sampling = int(conf['cardplay']['max_unknown_cards_for_sampling'])
+        max_unknown_cards_for_sampling = int(conf['cardplay'].get('max_unknown_cards_for_sampling', 0))
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
         check_remaining_card = conf.getboolean('cardplay', 'check_remaining_cards', fallback=False)
         check_discard = conf.getboolean('cardplay', 'check_discard', fallback=False)

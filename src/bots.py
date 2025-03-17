@@ -992,8 +992,6 @@ class BotBid:
                 
                 if self.models.model_version < 3:
                     x_bid_np = x_bid_np.reshape((n_samples, n_steps_vals[turn_i], -1))
-                else:
-                    x_bid_np = x_bid_np.numpy()
                     
                 bid_np = x_bid_np[:,-1,:]
                 assert bid_np.shape[1] == 40
