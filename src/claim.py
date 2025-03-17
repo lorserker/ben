@@ -129,18 +129,23 @@ class Claimer:
         if equal_value_keys:
             # Find the maximum value among keys with all equal values
             max_value = max(equal_value_keys.values())
-            # Collect keys that:
-            # - Either have all equal values but are NOT the max
-            # - Or have non-uniform values
-            non_max_keys = [
-                key
-                for key, values in dd_solved.items()
-                if (key in equal_value_keys and equal_value_keys[key] != max_value)
-                or (key not in equal_value_keys)
-            ]
-            # This should probably be extended as we might have moved a card to be a pip
-            # and DDSolver is not aware of that, and only reports the first card from a sequence
-            bad_plays = [key for key in non_max_keys if key in claim_cards]
+            if len(hands[0]) - 3 > max_value:
+                # None of the cards give same result for all combinations
+                # So we just ignore our claimcheck
+                bad_plays = claim_cards
+            else:
+                # Collect keys that:
+                # - Either have all equal values but are NOT the max
+                # - Or have non-uniform values
+                non_max_keys = [
+                    key
+                    for key, values in dd_solved.items()
+                    if (key in equal_value_keys and equal_value_keys[key] != max_value)
+                    or (key not in equal_value_keys)
+                ]
+                # This should probably be extended as we might have moved a card to be a pip
+                # and DDSolver is not aware of that, and only reports the first card from a sequence
+                bad_plays = [key for key in non_max_keys if key in claim_cards]
         else:
             # None of the cards give same result for all combinations
             # So we just ignore our claimcheck
