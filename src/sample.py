@@ -10,7 +10,7 @@ import binary
 
 from bidding import bidding
 import deck52
-from util import get_all_hidden_cards, calculate_seed, convert_to_probability, convert_to_probability_with_weight
+from util import get_all_hidden_cards32, get_all_hidden_cards, convert_to_probability_with_weight
 from configparser import ConfigParser
 from util import hand_to_str
 from collections import defaultdict
@@ -713,13 +713,11 @@ class Sample:
             k = n - k
         return math.factorial(n) // (math.factorial(k) * math.factorial(n - k))
 
-    def shuffle_cards(self, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
+    def shuffle_cards(self, hidden_cards, shown_out_suits, n_cards_play, rng, models):
         if self.verbose:    
             print(f"{Fore.YELLOW}Called shuffle_cards - {rng.bit_generator.state['state']['state']}{Fore.RESET}")
 
-        #print("h_1_nesw", h_1_nesw)
-        #print("h_2_nesw", h_2_nesw)
-        cards_in_suit = models.n_cards_play // 4
+        cards_in_suit = n_cards_play // 4
         cards_for_h1 = len(hidden_cards) // 2
         # distribute all cards of suits which are known to have shown out
         cards_shownout_suits = []
@@ -732,12 +730,13 @@ class Sample:
 
         cards_to_shuffle = [c for c in hidden_cards if c not in cards_shownout_suits]
 
-        #print("cards_shownout_suits", cards_shownout_suits)
-
-        #print("cards_to_shuffle", cards_to_shuffle)
+        if self.verbose:
+            print("shown_out_suits", shown_out_suits)
+            print("cards_shownout_suits", cards_shownout_suits)
+            print("cards_to_shuffle", cards_to_shuffle)
 
         n_samples = self.count_combinations(len(cards_to_shuffle), cards_for_h1)
-        h1_h2 = np.zeros((n_samples, 2, models.n_cards_play), dtype=int)
+        h1_h2 = np.zeros((n_samples, 2, n_cards_play), dtype=int)
 
         # distribute the known cards
         for i, suits in enumerate(shown_out_suits):
@@ -760,7 +759,8 @@ class Sample:
             return result
 
         cards = np.arange(len(cards_to_shuffle))
-        #print(f"Create combinations with {cards_for_h1} cards for h1. Hidden cards: {len(cards_to_shuffle)}. Combinations: {n_samples} ")
+        if self.verbose:
+            print(f"Create combinations with {cards_for_h1} cards for h1. Hidden cards: {len(cards_to_shuffle)}. Combinations: {n_samples} ")
         combinations = split_into_two(cards, cards_for_h1)
         assert len(combinations) == n_samples, f"Expected {n_samples} combinations, got {len(combinations)}"
 
@@ -769,14 +769,6 @@ class Sample:
                 h1_h2[i, 0, cards_to_shuffle[comb[0][j]]] += 1
             for j in range(len(cards_to_shuffle) - cards_for_h1):
                 h1_h2[i, 1, cards_to_shuffle[comb[1][j]]] += 1
-
-
-        for i in range(h1_h2.shape[0]):
-            sample = ('%s %s' % (
-                hand_to_str(h1_h2[i,0,:32].astype(int)),
-                hand_to_str(h1_h2[i,1,:32].astype(int)),
-            ))
-            #print(sample)
 
         return h1_h2, False
 
@@ -1100,14 +1092,14 @@ class Sample:
         return min(math.ceil(X * (math.log(X) + H_X + ln_term)), max_samples)
 
 
-    def init_rollout_states(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
+    def init_rollout_states(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
         if self.verbose:
             print(f"Called init_rollout_states {self.sample_hands_play} - Contract {bidding.get_contract(auction)} - Player {player_i}")
-        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = self.init_rollout_states_iterative(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng)
+        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.init_rollout_states_iterative(trick_i, player_i, card_players, played_cards,player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng)
 
-        return rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores
+        return rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds
     
-    def init_rollout_states_iterative(self, trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
+    def init_rollout_states_iterative(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
         hand_bidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_samples = self.sample_hands_play
         contract = bidding.get_contract(auction)
@@ -1130,23 +1122,42 @@ class Sample:
                 [np.array(vis_cur_trick_nonpub)] +
                 [np.array(x, dtype=np.int32) for x in player_cards_played]
             )
-            hidden_cards = get_all_hidden_cards(visible_cards)
-            hidden_cards_no = len(hidden_cards)
-            
+            hidden_cards32 = get_all_hidden_cards32(visible_cards)
+            hidden_cards_no = len(hidden_cards32)
             assert hidden_cards_no <= 26, f"Number of missing cards {hidden_cards_no} is higher than 26"
 
             known_nesw = player_to_nesw_i(player_i, contract)
             h_1_nesw = player_to_nesw_i(hidden_1_i, contract)
             h_2_nesw = player_to_nesw_i(hidden_2_i, contract)
             # With 7 cards left we can generate all possible combinations
+            worlds =  []
             if hidden_cards_no <= self.max_unknown_cards_for_sampling:
+                if models.alphamju_declaring and (player_i == 1 or player_i == 3) and trick_i > 8:
+                    # Generate all worlds for alphamju
+                    hidden_cards52 = get_all_hidden_cards(played_cards)
+                    hidden_cards52 = [num for num in hidden_cards52 if card_players[player_i].public52[num] == 0]
+                    hidden_cards52 = [num for num in hidden_cards52 if card_players[player_i].hand52[num] == 0]
+                    worlds = []
+                    h1_h2, use_bidding_info_stats = self.shuffle_cards(
+                        hidden_cards52,
+                        [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
+                        52,
+                        rng,
+                        models
+                    )
+                    for i in range(h1_h2.shape[0]):
+                        sample = ('%s %s %s %s' % (
+                            hand_to_str(h1_h2[i,0,:52].astype(int),52),
+                            deck52.deal_to_str(card_players[player_i].hand52),
+                            hand_to_str(h1_h2[i,1,:52].astype(int),52),
+                            deck52.deal_to_str(card_players[player_i].public52)
+                        ))
+                        worlds.append(sample)
+
                 h1_h2, use_bidding_info_stats = self.shuffle_cards(
-                    h_1_nesw,
-                    h_2_nesw,
-                    current_trick,
-                    hidden_cards,
-                    [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
+                    hidden_cards32,
                     [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
+                    models.n_cards_play,
                     rng,
                     models
                 )
@@ -1165,7 +1176,7 @@ class Sample:
                     h_1_nesw,
                     h_2_nesw,
                     current_trick,
-                    hidden_cards,
+                    hidden_cards32,
                     [player_cards_played[hidden_1_i], player_cards_played[hidden_2_i]],
                     [shown_out_suits[hidden_1_i], shown_out_suits[hidden_2_i]],
                     rng,
@@ -1489,7 +1500,7 @@ class Sample:
 
         probability_of_occurence = convert_to_probability_with_weight(sorted_min_bid_scores, bidding_states, counts, logical_play_scores, discard_scores)
 
-        return bidding_states, sorted_min_bid_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores
+        return bidding_states, sorted_min_bid_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models):
         n_steps = binary.calculate_step_bidding_info(auction)

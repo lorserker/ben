@@ -103,7 +103,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     verbose = args.verbose
 
-    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.6.4{Fore.RESET}\n")
+    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.6.5{Fore.RESET}\n")
     sys.stderr.write(f'NS = {args.bidderNS}\n')
     sys.stderr.write(f'EW = {args.bidderEW}\n')    
     sys.stderr.write(f'DB = {args.db}\n')

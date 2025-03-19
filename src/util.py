@@ -7,7 +7,7 @@ import json
 
 from typing import NamedTuple, List
 
-from binary import get_cards_from_binary_hand, get_binary_hand_from_cards
+from binary import get_cards_from_binary_hand, get_binary_hand_from_cards32, get_binary_hand_from_cards
 
 def save_for_training(deal, auction):
     with open("training.ben", "a") as file:
@@ -78,13 +78,23 @@ def view_samples(hand1, hand2):
 
         print('%s\t%s' % (h1str, h2str))
 
-def get_all_hidden_cards(visible_cards):
+def get_all_hidden_cards32(visible_cards):
     all_cards_hand = np.array([
         [1, 1, 1, 1, 1, 1, 1, 6],
         [1, 1, 1, 1, 1, 1, 1, 6],
         [1, 1, 1, 1, 1, 1, 1, 6],
         [1, 1, 1, 1, 1, 1, 1, 6],
     ]).reshape(32)
+
+    return get_cards_from_binary_hand(all_cards_hand - get_binary_hand_from_cards32(visible_cards))
+
+def get_all_hidden_cards(visible_cards):
+    all_cards_hand = np.array([
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+        [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,],
+    ]).reshape(52)
 
     return get_cards_from_binary_hand(all_cards_hand - get_binary_hand_from_cards(visible_cards))
 

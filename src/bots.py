@@ -17,6 +17,7 @@ from bidding import bidding
 from collections import defaultdict
 
 import carding
+from alphamju.alphamju import alphamju
 from util import hand_to_str, expected_tricks_sd, p_defeat_contract, follow_suit, calculate_seed, find_vuln_text, save_for_training
 from colorama import Fore, Back, Style, init
 
@@ -1819,7 +1820,7 @@ class CardPlayer:
 
         return merged_cards
     
-    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores):
+    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores):
         t_start = time.time()
         samples = []
 
@@ -1840,6 +1841,12 @@ class CardPlayer:
         if quality < 0.1 and self.verbose:
             print("Bad Samples:")
             print(samples)
+        
+        if self.models.alphamju_declaring and (self.player_i == 1 or self.player_i == 3) and trick_i > 8:
+            suit = "NSHDC"[self.strain_i]
+            # We need to figure out the goal, how many tricks we have, and how many our goal is
+            card_resp = alphamju(13-trick_i, suit, self.player_i, current_trick52, worlds)
+
             
         # When play_status is discard, it might be a good idea to use PIMC even if it is not enabled
         if play_status == "discard" and not self.models.pimc_use_discard:

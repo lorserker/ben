@@ -87,7 +87,7 @@ def get_execution_path():
     # Get the directory where the program is started from either PyInstaller executable or the script
     return os.getcwd()
 
-def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, cardplayer_i, claim, verbose):
+def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strain_i, decl_i, auction, play, cardplayer_i, claim, aceking, verbose):
     
     level = int(contract[0])
     is_decl_vuln = [vuln_ns, vuln_ew, vuln_ns, vuln_ew][decl_i]
@@ -244,14 +244,15 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                             claim = -1
                         )                        
                         return card_resp, player_i, play_status
-
+                played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
+                print("played cards",played_cards)
                 # No obvious play, so we roll out
-                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
+                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
                 assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
 
-                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
+                card_resp =  card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
 
                 card_resp.hcp = c_hcp
                 card_resp.shape = c_shp
@@ -416,7 +417,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.4")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.5")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -765,6 +766,7 @@ def lead():
             from bba.BBA import BBABotBid
             bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position, hand, vuln, dealer_i, models.matchpoint, verbose)
             aceking = bba_bot.find_aces(auction)
+            bba_bot.get_sample(auction)
 
         hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, dds, verbose)
         with model_lock_play:
@@ -881,9 +883,10 @@ def play():
             print(result)
             return json.dumps(result)
 
-        #print(hands)
+        # Find ace and kings, when defending
+        aceking = {}
         with model_lock_play:
-            card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, False, verbose)
+            card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, False, aceking, verbose)
         print("Playing:", card_resp.card.symbol(), msg)
         result = card_resp.to_dict()
         if not details:
@@ -1175,8 +1178,11 @@ def claim():
         if not claim:
             claim = 13 - len(cards) // 4
         result = {"tricks": claim}
+        # Find ace and kings, when defending
+        aceking = {}
+
         with model_lock_play:
-            card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, claim, verbose)
+            card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, claim, aceking, verbose)
         result["result"] = msg
         if record: 
             calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result, "claim":claim}

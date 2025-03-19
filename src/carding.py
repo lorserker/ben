@@ -195,6 +195,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     try:
                         response_dict = json.loads(card)
                         optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
+                        # print("optimum_plays", optimum_plays)
                         # We just take the play for MAX as we really don't know how many tricks are needed
                         for play in optimum_plays:
                             # If we can take all tricks we drop SuitC
@@ -206,10 +207,12 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                         print(f"SuitC dropped as we can take all tricks {current_count} {original_count} ")
                                     return candidate_cards[0].card, who
                             # We can have more than one play for MAX
-                            # So currently we are then selecting lowest card. Should that be different
+                            # So currently we are then selecting higest card. Should that be different?
+                            # We should probably look at the samples to find the best play
                             if "MAX" in play["OptimumPlayFor"]:
                                 if len(play["GameTree"]) > 0:
                                     suitc_card = play["GameTree"]["T"]
+                                    break
                                 else:
                                     print("SuitC found no gametree")
                                     return candidate_cards[0].card, who
@@ -229,7 +232,8 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                         print(f"SuitC found: {suit_str}{suitc_card}")
                     # Only play the card from SuitC if it was a candidate
                     for candidate_card in candidate_cards:
-                        if claim_cards is not None and candidate_card.card.code() not in claim_cards:
+                        if claim_cards != [] and candidate_card.card.code() not in claim_cards:
+                            print(f"Claim card not in candidate cards {claim_cards} {candidate_card.card.code()}")
                             continue
                         if candidate_card.card.symbol() == f"{suit_str}{suitc_card}":
                             # Only play SuitC if not losing to much DD
@@ -256,6 +260,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                             save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays, hand_str, dummy_str)
                             if models.force_suitc:
                                 return candidate_card.card, "SuitC-Forced"
+                    print("SuitC card not in candidate cards")
                 return candidate_cards[0].card, who
     
     if original_count == current_count:

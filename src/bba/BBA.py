@@ -435,6 +435,34 @@ class BBABotBid:
 
         return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA", quality=None, alert = bba_alert, explanation=meaning)
 
+    def get_sample(self, auction):
+
+        arr_bids = []
+        for k in range(len(auction)):
+            bidid = bidding.BID2ID[auction[k]]
+            if bidid < 2:
+                continue
+            if bidid < 5:
+                bidid = bidid - 2
+            arr_bids.append(f"{bidid:02}")
+
+        no_bids = len(arr_bids)
+
+        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+
+        arr_bids.extend([''] * (64 - len(arr_bids)))
+        self.players[self.position].set_arr_bids(arr_bids)
+        arr_suits = self.players[self.position].get_arr_suits()
+        print("How BBA think the hands looks like:")
+        for i in reversed(range(4)):
+            print(f"\t{arr_suits[i]}")
+        for i in reversed(range(4)):
+            print(f"{arr_suits[12 + i]}\t\t{arr_suits[4 + i]}")
+        for i in reversed(range(4)):
+            print(f"\t{arr_suits[8 + i]}")
+
+        return arr_suits
+
     def bid_hand(self, auction, deal):
         # To get deterministic result the hand is always North
         position = 0

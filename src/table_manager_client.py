@@ -107,7 +107,7 @@ class TMClient:
             'opponents': self.opponents,
             'partner': self.partner,
             'models': self.models.name,
-            'version': '0.8.6.4'
+            'version': '0.8.6.5'
         }
 
     async def run(self, biddingonly, restart):
@@ -143,13 +143,17 @@ class TMClient:
         if self.bot.bbabot is not None and self.models.use_bba_to_count_aces:
             aceking = self.bot.bbabot.find_aces(auction)
 
+        if self.verbose:
+            if self.bot.bbabot is not None:
+                self.bot.bbabot.get_sample(auction)
+
         opening_lead_card = await self.opening_lead(auction, aceking)
         opening_lead52 = Card.from_symbol(opening_lead_card).code()
 
         if self.player_i != (self.decl_i + 2) % 4:
             self.dummy_hand_str = await self.receive_dummy()
 
-        await self.play(auction, opening_lead52)
+        await self.play(auction, opening_lead52, aceking)
 
         await self.receive_line()
         
@@ -281,7 +285,7 @@ class TMClient:
             # just send that we are ready for the opening lead
             return await self.receive_card_play_for(on_lead_i, 0)
 
-    async def play(self, auction, opening_lead52):
+    async def play(self, auction, opening_lead52, aceking):
         contract = bidding.get_contract(auction)
         
         level = int(contract[0])
@@ -420,9 +424,10 @@ class TMClient:
                     # if card_resp is None, we have to rollout
                     if card_resp == None:
                         vuln = [self.vuln_ns, self.vuln_ew]
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, vuln, self.models, card_players[player_i].get_random_generator())
+                        played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, vuln, self.models, card_players[player_i].get_random_generator())
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
-                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
+                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
                         card_resp.hcp = c_hcp
                         card_resp.shape = c_shp
 
@@ -545,8 +550,8 @@ class TMClient:
             # update cards shown
             for i, card32 in enumerate(current_trick):
                 player_cards_played[(leader_i + i) % 4].append(card32)
-            for i, card32 in enumerate(current_trick52):
-                player_cards_played52[(leader_i + i) % 4].append(card32)
+            for i, card52 in enumerate(current_trick52):
+                player_cards_played52[(leader_i + i) % 4].append(card52)
             
             leader_i = trick_winner
             current_trick = []
@@ -608,8 +613,8 @@ class TMClient:
         # update cards shown
         for i, card32 in enumerate(current_trick):
             player_cards_played[(leader_i + i) % 4].append(card32)
-        for i, card32 in enumerate(current_trick52):
-            player_cards_played52[(leader_i + i) % 4].append(card32)
+        for i, card52 in enumerate(current_trick52):
+            player_cards_played52[(leader_i + i) % 4].append(card52)
 
         tricks.append(current_trick)
         tricks52.append(current_trick52)
@@ -966,7 +971,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.4")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.5")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

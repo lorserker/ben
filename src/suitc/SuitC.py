@@ -62,6 +62,7 @@ class SuitCLib:
         # -F5 is combines the effect of -F1 and -F4, -F7 combines all 3 options.
         # -ls2 limits the entries to 2 should be calculated
         # -ls is most important when the hand to lead has length
+        # consider adding vacant places -wn<n> -en<n>
         if self.verbose:
             input_str = " -Ls -u -c100 -a -b "
         else:

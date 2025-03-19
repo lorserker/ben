@@ -121,6 +121,7 @@ class CardByCard:
         ]
 
         player_cards_played = [[] for _ in range(4)]
+        player_cards_played52 = [[] for _ in range(4)]
         shown_out_suits = [set() for _ in range(4)]
         discards = [set() for _ in range(4)]
 
@@ -185,10 +186,12 @@ class CardByCard:
 
                     # if card_resp is None, we have to rollout
                     if card_resp == None:
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores = self.sampler.init_rollout_states(trick_i, player_i, card_players, player_cards_played, shown_out_suits, discards, current_trick, self.padded_auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
+                        played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
+
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, played_cards,player_cards_played, shown_out_suits, discards, current_trick, self.padded_auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
 
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
-                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
+                        card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
                         card_resp.hcp = c_hcp
                         card_resp.shape = c_shp
 
@@ -285,8 +288,10 @@ class CardByCard:
 
             # update cards shown
             for i, card32 in enumerate(current_trick):
-                player_cards_played[(leader_i + i) % 4].append(card32)
-            
+                player_cards_played[(leader_i + i) % 4].append(card32)           
+            for i, card52 in enumerate(current_trick52):
+                player_cards_played52[(leader_i + i) % 4].append(card52)
+
             leader_i = trick_winner
             current_trick = []
             current_trick52 = []

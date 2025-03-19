@@ -97,8 +97,14 @@ def get_cards_from_binary_hand(hand):
     return np.array(cards)
 
 
-def get_binary_hand_from_cards(cards):
+def get_binary_hand_from_cards32(cards):
     hand = np.zeros(32)
+    for card in cards:
+        hand[int(card)] += 1
+    return hand
+
+def get_binary_hand_from_cards(cards):
+    hand = np.zeros(52)
     for card in cards:
         hand[int(card)] += 1
     return hand

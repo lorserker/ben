@@ -20,7 +20,7 @@
 
 <body>
     <div>
-        <h1>API for BEN. Version 0.8.6.4</h1>
+        <h1>API for BEN. Version 0.8.6.5</h1>
     </div>
     <div id="loader"></div> 
     <div id="dealdiv">
