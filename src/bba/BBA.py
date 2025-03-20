@@ -311,7 +311,8 @@ class BBABotBid:
             print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
         info = self.find_info(auction)
-        trump =info["trump"] 
+        # BBA uaw C->S
+        trump = 3 - info["trump"] 
         result = {}
         if info["trump"] == 4:  
             return result
@@ -332,6 +333,7 @@ class BBABotBid:
         if asker != rho:
             result[2] = (trump, info[rho]["aces"], info[rho]["kings"])
 
+        " we should also check for trump queen"
         if self.verbose:
             print("Information from BBA", result)
 

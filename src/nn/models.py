@@ -228,7 +228,7 @@ class Models:
         adjust_X = conf.getint('adjustments', 'adjust_X', fallback=100)
         adjust_X_remove = conf.getint('adjustments', 'adjust_X_remove', fallback=10)
         adjust_passout = conf.getint('adjustments', 'adjust_passout', fallback=-100)
-        adjust_passout_negative = conf.getint('adjustments', 'adjust_passout_negative', fallback=3)
+        adjust_passout_negative = conf.getfloat('adjustments', 'adjust_passout_negative', fallback=1)
         adjust_min1 = conf.getfloat('adjustments', 'adjust_min1', fallback=0.002)
         adjust_min2 = conf.getfloat('adjustments', 'adjust_min2', fallback=0.0002)
         adjust_min1_by = conf.getint('adjustments', 'adjust_min1_by', fallback=200)
