@@ -40,9 +40,10 @@ def hand_to_str(hand, n_cards=32):
     symbols = 'AKQJT98765432'
     symbols_list = list(symbols)  # Convert the string to a list of characters
 
-    for i in range(13):
-        if i >= (n_cards // 4) - 1:
-            symbols_list[i] = 'x'  # Modify the character
+    if n_cards < 52:
+        for i in range(13):
+            if i >= (n_cards // 4) - 1:
+                symbols_list[i] = 'x'  # Modify the character
 
     symbols = ''.join(symbols_list)
 

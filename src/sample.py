@@ -103,7 +103,7 @@ class Sample:
         self.sample_boards_for_play = sample_boards_for_play
         self.max_unknown_cards_for_sampling = max_unknown_cards_for_sampling
         self.use_biddinginfo = use_biddinginfo
-        self.check_remaining_card = check_remaining_cards
+        self.check_remaining_cards = check_remaining_cards
         self.check_discard = check_discard
         self.use_distance = use_distance
         self.no_samples_when_no_search = no_samples_when_no_search
@@ -145,7 +145,7 @@ class Sample:
         sample_boards_for_play = int(conf['cardplay']['sample_boards_for_play'])
         max_unknown_cards_for_sampling = int(conf['cardplay'].get('max_unknown_cards_for_sampling', 0))
         use_biddinginfo = conf.getboolean('cardplay', 'use_biddinginfo', fallback=True)
-        check_remaining_card = conf.getboolean('cardplay', 'check_remaining_cards', fallback=False)
+        check_remaining_cards = conf.getint('cardplay', 'check_remaining_cards', fallback=10)
         check_discard = conf.getboolean('cardplay', 'check_discard', fallback=False)
         use_distance = conf.getboolean('sampling', 'use_distance', fallback=False)
         no_samples_when_no_search = conf.getboolean('sampling', 'no_samples_when_no_search', fallback=False)
@@ -155,7 +155,7 @@ class Sample:
         sample_previous_round_if_needed = conf.getboolean('sampling', 'sample_previous_round_if_needed', fallback=False)        
         return cls(lead_accept_threshold, lead_accept_threshold_suit, lead_accept_threshold_honors, lead_accept_threshold_partner_trust, bidding_threshold_sampling, play_accept_threshold_opponents, play_accept_threshold_declarer, play_accept_threshold_partner, min_play_accept_threshold_samples, 
                    bid_accept_play_threshold, bid_accept_threshold_bidding, bid_extend_play_threshold, sample_hands_auction, min_sample_hands_auction, sample_boards_for_auction, sample_boards_for_auction_step, warn_to_few_samples, increase_for_bid_count, 
-                   sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, max_unknown_cards_for_sampling, use_biddinginfo, check_remaining_card, check_discard, use_distance, no_samples_when_no_search, 
+                   sample_boards_for_auction_opening_lead, sample_hands_opening_lead, sample_hands_play, min_sample_hands_play, min_sample_hands_play_bad, sample_boards_for_play, max_unknown_cards_for_sampling, use_biddinginfo, check_remaining_cards, check_discard, use_distance, no_samples_when_no_search, 
                    exclude_samples, no_biddingquality_after_bid_count, hcp_reduction_factor, shp_reduction_factor, sample_previous_round_if_needed, verbose)
 
     @property
@@ -453,7 +453,7 @@ class Sample:
     def validate_aces_kings(self, hands, aceking, n_cards):
         if len(aceking) == 0:   
             return True
-        for seat, constraint in aceking.items():
+        for seat, (_, constraint) in enumerate(aceking.items()):
             if constraint[1] == -1 and constraint[2] == -1:
                 continue
             suits = hands[seat].reshape(4, int(n_cards/4))  # Reshape into 4 rows
@@ -780,7 +780,6 @@ class Sample:
                 h1_h2[i, 0, cards_to_shuffle[comb[0][j]]] += 1
             for j in range(len(cards_to_shuffle) - cards_for_h1):
                 h1_h2[i, 1, cards_to_shuffle[comb[1][j]]] += 1
-
         return h1_h2, False
 
     # shuffle the cards between the 2 hidden hands
@@ -1088,6 +1087,7 @@ class Sample:
         # We check the bid for each bidding round
         for i in range(n_steps):
             if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
+                # Consider adding more trust in the first bidding rounds by multiplying with bidding round
                 min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
         return min_scores
     
@@ -1103,14 +1103,14 @@ class Sample:
         return min(math.ceil(X * (math.log(X) + H_X + ln_term)), max_samples)
 
 
-    def init_rollout_states(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
+    def init_rollout_states(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
         if self.verbose:
             print(f"Called init_rollout_states {self.sample_hands_play} - Contract {bidding.get_contract(auction)} - Player {player_i}")
-        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.init_rollout_states_iterative(trick_i, player_i, card_players, played_cards,player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng)
+        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.init_rollout_states_iterative(trick_i, player_i, card_players, played_cards,player_cards_played, shown_out_suits, discards, aceking, current_trick, auction, hand_str, public_hand_str,vuln, models, rng)
 
         return rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds
     
-    def init_rollout_states_iterative(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
+    def init_rollout_states_iterative(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
         hand_bidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_samples = self.sample_hands_play
         contract = bidding.get_contract(auction)
@@ -1143,10 +1143,13 @@ class Sample:
             # With 7 cards left we can generate all possible combinations
             worlds =  []
             if hidden_cards_no <= self.max_unknown_cards_for_sampling:
-                if models.alphamju_declaring and (player_i == 1 or player_i == 3) and trick_i > 8:
+                if models.alphamju_declaring and (player_i == 1 or player_i == 3) and trick_i > 6:
                     # Generate all worlds for alphamju
+                    # Played cards
                     hidden_cards52 = get_all_hidden_cards(played_cards)
+                    # remove the cards we can see in dummy
                     hidden_cards52 = [num for num in hidden_cards52 if card_players[player_i].public52[num] == 0]
+                    # remove the cards in our hand
                     hidden_cards52 = [num for num in hidden_cards52 if card_players[player_i].hand52[num] == 0]
                     worlds = []
                     h1_h2, use_bidding_info_stats = self.shuffle_cards(
@@ -1286,6 +1289,14 @@ class Sample:
             c_hcp, c_shp = None, None
         
         min_bid_scores = np.ones(states[0].shape[0], dtype=np.float32)
+        feature_scores = np.ones(states[0].shape[0], dtype=np.float32)
+
+        # Loop the samples for each of the 2 hidden hands to check features like shown aces
+        # We should generally trust our partners bidding most
+        
+        for h_i in [hidden_1_i, hidden_2_i]:
+            feature_scores_h_i =self.validate_features(player_i, aceking, h_i, states[h_i][:, 0, :32], models)
+            feature_scores = np.minimum(feature_scores, feature_scores_h_i)
 
         # Loop the samples for each of the 2 hidden hands to check bidding
         # We should generally trust our partners bidding most
@@ -1294,8 +1305,8 @@ class Sample:
             #if (player_i + 2) % 4 == h_i:
             h_i_nesw = player_to_nesw_i(h_i, contract)
             partner = player_i == (h_i + 2) % 4
-            bid_scores = self.get_bid_scores(h_i_nesw, partner, auction, vuln, states[h_i][:, 0, :32], models)
-            min_bid_scores = np.minimum(min_bid_scores, bid_scores)
+            bid_scores_h_i = self.get_bid_scores(h_i_nesw, partner, auction, vuln, states[h_i][:, 0, :32], models)
+            min_bid_scores = np.minimum(min_bid_scores, bid_scores_h_i)
 
         # Perhaps this should be calculated more statistical, as we are just taking the bid with the highest score
         # This need to be updated to euclidian distance or logarithmic
@@ -1365,9 +1376,9 @@ class Sample:
         if self.verbose:
             print("Bidding samples accepted: ",valid_bidding_samples)
 
-        if trick_i + 1 > 10 and self.check_remaining_card:
+        if trick_i > self.check_remaining_cards:
             # For the samples we have we will check if any of the remaining cards was the natural play at the previous trick
-            logical_play_scores = self.check_remaining_cards(player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, bidding_states, models, contract)
+            logical_play_scores = self.validate_logical_play(player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, bidding_states, models, contract)
             #print("logical_play_scores",logical_play_scores)
         else:
             logical_play_scores = np.ones(bidding_states[0].shape[0], dtype=np.float32)
@@ -1512,6 +1523,29 @@ class Sample:
         probability_of_occurence = convert_to_probability_with_weight(sorted_min_bid_scores, bidding_states, counts, logical_play_scores, discard_scores)
 
         return bidding_states, sorted_min_bid_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds
+
+    def validate_features(self, player_i, aceking, h_i, sample_hands, models):
+        scores = np.ones(sample_hands.shape[0], dtype=np.float32)
+        if len(aceking) == 0:
+            return scores
+        if player_i == 0 and h_i == 2:
+            feature = aceking["Partner"]
+        if player_i == 0 and h_i == 3:
+            feature = aceking["RHO"]
+        if player_i == 1 and h_i == 2:
+            feature = aceking["LHO"]
+        if player_i == 1 and h_i == 0:
+            feature = aceking["RHO"]
+        if player_i == 2 and h_i == 0:
+            feature = aceking["Partner"]
+        if player_i == 2 and h_i == 3:
+            feature = aceking["LHO"]
+        if player_i == 3 and h_i == 0:
+            feature = aceking["LHO"]
+        if player_i == 3 and h_i == 2:
+            feature = aceking["RHO"]
+        #print(h_i, feature)
+        return scores
     
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models):
         n_steps = binary.calculate_step_bidding_info(auction)
@@ -1681,7 +1715,25 @@ class Sample:
             # When the player is instantiated the right model is selected, but here we get it from the configuration
             # print("trick_i", trick_i, "len(card_played_current_trick)", len(card_played_current_trick), "n_tricks_pred", n_tricks_pred)
             p_cards = models.player_models[p_i+playermodelindex].pred_fun(states[p_i][:, :n_tricks_pred, :])
-            card_scores = p_cards[:, np.arange(len(cards_played)), cards_played]
+
+            # Convert the response to a 24 card deck
+            # Get the shape dynamically
+            batch_size, num_groups, num_features = p_cards.shape
+
+            # Reshape to split into 4 blocks of 8 (for all groups)
+            p_cards_reshaped = p_cards.reshape(batch_size, num_groups, 4, 8)  # (batch, X, 4, 8)
+
+            # Keep first 5 elements, sum last 3
+            p_cards_reduced = np.concatenate([
+                p_cards_reshaped[:, :, :, :5],  # First 5 elements remain
+                p_cards_reshaped[:, :, :, 5:].sum(axis=3, keepdims=True)  # Sum last 3 elements
+            ], axis=3)  # (batch, X, 4, 6)
+
+            # Reshape back to (batch_size, num_groups, 24)
+            p_cards_final = p_cards_reduced.reshape(batch_size, num_groups, -1)  # (batch, X, 24)
+
+            cards_played = [deck52.card32to24(c) for c in cards_played]
+            card_scores = p_cards_final[:, np.arange(len(cards_played)), cards_played]
 
             # The opening lead is validated elsewhere, so we just change the score to 1 for all samples
             if p_i == 0 and models.opening_lead_included:
@@ -1711,7 +1763,7 @@ class Sample:
         min_play_scores = min_play_scores[s_accepted]
         return states, bidding_scores, lead_scores, min_play_scores, min_play_scores_unfiltered
     
-    def check_remaining_cards(self, player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states, models, contract):
+    def validate_logical_play(self, player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states, models, contract):
         # If they don't cover they dont have that card
         # Should be implemented as a logical rule TODO
         if self.verbose:
@@ -1759,15 +1811,15 @@ class Sample:
                             for t in range(trick_i):
                                 if p_cards[i][t][j*8+k] > 0.95:
                                     #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
-                                    logical_play_scores[i] -= 0.3
+                                    logical_play_scores[i] *= 0.4
                                     continue
                                 if p_cards[i][t][j*8+k] > 0.9:
                                     #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
-                                    logical_play_scores[i] -= 0.2
+                                    logical_play_scores[i] *= 0.6
                                     continue
                                 if p_cards[i][t][j*8+k] > 0.8:
                                     #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
-                                    logical_play_scores[i] -= 0.1
+                                    logical_play_scores[i] *= 0.8
 
         return logical_play_scores
 

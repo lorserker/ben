@@ -295,7 +295,7 @@ class Driver:
                 print(f"{Fore.RESET}")
 
         
-        self.card_play = await self.play(self.contract, self.strain_i, self.decl_i, self.auction, opening_lead52)
+        self.card_play = await self.play(self.contract, self.strain_i, self.decl_i, self.auction, opening_lead52, aceking)
 
         await self.channel.send(json.dumps({
             'message': 'deal_end',
@@ -456,7 +456,7 @@ class Driver:
             'opponents': "BEN",
             'partner': "BEN",
             'model': self.models.name,
-            'version': '0.8.6.5'
+            'version': '0.8.6.6'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -511,7 +511,7 @@ class Driver:
 # After each trick is done :
 #     for each card played, init the x_play slice of the next trick. Pain in the ass
 
-    async def play(self, contract, strain_i, decl_i, auction, opening_lead52):
+    async def play(self, contract, strain_i, decl_i, auction, opening_lead52, aceking):
         
         level = int(contract[0])
         is_decl_vuln = [self.vuln_ns, self.vuln_ew, self.vuln_ns, self.vuln_ew][decl_i]
@@ -643,7 +643,7 @@ class Driver:
                 if card_resp == None:    
                     if isinstance(card_players[player_i], bots.CardPlayer):
                         played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
                     else: 
@@ -946,8 +946,8 @@ class Driver:
                 players.append(self.bot)
 
         if self.models.use_bba or self.models.use_bba_to_count_aces or self.models.consult_bba or self.models.use_bba_rollout:
-            print(f"Using BBA CC's {self.models.bba_our_cc} and {self.models.bba_their_cc}")
             if self.verbose:
+                print(f"Using BBA CC's {self.models.bba_our_cc} and {self.models.bba_their_cc}")
                 print("Our conventions")
                 print("\n".join([convention for convention, selected in players[0].bbabot.our_conventions.items() if selected]))
                 print("Their conventions")
@@ -1069,7 +1069,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.5")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.6")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

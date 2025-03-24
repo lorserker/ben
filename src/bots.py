@@ -49,22 +49,26 @@ class BotBid:
         self.ddsolver = ddsolver
         self.my_bid_no = 1
         self._bbabot_instance = None
+        #sys.stderr.write(f"Using model version {self.models.model_version}\n")
+        #sys.stderr.write(f"Using our cc {self.models.bba_our_cc}\n")
+        #sys.stderr.write(f"Using their cc {self.models.bba_their_cc}\n")
 
     @property
     def bbabot(self):
         if self._bbabot_instance is None:
-            from bba.BBA import BBABotBid
-            # Initialize the BBABotBid instance with required parameters
-            self._bbabot_instance = BBABotBid(
-                self.models.bba_our_cc,
-                self.models.bba_their_cc,
-                self.seat,
-                self.hand_str,
-                self.vuln,
-                self.dealer,
-                self.models.matchpoint,
-                self.verbose
-            )
+            if self.models.bba_our_cc and self.models.bba_their_cc:
+                from bba.BBA import BBABotBid
+                # Initialize the BBABotBid instance with required parameters
+                self._bbabot_instance = BBABotBid(
+                    self.models.bba_our_cc,
+                    self.models.bba_their_cc,
+                    self.seat,
+                    self.hand_str,
+                    self.vuln,
+                    self.dealer,
+                    self.models.matchpoint,
+                    self.verbose
+                )
         return self._bbabot_instance
     
     def explain(self, auction):
@@ -320,9 +324,37 @@ class BotBid:
                     adjust += self.models.adjust_NN * candidate.insta_score
 
                 if self.verbose:
-                    print("Adjust for trust in NN", adjust)
+                    print("Adjust for trust in NN", candidate.bid, adjust)
+
+                if candidate.bid == "X":
+                    meaning, alert = self.explain(auction + ["X"])
+                    # If we do not have any controls, then adjust the score
+                    # If we are void in the suit, then we should not bid X, so we adjust
+                    # We also adjust for a singleton
+                    if meaning and "penalty" in meaning:
+                        trump = bidding.get_strain_i(bidding.get_contract(auction + ["X", "PASS", "PASS", "PASS"]))
+                        if trump > 0:
+                            #print(self.hand_bidding)
+                            reshaped_array = self.hand_bidding.reshape(-1,int(self.models.n_cards_bidding / 4))
+                            suits = reshaped_array.sum(axis=1)
+                            aces = np.sum(reshaped_array[:, 0] == 1)
+                            kings = np.sum(reshaped_array[:, 1] == 1)
+                            controls = 2 * aces + kings
+                            #print(trump, suits)
+                            if suits[trump-1] == 1:
+                                adjust -= 0.5 * self.models.adjust_X
+                            if suits[trump-1] == 0:
+                                adjust -= self.models.adjust_X
+                            if controls == 0:
+                                adjust -= self.models.adjust_X
+                            if controls == 1:
+                                adjust -= 0.5 * self.models.adjust_X
+
+                    #print("X=",meaning, alert, auction + ["X"])
+
+                # If we are doubling as penalty in the pass out-situation
                 # These adjustments should probably be configurable
-                if passout and candidate.insta_score < self.get_min_candidate_score(self.my_bid_no):
+                if passout and candidate.insta_score < self.get_min_candidate_score(1):
                     # If we are bidding in the passout situation, and are going down, assume we are doubled
                     if bidding.BID2ID[candidate.bid] > 4:
                         if expected_score < 0:
@@ -334,6 +366,8 @@ class BotBid:
 
                 # If we are doubling as penalty in the pass out-situation
                     if candidate.bid == "X":
+                        #eaning, alert = self.explain(auction)
+                        #print("X=",meaning, alert)
                         if self.models.adjust_X_remove > 0:
 
                             # Sort the dictionary by values (ascending order)
@@ -385,8 +419,17 @@ class BotBid:
                     # Just a general adjustment of doubles
                     # First round doubles are not included
                     no_bids  = binary.get_number_of_bids(auction) 
+                    current_contract = bidding.get_contract(auction)
+                    if current_contract == None:
+                        current_level = 0
+                    else:
+                        current_level = int(current_contract[0:1])
+
                     if candidate.bid == "X" and candidate.insta_score < 0.5 and no_bids > 4:
-                        adjust -= self.models.adjust_X
+                        if current_level > 5:
+                            adjust -= 2 * self.models.adjust_X
+                        else:
+                            adjust -= self.models.adjust_X
                         if self.verbose:
                             print("Adjusted for double if insta_score to low", adjust)
 
@@ -1277,19 +1320,20 @@ class BotLead:
         #print(self.seat, auction)
         partnersuit = bidding.get_partner_suit(self.seat, auction)
         if partnersuit != None and partnersuit < 4:
-            suit_adjust[partnersuit] += 0.5
+            suit_adjust[partnersuit] += self.models.reward_lead_partner_suit
 
         # penalty for leading trump with a singleton honor
         strain_i = bidding.get_strain_i(contract)
-        if strain_i > 0 and strain_i < 5:
-            suit_adjust[strain_i - 1] -= 0.2
-            trumps = self.hand_str.split('.')[strain_i - 1]
-            if trumps == 'A' :   
-                suit_adjust[strain_i - 1] -= 0.2
-            if trumps == 'K' :   
-                suit_adjust[strain_i - 1] -= 0.5
-            if trumps == 'Q' :   
-                suit_adjust[strain_i - 1] -= 0.2
+        if self.models.trump_lead_penalty:
+            if strain_i > 0 and strain_i < 5:
+                suit_adjust[strain_i - 1] -= self.models.trump_lead_penalty[0]
+                trumps = self.hand_str.split('.')[strain_i - 1]
+                if trumps == 'A' :   
+                    suit_adjust[strain_i - 1] -= self.models.trump_lead_penalty[1]
+                if trumps == 'K' :   
+                    suit_adjust[strain_i - 1] -= self.models.trump_lead_penalty[2]
+                if trumps == 'Q' :   
+                    suit_adjust[strain_i - 1] -= self.models.trump_lead_penalty[3]
 
         level = int(contract[0])
         # Penalty for leading from Queen against slam
@@ -1418,7 +1462,7 @@ class BotLead:
             print(f"Samples quality: {quality:.3f}")
             for card in candidate_cards:
                 print(card)
-        if opening_lead % 8 == 7:
+        if opening_lead % 8 > 5:
             contract = bidding.get_contract(auction)
             # Implement human carding here
             opening_lead52 = carding.select_right_card(self.hand52, opening_lead, self.get_random_generator(), contract, self.models, self.verbose)
@@ -1779,8 +1823,8 @@ class CardPlayer:
 
     def check_pimc_constraints(self, trick_i, players_states, quality):
         # If we are declarer and PIMC enabled - use PIMC
-        self.pimc_declaring = self.models.pimc_use_declaring and trick_i >= (self.models.pimc_start_trick_declarer - 1) and trick_i < (self.models.pimc_stop_trick_declarer - 1)
-        self.pimc_defending = self.models.pimc_use_defending and trick_i >= (self.models.pimc_start_trick_defender - 1) and trick_i < (self.models.pimc_stop_trick_defender - 1)
+        self.pimc_declaring = self.models.pimc_use_declaring and trick_i >= (self.models.pimc_start_trick_declarer - 1) and trick_i < (self.models.pimc_stop_trick_declarer)
+        self.pimc_defending = self.models.pimc_use_defending and trick_i >= (self.models.pimc_start_trick_defender - 1) and trick_i < (self.models.pimc_stop_trick_defender)
         if not self.pimc_defending and not self.pimc_declaring:
             return
         if self.models.pimc_constraints:
@@ -1841,8 +1885,8 @@ class CardPlayer:
         if quality < 0.1 and self.verbose:
             print("Bad Samples:")
             print(samples)
-        
-        if self.models.alphamju_declaring and (self.player_i == 1 or self.player_i == 3) and trick_i > 8:
+               
+        if self.models.alphamju_declaring and (self.player_i == 1 or self.player_i == 3) and trick_i > 6:
             suit = "NSHDC"[self.strain_i]
             # We need to figure out the goal, how many tricks we have, and how many our goal is
             card_resp = alphamju(13-trick_i, suit, self.player_i, current_trick52, worlds)
@@ -2099,13 +2143,15 @@ class CardPlayer:
 
     def calculate_suit_adjust_for_nt(self, leader_i, play_status, strain_i, trump_adjust, tricks52):
         # Only for dummy and declarer snd NT
+        result = [0,0,0,0]
         if self.strain_i != 0:
-            return [0,0,0,0]
+            result[strain_i-1] = trump_adjust
+            return result
         if leader_i % 2 != 1:
-            return [0,0,0,0]
+            return result
         # Only adjustment if we are on lead
         if play_status != "Lead": 
-            return [0,0,0,0]
+            return result
         s = []
         if self.models.use_suit_adjust:
             played_cards = np.zeros(52)
@@ -2116,20 +2162,11 @@ class CardPlayer:
             remaining_cards -= played_cards
             remaining_cards -= self.hand52
             remaining_cards -= self.public52
-            results = self.calculate_sure_tricks([self.hand52, self.public52], remaining_cards)
-        else:
-            results = [0,0,0,0]
+            result = self.calculate_sure_tricks([self.hand52, self.public52], remaining_cards)
 
-        for i in range(4):
-            if i + 1 == strain_i:
-                s.append(trump_adjust)
-                continue
-            s.append(results[i])
-            # removing last stopper gives penalty
-            # Playing suit, where we do not raise tricks for opponents are rewarded
         if self.verbose:
-            print("Suit adjust", s)
-        return s
+            print("Suit adjust", result)
+        return result
         
     # Trying to help BEN to know, when to draw trump, and when not to
     def calculate_trump_adjust(self, play_status):
@@ -2152,6 +2189,7 @@ class CardPlayer:
                         trump_adjust = trump_adjust * 2
                     else:
                         trump_adjust = trump_adjust / 2
+            print("Trump adjust", trump_adjust)
         return trump_adjust
 
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits):
@@ -2313,7 +2351,6 @@ class CardPlayer:
         trump_adjust = self.calculate_trump_adjust(play_status)
 
         suit_adjust = self.calculate_suit_adjust_for_nt(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
-
         candidate_cards = []
         
         current_card = 0

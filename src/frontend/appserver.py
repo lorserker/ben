@@ -488,6 +488,10 @@ def index():
 def index():
     return template('gib.tpl')
 
+@app.route('/bba')
+def index():
+    return template('bba.tpl')
+
 @app.route('/api/deals/<deal_id>')
 def deal_data(deal_id):
     print("Getting:", deal_id)

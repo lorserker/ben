@@ -89,6 +89,7 @@ It is possible to change the server and bid with 2/1 like GIB.</p>
 
 <p><a href="/home">Play</a></p>
 <p><a href="/gib">GIB system definition</a></p>
+<p><a href="/bba">BBA system definition (Based on what BEN is configured to use)</a></p>
 <p><a href="/api">Ask BEN</a></p>
 <p><a href="https://www.netbridge.dk/bridge/Upload/BEN/Training/html/index.html">Training data</a></p>
 </div>

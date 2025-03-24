@@ -390,7 +390,7 @@ class BridgeApp:
             self.play_button.config(state="disabled", bg="red", fg="black")
 
     def on_about(self):
-        messagebox.showinfo("About", "Play with BEN. Version 0.8.6.5")
+        messagebox.showinfo("About", "Play with BEN. Version 0.8.6.6")
 
     def terminate(self, signum, frame):
         """

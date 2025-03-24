@@ -245,9 +245,8 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                         )                        
                         return card_resp, player_i, play_status
                 played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
-                print("played cards",played_cards)
                 # No obvious play, so we roll out
-                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
+                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
                 assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
@@ -384,7 +383,7 @@ def str_to_bool(value):
 
 
 def create_auction(bids, dealer_i):
-    auction = [bid.replace('--', "PASS").replace('Db', 'X').replace('Rd', 'XX') for bid in bids]
+    auction = [bid.upper().replace('--', "PASS").replace('DB', 'X').replace('RD', 'XX') for bid in bids]
     auction = ['PAD_START'] * dealer_i + auction
     return auction
 
@@ -417,7 +416,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.5")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.6")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -884,7 +883,14 @@ def play():
             return json.dumps(result)
 
         # Find ace and kings, when defending
+        # Find ace and kings
         aceking = {}
+        if models.use_bba_to_count_aces:
+            from bba.BBA import BBABotBid
+            bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand_str, vuln, dealer_i, models.matchpoint, verbose)
+            aceking = bba_bot.find_aces(auction)
+            bba_bot.get_sample(auction)
+        # Play
         with model_lock_play:
             card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, False, aceking, verbose)
         print("Playing:", card_resp.card.symbol(), msg)
@@ -971,7 +977,7 @@ def cuebid():
     dealer_i = dealer_enum[dealer]
     position_i = (dealer_i + len(auction_input)) % 4
     auction = ['PAD_START'] * dealer_i + [bid.upper() for bid in auction_input]
-    auction = [bid.replace('--', "PASS").replace('Db', 'X').replace('Rd', 'XX').replace("NT","N") for bid in auction]
+    auction = [bid.upper().replace('--', "PASS").replace('DB', 'X').replace('RD', 'XX').replace("NT","N") for bid in auction]
 
     vuln_ns = vuln_input == 'NS' or vuln_input == 'ALL'
     vuln_ew = vuln_input == 'EW' or vuln_input == 'ALL'
@@ -1034,6 +1040,29 @@ def explain():
     explanation, alert = bot.explain_last_bid(auction)
     
     result = {"explanation": explanation, "Alert": alert} # explaination
+    print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+
+    return json.dumps(result)
+@app.route('/bids')
+def bids():
+    t_start = time.time()
+    from bba.BBA import BBABotBid
+    if verbose:
+        print("models.bba_our_cc", models.bba_our_cc, "models.bba_their_cc", models.bba_their_cc)
+    dealer_i = 0
+    position_i = 0
+    mp = False
+    vuln = [False, False]
+    bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, mp, verbose)
+    ctx = request.args.get("ctx").replace('*','').replace("XX","Rd").replace("X","Db").replace('-','').upper().replace("P","--")
+    # Split the string into chunks of every second character
+    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+
+    auction = create_auction(bids, dealer_i)
+    #print("auction", auction, ctx)
+
+    result = bot.list_bids(auction)
+    
     print(f'Request took {(time.time() - t_start):0.2f} seconds')       
 
     return json.dumps(result)

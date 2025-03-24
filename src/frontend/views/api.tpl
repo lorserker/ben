@@ -20,7 +20,7 @@
 
 <body>
     <div>
-        <h1>API for BEN. Version 0.8.6.5</h1>
+        <h1>API for BEN. Version 0.8.6.6</h1>
     </div>
     <div id="loader"></div> 
     <div id="dealdiv">
@@ -621,6 +621,10 @@
             let explanation = "";
             if (data.explanation) {
                 explanation = ` (${data.explanation})`;
+   				explanation = explanation.replace(/!S/g, '<span style="color: blue">&spades;</span>');
+				explanation = explanation.replace(/!H/g, '<span style="color: red">&hearts;</span>');
+				explanation = explanation.replace(/!D/g, '<span style="color: orange">&diams;</span>');
+				explanation = explanation.replace(/!C/g, '<span style="color: green">&clubs;</span>');
             }
             let html = `<br>
                 <p class="bid"><strong>Bid:</strong> ${data.bid}${alerted} ${explanation} ${data.who !== undefined ? ' by ' + data.who : '' }</p>
@@ -994,7 +998,12 @@
                     }
                 }
                 if (action == 'explain') {
-                    document.getElementById('result').innerText = `Meaning: ${data.explanation}`;
+                    explanation = `${data.explanation}`;
+                    explanation = explanation.replace(/!S/g, '<span style="color: blue">&spades;</span>');
+                    explanation = explanation.replace(/!H/g, '<span style="color: red">&hearts;</span>');
+                    explanation = explanation.replace(/!D/g, '<span style="color: orange">&diams;</span>');
+                    explanation = explanation.replace(/!C/g, '<span style="color: green">&clubs;</span>');
+                    document.getElementById('result').innerHTML = `Meaning: ${explanation}`;
                 }
                 if (action == 'claim') {
                     document.getElementById('result').innerText = `Response: ${data.result}`;

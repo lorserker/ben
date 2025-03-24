@@ -5,6 +5,15 @@ set boards=%3
 set db=%4
 set directory=%5
 
+:: Create the directory if it doesn't exist
+if not exist ".\%model1%" (
+    mkdir ".\%model1%"
+)
+:: Create the directory if it doesn't exist
+if not exist ".\%model1%\html" (
+    mkdir ".\%model1%\html"
+)
+
 python auction.py --bidderNS=config/%directory%%model1%.conf --bidderEW=config/%directory%%model2%.conf --set=%boards% --db=%db% > .\%model1%\auctionsNS.json
 python auction.py --bidderNS=config/%directory%%model2%.conf --bidderEW=config/%directory%%model1%.conf --set=%boards% --db=%db% > .\%model1%\auctionsEW.json
 
@@ -22,7 +31,7 @@ type ".\%model1%\compare.json" | python printmatch.py >.\%model1%\match.txt
 
 type ".\%model1%\compare.json" | python printmatchashtml.py >.\%model1%\html\match.html
 
-python printdeal.py %boards% %1\html
+python printdeal.py %boards% %model1%\html
 
 powershell -Command "Get-Content .\%model1%\compare.json | jq .imp | Measure-Object -Sum | Select-Object -ExpandProperty Sum"
 

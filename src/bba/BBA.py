@@ -78,7 +78,7 @@ class BBABotBid:
 
     SCORING_MATCH_POINTS = 0
     SCORING_IMP = 1
-
+    suitsymbols = ["!C", "!D", "!H", "!S"]   
 
     def __init__(self, our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose):
 
@@ -311,27 +311,40 @@ class BBABotBid:
             print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
         info = self.find_info(auction)
+        # print("info", info)
         # BBA uaw C->S
         trump = 3 - info["trump"] 
         result = {}
         if info["trump"] == 4:  
             return result
-        
+        # Asker is always based on seating 0=N, 3=W
         asker = info["asker"]
+
         # 0 = LHO, 1 = Partner, 2 = RHO
+        # We do not know anything about the asker, but we should prepare for a 5N showing all keycards
+        # Currently BBA assume a number of aces for asker, but this is not used
         lho = (self.position + 1) % 4
-        if asker != lho:
-            result[0] = (trump, info[lho]["aces"], info[lho]["kings"])
-        # For the partner we take the calculated information
+        rho = (self.position + 3) % 4
         partner = (self.position + 2) % 4 
-        if asker != partner:
+        if asker == rho:
+            result["RHO"] = (trump, -1, -1)
+            result["Partner"] = (trump, -1, -1)
+            result["LHO"] = (trump, info[lho]["aces"], info[lho]["kings"])
+        
+        elif asker == lho:
+            result["LHO"] = (trump, -1, -1)
+            result["Partner"] = (trump, -1, -1)
+            result["RHO"] = (trump, info[rho]["aces"], info[rho]["kings"])
+        # For the partner we take the calculated information
+        elif asker != partner:
+            # We have asked
             # if we know something about partners aces we take the calculated information
             if info[partner]["aces"] > -1:
                 partner += 4
-            result[1] = (trump, info[partner]["aces"], info[partner]["kings"])
-        rho = (self.position + 3) % 4
-        if asker != rho:
-            result[2] = (trump, info[rho]["aces"], info[rho]["kings"])
+            result["LHO"] = (trump, -1, -1)
+            result["Partner"] = (trump, info[partner]["aces"], info[partner]["kings"])
+            result["RHO"] = (trump, -1, -1)
+
 
         " we should also check for trump queen"
         if self.verbose:
@@ -366,22 +379,25 @@ class BBABotBid:
         # Get information from Player(position) about the interpreted bid
         meaning = self.players[self.position].get_info_meaning(position)
         if meaning is None: meaning = ""
-        if meaning.strip() == "calculated bid": meaning = ""
-        if meaning.strip() == "bidable suit": meaning = ""
-        bba_alert = self.players[self.position].get_info_alerting(position)
-        info = self.players[self.position].get_info_feature(position)
-        if not bba_alert and meaning != "":   
-            minhcp = info[402]
-            maxhcp = info[403]
-            if minhcp > 0:
-                if maxhcp < 37:
-                    meaning += f" ({minhcp}-{maxhcp} hcp)"
-                else:
-                    meaning += f" ({minhcp}+ hcp)"
-            elif maxhcp < 37:
-                meaning += f" ({maxhcp}- hcp)"
+        #if meaning.strip() == "calculated bid": meaning = ""
+        #if meaning.strip() == "bidable suit": meaning = ""
+        length = self.extract_lengths(position)
+        meaning = meaning + " -- " + "; ".join(length)
 
-        return f"{meaning}", bba_alert
+        minhcp, maxhcp, gf, forcing_to, forcing, hcp = self.extract_hcp(position)
+        meaning = meaning + (";" + hcp if hcp else "")
+
+        bba_alert = self.players[self.position].get_info_alerting(position)
+        if bba_alert:
+            meaning += "; Artificial"
+        if gf:
+            meaning += "; GF"
+        elif forcing:
+            meaning += "; Forcing"
+        elif forcing_to and forcing_to > bidid and bidid > 4:
+                meaning += f"; Forcing to {bidding.ID2BID[forcing_to]}"
+
+        return meaning, bba_alert
 
     # Define a Python function to find a bid
     def bid(self, auction):
@@ -403,11 +419,9 @@ class BBABotBid:
             position += 1
 
 
-        #print("get_bid()")
         new_bid = self.players[self.position].get_bid()
 
         # Interpret the potential bid
-        #print("interpret_bid",new_bid)
         self.players[self.position].interpret_bid(new_bid)
         if new_bid < 5:
             new_bid += 2
@@ -415,27 +429,189 @@ class BBABotBid:
         # Get information from Player(position) about the interpreted player
         meaning = self.players[self.position].get_info_meaning(self.C_INTERPRETED)
         if meaning is None: meaning = ""
-        if meaning.strip() == "calculated bid": meaning = ""
-        if meaning.strip() == "bidable suit": meaning = ""
+        #if meaning.strip() == "calculated bid": meaning = ""
+        #if meaning.strip() == "bidable suit": meaning = ""
+
+        length = self.extract_lengths(self.C_INTERPRETED)
+        meaning = meaning + " -- " + "; ".join(length)
+
+        minhcp, maxhcp, gf, forcing_to, forcing, hcp = self.extract_hcp(self.C_INTERPRETED)
+        meaning = meaning + (";" + hcp if hcp else "")
+
         bba_alert = self.players[self.position].get_info_alerting(self.C_INTERPRETED)
-
-        info = self.players[self.position].get_info_feature(self.C_INTERPRETED)
-
-        if not bba_alert and meaning != "":   
-            minhcp = info[402]
-            maxhcp = info[403]
-            if minhcp > 0:
-                if maxhcp < 37:
-                    meaning += f" ({minhcp}-{maxhcp} hcp)"
-                else:
-                    meaning += f" ({minhcp}+ hcp)"
-            elif maxhcp < 37:
-                meaning += f" ({maxhcp}- hcp)"
+        if bba_alert:
+            meaning += "; Artificial"
+        if gf:
+            meaning += "; GF"
+        elif forcing:
+            meaning += "; Forcing"
+        elif forcing_to and forcing_to > new_bid and new_bid > 4:
+                meaning += f"; Forcing to {bidding.ID2BID[forcing_to]}"
 
         if self.verbose:
             print(f"BBABid: {bidding.ID2BID[new_bid]}={meaning}")
 
         return BidResp(bid=bidding.ID2BID[new_bid], candidates=[], samples=[], shape=-1, hcp=-1, who = "BBA", quality=None, alert = bba_alert, explanation=meaning)
+
+    def get_attributes(self,value):
+        mapping = {4: 'A', 3: 'K', 2: 'Q', 1: 'J'}
+        attributes = []
+
+        for points, attribute in mapping.items():
+            while value >= points:
+                attributes.append(attribute)
+                value -= points
+
+        return ''.join(attributes)
+    
+    def get_honors(self,value):
+        mapping = {16: 'A', 8: 'K', 4: 'Q', 2: 'J', 1: 'T'}
+        attributes = []
+
+        for points, attribute in mapping.items():
+            while value >= points:
+                attributes.append(attribute)
+                value -= points
+
+        return ''.join(attributes)
+
+    def list_bids(self, auction):
+        # Send all bids to the bot
+        # We are to make a bid, so we can use the position
+        if self.verbose:
+            print(auction)
+            print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+        position = (self.dealer + len(auction)) % 4
+        self.players[self.position].new_hand(position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+
+        position = self.dealer
+        for k in range(len(auction)):
+            bidid = bidding.BID2ID[auction[k]]
+            if bidid < 2:
+                continue
+            if bidid < 5:
+                bidid = bidid - 2
+            self.players[self.position].set_bid((position) % 4, bidid)
+            position += 1
+
+        result = []
+        for new_bid in range(40):
+            if new_bid < 2:
+                continue
+            if not bidding.can_bid(bidding.ID2BID[new_bid], auction):
+                continue
+            if new_bid < 5:
+                new_bid = new_bid - 2
+            # Interpret the potential bid
+            #print("interpret_bid",new_bid)
+            # self.players[self.position].set_bid(self.position, new_bid)
+
+            self.players[self.position].interpret_bid(new_bid)
+
+            # Get information from Player(position) about the interpreted player
+            meaning = self.players[self.position].get_info_meaning(self.C_INTERPRETED)
+            if meaning is None: meaning = ""
+
+            length = self.extract_lengths(self.C_INTERPRETED)
+            meaning = meaning + " -- " + "; ".join(length)
+
+            minhcp, maxhcp, gf, forcing_to, forcing, hcp = self.extract_hcp(self.C_INTERPRETED)
+            meaning = meaning + (";" + hcp if hcp else "")
+                    
+            pl = self.players[self.position].get_info_probable_length(self.C_INTERPRETED)
+            pl_str = []
+            for i in range(len(pl)):
+                if pl[i] == 0: continue
+                pl_str.append(f"probable length in {self.suitsymbols[i]} {pl[i]}")
+                #print(f"probable length in {self.suitsymbols[i]}",pl[i])
+
+            # Suit power is the same as stregngth, and basically the same as Honors
+            sp = self.players[self.position].get_info_suit_power(self.C_INTERPRETED)                
+            sp_str = []
+            for i in range(len(sp)):
+                if sp[i] == 0: continue
+                sp_str.append(f"{self.get_attributes(sp[i])} in {self.suitsymbols[i]}")
+                #print(f"suit power in {self.suitsymbols[i]}", i,sp[i])
+
+            stoppers = self.players[self.position].get_info_stoppers(self.C_INTERPRETED)                
+            stoppers_str = []
+            for i in range(len(stoppers)):
+                if stoppers[i] == 0: continue
+                stoppers_str.append(f"Stopper in {self.suitsymbols[i]}")
+                meaning += f"; Stopper in {self.suitsymbols[i]}"
+
+            # Strength is the same as Suit Power
+            strength = self.players[self.position].get_info_strength(self.C_INTERPRETED) 
+            strength_str = []             
+            for i in range(len(strength)):
+                if strength[i] == 0: continue
+                strength_str.append(f"{self.get_attributes(strength[i])} in {self.suitsymbols[i]}")
+                #meaning += f"; {self.get_attributes(strength[i])} in {self.suitsymbols[i]}"
+
+            honors = self.players[self.position].get_info_honors(self.C_INTERPRETED)
+            honor_str = []
+            for i in range(len(honors)):
+                if honors[i] == 0: continue
+                honor_str.append(f"{self.get_honors(honors[i])} in {self.suitsymbols[i]}")
+                meaning += f"; {self.get_honors(honors[i])} in {self.suitsymbols[i]}"
+
+            bba_alert = self.players[self.position].get_info_alerting(self.C_INTERPRETED)
+            if bba_alert:
+                meaning += "; Artificial"
+            if gf:
+                meaning += "; GF"
+            elif forcing:
+                meaning += "; Forcing"
+            elif forcing_to and forcing_to > new_bid and new_bid > 4:
+                    meaning += f"; Forcing to {bidding.ID2BID[forcing_to]}"
+            if new_bid < 3:
+                new_bid = new_bid + 2
+            explain = {"bid": bidding.ID2BID[new_bid].replace("PASS","P"), "m": meaning, "Alert": bba_alert, "MinHcp": minhcp, "MaxHcp": maxhcp, "Length": length, "Honors": honor_str, "Stoppers": stoppers_str, "Strength": strength_str, "SuitPower": sp_str, "ProbableLength": pl_str}
+            result.append(explain) 
+            if self.verbose:
+                print(f"{bidding.ID2BID[new_bid]}={meaning}")
+
+        explain["NS"] = self.our_system_file
+        explain["EW"] = self.their_system_file
+        return result
+
+    def extract_hcp(self, position):
+        info = self.players[self.position].get_info_feature(position)
+
+        minhcp = info[402]
+        maxhcp = info[403]
+        gf = info[443]
+        forcing_to = info[411]
+        forcing = info[412]
+        if minhcp > 0:
+            if maxhcp < 37:
+                hcp = f" {minhcp}-{maxhcp} HCP"
+            else:
+                hcp = f" {minhcp}+ HCP"
+        else:
+            if maxhcp < 37:
+                hcp = f" {maxhcp}- HCP"
+            else:
+                hcp = f""
+        return minhcp,maxhcp,gf,forcing_to,forcing,hcp
+
+    def extract_lengths(self, position):
+        maxlength = self.players[self.position].get_info_max_length(position)
+        minlength = self.players[self.position].get_info_min_length(position)
+        length = []
+        for i in range(4):
+            if minlength[i] == 0: 
+                if maxlength[i] != 13:
+                    length.append(f"{maxlength[i]}-{self.suitsymbols[i]}")
+            else:
+                if maxlength[i] == 13:
+                    length.append(f"{minlength[i]}+{self.suitsymbols[i]}")
+                else:
+                    if minlength[i] == maxlength[i]:
+                        length.append(f"{minlength[i]}={self.suitsymbols[i]}")
+                    else:
+                        length.append(f"{minlength[i]}-{maxlength[i]}{self.suitsymbols[i]}")
+        return length
 
     def get_sample(self, auction):
 

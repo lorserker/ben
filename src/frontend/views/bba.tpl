@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 
 <head>
-	<title>GIB Bidding</title>
+	<title>BBA Bidding</title>
 
 	<!-- CSS -->
 	<style>
@@ -65,7 +65,7 @@
  		    biddingsequence += "*";
 		}
 
-		var url = "https://gibrest.bridgebase.com/u_bm/u_bm.php?s=" + biddingsequence +"&t=g&v3b=web&v3v=6.19.3&v3u=BBO1"
+		var url = "http://localhost:8085/bids?ctx=" + biddingsequence
         const numOfHyphens = (biddingsequence.match(/-/g) || []).length;
         const who = numOfHyphens % 2 === 0 ? 'us' : 'them';
 
@@ -75,22 +75,21 @@
             return searchParams.get(key);
         }
 
-		function loadXMLDoc() {
-			let cachedData = localStorage.getItem('gibData__' + biddingsequence);
+		function loadJSONDoc() {
+			let cachedData = localStorage.getItem('bbaData_' + biddingsequence);
 
 			if (cachedData) {
-                let parser = new DOMParser();
-                let xmlDoc = parser.parseFromString(cachedData, "text/xml"); // Convert string to XML
-				displayBidDetails(xmlDoc); // Use cached data
+				// If there's cached data, parse it as JSON
+				let jsonData = JSON.parse(cachedData);
+				displayBidDetails(jsonData); // Use cached data
 			} else {
 				let xmlhttp = new XMLHttpRequest();
 				xmlhttp.onreadystatechange = function () {
 					if (this.readyState == 4 && this.status == 200) {
 						let data = this.responseText;
-						localStorage.setItem('gibData__' + biddingsequence, data); // Cache the response
-						let parser = new DOMParser();
-		                let xmlDoc = parser.parseFromString(data, "text/xml"); // Convert string to XML
-						displayBidDetails(xmlDoc);
+						localStorage.setItem('bbaData_' + biddingsequence, data); // Cache the response
+						let jsonData = JSON.parse(data); // Parse the JSON response
+						displayBidDetails(jsonData);
 					}
 				};
 				xmlhttp.open("GET", url, true);
@@ -106,29 +105,13 @@
 			return !biddingsequence.endsWith("-P-P-P")
 		}
 
-		function displayBidDetails(xmlDoc) {
-			let i;
-			let table =	`<tr><th>Bid</th><th>Description</th></tr>`;
-			let x = xmlDoc.getElementsByTagName("r");
+		function displayBidDetails(jsonData) {
+			let table = `<tr><th>Bid</th><th>Description</th></tr>`;
 
-			const bValue = x[0].getAttribute('b').toUpperCase();
-			bValueHtml = bValue;
-            const mValue = x[0].getAttribute('m');
-			mValueHtml = mValue .replace(/!S/g, '<span style="color: blue">&spades;</span>');
-			mValueHtml = mValueHtml.replace(/!H/g, '<span style="color: red">&hearts;</span>');
-			mValueHtml = mValueHtml.replace(/!D/g, '<span style="color: orange">&diams;</span>');
-			mValueHtml = mValueHtml.replace(/!C/g, '<span style="color: green">&clubs;</span>');
-			mValueHtml = replaceSuitsBeforeDoubleDash(mValueHtml);
-			mValueHtml = replaceSuits(mValueHtml);
-			if (!canbid(bValueHtml)) {
-				table += "<tr class="+ who + "><td></td><td>Bidding ended</td></tr>";
-			} else {
-				table += "<tr class="+ who + "><td><a href=?bid="+  biddingsequence.substring(0,biddingsequence.length - 1) + (biddingended(bValueHtml) ? "P>" : bValue +"-*>") + bValueHtml + "</a></td><td>" + mValueHtml + "</td></tr>";
-			}
-
-			// Start to fetch the data by using TagName 
-			for (i = x.length; i >1; i--) {
-                const bValue = x[i-1].getAttribute('b').toUpperCase();
+			// Assuming jsonData contains an array of bids or a similar structure
+			jsonData.forEach(bid => {
+				const bValue = bid.bid.toUpperCase();
+				let bValueHtml = bValue;
 				if (bValue != "D") {
 					bValueHtml = bValue.replace(/S/g, '<span style="color: blue">&spades;</span>');
 					bValueHtml = bValueHtml.replace(/H/g, '<span style="color: red">&hearts;</span>');
@@ -136,21 +119,31 @@
 					bValueHtml = bValueHtml.replace(/C/g, '<span style="color: green">&clubs;</span>');
 				} else {
 					bValueHtml = bValue;
-				}
-                const mValue = x[i-1].getAttribute('m');
-				mValueHtml = mValue .replace(/!S/g, '<span style="color: blue">&spades;</span>');
+				}				
+				let mValueHtml = bid.m.replace(/!S/g, '<span style="color: blue">&spades;</span>');
 				mValueHtml = mValueHtml.replace(/!H/g, '<span style="color: red">&hearts;</span>');
 				mValueHtml = mValueHtml.replace(/!D/g, '<span style="color: orange">&diams;</span>');
 				mValueHtml = mValueHtml.replace(/!C/g, '<span style="color: green">&clubs;</span>');
 				mValueHtml = replaceSuitsBeforeDoubleDash(mValueHtml);
 				mValueHtml = replaceSuits(mValueHtml);
-				table += "<tr class="+ who + "><td><a href=?bid="+  biddingsequence.substring(0,biddingsequence.length - 1) + bValue + "-*>" + bValueHtml + "</a></td><td>" + mValueHtml + "</td></tr>";
-			}
 
-			// Print the xml data in table form
+				if (!canbid(bValueHtml)) {
+					table += `<tr class="${who}"><td></td><td>Bidding ended</td></tr>`;
+				} else {
+					table += `<tr class="${who}"><td>`
+					table += `<a href="?bid=`
+					table += `${biddingsequence.substring(0, biddingsequence.length - 1)}`
+					if (biddingended(bValueHtml))
+						table += `P">`
+					else 
+					   table += `${bValue}-*">${bValueHtml}</a>`
+					table += `</td><td>${mValueHtml}</td></tr>`;
+				}
+			});
+
 			document.getElementById("id").innerHTML = table;
 		}
-		
+
 		// Define a mapping of card suits to HTML symbols
 		const suitMapping = {
 			'C': '<span style="color: green">&clubs;</span>', 
@@ -195,10 +188,10 @@
 	</script>
 </head>
 
-<body onload="loadXMLDoc()">
+<body onload="loadJSONDoc()">
 
 	<br><br>
-	<h1>GIB Bidding Definitions from BBO</h1>
+	<h1>BBA Bidding Definitions</h1>
 	<h2>Current bidding: </h2>
     <table class="biddingdiagram">
 		<tbody id="biddingTable">
@@ -269,13 +262,12 @@
 			localStorage.clear(); 
 			
 			// Optionally, if you want to clear only specific cached data (e.g., bid-related):
-			// localStorage.removeItem('gibData__' + bid); 
+			// localStorage.removeItem('bbaData_' + bid); 
 			
 			alert('Cache has been cleared!');
-    		// Reload the page after clearing cache
+			// Reload the page after clearing cache
     		location.reload();
 		}
-
 		</script>
 	<table id="id"></table>
 	<h2>Trouble shooting</h2>

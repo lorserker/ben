@@ -16,6 +16,18 @@ verbose = False
 bot = BBABotBid(our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose)
 # hand = "AQT8.AK.AK6.A986"
 #print(bot.find_info(['PASS','2C','PASS','2H','PASS','2N','PASS','3D','PASS','3S','PASS','3N','PASS','4D','PASS','4N','PASS','5D','PASS']))
-info = bot.find_aces(['2N', 'PASS', '4D', 'PASS', '4H', 'PASS', '4N', 'PASS', '5C', 'PASS'])
+# info = bot.find_aces(['2N', 'PASS', '4D', 'PASS', '4H', 'PASS', '4N', 'PASS', '5C', 'PASS'])
+#print(json.dumps(info))
+
+
+our_system_file = "../../BBA/CC/BEN-21GF.bbsa"
+their_system_file = "../../BBA/CC/WBridge5-Sayc.bbsa"
+position = 2
+hand = "KJT42.JT76..J753"
+vuln = [False, True]
+dealer = 2
+
+bot = BBABotBid(our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose)
+info = bot.find_aces(['PASS', '2N', 'PASS', '3C', 'PASS', '3D', 'PASS', '4D', 'PASS', '4N', 'PASS', '5H', 'PASS', '6D', 'PASS', 'PASS', 'PASS'])
 print(json.dumps(info))
 

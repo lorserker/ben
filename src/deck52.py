@@ -78,6 +78,11 @@ def card32to52(c32):
     rank = int(c32 % 8)
     return suit * 13 + rank
 
+def card32to24(c32):
+    suit = int(c32 // 8)
+    rank = int(c32 % 8)
+    return suit * 6 + min(5, rank)
+
 def card52to32(c52):
     suit = int(c52 // 13)
     rank = int(c52 % 13)

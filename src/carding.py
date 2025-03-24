@@ -345,8 +345,23 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
             # From touching honors lead the highest
             # From bad suit lead 2nd highest
             hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
-            if suit_length < 4 or hcp_in_suit < 1:
-                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
+            if suit_length < 4:
+                if hcp_in_suit < 1:
+                    card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
+                else:
+                    if suit_length == 2:    
+                        # lead hihest from Hx
+                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
+                    else:
+                        indices = np.where(hand52.reshape((4, 13))[opening_suit])[0]
+
+                        # Check if the first two ones are consecutive
+                        if len(indices) >= 2 and indices[1] - indices[0] == 1:
+                            #lead highes
+                            card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
+                        else:
+                            card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
+
             else:
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)
             return card_index + 13 * opening_suit

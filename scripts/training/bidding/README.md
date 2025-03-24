@@ -61,7 +61,7 @@ There are a lot of other metrics for a hand, that is used in bidding, and it mig
 
 It is also important to realize, that a lot of that type of information is used at the later bidding stages, and should not be used in the first bidding rounds.
 
-The following metrics should be condsidered
+The following metrics should be considered
 
 - Losers
 - Controls

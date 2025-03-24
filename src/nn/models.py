@@ -22,7 +22,8 @@ class Models:
                  use_suitc, force_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
                  use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead,check_final_contract, max_samples_checked,  
                  alert_supported, alert_threshold,
-                 factor_to_translate_to_mp, factor_to_translate_to_imp, use_suit_adjust, suppress_warnings
+                 factor_to_translate_to_mp, factor_to_translate_to_imp, use_suit_adjust, suppress_warnings,
+                 reward_lead_partner_suit, trump_lead_penalty
                  ):
         self.name = name
         self.tf_version = tf_version
@@ -131,7 +132,8 @@ class Models:
         self.factor_to_translate_to_imp = factor_to_translate_to_imp
         self.use_suit_adjust = use_suit_adjust
         self.suppress_warnings = suppress_warnings
-
+        self.reward_lead_partner_suit = reward_lead_partner_suit
+        self.trump_lead_penalty = trump_lead_penalty
 
 
     @classmethod
@@ -188,7 +190,7 @@ class Models:
         double_dummy_calculator = conf.getboolean('eval', 'double_dummy_calculator', fallback=False)
         claim = conf.getboolean('cardplay', 'claim', fallback=True)
         play_reward_threshold_NN = conf.getfloat('cardplay', 'play_reward_threshold_NN', fallback=0)
-        check_remaining_cards = conf.getboolean('cardplay', 'check_remaining_cards', fallback=False)
+        check_remaining_cards = conf.getint('cardplay', 'check_remaining_cards', fallback=10)
         check_discard = conf.getboolean('cardplay', 'check_discard', fallback=False)
         pimc_verbose = conf.getboolean('pimc', 'pimc_verbose', fallback=True)
         pimc_use_declaring = conf.getboolean('pimc', 'pimc_use_declaring', fallback=False)
@@ -236,6 +238,13 @@ class Models:
         factor_to_translate_to_mp = conf.getint('adjustments', 'factor_to_translate_to_mp', fallback=10)
         factor_to_translate_to_imp = conf.getint('adjustments', 'factor_to_translate_to_imp', fallback=25)
         use_suit_adjust = conf.getboolean('adjustments', 'use_suit_adjust', fallback=False)
+
+        reward_lead_partner_suit = conf.getfloat('adjustments', 'reward_lead_partner_suit', fallback=0)
+        trump_lead_penalty_str = conf.get('bidding', 'trump_lead_penalty', fallback=None)
+        if trump_lead_penalty_str:
+            trump_lead_penalty = [float(x) for x in trump_lead_penalty_str.strip('[]').split(',')]
+        else:
+            trump_lead_penalty = []
 
         opening_lead_included = conf.getboolean('cardplay', 'opening_lead_included', fallback=False)
         use_biddingquality_in_eval = conf.getboolean('cardplay', 'use_biddingquality_in_eval', fallback=False)
@@ -410,7 +419,10 @@ class Models:
             use_real_imp_or_mp_opening_lead=use_real_imp_or_mp_opening_lead,
             check_final_contract=check_final_contract,
             max_samples_checked=max_samples_checked,
-            suppress_warnings=suppress_warnings
+            suppress_warnings=suppress_warnings,
+            reward_lead_partner_suit=reward_lead_partner_suit,
+            trump_lead_penalty=trump_lead_penalty
+
         )
 
     @property
