@@ -243,7 +243,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                         return candidate_card.card, "SuitC-MP"
                                     else:
                                         # If forced we allow up to 40 MP
-                                        if models.force_suitc and candidate_card.expected_score_imp >= candidate_cards[0].expected_score_mp - 40:
+                                        if models.force_suitc and candidate_card.expected_score_mp >= candidate_cards[0].expected_score_mp - 40:
                                             if verbose:
                                                 print("SuitC candidate card worse than best DD cards")
                                                 print("SuitC card", candidate_card)

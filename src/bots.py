@@ -72,7 +72,7 @@ class BotBid:
         return self._bbabot_instance
     
     def explain(self, auction):
-        if self.bbabot is None:
+        if not self.models.consult_bba or self.bbabot is None:
             return None, False
         return self.bbabot.explain_last_bid(auction)
 
