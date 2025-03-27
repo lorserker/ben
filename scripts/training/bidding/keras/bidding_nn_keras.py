@@ -76,7 +76,7 @@ n_cards = X_train.shape[2] - 169
 
 batch_size = 512  
 buffer_size = 100000
-epochs = 100
+epochs = 30
 learning_rate = 0.001
 keep = 0.8
 steps_per_epoch = n_examples // batch_size

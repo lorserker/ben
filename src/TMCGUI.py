@@ -216,14 +216,26 @@ class TableManagerApp(tk.Tk):
         browse_button = ttk.Button(col_frames[2], text="Browse", command=self.browse_file)
         browse_button.grid(row=2, column=0, padx=5, pady=5)
 
+        # Config field (Label and Entry in column 3)
+        config_label = ttk.Label(col_frames[2], text="Opponent:")
+        config_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        opponent_file = self.settings.get("opponent", "")
+        self.opponent_entry = ttk.Entry(col_frames[2], width=25)
+        self.opponent_entry.insert(0, opponent_file)
+        self.opponent_entry.grid(row=4, column=0, padx=5, pady=5)
+
+        # Browse button for Config in column 3
+        browse_button = ttk.Button(col_frames[2], text="Browse", command=self.browse_opponent)
+        browse_button.grid(row=5, column=0, padx=5, pady=5)
+
         # Checkboxes (Bidding Only, Match Point) in column 3
         self.bidding_only = tk.BooleanVar(value=self.settings.get("bidding_only", False))
         self.nosearch = tk.BooleanVar(value=self.settings.get("nosearch", False))
         self.matchpoint = tk.BooleanVar(value=self.settings.get("matchpoint", False))
 
-        ttk.Checkbutton(col_frames[2], text="Bidding Only", variable=self.bidding_only).grid(row=3, column=0, sticky="w", padx=5, pady=5)
-        ttk.Checkbutton(col_frames[2], text="No simulation", variable=self.nosearch).grid(row=4, column=0, sticky="w", padx=5, pady=5)
-        ttk.Checkbutton(col_frames[2], text="Match Point", variable=self.matchpoint).grid(row=5, column=0, sticky="w", padx=5, pady=5)
+        ttk.Checkbutton(col_frames[2], text="Bidding Only", variable=self.bidding_only).grid(row=6, column=0, sticky="w", padx=5, pady=5)
+        ttk.Checkbutton(col_frames[2], text="No simulation", variable=self.nosearch).grid(row=7, column=0, sticky="w", padx=5, pady=5)
+        ttk.Checkbutton(col_frames[2], text="Match Point", variable=self.matchpoint).grid(row=8, column=0, sticky="w", padx=5, pady=5)
 
         # Verbose checkbox and buttons (Start/Stop) in column 4
         self.verbose = tk.BooleanVar(value=False)
@@ -334,7 +346,7 @@ class TableManagerApp(tk.Tk):
         # Place the selected file path in the target Entry field
         target_entry.delete(0, tk.END)  # Clear existing content
         target_entry.insert(0, exe_path)  # Insert new file path
-    
+
     def browse_file(self):
 
         # Get the current path from the Config entry field
@@ -357,6 +369,28 @@ class TableManagerApp(tk.Tk):
             self.inputs["Name:"].insert(0,  os.path.basename(rel_path).split(".")[0])
             self.settings["config"] = rel_path
             self.settings["name"] = self.inputs["Name:"].get()
+            self.save_settings()
+
+
+    def browse_opponent(self):
+
+        # Get the current path from the Config entry field
+        current_path = self.config_entry.get()
+        # Extract the directory
+        initial_dir = os.path.dirname(current_path) if os.path.isdir(os.path.dirname(current_path)) else "opponent"
+
+        # Open file dialog with the initial directory
+        file_path = filedialog.askopenfilename(
+            initialdir=initial_dir, 
+            title="Select opponent File", 
+            filetypes=(("Opponent Files", "*.conf"), ("All Files", "*.*"))
+        )
+        if file_path:
+            # Save relative path if possible
+            rel_path = os.path.relpath(file_path, os.getcwd())
+            self.opponent_entry.delete(0, tk.END)
+            self.opponent_entry.insert(0, rel_path)
+            self.settings["opponent"] = rel_path
             self.save_settings()
 
 
@@ -670,6 +704,7 @@ class TableManagerApp(tk.Tk):
         name = self.inputs["Name:"].get()
         seat = self.inputs["Seat:"].get()
         config = self.config_entry.get()
+        opponent = self.opponent_entry.get()
         bidding_only = self.bidding_only.get()
         matchpoint = self.matchpoint.get()
         nosearch = self.nosearch.get()
@@ -677,7 +712,7 @@ class TableManagerApp(tk.Tk):
 
         self.reset_output_text()
         
-        def run_process(seat, delay=None):
+        def run_process(seat, name, delay=None):
             try:
                 output_queue = queue.Queue()
                 time.sleep(delay)  # Wait for the specified delay if any
@@ -702,6 +737,8 @@ class TableManagerApp(tk.Tk):
                     cmd.extend(["--port", str(port)])
                 if config:
                     cmd.extend(["--config", config])
+                if opponent:
+                    cmd.extend(["--opponent", opponent])
                 if bidding_only:
                     cmd.extend(["--biddingonly", str(bidding_only)])
                 if nosearch:
@@ -806,9 +843,13 @@ class TableManagerApp(tk.Tk):
         self.terminate_flag = False
         # Expand combined parameters into individual calls
         for index, single_seat in enumerate(combined_seats[seat]):
+            if seat == "NESW":
+                new_name = ["NS","EW"][index % 2]
+            else:
+                new_name = name
             # Introduce a slight delay to stagger the start of each thread
             delay = 2 * (index)  # Increasing delay as threads are started
-            threading.Thread(target=run_process, args=(single_seat,delay), daemon=True).start()
+            threading.Thread(target=run_process, args=(single_seat, new_name, delay), daemon=True).start()
 
 
     def parse_hand(self,s):
@@ -1118,6 +1159,7 @@ class TableManagerApp(tk.Tk):
         self.settings["host"] = self.inputs["Host:"].get()
         self.settings["port"] = self.inputs["Port:"].get()
         self.settings["config"] = self.config_entry.get()
+        self.settings["opponent"] = self.opponent_entry.get()
         # Checkboxes (Bidding Only, Match Point) in column 3
         self.settings["bidding_only"] =self.bidding_only.get()
         self.settings["nosearch"] =self.nosearch.get()

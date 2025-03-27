@@ -1471,35 +1471,49 @@ class BotLead:
 
         samples1 = []
         samples2 = []
+        samples = []
         if self.verbose:
             print(f"Accepted samples for opening lead: {accepted_samples.shape[0]}")
+        if accepted_samples.shape[0] == 0:
+            # Consider asking BBA for sample
+            print("Accepted samples for opening lead: 0")
         for i in range(accepted_samples.shape[0]):
             # Extract scores for the current sample index i
-            k_values = {k: v[i] for k, v in real_scores.items()}
+            if self.models.use_real_imp_or_mp_opening_lead:
+                k_values = {k: v[i] for k, v in real_scores.items()}
 
-            # Check if all values in k_values are the same
-            if len(set(k_values.values())) == 1:
-                k_str = ""  # All values are identical, so print an empty string
-                samples1.append('%s %s %s %s - %.5f | %s' % (
-                    hand_to_str(self.handplay),
-                    hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
-                    hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
-                    hand_to_str(accepted_samples[i,2,:], self.models.n_cards_bidding),
-                    sorted_bidding_score[i],
-                    k_str  # Include formatted key-value scores
-                ))
+                # Check if all values in k_values are the same
+                if len(set(k_values.values())) == 1:
+                    k_str = ""  # All values are identical, so print an empty string
+                    samples1.append('%s %s %s %s - %.5f | %s' % (
+                        hand_to_str(self.handplay),
+                        hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
+                        hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
+                        hand_to_str(accepted_samples[i,2,:], self.models.n_cards_bidding),
+                        sorted_bidding_score[i],
+                        k_str  # Include formatted key-value scores
+                    ))
+                else:
+                    k_str = " ".join(f"{Card.from_code(int(k), xcards=True)}:{score}" for k, score in k_values.items())  # Format normally
+                    samples2.append('%s %s %s %s - %.5f | %s' % (
+                        hand_to_str(self.handplay),
+                        hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
+                        hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
+                        hand_to_str(accepted_samples[i,2,:], self.models.n_cards_bidding),
+                        sorted_bidding_score[i],
+                        k_str  # Include formatted key-value scores
+                    ))
+                samples = (samples2 + samples1)[:self.models.sample_hands_for_review]
             else:
-                k_str = " ".join(f"{Card.from_code(int(k), xcards=True)}:{score}" for k, score in k_values.items())  # Format normally
-                samples2.append('%s %s %s %s - %.5f | %s' % (
-                    hand_to_str(self.handplay),
-                    hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
-                    hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
-                    hand_to_str(accepted_samples[i,2,:], self.models.n_cards_bidding),
-                    sorted_bidding_score[i],
-                    k_str  # Include formatted key-value scores
-                ))
+                for i in range(min(self.models.sample_hands_for_review, accepted_samples.shape[0])):
+                    samples.append('%s %s %s %s %.5f' % (
+                        hand_to_str(self.handplay),
+                        hand_to_str(accepted_samples[i,0,:], self.models.n_cards_bidding),
+                        hand_to_str(accepted_samples[i,1,:], self.models.n_cards_bidding),
+                        hand_to_str(accepted_samples[i,2,:], self.models.n_cards_bidding),
+                        sorted_bidding_score[i]
+                    ))
 
-        samples = (samples2 + samples1)[:self.models.sample_hands_for_review]
 
         card_resp = CardResp(
             card=Card.from_code(opening_lead52),
@@ -1848,15 +1862,12 @@ class CardPlayer:
         if quality < self.models.pimc_bidding_quality:
             weight = 0.5
 
-        for card52, (e_tricks, e_score, e_make) in dd_resp.items():
+        for card52, (e_tricks, e_score, e_make, msg) in dd_resp.items():
             pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card52]
             new_e_tricks = round((pimc_e_tricks * weight + e_tricks * (1-weight)),2) if pimc_e_tricks is not None and e_tricks is not None else None
             new_e_score = round((pimc_e_score * weight + e_score * (1-weight)),2) if pimc_e_score is not None and e_score is not None else None
             new_e_make = round((pimc_e_make * weight + e_make * (1-weight)),2) if pimc_e_make is not None and e_make is not None else None
-            #print(new_e_tricks, new_e_score, new_e_make)
-            #print(pimc_e_tricks, pimc_e_score, pimc_e_make)
-            #print(e_tricks, e_score, e_make)
-            new_msg = engine + f" {weight*100:.0f}%|" + (pimc_msg or '') 
+            new_msg = msg +"|" if msg else "" + engine + f" {weight*100:.0f}%|" + (pimc_msg or '') 
             new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
             new_msg += f"|BEN DD {(1-weight)*100:.0f}%|" 
             new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
@@ -1885,16 +1896,93 @@ class CardPlayer:
         if quality < 0.1 and self.verbose:
             print("Bad Samples:")
             print(samples)
-               
-        if self.models.alphamju_declaring and (self.player_i == 1 or self.player_i == 3) and trick_i > 6:
+        card_resp_alphamju = []
+        # AlphaMju is not good at discarding yet
+        if self.models.alphamju_declaring and (self.player_i == 1 or self.player_i == 3) and trick_i > 6 and play_status != "Discard":
             suit = "NSHDC"[self.strain_i]
-            # We need to figure out the goal, how many tricks we have, and how many our goal is
-            card_resp = alphamju(13-trick_i, suit, self.player_i, current_trick52, worlds)
+            # if defending the target is another
+            level = int(self.contract[0])
+            if self.player_i % 2 == 1:
+                tricks_needed = level + 6 - self.n_tricks_taken
+            else:
+                tricks_needed = 13 - (level + 6) - self.n_tricks_taken + 1
+
+            tricks_left = 13 - trick_i
+
+            print(f"Tricks needed: {tricks_needed}, Tricks left: {tricks_left}, trick_i: {trick_i}, play_status: {play_status}, leader_i: {leader_i}, current_trick52: {current_trick52}")
+
+            # Initialize a flag to track if we adjusted tricks_needed up or down
+            adjusted_up = False
+            adjusted_down = False
+            previous_card_resp_alphamju = None  # Store previous result of alphamju when all_100 was True
+
+            # Start by calling alphamju inside the loop to execute at least once
+            while True:
+                # Call alphamju with the current value of tricks_needed
+                card_resp_alphamju = alphamju(min(tricks_needed, tricks_left), suit, self.player_i, current_trick52, worlds, self.get_random_generator())
+
+                if card_resp_alphamju != []:
+                    candidate_cards = []
+
+                # Check if all candidates have percent 100
+                    all_100 = all(percent == 100 for card, percent in card_resp_alphamju)
+                    # Check if all candidates have percent 0
+                    all_0 = all(percent == 0 for card, percent in card_resp_alphamju)
+
+                    # If all percent values are 100 and tricks_needed < tricks_left, increment tricks_needed
+                    if all_100 and tricks_needed < tricks_left and not adjusted_down:
+                        previous_card_resp_alphamju = card_resp_alphamju  # Save the current result
+                        tricks_needed += 1
+                        adjusted_up = True  # Mark that we've adjusted up
+                        adjusted_down = False  # Reset the down adjustment flag
+                        continue  # Continue the loop to try again with the updated tricks_needed
+
+                    # If all percent values are 0 and tricks_needed > 1, decrement tricks_needed
+                    if all_0 and tricks_needed > 1:
+                        if adjusted_up:
+                            # If we encounter all_0 after adjusting up, revert to the previous result from all_100
+                            if previous_card_resp_alphamju is not None:
+                                card_resp_alphamju = previous_card_resp_alphamju  # Use the previous result
+                        else:
+                            tricks_needed -= 1
+                            adjusted_down = True  # Mark that we've adjusted down
+                            continue  # Continue the loop to try again with the updated tricks_needed
+      
+
+                    # Collect candidate cards
+                    for card, percent in card_resp_alphamju:
+                        if percent > 0:
+                            candidate = CandidateCard(Card.from_symbol(card), percent, -1, -1, -1, -1, -1, -1, -1, -1)
+                            candidate_cards.append(candidate)
+
+                    if candidate_cards != []:
+                        # Sort by insta_score (descending), and in case of tie, by index (ascending)
+                        candidate_cards = sorted(candidate_cards, key=lambda x: (x.insta_score, -candidate_cards.index(x)), reverse=True)
+
+                        card_resp = CardResp(
+                            card=candidate_cards[0].card,
+                            candidates=candidate_cards,
+                            samples=samples,
+                            shape=-1,
+                            hcp=-1, 
+                            quality=quality,
+                            who='𝛼𝞵', 
+                            claim=-1
+                        )
+                        return card_resp
+
+                    # If card_resp_alphamju is empty, break out of the loop (or handle as needed)
+                    break
+
+                # If card_resp_alphamju is empty, break out of the loop (or handle as needed)
+                break
+
 
             
         # When play_status is discard, it might be a good idea to use PIMC even if it is not enabled
         if play_status == "discard" and not self.models.pimc_use_discard:
             dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+            self.update_with_alphamju(card_resp_alphamju, merged_card_resp)
             card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)
         else:                    
             if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
@@ -1910,6 +1998,7 @@ class CardPlayer:
                     merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", self.models.pimc_ben_dd_declaring_weight, quality)
                 else:
                     merged_card_resp = pimc_resp_cards
+                self.update_with_alphamju(card_resp_alphamju, merged_card_resp)
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)            
             else:
                 if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
@@ -1926,15 +2015,25 @@ class CardPlayer:
                         merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef", self.models.pimc_ben_dd_defending_weight, quality)
                     else:
                         merged_card_resp = pimc_resp_cards
+                    self.update_with_alphamju(card_resp_alphamju, merged_card_resp)
                     card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)            
                     
                 else:
                     dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+                    self.update_with_alphamju(card_resp_alphamju, dd_resp_cards)
                     card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits)
 
         if self.verbose:
             print(f'Play card response time: {time.time() - t_start:0.4f}')
         return card_resp
+
+    def update_with_alphamju(self, card_resp_alphamju, merged_card_resp):
+        for card, percent in card_resp_alphamju:
+            card52 = Card.from_symbol(card).code()
+            if card52 in merged_card_resp:
+                values = merged_card_resp[card52]
+                updated_msg = values[-1] + f"|𝛼𝞵 {percent}%"
+                merged_card_resp[card52] = (*values[:-1], updated_msg)
 
     def get_cards_dd_evaluation(self, trick_i, leader_i, tricks52, current_trick52, players_states, probabilities_list):
         
@@ -2061,7 +2160,7 @@ class CardPlayer:
         card_result = {}
         claim_cards = []
         for key in dd_solved.keys():
-            card_result[key] = (card_tricks[key], card_ev[key], making[key])
+            card_result[key] = (card_tricks[key], card_ev[key], making[key], "")
             if card_tricks[key] == 13 - trick_i:
                 claim_cards.append(key)
             if self.verbose:
@@ -2189,7 +2288,6 @@ class CardPlayer:
                         trump_adjust = trump_adjust * 2
                     else:
                         trump_adjust = trump_adjust / 2
-            print("Trump adjust", trump_adjust)
         return trump_adjust
 
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits):
@@ -2356,7 +2454,7 @@ class CardPlayer:
         current_card = 0
         current_insta_score = 0
         # Small cards come from DD, but if a sequence is present it is the highest card
-        for card52, (e_tricks, e_score, e_make) in card_dd.items():
+        for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
             adjust_card = suit_adjust[card52 // 13]
             card32 = deck52.card52to32(card52)
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
@@ -2391,7 +2489,7 @@ class CardPlayer:
                     {
                         "expected_score_dd": e_score + adjust_card
                     }),
-                    msg= (f"|suit adjust={adjust_card}" if adjust_card != 0 else "")
+                    msg= (f"|suit adjust={adjust_card}{msg}" if adjust_card != 0 else msg)
                 ))
             else:
                 candidate_cards.append(CandidateCard(
@@ -2408,7 +2506,7 @@ class CardPlayer:
                     {
                         "expected_score_dd": e_score + adjust_card
                     }),
-                    msg= (f"|suit adjust={adjust_card}" if adjust_card != 0  else "")
+                    msg= (f"|suit adjust={adjust_card}{msg}" if adjust_card != 0 else msg)
                 ))
             current_card = card52
             current_insta_score = insta_score

@@ -72,7 +72,7 @@ n_dim_shape = SHAPE_train.shape[2]
 
 batch_size = 256  
 buffer_size =  25600
-epochs = 50
+epochs = 30
 learning_rate = 0.0005
 keep = 0.8
 steps_per_epoch = n_examples // batch_size

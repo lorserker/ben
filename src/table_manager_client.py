@@ -1,6 +1,7 @@
 import os
 import sys
 import platform
+
 os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
 # Just disables the warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -42,6 +43,7 @@ import datetime
 import pprint
 from objects import Card, CardResp, BidResp
 from util import get_play_status, get_singleton, get_possible_cards
+from nn.opponents import Opponents
 
 from deck52 import card52to32, decode_card, get_trick_winner_i, hand_to_str
 from bidding import bidding
@@ -86,6 +88,7 @@ class TMClient:
         self.opponents = None
         self.dds = ddsolver
         self.partner = None
+        self.last_explanations = ""
 
     @property
     def is_connected(self):
@@ -107,7 +110,7 @@ class TMClient:
             'opponents': self.opponents,
             'partner': self.partner,
             'models': self.models.name,
-            'version': '0.8.6.6'
+            'version': '0.8.6.7'
         }
 
     async def run(self, biddingonly, restart):
@@ -662,7 +665,9 @@ class TMClient:
         if bid_resp.alert:
             msg_bid += ' Alert. ' + bid_resp.explanation
         elif bid_resp.explanation:
-            msg_bid += ' Infos. ' + bid_resp.explanation
+            if bid_resp.explanation not in self.last_explanations:
+                msg_bid += ' Infos. ' + bid_resp.explanation
+                self.last_explanations = bid_resp.explanation
         await self.send_message(msg_bid)
 
     async def receive_card_play_for(self, player_i, trick_i):
@@ -811,7 +816,7 @@ class TMClient:
         assert vuln_str in {'Neither', 'N/S', 'E/W', 'Both'}
         vuln_ns = vuln_str == 'N/S' or vuln_str == 'Both'
         vuln_ew = vuln_str == 'E/W' or vuln_str == 'Both'
-
+        self.last_explanations = ""
         return dealer_i, vuln_ns, vuln_ew, hand_str
     
     @staticmethod
@@ -950,6 +955,7 @@ async def main():
     parser.add_argument("--name", required=True, help="Name in Table Manager")
     parser.add_argument("--seat", required=True, help="Where to sit (North, East, South or West)")
     parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
+    parser.add_argument("--opponent", default="", help="Filename for configuration pf opponents")
     parser.add_argument("--biddingonly", type=str_to_bool, default=False, help="Only bid, no play")
     parser.add_argument("--nosearch", type=str_to_bool, default=False, help="Just use neural network")
     parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
@@ -962,6 +968,7 @@ async def main():
     name = args.name
     seat = args.seat
     configfile = args.config
+    opponentfile = args.opponent
     matchpoint = args.matchpoint
     verbose = args.verbose
     biddingonly = args.biddingonly
@@ -971,7 +978,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.6")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.7")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1020,6 +1027,14 @@ async def main():
         
     print("Config:", configfile)
     print("System:", models.name)
+    if opponentfile != "":
+        # Override with information from opponent file
+        print("Opponent:", opponentfile)
+        opp_configuration = conf.load(opponentfile)
+        opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
+        models.opponent_model = opponents.opponent_model
+        models.bba_their_cc = opponents.bba_their_cc
+        sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
     if models.use_bba:
         print("Using BBA for bidding")

@@ -13,9 +13,6 @@ def load(fnm: str) -> ConfigParser:
     # Build the full path to the config file
     full_path = os.path.join(base_path, fnm)
     sys.stderr.write("Loading config file %s\n" % full_path)
-    #if util.is_pyinstaller_executable():
-        #full_path = full_path.replace("\\_internal", "")
-        #sys.stderr.write("Loading config file %s\n" % full_path)        
     with open(full_path) as f:
         conf.read_file(f)
     return conf

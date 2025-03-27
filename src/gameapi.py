@@ -57,6 +57,7 @@ warnings.filterwarnings("ignore")
 logging.getLogger().setLevel(logging.CRITICAL)
 # Just disables the warnings
 import tensorflow as tf
+from nn.opponents import Opponents
 
 import pprint
 import argparse
@@ -399,6 +400,7 @@ config_path = get_execution_path()
 parser = argparse.ArgumentParser(description="Game API")
 parser.add_argument("--host", default="localhost", help="Hostname for appserver")
 parser.add_argument("--config", default=f"{config_path}/config/default_api.conf", help="Filename for configuration")
+parser.add_argument("--opponent", default="", help="Filename for configuration pf opponents")
 parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=8085, help="Port for appserver")
 parser.add_argument("--record", type=str_to_bool, default=True, help="Recording of responses")
@@ -408,6 +410,7 @@ parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playin
 args = parser.parse_args()
 
 configfile = args.config
+opponentfile = args.opponent
 verbose = args.verbose
 port = args.port
 record = args.record
@@ -416,7 +419,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.6")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.7")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -472,6 +475,16 @@ if sys.platform != 'win32':
     
 print("Config:", configfile)
 print("System:", models.name)
+
+if opponentfile != "":
+    # Override with information from opponent file
+    print("Opponent:", opponentfile)
+    opp_configuration = conf.load(configfile)
+    opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
+    models.opponent_model = opponents.opponent_model
+    models.bba_their_cc = opponents.bba_their_cc
+    sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
+
 
 if models.use_bba:
     print("Using BBA for bidding")
@@ -1046,14 +1059,26 @@ def explain():
 @app.route('/bids')
 def bids():
     t_start = time.time()
+    base_path = os.getenv('BEN_HOME') or '..'
+    file_us = request.args.get("file_us")
+    file_them = request.args.get("file_them")
+    if not file_us:
+        file_us = models.bba_our_cc
+    else:
+        file_us = os.path.join(base_path,"BBA/CC/" + file_us)
+    if not file_them:
+        file_them = models.bba_their_cc
+    else:
+        file_them = os.path.join(base_path,"BBA/CC/" + file_them)
+        
     from bba.BBA import BBABotBid
     if verbose:
-        print("models.bba_our_cc", models.bba_our_cc, "models.bba_their_cc", models.bba_their_cc)
+        print("file_us", file_us, "file_them", file_them)
     dealer_i = 0
     position_i = 0
     mp = False
     vuln = [False, False]
-    bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, mp, verbose)
+    bot = BBABotBid(file_us, file_them, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, mp, verbose)
     ctx = request.args.get("ctx").replace('*','').replace("XX","Rd").replace("X","Db").replace('-','').upper().replace("P","--")
     # Split the string into chunks of every second character
     bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]

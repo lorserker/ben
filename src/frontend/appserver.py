@@ -29,11 +29,19 @@ BUNDLE_TEMP_DIR = ''
 try:
     if getattr(sys, 'frozen') and hasattr(sys, '_MEIPASS'):
         BUNDLE_TEMP_DIR = sys._MEIPASS
+        FILES_DIR = "../BBA/CC/"
         #Modify template
         bottle.TEMPLATE_PATH.insert(0,BUNDLE_TEMP_DIR + '/views')
 except:
     BUNDLE_TEMP_DIR= '' 
+    # Directory containing the files
+    FILES_DIR = "../../BBA/CC/"
 
+
+# Get a list of filenames in the directory
+filenames = [f for f in os.listdir(FILES_DIR) if os.path.isfile(os.path.join(FILES_DIR, f))]
+file_map = {os.path.splitext(f)[0]: f for f in filenames}  # Remove extension but keep mapping
+  
 def extract_value(s: str) -> str:
     return s[s.index('"') + 1 : s.rindex('"')]
 
@@ -490,7 +498,7 @@ def index():
 
 @app.route('/bba')
 def index():
-    return template('bba.tpl')
+    return template('bba.tpl', file_map=file_map)
 
 @app.route('/api/deals/<deal_id>')
 def deal_data(deal_id):

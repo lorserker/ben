@@ -103,7 +103,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     verbose = args.verbose
 
-    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.6.6{Fore.RESET}\n")
+    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.6.7{Fore.RESET}\n")
     sys.stderr.write(f'NS = {args.bidderNS}\n')
     sys.stderr.write(f'EW = {args.bidderEW}\n')    
     sys.stderr.write(f'DB = {args.db}\n')
@@ -188,9 +188,9 @@ if __name__ == '__main__':
                 'declarer': bidding.get_decl_i(contract),
                 'strain_i': bidding.get_strain_i(contract)
             }
+            sys.stderr.write('{1} Board Bid in {0:0.2f} seconds.\n'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
             with shelve.open(f"{base_path}/{db_name}") as db:
                 deal = result
-                sys.stderr.write('{1} Board Bid in {0:0.2f} seconds.\n'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
                 db[uuid.uuid4().hex] = deal
 
     if db_name:

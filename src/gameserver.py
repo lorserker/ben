@@ -90,6 +90,7 @@ parser = argparse.ArgumentParser(description="Game server")
 parser.add_argument("--boards", default="", help="Filename for boards")
 parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
 parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
+parser.add_argument("--opponent", default="", help="Filename for configuration pf opponents")
 parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
 parser.add_argument("--port", type=int, default=4443, help="Port for appserver")
 parser.add_argument("--auto", type=bool, default=False, help="BEN bids and plays all 4 hands")
@@ -100,6 +101,7 @@ parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 args = parser.parse_args()
 
 configfile = args.config
+opponentfile = args.opponent
 verbose = args.verbose
 port = args.port
 auto = args.auto
@@ -110,7 +112,7 @@ boards = []
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.6")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.7")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -160,6 +162,15 @@ if sys.platform != 'win32':
     
 print("Config:", configfile)
 print("System:", models.name)
+
+if opponentfile != "":
+    # Override with information from opponent file
+    print("Opponent:", opponentfile)
+    opp_configuration = conf.load(configfile)
+    opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
+    models.opponent_model = opponents.opponent_model
+    models.bba_their_cc = opponents.bba_their_cc
+    sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
 if models.use_bba:
     print("Using BBA for bidding")

@@ -241,9 +241,28 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                 if models.matchpoint:
                                     if candidate_card.expected_score_mp >= candidate_cards[0].expected_score_mp - 4:
                                         return candidate_card.card, "SuitC-MP"
+                                    else:
+                                        # If forced we allow up to 40 MP
+                                        if models.force_suitc and candidate_card.expected_score_imp >= candidate_cards[0].expected_score_mp - 40:
+                                            if verbose:
+                                                print("SuitC candidate card worse than best DD cards")
+                                                print("SuitC card", candidate_card)
+                                                print("DD card", candidate_cards[0])
+                                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays, hand_str, dummy_str)
+                                            return candidate_card.card, "SuitC-MP-Forced"
                                 else:
                                     if candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 0.4:
                                         return candidate_card.card, "SuitC-Imp"
+                                    else:
+                                        # If forced we allow up to 4 IMP
+                                        if models.force_suitc and candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 4:
+                                            if verbose:
+                                                print("SuitC candidate card worse than best DD cards")
+                                                print("SuitC card", candidate_card)
+                                                print("DD card", candidate_cards[0])
+                                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays, hand_str, dummy_str)
+                                            return candidate_card.card, "SuitC-Imp-Forced"
+
                             else:
                                 if models.double_dummy:
                                     if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
@@ -253,14 +272,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                     if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
                                         if candidate_card.expected_tricks_sd and candidate_card.expected_tricks_sd >= candidate_cards[0].expected_tricks_sd - 0.2:
                                             return candidate_card.card, "SuitC-SD"
-                            if verbose:
-                                print("SuitC candidate card worse than best DD cards")
-                                print("SuitC card", candidate_card)
-                                print("DD card", candidate_cards[0])
-                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays, hand_str, dummy_str)
-                            if models.force_suitc:
-                                return candidate_card.card, "SuitC-Forced"
-                    print("SuitC card not in candidate cards")
+                    print("SuitC card not an acceptable card: {suit_str}{suitc_card}")
                 return candidate_cards[0].card, who
     
     if original_count == current_count:

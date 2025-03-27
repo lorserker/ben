@@ -17,6 +17,8 @@ robocopy ..\BBA\CC "BBA\BBA\CC" Shark-Sayc.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" WBridge5-Sayc.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" WJ.bbsa
 
+robocopy ..\src\config\opponent "BBA\config\opponent" /E
+
 robocopy ..\src\config "BBA\config" BBA-21GF.conf
 robocopy ..\src\config "BBA\config" BBA-SAYC.conf
 robocopy ..\src\config "BBA\config" BEN-21GF.conf

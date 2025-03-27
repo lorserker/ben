@@ -56,6 +56,7 @@ from util import calculate_seed, get_play_status, get_singleton, get_possible_ca
 from colorama import Fore, Back, Style, init
 import gc
 import psutil
+from nn.opponents import Opponents
 
 import faulthandler
 faulthandler.enable()
@@ -238,11 +239,11 @@ class Driver:
         
         aceking = {}
         if self.models.use_bba_to_count_aces:
-            if self.bot.bbabot is not None:
+            if self.bot is not None and self.bot.bbabot is not None:
                 aceking = self.bot.bbabot.find_aces(self.auction)
 
         if self.verbose:
-            if self.bot.bbabot is not None:
+            if self.bot is not None and self.bot.bbabot is not None:
                 self.bot.bbabot.get_sample(self.auction)
 
         print("trick 1")
@@ -456,7 +457,7 @@ class Driver:
             'opponents': "BEN",
             'partner': "BEN",
             'model': self.models.name,
-            'version': '0.8.6.6'
+            'version': '0.8.6.7'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -941,6 +942,7 @@ class Driver:
             if level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
+                self.bot = None
             else:
                 self.bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
                 players.append(self.bot)
@@ -1038,6 +1040,7 @@ async def main():
     parser.add_argument("--auto", type=str_to_bool, default=False, help="Continue without user confirmation. If a file is provided it will stop at end of file")
     parser.add_argument("--boardno", default=0, type=int, help="Board number to start from")
     parser.add_argument("--config", default=f"{config_path}/config/default.conf", help="Filename for configuration")
+    parser.add_argument("--opponent", default="", help="Filename for configuration pf opponents")
     parser.add_argument("--playonly", type=str_to_bool, default=False, help="Just play, no bidding")
     parser.add_argument("--biddingonly", default="False", help="Just bidding, no play, can be True, NS or EW")
     parser.add_argument("--outputpbn", default="", help="Save each board to this PBN file")
@@ -1051,6 +1054,7 @@ async def main():
     args = parser.parse_args()
 
     configfile = args.config
+    opponentfile = args.opponent
     verbose = args.verbose
     auto = args.auto
     playonly = args.playonly
@@ -1069,7 +1073,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.6")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.7")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1118,6 +1122,15 @@ async def main():
         
     print("Config:", configfile)
     print("System:", models.name)
+
+    if opponentfile != "":
+        # Override with information from opponent file
+        print("Opponent:", opponentfile)
+        opp_configuration = conf.load(configfile)
+        opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
+        models.opponent_model = opponents.opponent_model
+        models.bba_their_cc = opponents.bba_their_cc
+        sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
     if models.use_bba:
         print("Using BBA for bidding")

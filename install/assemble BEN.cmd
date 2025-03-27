@@ -12,6 +12,8 @@ robocopy ..\models\TF2Models "BEN\models\TF2Models" /E RPDD_*
 robocopy ..\models\TF2Models "BEN\models\TF2Models" /E Contract*
 robocopy ..\models\TF2Models "BEN\models\TF2Models" /E Trick*
 if not exist "BEN\config" mkdir "BEN\config"
+if not exist "BEN\config\opponent" mkdir "BEN\config\opponent"
+robocopy BEN\config\opponent "BEN\config\opponent" /E
 copy ..\src\config\BEN-Sayc.conf "BEN\config\default.conf" /Y
 if not exist "BEN\BBA" mkdir "BEN\BBA"
 if not exist "BEN\BBA\CC" mkdir "BEN\BBA\CC"

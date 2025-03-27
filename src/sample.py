@@ -213,7 +213,7 @@ class Sample:
             print(f"Found {len(accepted_samples)} samples for bidding. Quality={quality:.2f}, Samplings={samplings}, Auction={auction_so_far}")
         
 
-        if self.sample_previous_round_if_needed and quality < self.bid_accept_threshold_bidding and len(auction_so_far) >= 8:
+        if self.sample_previous_round_if_needed and quality < self.bid_accept_threshold_bidding and binary.get_number_of_bids(auction_so_far) >= 8:
             sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping their doubles{Fore.RESET}\n")
             # Was there a X or XX we can replace with P, then just try again
             auction_updated = False
@@ -240,7 +240,7 @@ class Sample:
                 else:
                     sys.stderr.write(f"{Fore.YELLOW}Could not update auction {auction_so_far}{Fore.RESET}\n")
 
-        if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and len(auction_so_far) >= 12:
+        if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and binary.get_number_of_bids(auction_so_far) >= 12:
             sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping last bidding round{Fore.RESET}\n")
             auction_so_far_copy = auction_so_far.copy()
             auction_so_far_copy = auction_so_far_copy[:-4]
@@ -1160,11 +1160,12 @@ class Sample:
                         models
                     )
                     for i in range(h1_h2.shape[0]):
+                        # In these worlds declarer is south, and if playing for dummy it is south
                         sample = ('%s %s %s %s' % (
-                            hand_to_str(h1_h2[i,0,:52].astype(int),52),
-                            deck52.deal_to_str(card_players[player_i].hand52),
                             hand_to_str(h1_h2[i,1,:52].astype(int),52),
-                            deck52.deal_to_str(card_players[player_i].public52)
+                            deck52.deal_to_str(card_players[player_i].public52),
+                            hand_to_str(h1_h2[i,0,:52].astype(int),52),
+                            deck52.deal_to_str(card_players[player_i].hand52)
                         ))
                         worlds.append(sample)
 

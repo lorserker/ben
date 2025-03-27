@@ -58,16 +58,28 @@
 
 	<!--JavaScript-->
 	<script>
-        let biddingsequence = getQueryParam('bid')
-        if (!biddingsequence) {
-            biddingsequence = "*"
+		let biddingsequence = getQueryParam('bid')
+		if (!biddingsequence) {
+			biddingsequence = "*"
 		} else if (biddingsequence.endsWith("-")) {
- 		    biddingsequence += "*";
+			biddingsequence += "*";
 		}
 
-		var url = "http://localhost:8085/bids?ctx=" + biddingsequence
-        const numOfHyphens = (biddingsequence.match(/-/g) || []).length;
-        const who = numOfHyphens % 2 === 0 ? 'us' : 'them';
+		function create_URL() {
+
+			// Construct the URL dynamically
+			var url = "http://" + window.location.hostname + ":8085/bids";
+			var params = [];
+
+			if (fileUs) params.push("file_us=" + encodeURIComponent(fileUs));
+			if (fileThem) params.push("file_them=" + encodeURIComponent(fileThem));
+			if (biddingsequence) params.push("ctx=" + encodeURIComponent(biddingsequence));
+
+			if (params.length > 0) {
+				url += "?" + params.join("&"); // Append only if there are parameters
+			}
+			return url
+		}
 
         function getQueryParam(key) {
             const queryString = window.location.search;
@@ -106,6 +118,8 @@
 		}
 
 		function displayBidDetails(jsonData) {
+			const numOfHyphens = (biddingsequence.match(/-/g) || []).length;
+			const who = numOfHyphens % 2 === 0 ? 'us' : 'them';
 			let table = `<tr><th>Bid</th><th>Description</th></tr>`;
 
 			// Assuming jsonData contains an array of bids or a similar structure
@@ -119,24 +133,28 @@
 					bValueHtml = bValueHtml.replace(/C/g, '<span style="color: green">&clubs;</span>');
 				} else {
 					bValueHtml = bValue;
+				}
+				let	mValueHtml = "&nbsp";
+				if (!bid.m.includes("Not defined") && !bid.m.includes("unknown")) {
+					mValueHtml = bid.m.replace(/!S/g, '<span style="color: blue">&spades;</span>');
+					mValueHtml = mValueHtml.replace(/!H/g, '<span style="color: red">&hearts;</span>');
+					mValueHtml = mValueHtml.replace(/!D/g, '<span style="color: orange">&diams;</span>');
+					mValueHtml = mValueHtml.replace(/!C/g, '<span style="color: green">&clubs;</span>');
+					mValueHtml = replaceSuitsBeforeDoubleDash(mValueHtml);
+					mValueHtml = replaceSuits(mValueHtml);
 				}				
-				let mValueHtml = bid.m.replace(/!S/g, '<span style="color: blue">&spades;</span>');
-				mValueHtml = mValueHtml.replace(/!H/g, '<span style="color: red">&hearts;</span>');
-				mValueHtml = mValueHtml.replace(/!D/g, '<span style="color: orange">&diams;</span>');
-				mValueHtml = mValueHtml.replace(/!C/g, '<span style="color: green">&clubs;</span>');
-				mValueHtml = replaceSuitsBeforeDoubleDash(mValueHtml);
-				mValueHtml = replaceSuits(mValueHtml);
 
 				if (!canbid(bValueHtml)) {
 					table += `<tr class="${who}"><td></td><td>Bidding ended</td></tr>`;
 				} else {
 					table += `<tr class="${who}"><td>`
-					table += `<a href="?bid=`
-					table += `${biddingsequence.substring(0, biddingsequence.length - 1)}`
 					if (biddingended(bValueHtml))
-						table += `P">`
-					else 
-					   table += `${bValue}-*">${bValueHtml}</a>`
+						table += `P`
+					else {
+						table += `<a href="?bid=`
+						table += `${biddingsequence.substring(0, biddingsequence.length - 1)}`
+					   	table += `${bValue}-*">${bValueHtml}</a>`
+					} 
 					table += `</td><td>${mValueHtml}</td></tr>`;
 				}
 			});
@@ -188,7 +206,7 @@
 	</script>
 </head>
 
-<body onload="loadJSONDoc()">
+<body>
 
 	<br><br>
 	<h1>BBA Bidding Definitions</h1>
@@ -204,6 +222,27 @@
         </tbody>
     </table>
 	<br>
+        <label for="file_us">Select BBA for Us:</label>
+        <select name="file_us" id="file_us">
+			<option value="">-- Select a CC --</option>  <!-- Default blank option -->
+            % for display_name, full_name in file_map.items():
+                <option value="{{ full_name }}">{{ display_name }}</option>
+            % end
+        </select>
+
+        <label for="file_them">Select BBA for Them:</label>
+        <select name="file_them" id="file_them">
+			<option value="">-- Select a CC --</option>  <!-- Default blank option -->
+            % for display_name, full_name in file_map.items():
+                <option value="{{ full_name }}">{{ display_name }}</option>
+            % end
+        </select>
+
+    	<button id="setFileBtn">Set CC's</button>  <!-- Saves selection -->
+
+        <br>
+			<p id="statusMessage" style="color: green;"></p>  <!-- Status message -->
+		<br>
     <script>
         function formatBid(bid) {
 			if (bid === "D") {
@@ -258,15 +297,16 @@
 		}
 		    // Function to clear cache
 		function clearCache() {
+            var fileUs = localStorage.getItem("file_us");
+            var fileThem = localStorage.getItem("file_them");
 			// Clear all localStorage
 			localStorage.clear(); 
-			
-			// Optionally, if you want to clear only specific cached data (e.g., bid-related):
-			// localStorage.removeItem('bbaData_' + bid); 
-			
+            if (fileUs) localStorage.setItem("file_us", fileUs);
+            if (fileThem) localStorage.setItem("file_them", fileThem);
+					
 			alert('Cache has been cleared!');
 			// Reload the page after clearing cache
-    		location.reload();
+    		location.reload(true);
 		}
 		</script>
 	<table id="id"></table>
@@ -277,11 +317,37 @@
 		<button id="clearCacheButton">Clear Cache</button>
 	</h2>
     <script>
-		// Set the href attribute of the link
-		document.getElementById('sourceLink').href = url;
+        // Save the selected file values
+        document.getElementById("setFileBtn").addEventListener("click", function () {
+            var fileUs = document.getElementById("file_us").value;
+            var fileThem = document.getElementById("file_them").value;
+
+            if (fileUs) localStorage.setItem("file_us", fileUs);
+            if (fileThem) localStorage.setItem("file_them", fileThem);
+
+            document.getElementById("statusMessage").innerText = "CC set successfully!";
+			clearCache()
+        });
+		
     	// Attach the clearCache function to the button
     	document.getElementById('clearCacheButton').onclick = clearCache;
-	</script>
+        // Restore saved values from localStorage
+        window.onload = function () {
+            fileUs = localStorage.getItem("file_us");
+            fileThem = localStorage.getItem("file_them");
+
+            if (fileUs) {
+                document.getElementById("file_us").value = fileUs;
+            }
+            if (fileThem) {
+                document.getElementById("file_them").value = fileThem;
+            }
+			url = create_URL()
+			// Set the href attribute of the link
+			document.getElementById('sourceLink').href = url;
+			loadJSONDoc()
+        };
+ 	</script>
 </body>
 
 </html>

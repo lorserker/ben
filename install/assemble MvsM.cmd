@@ -2,6 +2,8 @@ python -m PyInstaller table_manager_client.spec --noconfirm
 python -m PyInstaller TMCGui.spec --noconfirm
 
 robocopy ..\src\config\MvsM "MvsM\config" /E
+if not exist "MvsM\config\opponent" mkdir "MvsM\config\opponent"
+robocopy ..\src\config\opponent "MvsM\config\opponent" /E
 robocopy ..\BBA\CC "MvsM\BBA\CC" /E
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E righty*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E lefty*
