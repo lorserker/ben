@@ -110,22 +110,17 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                 return candidate_cards[0].card, who
     
     interesting_suit = candidate_cards[0].card.suit
-    #print("interesting_suit", interesting_suit)
+
     if verbose:
         print(f'Checking SuitC: {models.use_suitc} {contract}  {models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]}')
 
     if player_i == 3 and not models.use_suitc:
         # For declarer pick a random card, when touching honors and NN is equal (Will not happen in practice)
-        #print("First card for declarer", candidate_cards[0].card)
-        #print(hand_str)
-        #print(dummy_str)
-        #print("play_status", play_status)
         return candidate_cards[0].card, who       
 
     suits = hand_str.split('.')
     original_count = len(suits[interesting_suit])
     current_count  = original_count
-    #print("original_count", original_count, suits[interesting_suit])
     discards = ""
     suit_played = False
     for trick in tricks52:
@@ -138,14 +133,15 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     current_count -= 1
                 else:
                     discards += c
-
+    if verbose:
+        print("original_count", original_count, "current_count", current_count, "discards", discards, "suit_played", suit_played)
     if models.use_suitc and not suit_played:
         if contract[1] == "N" or models.suitc_sidesuit_check or "SHDC"[interesting_suit] == contract[1]:
             if (player_i  == 1 or player_i == 3) and play_status == "Lead":
                 # We only use SuitC the first time the suit is played 
                 # but allow 3 discards / rufs in the suit
                 suits_north = dummy_str.split('.')[interesting_suit]
-                if current_count + 2 >= original_count and len(discards) < 3 and models.use_suitc and len(suits_north) + original_count > 6:
+                if current_count + 2 >= original_count and len(discards) < 3 and models.use_suitc and len(suits_north) + original_count >= 6:
                     if verbose:
                         print("SuitC activated")
                         print("discards", discards)
@@ -190,43 +186,17 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
                     entries = count_entries(hand_str, interesting_suit, played_cards, contract[1])
 
-                    card = suitc.calculate(f"{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}", trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
-                    suitc_card = None
                     try:
-                        response_dict = json.loads(card)
-                        optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
-                        # print("optimum_plays", optimum_plays)
-                        # We just take the play for MAX as we really don't know how many tricks are needed
-                        for play in optimum_plays:
-                            # If we can take all tricks we drop SuitC
-                            #print(play['Plays'][0]['Tricks'])
-                            #print("Tricks", play['Plays'][0]['Tricks'], " Max: ",max(len(suits_north),len(suits_south)))
-                            if play['Plays'][0]['Tricks'] == max(len(suits_north),len(suits_south)):
-                                if play['Plays'][0]['Percentage'] == 100:
-                                    if verbose:
-                                        print(f"SuitC dropped as we can take all tricks {current_count} {original_count} ")
-                                    return candidate_cards[0].card, who
-                            # We can have more than one play for MAX
-                            # So currently we are then selecting higest card. Should that be different?
-                            # We should probably look at the samples to find the best play
-                            if "MAX" in play["OptimumPlayFor"]:
-                                if len(play["GameTree"]) > 0:
-                                    suitc_card = play["GameTree"]["T"]
-                                    break
-                                else:
-                                    print("SuitC found no gametree")
-                                    return candidate_cards[0].card, who
-                                #print("card", card)
+                        suitc_card = suitc.calculate(max(len(suits_north),len(suits_south)), suits_north if suits_north != '' else '.', suits_south if suits_south != '' else '.', suits_westeast, trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
                     except Exception as ex:
                         sys.stderr.write(f"{Fore.RED}{ex}{Fore.RESET}\n")
-                        sys.stderr.write(f"{Fore.RED}SuitC failed: {card} Input:{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}{Fore.RESET}\n")
+                        sys.stderr.write(f"{Fore.RED}SuitC failed. Input:{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}{Fore.RESET}\n")
                         return candidate_cards[0].card, who
                     if suitc_card is None:
                         if verbose:
                             print("SuitC found no plays")
                         return candidate_cards[0].card, who
-                    else:
-                        suitc_card = suitc_card[-1]
+
                     suit_str = "SHDC"[interesting_suit]
                     if verbose:
                         print(f"SuitC found: {suit_str}{suitc_card}")
@@ -248,7 +218,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                                 print("SuitC candidate card worse than best DD cards")
                                                 print("SuitC card", candidate_card)
                                                 print("DD card", candidate_cards[0])
-                                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays, hand_str, dummy_str)
+                                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], hand_str, dummy_str)
                                             return candidate_card.card, "SuitC-MP-Forced"
                                 else:
                                     if candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 0.4:
@@ -260,7 +230,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                                 print("SuitC candidate card worse than best DD cards")
                                                 print("SuitC card", candidate_card)
                                                 print("DD card", candidate_cards[0])
-                                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], optimum_plays, hand_str, dummy_str)
+                                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0],  hand_str, dummy_str)
                                             return candidate_card.card, "SuitC-Imp-Forced"
 
                             else:
@@ -272,7 +242,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                     if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
                                         if candidate_card.expected_tricks_sd and candidate_card.expected_tricks_sd >= candidate_cards[0].expected_tricks_sd - 0.2:
                                             return candidate_card.card, "SuitC-SD"
-                    print("SuitC card not an acceptable card: {suit_str}{suitc_card}")
+                    print(f"SuitC card not an acceptable card: {suit_str}{suitc_card}")
                 return candidate_cards[0].card, who
     
     if original_count == current_count:

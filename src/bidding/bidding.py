@@ -191,6 +191,7 @@ def get_partner_suit(seat, auction):
     for i in range(len(auction)):
         if i % 4 == partner_seat:
             call = auction[i]
+            # We should check if it was a splinter or support of our suit
             if is_contract(call):
                 return "SHDCN".index(call[1])
             else:

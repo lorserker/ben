@@ -20,7 +20,7 @@ class Models:
                  alphamju_declaring, alphamju_defending,
                  use_adjustment, adjust_NN, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
                  use_suitc, force_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
-                 use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead,check_final_contract, max_samples_checked,  
+                 use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead, lead_convention, check_final_contract, max_samples_checked,  
                  alert_supported, alert_threshold,
                  factor_to_translate_to_mp, factor_to_translate_to_imp, use_suit_adjust, suppress_warnings,
                  reward_lead_partner_suit, trump_lead_penalty
@@ -124,6 +124,7 @@ class Models:
         self.use_real_imp_or_mp = use_real_imp_or_mp
         self.use_real_imp_or_mp_bidding = use_real_imp_or_mp_bidding
         self.use_real_imp_or_mp_opening_lead = use_real_imp_or_mp_opening_lead
+        self.lead_convention = lead_convention
         self.check_final_contract = check_final_contract
         self.max_samples_checked = max_samples_checked
         self.alert_supported = alert_supported
@@ -256,6 +257,7 @@ class Models:
         use_real_imp_or_mp = conf.getboolean('cardplay', 'use_real_imp_or_mp', fallback=False)
         use_real_imp_or_mp_bidding = conf.getboolean('eval', 'use_real_imp_or_mp_bidding', fallback=False)
         use_real_imp_or_mp_opening_lead = conf.getboolean('lead', 'use_real_imp_or_mp_opening_lead', fallback=False)
+        lead_convention = conf.getboolean('lead', 'lead_convention', fallback=False)
         suppress_warnings = conf.getboolean('models', 'suppress_warnings', fallback=True)
         use_bba = conf.getboolean('models', 'use_bba', fallback=False)
         consult_bba = conf.getboolean('models', 'consult_bba', fallback=False)
@@ -417,6 +419,7 @@ class Models:
             use_real_imp_or_mp=use_real_imp_or_mp,
             use_real_imp_or_mp_bidding=use_real_imp_or_mp_bidding,
             use_real_imp_or_mp_opening_lead=use_real_imp_or_mp_opening_lead,
+            lead_convention = lead_convention,
             check_final_contract=check_final_contract,
             max_samples_checked=max_samples_checked,
             suppress_warnings=suppress_warnings,

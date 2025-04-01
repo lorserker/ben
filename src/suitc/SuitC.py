@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
 # Calculate the parent directory
@@ -56,24 +57,25 @@ class SuitCLib:
         self.suitc.version.restype = ctypes.c_char_p
         return self.suitc.version().decode('utf-8')
     
-    def calculate(self, input, east_vacant=None, west_vacant=None, trump = False, entries = 1 ):
+    def calculate(self, max_tricks, north, south, eastwest, east_vacant=None, west_vacant=None, trump = False, entries = 1 ):
         # if matchoint is true, then -M is used
         # if verbose is true, then -a and -b is used
         # -F5 is combines the effect of -F1 and -F4, -F7 combines all 3 options.
-        # -ls2 limits the entries to 2 should be calculated
+        # -ls limits the entries 
         # -ls is most important when the hand to lead has length
+        # -Ls set south to lead
         # consider adding vacant places -wn<n> -en<n>
         if self.verbose:
-            input_str = " -Ls -u -c100 -a -b "
+            input_str = " -F1 -u -c100 -a -b "
         else:
-            input_str = " -Ls -u -c100 "
+            input_str = " -F1 -u -c100 "
         if not trump:
             input_str += f"-ls{entries} "
         if east_vacant:
             input_str +=f'-wv{west_vacant} '
             input_str +=f'-ev{east_vacant} '
         #input_str = ""
-        input_str += input
+        input_str += f"{north} {south} {eastwest}"
         input_length = len(input_str)
         if self.verbose:
             print("SuitC Input: " + input_str)
@@ -85,14 +87,14 @@ class SuitCLib:
         input_buffer_ptr = ctypes.pointer(c_wchar_p(input_buffer.value))
         
         # Create an output buffer
-        output_length = 32768
+        output_length = 4 * 32768
         output_buffer = create_unicode_buffer(output_length)
 
         # Create a variable to hold the output buffer size
         output_size = ctypes.c_int()
 
         # Create details buffer
-        details_length = 32768
+        details_length = 4 * 32768
         details_buffer = create_unicode_buffer(details_length)
         # Create a variable to hold the output buffer size
         details_size = ctypes.c_int()
@@ -109,4 +111,44 @@ class SuitCLib:
         if self.verbose:
             print(output_buffer.value)
             print(details_buffer.value)
-        return output_buffer.value
+
+        suitc_card = None
+        #print("SuitC Output: " + output_buffer.value)
+        response_dict = json.loads(output_buffer.value)
+        optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
+        # print("optimum_plays", optimum_plays)
+        # We just take the play for MAX as we really don't know how many tricks are needed
+        for play in optimum_plays:
+            # If we can take all tricks we drop SuitC
+            if play['Plays'][0]['Tricks'] == max_tricks:
+                if play['Plays'][0]['Percentage'] == 100:
+                    if self.verbose:
+                        print(f"SuitC dropped as we can take all tricks")
+                    return None
+            # We can have more than one play for MAX
+            # So currently we are then selecting higest card. Should that be different?
+            # We should probably look at the samples to find the best play
+            if "MAX" in play["OptimumPlayFor"]:
+                if len(play["GameTree"]) > 0:
+                    for card in play["GameTree"]:
+                        for key, card in card.items():
+                            if key == "T":  
+                                actual_card = card[-1]
+                                if actual_card in north:
+                                    if self.verbose:
+                                        print(f"Skipping play from North {card} {input_str}")
+                                    continue
+                                if actual_card in south:
+                                    if self.verbose:
+                                        print(f"Play from South {card} {input_str}")
+                                    return actual_card
+                                if self.verbose:
+                                    print("SuitC found play not in North or South", card)
+                else:
+                    if self.verbose:
+                        print(f"SuitC found no gametree. {input_str}")
+                    return None
+        if self.verbose:
+            print(f"SuitC found no Optimum play for MAX. {input_str}")
+
+        return None

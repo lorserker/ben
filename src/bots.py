@@ -115,7 +115,7 @@ class BotBid:
         # check configuration
         if self.verbose:
             print("Checking if we should evaluate rescue bid", self.models.check_final_contract, "Samples:",len(samples))
-            print("Auction",auction, "Passout?" ,passout,"Candidate bid", candidate_bid.bid, "Sample quality: ",quality)
+            print("Auction",auction, "Passout?" ,passout,"Candidate bid", candidate_bid.bid, "Sample quality: ",quality, "Expected score", candidate_bid.expected_score)
         if not self.models.check_final_contract:
             return False
 
@@ -914,7 +914,8 @@ class BotBid:
                     candidate.explanation = bid_resp.explanation
                     break
             else:
-                sys.stderr.write(f"{Fore.CYAN}Adding BBA bid as candidate: {bid_resp.bid} Alert: { bid_resp.alert} Explaination: {bid_resp.explanation}{Fore.RESET}\n")
+                if self.verbose:
+                    sys.stderr.write(f"{Fore.CYAN}Adding BBA bid as candidate: {bid_resp.bid} Alert: { bid_resp.alert} Explaination: {bid_resp.explanation}{Fore.RESET}\n")
                 candidates.append(CandidateBid(bid=bid_resp.bid, insta_score=0.2, alert = bid_resp.alert, who="BBA", explanation=bid_resp.explanation))
 
         return candidates, passout
@@ -2200,12 +2201,10 @@ class CardPlayer:
             """Calculates the sure tricks in a single suit."""
             max_tricks_possible = max(len(our_hand1), len(our_hand2))
             our_cards = sorted(our_hand1 + our_hand2, reverse=True)  # Sorted in descending order
-            if our_cards == []:
+            # If we can take all the tricks in ths suit we will not adjust
+            if our_cards == [] or opponents_hand == []:
                 return 0
             opponents_cards = sorted(opponents_hand, reverse=True)
-            if opponents_cards == []:
-                return max_tricks_possible / 100
-
 
             sure_tricks = 0
             opponent_highest = opponents_cards.pop(0)
@@ -2222,9 +2221,9 @@ class CardPlayer:
 
             # We do not want to create tricks for the opponents
             if len(opponents_hand)/2 > max_tricks_possible:
-                return (sure_tricks-(len(opponents_hand)/2 - max_tricks_possible)) / 100
+                return (max_tricks_possible - sure_tricks - (len(opponents_hand)/2)) / 100
 
-            return sure_tricks / 100
+            return (max_tricks_possible - sure_tricks) / 100
 
         results = {}
 
@@ -2234,7 +2233,7 @@ class CardPlayer:
             our_hand2 = extract_cards(our_hands[1], suit_index)
             opponents_hand = extract_cards(missing_cards, suit_index)
 
-            # Calculate sure tricks for the current suit
+            # Calculate score tricks for the current suit
             tricks = sure_tricks_in_suit(our_hand1, our_hand2, opponents_hand)
             results[suit_index] = tricks
 
@@ -2321,25 +2320,36 @@ class CardPlayer:
         trump_adjust = self.calculate_trump_adjust(play_status)
     
         suit_adjust = self.calculate_suit_adjust_for_nt(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
+
+        # Problem with playing the J from Jxxx as it might be a trick.  Seems to be in second hand as defender when card is played from dummu
+        if self.player_i == 2:
+            if len(current_trick) == 1:
+                print("Second hand")
+
+        if self.verbose:
+            print(f'Suit adjust: {suit_adjust}, Trump adjust: {trump_adjust}, play_status: {play_status}')
         candidate_cards = []
         
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
             adjust_card = suit_adjust[card52 // 13]
             card32 = deck52.card52to32(card52)
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
-            # Ignore cards not suggested by the NN
-            if insta_score < self.models.pimc_trust_NN:
-                continue
-            if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
-                adjust_card += 0.5            
-            # If we can take rest we don't adjust, then NN will decide if equal
-            # Another option could be to resample the hands without restrictions
-            if e_tricks == 13 - trick_i:
-                # Calculate valid claim cards
-                if card32 // 8 != self.strain_i - 1:
+            if len(claim_cards) == 0:
+                # Ignore cards not suggested by the NN
+                if insta_score < self.models.pimc_trust_NN:
+                    continue
+                if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
+                    adjust_card += 0.5           
+            else:
+                # If we can take rest we don't adjust, then NN will decide if equal
+                # Another option could be to resample the hands without restrictions
+                if e_tricks >= 13 - trick_i:
+                    # Calculate valid claim cards
+                    # if card32 // 8 != self.strain_i - 1:
                     adjust_card = 0
-            if card52 in bad_play:
-                adjust_card += -0.2            
+                if card52 in bad_play:
+                    adjust_card += -0.2            
+
             expected_score = round(e_score + adjust_card)
 
             candidate_cards.insert(0,CandidateCard(
@@ -2449,6 +2459,14 @@ class CardPlayer:
         trump_adjust = self.calculate_trump_adjust(play_status)
 
         suit_adjust = self.calculate_suit_adjust_for_nt(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
+
+        # Problem with playing the J from Jxxx as it might be a trick.  Seems to be in second hand as defender when card is played from dummu
+        if self.player_i == 2:
+            if len(current_trick) == 1:
+                print("Second hand")
+
+        if self.verbose:
+            print(f'Suit adjust: {suit_adjust}, Trump adjust: {trump_adjust}, play_status: {play_status}')
         candidate_cards = []
         
         current_card = 0

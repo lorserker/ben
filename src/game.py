@@ -457,7 +457,7 @@ class Driver:
             'opponents': "BEN",
             'partner': "BEN",
             'model': self.models.name,
-            'version': '0.8.6.7'
+            'version': '0.8.6.8'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -1073,7 +1073,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.7")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.8")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1126,7 +1126,7 @@ async def main():
     if opponentfile != "":
         # Override with information from opponent file
         print("Opponent:", opponentfile)
-        opp_configuration = conf.load(configfile)
+        opp_configuration = conf.load(opponentfile)
         opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
         models.opponent_model = opponents.opponent_model
         models.bba_their_cc = opponents.bba_their_cc

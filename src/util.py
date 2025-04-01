@@ -13,11 +13,10 @@ def save_for_training(deal, auction):
     with open("training.ben", "a") as file:
         file.write(deal + " #" + auction + "\n")
 
-def save_for_suitc(suits_north, suits_south, candidate_card1, candidate_card2, optimum_plays, hand_str, dummy_str):
+def save_for_suitc(suits_north, suits_south, candidate_card1, candidate_card2, hand_str, dummy_str):
     with open("suitc.txt", "a") as file:
         file.write(suits_north + " " + suits_south + "\n")
         file.write(str(candidate_card1) + "\n" + str(candidate_card2) + "\n")
-        file.write(json.dumps(optimum_plays) + "\n")
         file.write(hand_str + "\n")
         file.write(dummy_str + "\n")
         file.write("-------------------------------\n")

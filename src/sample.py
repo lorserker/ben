@@ -16,7 +16,9 @@ from util import hand_to_str
 from collections import defaultdict
 from colorama import Fore, Back, Style, init
 from objects import Card
+from openinglead import validate_lead
 import itertools
+import re
 
 init()
 
@@ -522,6 +524,8 @@ class Sample:
 
             # Predict bids based on the model for the specific position
             sample_bids, _ = model.pred_fun_seq(X)
+            if verbose:
+                print("model", model.model_path, "position", position, "bids", sample_bids.shape, "Exclude samples", self.exclude_samples)
 
             sample_bids = sample_bids.reshape((lho_pard_rho.shape[0], n_steps, -1))
 
@@ -634,14 +638,12 @@ class Sample:
                 quality = -1
                 return lho_pard_rho, bidding_scores, c_hcp, c_shp, quality
 
-        
         min_scores = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
 
         max_distance = lho_bid_count + 2 * pard_bid_count + rho_bid_count  # Replace with the maximum possible distance in your context
-        
         if self.use_distance:
             # Initialize an array to store distances
-            distances = np.zeros(lho_pard_rho.shape[0], dtype=np.float16)
+            distances = np.zeros(lho_pard_rho.shape[0], dtype=np.float32)
             # Calculate the Euclidean distance for each index
             # Small distance is good
             for i in range(lho_pard_rho.shape[0]):
@@ -660,12 +662,16 @@ class Sample:
             # Normalize the total distance to a scale between 0 and 100
             if verbose:
                 print("Max distance", max_distance, lho_bid_count, pard_bid_count, rho_bid_count)
-            scaled_distance_A = ((max_distance - distances) / max_distance)
-            #print("scaled_distance_A", scaled_distance_A)
 
-            # Get the indices that would sort min_scores in descending order
+            scaled_distance_A = (max_distance - distances) / max_distance
+            #print("scaled_distance_A: ", scaled_distance_A.shape)
             sorted_indices = np.argsort(scaled_distance_A)[::-1]
+
             bidding_scores = scaled_distance_A[sorted_indices]
+            #print(sorted_indices[bidding_scores >= 0])
+            # Reorder the original lho_pard_rho array based on the sorted indices
+            samples = lho_pard_rho[sorted_indices][bidding_scores >= 0]
+            bidding_scores = bidding_scores[bidding_scores >= 0]
         else:
             min_scores = np.minimum(min_scores_rho, min_scores)
             min_scores = np.minimum(min_scores_partner, min_scores)
@@ -674,19 +680,13 @@ class Sample:
             sorted_indices = np.argsort(min_scores)[::-1]
             # Extract scores based on the sorted indices
             bidding_scores = min_scores
+            samples = lho_pard_rho[sorted_indices]
 
-        #print("sorted_indices",sorted_indices)
-        #print("sorted_scores",sorted_scores)
-
-        # Reorder the original lho_pard_rho array based on the sorted indices
-        samples = lho_pard_rho[sorted_indices]
-
-        # We remove the samples with negative scores
-        samples = samples[bidding_scores >= 0]
-        bidding_scores = bidding_scores[bidding_scores >= 0]
 
         if verbose:
             print("Samples after bidding distance: ", len(samples))
+            print("Bidding scores after bidding distance: ", bidding_scores.shape)
+
         if len(bidding_scores) == 0:
             return samples, bidding_scores, c_hcp, c_shp, -1
 
@@ -971,7 +971,44 @@ class Sample:
         #print(f"{Fore.YELLOW}Hash of h1_h2 after small: {hashlib.sha256(arr_bytes).hexdigest()} {Fore.RESET}")  # Compute a SHA-256 hashhashlib.sha256(arr_bytes).hexdigest() 
         return h1_h2, use_bidding_info_stats
 
-    def get_opening_lead_scores(self, auction, vuln, models, handsamples, opening_lead_card):
+
+    # This only focus on the card from the actual suit
+    def get_opening_lead_scores(self, auction, vuln, models, handsamples, opening_lead_card, partner):
+        if self.verbose:
+            print(f"get_opening_lead_scores. {models.lead_convention}") 
+        assert(handsamples.shape[1] == models.n_cards_play)
+        if models.lead_convention:
+            opening_lead_scores = np.ones(handsamples.shape[0], dtype=np.float32)
+            contract = bidding.get_contract(auction)
+            strain = bidding.get_strain_i(contract)
+            cards_in_suit = models.n_cards_play // 4
+            opening_lead = "AKQJTxxx"[ opening_lead_card % cards_in_suit]
+            lead_type = "NT" if strain == 0 else "Suit"
+            explanations = set()
+            # We should probably ignore the lead if we know how the suit is divided
+            for ix, hand in enumerate(handsamples):
+                suit = opening_lead_card // cards_in_suit
+                hand_str = deck52.suit32to52str(hand[suit * cards_in_suit: (suit + 1) * cards_in_suit])
+                valid, explanation = validate_lead(hand_str, opening_lead, lead_type, self.verbose)
+
+                if self.verbose and not valid:
+                    explanations.update(explanation)
+                    
+
+                if not valid:
+                    if partner:
+                        opening_lead_scores[ix] = 0.1
+                    else:
+                        opening_lead_scores[ix] = 0.2
+        if self.verbose:
+
+            # Print unique elements
+            for elem in explanations:
+                print(elem)
+                
+        return opening_lead_scores  
+
+    def get_opening_lead_scores_nn(self, auction, vuln, models, handsamples, opening_lead_card):
         assert(handsamples.shape[1] == models.n_cards_play)
         cards_in_suit = models.n_cards_play // 4
         #handsamples = handsamples[:1,:]
@@ -1618,8 +1655,12 @@ class Sample:
                 lead_accept_threshold = self.lead_accept_threshold
 
             opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
-            lead_scores_unfiltered = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead)
+            lead_scores_nat = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead, hidden_2_i == 3 )
+            
+            lead_scores_unfiltered_nn = self.get_opening_lead_scores_nn(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead)
 
+            lead_scores_unfiltered = lead_scores_nat * lead_scores_unfiltered_nn
+            
             if states[0].shape[0] >= self.min_sample_hands_play:
                 while np.sum(lead_scores_unfiltered >= lead_accept_threshold) < self.min_sample_hands_play and lead_accept_threshold > 0:
                     # We are RHO and trust partners lead
