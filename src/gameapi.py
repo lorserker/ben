@@ -668,10 +668,6 @@ def bid():
             mp = request.args.get("tournament").lower() == "mp"
             models.matchpoint = mp
         details = request.args.get("details")
-        if request.args.get("explain"):
-            explain = request.args.get("explain").lower() == "true"
-        else:
-            explain = False
         # First we extract our hand
         hand = request.args.get("hand").replace('_','.').upper()
         if 'X' in hand:

@@ -73,7 +73,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("Table Manager Interface. v0.8.6.2")
+        self.title("Table Manager Interface. v0.8.6.8")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -191,7 +191,7 @@ class TableManagerApp(tk.Tk):
 
             # Entry or Combobox for each input field (in column 1)
             if label_text == "Seat:":
-                entry = ttk.Combobox(col_frames[1], values=["", "North", "East", "South", "West", "NS", "EW", "NESW"])
+                entry = ttk.Combobox(col_frames[1], values=["", "North", "East", "South", "West", "NS", "EW", "NESW", "NS open - EW Closed", "EW open - NS Closed"])
                 entry.set(default)
             else:
                 entry = ttk.Entry(col_frames[1])
@@ -276,6 +276,8 @@ class TableManagerApp(tk.Tk):
         ttk.Button(col_frames[5], text="Start Blue Chip client", command=self.start_bc_window, width=button_width).grid(row=6, column=0, padx=5, pady=5)
         ttk.Button(col_frames[5], text="Start TM Mediator", command=self.start_tmmediator_window, width=button_width).grid(row=7, column=0, padx=5, pady=5)
         ttk.Button(col_frames[5], text="Start GIB client", command=self.start_gib_window, width=button_width).grid(row=8, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Meadowlark client", command=self.start_meadowlark_window, width=button_width).grid(row=9, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start BEN client", command=self.start_ben_window, width=button_width).grid(row=10, column=0, padx=5, pady=5)
 
         # Add "Save Log" button
         self.save_log_button = ttk.Button(col_frames[3], text="Save Log", command=self.save_log)
@@ -654,6 +656,40 @@ class TableManagerApp(tk.Tk):
             introduction_text=introduction_text
         )
 
+    def start_meadowlark_window(self):
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
+            self.settings["Meadowlark_file"] = exe_path
+            self.save_settings()
+            self.start_appl(exe_path)
+            modal_window.destroy()
+
+        introduction_text = "It is recommended to create a command file with the commands to start Meadowlark clients."
+        self.create_modal_window(
+            "Start Meadowlark",
+            "Meadowlark_file",
+            "Meadowlark Executable:",
+            on_submit,
+            introduction_text=introduction_text
+        )
+
+    def start_ben_window(self):
+        def on_submit(entry, modal_window):
+            exe_path = entry.get()
+            self.settings["BEN_file"] = exe_path
+            self.save_settings()
+            self.start_appl(exe_path)
+            modal_window.destroy()
+
+        introduction_text = "It is recommended to create a command file with the commands to start BEN clients."
+        self.create_modal_window(
+            "Start BEN",
+            "BEN_file",
+            "BEN Executable:",
+            on_submit,
+            introduction_text=introduction_text
+        )
+
     def start_appl(self, exe_path, paramlist=[]):
 
         try:           
@@ -700,7 +736,7 @@ class TableManagerApp(tk.Tk):
 
         # Get command-line parameters
         host = self.inputs["Host:"].get()
-        port = self.inputs["Port:"].get()
+        port = int(self.inputs["Port:"].get())
         name = self.inputs["Name:"].get()
         seat = self.inputs["Seat:"].get()
         config = self.config_entry.get()
@@ -712,7 +748,7 @@ class TableManagerApp(tk.Tk):
 
         self.reset_output_text()
         
-        def run_process(seat, name, delay=None):
+        def run_process(seat, name, port, delay=None):
             try:
                 output_queue = queue.Queue()
                 time.sleep(delay)  # Wait for the specified delay if any
@@ -733,6 +769,8 @@ class TableManagerApp(tk.Tk):
                 cmd.extend(["--matchpoint", str(matchpoint)])
                 if host:  
                     cmd.extend(["--host", str(host)])
+                if port:  
+                    cmd.extend(["--port", str(port)])
                 if port:  
                     cmd.extend(["--port", str(port)])
                 if config:
@@ -837,10 +875,13 @@ class TableManagerApp(tk.Tk):
             "West": ["West"],
             "NS": ["North", "South"],
             "EW": ["East", "West"],
-            "NESW": ["North", "East", "South", "West"]
+            "NESW": ["North", "East", "South", "West"],
+            "NS open - EW Closed": ["North", "East", "South", "West"],
+            "EW open - NS Closed": ["North", "East", "South", "West"]
         }
         self.seats = combined_seats[seat]
         self.terminate_flag = False
+
         # Expand combined parameters into individual calls
         for index, single_seat in enumerate(combined_seats[seat]):
             if seat == "NESW":
@@ -849,7 +890,15 @@ class TableManagerApp(tk.Tk):
                 new_name = name
             # Introduce a slight delay to stagger the start of each thread
             delay = 2 * (index)  # Increasing delay as threads are started
-            threading.Thread(target=run_process, args=(single_seat, new_name, delay), daemon=True).start()
+            new_port = port
+            if seat == "NS open - EW Closed":
+                if single_seat == "East" or single_seat == "West":
+                    new_port = port + 1
+            elif seat == "EW open - NS Closed":
+                if single_seat == "North" or single_seat == "South":
+                    new_port = port + 1
+            print(single_seat, new_name, new_port, delay)
+            threading.Thread(target=run_process, args=(single_seat, new_name, new_port, delay), daemon=True).start()
 
 
     def parse_hand(self,s):

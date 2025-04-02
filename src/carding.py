@@ -187,61 +187,62 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     entries = count_entries(hand_str, interesting_suit, played_cards, contract[1])
 
                     try:
-                        suitc_card = suitc.calculate(max(len(suits_north),len(suits_south)), suits_north if suits_north != '' else '.', suits_south if suits_south != '' else '.', suits_westeast, trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
+                        suitc_cards = suitc.calculate(max(len(suits_north),len(suits_south)), suits_north if suits_north != '' else '.', suits_south if suits_south != '' else '.', suits_westeast, trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
                     except Exception as ex:
                         sys.stderr.write(f"{Fore.RED}{ex}{Fore.RESET}\n")
                         sys.stderr.write(f"{Fore.RED}SuitC failed. Input:{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}{Fore.RESET}\n")
                         return candidate_cards[0].card, who
-                    if suitc_card is None:
+                    if len(suitc_cards) == 0 :
                         if verbose:
                             print("SuitC found no plays")
                         return candidate_cards[0].card, who
 
                     suit_str = "SHDC"[interesting_suit]
                     if verbose:
-                        print(f"SuitC found: {suit_str}{suitc_card}")
+                        print(f"SuitC found: {suit_str}{suitc_cards}")
                     # Only play the card from SuitC if it was a candidate
                     for candidate_card in candidate_cards:
                         if claim_cards != [] and candidate_card.card.code() not in claim_cards:
                             print(f"Claim card not in candidate cards {claim_cards} {candidate_card.card.code()}")
                             continue
-                        if candidate_card.card.symbol() == f"{suit_str}{suitc_card}":
-                            # Only play SuitC if not losing to much DD
-                            if models.use_real_imp_or_mp:
-                                if models.matchpoint:
-                                    if candidate_card.expected_score_mp >= candidate_cards[0].expected_score_mp - 4:
-                                        return candidate_card.card, "SuitC-MP"
+                        for suitc_card in suitc_cards:
+                            if candidate_card.card.symbol() == f"{suit_str}{suitc_card}":
+                                # Only play SuitC if not losing to much DD
+                                if models.use_real_imp_or_mp:
+                                    if models.matchpoint:
+                                        if candidate_card.expected_score_mp >= candidate_cards[0].expected_score_mp - 4:
+                                            return candidate_card.card, "SuitC-MP"
+                                        else:
+                                            # If forced we allow up to 40 MP
+                                            if models.force_suitc and candidate_card.expected_score_mp >= candidate_cards[0].expected_score_mp - 40:
+                                                if verbose:
+                                                    print("SuitC candidate card worse than best DD cards")
+                                                    print("SuitC card", candidate_card)
+                                                    print("DD card", candidate_cards[0])
+                                                save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], hand_str, dummy_str)
+                                                return candidate_card.card, "SuitC-MP-Forced"
                                     else:
-                                        # If forced we allow up to 40 MP
-                                        if models.force_suitc and candidate_card.expected_score_mp >= candidate_cards[0].expected_score_mp - 40:
-                                            if verbose:
-                                                print("SuitC candidate card worse than best DD cards")
-                                                print("SuitC card", candidate_card)
-                                                print("DD card", candidate_cards[0])
-                                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], hand_str, dummy_str)
-                                            return candidate_card.card, "SuitC-MP-Forced"
-                                else:
-                                    if candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 0.4:
-                                        return candidate_card.card, "SuitC-Imp"
-                                    else:
-                                        # If forced we allow up to 4 IMP
-                                        if models.force_suitc and candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 4:
-                                            if verbose:
-                                                print("SuitC candidate card worse than best DD cards")
-                                                print("SuitC card", candidate_card)
-                                                print("DD card", candidate_cards[0])
-                                            save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0],  hand_str, dummy_str)
-                                            return candidate_card.card, "SuitC-Imp-Forced"
+                                        if candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 0.4:
+                                            return candidate_card.card, "SuitC-Imp"
+                                        else:
+                                            # If forced we allow up to 4 IMP
+                                            if models.force_suitc and candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 4:
+                                                if verbose:
+                                                    print("SuitC candidate card worse than best DD cards")
+                                                    print("SuitC card", candidate_card)
+                                                    print("DD card", candidate_cards[0])
+                                                save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0],  hand_str, dummy_str)
+                                                return candidate_card.card, "SuitC-Imp-Forced"
 
-                            else:
-                                if models.double_dummy:
-                                    if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
-                                        if candidate_card.expected_tricks_dd and candidate_card.expected_tricks_dd >= candidate_cards[0].expected_tricks_dd - 0.2:
-                                            return candidate_card.card, "SuitC-DD"
                                 else:
-                                    if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
-                                        if candidate_card.expected_tricks_sd and candidate_card.expected_tricks_sd >= candidate_cards[0].expected_tricks_sd - 0.2:
-                                            return candidate_card.card, "SuitC-SD"
+                                    if models.double_dummy:
+                                        if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
+                                            if candidate_card.expected_tricks_dd and candidate_card.expected_tricks_dd >= candidate_cards[0].expected_tricks_dd - 0.2:
+                                                return candidate_card.card, "SuitC-DD"
+                                    else:
+                                        if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
+                                            if candidate_card.expected_tricks_sd and candidate_card.expected_tricks_sd >= candidate_cards[0].expected_tricks_sd - 0.2:
+                                                return candidate_card.card, "SuitC-SD"
                     print(f"SuitC card not an acceptable card: {suit_str}{suitc_card}")
                 return candidate_cards[0].card, who
     

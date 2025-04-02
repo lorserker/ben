@@ -226,7 +226,7 @@ class Models:
 
         use_adjustment = conf.getboolean('adjustments', 'use_adjustment', fallback=True)
         adjust_NN = conf.getint('adjustments', 'adjust_NN', fallback=50)
-        adjust_NN_Few_Samples = conf.getint('adjustments', 'adjust_NN_Few_Samples', fallback=500)
+        adjust_NN_Few_Samples = conf.getint('adjustments', 'adjust_NN_Few_Samples', fallback=200)
         adjust_XX = conf.getint('adjustments', 'adjust_XX', fallback=100)
         adjust_X = conf.getint('adjustments', 'adjust_X', fallback=100)
         adjust_X_remove = conf.getint('adjustments', 'adjust_X_remove', fallback=10)

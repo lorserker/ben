@@ -49,9 +49,6 @@ class BotBid:
         self.ddsolver = ddsolver
         self.my_bid_no = 1
         self._bbabot_instance = None
-        #sys.stderr.write(f"Using model version {self.models.model_version}\n")
-        #sys.stderr.write(f"Using our cc {self.models.bba_our_cc}\n")
-        #sys.stderr.write(f"Using their cc {self.models.bba_their_cc}\n")
 
     @property
     def bbabot(self):
@@ -315,16 +312,19 @@ class BotBid:
                     if self.verbose:
                         print("Adjust for really bad scores", adjust)
                 
+                if self.verbose:
+                    print("Adjust for trust in NN", candidate.bid, candidate.insta_score, candidate.bid[0] in ["5", "6", "7"], "Samples:", hands_np.shape[0])
+                if not candidate.bid[0] in ["5", "6", "7"]:
                 # Adding some bonus to the bid selected by the neural network
-                if hands_np.shape[0] == self.sampler.min_sample_hands_auction:
-                    # We only have the minimum number of samples, so they are often of bad quality
-                    # So we add more trust to the NN
-                    adjust += self.models.adjust_NN_Few_Samples * candidate.insta_score
-                else:
-                    adjust += self.models.adjust_NN * candidate.insta_score
+                    if hands_np.shape[0] == self.sampler.min_sample_hands_auction:
+                        # We only have the minimum number of samples, so they are often of bad quality
+                        # So we add more trust to the NN
+                        adjust += self.models.adjust_NN_Few_Samples * candidate.insta_score
+                    else:
+                        adjust += self.models.adjust_NN * candidate.insta_score
 
                 if self.verbose:
-                    print("Adjust for trust in NN", candidate.bid, adjust)
+                    print(f"Adjusted for trust in NN {candidate.bid} {adjust:0.3f}")
 
                 if candidate.bid == "X":
                     meaning, alert = self.explain(auction + ["X"])
@@ -639,7 +639,13 @@ class BotBid:
                     alternatives = {}
                     break
                 # If 3N don't bid 4N
-                if current_contract == "3N" and (contract == "4N" or contract == "5N"):
+                if current_contract == "3N" and (contract == "4N" or contract == "5N" or contract == "6N"):
+                    if self.verbose:
+                        print("Stopping rescue, just one level higher")
+                    alternatives = {}
+                    break
+                # If 6N don't bid 7N
+                if current_contract == "6N" and (contract == "7N"):
                     if self.verbose:
                         print("Stopping rescue, just one level higher")
                     alternatives = {}
@@ -2339,7 +2345,7 @@ class CardPlayer:
                 if insta_score < self.models.pimc_trust_NN:
                     continue
                 if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
-                    adjust_card += 0.5           
+                    adjust_card += 0.1           
             else:
                 # If we can take rest we don't adjust, then NN will decide if equal
                 # Another option could be to resample the hands without restrictions
@@ -2480,7 +2486,7 @@ class CardPlayer:
             if insta_score < self.models.pimc_trust_NN:
                 continue
             if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
-                adjust_card += 0.5            
+                adjust_card += 0.1            
             # If we can take rest we don't adjust, then NN will decide if equal
             # Another option could be to resample the hands without restrictions
             if e_tricks == 13 - trick_i:

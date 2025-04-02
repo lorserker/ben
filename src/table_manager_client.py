@@ -664,10 +664,19 @@ class TMClient:
             msg_bid = f'{SEATS[self.player_i]} redoubles'
         if bid_resp.alert:
             msg_bid += ' Alert. ' + bid_resp.explanation
+            if bid_resp.who == "Rescue":
+                msg_bid += ' Rescue.'
+
         elif bid_resp.explanation:
             if bid_resp.explanation not in self.last_explanations:
                 msg_bid += ' Infos. ' + bid_resp.explanation
+                if bid_resp.who == "Rescue":
+                    msg_bid += ' Rescue.'
                 self.last_explanations = bid_resp.explanation
+            else:
+                if bid_resp.who == "Rescue":
+                    msg_bid += ' Infos. Rescue.'
+            
         await self.send_message(msg_bid)
 
     async def receive_card_play_for(self, player_i, trick_i):

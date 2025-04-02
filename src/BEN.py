@@ -46,7 +46,7 @@ class BridgeApp:
     def __init__(self, root):
         self.root = root
         self.root.iconbitmap("ben.ico")
-        self.root.title("Bridge with BEN. v0.8.6.2")
+        self.root.title("Bridge with BEN. v0.8.6.8")
         self.root.geometry("1000x1000")
 
         # Center the window

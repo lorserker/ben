@@ -87,14 +87,14 @@ class SuitCLib:
         input_buffer_ptr = ctypes.pointer(c_wchar_p(input_buffer.value))
         
         # Create an output buffer
-        output_length = 4 * 32768
+        output_length = 8 * 32768
         output_buffer = create_unicode_buffer(output_length)
 
         # Create a variable to hold the output buffer size
         output_size = ctypes.c_int()
 
         # Create details buffer
-        details_length = 4 * 32768
+        details_length = 8 * 32768
         details_buffer = create_unicode_buffer(details_length)
         # Create a variable to hold the output buffer size
         details_size = ctypes.c_int()
@@ -112,19 +112,19 @@ class SuitCLib:
             print(output_buffer.value)
             print(details_buffer.value)
 
-        suitc_card = None
         #print("SuitC Output: " + output_buffer.value)
         response_dict = json.loads(output_buffer.value)
         optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
         # print("optimum_plays", optimum_plays)
         # We just take the play for MAX as we really don't know how many tricks are needed
+        possible_cards = []
         for play in optimum_plays:
             # If we can take all tricks we drop SuitC
             if play['Plays'][0]['Tricks'] == max_tricks:
                 if play['Plays'][0]['Percentage'] == 100:
                     if self.verbose:
                         print(f"SuitC dropped as we can take all tricks")
-                    return None
+                    return possible_cards
             # We can have more than one play for MAX
             # So currently we are then selecting higest card. Should that be different?
             # We should probably look at the samples to find the best play
@@ -141,14 +141,15 @@ class SuitCLib:
                                 if actual_card in south:
                                     if self.verbose:
                                         print(f"Play from South {card} {input_str}")
-                                    return actual_card
+                                    possible_cards.append(actual_card) 
+                                    continue
                                 if self.verbose:
                                     print("SuitC found play not in North or South", card)
                 else:
                     if self.verbose:
                         print(f"SuitC found no gametree. {input_str}")
-                    return None
-        if self.verbose:
+                    return possible_cards
+        if self.verbose and len(possible_cards) == 0:
             print(f"SuitC found no Optimum play for MAX. {input_str}")
 
-        return None
+        return possible_cards
