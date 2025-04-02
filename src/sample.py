@@ -977,8 +977,8 @@ class Sample:
         if self.verbose:
             print(f"get_opening_lead_scores. {models.lead_convention}") 
         assert(handsamples.shape[1] == models.n_cards_play)
+        opening_lead_scores = np.ones(handsamples.shape[0], dtype=np.float32)
         if models.lead_convention:
-            opening_lead_scores = np.ones(handsamples.shape[0], dtype=np.float32)
             contract = bidding.get_contract(auction)
             strain = bidding.get_strain_i(contract)
             cards_in_suit = models.n_cards_play // 4
