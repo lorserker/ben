@@ -897,7 +897,6 @@ class TableManagerApp(tk.Tk):
             elif seat == "EW open - NS Closed":
                 if single_seat == "North" or single_seat == "South":
                     new_port = port + 1
-            print(single_seat, new_name, new_port, delay)
             threading.Thread(target=run_process, args=(single_seat, new_name, new_port, delay), daemon=True).start()
 
 

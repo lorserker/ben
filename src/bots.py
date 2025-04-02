@@ -1232,12 +1232,14 @@ class BotBid:
 
             # It will probably improve performance if all is calculated in one go
             dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1)
-            sum += dd_solved["max"][0]
+            sum += 13 - dd_solved["max"][0]
+            if 13 -dd_solved["max"][0] < 7:
+                print(f"DD: {hands_np_as_pbn[i]} {contract} {dd_solved}")
             decl_tricks_softmax[i,13 - dd_solved["max"][0]] = 1
 
         if self.verbose:
             print(f'dds took: {(time.time() - t_start):0.4f}')
-            print("sum", bid, sum)
+            print("Total tricks:", bid, sum)
         return contracts, decl_tricks_softmax
         
 

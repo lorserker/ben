@@ -41,9 +41,9 @@ function generateSamplesTable(samples, id) {
             <tr>
                 <td class="row-index">${index + 1}</td>  <!-- Added row index here -->
                 <td class="deal-cell" data-deal="${deal}">
+                    <span class="tooltip">${formatDealForTooltip(deal)}</span>
                     ${deal} 
                     ${biddingLines.length > 0 ? `<br><small>${biddingLines.join("<br>")}</small>` : ""}
-                    <span class="tooltip">${formatDealForTooltip(deal)}</span>
                 </td>
                 ${formattedProbabilities.slice(0, probabilityCount).map(p => `<td class="right-align">${p}</td>`).join('')}
             </tr>

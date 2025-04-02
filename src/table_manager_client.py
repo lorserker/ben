@@ -842,13 +842,13 @@ class TMClient:
 
 
     async def send_message(self, message: str):
-        time.sleep(0.05)
         try:
             print(f'{datetime.datetime.now().strftime("%H:%M:%S")} sending:   {message.ljust(57)}', end='')
 
             self.writer.write((message + "\r\n").encode())
             await self.writer.drain()
             print(' ...sent successfully.')
+            await asyncio.sleep(0.03)
         except ConnectionAbortedError as ex:
             print(f'Error: {str(ex)}')
             # Handle the error gracefully, such as logging it or notifying the user
