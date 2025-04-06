@@ -379,7 +379,9 @@ class BBABotBid:
         # Get information from Player(position) about the interpreted bid
         meaning = self.players[self.position].get_info_meaning(position)
         if meaning is None: meaning = ""
-        #if meaning.strip() == "calculated bid": meaning = ""
+        if meaning.strip() == "calculated bid": meaning = "Nat."
+        if meaning:
+            meaning = meaning[0].upper() + meaning[1:]
         #if meaning.strip() == "bidable suit": meaning = ""
         length = self.extract_lengths(position)
         meaning = meaning + " -- " + "; ".join(length)
@@ -395,7 +397,7 @@ class BBABotBid:
         elif forcing:
             meaning += "; Forcing"
         elif forcing_to and forcing_to > bidid and bidid > 4:
-                meaning += f"; Forcing to {bidding.ID2BID[forcing_to]}"
+                meaning += f"; Forcing" # to {bidding.ID2BID[forcing_to]}
 
         return meaning, bba_alert
 
@@ -429,8 +431,9 @@ class BBABotBid:
         # Get information from Player(position) about the interpreted player
         meaning = self.players[self.position].get_info_meaning(self.C_INTERPRETED)
         if meaning is None: meaning = ""
-        #if meaning.strip() == "calculated bid": meaning = ""
-        #if meaning.strip() == "bidable suit": meaning = ""
+        if meaning.strip() == "calculated bid": meaning = "Nat."
+        if meaning:
+            meaning = meaning[0].upper() + meaning[1:]
 
         length = self.extract_lengths(self.C_INTERPRETED)
         meaning = meaning + " -- " + "; ".join(length)
@@ -446,7 +449,7 @@ class BBABotBid:
         elif forcing:
             meaning += "; Forcing"
         elif forcing_to and forcing_to > new_bid and new_bid > 4:
-                meaning += f"; Forcing to {bidding.ID2BID[forcing_to]}"
+                meaning += f"; Forcing" # to {bidding.ID2BID[forcing_to]}
 
         if self.verbose:
             print(f"BBABid: {bidding.ID2BID[new_bid]}={meaning}")
@@ -511,6 +514,9 @@ class BBABotBid:
             # Get information from Player(position) about the interpreted player
             meaning = self.players[self.position].get_info_meaning(self.C_INTERPRETED)
             if meaning is None: meaning = ""
+            if meaning.strip() == "calculated bid": meaning = "Nat."
+            if meaning:
+                meaning = meaning[0].upper() + meaning[1:]
 
             length = self.extract_lengths(self.C_INTERPRETED)
             meaning = meaning + " -- " + "; ".join(length)
@@ -563,7 +569,7 @@ class BBABotBid:
             elif forcing:
                 meaning += "; Forcing"
             elif forcing_to and forcing_to > new_bid and new_bid > 4:
-                    meaning += f"; Forcing to {bidding.ID2BID[forcing_to]}"
+                    meaning += f"; Forcing" # to {bidding.ID2BID[forcing_to]}
             if new_bid < 3:
                 new_bid = new_bid + 2
             explain = {"bid": bidding.ID2BID[new_bid].replace("PASS","P"), "m": meaning, "Alert": bba_alert, "MinHcp": minhcp, "MaxHcp": maxhcp, "Length": length, "Honors": honor_str, "Stoppers": stoppers_str, "Strength": strength_str, "SuitPower": sp_str, "ProbableLength": pl_str}

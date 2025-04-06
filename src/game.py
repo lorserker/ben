@@ -311,7 +311,7 @@ class Driver:
         pbn_str += '%PipColors #0000ff,#ff0000,#ffc000,#008000\n'
         pbn_str += '%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7\n'
         pbn_str += '%Font:FixedPitch "Courier New",14,700,0\n'
-        pbn_str += '%Margins 2000,1000,2000,1000\n\n'
+        pbn_str += '%Margins 1000,0800,1000,0800\n\n'
         pbn_str += f'[Event "##{event}"]\n'
         pbn_str += '[Site "##BEN"]\n'
         date = datetime.datetime.now().date().isoformat().replace('-', '.')
@@ -374,7 +374,7 @@ class Driver:
             if b.alert or (b.explanation != None and b.explanation != ""):
                 pbn_str += f" ={alerts}="
                 note = f'[Note "{alerts}:'
-                note += ' Alert.' if b.alert else ''
+                note += '*' if b.alert else ''
                 note += f' {b.explanation}' if b.explanation != None else ''
                 note += '"]'
                 notes.append(note)

@@ -180,7 +180,7 @@ class TableManagerApp(tk.Tk):
             ("Host:", self.settings.get("host", "")),
             ("Port:", self.settings.get("port", "")),
             ("Name:", self.settings.get("name", "")),
-            ("Seat:", ""),
+            ("Seat:", self.settings.get("seat", "")),
         ]
         self.inputs = {}
 
@@ -238,14 +238,14 @@ class TableManagerApp(tk.Tk):
         ttk.Checkbutton(col_frames[2], text="Match Point", variable=self.matchpoint).grid(row=8, column=0, sticky="w", padx=5, pady=5)
 
         # Verbose checkbox and buttons (Start/Stop) in column 4
-        self.verbose = tk.BooleanVar(value=False)
+        self.verbose = tk.BooleanVar(value=self.settings.get("verbose", False))
         ttk.Checkbutton(col_frames[3], text="Verbose", variable=self.verbose).grid(row=0, column=0, sticky="w", padx=5, pady=5)
 
         # Verbose checkbox and buttons (Start/Stop) in column 4
-        self.detached_checkbox = tk.BooleanVar(value=False)
+        self.detached = tk.BooleanVar(value=self.settings.get("detached", False))
         # Callback function to enable or disable the button
         def update_button_state():
-            if self.detached_checkbox.get():
+            if self.detached.get():
                 self.start_button.config(state="normal")  # Enable button
             else:
                 self.start_button.config(state="normal")  # Enable button
@@ -254,7 +254,7 @@ class TableManagerApp(tk.Tk):
                         if flags != subprocess.CREATE_NEW_CONSOLE:
                             self.start_button.config(state="disabled")  # Disable button
 
-        ttk.Checkbutton(col_frames[3], text="Detached", variable=self.detached_checkbox,command=update_button_state).grid(row=1, column=0, sticky="w", padx=5, pady=5)
+        ttk.Checkbutton(col_frames[3], text="Detached", variable=self.detached,command=update_button_state).grid(row=1, column=0, sticky="w", padx=5, pady=5)
 
         # Move Start and Stop buttons to column 4
         self.start_button = ttk.Button(col_frames[3], text="Start BEN client", command=self.start_ben_client)
@@ -745,6 +745,7 @@ class TableManagerApp(tk.Tk):
         matchpoint = self.matchpoint.get()
         nosearch = self.nosearch.get()
         verbose = self.verbose.get()
+        detached = self.detached.get()
 
         self.reset_output_text()
         
@@ -785,7 +786,7 @@ class TableManagerApp(tk.Tk):
                     cmd.extend(["--verbose", str(verbose)])
 
                 # Check the Detached checkbox
-                if self.detached_checkbox.get():  # Assuming it's a Tkinter Checkbutton
+                if detached:  # Assuming it's a Tkinter Checkbutton
                     cmd = ["cmd", "/k"] + cmd  # Prepend cmd /k to keep the console open
                     # Detached mode: Open in a new console, no output capture
                     creation_flags = subprocess.CREATE_NEW_CONSOLE
@@ -1206,12 +1207,16 @@ class TableManagerApp(tk.Tk):
         self.stop_application()
         self.settings["host"] = self.inputs["Host:"].get()
         self.settings["port"] = self.inputs["Port:"].get()
+        self.settings["seat"] = self.inputs["Seat:"].get()
+        self.settings["name"] = self.inputs["Name:"].get()
         self.settings["config"] = self.config_entry.get()
         self.settings["opponent"] = self.opponent_entry.get()
         # Checkboxes (Bidding Only, Match Point) in column 3
-        self.settings["bidding_only"] =self.bidding_only.get()
-        self.settings["nosearch"] =self.nosearch.get()
-        self.settings["matchpoint"] =self.matchpoint.get()
+        self.settings["bidding_only"] = self.bidding_only.get()
+        self.settings["nosearch"] = self.nosearch.get()
+        self.settings["matchpoint"] = self.matchpoint.get()
+        self.settings["detached"] = self.detached.get()
+        self.settings["verbose"] = self.verbose.get()
 
         self.save_settings()
         # Hide the closing popup

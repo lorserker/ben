@@ -192,9 +192,43 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                         sys.stderr.write(f"{Fore.RED}{ex}{Fore.RESET}\n")
                         sys.stderr.write(f"{Fore.RED}SuitC failed. Input:{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}{Fore.RESET}\n")
                         return candidate_cards[0].card, who
+                                      
+
                     if len(suitc_cards) == 0 :
+                        # If we did not find the card using SuitC we will remove any adjustments, as we should probablay play the suit from the other hand
                         if verbose:
                             print("SuitC found no plays")
+                        if models.use_real_imp_or_mp:
+                            if models.matchpoint:
+                                score = candidate_cards[0].expected_score_mp
+                            else:
+                                score = candidate_cards[0].expected_score_imp
+                        else:
+                            if models.double_dummy:
+                                score =  candidate_cards[0].expected_tricks_dd
+                            else:
+                                score =  candidate_cards[0].expected_tricks_sd
+                        for candidate_card in candidate_cards:
+                            print(candidate_card.card)
+                            if candidate_card.card.suit == interesting_suit:
+                                continue
+                            if models.use_real_imp_or_mp:
+                                if models.matchpoint:
+                                    if candidate_card.expected_score_mp < score - 20:
+                                        break
+                                else:
+                                    if candidate_card.expected_score_imp < score - 0.2:
+                                        break
+                            else:
+                                if models.double_dummy:
+                                    if candidate_card.expected_tricks_dd < score - 0.2:
+                                        break
+                                else:                                    
+                                    if candidate_card.expected_tricks_sd < score - 0.2:
+                                        break
+
+                            return candidate_card.card, who
+
                         return candidate_cards[0].card, who
 
                     suit_str = "SHDC"[interesting_suit]

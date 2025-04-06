@@ -1233,8 +1233,6 @@ class BotBid:
             # It will probably improve performance if all is calculated in one go
             dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1)
             sum += 13 - dd_solved["max"][0]
-            if 13 -dd_solved["max"][0] < 7:
-                print(f"DD: {hands_np_as_pbn[i]} {contract} {dd_solved}")
             decl_tricks_softmax[i,13 - dd_solved["max"][0]] = 1
 
         if self.verbose:
@@ -2338,6 +2336,8 @@ class CardPlayer:
             print(f'Suit adjust: {suit_adjust}, Trump adjust: {trump_adjust}, play_status: {play_status}')
         candidate_cards = []
         
+        current_suit = 0
+        current_insta_score = 0
         for card52, (e_tricks, e_score, e_make, msg) in card_dd.items():
             adjust_card = suit_adjust[card52 // 13]
             card32 = deck52.card52to32(card52)
@@ -2358,24 +2358,16 @@ class CardPlayer:
                 if card52 in bad_play:
                     adjust_card += -0.2            
 
-            expected_score = round(e_score + adjust_card)
+            card = self.create_card(suit_adjust, card52, e_tricks, e_score, e_make, msg, adjust_card, insta_score)
 
-            candidate_cards.insert(0,CandidateCard(
-                card=Card.from_code(card52),
-                insta_score=round(insta_score,3),
-                expected_tricks_dd=round(e_tricks + adjust_card,3),
-                p_make_contract=e_make,
-                **({
-                    "expected_score_mp": round(expected_score + adjust_card * 100,2)
-                } if self.models.matchpoint and self.models.use_real_imp_or_mp else
-                {
-                    "expected_score_imp": round(e_score + adjust_card,2)
-                } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
-                {
-                    "expected_score_dd": e_score + suit_adjust[card32 // 8]
-                }),
-                msg=msg + (f"|suit adjust={adjust_card}" if adjust_card != 0 else "")
-            ))
+            # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
+            if (card52 > current_suit) and (insta_score == current_insta_score) and (card52 // 13 == current_suit // 13):
+                candidate_cards.insert(0, card)
+            else:
+                candidate_cards.append(card)
+            current_suit = card52
+            current_insta_score = insta_score
+
 
         if self.models.use_real_imp_or_mp:
             if self.models.matchpoint:
@@ -2497,43 +2489,13 @@ class CardPlayer:
                     adjust_card = 0
             if card52 in bad_play:
                 adjust_card += -0.2            
-            expected_score = round(e_score + adjust_card)            
+            card = self.create_card(suit_adjust, card52, e_tricks, e_score, e_make, msg, adjust_card, insta_score)
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
-            expected_score = round(e_score + 20 * suit_adjust[card32 // 8],0)
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):
-                candidate_cards.insert(0, CandidateCard(
-                    card=Card.from_code(card52),
-                    insta_score=insta_score,
-                    expected_tricks_dd=round(e_tricks + adjust_card,3),
-                    p_make_contract=e_make,
-                    **({
-                        "expected_score_mp": round(expected_score + adjust_card * 100,2)
-                    } if self.models.matchpoint and self.models.use_real_imp_or_mp else
-                    {
-                        "expected_score_imp": round(e_score + adjust_card,2)
-                    } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
-                    {
-                        "expected_score_dd": e_score + adjust_card
-                    }),
-                    msg= (f"|suit adjust={adjust_card}{msg}" if adjust_card != 0 else msg)
-                ))
+                candidate_cards.insert(0, card)
             else:
-                candidate_cards.append(CandidateCard(
-                    card=Card.from_code(card52),
-                    insta_score=insta_score,
-                    expected_tricks_dd=round(e_tricks + adjust_card,3),
-                    p_make_contract=e_make,
-                    **({
-                        "expected_score_mp": expected_score
-                    } if self.models.matchpoint and self.models.use_real_imp_or_mp else
-                    {
-                        "expected_score_imp": round(e_score + 2 * adjust_card,2)
-                    } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
-                    {
-                        "expected_score_dd": e_score + adjust_card
-                    }),
-                    msg= (f"|suit adjust={adjust_card}{msg}" if adjust_card != 0 else msg)
-                ))
+                candidate_cards.append(card)
+
             current_card = card52
             current_insta_score = insta_score
 
@@ -2600,3 +2562,23 @@ class CardPlayer:
         )
 
         return best_card_resp
+
+    def create_card(self, suit_adjust, card52, e_tricks, e_score, e_make, msg, adjust_card, insta_score):
+        card = CandidateCard(
+                    card=Card.from_code(card52),
+                    insta_score=insta_score,
+                    expected_tricks_dd=round(e_tricks + adjust_card,3),
+                    p_make_contract=e_make,
+                    **({
+                        "expected_score_mp": round(e_score + 20 * suit_adjust[card52 // 13],0)
+                    } if self.models.matchpoint and self.models.use_real_imp_or_mp else
+                    {
+                        "expected_score_imp": round(e_score + adjust_card,2)
+                    } if not self.models.matchpoint and self.models.use_real_imp_or_mp else
+                    {
+                        "expected_score_dd": e_score + adjust_card
+                    }),
+                    msg= (f"|adjust={adjust_card}{msg}" if adjust_card != 0 else msg)
+                )
+            
+        return card
