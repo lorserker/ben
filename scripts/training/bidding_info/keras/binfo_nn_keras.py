@@ -17,6 +17,7 @@ import psutil
 import GPUtil
 
 sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
+sys.stderr.write(f"NumPy Version : {np.__version__}\n")
 
 # Redirect standard output and error
 logging.getLogger('tensorflow').disabled = True

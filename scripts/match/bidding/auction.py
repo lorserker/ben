@@ -62,7 +62,7 @@ def bid_hand(hands, dealer, vuln, models_ns_ew, samplers, dds, verbose):
 
     dealer_i = 'NESW'.index(dealer)
     
-    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], samplers[i % 2], i, dealer_i, dds, verbose) for i, hand in enumerate(hands)]
+    bidder_bots = [BotBid(VULN[vuln], hand, models_ns_ew[i % 2], samplers[i % 2], i, dealer_i, dds, False, verbose) for i, hand in enumerate(hands)]
 
     auction = ['PAD_START'] * dealer_i
     
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     verbose = args.verbose
 
-    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.6.8{Fore.RESET}\n")
+    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.6.9{Fore.RESET}\n")
     sys.stderr.write(f'NS = {args.bidderNS}\n')
     sys.stderr.write(f'EW = {args.bidderEW}\n')    
     sys.stderr.write(f'DB = {args.db}\n')
@@ -114,6 +114,7 @@ if __name__ == '__main__':
     np.set_printoptions(precision=2, suppress=True)
 
     sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
+    sys.stderr.write(f"NumPy Version : {np.__version__}\n")
     try:
         if configuration_ns["models"]['tf_version'] == "2":
             from nn.models_tf2 import Models

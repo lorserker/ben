@@ -80,6 +80,7 @@ def main():
     config = conf.load(config_path)
    
     sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
+    sys.stderr.write(f"NumPy Version : {np.__version__}\n")
     try:
         if (config["models"]['tf_version'] == "2"):
             from nn.bidder_tf2 import Bidder

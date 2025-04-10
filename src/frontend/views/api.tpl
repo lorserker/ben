@@ -20,7 +20,7 @@
 
 <body>
     <div>
-        <h1>API for BEN. Version 0.8.6.8</h1>
+        <h1>API for BEN. Version 0.8.6.9</h1>
     </div>
     <div id="loader"></div> 
     <div id="dealdiv">
@@ -90,6 +90,7 @@
         <button onclick="callAPI('claim')">Claim</button><br><br>
         <button onclick="callAPI('contract')">Ask BEN for contract</button>&nbsp;&nbsp;
         <button onclick="callAPI('explain')">Explain last bid</button><br><br>
+        <button onclick="callAPI('explain_auction')">Explain auction</button><br><br>
         <div id="result"></div><br><br>
         <div id="info"></div><br><br>
         <div><a href="/home">Home</a></div>
@@ -862,7 +863,7 @@
             document.querySelector("#loader").style.visibility = "visible"; 
             let validationerror = false;
             let hand = document.getElementById('handInput').value.toUpperCase();
-            if (!validateHand(hand) && (action != "explain")) {
+            if (!validateHand(hand) && (action != "explain") && (action != "explain_auction")) {
                 alert("Invalid hand input. Please enter four suits delimited by .");
                 validationerror = true;
             }
@@ -997,7 +998,7 @@
                         }
                     }
                 }
-                if (action == 'explain') {
+                if (action == 'explain' || action == 'explain_auction') {
                     explanation = `${data.explanation}`;
                     explanation = explanation.replace(/!S/g, '<span style="color: blue">&spades;</span>');
                     explanation = explanation.replace(/!H/g, '<span style="color: red">&hearts;</span>');

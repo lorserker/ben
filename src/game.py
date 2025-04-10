@@ -59,7 +59,8 @@ import psutil
 from nn.opponents import Opponents
 
 import faulthandler
-faulthandler.enable()
+with open("fault.log", "w") as f:
+    faulthandler.enable(file=f, all_threads=True)
 
 init()
 
@@ -941,10 +942,10 @@ class Driver:
         for i, level in enumerate(self.human):
             if level == 1:
                 players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
-                hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
+                hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, False, self.verbose)
                 self.bot = None
             else:
-                self.bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, self.verbose)
+                self.bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, False, self.verbose)
                 players.append(self.bot)
 
         if self.models.use_bba or self.models.use_bba_to_count_aces or self.models.consult_bba or self.models.use_bba_rollout:
@@ -1073,7 +1074,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.8")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.9")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1095,6 +1096,7 @@ async def main():
 
     # Write to stderr
     sys.stderr.write(f"Loading TensorFlow {tf.__version__} - Keras version: {keras_version}\n")
+    sys.stderr.write(f"NumPy Version : {np.__version__}\n")
 
     configuration = conf.load(configfile)
 

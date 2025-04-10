@@ -24,7 +24,7 @@ from colorama import Fore, Back, Style, init
 init()
 class BotBid:
 
-    def __init__(self, vuln, hand_str, models, sampler, seat, dealer, ddsolver, verbose):
+    def __init__(self, vuln, hand_str, models, sampler, seat, dealer, ddsolver, bba_is_controlling, verbose):
         self.vuln = vuln
         self.hand_str = hand_str
         self.hand_bidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
@@ -49,6 +49,7 @@ class BotBid:
         self.ddsolver = ddsolver
         self.my_bid_no = 1
         self._bbabot_instance = None
+        self.bba_is_controlling = bba_is_controlling
 
     @property
     def bbabot(self):
@@ -68,10 +69,24 @@ class BotBid:
                 )
         return self._bbabot_instance
     
+    def is_bba_controlling(self, bid, explanation):
+        if not self.models.consult_bba or self.bbabot is None:
+            return False
+        
+        # We let BBA answer the question
+        if bid in self.bbabot.bba_controling and self.bbabot.bba_controling[bid] in explanation:
+            return True
+        return False
+    
     def explain(self, auction):
         if not self.models.consult_bba or self.bbabot is None:
             return None, False
         return self.bbabot.explain_last_bid(auction)
+
+    def explain_auction(self, auction):
+        if not self.models.consult_bba or self.bbabot is None:
+            return "", False
+        return self.bbabot.explain_auction(auction)
 
     def bid_hand(self, auction, hand):    
         return self.bbabot.bid_hand(auction, hand)
@@ -557,10 +572,13 @@ class BotBid:
             current_contract = bidding.get_contract(auction)
             current_contract = current_contract[0:2]
             if self.verbose:
-                print("check_final_contract, current_contract", current_contract)
+                print("check_final_contract, current_contract:", current_contract, " Samples:", len(samples))
+            # We should probably select random form the samples
             break_outer = False
-            for i in range(min(len(samples), self.models.max_samples_checked)):
-                sample = samples[i].split(" ")
+            samples_to_check = self.rng.choice(samples, min(len(samples), self.models.max_samples_checked), replace=False)
+
+            for sample in samples_to_check:
+                sample = sample.split(" ")
                 if self.verbose:
                     #print(samples[i].split(" ")[(self.seat + 2) % 4])
                     print(sample[(self.seat + 2) % 4], sample[5])
@@ -674,9 +692,9 @@ class BotBid:
                     level = int(contract[0])
                     # If we go down we assume we are doubled
                     doubled = tricks < level + 6
-                    score = scoring.score(contract + ("X" if doubled else ""), self.vuln, tricks)
-                    #if self.verbose:
-                    #    print(result, score)
+                    score = scoring.score(contract + ("X" if doubled else ""), self.vuln[(self.seat + 1) % 2], tricks)
+                    if self.verbose:
+                        print(result, score, level, doubled, self.vuln[(self.seat + 1) % 2] )
                     if contract not in alternatives:
                         alternatives[contract] = []
                     alternatives[contract].append({"score": score, "tricks": tricks})
@@ -789,14 +807,23 @@ class BotBid:
                 print("We found no samples, so will just trust the NN or BBA")
             return False
         return True
+    
 
     def get_bid_candidates(self, auction):
-        if self.models.use_bba_to_count_aces:
-            kc_resp = self.bbabot.is_key_card_ask(auction)
-            if kc_resp != None:
+        if self.verbose:
+            print("Getting bid candidates")
+        explanation = None
+        if self.models.consult_bba:
+            explanation, alert = self.bbabot.explain_last_bid(auction[:-1])
+            bba_bid_resp = self.bbabot.bid(auction)
+            if self.bba_is_controlling:
+                return [CandidateBid(bid=bba_bid_resp.bid, insta_score=1, alert = True, who="BBA - Keycard sequence", explanation=bba_bid_resp.explanation)], False
+
+            if self.models.use_bba_to_count_aces and self.bbabot.is_key_card_ask(auction, explanation):
                 if self.verbose:
-                    print("Keycards: ", kc_resp)
-                return [CandidateBid(bid=kc_resp.bid, insta_score=1, alert = True, who="BBA", explanation=kc_resp.explanation)], False
+                    print("Keycards: ", bba_bid_resp)
+                self.bba_is_controlling = True
+                return [CandidateBid(bid=bba_bid_resp.bid, insta_score=1, alert = True, who="BBA - Keycard response", explanation=bba_bid_resp.explanation)], False
 
         bid_softmax, alerts = self.next_bid_np(auction)
 
@@ -909,20 +936,25 @@ class BotBid:
             print("\n".join(str(bid) for bid in candidates))
     
         if self.models.consult_bba:
-            bid_resp = self.bbabot.bid(auction)
-            
             if self.verbose:
-                print("BBA suggests: ", bid_resp.bid)
+                print("BBA suggests: ", bba_bid_resp.bid)
             # If BBA suggest Pass, then we should probably not double
+            if explanation:
+                if "Forcing" in explanation:
+                    for candidate in candidates:
+                        if candidate.bid == "PASS":
+                            candidate.explanation = "We are not allowed to pass"
+                            candidate.insta_score = -1
+
             for candidate in candidates:
-                if candidate.bid == bid_resp.bid:
-                    candidate.alert = bid_resp.alert
-                    candidate.explanation = bid_resp.explanation
+                if candidate.bid == bba_bid_resp.bid:
+                    candidate.alert = bba_bid_resp.alert
+                    candidate.explanation = bba_bid_resp.explanation
                     break
             else:
                 if self.verbose:
-                    sys.stderr.write(f"{Fore.CYAN}Adding BBA bid as candidate: {bid_resp.bid} Alert: { bid_resp.alert} Explaination: {bid_resp.explanation}{Fore.RESET}\n")
-                candidates.append(CandidateBid(bid=bid_resp.bid, insta_score=0.2, alert = bid_resp.alert, who="BBA", explanation=bid_resp.explanation))
+                    sys.stderr.write(f"{Fore.CYAN}Adding BBA bid as candidate: {bba_bid_resp.bid} Alert: { bba_bid_resp.alert} Explaination: {bba_bid_resp.explanation}{Fore.RESET}\n")
+                candidates.append(CandidateBid(bid=bba_bid_resp.bid, insta_score=0.2, alert = bba_bid_resp.alert, who="BBA", explanation=bba_bid_resp.explanation))
 
         return candidates, passout
 
@@ -1905,7 +1937,7 @@ class CardPlayer:
             print(samples)
         card_resp_alphamju = []
         # AlphaMju is not good at discarding yet
-        if self.models.alphamju_declaring and (self.player_i == 1 or self.player_i == 3) and trick_i > 6 and play_status != "Discard":
+        if self.models.alphamju_declaring and (self.player_i == 1 or self.player_i == 3) and trick_i > 1 and play_status != "Discard":
             suit = "NSHDC"[self.strain_i]
             # if defending the target is another
             level = int(self.contract[0])
@@ -2328,9 +2360,9 @@ class CardPlayer:
         suit_adjust = self.calculate_suit_adjust_for_nt(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
 
         # Problem with playing the J from Jxxx as it might be a trick.  Seems to be in second hand as defender when card is played from dummu
-        if self.player_i == 2:
-            if len(current_trick) == 1:
-                print("Second hand")
+        #if self.player_i == 2:
+        #    if len(current_trick) == 1:
+        #        print("Second hand")
 
         if self.verbose:
             print(f'Suit adjust: {suit_adjust}, Trump adjust: {trump_adjust}, play_status: {play_status}')
@@ -2461,9 +2493,9 @@ class CardPlayer:
         suit_adjust = self.calculate_suit_adjust_for_nt(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
 
         # Problem with playing the J from Jxxx as it might be a trick.  Seems to be in second hand as defender when card is played from dummu
-        if self.player_i == 2:
-            if len(current_trick) == 1:
-                print("Second hand")
+        #if self.player_i == 2:
+        #    if len(current_trick) == 1:
+        #        print("Second hand")
 
         if self.verbose:
             print(f'Suit adjust: {suit_adjust}, Trump adjust: {trump_adjust}, play_status: {play_status}')

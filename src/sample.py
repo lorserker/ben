@@ -456,15 +456,15 @@ class Sample:
         if len(aceking) == 0:   
             return True
         for seat, (_, constraint) in enumerate(aceking.items()):
-            if constraint[1] == -1 and constraint[2] == -1:
+            if constraint[1] == -1 and constraint[2] == -1 and constraint[3] == 0:
                 continue
             suits = hands[seat].reshape(4, int(n_cards/4))  # Reshape into 4 rows
             # Check the first element of each group
             aces = suits[:, 0]  # Extract the first element from each group
             count_aces = np.sum(aces == 1)  # Count the number of aces
             kings = suits[:, 1]  # Extract the second element from each group
-            count_kings = np.sum(kings == 1)  # Count the number of onkingses
-            count_queen = 0
+            count_kings = np.sum(kings == 1)  # Count the number of kings
+            queen = -1
             #print(seat, count_aces, count_kings, aceking, suits, constraint)
             # NT
             if constraint[0] != 4:
@@ -473,10 +473,8 @@ class Sample:
                     #print("Adding trump king")
                     count_aces += 1
                     count_kings -= 1
-                # Check trump king
-                if suits[constraint[0], 2] == 1:
-                    #print("Adding trump queen")
-                    count_queen = 1
+                #print("Adding trump queen")
+                queen = suits[constraint[0], 2] 
             if constraint[1] != -1:
                 if count_aces != constraint[1] and count_aces != constraint[1] + 3:
                     #print("not valid aces", count_aces, constraint[1])
@@ -484,6 +482,10 @@ class Sample:
             if constraint[2] != -1:
                 if count_kings != constraint[2]:
                     #print("not valid kings", count_aces, constraint[2])
+                    return False
+            if constraint[3] != -1:
+                if queen != constraint[3]:
+                    #print("not valid queen", queen, constraint[3])
                     return False
 
     

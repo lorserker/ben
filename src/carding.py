@@ -52,11 +52,11 @@ def count_entries(hand_str, interesting_suit, played_cards, trump):
                     continue
                 total_entries += 1
         else:
-            if i != interesting_suit:
-                for card in suit:
-                    if card in played_cards[i]:
-                        continue
-                    total_entries += entry_values.get(card, 0)
+            #if i != interesting_suit:
+            for card in suit:
+                if card in played_cards[i]:
+                    continue
+                total_entries += entry_values.get(card, 0)
 
     #print("Total entries", total_entries, hand_str, interesting_suit)
     return round(total_entries)    
@@ -209,8 +209,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                             else:
                                 score =  candidate_cards[0].expected_tricks_sd
                         for candidate_card in candidate_cards:
-                            print(candidate_card.card)
-                            if candidate_card.card.suit == interesting_suit:
+                            if candidate_card.card.suit != interesting_suit:
                                 continue
                             if models.use_real_imp_or_mp:
                                 if models.matchpoint:
@@ -255,18 +254,23 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                                     print("DD card", candidate_cards[0])
                                                 save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0], hand_str, dummy_str)
                                                 return candidate_card.card, "SuitC-MP-Forced"
+                                            else:   
+                                                # Perhaps we should check the missing QUeen
+                                                return candidate_card.card, "SuitC-MP-Worse"
                                     else:
                                         if candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 0.4:
                                             return candidate_card.card, "SuitC-Imp"
                                         else:
                                             # If forced we allow up to 4 IMP
-                                            if models.force_suitc and candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 4:
+                                            if models.force_suitc and candidate_card.expected_score_imp >= candidate_cards[0].expected_score_imp - 5:
                                                 if verbose:
                                                     print("SuitC candidate card worse than best DD cards")
                                                     print("SuitC card", candidate_card)
                                                     print("DD card", candidate_cards[0])
                                                 save_for_suitc(suits_north, suits_south, candidate_card, candidate_cards[0],  hand_str, dummy_str)
                                                 return candidate_card.card, "SuitC-Imp-Forced"
+                                            else:
+                                                return candidate_card.card, "SuitC-Imp-Worse"
 
                                 else:
                                     if models.double_dummy:
@@ -279,7 +283,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                                 return candidate_card.card, "SuitC-SD"
                     print(f"SuitC card not an acceptable card: {suit_str}{suitc_card}")
                 return candidate_cards[0].card, who
-    
+
     if original_count == current_count:
         # If we are on lead, and playing the suit the first time, follow our lead agreements.
         # We should probably look at first card in each tricks52

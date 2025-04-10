@@ -112,7 +112,8 @@ class SuitCLib:
             print(output_buffer.value)
             print(details_buffer.value)
 
-        #print("SuitC Output: " + output_buffer.value)
+        #print(f"{Fore.GREEN}SuitC Output: {len(output_buffer.value)}{Fore.RESET}")
+        #print(f"{Fore.GREEN}SuitC Output details:  {len(details_buffer.value)}{Fore.RESET}")
         response_dict = json.loads(output_buffer.value)
         optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
         # print("optimum_plays", optimum_plays)

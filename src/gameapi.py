@@ -70,6 +70,10 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
+import faulthandler
+with open("fault.log", "w") as f:
+    faulthandler.enable(file=f, all_threads=True)
+
 init()
 def handle_exception(e):
     sys.stderr.write(f"{str(e)}\n")
@@ -419,7 +423,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.8")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.9")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -441,6 +445,7 @@ except AttributeError:
 
 # Write to stderr
 sys.stderr.write(f"Loading TensorFlow {tf.__version__} - Keras version: {keras_version}\n")
+sys.stderr.write(f"NumPy Version : {np.__version__}\n")
 
 configuration = conf.load(configfile)
 
@@ -704,7 +709,10 @@ def bid():
             from bba.BBA import BBABotBid
             hint_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand, vuln, dealer_i, mp, verbose)
         else:
-            hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
+
+            hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, False, verbose)
+            explanations, bba_controlled = hint_bot.explain_auction(auction)
+            hint_bot.bba_is_controlling = bba_controlled
         with model_lock_bid:
             bid = hint_bot.bid(auction)
 
@@ -715,6 +723,8 @@ def bid():
             if "samples" in result: del result["samples"]
             if "shape" in result: del result["shape"]
             if "hcp" in result: del result["hcp"]
+        else:
+            result["explanations"] = explanations
 
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
@@ -998,7 +1008,9 @@ def cuebid():
         from bba.BBA import BBABotBid
         hint_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
     else:
-        hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, verbose)
+        hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, False, verbose)
+        explanations, bba_controlled = hint_bot.explain_auction(auction)
+        hint_bot.bba_is_controlling = bba_controlled
     with model_lock_bid:
         bid = hint_bot.bid(auction)
     result = bid.to_dict()
@@ -1050,6 +1062,48 @@ def explain():
     explanation, alert = bot.explain_last_bid(auction)
     
     result = {"explanation": explanation, "Alert": alert} # explaination
+    print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+
+    return json.dumps(result)
+@app.route('/explain_auction')
+def explain_auction():
+    t_start = time.time()
+    from bba.BBA import BBABotBid
+    # First we extract the hands and seat
+    seat = request.args.get("seat")
+    # Then vulnerability
+    v = request.args.get("vul")
+    vuln = []
+    vuln.append('@v' in v)
+    vuln.append('@V' in v)
+    mp = models.matchpoint
+    if request.args.get("tournament"):
+        mp = request.args.get("tournament").lower() == "mp"
+        models.matchpoint = mp
+    # And finally we deduct our position
+    position_i = dealer_enum[seat]
+    dealer = request.args.get("dealer")
+    dealer_i = dealer_enum[dealer]
+    if verbose:
+        print("models.bba_our_cc", models.bba_our_cc, "models.bba_their_cc", models.bba_their_cc)
+    bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, mp, verbose)
+    ctx = request.args.get("ctx")
+    # Split the string into chunks of every second character
+    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+
+    auction = create_auction(bids, dealer_i)
+
+    explanation, bba_controlled = bot.explain_auction(auction)
+    
+    # Create the HTML list
+    html_list = '<ul>\n'  # Start the unordered list
+    for item in explanation:
+        key, value = item  # Unpack the tuple
+        html_list += f'  <li>{key} {value}</li>\n'  # Add formatted tuple as list item
+    html_list += '</ul>'  # Close the unordered list
+
+
+    result = {"explanation": html_list, "bba_controlled": bba_controlled} # explaination
     print(f'Request took {(time.time() - t_start):0.2f} seconds')       
 
     return json.dumps(result)

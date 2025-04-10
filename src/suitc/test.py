@@ -13,7 +13,8 @@ t_start = time.time()
 
 #-F1 -u -c100 -ls6 KT63 972 AQJ854
 #card = suitc.calculate(4, "KT63", "972", "AQJ854")
-card = suitc.calculate(4, "K83", "AJ942", "QT765")
+#card = suitc.calculate(4, "K83", "AJ942", "QT765")
+card = suitc.calculate(4, "AJ93", "K752",  "QT864", None, None, False, 0)
 
 print(card)
 

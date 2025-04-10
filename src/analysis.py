@@ -35,7 +35,7 @@ class CardByCard:
     def analyze_bidding(self):
         from ddsolver import ddsolver
         dds = ddsolver.DDSolver()
-        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.dealer_i, dds, self.verbose) for idx, hand in enumerate(self.hands)]
+        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.dealer_i, dds, False, self.verbose) for idx, hand in enumerate(self.hands)]
 
         player_i = self.dealer_i
         bid_i = self.dealer_i

@@ -112,7 +112,7 @@ boards = []
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.8")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.9")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -134,6 +134,7 @@ except AttributeError:
 
 # Write to stderr
 sys.stderr.write(f"Loading TensorFlow {tf.__version__} - Keras version: {keras_version}\n")
+sys.stderr.write(f"NumPy Version : {np.__version__}\n")
 
 configuration = conf.load(configfile)
 

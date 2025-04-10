@@ -27,6 +27,18 @@ absl.logging.set_stderrthreshold(absl.logging.FATAL)
 
 import tensorflow as tf
 
+gpus = tf.config.list_physical_devices('GPU')
+if gpus:
+    try:
+        for gpu in gpus:
+            tf.config.experimental.set_memory_growth(gpu, True)
+        print("✅ GPU available and memory growth enabled.")
+    except RuntimeError as e:
+        print("⚠️ Error setting memory growth:", e)
+else:
+    print("🧠 No GPU detected, using CPU.")
+
+
 import socket
 import shelve
 
@@ -52,7 +64,8 @@ from colorama import Fore, Back, Style, init
 import gc
 
 import faulthandler
-faulthandler.enable()
+with open("fault.log", "w") as f:
+    faulthandler.enable(file=f, all_threads=True)
 
 init()
 
@@ -219,7 +232,7 @@ class TMClient:
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
 
-        self.bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.dds, self.verbose)
+        self.bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.dds, False, self.verbose)
 
         auction = ['PAD_START'] * self.dealer_i
 
@@ -237,6 +250,10 @@ class TMClient:
                     explanation, alert = self.bot.explain(auction)
                     bid_resp.explanation = explanation
                     bid_resp.alert = alert
+                    # Are we in a keycard sequence
+                    if not self.bot.bba_is_controlling:
+                        self.bot.bba_is_controlling = self.bot.is_bba_controlling(bid_resp.bid, explanation)
+                        
                 self.bid_responses.append(bid_resp)
                 await self.send_own_bid(bid_resp)
             else:
@@ -987,7 +1004,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.8")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.9")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1009,6 +1026,7 @@ async def main():
 
     # Write to stderr
     sys.stderr.write(f"Loading TensorFlow {tf.__version__} - Keras version: {keras_version}\n")
+    sys.stderr.write(f"NumPy Version : {np.__version__}\n")
 
     configuration = conf.load(configfile)
 

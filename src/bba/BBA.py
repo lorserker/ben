@@ -80,6 +80,19 @@ class BBABotBid:
     SCORING_IMP = 1
     suitsymbols = ["!C", "!D", "!H", "!S"]   
 
+    # After getting this explanation we leave to BBA to continue the bidding
+    bba_controling = {
+            "4N": "Blackwood",
+            "5N": "King ask",
+            "4C": "Gerber",
+            "5C": "King ask",
+            "5C": "Exclusion",
+            "5D": "Exclusion",            
+            "5H": "Exclusion",            
+            "5S": "Exclusion"            
+        }        # Did partner ask for keycards
+
+
     def __init__(self, our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose):
 
         dll = BBABotBid.get_dll(verbose)  # Retrieve the loaded DLL classes through the singleton
@@ -204,34 +217,13 @@ class BBABotBid:
         return our_conventions, their_conventions
 
 
-    def is_key_card_ask(self, auction):
-        # Did partner ask for keycards
+    def is_key_card_ask(self, auction, explanation):
         if len(auction) > 1:
-            if auction[-2] == "4N":
-                explanation, alert = self.explain_last_bid(auction[:-1])
-                if self.verbose:
-                    print(explanation, alert)
-                if "Blackwood" in explanation:
-                    return self.bid(auction)
-            if auction[-2] == "5N":
-                explanation, alert = self.explain_last_bid(auction[:-1])
-                if self.verbose:
-                    print(explanation, alert)
-                if "King ask" in explanation:
-                    return self.bid(auction)
-            if auction[-2] == "4C":
-                explanation, alert = self.explain_last_bid(auction[:-1])
-                if self.verbose:
-                    print(explanation, alert)
-                if "Gerber" in explanation:
-                    return self.bid(auction)
-            if auction[-2] == "5C":
-                explanation, alert = self.explain_last_bid(auction[:-1])
-                if self.verbose:
-                    print(explanation, alert)
-                if "King ask" in explanation:
-                    return self.bid(auction)
-        return None
+            # We let BBA answer the question
+            if auction[-2] in self.bba_controling and self.bba_controling[auction[-2]] in explanation:
+                return True
+    
+        return False
 
     def find_info(self, auction):
         if self.verbose:
@@ -300,6 +292,13 @@ class BBABotBid:
                 hand_info["honors"] =  honors[trump]
             hand_info["aces"] = features[406]
             hand_info["kings"] = features[407]
+            # BBA has switched the meaning of -1 and 0
+            if features[319] == 1:
+                hand_info["queen"] = features[319]
+            if features[319] == 0:
+                hand_info["queen"] = -1
+            if features[319] == -1:
+                hand_info["queen"] = 0
             #print(hand_info)
             info[i] = hand_info
 
@@ -327,35 +326,59 @@ class BBABotBid:
         rho = (self.position + 3) % 4
         partner = (self.position + 2) % 4 
         if asker == rho:
-            result["RHO"] = (trump, -1, -1)
-            result["Partner"] = (trump, -1, -1)
-            result["LHO"] = (trump, info[lho]["aces"], info[lho]["kings"])
+            result["RHO"] = (trump, -1, -1, -1)
+            result["Partner"] = (trump, -1, -1, -1)
+            result["LHO"] = (trump, info[lho]["aces"], info[lho]["kings"], info[partner]["queen"])
         
         elif asker == lho:
-            result["LHO"] = (trump, -1, -1)
-            result["Partner"] = (trump, -1, -1)
-            result["RHO"] = (trump, info[rho]["aces"], info[rho]["kings"])
+            result["LHO"] = (trump, -1, -1, -1)
+            result["Partner"] = (trump, -1, -1, -1)
+            result["RHO"] = (trump, info[rho]["aces"], info[rho]["kings"], info[partner]["queen"])
         # For the partner we take the calculated information
         elif asker != partner:
             # We have asked
             # if we know something about partners aces we take the calculated information
             if info[partner]["aces"] > -1:
                 partner += 4
-            result["LHO"] = (trump, -1, -1)
-            result["Partner"] = (trump, info[partner]["aces"], info[partner]["kings"])
-            result["RHO"] = (trump, -1, -1)
+            result["LHO"] = (trump, -1, -1, -1)
+            result["Partner"] = (trump, info[partner]["aces"], info[partner]["kings"], info[partner]["queen"])
+            result["RHO"] = (trump, -1, -1, -1)
 
-
-        " we should also check for trump queen"
         if self.verbose:
             print("Information from BBA", result)
 
         return result
 
+    def explain_auction(self, auction):
+        if self.verbose:
+            print(auction)
+            print("explain_auction", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+
+        meaning_of_bids = []
+        bba_controlling = False
+        position = 0
+        for k in range(len(auction)):
+            bidid = bidding.BID2ID[auction[k]]
+            if bidid < 2:
+                continue
+            if bidid < 5:
+                bidid = bidid - 2
+            self.players[self.position].set_bid((position) % 4, bidid)
+            meaning = self.players[self.position].get_info_meaning((position) % 4)
+            if not meaning:
+                meaning = ""
+            #print(auction[k], meaning)
+            meaning_of_bids.append((auction[k], meaning))
+            if auction[k] in self.bba_controling and self.bba_controling[auction[k]] in meaning:
+                bba_controlling = True
+            position += 1
+
+        return meaning_of_bids, bba_controlling
+
     def explain_last_bid(self, auction):
         if self.verbose:
             print(auction)
-            print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+            print("explain_last_bid", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
         arr_bids = []
         for k in range(len(auction)):

@@ -20,7 +20,6 @@ import numpy as np
 
 from bidding import bidding
 from sample import Sample
-from bots import BotBid
 
 DD = DDSolver(dds_mode=1)
 
