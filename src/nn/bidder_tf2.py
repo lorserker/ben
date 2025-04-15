@@ -1,8 +1,5 @@
-import numpy as np
 import tensorflow as tf
-from collections import namedtuple
 from tensorflow.keras.models import load_model
-import time
 
 class Bidder:
     

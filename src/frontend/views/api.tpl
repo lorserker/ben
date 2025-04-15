@@ -20,7 +20,7 @@
 
 <body>
     <div>
-        <h1>API for BEN. Version 0.8.6.9</h1>
+        <h1>API for BEN. Version 0.8.6.10</h1>
     </div>
     <div id="loader"></div> 
     <div id="dealdiv">
@@ -153,13 +153,28 @@
             document.getElementById('biddingInput').value = ''
             document.getElementById('playInput').value = ''
             // Handle firefox lin-link
-            let lin = decodeURI(document.getElementById('importInput').value).replace(/%2C/g,",");
+            let input = decodeURI(document.getElementById('importInput').value).replace(/%2C/g,",");
+
+            // Check if the input is a full URL or just a lin value
+            let lin = "";
+
+            // Case 1: If the input is a full URL, extract the lin value from the query string
+            if (input.startsWith('http://') || input.startsWith('https://')) {
+                try {
+                    let urlObj = new URL(input);  // Parse the URL
+                    lin = urlObj.searchParams.get('lin');  // Get the 'lin' parameter
+                } catch (e) {
+                    console.error("Invalid URL");
+                    lin = "";
+                }
+            }
+            // Case 2: If the input is just a lin value (starts with 'lin=')
+            else if (input.startsWith('lin=')) {
+                lin = input.split('=')[1];  // Get the value after 'lin='
+            }
 
             var startIndex = 0;
-            parts = lin.split('=')
-            if (parts.length > 1) {
-                lin = parts[parts.length-1].trim();
-            } 
+
             while (startIndex < lin.length) {
                 var openPipeIndex = lin.indexOf('|', startIndex);
                 if (openPipeIndex < 2) break;
@@ -174,14 +189,14 @@
             }
             // Replace "D" with "X" and "RD" with "XX"
             bidSequence = bidSequence.map(item => {
-                if (item === "D") {
+                if (item.toUpperCase() === "D") {
                     return "X";
-                } else if (item === "R") {
+                } else if (item.toUpperCase() === "R") {
                     return "XX";
                 }
                 return item; // Keep other items unchanged
             });
-            document.getElementById('biddingInput').value = bidSequence.join('-').toUpperCase()
+            document.getElementById('biddingInput').value = bidSequence.join('-')
             const seat = document.getElementById('seatInput').value;
             const dealer = "NESW".indexOf(document.getElementById('dealerInput').value);
             // Deck is based from South

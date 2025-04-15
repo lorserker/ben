@@ -4,6 +4,7 @@ import os
 from util import calculate_seed, load_dotnet_framework_assembly
 from threading import Lock
 import numpy as np
+import platform
 
 
 # Get the directory of the current script
@@ -29,8 +30,14 @@ else:
     else:
         BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 
+# Check if Python is 64-bit or 32-bit
+python_arch = platform.architecture()[0]  # '32bit' or '64bit'
+
 if sys.platform == 'win32':
-    EPBot_LIB = 'EPBot86'
+    if python_arch == '64bit':
+        EPBot_LIB = 'EPBot64'
+    else:
+        EPBot_LIB = 'EPBot86'
 elif sys.platform == 'darwin':
     EPBot_LIB = 'N/A'
 else:
@@ -51,10 +58,13 @@ class BBABotBid:
             with cls._lock:  # Ensure only one thread can enter this block at a time
                 if cls._dll_loaded is None:  # Double-checked locking
                     if EPBot_LIB == 'N/A':
-                        raise RuntimeError("EPBot86.dll is not available on this platform.")
+                        raise RuntimeError(f"{EPBot_LIB}.dll is not available on this platform.")
                     try:
                         load_dotnet_framework_assembly(EPBot_PATH, verbose)
-                        from EPBot86 import EPBot
+                        if python_arch == '64bit':
+                            from EPBot64 import EPBot
+                        else:
+                            from EPBot86 import EPBot
                         # Load the .NET assembly and import the types and classes from the assembly
                         if verbose:
                             print(f"EPBot Version (DLL): {EPBot().version()}")
@@ -63,7 +73,7 @@ class BBABotBid:
                         }
                     except Exception as ex:
                         # Provide a message to the user if the assembly is not found
-                        print(f"{Fore.RED}Error: Unable to load EPBot86.dll. Make sure the DLL is in the ./bin directory")
+                        print(f"{Fore.RED}Error: Unable to load {EPBot_LIB}.dll. Make sure the DLL is in the ./bin directory")
                         print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
                         print(f"Make sure the dll is not writeprotected{Fore.RESET}")
                         print('Error:', ex)
@@ -293,12 +303,7 @@ class BBABotBid:
             hand_info["aces"] = features[406]
             hand_info["kings"] = features[407]
             # BBA has switched the meaning of -1 and 0
-            if features[319] == 1:
-                hand_info["queen"] = features[319]
-            if features[319] == 0:
-                hand_info["queen"] = -1
-            if features[319] == -1:
-                hand_info["queen"] = 0
+            hand_info["queen"] = features[319]
             #print(hand_info)
             info[i] = hand_info
 
@@ -352,10 +357,13 @@ class BBABotBid:
     def explain_auction(self, auction):
         if self.verbose:
             print(auction)
-            print("explain_auction", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+            print("explain_auction", self.position, self.hand_str, 0, self.bba_vul(self.vuln_nsew))
+
+        self.players[self.position].new_hand(self.position, self.hand_str, 0, self.bba_vul(self.vuln_nsew))
 
         meaning_of_bids = []
         bba_controlling = False
+        preempted = False
         position = 0
         for k in range(len(auction)):
             bidid = bidding.BID2ID[auction[k]]
@@ -369,11 +377,17 @@ class BBABotBid:
                 meaning = ""
             #print(auction[k], meaning)
             meaning_of_bids.append((auction[k], meaning))
-            if auction[k] in self.bba_controling and self.bba_controling[auction[k]] in meaning:
-                bba_controlling = True
+            # Are we bidding
+            if (k % 2) == (len(auction) % 2):
+                if auction[k] in self.bba_controling and self.bba_controling[auction[k]] in meaning:
+                    bba_controlling = True
+            if (k % 2) == ((len(auction) -1) % 2) :
+                lowered_meaning = meaning.lower()
+                if "weak" in lowered_meaning or "preempt" in lowered_meaning:
+                    preempted = True
             position += 1
-
-        return meaning_of_bids, bba_controlling
+        
+        return meaning_of_bids, bba_controlling, preempted
 
     def explain_last_bid(self, auction):
         if self.verbose:

@@ -1,8 +1,7 @@
-import hashlib
 import sys
 import time
 import math
-
+import os
 import numpy as np
 import tensorflow as tf
 
@@ -527,7 +526,7 @@ class Sample:
             # Predict bids based on the model for the specific position
             sample_bids, _ = model.pred_fun_seq(X)
             if verbose:
-                print("model", model.model_path, "position", position, "bids", sample_bids.shape, "Exclude samples", self.exclude_samples)
+                print("Model:   ", os.path.basename(models.model_path), "position", position, "bids", sample_bids.shape, "Exclude samples", self.exclude_samples)
 
             sample_bids = sample_bids.reshape((lho_pard_rho.shape[0], n_steps, -1))
 
@@ -1002,11 +1001,11 @@ class Sample:
                         opening_lead_scores[ix] = 0.1
                     else:
                         opening_lead_scores[ix] = 0.2
-        if self.verbose:
 
-            # Print unique elements
-            for elem in explanations:
-                print(elem)
+            if self.verbose:
+                # Print unique elements
+                for elem in explanations:
+                    print(elem)
                 
         return opening_lead_scores  
 

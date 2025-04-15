@@ -12,8 +12,8 @@ vuln = [False, False]
 dealer = 2
 scoring_matchpoint = False
 verbose = True
-
 bot = BBABotBid(our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose)
+
 explanation = bot.explain_last_bid(['PASS'])
 print(explanation)
 explanation = bot.explain_last_bid(['PASS','2S'])
@@ -22,4 +22,7 @@ explanation = bot.explain_last_bid(['PASS','2S', 'PASS'])
 print(explanation)
 explanation = bot.explain_last_bid(['PASS','2S', 'PASS','2N'])
 print(explanation)
-
+dealer = 3
+bot = BBABotBid(our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose)
+explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
+print(explanation, bba_controlled, preempted)

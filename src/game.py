@@ -59,8 +59,7 @@ import psutil
 from nn.opponents import Opponents
 
 import faulthandler
-with open("fault.log", "w") as f:
-    faulthandler.enable(file=f, all_threads=True)
+faulthandler.enable()
 
 init()
 
@@ -100,8 +99,8 @@ class AsyncBotLead(bots.BotLead):
         return self.find_opening_lead(auction, aceking)
 
 class AsyncCardPlayer(bots.CardPlayer):
-    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores):
-        return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
+    async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores, features):
+        return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores, features)
     
     
 class Driver:
@@ -238,11 +237,17 @@ class Driver:
 
         print('{1} Bidding took {0:0.1f} seconds.'.format(time.time() - t_start, datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
         
+        features = {}
         aceking = {}
         if self.models.use_bba_to_count_aces:
             if self.bot is not None and self.bot.bbabot is not None:
                 aceking = self.bot.bbabot.find_aces(self.auction)
+                explanation, _, preempted = self.bot.bbabot.explain_auction(self.auction)
+                features["Explanation"] = explanation
+                features["preempted"] = preempted
 
+        features["aceking"] = aceking
+        
         if self.verbose:
             if self.bot is not None and self.bot.bbabot is not None:
                 self.bot.bbabot.get_sample(self.auction)
@@ -297,7 +302,7 @@ class Driver:
                 print(f"{Fore.RESET}")
 
         
-        self.card_play = await self.play(self.contract, self.strain_i, self.decl_i, self.auction, opening_lead52, aceking)
+        self.card_play = await self.play(self.contract, self.strain_i, self.decl_i, self.auction, opening_lead52, features)
 
         await self.channel.send(json.dumps({
             'message': 'deal_end',
@@ -458,7 +463,7 @@ class Driver:
             'opponents': "BEN",
             'partner': "BEN",
             'model': self.models.name,
-            'version': '0.8.6.8'
+            'version': '0.8.6.10'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -513,7 +518,7 @@ class Driver:
 # After each trick is done :
 #     for each card played, init the x_play slice of the next trick. Pain in the ass
 
-    async def play(self, contract, strain_i, decl_i, auction, opening_lead52, aceking):
+    async def play(self, contract, strain_i, decl_i, auction, opening_lead52, features):
         
         level = int(contract[0])
         is_decl_vuln = [self.vuln_ns, self.vuln_ew, self.vuln_ns, self.vuln_ew][decl_i]
@@ -645,7 +650,7 @@ class Driver:
                 if card_resp == None:    
                     if isinstance(card_players[player_i], bots.CardPlayer):
                         played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, features["aceking"], current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
                     else: 
@@ -663,7 +668,7 @@ class Driver:
                     await asyncio.sleep(0.01)
 
                     while card_resp is None:
-                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores)
+                        card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores, features)
 
                         if (str(card_resp.card).startswith("Conceed")) :
                                 self.claimedbydeclarer = (player_i == 3) or (player_i == 1)
@@ -1074,7 +1079,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.9")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.10")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1137,8 +1142,8 @@ async def main():
     if models.use_bba:
         print("Using BBA for bidding")
     else:
-        print("Model:   ", models.bidder_model.model_path)
-        print("Opponent:", models.opponent_model.model_path)
+        print("Model:   ", os.path.basename(models.bidder_model.model_path))
+        print("Opponent:", os.path.basename(models.opponent_model.model_path))
 
     if facit:
             print("Playing Bidding contest")
