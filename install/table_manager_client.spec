@@ -7,7 +7,7 @@ block_cipher = None
 a = Analysis(
     ['..\\src\\table_manager_client.py'],
     pathex=['..\\src'],
-    binaries=[('..\\bin\\dds.dll', 'bin'), ('..\\bin\\BGADLL.dll', 'bin'), ('..\\bin\\libbcalcdds.dll', 'bin'), ('..\\bin\\SuitCLib.dll', 'bin'), ('..\\bin\\EPBot86.dll', 'bin')],
+    binaries=[('..\\bin\\dds.dll', 'bin'), ('..\\bin\\BGADLL.dll', 'bin'), ('..\\bin\\libbcalcdds.dll', 'bin'), ('..\\bin\\SuitCLib.dll', 'bin'), ('..\\bin\\EPBot86.dll', 'bin'), ('..\\bin\\EPBot64.dll', 'bin')],
     datas=[(r'..\src\nn\*.py','nn')],
     hiddenimports=[],
     hookspath=[],

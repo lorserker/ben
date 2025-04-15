@@ -1,6 +1,8 @@
 import sys
 import json
 sys.path.append('../../src')
+import platform
+print(platform.architecture())
 
 from bba.BBA import BBABotBid
 

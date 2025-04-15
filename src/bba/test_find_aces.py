@@ -28,6 +28,13 @@ vuln = [False, True]
 dealer = 2
 
 bot = BBABotBid(our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose)
+explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
+print(explanation, bba_controlled, preempted)
+explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
+print(explanation, bba_controlled, preempted)
+
 info = bot.find_aces(['PASS', '2N', 'PASS', '3C', 'PASS', '3D', 'PASS', '4D', 'PASS', '4N', 'PASS', '5H', 'PASS', '6D', 'PASS', 'PASS', 'PASS'])
 print(json.dumps(info))
 
+explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
+print(explanation, bba_controlled, preempted)

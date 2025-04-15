@@ -166,6 +166,23 @@ def get_hcp(hand):
 
     return np.sum(points, axis=(1, 2))
 
+def get_hcp_adjusted(hand):
+    x = hand.reshape((hand.shape[0], 4, -1))
+    A = np.zeros_like(x)
+    A[:, :, 0] = 1.25
+    K = np.zeros_like(x)
+    K[:, :, 1] = 1
+    Q = np.zeros_like(x)
+    Q[:, :, 2] = 1
+    J = np.zeros_like(x)
+    J[:, :, 3] = 1
+    T = np.zeros_like(x)
+    T[:, :, 3] = 0.25
+
+    points = 4 * A * x + 3 * K * x + 2 * Q * x + J * x + T * x
+
+    return np.sum(points, axis=(1, 2))
+
 def get_hcp_suit(suit):
     points = 4 * suit[0] + 3 * suit[1] + 2 * suit[2] + suit[3]
 
@@ -182,7 +199,10 @@ def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
 
     vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float16)
     shp = (get_shape(hand) - 3.25) / 1.75
-    hcp = (get_hcp(hand) - 10) / 4
+    if models.adjust_hcp:
+        hcp = (get_hcp_adjusted(hand) - 10) / 4
+    else:
+        hcp = (get_hcp(hand) - 10) / 4
 
     auction_input = auction_input + ['PAD_END'] * 4 * n_steps # To prevent index errors in the next section
     auction = bidding.BID2ID['PAD_END'] * np.ones((n_samples, len(auction_input)), dtype=np.int32)

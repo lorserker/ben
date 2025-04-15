@@ -104,7 +104,7 @@ def validate_lead(hand, lead, contract_type, verbose):
         (r"^AJT[^KQ].*$", "A", "Leading from AJTx sequence vs NT"),
         (r"^AJT[^KQ].*$", "J", "Leading from AJTx sequence vs NT"),
         (r"^KJT[^AQ].*$", "K", "Leading from KJTx sequence vs NT"),
-        (r"^KJT[^AQ].*$", "j", "Leading from KJTx sequence vs NT"),
+        (r"^KJT[^AQ].*$", "J", "Leading from KJTx sequence vs NT"),
         (r"^QT9[^AKJ].*$", "Q", "Leading from QT9x sequence vs NT"),
         (r"^QT9[^AKJ].*$", "T", "Leading from QT9x sequence vs NT"),
         

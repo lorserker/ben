@@ -112,7 +112,7 @@ boards = []
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.9")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.10")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -176,8 +176,8 @@ if opponentfile != "":
 if models.use_bba:
     print("Using BBA for bidding")
 else:
-    print("Model:   ", models.bidder_model.model_path)
-    print("Opponent:", models.opponent_model.model_path)
+    print("Model:   ", os.path.basename(models.bidder_model.model_path))
+    print("Opponent:", os.path.basename(models.opponent_model.model_path))
 
 if matchpoint is not None:
     models.matchpoint = matchpoint

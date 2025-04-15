@@ -85,7 +85,7 @@ class BotBid:
 
     def explain_auction(self, auction):
         if not self.models.consult_bba or self.bbabot is None:
-            return "", False
+            return "", False, False
         return self.bbabot.explain_auction(auction)
 
     def bid_hand(self, auction, hand):    
@@ -135,12 +135,6 @@ class BotBid:
             sys.stderr.write("Rescue bid not supported for TF 1.x\n")
             return False
 
-        # We did not rescue bid before our 3rd bid     
-        # We should look at how the bidding continues, as we can't expect partner to bid
-        # Could be a sequence like this 1D-3C-X-4C with A97.AT63.AT8652.
-        if my_bid_no < 3:
-            return False
-
         # If no samples we can't evaluate rescue bid
         if len(samples) == 0:
             return False
@@ -148,7 +142,7 @@ class BotBid:
         # never rescue on first bid
         if binary.get_number_of_bids(auction) < 4:
             return False
-        
+
         # we only try to avoid passing in the wrong contract
         if candidate_bid.bid != "PASS" :
             return False
@@ -156,14 +150,28 @@ class BotBid:
         # If samples of bad quality we do not try to rescue
         if quality <= self.sampler.bid_accept_threshold_bidding:
             return False
-        
-        # RHO bid, so we will not evaluate rescue bid
-        if (auction[-1] != "PASS"):
-            return False
-        
+
         # We are in the passout situation
         if passout:
             return True
+
+        # We do not rescue bid before our 3rd bid     
+        # unless there has been some preempting
+        # We should look at how the bidding continues, as we can't expect partner to bid
+        # Could be a sequence like this 1D-3C-X-4C with A97.AT63.AT8652.
+        if my_bid_no < 2 :
+            return False
+
+        if my_bid_no < 3 :
+            if bidding.BID2ID[auction[-1]] < 14:
+                return False
+
+     
+        
+        # RHO bid, so we will not evaluate rescue bid
+        #if (auction[-1] != "PASS"):
+        #    return False
+        
 
         if candidate_bid.expected_score is None:
             # We will prepare data for calculating rescue bid
@@ -234,7 +242,7 @@ class BotBid:
         # If no search we will not generate any samples if switch of
         # if only 1 sample we drop sampling, but only if no rescue bidding
         generate_samples = not self.sampler.no_samples_when_no_search and self.get_min_candidate_score(self.my_bid_no) != -1
-        generate_samples = generate_samples or (binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract and (passout or auction[-2] != "PASS"))
+        generate_samples = generate_samples or (binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract)
         generate_samples = generate_samples or len(candidates) > 1
 
         if generate_samples:
@@ -575,17 +583,20 @@ class BotBid:
                 print("check_final_contract, current_contract:", current_contract, " Samples:", len(samples))
             # We should probably select random form the samples
             break_outer = False
-            samples_to_check = self.rng.choice(samples, min(len(samples), self.models.max_samples_checked), replace=False)
+            # Split and filter the samples based on your condition
+            filtered_samples = [
+                sample for sample in samples if float(sample.split(" ")[5]) >= self.models.min_bidding_trust_for_sample_when_rescue
+            ]
+
+            # Select random samples from the filtered list
+            samples_to_check = self.rng.choice(filtered_samples, min(len(filtered_samples), self.models.max_samples_checked), replace=False)
 
             for sample in samples_to_check:
+                #contract_id = 40
                 sample = sample.split(" ")
                 if self.verbose:
                     #print(samples[i].split(" ")[(self.seat + 2) % 4])
                     print(sample[(self.seat + 2) % 4], sample[5])
-                if float(sample[5]) < self.models.min_bidding_trust_for_sample_when_rescue:
-                    if self.verbose: 
-                        print("Skipping sample due to threshold", self.models.min_bidding_trust_for_sample_when_rescue)
-                    continue
                 X = self.get_binary_contract(self.seat, self.vuln, self.hand_str, sample[(self.seat + 2) % 4], self.models.n_cards_bidding)
                 # Perhaps we should collect all samples, and just make one call to the neural network
                 contracts = self.models.contract_model.pred_fun(X)
@@ -594,7 +605,7 @@ class BotBid:
                 score = 0
                 result = {}
                 for i in range(len(contracts[0])):
-                    # We should make calculations on this, so 4H, %h or even 6H is added, if tricks are fin
+                    # We should make calculations on this, so 4H, 5H or even 6H is added, if tricks are fine
                     if contracts[0][i] > 0.2:
                         y = np.zeros(5)
                         suit = bidding.ID2BID[i][1]
@@ -606,7 +617,7 @@ class BotBid:
                         max_tricks = None
                         for j in range(14):
                             trick_score = 0
-                            if nn_tricks[0][j] > 0.2:
+                            if nn_tricks[0][j] > 0.1:
                                 if bidding.ID2BID[i] in result:
                                     # Append new data to the existing entry
                                     result[bidding.ID2BID[i]]["Tricks"].append(j)
@@ -628,18 +639,12 @@ class BotBid:
                             contract = bidding.ID2BID[contract_id] 
 
 
-
-                if score < self.models.min_bidding_trust_for_sample_when_rescue:
-                    #if self.verbose:
-                    #    print(self.hand_str, [sample[(self.seat + 2) % 4]])
-                    #    if score == 0:
-                    #        print(f"No obvious rescue contract")
-                    #    else:
-                    #        print(f"Skipping sample below level: {self.models.min_bidding_trust_for_sample_when_rescue} {contract} {tricks} score {score:.3f}")
-                    continue
-
                 if self.verbose:
-                    print(result)                    
+                    print("result", result)                    
+                if not result:
+                    if self.verbose:
+                        print("No valid contracts, skipping sample")
+                    break
 
                 while not bidding.can_bid(contract, auction) and contract_id < 35:
                     contract_id += 5
@@ -692,12 +697,15 @@ class BotBid:
                     level = int(contract[0])
                     # If we go down we assume we are doubled
                     doubled = tricks < level + 6
-                    score = scoring.score(contract + ("X" if doubled else ""), self.vuln[(self.seat + 1) % 2], tricks)
+                    score = scoring.score(contract + ("X" if doubled else ""), self.vuln[(self.seat ) % 2], tricks)
                     if self.verbose:
-                        print(result, score, level, doubled, self.vuln[(self.seat + 1) % 2] )
+                        print(result, score, level, doubled, self.vuln[(self.seat) % 2] )
                     if contract not in alternatives:
                         alternatives[contract] = []
                     alternatives[contract].append({"score": score, "tricks": tricks})
+                else:
+                    if self.verbose:
+                        print("Skipping invalid contract", contract, auction)
                     
             # Only if at least 75% of the samples suggest bidding check the score for the rescue bid
             # print(len(alternatives), min(len(samples), self.models.max_samples_checked))
@@ -769,6 +777,12 @@ class BotBid:
                         candidates.insert(0, candidatebid)
                         who = "Rescue"
                         sys.stderr.write(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}\n")
+                    else:
+                        if self.verbose:
+                            print("No rescue, due to low expected score: ", (expected_score, candidates[0].expected_score + self.models.min_rescue_reward))
+                else:
+                    if self.verbose:
+                        print("No rescue, due to low reward: ", (contract_average_scores[max_count_contract], candidates[0].expected_score + self.models.min_rescue_reward, contract_average_tricks[max_count_contract] - expected_tricks))
             else:
                 if self.verbose:
                     print("No rescue, due to not enough samples, that suggest bidding: ", total_entries, len(samples), self. models.max_samples_checked)
@@ -777,7 +791,7 @@ class BotBid:
 
         else:
             if self.verbose:
-                print("No rescue bid evaluated")
+                print("No rescue bid evaluated", auction, passout, candidates[0], quality, self.my_bid_no, candidates[0].who)
 
         # We return the bid with the highest expected score or highest adjusted score 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=quality, alert = bool(candidates[0].alert), explanation=candidates[0].explanation)
@@ -870,10 +884,13 @@ class BotBid:
             return candidates, False
         
         no_bids  = binary.get_number_of_bids(auction) 
+        min_bid_score = self.get_min_candidate_score(self.my_bid_no)
         passout = False
         if no_bids > 3 and auction[-2:] == ['PASS', 'PASS']:
             # this is the final pass, so we wil have a second opinion
             min_candidates = self.models.min_passout_candidates
+            # Reduce the score so we search
+            min_bid_score = self.get_min_candidate_score(self.my_bid_no + 1)
             passout = True
             # If we are doubled trust the bidding model
             # This is not good if we are doubled in a splinter
@@ -887,9 +904,11 @@ class BotBid:
                 min_candidates = 1
 
         # After preempts the model is lacking some bidding, so we will try to get a second bid
-        if no_bids < 4 and no_bids > 0:
+        if no_bids <= 4 and no_bids > 0:
             if bidding.BID2ID[auction[-1]] > 14:
                 min_candidates = 2
+                # Reduce the score so we search
+                min_bid_score = self.get_min_candidate_score(self.my_bid_no + 2)
                 if self.verbose:
                     print("Extra candidate after opponents preempt might be needed")
                 elif no_bids > 1 and bidding.BID2ID[auction[-2]] > 14:
@@ -898,11 +917,11 @@ class BotBid:
 
         while True:
             bid_i = np.argmax(bid_softmax)
-            if bid_softmax[bid_i] < self.get_min_candidate_score(self.my_bid_no):
+            if bid_softmax[bid_i] < min_bid_score:
                 if len(candidates) >= min_candidates:
                     break
                 # Second candidate to low. Rescuebid should handle 
-                if bid_softmax[bid_i] <= 0.005:
+                if bid_softmax[bid_i] <= 0.0005:
                     break
             if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                 if self.models.alert_supported:
@@ -937,15 +956,17 @@ class BotBid:
     
         if self.models.consult_bba:
             if self.verbose:
-                print("BBA suggests: ", bba_bid_resp.bid)
+                print(f"{Fore.CYAN}BBA suggests: {bba_bid_resp.bid} Partners bid explained: {explanation} {Fore.RESET}")
             # If BBA suggest Pass, then we should probably not double
             if explanation:
                 if "Forcing" in explanation:
-                    for candidate in candidates:
-                        if candidate.bid == "PASS":
-                            candidate.explanation = "We are not allowed to pass"
-                            candidate.insta_score = -1
-
+                    # If the opponents bid we are no longer in a forcing situation
+                    if auction[:-1] == "PASS":
+                        for candidate in candidates:
+                            if candidate.bid == "PASS":
+                                candidate.explanation = "We are not allowed to pass"
+                                candidate.insta_score = -1
+            
             for candidate in candidates:
                 if candidate.bid == bba_bid_resp.bid:
                     candidate.alert = bba_bid_resp.alert
@@ -1914,7 +1935,7 @@ class CardPlayer:
 
         return merged_cards
     
-    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores):
+    def play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores, features):
         t_start = time.time()
         samples = []
 
@@ -2016,9 +2037,9 @@ class CardPlayer:
                 # If card_resp_alphamju is empty, break out of the loop (or handle as needed)
                 break
 
-
-            
         # When play_status is discard, it might be a good idea to use PIMC even if it is not enabled
+        preempted = features.get("preempted", False)
+
         if play_status == "discard" and not self.models.pimc_use_discard:
             dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
             self.update_with_alphamju(card_resp_alphamju, merged_card_resp)
@@ -2034,7 +2055,11 @@ class CardPlayer:
                     #print(pimc_resp_cards)
                     dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                     #print(dd_resp_cards)
-                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", self.models.pimc_ben_dd_declaring_weight, quality)
+                    if preempted and self.models.pimc_after_preempt:
+                        weight = 1 - self.models.pimc_after_preempt_weight
+                    else:
+                        weight = self.models.pimc_ben_dd_declaring_weight
+                    merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMC", weight, quality)
                 else:
                     merged_card_resp = pimc_resp_cards
                 self.update_with_alphamju(card_resp_alphamju, merged_card_resp)
@@ -2200,6 +2225,7 @@ class CardPlayer:
         claim_cards = []
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key], making[key], "")
+            # We should probably allow claim -1 etc
             if card_tricks[key] == 13 - trick_i:
                 claim_cards.append(key)
             if self.verbose:
@@ -2305,26 +2331,54 @@ class CardPlayer:
         return result
         
     # Trying to help BEN to know, when to draw trump, and when not to
-    def calculate_trump_adjust(self, play_status):
+    def calculate_trump_adjust(self, play_status, tricks52):
         trump_adjust = 0
+        # No adjust for NT
+        if self.strain_i == 0:
+            return trump_adjust
+        # No adjust unless we are making a lead
+        if play_status != "Lead":
+            return trump_adjust
+         
         # Only in suit contract and if we are on lead and we are declaring
-        if self.strain_i != 0 and play_status == "Lead" and (self.player_i == 1 or self.player_i == 3):
-            # Any outstanding trump?
-            if self.models.draw_trump_reward > 0 and self.missing_cards[self.strain_i-1] > 0:
-                trump_adjust = self.models.draw_trump_reward
-            # Just to be sure we won't show opps that they have no trump
-            if self.models.draw_trump_penalty > 0 and self.missing_cards[self.strain_i-1] == 0:
-                trump_adjust = -self.models.draw_trump_penalty
-            if self.verbose:
-                print("Trump adjust", trump_adjust)
-            if self.models.use_real_imp_or_mp:
-                if self.models.matchpoint:
+        if self.player_i % 2 ==0:
+            return trump_adjust
+
+        used_trumps = []
+        for trick in tricks52:
+            for card in trick:
+                if card // 13 == self.strain_i -1:
+                    used_trumps.append(card % 13)
+        highest_trump = -1
+        for i in range(13):  # Check numbers from 0 to 12
+            if i not in used_trumps:
+                highest_trump = i
+                break
+
+        if self.verbose:
+            print("Used trumps", used_trumps, highest_trump, self.missing_cards[self.strain_i-1], self.hand52[highest_trump + (self.strain_i-1) * 13], self.public52[highest_trump + (self.strain_i-1) * 13])
+        # Only 1 trump left, and they have it
+        if self.missing_cards[self.strain_i-1] == 1 and self.hand52[highest_trump + (self.strain_i-1) * 13] + self.public52[highest_trump + (self.strain_i-1) * 13] == 0:
+            # If they have the highest we will not adjust the play of trump
+            return trump_adjust
+        
+        # Any outstanding trump?
+        if self.models.draw_trump_reward > 0 and self.missing_cards[self.strain_i-1] > 0:
+            # If they have the highest we will not adjust the play of trump
+            trump_adjust = self.models.draw_trump_reward
+        # Just to be sure we won't show opps that they have no trump
+        if self.models.draw_trump_penalty > 0 and self.missing_cards[self.strain_i-1] == 0:
+            trump_adjust = -self.models.draw_trump_penalty
+        if self.models.use_real_imp_or_mp:
+            if self.models.matchpoint:
+                trump_adjust = trump_adjust * 2
+            else:
+                if (trump_adjust > 0):
                     trump_adjust = trump_adjust * 2
                 else:
-                    if (trump_adjust > 0):
-                        trump_adjust = trump_adjust * 2
-                    else:
-                        trump_adjust = trump_adjust / 2
+                    trump_adjust = trump_adjust / 2
+        if self.verbose:
+            print("Trump adjust", trump_adjust)
         return trump_adjust
 
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits):
@@ -2355,7 +2409,7 @@ class CardPlayer:
         # Create a lookup dictionary to find the scores
         card_nn = {c: round(s, 3) for c, s in zip(np.arange(self.models.n_cards_play), card_scores)}
         
-        trump_adjust = self.calculate_trump_adjust(play_status)
+        trump_adjust = self.calculate_trump_adjust(play_status, tricks52)
     
         suit_adjust = self.calculate_suit_adjust_for_nt(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
 
@@ -2379,7 +2433,7 @@ class CardPlayer:
                 if insta_score < self.models.pimc_trust_NN:
                     continue
                 if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
-                    adjust_card += 0.1           
+                    adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor,2)
             else:
                 # If we can take rest we don't adjust, then NN will decide if equal
                 # Another option could be to resample the hands without restrictions
@@ -2488,7 +2542,7 @@ class CardPlayer:
         # Create a lookup dictionary to find the scores
         card_nn = {c: round(s, 3) for c, s in zip(np.arange(self.models.n_cards_play), card_scores)}
 
-        trump_adjust = self.calculate_trump_adjust(play_status)
+        trump_adjust = self.calculate_trump_adjust(play_status, tricks52)
 
         suit_adjust = self.calculate_suit_adjust_for_nt(leader_i, play_status, self.strain_i, trump_adjust, tricks52)
 
@@ -2512,7 +2566,7 @@ class CardPlayer:
             if insta_score < self.models.pimc_trust_NN:
                 continue
             if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
-                adjust_card += 0.1            
+                adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor,2)
             # If we can take rest we don't adjust, then NN will decide if equal
             # Another option could be to resample the hands without restrictions
             if e_tricks == 13 - trick_i:
@@ -2610,7 +2664,7 @@ class CardPlayer:
                     {
                         "expected_score_dd": e_score + adjust_card
                     }),
-                    msg= (f"|adjust={adjust_card}{msg}" if adjust_card != 0 else msg)
+                    msg= (f"{msg}|adjust={adjust_card}" if adjust_card != 0 else msg)
                 )
             
         return card
