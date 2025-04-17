@@ -223,8 +223,7 @@ class TMClient:
             else:
                 self.partner = ew_name
                 self.opponents = ns_name
-        if self.verbose:
-            print(f"Partner: {self.partner}, Opponents: {self.opponents}")        
+        print(f"{Fore.LIGHTGREEN_EX}Partner: {self.partner}, Opponents: {self.opponents}{Fore.RESET}")        
         # Perhaps we should use the IMP/MP from table manager
         # print(f"IMP/MP: {imp}")
         if self.models.matchpoint:
@@ -718,11 +717,12 @@ class TMClient:
             raise RestartLogicException(card_resp)
 
         assert card_resp_parts[0] == SEATS[player_i], f"Received {card_resp_parts} - was expecting card for {SEATS[player_i]}"
-        if (player_i + 2) % 4 == self.player_i:
+        if player_i % 2 == self.player_i:
             who = self.partner
         else:
             who = self.opponents
 
+        print(f"Received {card_resp_parts} from {who} {player_i} {self.player_i}")
         cr = CardResp(
             card=Card.from_symbol(card_resp_parts[-1][::-1].upper()),
             candidates=[],

@@ -664,6 +664,7 @@ class Driver:
                         probability_of_occurence = []
                         logical_play_scores = []
                         discard_scores = []
+                        worlds = []
                         
                     await asyncio.sleep(0.01)
 

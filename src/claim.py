@@ -10,7 +10,7 @@ class Claimer:
         self.verbose = verbose
         self.dd = ddsolver
 
-    def claimcheck(self, strain_i, player_i, hands52, tricks52, claim_cards, shown_out_suits, missing_cards, current_trick, n_samples):
+    def claimcheck(self, strain_i, player_i, hands52, tricks52, claim_cards, shown_out_suits, missing_cards, current_trick, n_samples, tricks):
         # If any voids we will not manipulate the suit, as we can take finesses if needed
         # We remove any intermediate cards, so there is no finesse 
         hidden_cards = []
@@ -105,6 +105,8 @@ class Claimer:
         # Select unique samples without replacement
         unique_combinations = random.sample(card_combinations, n_possible_samples)
 
+        # We should check shown_out_suits
+        #print("shown_out_suits", shown_out_suits)
         for chosen_combination  in unique_combinations:
 
             # Create the hands based on the selected combination
@@ -122,6 +124,7 @@ class Claimer:
             sampled_hands_pbn.append('N:' + ' '.join(hands))
 
         #print('\n'.join(sampled_hands_pbn))
+        #print("Trump",strain_i)
         dd_solved = self.dd.solve(strain_i, (4 - len(current_trick)) % 4, current_trick, sampled_hands_pbn, 3)
         # Filter keys where all values in the list are equal
         equal_value_keys = {key: values[0] for key, values in dd_solved.items() if all(value == values[0] for value in values)}
@@ -129,9 +132,13 @@ class Claimer:
         if equal_value_keys:
             # Find the maximum value among keys with all equal values
             max_value = max(equal_value_keys.values())
-            if len(hands[0]) - 3 > max_value:
+            if self.verbose:
+                print(f"Max value: {max_value}")
+            if  max_value < tricks:
                 # None of the cards give same result for all combinations
                 # So we just ignore our claimcheck
+                if self.verbose:
+                    print(f"No cards yield the needed tricks {tricks} best {max_value}")
                 bad_plays = claim_cards
             else:
                 # Collect keys that:
@@ -143,9 +150,13 @@ class Claimer:
                     if (key in equal_value_keys and equal_value_keys[key] != max_value)
                     or (key not in equal_value_keys)
                 ]
+                bad_plays = [key for key in non_max_keys if key in claim_cards]
                 # This should probably be extended as we might have moved a card to be a pip
                 # and DDSolver is not aware of that, and only reports the first card from a sequence
-                bad_plays = [key for key in non_max_keys if key in claim_cards]
+                # will create redundant cards, but that is OK
+                for card in claim_cards:
+                    if card not in equal_value_keys:
+                        bad_plays.append(card)
         else:
             # None of the cards give same result for all combinations
             # So we just ignore our claimcheck

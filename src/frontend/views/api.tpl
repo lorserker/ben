@@ -709,28 +709,28 @@
 
                     html += '<tr>'
                     html += '<td class="candidate-card">' + candidate['card'] + '</td>'
-                    if ("expected_tricks_sd" in candidate) {
+                    if ("expected_tricks_sd" in candidate && candidate['expected_tricks_sd'] !== -1) {
                         html += '<td>e(tricks)(SD)=' + Math.round(candidate['expected_tricks_sd'] * 100) / 100 + '</td>'
                     }
-                    if ("expected_tricks_dd" in candidate) {
+                    if ("expected_tricks_dd" in candidate && candidate['expected_tricks_sd'] !== -1) {
                         html += '<td>e(tricks)(DD)=' + Math.round(candidate['expected_tricks_dd'] * 100) / 100 + '</td>'
                     }
-                    if ("expected_score_sd" in candidate) {
+                    if ("expected_score_sd" in candidate && candidate['expected_score_sd'] !== -1) {
                         html += '<td>e(score)sd=' + Math.round(candidate['expected_score_sd'] * 100) / 100 + '</td>'
                     }
-                    if ("expected_score_dd" in candidate) {
+                    if ("expected_score_dd" in candidate && candidate['expected_score_dd'] !== -1) {
                         html += '<td>e(score)dd=' + Math.round(candidate['expected_score_dd'] * 100) / 100 + '</td>'
                     }
-                    if ("expected_score_mp" in candidate) {
+                    if ("expected_score_mp" in candidate && candidate['expected_score_mp'] !== -1) {
                         html += '<td>e(MP)dd=' + Math.round(candidate['expected_score_mp'] * 100) / 100 + '%</td>'
                     }
-                    if ("expected_score_imp" in candidate) {
+                    if ("expected_score_imp" in candidate && candidate['expected_score_imp'] !== -1) {
                         html += '<td>e(IMP)dd=' + candidate['expected_score_imp'] + '</td>'
                     }
-                    if ("insta_score" in candidate) {
+                    if ("insta_score" in candidate && candidate['insta_score'] !== -1) {
                         html += '<td>iscore=' + Math.round(candidate['insta_score'] * 1000) / 1000 + '</td>'
                     }
-                    if ("p_make_contract" in candidate) {
+                    if ("p_make_contract" in candidate && candidate['p_make_contract'] !== -1) {
                         html += '<td>e(make/set)=' + Math.round(candidate['p_make_contract'] * 100) / 100 + '</td>'
                     }
                     if ("msg" in candidate) {
