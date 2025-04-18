@@ -91,7 +91,7 @@ class HumanBid:
         self.render_auction_hand(auction)
         print('\n')
         bid = input('enter bid: ').strip().upper()
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.name, quality=None, alert=alert, explanation=None)
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="Human", quality=None, alert=alert, explanation=None)
 
     def render_auction_hand(self, auction):
         clear_screen()
@@ -132,7 +132,7 @@ class HumanBidSocket:
 
         bid = await self.socket.recv()
 
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = self.name, quality=None, alert=alert, explanation=None)
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = "Human", quality=None, alert=alert, explanation=None)
     
 
 class HumanLead:

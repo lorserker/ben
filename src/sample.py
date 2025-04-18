@@ -214,35 +214,38 @@ class Sample:
             print(f"Found {len(accepted_samples)} samples for bidding. Quality={quality:.2f}, Samplings={samplings}, Auction={auction_so_far}")
         
 
+        if quality < self.bid_accept_threshold_bidding and binary.get_number_of_bids(auction_so_far) >= 8:
+            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}") 
         if self.sample_previous_round_if_needed and quality < self.bid_accept_threshold_bidding and binary.get_number_of_bids(auction_so_far) >= 8:
-            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping their doubles{Fore.RESET}\n")
             # Was there a X or XX we can replace with P, then just try again
             auction_updated = False
             auction_so_far_copy = auction_so_far.copy()
-            # Replace every second 'X' starting from the last
-            count = 0
-            for i in range(len(auction_so_far) - 1, -1, -1):  # Iterate backwards
-                if auction_so_far[i] == 'X':
-                    count += 1
-                    if count % 2 == 1:  # Replace only every second 'X'
-                        auction_updated = True
-                        auction_so_far_copy[i] = 'PASS'
-                else:
-                    if auction_so_far_copy[i] != 'PASS':
-                        break
-            # It was a double in last bidding round, and changing that to pass will end the bidding
-            if not bidding.auction_over(auction_so_far_copy):
-                if auction_updated:
-                    sys.stderr.write(f"{Fore.YELLOW}Updated auction {auction_so_far_copy}{Fore.RESET}\n")
-                    needed_samples = needed_samples / 4
-                    # Consider transferring found samples, but we also need score and quality then
-                    accepted_samples = []
-                    return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples, aceking)
-                else:
-                    sys.stderr.write(f"{Fore.YELLOW}Could not update auction {auction_so_far}{Fore.RESET}\n")
+            if "X" in auction_so_far:
+                sys.stderr.write(f"{Fore.YELLOW}Skipping their doubles{Fore.RESET}\n")
+                # Replace every second 'X' starting from the last
+                count = 0
+                for i in range(len(auction_so_far) - 1, -1, -1):  # Iterate backwards
+                    if auction_so_far[i] == 'X':
+                        count += 1
+                        if count % 2 == 1:  # Replace only every second 'X'
+                            auction_updated = True
+                            auction_so_far_copy[i] = 'PASS'
+                    else:
+                        if auction_so_far_copy[i] != 'PASS':
+                            break
+                # It was a double in last bidding round, and changing that to pass will end the bidding
+                if not bidding.auction_over(auction_so_far_copy):
+                    if auction_updated:
+                        sys.stderr.write(f"{Fore.YELLOW}Updated auction {auction_so_far_copy}{Fore.RESET}\n")
+                        needed_samples = needed_samples / 4
+                        # Consider transferring found samples, but we also need score and quality then
+                        accepted_samples = []
+                        return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples, aceking)
+                    else:
+                        sys.stderr.write(f"{Fore.YELLOW}Could not update auction {auction_so_far}{Fore.RESET}\n")
 
         if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and binary.get_number_of_bids(auction_so_far) >= 12:
-            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction} - Skipping last bidding round{Fore.RESET}\n")
+            sys.stderr.write(f"{Fore.YELLOW}Skipping last bidding round{Fore.RESET}\n")
             auction_so_far_copy = auction_so_far.copy()
             auction_so_far_copy = auction_so_far_copy[:-4]
             needed_samples = needed_samples / 4
@@ -526,7 +529,7 @@ class Sample:
             # Predict bids based on the model for the specific position
             sample_bids, _ = model.pred_fun_seq(X)
             if verbose:
-                print("Model:   ", os.path.basename(models.model_path), "position", position, "bids", sample_bids.shape, "Exclude samples", self.exclude_samples)
+                print("Model:   ", os.path.basename(model.model_path), "position", position, "bids", sample_bids.shape, "Exclude samples", self.exclude_samples)
 
             sample_bids = sample_bids.reshape((lho_pard_rho.shape[0], n_steps, -1))
 

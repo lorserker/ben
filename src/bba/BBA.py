@@ -316,20 +316,20 @@ class BBABotBid:
 
         info = self.find_info(auction)
         # print("info", info)
-        # BBA uaw C->S
+        # BBA use C->S
         trump = 3 - info["trump"] 
         result = {}
         if info["trump"] == 4:  
             return result
         # Asker is always based on seating 0=N, 3=W
         asker = info["asker"]
-
         # 0 = LHO, 1 = Partner, 2 = RHO
         # We do not know anything about the asker, but we should prepare for a 5N showing all keycards
         # Currently BBA assume a number of aces for asker, but this is not used
         lho = (self.position + 1) % 4
         rho = (self.position + 3) % 4
         partner = (self.position + 2) % 4 
+
         if asker == rho:
             result["RHO"] = (trump, -1, -1, -1)
             result["Partner"] = (trump, -1, -1, -1)
@@ -343,8 +343,6 @@ class BBABotBid:
         elif asker != partner:
             # We have asked
             # if we know something about partners aces we take the calculated information
-            if info[partner]["aces"] > -1:
-                partner += 4
             result["LHO"] = (trump, -1, -1, -1)
             result["Partner"] = (trump, info[partner]["aces"], info[partner]["kings"], info[partner]["queen"])
             result["RHO"] = (trump, -1, -1, -1)

@@ -1,7 +1,7 @@
 
-python game.py --conf ./config/GIB-BBO.conf --auto True --biddingonly NS --boards ../Challenges/CTC_mayjun20.pbn --facit True --outputpbn ../Challenges/Results/CTC_mayjun20-GIB-BBO-8712.pbn
-python game.py --conf ./config/GIB-BBO.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-GIB-BBO-8712.pbn
-
+python game.py --conf ./config/GIB-BBO.conf --auto True --biddingonly NS --boards ../Challenges/CTC_mayjun20.pbn --facit True --outputpbn ../Challenges/Results/CTC_mayjun20-GIB-BBO-8728.pbn
+python game.py --conf ./config/GIB-BBO.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-GIB-BBO-8728.pbn
+python game.py --conf ./config/BEN-21GF.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-BEN-21GF-8728.pbn
 
 
 python game.py --conf ./config/BBA-21GF.conf --auto True --biddingonly NS --boards ../Challenges/pav_first120.pbn --facit True --outputpbn ../Challenges/Results/pav_first120-ResultBBA21.pbn

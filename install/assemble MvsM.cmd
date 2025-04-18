@@ -16,7 +16,7 @@ robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E GIB-*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Lia-*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Q-Plus*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Shark-*
-robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E RoboSayc-*
+robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Robo-Sayc-*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E WBridge5-*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Contract*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" /E Trick*

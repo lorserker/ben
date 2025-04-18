@@ -23,18 +23,10 @@ bot = BBABotBid(our_system_file, their_system_file, position, hand, vuln, dealer
 our_system_file = "../../BBA/CC/BEN-21GF.bbsa"
 their_system_file = "../../BBA/CC/WBridge5-Sayc.bbsa"
 position = 2
-hand = "KJT42.JT76..J753"
-vuln = [False, True]
-dealer = 2
+hand = "3.KJT95.K94.KT42"
+vuln = [False, False]
+dealer = 0
 
-bot = BBABotBid(our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose)
-explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
-print(explanation, bba_controlled, preempted)
-explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
-print(explanation, bba_controlled, preempted)
-
-info = bot.find_aces(['PASS', '2N', 'PASS', '3C', 'PASS', '3D', 'PASS', '4D', 'PASS', '4N', 'PASS', '5H', 'PASS', '6D', 'PASS', 'PASS', 'PASS'])
+info = bot.find_aces(['2N', 'PASS', '3D', 'PASS', '3N', 'PASS', '4C', 'PASS', '4H', 'PASS', '4N', 'PASS', '5D', 'PASS'])
 print(json.dumps(info))
 
-explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
-print(explanation, bba_controlled, preempted)

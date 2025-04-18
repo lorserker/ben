@@ -26,3 +26,13 @@ dealer = 3
 bot = BBABotBid(our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose)
 explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
 print(explanation, bba_controlled, preempted)
+
+explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
+print(explanation, bba_controlled, preempted)
+
+bot = BBABotBid(our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose)
+explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
+print(explanation, bba_controlled, preempted)
+
+explanation, bba_controlled, preempted = bot.explain_auction(['PASS', '2S', 'X', 'PASS', '3C', 'PASS', '3N', 'PASS', 'PASS', 'PASS'])
+print(explanation, bba_controlled, preempted)

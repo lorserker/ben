@@ -152,19 +152,19 @@
                                     }
                                 }
                                 if (deal.data.human) {
-                                    if (deal.data.human[0]) document.querySelector('.north').innerHTML = deal.data.player
-                                    if (deal.data.human[1]) document.querySelector('.east').innerHTML = deal.data.player
-                                    if (deal.data.human[2]) document.querySelector('.south').innerHTML = deal.data.player
-                                    if (deal.data.human[3]) document.querySelector('.west').innerHTML = deal.data.player
+                                    if (deal.data.human[0]) document.querySelector('.north').innerHTML = "Human"
+                                    if (deal.data.human[1]) document.querySelector('.east').innerHTML = "Human"
+                                    if (deal.data.human[2]) document.querySelector('.south').innerHTML = "Human"
+                                    if (deal.data.human[3]) document.querySelector('.west').innerHTML = "Human"
                                 }
                                 if (deal.data.feedback) {
                                     document.querySelector('#feedback').innerHTML = deal.data.feedback
                                 }
-                                if (deal.data.model) {
-                                    document.querySelector('#model').innerHTML = deal.data.model
-                                }
                                 if (deal.data.version) {
-                                    document.querySelector('#model').innerHTML += "<br>" +deal.data.version
+                                    document.querySelector('#model').innerHTML = "<br>Version:<br>" + deal.data.version
+                                }
+                                if (deal.data.model) {
+                                    document.querySelector('#model').innerHTML += "<br>" + deal.data.model
                                 }
                                 document.getElementById("boardno").innerHTML=deal.board_number()
                                 let auction = new Auction(log['dealer'], log['bids'])

@@ -773,7 +773,7 @@ class BotBid:
                     if (expected_score > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
 
                         candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 
-                                                    expected_score=contract_average_scores[max_count_contract], expected_tricks=expected_tricks, adjust=0, alert = False, who="Rescue")
+                                                    expected_score=contract_average_scores[max_count_contract], expected_tricks=expected_tricks, adjust=0, alert = False, who="Rescue", explanation="Rescue bid")
                         candidates.insert(0, candidatebid)
                         who = "Rescue"
                         sys.stderr.write(f"Rescuing {current_contract} {contract_counts[max_count_contract]}*{max_count_contract} {contract_average_scores[max_count_contract]:.3f} {contract_average_tricks[max_count_contract]:.2f}\n")
