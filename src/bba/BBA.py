@@ -433,7 +433,8 @@ class BBABotBid:
             meaning += "; Forcing"
         elif forcing_to and forcing_to > bidid and bidid > 4:
                 meaning += f"; Forcing" # to {bidding.ID2BID[forcing_to]}
-
+        if self.verbose:
+            print("explain_last_bid", meaning, bba_alert)
         return meaning, bba_alert
 
     # Define a Python function to find a bid

@@ -61,6 +61,8 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
+version = '0.8.6.10'
+
 init()
 
 def handle_exception(e):
@@ -314,12 +316,13 @@ class Driver:
         pbn_str = ""
         pbn_str += '% PBN 2.1\n'
         pbn_str += '% EXPORT\n'
+        pbn_str += '%BCOptions\n'
         pbn_str += '%PipColors #0000ff,#ff0000,#ffc000,#008000\n'
         pbn_str += '%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7\n'
         pbn_str += '%Font:FixedPitch "Courier New",14,700,0\n'
-        pbn_str += '%Margins 1000,0800,1000,0800\n\n'
+        pbn_str += '%Margins 1000,0800,500,0800\n\n'
         pbn_str += f'[Event "##{event}"]\n'
-        pbn_str += '[Site "##BEN"]\n'
+        pbn_str += f'[Site "##BEN {version}"]\n'
         date = datetime.datetime.now().date().isoformat().replace('-', '.')
         pbn_str += f'[Date "##{date}"]\n'
         return pbn_str
@@ -463,7 +466,7 @@ class Driver:
             'opponents': "BEN",
             'partner': "BEN",
             'model': self.models.name,
-            'version': '0.8.6.10'
+            'version': f'{version}'
         }
         if self.decl_i is not None:
             result['declarer'] = self.decl_i
@@ -1080,7 +1083,7 @@ async def main():
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version 0.8.6.10")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} game.py - Version {version}")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:

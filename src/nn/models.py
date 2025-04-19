@@ -171,7 +171,7 @@ class Models:
             # Convert the value to a single float
             no_search_threshold = float(no_search_threshold_str)
 
-        adjust_hcp = conf.getboolean('adjust_hcp', 'adjust_hcp', fallback=False)
+        adjust_hcp = conf.getboolean('bidding', 'adjust_hcp', fallback=False)
         eval_after_bid_count = conf.getint('bidding', 'eval_after_bid_count', fallback=-1)
         eval_opening_bid = conf.getboolean('bidding', 'eval_opening_bid', fallback=False)
         eval_pass_after_bid_count = conf.getint('bidding', 'eval_pass_after_bid_count', fallback=-1)

@@ -169,7 +169,7 @@ def get_hcp(hand):
 def get_hcp_adjusted(hand):
     x = hand.reshape((hand.shape[0], 4, -1))
     A = np.zeros_like(x)
-    A[:, :, 0] = 1.25
+    A[:, :, 0] = 1
     K = np.zeros_like(x)
     K[:, :, 1] = 1
     Q = np.zeros_like(x)
@@ -177,11 +177,22 @@ def get_hcp_adjusted(hand):
     J = np.zeros_like(x)
     J[:, :, 3] = 1
     T = np.zeros_like(x)
-    T[:, :, 3] = 0.25
+    T[:, :, 4] = 1
 
-    points = 4 * A * x + 3 * K * x + 2 * Q * x + J * x + T * x
+    points = 4.25 * A * x + 3 * K * x + 2 * Q * x + 1 * J * x + 0.25 * T * x
 
-    return np.sum(points, axis=(1, 2))
+    # Perhaps deduct some hcp if 4333
+    #suit_counts = np.sum(x, axis=2)
+    #print("Hand: ", hand)
+    #print(x)
+    #print("Suit counts: ", suit_counts)
+    #print("HCP: ", get_hcp(hand))
+    #print("Points: ", points)
+    #print("HCP adjusted: ", np.sum(points, axis=(1, 2)))
+
+    hcp_adjusted = np.sum(points, axis=(1, 2))
+
+    return hcp_adjusted
 
 def get_hcp_suit(suit):
     points = 4 * suit[0] + 3 * suit[1] + 2 * suit[2] + suit[3]
@@ -191,7 +202,7 @@ def get_hcp_suit(suit):
 def get_auction_binary(n_steps, auction_input, hand_ix, hand, vuln, models):
     assert (len(hand.shape) == 2)
     assert (hand.shape[1] == models.n_cards_bidding)
-
+    
     n_samples = hand.shape[0]
     bids = 4 if models.model_version >= 2 else 3
     # Do not add 2 cells for biddingsystem, we will add the at the end of the function

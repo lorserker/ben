@@ -215,7 +215,7 @@ class Sample:
         
 
         if quality < self.bid_accept_threshold_bidding and binary.get_number_of_bids(auction_so_far) >= 8:
-            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}") 
+            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}\n") 
         if self.sample_previous_round_if_needed and quality < self.bid_accept_threshold_bidding and binary.get_number_of_bids(auction_so_far) >= 8:
             # Was there a X or XX we can replace with P, then just try again
             auction_updated = False

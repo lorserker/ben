@@ -128,6 +128,11 @@ class BotBid:
         if self.verbose:
             print("Checking if we should evaluate rescue bid", self.models.check_final_contract, "Samples:",len(samples))
             print("Auction",auction, "Passout?" ,passout,"Candidate bid", candidate_bid.bid, "Sample quality: ",quality, "Expected score", candidate_bid.expected_score)
+        
+        # We will not try to rescue BBA
+        if self.bba_is_controlling:
+            return False
+        
         if not self.models.check_final_contract:
             return False
 
@@ -793,8 +798,15 @@ class BotBid:
             if self.verbose:
                 print("No rescue bid evaluated", auction, passout, candidates[0], quality, self.my_bid_no, candidates[0].who)
 
+        explain = candidates[0].explanation
+        alert = bool(candidates[0].alert)
+        if candidates[0].explanation is None:
+            if self.models.consult_bba:
+                explain, alert = self.explain(auction + [candidates[0].bid])
+
+        #print("Final candidate", candidates[0].bid , explain)
         # We return the bid with the highest expected score or highest adjusted score 
-        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=quality, alert = bool(candidates[0].alert), explanation=candidates[0].explanation)
+        return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=quality, alert = alert, explanation=explain)
     
     def do_rollout(self, auction, candidates, max_candidate_score, sample_count):
         if candidates[0].insta_score > max_candidate_score:
@@ -826,14 +838,18 @@ class BotBid:
     def get_bid_candidates(self, auction):
         if self.verbose:
             print("Getting bid candidates")
-        explanation = None
+        explanation_partner_bid = None
         if self.models.consult_bba:
-            explanation, alert = self.bbabot.explain_last_bid(auction[:-1])
+
+            explanations, bba_controlled, preempted = self.explain_auction(auction)
+            self.bba_is_controlling = bba_controlled
+
+            explanation_partner_bid, bba_alert = self.explain(auction[:-1])
             bba_bid_resp = self.bbabot.bid(auction)
             if self.bba_is_controlling:
                 return [CandidateBid(bid=bba_bid_resp.bid, insta_score=1, alert = True, who="BBA - Keycard sequence", explanation=bba_bid_resp.explanation)], False
 
-            if self.models.use_bba_to_count_aces and self.bbabot.is_key_card_ask(auction, explanation):
+            if self.models.use_bba_to_count_aces and self.bbabot.is_key_card_ask(auction, explanation_partner_bid):
                 if self.verbose:
                     print("Keycards: ", bba_bid_resp)
                 self.bba_is_controlling = True
@@ -949,17 +965,17 @@ class BotBid:
                 if candidate.bid == 'PASS':
                     break
             else:
-                candidates.append(CandidateBid(bid=bidding.ID2BID[2], insta_score=0.1, alert = None, Who = "Config"))
+                candidates.append(CandidateBid(bid=bidding.ID2BID[2], insta_score=0.1, alert = None, Who = "Config", explanation = "Pass after bid count"))
 
         if self.verbose:
             print("\n".join(str(bid) for bid in candidates))
     
         if self.models.consult_bba:
             if self.verbose:
-                print(f"{Fore.CYAN}BBA suggests: {bba_bid_resp.bid} Partners bid explained: {explanation} {Fore.RESET}")
+                print(f"{Fore.CYAN}BBA suggests: {bba_bid_resp.bid} Partners bid {auction[:-1]}: {explanation_partner_bid} {Fore.RESET}")
             # If BBA suggest Pass, then we should probably not double
-            if explanation:
-                if "Forcing" in explanation:
+            if explanation_partner_bid:
+                if "Forcing" in explanation_partner_bid:
                     # If the opponents bid we are no longer in a forcing situation
                     if auction[:-1] == "PASS":
                         for candidate in candidates:
@@ -1787,7 +1803,7 @@ class CardPlayer:
         self.is_decl_vuln = is_decl_vuln
         self.n_tricks_taken = 0
         self.missing_cards = (13 -  np.array(binary.get_shape_array(self.hand52)) -  np.array(binary.get_shape_array(self.public52))).astype(int)
-        self.missing_cards_initial = self.missing_cards
+        self.missing_cards_initial = self.missing_cards.copy()
         self.verbose = verbose
         self.level = int(contract[0])
         self.init_x_play(binary.parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
@@ -2364,6 +2380,11 @@ class CardPlayer:
         if self.player_i % 2 ==0:
             return trump_adjust
 
+        # Only adjust if we are controlling the suit
+        # Remember adjust is helping declarer so we still play trump if DD suggest it
+        if self.missing_cards_initial[self.strain_i-1] > 5:
+            return trump_adjust
+
         used_trumps = []
         for trick in tricks52:
             for card in trick:
@@ -2384,7 +2405,6 @@ class CardPlayer:
         
         # Any outstanding trump?
         if self.models.draw_trump_reward > 0 and self.missing_cards[self.strain_i-1] > 0:
-            # If they have the highest we will not adjust the play of trump
             trump_adjust = self.models.draw_trump_reward
         # Just to be sure we won't show opps that they have no trump
         if self.models.draw_trump_penalty > 0 and self.missing_cards[self.strain_i-1] == 0:
@@ -2404,7 +2424,7 @@ class CardPlayer:
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits, card_scores_nn):
         bad_play = []
         if claim_cards is not None and len(claim_cards) > 0:
-            claim_tricks = card_dd[claim_cards[0]][0]
+            claim_tricks = int(card_dd[claim_cards[0]][0])
             if claim_tricks > 10 - trick_i:
                 # DD we could claim, so let us check if one card is better
                 bad_play = self.claimer.claimcheck(
@@ -2515,7 +2535,7 @@ class CardPlayer:
             hcp=-1, 
             quality=quality,
             who = who, 
-            claim = -1 if not claim_cards else 13 - trick_i
+            claim = -1 if not claim_cards else claim_tricks
         )
         return best_card_resp
 
@@ -2539,7 +2559,7 @@ class CardPlayer:
     def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits, card_scores_nn):
         bad_play = []
         if claim_cards is not None and len(claim_cards) > 0:
-            claim_tricks = card_dd[claim_cards[0]][0]
+            claim_tricks = int(card_dd[claim_cards[0]][0])
             if claim_tricks > 10 - trick_i:
                 # DD we could claim, so let us check if one card is better
                 bad_play = self.claimer.claimcheck(
