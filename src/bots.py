@@ -2260,9 +2260,8 @@ class CardPlayer:
 
         card_result = {}
         claim_cards = []
-        max_value = max(card_tricks.values())
-        claim_cards = [k for k, v in card_tricks.items() if v == max_value]
-        
+        max_value = round(max(card_tricks.values()),0)
+        claim_cards = [k for k, v in card_tricks.items() if abs(v - max_value) <= 0.0001]
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key], making[key], "")
             if self.verbose:
