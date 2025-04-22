@@ -774,7 +774,7 @@ class BotBid:
                     if expected_score_doubled < expected_score:
                         expected_score = expected_score_doubled
                     if self.verbose:
-                        print("expected_score", expected_score)
+                        print("expected_score", expected_score, candidates[0].expected_score, self.models.min_rescue_reward)
                     if (expected_score > candidates[0].expected_score + self.models.min_rescue_reward) or (contract_average_tricks[max_count_contract] - expected_tricks > 4):
 
                         candidatebid = CandidateBid(bid=max_count_contract, insta_score=-1, 

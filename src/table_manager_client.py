@@ -122,7 +122,7 @@ class TMClient:
             'opponents': self.opponents,
             'partner': self.partner,
             'models': self.models.name,
-            'version': '0.8.6.10'
+            'version': '0.8.6.11'
         }
 
     async def run(self, biddingonly, restart):
@@ -1008,7 +1008,7 @@ async def main():
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.10")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.11")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1063,8 +1063,9 @@ async def main():
         print("Opponent:", opponentfile)
         opp_configuration = conf.load(opponentfile)
         opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
+        # We only use the opponent model, and the BBA convention card
         models.opponent_model = opponents.opponent_model
-        models.bba_their_cc = opponents.bba_their_cc
+        models.bba_their_cc = opponents.bba_cc
         sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
     if models.use_bba:
@@ -1077,6 +1078,8 @@ async def main():
         from bba.BBA import BBABotBid
         bot = BBABotBid(None, None ,None, None, None, None, None, verbose)
         print(f"BBA enabled. Version {bot.version()}")    
+        print(f"Our BBA convention card: {models.bba_our_cc}")
+        print(f"Their BBA convention card: {models.bba_their_cc}")
 
     if models.use_suitc:
         from suitc.SuitC import SuitCLib

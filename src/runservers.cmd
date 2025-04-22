@@ -17,7 +17,3 @@ timeout /t 10 /nobreak >nul
 start "TF2 GIB" cmd /k python gameserver.py --config config\GIB-BBO.conf --port 4442
 timeout /t 10 /nobreak >nul
 start "Default (GIB-BBO)" cmd /k python gameserver.py --config config\default.conf --port 4443
-timeout /t 10 /nobreak >nul
-start "BBA 2/1" cmd /k python gameserver.py --config config\BBA-21GF.conf --port 4444
-timeout /t 10 /nobreak >nul
-start "BBA Sayc" cmd /k python gameserver.py --config config\BBA-Sayc.conf --port 4445

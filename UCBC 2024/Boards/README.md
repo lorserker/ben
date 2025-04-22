@@ -1,6 +1,6 @@
 First run
 
-```MergePBNFiles.exe --d .```
+```MergePBNFiles.exe -d -r .```
 
 to gather all PBN-input in a new file. The new file will be All.PBN
 
@@ -31,9 +31,10 @@ Copy these files to the BBA directory with the runBBA.cmd from this directory (C
 So from the BBA-directory run
 
 ```
-runBBA.cmd
+runBBA.cmd conventioncard
 ```
 
+Where convention card will be taken from D:\GitHub\ben\BBA\
 You should also check that the CC in use is present
 
 Before running the command you must start BBA and select archive as PBN for one room.

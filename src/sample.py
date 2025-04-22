@@ -1418,7 +1418,7 @@ class Sample:
         if self.verbose:
             print("Bidding samples accepted: ",valid_bidding_samples)
 
-        if trick_i > self.check_remaining_cards:
+        if trick_i >= self.check_remaining_cards:
             # For the samples we have we will check if any of the remaining cards was the natural play at the previous trick
             logical_play_scores = self.validate_logical_play(player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, bidding_states, models, contract)
             #print("logical_play_scores",logical_play_scores)
@@ -1853,19 +1853,21 @@ class Sample:
                 for j in range(4):
                     for k in range(5):
                         if remaining_cards[i][j*8+k] == 1:
-                            #print("Checking card", Card.from_code(j*8+k, xcards=True).symbol())
+                            #print("Checking card", Card.from_code(j*8+k, xcards=True).symbol(), k == 0)
+                            # If an ace that should have been played is not played, the score is reduced further
+                            # could be King should be considered also
                             for t in range(trick_i):
                                 if p_cards[i][t][j*8+k] > 0.95:
                                     #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
-                                    logical_play_scores[i] *= 0.4
+                                    logical_play_scores[i] *= 0.2 if k == 0 else 0.4
                                     continue
                                 if p_cards[i][t][j*8+k] > 0.9:
                                     #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
-                                    logical_play_scores[i] *= 0.6
+                                    logical_play_scores[i] *= 0.3 if k == 0 else 0.6
                                     continue
                                 if p_cards[i][t][j*8+k] > 0.8:
                                     #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
-                                    logical_play_scores[i] *= 0.8
+                                    logical_play_scores[i] *= 0.4 if k == 0 else 0.8
 
         return logical_play_scores
 

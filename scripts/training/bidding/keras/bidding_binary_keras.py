@@ -256,7 +256,7 @@ if __name__ == '__main__':
     n_cards = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("n_cards=")), 24)
     alternating = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("alternate=")), False)
     rotate = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("rotate=")), False)
-    max_occurrences = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("max_occurrences=")), 99)
+    max_occurrences = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("max_occurrences=")), 25)
     alert_supported = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("alert_supported=")), False)
     version = 3
     add_missing_vulns = False

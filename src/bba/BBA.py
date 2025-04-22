@@ -671,9 +671,12 @@ class BBABotBid:
         self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
         arr_bids.extend([''] * (64 - len(arr_bids)))
+        print(arr_bids)
         self.players[self.position].set_arr_bids(arr_bids)
         arr_suits = self.players[self.position].get_arr_suits()
         print("How BBA think the hands looks like:")
+        print("Auction: ", auction)
+        print(self.players[self.position].get_str_bidding())
         for i in reversed(range(4)):
             print(f"\t{arr_suits[i]}")
         for i in reversed(range(4)):

@@ -25,6 +25,7 @@ absl.logging.set_verbosity(absl.logging.FATAL)
 absl.logging.set_stderrthreshold(absl.logging.FATAL)
 
 import tensorflow as tf
+from nn.opponents import Opponents
 
 import time
 import datetime
@@ -112,7 +113,7 @@ boards = []
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.10")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.11")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -170,7 +171,7 @@ if opponentfile != "":
     opp_configuration = conf.load(opponentfile)
     opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
     models.opponent_model = opponents.opponent_model
-    models.bba_their_cc = opponents.bba_their_cc
+    models.bba_their_cc = opponents.bba_cc
     sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
 if models.use_bba:

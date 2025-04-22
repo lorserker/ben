@@ -18,8 +18,8 @@ copy ..\src\config\BEN-Sayc.conf "BEN\config\default.conf" /Y
 if not exist "BEN\BBA" mkdir "BEN\BBA"
 if not exist "BEN\BBA\CC" mkdir "BEN\BBA\CC"
 copy ..\BBA\CC\BEN-SAYC.bbsa "BEN\BBA\CC\BEN-SAYC.bbsa" /Y
-copy ..\models\TF2models\BEN-Sayc-8728_2025-03-04-E44.keras "BEN\models\TF2Models" /Y 
-copy ..\models\TF2models\BEN-Sayc-Info-8728_2025-03-03-E50.keras "BEN\models\TF2Models" /Y
+copy ..\models\TF2models\BEN-Sayc-8730_2025-04-20-E30.keras "BEN\models\TF2Models" /Y 
+copy ..\models\TF2models\BEN-Sayc-Info-8730_2025-04-20-E30.keras "BEN\models\TF2Models" /Y
 copy ..\src\logo.png "BEN"
 copy ..\src\ben.ico "BEN"
 robocopy dist\gameserver "BEN" /E

@@ -40,7 +40,7 @@
 	</head> 
 <body> 
 <div class="center">
-    <h1>Play with BEN. Version 0.8.6.10</h1>
+    <h1>Play with BEN. Version 0.8.6.11</h1>
 </div>
 
 <div class="container {{ 'hidden' if play else '' }}">
@@ -52,8 +52,6 @@
             <option value="1">BEN SAYC</option>
             <option value="2">GIB-BBO</option>
             <option value="3">Default (21GF)</option>
-            <option value="4">BBA 2/1</option>
-            <option value="5">BBA Sayc</option>
         </select><br>
         </div>
     </div>

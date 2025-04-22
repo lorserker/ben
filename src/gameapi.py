@@ -422,7 +422,7 @@ seed = args.seed
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.10")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameapi.py - Version 0.8.6.11")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:
@@ -486,8 +486,8 @@ if opponentfile != "":
     opp_configuration = conf.load(opponentfile)
     opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
     models.opponent_model = opponents.opponent_model
-    models.bba_their_cc = opponents.bba_their_cc
-    sys.stderr.write(f"Using: {opponents.bba_their_cc}\n")
+    models.bba_their_cc = opponents.bba_cc
+    sys.stderr.write(f"Using: {opponents.bba_cc}\n")
     sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
 

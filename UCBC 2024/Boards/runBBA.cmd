@@ -10,7 +10,7 @@ if "%~1"=="" (
 
 REM Store the passed parameter
 set "CC=%~1"
-set "version=8728"
+set "version=8730"
 
 REM Merge all output files into a single file
 set "merged_file=D:\GitHub\ben\BBA\Boards\!CC!-!version!.pbn"

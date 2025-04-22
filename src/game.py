@@ -61,7 +61,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.6.10'
+version = '0.8.6.11'
 
 init()
 
@@ -1140,7 +1140,7 @@ async def main():
         opp_configuration = conf.load(opponentfile)
         opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
         models.opponent_model = opponents.opponent_model
-        models.bba_their_cc = opponents.bba_their_cc
+        models.bba_their_cc = opponents.bba_cc
         sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
     if models.use_bba:
