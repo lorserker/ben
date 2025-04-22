@@ -2078,9 +2078,9 @@ class CardPlayer:
         preempted = features.get("preempted", False)
 
         if play_status == "discard" and not self.models.pimc_use_discard:
-            dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+            dd_resp_cards, claims = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
             self.update_with_alphamju(card_resp_alphamju, merged_card_resp)
-            card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits, card_scores_nn)
+            card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)
         else:                    
             if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
                 pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
@@ -2090,7 +2090,7 @@ class CardPlayer:
                 assert pimc_resp_cards is not None, "PIMC result is None"
                 if self.models.pimc_ben_dd_declaring:
                     #print(pimc_resp_cards)
-                    dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+                    dd_resp_cards, claims = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
 
                     if preempted and self.models.pimc_after_preempt:
                         weight = 1 - self.models.pimc_after_preempt_weight
@@ -2100,7 +2100,7 @@ class CardPlayer:
                 else:
                     merged_card_resp = pimc_resp_cards
                 self.update_with_alphamju(card_resp_alphamju, merged_card_resp)
-                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits, card_scores_nn)            
+                card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)            
             else:
                 if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
                     pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
@@ -2111,18 +2111,18 @@ class CardPlayer:
                     assert pimc_resp_cards is not None, "PIMCDef result is None"
                     if self.models.pimc_ben_dd_defending:
                         #print(pimc_resp_cards)
-                        dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+                        dd_resp_cards, claims = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                         #print(dd_resp_cards)
                         merged_card_resp = self.merge_candidate_cards(pimc_resp_cards, dd_resp_cards, "PIMCDef", self.models.pimc_ben_dd_defending_weight, quality)
                     else:
                         merged_card_resp = pimc_resp_cards
                     self.update_with_alphamju(card_resp_alphamju, merged_card_resp)
-                    card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits, card_scores_nn)            
+                    card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)            
                     
                 else:
-                    dd_resp_cards, claim_cards = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
+                    dd_resp_cards, claims = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence)
                     self.update_with_alphamju(card_resp_alphamju, dd_resp_cards)
-                    card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claim_cards, shown_out_suits, card_scores_nn)
+                    card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)
 
         if self.verbose:
             print(f'Play card response time: {time.time() - t_start:0.4f}')
@@ -2269,7 +2269,7 @@ class CardPlayer:
 
         if self.verbose:
             print(f'dds took: {(time.time() - t_start):0.4f}')
-        return card_result, claim_cards
+        return card_result, (claim_cards, max_value)
     
     
     def next_card_softmax(self, trick_i):
@@ -2420,10 +2420,10 @@ class CardPlayer:
             print("Trump adjust", trump_adjust)
         return trump_adjust
 
-    def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits, card_scores_nn):
+    def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim, shown_out_suits, card_scores_nn):
         bad_play = []
-        if claim_cards is not None and len(claim_cards) > 0:
-            claim_tricks = int(card_dd[claim_cards[0]][0])
+        claim_cards, claim_tricks = claim
+        if claim_cards :
             if claim_tricks > 10 - trick_i:
                 # DD we could claim, so let us check if one card is better
                 bad_play = self.claimer.claimcheck(
@@ -2446,7 +2446,7 @@ class CardPlayer:
                 claim_cards = []
 
         if self.verbose:
-            print(f"Claim cards after check: {claim_cards}, Bad claim cards {bad_play}")
+            print(f"Claim cards after check: {claim_cards}, Bad claim cards {bad_play}. Tricks {claim_tricks}")
 
         # Create a lookup dictionary to find the scores
         card_nn = {c: round(s, 3) for c, s in zip(np.arange(self.models.n_cards_play), card_scores_nn)}
@@ -2555,10 +2555,10 @@ class CardPlayer:
 
         return card_nn.get(card32, 0)
 
-    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim_cards, shown_out_suits, card_scores_nn):
+    def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim, shown_out_suits, card_scores_nn):
         bad_play = []
-        if claim_cards is not None and len(claim_cards) > 0:
-            claim_tricks = int(card_dd[claim_cards[0]][0])
+        claim_cards, claim_tricks = claim
+        if claim_cards :
             if claim_tricks > 10 - trick_i:
                 # DD we could claim, so let us check if one card is better
                 bad_play = self.claimer.claimcheck(
@@ -2581,7 +2581,7 @@ class CardPlayer:
                 claim_cards = []
 
         if self.verbose:
-            print(f"Claim cards after check: {claim_cards}, Bad claim cards {bad_play}")
+            print(f"Claim cards after check: {claim_cards}, Bad claim cards {bad_play}. Tricks {claim_tricks}")
 
         # Create a lookup dictionary to find the scores
         card_nn = {c: round(s, 3) for c, s in zip(np.arange(self.models.n_cards_play), card_scores_nn)}

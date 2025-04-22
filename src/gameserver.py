@@ -46,6 +46,7 @@ from colorama import Fore, Back, Style, init
 import gc
 import psutil
 
+version = '0.8.6.11'
 init()
 
 # Custom function to convert string to boolean
@@ -113,7 +114,7 @@ boards = []
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
-print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version 0.8.6.11")
+print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} gameserver.py - Version {version}{Fore.RESET}")
 if util.is_pyinstaller_executable():
     print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
 else:

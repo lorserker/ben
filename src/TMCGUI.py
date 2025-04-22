@@ -232,10 +232,12 @@ class TableManagerApp(tk.Tk):
         self.bidding_only = tk.BooleanVar(value=self.settings.get("bidding_only", False))
         self.nosearch = tk.BooleanVar(value=self.settings.get("nosearch", False))
         self.matchpoint = tk.BooleanVar(value=self.settings.get("matchpoint", False))
+        self.bm = tk.BooleanVar(value=self.settings.get("bm", False))
 
         ttk.Checkbutton(col_frames[2], text="Bidding Only", variable=self.bidding_only).grid(row=6, column=0, sticky="w", padx=5, pady=5)
         ttk.Checkbutton(col_frames[2], text="No simulation", variable=self.nosearch).grid(row=7, column=0, sticky="w", padx=5, pady=5)
         ttk.Checkbutton(col_frames[2], text="Match Point", variable=self.matchpoint).grid(row=8, column=0, sticky="w", padx=5, pady=5)
+        ttk.Checkbutton(col_frames[2], text="Using BM", variable=self.bm).grid(row=9, column=0, sticky="w", padx=5, pady=5)
 
         # Verbose checkbox and buttons (Start/Stop) in column 4
         self.verbose = tk.BooleanVar(value=self.settings.get("verbose", False))
@@ -743,6 +745,7 @@ class TableManagerApp(tk.Tk):
         opponent = self.opponent_entry.get()
         bidding_only = self.bidding_only.get()
         matchpoint = self.matchpoint.get()
+        bm = self.bm.get()
         nosearch = self.nosearch.get()
         verbose = self.verbose.get()
         detached = self.detached.get()
@@ -770,6 +773,8 @@ class TableManagerApp(tk.Tk):
                 cmd.extend(["--matchpoint", str(matchpoint)])
                 if host:  
                     cmd.extend(["--host", str(host)])
+                if bm:  
+                    cmd.extend(["--bm", str(bm)])
                 if port:  
                     cmd.extend(["--port", str(port)])
                 if port:  

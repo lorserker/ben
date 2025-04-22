@@ -66,6 +66,7 @@ import gc
 import faulthandler
 faulthandler.enable()
 
+version = '0.8.6.11'
 init()
 
 SEATS = ['North', 'East', 'South', 'West']
@@ -85,7 +86,7 @@ def handle_exception(e):
 
 class TMClient:
 
-    def __init__(self, name, seat, models, sampler, ddsolver, verbose):
+    def __init__(self, name, seat, models, sampler, ddsolver, bm, verbose):
         self.name = name
         self.seat = seat
         self.player_i = SEATS.index(self.seat)
@@ -101,6 +102,7 @@ class TMClient:
         self.dds = ddsolver
         self.partner = None
         self.last_explanations = ""
+        self.bm = bm
 
     @property
     def is_connected(self):
@@ -122,10 +124,10 @@ class TMClient:
             'opponents': self.opponents,
             'partner': self.partner,
             'models': self.models.name,
-            'version': '0.8.6.11'
+            'version': version
         }
 
-    async def run(self, biddingonly, restart):
+    async def run(self, biddingonly, restart, bm):
 
         self.bid_responses = []
         self.card_responses = []
@@ -173,12 +175,12 @@ class TMClient:
         if self.player_i != (self.decl_i + 2) % 4:
             self.dummy_hand_str = await self.receive_dummy()
 
-        await self.play(auction, opening_lead52, features)
+        await self.play(auction, opening_lead52, features, bm)
 
         await self.receive_line()
         
 
-    async def connect(self, host, port):
+    async def connect(self, host, port, bm, config):
         try:
             # Check if the host is already an IP address
             ipaddress.ip_address(host)
@@ -199,7 +201,7 @@ class TMClient:
         self._is_connected = True
         print(f"Connected to {host}:{port}")
 
-        await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18')
+        await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18{". " + config if not bm else ""}')
 
         # Validate response Blue Chip can send: Error Team name mismatch
         await self.receive_line()
@@ -299,7 +301,7 @@ class TMClient:
 
             await asyncio.sleep(0.01)
 
-            await self.send_card_played(card_symbol)
+            await self.send_card_played(card_symbol, card_resp.who)
 
             await asyncio.sleep(0.01)
 
@@ -308,7 +310,8 @@ class TMClient:
             # just send that we are ready for the opening lead
             return await self.receive_card_play_for(on_lead_i, 0)
 
-    async def play(self, auction, opening_lead52, features):
+    async def play(self, auction, opening_lead52, features, bm ):
+        self.bm = bm
         contract = bidding.get_contract(auction)
         
         level = int(contract[0])
@@ -463,9 +466,9 @@ class TMClient:
                     card52 = card_resp.card.code()
                     
                     if (player_i == 1 and cardplayer_i == 3):
-                        await self.send_card_played_for_dummy(card_resp.card.symbol()) 
+                        await self.send_card_played_for_dummy(card_resp.card.symbol(), card_resp.who) 
                     else:
-                        await self.send_card_played(card_resp.card.symbol()) 
+                        await self.send_card_played(card_resp.card.symbol(),card_resp.who) 
                         
                     await asyncio.sleep(0.01)
 
@@ -609,7 +612,7 @@ class TMClient:
                     shape=-1,
                     hcp=-1,
                     quality=None,
-                    who = "NN",
+                    who = "Forced",
                     claim = -1
                 )
                 self.card_responses.append(cr)
@@ -617,9 +620,9 @@ class TMClient:
                 await asyncio.sleep(0.01)
                 
                 if player_i == 1 and cardplayer_i == 3:
-                    await self.send_card_played_for_dummy(card52_symbol)
+                    await self.send_card_played_for_dummy(card52_symbol, cr.who)
                 else:    
-                    await self.send_card_played(card52_symbol)
+                    await self.send_card_played(card52_symbol, cr.who)
 
                 await asyncio.sleep(0.01)
                 self.card_responses
@@ -663,14 +666,14 @@ class TMClient:
         self.deal_str = concatenated_str.strip()
 
 
-    async def send_card_played(self, card_symbol):
-        msg_card = f'{self.seat} plays {card_symbol[::-1]}'
+    async def send_card_played(self, card_symbol, who):
+        msg_card = f'{self.seat} plays {card_symbol[::-1]} {who if not self.bm else "s"}'
         await self.send_message(msg_card)
 
-    async def send_card_played_for_dummy(self, card_symbol):
+    async def send_card_played_for_dummy(self, card_symbol, who):
         dummy_i = (self.decl_i + 2) % 4
         seat = SEATS[dummy_i]
-        msg_card = f'{seat} plays {card_symbol[::-1]}'
+        msg_card = f'{seat} plays {card_symbol[::-1]} {who if not self.bm else "s"}'
         await self.send_message(msg_card)
 
     async def send_own_bid(self, bid_resp):
@@ -686,16 +689,18 @@ class TMClient:
             msg_bid += ' Alert. ' + bid_resp.explanation
             if bid_resp.who == "Rescue":
                 msg_bid += ' Rescue.'
-
-        elif bid_resp.explanation:
-            if bid_resp.explanation not in self.last_explanations:
-                msg_bid += ' Infos. ' + bid_resp.explanation
-                if bid_resp.who == "Rescue":
-                    msg_bid += ' Rescue.'
-                self.last_explanations = bid_resp.explanation
-            else:
-                if bid_resp.who == "Rescue":
-                    msg_bid += ' Infos. Rescue.'
+            self.last_explanations = bid_resp.explanation
+        else:
+            if not self.bm:
+                if bid_resp.explanation:
+                    if bid_resp.explanation not in self.last_explanations:
+                        msg_bid += ' Infos. ' + bid_resp.explanation
+                        if bid_resp.who == "Rescue":
+                            msg_bid += ' Rescue.'
+                        self.last_explanations = bid_resp.explanation
+                    else:
+                        if bid_resp.who == "Rescue":
+                            msg_bid += ' Infos. Rescue.'
             
         await self.send_message(msg_bid)
 
@@ -869,7 +874,7 @@ class TMClient:
             self.writer.write((message + "\r\n").encode())
             await self.writer.drain()
             print(' ...sent successfully.')
-            await asyncio.sleep(0.03)
+            await asyncio.sleep(0.05)
         except ConnectionAbortedError as ex:
             print(f'Error: {str(ex)}')
             # Handle the error gracefully, such as logging it or notifying the user
@@ -989,6 +994,7 @@ async def main():
     parser.add_argument("--biddingonly", type=str_to_bool, default=False, help="Only bid, no play")
     parser.add_argument("--nosearch", type=str_to_bool, default=False, help="Just use neural network")
     parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
+    parser.add_argument("--bm", type=str_to_bool, default=False, help="Bridge Moniteur is table manager")
     parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()
@@ -1003,12 +1009,13 @@ async def main():
     verbose = args.verbose
     biddingonly = args.biddingonly
     nosearch = args.nosearch
+    bm = args.bm
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
     print("BEN_HOME=",os.getenv('BEN_HOME'))
 
-    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version 0.8.6.11")
+    print(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} table_manager_client.py - Version {version}")
     if util.is_pyinstaller_executable():
         print(f"Running inside a PyInstaller-built executable. {platform.python_version()}")
     else:
@@ -1113,9 +1120,10 @@ async def main():
     else:
         print("Playing IMPS mode")
 
-    client = TMClient(name, seat, models, Sample.from_conf(configuration, verbose), dds, verbose)
-    print(f"Connecting to {host}:{port}")
-    await client.connect(host, port)
+    client = TMClient(name, seat, models, Sample.from_conf(configuration, verbose), dds, bm, verbose)
+    print(f"Connecting to {host}:{port} as {seat} {"using BM" if bm else ""}...")
+    config = f"{models.name} {version} {configfile} {opponentfile}" 
+    await client.connect(host, port, bm, config)
     first = True
 
     if client.is_connected:
@@ -1126,7 +1134,7 @@ async def main():
     while client.is_connected:
         t_start = time.time()
         try:
-            await client.run(biddingonly, restart)
+            await client.run(biddingonly, restart, bm)
         except RestartLogicException as e:
             print(f"{Fore.CYAN}{datetime.datetime.now():%H:%M:%S} Communication restarted from Table Manager{Fore.RESET}")
             restart = True
