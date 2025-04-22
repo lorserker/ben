@@ -7,8 +7,8 @@
 %Margins 1000,0800,500,0800
 
 [Event "##pav_first120"]
-[Site "##BEN"]
-[Date "##2025.04.19"]
+[Site "##BEN 0.8.6.11"]
+[Date "##2025.04.22"]
 [BCFlags "801f"]
 [Board "1"]
 [West "Facit"]
@@ -482,7 +482,7 @@ PASS =1= PASS 2C =2= PASS
 [Note "3:* Waiting -- ; 10- HCP; Artificial; Forcing"]
 [Note "4: Bidable suit -- 6-!H; 5+!S; 19+ HCP; GF"]
 [Note "5: Nat. -- 3+!S; 3-10 HCP; Forcing"]
-[Note "6:* Cue bid, surplus -- 6-!H; 5+!S; 22+ HCP; Artificial; GF"]
+[Note "6:* Cue bid, surplus -- 6-!H; 5+!S; 25+ HCP; Artificial; GF"]
 [Note "7: Nat. -- 3+!S; 3-9 HCP"]
 [Note "8:  -- 6-!H; 5+!S; 22+ HCP; GF"]
 [Play ""]
@@ -1612,7 +1612,7 @@ PASS =7= PASS
 [Note "2:* Waiting -- ; Artificial; Forcing"]
 [Note "3: Bidable suit -- 5+!H; 6-!S; 19+ HCP; GF"]
 [Note "4: Nat. -- 3+!H; 3-26 HCP; Forcing"]
-[Note "5:* Cue bid, a !C stopper -- 5+!H; 6-!S; 22+ HCP; Artificial; GF"]
+[Note "5:* Cue bid, a !C stopper -- 5+!H; 6-!S; 25+ HCP; Artificial; GF"]
 [Note "6: Denies a !S stopper -- 3+!H; 3-9 HCP"]
 [Note "7:  -- 5+!H; 6-!S; 22+ HCP; GF"]
 [Play ""]
@@ -2046,18 +2046,20 @@ Facit Score:     1\nRunning Score: 512
 1N =1= PASS 2C =2= PASS
 2D =3= PASS 3C =4= PASS
 3N =5= PASS 4C =6= PASS
-4N =7= PASS 5S =8= PASS
-6C =9= PASS PASS =10= PASS
+4D =7= PASS 4N =8= PASS
+5H =9= PASS 6C =10= PASS
+PASS =11= PASS 
 [Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
 [Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
 [Note "3: No major suits -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
 [Note "4: Bidable suit -- 5+!C; 6-!D; 4-!H; 4-!S; 9-25 HCP; Forcing"]
 [Note "5: Nat. -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
 [Note "6: Slam try -- 6+!C; 6-!D; 4-!H; 4-!S; 11-25 HCP; Forcing"]
-[Note "7:* Blackwood 1430, for !C -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP; Artificial; Forcing"]
-[Note "8:* A=2/5 or 5/5, Q(C)=1 -- 6+!C; 6-!D; 4-!H; 4-!S; 11-25 HCP; Artificial"]
-[Note "9:* Nat. -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
-[Note "10:*  -- 6+!C; 6-!D; 4-!H; 4-!S; 11-25 HCP"]
+[Note "7:* Cue bid, a !D stopper -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP; Artificial; Forcing"]
+[Note "8:* Blackwood 1430, for !C -- 6+!C; 6-!D; 4-!H; 4-!S; 11-25 HCP; Artificial; Forcing"]
+[Note "9:* A=2/5 or 5/5, Q(C)=0 -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP; Artificial"]
+[Note "10:* Nat. -- 6+!C; 6-!D; 4-!H; 4-!S; 11-25 HCP"]
+[Note "11:*  -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
 [Play ""]
 [Hidden "EW"]
 {Score Table:
@@ -2282,7 +2284,7 @@ PASS =7= PASS
 [Note "2:* Stayman -- ; 5+ HCP; Artificial; Forcing"]
 [Note "3: No major suits -- 2-5!C; 2-5!D; 2-3!H; 2-3!S; 20-21 HCP; Forcing"]
 [Note "4: Slam try -- 5+!D; 6+ HCP; Forcing"]
-[Note "5: Bidable suit -- 2-5!C; 2-5!D; 3=!H; 2-3!S; 21-21 HCP"]
+[Note "5: Bidable suit -- 2-5!C; 2-5!D; 3=!H; 2-3!S; 20-21 HCP"]
 [Note "6: Bidable suit -- 6-!C; 6+!D; 4-!H; 4-!S; 6+ HCP"]
 [Note "7:  -- 2-5!C; 2-5!D; 3=!H; 2-3!S; 21-21 HCP"]
 [Play ""]
@@ -2373,28 +2375,26 @@ Facit Score:     0\nRunning Score: 572
 [Vulnerable "NS"]
 [Deal "N:KQT4.A43.AQ9862. A876.Q965.T.AK64 J.KT2.KJ75.98532 9532.J87.43.QJT7"]
 [Declarer "N"]
-[Contract "6D"]
+[Contract "5D"]
 [Scoring "Facit"]
 [ParScore "0"]
 [Auction "N"]
 1D =1= PASS 1N =2= PASS
 2S =3= PASS 3D =4= PASS
-5D =5= PASS 6D =6= PASS
-PASS =7= PASS 
+5D =5= PASS PASS =6= PASS
 [Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
 [Note "2: Balanced -- 3+!C; 4-!D; 3-!H; 3-!S; 6-11 HCP"]
 [Note "3: Bidable suit -- 5-!C; 4-9!D; 3-!H; 4-6!S; 16-21 HCP; Forcing"]
 [Note "4: Nat. -- 3-9!C; 4=!D; 3-!H; 3-!S; 6-8 HCP"]
 [Note "5: Nat. -- 5-!C; 4-9!D; 3-!H; 4-6!S; 16-21 HCP"]
-[Note "6: Rescue bid"]
-[Note "7:  -- 5-!C; 4-9!D; 3-!H; 4-6!S; 16-21 HCP"]
+[Note "6:  -- 3-9!C; 4=!D; 3-!H; 3-!S; 6-8 HCP"]
 [Play ""]
 [Hidden "EW"]
 {Score Table:
 
  6\d      10\n 5\d       7\n 3N       4\n 4\d       3\n 2N       2\n 7\d       1\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 582
+Facit Score:     7\nRunning Score: 579
 }
 
 [BCFlags "801f"]
@@ -2426,7 +2426,7 @@ Facit Score:    10\nRunning Score: 582
 
  4\s      10\n 5\s       7\n 3N       4\n 6\s       3\n 4N       2\n 5N       1\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 592
+Facit Score:    10\nRunning Score: 589
 }
 
 [BCFlags "801f"]
@@ -2463,7 +2463,7 @@ PASS =9= PASS
 
  6\s      10\n 5\s       6\n 4\s       6\n 4N       5\n 3N       5\n 6N       3\n 5N       1\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 602
+Facit Score:    10\nRunning Score: 599
 }
 
 [BCFlags "801f"]
@@ -2495,7 +2495,7 @@ Facit Score:    10\nRunning Score: 602
 
  6\d      10\n 3N       7\n 4N       6\n 5\d       5\n 6N       3\n 5N       2\n\n\n\n\n\n\n
 
-Facit Score:     7\nRunning Score: 609
+Facit Score:     7\nRunning Score: 606
 }
 
 [BCFlags "801f"]
@@ -2526,7 +2526,7 @@ PASS =5= PASS
 
  6\s      10\n 6\h       9\n 5\s       7\n 4\s       7\n 5\h       6\n 4\h       6\n 3N       3\n 4N       2\n 5N       1\n\n\n\n
 
-Facit Score:     7\nRunning Score: 616
+Facit Score:     7\nRunning Score: 613
 }
 
 [BCFlags "801f"]
@@ -2550,7 +2550,7 @@ PASS =7= PASS
 [Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
 [Note "2: Strength Lawrence structure -- 4+!C; 6-!D; 4-!S; 12+ HCP; GF"]
 [Note "3: Bidable suit -- 4-!C; 4-8!D; 4-!H; 5-9!S; 14-20 HCP; Forcing"]
-[Note "4:* Blackwood 1430, for !D -- 4+!C; 6-!D; 4-!S; 14+ HCP; Artificial; GF"]
+[Note "4:* Blackwood 1430, for !D -- 4+!C; 6-!D; 4-!S; 15+ HCP; Artificial; GF"]
 [Note "5:* A=2/5 or 5/5, Q(D)=1 -- 4-!C; 4-8!D; 4-!H; 5-9!S; 14-20 HCP; Artificial"]
 [Note "6:* Nat. -- 4-9!C; 4-6!D; 4-!H; 4-!S; 14+ HCP; GF"]
 [Note "7:*  -- 4-!C; 4-8!D; 4-!H; 5-9!S; 14-20 HCP"]
@@ -2560,7 +2560,7 @@ PASS =7= PASS
 
  3N      10\n 4N       8\n 4\s       6\n 6\d       5\n 5N       4\n 5\d       3\n 5\s       2\n 6\s       1\n\n\n\n\n
 
-Facit Score:     5\nRunning Score: 621
+Facit Score:     5\nRunning Score: 618
 }
 
 [BCFlags "801f"]
@@ -2591,7 +2591,7 @@ PASS =5= PASS
 
  6\s      10\n 5\s       7\n 4\s       7\n 5\d       3\n 3N       3\n 4N       2\n 5N       1\n\n\n\n\n\n
 
-Facit Score:     7\nRunning Score: 628
+Facit Score:     7\nRunning Score: 625
 }
 
 [BCFlags "801f"]
@@ -2626,7 +2626,7 @@ Facit Score:     7\nRunning Score: 628
 
  6\c      10\n 4\s       7\n 5\c       6\n 3\s       5\n 4\c       4\n 7\c       3\n 3N       2\n 6\s       1\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 638
+Facit Score:    10\nRunning Score: 635
 }
 
 [BCFlags "801f"]
@@ -2660,7 +2660,7 @@ PASS =7= PASS
 
  3N      10\n 4N       7\n 5\c       5\n 6\c       4\n 4\c       3\n 5N       1\n\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 642
+Facit Score:     4\nRunning Score: 639
 }
 
 [BCFlags "801f"]
@@ -2689,7 +2689,7 @@ Facit Score:     4\nRunning Score: 642
 
  4\s      10\n 3N       9\n 4N       8\n 5\s       5\n 6\c       4\n 5N       3\n 6\s       2\n 6N       1\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 652
+Facit Score:    10\nRunning Score: 649
 }
 
 [BCFlags "801f"]
@@ -2721,7 +2721,7 @@ Facit Score:    10\nRunning Score: 652
 
  6\h      10\n 5\h       7\n 4\h       7\n 4\s       5\n 5\s       4\n 3N       3\n 4N       2\n 7\h       2\n 6\s       1\n\n\n\n
 
-Facit Score:     7\nRunning Score: 659
+Facit Score:     7\nRunning Score: 656
 }
 
 [BCFlags "801f"]
@@ -2752,7 +2752,7 @@ PASS =5= PASS
 
  4\h      10\n 3N       8\n 5\h       7\n 4N       6\n 5N       4\n 4\s       2\n 6\h       1\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 669
+Facit Score:    10\nRunning Score: 666
 }
 
 [BCFlags "801f"]
@@ -2790,7 +2790,7 @@ Facit Score:    10\nRunning Score: 669
 
  6\s      10\n 4\s       7\n 5\s       6\n 4\h       5\n 3N       4\n 5\h       3\n 4N       3\n 6\h       2\n 5N       1\n\n\n\n
 
-Facit Score:    10\nRunning Score: 679
+Facit Score:    10\nRunning Score: 676
 }
 
 [BCFlags "801f"]
@@ -2824,7 +2824,7 @@ PASS =7= PASS
 
  3N      10\n 4N      10\n 4\s       9\n 5N       6\n 5\s       5\n 6N       2\n 6\s       1\n\n\n\n\n\n
 
-Facit Score:     9\nRunning Score: 688
+Facit Score:     9\nRunning Score: 685
 }
 
 [BCFlags "801f"]
@@ -2859,7 +2859,7 @@ Facit Score:     9\nRunning Score: 688
 
  3N      10\n 4N      10\n 4\h       6\n 4\s       6\n 6N       4\n 6\c       3\n 5\h       2\n 5\s       2\n 5N       2\n 5\c       1\n\n\n
 
-Facit Score:    10\nRunning Score: 698
+Facit Score:    10\nRunning Score: 695
 }
 
 [BCFlags "801f"]
@@ -2891,7 +2891,7 @@ Facit Score:    10\nRunning Score: 698
 
  6\d      10\n 3N       6\n 4N       5\n 5N       4\n 5\d       3\n 4\d       2\n 6N       1\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score: 704
+Facit Score:     6\nRunning Score: 701
 }
 
 [BCFlags "801f"]
@@ -2929,7 +2929,7 @@ Facit Score:     6\nRunning Score: 704
 
  6\c      10\n 5\c       6\n 4\s       5\n 5\s       4\n 6\s       3\n 4\c       2\n 3N       1\n 4N       1\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 714
+Facit Score:    10\nRunning Score: 711
 }
 
 [BCFlags "801f"]
@@ -2960,7 +2960,7 @@ PASS =5= PASS
 
  6\c      10\n 3N       6\n 4N       6\n 6N       4\n 5\c       3\n 5N       2\n 4\c       1\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score: 720
+Facit Score:     6\nRunning Score: 717
 }
 
 [BCFlags "801f"]
@@ -2997,7 +2997,7 @@ PASS =9= PASS
 
  N3N     10\n N4N      9\n 4\h       8\n N6N      7\n N5N      6\n S3N      5\n S4N      4\n 5\h       3\n S5N      2\n 6\h       1\n\n\n
 
-Facit Score:     1\nRunning Score: 721
+Facit Score:     1\nRunning Score: 718
 }
 
 [BCFlags "801f"]
@@ -3031,7 +3031,7 @@ PASS =7= PASS
 
  4\s      10\n 5\s       9\n 3N       6\n 4N       5\n 6\s       4\n 6N       3\n 5N       2\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 731
+Facit Score:    10\nRunning Score: 728
 }
 
 [BCFlags "801f"]
@@ -3065,7 +3065,7 @@ PASS =7= PASS
 
  6\d      10\n 3N       7\n 4N       7\n 5\d       4\n 6\c       3\n 5\c       2\n 4\d       1\n\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 735
+Facit Score:     4\nRunning Score: 732
 }
 
 [BCFlags "801f"]
@@ -3096,7 +3096,7 @@ PASS =5= PASS
 
  6\d      10\n 4\s       8\n 5\s       7\n 6\s       5\n 3N       4\n 7\d       3\n 4N       3\n 5N       2\n 5\d       1\n\n\n\n
 
-Facit Score:     4\nRunning Score: 739
+Facit Score:     4\nRunning Score: 736
 }
 
 [BCFlags "801f"]
@@ -3127,7 +3127,7 @@ PASS =5= PASS
 
  3N      10\n 4N       8\n 5N       5\n 5\c       4\n 4\h       2\n 5\d       1\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 749
+Facit Score:    10\nRunning Score: 746
 }
 
 [BCFlags "801f"]
@@ -3158,7 +3158,7 @@ PASS =5= PASS
 
  2\s      10\n 2\d       8\n E2\cX     7\n E2\c      5\n 3\s       4\n 3\d       3\n 2\h       2\n 2N       1\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 759
+Facit Score:    10\nRunning Score: 756
 }
 
 [BCFlags "801f"]
@@ -3181,7 +3181,7 @@ PASS =5= PASS
 [Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
 [Note "2: Bidable suit -- 6-!H; 5+!S; 8-17 HCP; Forcing"]
 [Note "3: Bidable suit -- 5+!H; 2-!S; 11-17 HCP"]
-[Note "4: Nat. -- 6-!C; 6-!D; 2-6!H; 5-11!S; 9-17 HCP"]
+[Note "4: Nat. -- 6-!C; 6-!D; 2-6!H; 5-11!S; 10-17 HCP"]
 [Note "5:  -- 5+!H; 2-!S; 11-17 HCP"]
 [Play ""]
 [Hidden "EW"]
@@ -3189,7 +3189,7 @@ PASS =5= PASS
 
  4\h      10\n 3\h       6\n 4\c       5\n 5\c       4\n 2N       3\n 3\s       2\n 3N       1\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 769
+Facit Score:    10\nRunning Score: 766
 }
 
 [BCFlags "801f"]
@@ -3218,7 +3218,7 @@ Facit Score:    10\nRunning Score: 769
 
  S3N     10\n S2N      7\n 3\d       6\n 4\d       4\n S2N      3\n N3N      2\n 5\d       1\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score: 775
+Facit Score:     6\nRunning Score: 772
 }
 
 [BCFlags "801f"]
@@ -3242,14 +3242,14 @@ PASS =5= PASS
 [Note "2: Bidable suit -- 6-!C; 5+!D; 8-21 HCP; Forcing"]
 [Note "3: Bidable suit -- 6+!H; 6-!S; 14-17 HCP"]
 [Note "4: Bidable suit -- 6-!C; 6+!D; 11-11 HCP; Forcing"]
-[Note "5:  -- 6+!H; 6-!S; 14-16 HCP"]
+[Note "5:  -- 6+!H; 6-!S; 14-17 HCP"]
 [Play ""]
 [Hidden "EW"]
 {\nScore Table:
 
  5\d      10\n 4\h       8\n E2\sX     7\n 3\d       6\n 4\d       5\n 3\h       4\n 2N       3\n 6\d       2\n 3N       1\n\n\n\n
 
-Facit Score:     5\nRunning Score: 780
+Facit Score:     5\nRunning Score: 777
 }
 
 [BCFlags "801f"]
@@ -3278,7 +3278,7 @@ PASS =3= PASS PASS =4=
 
  2\s      10\n 2\h       7\n 3\s       6\n 3\c       5\n W2\d      4\n W2\dX     3\n 3\h       2\n 2N       1\n\n\n\n\n
 
-Facit Score:     4\nRunning Score: 784
+Facit Score:     4\nRunning Score: 781
 }
 
 [BCFlags "801f"]
@@ -3307,7 +3307,7 @@ Facit Score:     4\nRunning Score: 784
 
  2\c      10\n 1N       7\n 2\d       6\n 3\c       5\n 2\s       3\n 2N       2\n 3\d       1\n\n\n\n\n\n
 
-Facit Score:     6\nRunning Score: 790
+Facit Score:     6\nRunning Score: 787
 }
 
 [BCFlags "801f"]
@@ -3336,7 +3336,7 @@ X =3= PASS PASS =4= PASS
 
  E5\cX    10\n E5\c      6\n 5\s       4\n 5\h       2\n 6\s       1\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 800
+Facit Score:    10\nRunning Score: 797
 }
 
 [BCFlags "801f"]
@@ -3359,7 +3359,7 @@ Facit Score:    10\nRunning Score: 800
 [Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
 [Note "2: Penalty -- ; 10+ HCP"]
 [Note "3: Bidable suit -- 4-!C; 4-!D; 4-6!H; 5-9!S; 11-13 HCP"]
-[Note "4: Stopper !C -- 2-6!C; 2-6!D; 3-!H; 2-!S; 11-13 HCP"]
+[Note "4: Stopper !C -- 2-6!C; 2-6!D; 3-!H; 2-!S; 15-16 HCP"]
 [Note "5: Nat. -- 4-!C; 4-!D; 4=!H; 5=!S; 13-13 HCP"]
 [Note "6:  -- 2-6!C; 2-6!D; 3-!H; 2-!S; 11-13 HCP"]
 [Play ""]
@@ -3368,7 +3368,7 @@ Facit Score:    10\nRunning Score: 800
 
  W2\cX    10\n 2N       7\n 2\h       6\n 2\s       5\n 3N       3\n 3\h       2\n 3\s       1\n\n\n\n\n\n
 
-Facit Score:     3\nRunning Score: 803
+Facit Score:     3\nRunning Score: 800
 }
 
 [BCFlags "801f"]
@@ -3396,7 +3396,7 @@ PASS =3= PASS
 
  2N      10\n 2\c       7\n 3\c       6\n E1\hX     5\n E1\h      4\n 3N       3\n 4\c       2\n 4N       1\n\n\n\n\n
 
-Facit Score:     3\nRunning Score: 806
+Facit Score:     3\nRunning Score: 803
 }
 
 [BCFlags "801f"]
@@ -3428,7 +3428,7 @@ X =3= PASS 2S =4= PASS
 
  4\s      10\n 6\s       8\n 6\d       7\n 5\s       6\n 5\d       4\n 2\s       4\n 3\s       3\n 3\d       2\n 4\d       1\n\n\n\n
 
-Facit Score:    10\nRunning Score: 816
+Facit Score:    10\nRunning Score: 813
 }
 
 [BCFlags "801f"]
@@ -3457,7 +3457,7 @@ PASS =3= PASS PASS =4=
 
  E3\sX    10\n E3\s      7\n 4\c       4\n 3N       3\n 4\d       2\n 4\h       1\n\n\n\n\n\n\n
 
-Facit Score:     7\nRunning Score: 823
+Facit Score:     7\nRunning Score: 820
 }
 
 [BCFlags "801f"]
@@ -3486,7 +3486,7 @@ Facit Score:     7\nRunning Score: 823
 
  2\h      10\n 3\h       6\n 2\d       5\n 3\d       3\n 4\h       2\n 4\d       1\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 833
+Facit Score:    10\nRunning Score: 830
 }
 
 [BCFlags "801f"]
@@ -3517,7 +3517,7 @@ PASS =5= PASS
 
  E3\cX    10\n 3\d       9\n 3\s       6\n 4\d       5\n N3\c      4\n 4\s       2\n 3N       1\n 5\d       1\n\n\n\n\n
 
-Facit Score:     6\nRunning Score: 839
+Facit Score:     6\nRunning Score: 836
 }
 
 [BCFlags "801f"]
@@ -3545,7 +3545,7 @@ PASS =3= PASS
 
  2\h      10\n 2\s       7\n N1N      6\n 3\h       5\n N3\s      4\n N1NX     3\n 2\c       2\n 2\d       1\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 849
+Facit Score:    10\nRunning Score: 846
 }
 
 [BCFlags "801f"]
@@ -3573,7 +3573,7 @@ PASS =3= PASS
 
  3N      10\n E3\dX     8\n 4N       7\n 3\s       5\n E3\d      5\n 4\s       4\n 4\c       3\n 5\c       2\n 6\c       1\n\n\n\n
 
-Facit Score:     8\nRunning Score: 857
+Facit Score:     8\nRunning Score: 854
 }
 
 [BCFlags "801f"]
@@ -3601,7 +3601,7 @@ PASS =3=
 
  E2\d     10\n E2\dX     8\n 2\s       4\n 2\h       3\n 2N       1\n\n\n\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 867
+Facit Score:    10\nRunning Score: 864
 }
 
 [BCFlags "801f"]
@@ -3632,7 +3632,7 @@ PASS =5= PASS
 
  5\d      10\n 4\d       6\n E2\sX     4\n 3\c       3\n 2N       3\n E2\s      2\n 4\c       2\n 3N       1\n 6\d       1\n\n\n\n
 
-Facit Score:     1\nRunning Score: 868
+Facit Score:     1\nRunning Score: 865
 }
 
 [BCFlags "801f"]
@@ -3663,7 +3663,7 @@ PASS =5= PASS
 
  2\s      10\n 3\c       7\n W2\d      5\n 3\s       4\n 4\c       3\n 2N       2\n W2\dX     2\n 3N       1\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 878
+Facit Score:    10\nRunning Score: 875
 }
 
 [BCFlags "801f"]
@@ -3692,7 +3692,7 @@ Facit Score:    10\nRunning Score: 878
 
  6\h      10\n 6\c       6\n 5\h       5\n E4\sX     4\n 5\c       2\n E4\s      1\n\n\n\n\n\n\n
 
-Facit Score:     5\nRunning Score: 883
+Facit Score:     5\nRunning Score: 880
 }
 
 [BCFlags "801f"]
@@ -3720,7 +3720,7 @@ PASS =3= PASS
 
  3N      10\n 3\h       7\n 2N       6\n 4\h       5\n 4N       3\n E2\s      2\n 5\h       1\n E2\sX     1\n\n\n\n\n
 
-Facit Score:    10\nRunning Score: 893
+Facit Score:    10\nRunning Score: 890
 }
 
 [BCFlags "801f"]
@@ -3741,7 +3741,7 @@ Facit Score:    10\nRunning Score: 893
 5D =3= PASS PASS =4= PASS
 [Note "1:* Strong -- ; 19+ HCP; Artificial; GF"]
 [Note "2:* Waiting -- ; Artificial; Forcing"]
-[Note "3: Bidable suit -- 6-!C; 5+!D; 20+ HCP; GF"]
+[Note "3: Bidable suit -- 6-!C; 6+!D; 25+ HCP; GF"]
 [Note "4:  -- ; 17- HCP"]
 [Play ""]
 [Hidden "EW"]
@@ -3749,7 +3749,7 @@ Facit Score:    10\nRunning Score: 893
 
  5\h      10\n 5\d       7\n 4N       5\n W4\sX     4\n 6\h       3\n W4\s      2\n 5N       1\n\n\n\n\n\n
 
-Facit Score:     7\nRunning Score: 900
+Facit Score:     7\nRunning Score: 897
 }
 
 [BCFlags "801f"]
@@ -3781,7 +3781,7 @@ XX =3= PASS 2C =4= PASS
 
  2\c      10\n 2\s       9\n 2\d       8\n 3\c       3\n 3\s       2\n 3\d       1\n 1NX      1\n\n\n\n\n\n
 
-Facit Score:     0\nRunning Score: 900
+Facit Score:     0\nRunning Score: 897
 }
 
 [BCFlags "801f"]
@@ -3813,7 +3813,7 @@ PASS =3= PASS X =4= PASS
 
  3\c      10\n W2\hX     7\n W2\h      6\n 2N       5\n 2\s       4\n 4\c       3\n 3\d       2\n 5\c       1\n 3N       1\n\n\n\n
 
-Facit Score:    10\nRunning Score: 910
+Facit Score:    10\nRunning Score: 907
 }
 
 [BCFlags "801f"]
@@ -3836,7 +3836,7 @@ PASS =5= PASS
 [Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
 [Note "2: Penalty -- ; 10+ HCP"]
 [Note "3: Stopper !S -- 2-4!C; 3-5!D; 2-4!H; 2-4!S; 11-14 HCP"]
-[Note "4: Nat. -- 2-5!C; 2-4!D; 2-4!H; 2-4!S; 13-17 HCP"]
+[Note "4: Nat. -- 2-5!C; 2-4!D; 2-4!H; 2-4!S; 18-22 HCP"]
 [Note "5:  -- 2-4!C; 3-5!D; 2-4!H; 2-4!S; 11-14 HCP"]
 [Play ""]
 [Hidden "EW"]
@@ -3844,6 +3844,6 @@ PASS =5= PASS
 
  W1\sX    10\n 1NXX    10\n 3N       7\n 2N       5\n 2\h       4\n 4N       3\n 4\h       3\n 3\h       2\n 2\d       1\n\n\n\n
 
-Facit Score:     7\nRunning Score: 917
+Facit Score:     7\nRunning Score: 914
 }
 
