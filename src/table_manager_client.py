@@ -667,13 +667,13 @@ class TMClient:
 
 
     async def send_card_played(self, card_symbol, who):
-        msg_card = f'{self.seat} plays {card_symbol[::-1]} {who if not self.bm else "s"}'
+        msg_card = f'{self.seat} plays {card_symbol[::-1]} {who if not self.bm else ""}'
         await self.send_message(msg_card)
 
     async def send_card_played_for_dummy(self, card_symbol, who):
         dummy_i = (self.decl_i + 2) % 4
         seat = SEATS[dummy_i]
-        msg_card = f'{seat} plays {card_symbol[::-1]} {who if not self.bm else "s"}'
+        msg_card = f'{seat} plays {card_symbol[::-1]} {who if not self.bm else ""}'
         await self.send_message(msg_card)
 
     async def send_own_bid(self, bid_resp):
@@ -727,7 +727,7 @@ class TMClient:
         else:
             who = self.opponents
 
-        print(f"Received {card_resp_parts} from {who} {player_i} {self.player_i}")
+        print(f"Received {card_resp_parts} from {who}")
         cr = CardResp(
             card=Card.from_symbol(card_resp_parts[-1][::-1].upper()),
             candidates=[],
