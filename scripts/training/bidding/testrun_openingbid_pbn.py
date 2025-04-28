@@ -21,7 +21,7 @@ import numpy as np
 
 from bidding import bidding
 from sample import Sample
-from bots import BotBid
+from botbidder import BotBid
 import endplay.parsers.pbn as pbn
 import endplay.config as cfg
 

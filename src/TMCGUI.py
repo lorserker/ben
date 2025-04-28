@@ -73,7 +73,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("Table Manager Interface. v0.8.6.11")
+        self.title("Table Manager Interface. v0.8.6.12")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -269,17 +269,18 @@ class TableManagerApp(tk.Tk):
         self.stop_button.grid(row=3, column=0, padx=5, pady=5)
 
         # Create and place the buttons without storing them
-        ttk.Button(col_frames[5], text="Start Table Manager", command=self.start_tm_window, width=button_width).grid(row=0, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start RoboBridge client", command=self.start_robobridge_window, width=button_width).grid(row=1, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start WBridge5 client", command=self.start_wbridge5_window, width=button_width).grid(row=2, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start Q-Plus client", command=self.start_qplus_window, width=button_width).grid(row=3, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start Powershark client", command=self.start_shark_window, width=button_width).grid(row=4, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start Lia client", command=self.start_lia_window, width=button_width).grid(row=5, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start Blue Chip client", command=self.start_bc_window, width=button_width).grid(row=6, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start TM Mediator", command=self.start_tmmediator_window, width=button_width).grid(row=7, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start GIB client", command=self.start_gib_window, width=button_width).grid(row=8, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start Meadowlark client", command=self.start_meadowlark_window, width=button_width).grid(row=9, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start BEN client", command=self.start_ben_window, width=button_width).grid(row=10, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Robo TM", command=self.start_tm_window, width=button_width).grid(row=0, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Bridge Moniteur", command=self.start_bm_window, width=button_width).grid(row=1, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start RoboBridge client", command=self.start_robobridge_window, width=button_width).grid(row=2, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start WBridge5 client", command=self.start_wbridge5_window, width=button_width).grid(row=3, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Q-Plus client", command=self.start_qplus_window, width=button_width).grid(row=4, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Powershark client", command=self.start_shark_window, width=button_width).grid(row=5, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Lia client", command=self.start_lia_window, width=button_width).grid(row=6, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Blue Chip client", command=self.start_bc_window, width=button_width).grid(row=7, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start TM Mediator", command=self.start_tmmediator_window, width=button_width).grid(row=8, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start GIB client", command=self.start_gib_window, width=button_width).grid(row=9, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start Meadowlark client", command=self.start_meadowlark_window, width=button_width).grid(row=10, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start BEN client", command=self.start_ben_window, width=button_width).grid(row=11, column=0, padx=5, pady=5)
 
         # Add "Save Log" button
         self.save_log_button = ttk.Button(col_frames[3], text="Save Log", command=self.save_log)
@@ -403,7 +404,7 @@ class TableManagerApp(tk.Tk):
         exe_path = self.settings.get("TM_file", "")
 
         modal_window = tk.Toplevel(self)
-        modal_window.title("Start Table Manager")
+        modal_window.title("Start Robo Table Manager")
 
         # Make the window modal
         modal_window.transient(self)  # Make it appear above the main window
@@ -417,13 +418,13 @@ class TableManagerApp(tk.Tk):
         modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
 
         # Introduction text
-        introduction_text = "Start Table Manager, select boards and start the table. Then start the clients."
+        introduction_text = "Start Robo Table Manager, select boards and start the table. Then start the clients."
         tk.Label(modal_window, text=introduction_text, anchor="w", padx=10, pady=10).grid(
             row=0, column=0, columnspan=2, sticky="w"
         )
 
         # Label above the entry field
-        tk.Label(modal_window, text="Table Manager Executable:", anchor="w").grid(
+        tk.Label(modal_window, text="Robo Table Manager Executable:", anchor="w").grid(
             row=1, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
         )
 
@@ -440,6 +441,67 @@ class TableManagerApp(tk.Tk):
             # Get values from the entry fields
             exe_path = entry1.get()
             self.settings["TM_file"] = exe_path
+            self.save_settings()
+            self.start_appl(exe_path)
+            modal_window.destroy()  # Close the modal window
+            
+        # Add a submit button, centered below the input
+        submit_button = ttk.Button(modal_window, text="Start", command=on_submit)
+        submit_button.grid(row=3, column=0, columnspan=3, pady=20)
+
+        # Adjust modal window size and center it
+        modal_window.update_idletasks()
+        modal_window.geometry(
+            f"{modal_window.winfo_width()}x{modal_window.winfo_height()}+"
+            f"{modal_window.winfo_pointerx() - modal_window.winfo_width() // 2}+"
+            f"{modal_window.winfo_pointery() - modal_window.winfo_height() // 2}"
+        )
+
+        # Wait for the modal window to be closed
+        self.wait_window(modal_window)
+
+    def start_bm_window(self):
+        # Create a new window (Toplevel)
+        exe_path = self.settings.get("BM_file", "")
+
+        modal_window = tk.Toplevel(self)
+        modal_window.title("Start Bridge Moniteur")
+
+        # Make the window modal
+        modal_window.transient(self)  # Make it appear above the main window
+        modal_window.grab_set()  # Prevent interaction with other windows
+        
+        # Get cursor position
+        cursor_x = self.winfo_pointerx()
+        cursor_y = self.winfo_pointery()
+
+        # Set window position at cursor
+        modal_window.geometry(f"+{cursor_x}+{cursor_y}")        
+
+        # Introduction text
+        introduction_text = "Start Bridge Moniteur, select boards and start the table. Then start the clients."
+        tk.Label(modal_window, text=introduction_text, anchor="w", padx=10, pady=10).grid(
+            row=0, column=0, columnspan=2, sticky="w"
+        )
+
+        # Label above the entry field
+        tk.Label(modal_window, text="Bridge Moniteur Executable:", anchor="w").grid(
+            row=1, column=0, columnspan=2, padx=10, pady=(10, 5), sticky="w"
+        )
+
+        # Wider entry field for better readability
+        entry1 = ttk.Entry(modal_window, width=50)  # Adjust width as needed
+        entry1.grid(row=2, column=0, padx=10, pady=5, sticky="w")
+        entry1.insert(0, exe_path)
+
+        # Browse button beside the entry field
+        browse_button = ttk.Button(modal_window, text="Browse", command=lambda: self.browse_executable(exe_path, entry1))
+        browse_button.grid(row=2, column=1, padx=10, pady=5)
+        # Add a submit button
+        def on_submit():
+            # Get values from the entry fields
+            exe_path = entry1.get()
+            self.settings["BM_file"] = exe_path
             self.save_settings()
             self.start_appl(exe_path)
             modal_window.destroy()  # Close the modal window
@@ -773,8 +835,7 @@ class TableManagerApp(tk.Tk):
                 cmd.extend(["--matchpoint", str(matchpoint)])
                 if host:  
                     cmd.extend(["--host", str(host)])
-                if bm:  
-                    cmd.extend(["--bm", str(bm)])
+                cmd.extend(["--bm", str(bm)])
                 if port:  
                     cmd.extend(["--port", str(port)])
                 if port:  
@@ -1219,6 +1280,7 @@ class TableManagerApp(tk.Tk):
         # Checkboxes (Bidding Only, Match Point) in column 3
         self.settings["bidding_only"] = self.bidding_only.get()
         self.settings["nosearch"] = self.nosearch.get()
+        self.settings["bm"] = self.bm.get()
         self.settings["matchpoint"] = self.matchpoint.get()
         self.settings["detached"] = self.detached.get()
         self.settings["verbose"] = self.verbose.get()

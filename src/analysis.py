@@ -1,5 +1,5 @@
 import numpy as np
-import bots
+import botbidder
 import deck52
 
 from bidding import bidding
@@ -35,7 +35,7 @@ class CardByCard:
     def analyze_bidding(self):
         from ddsolver import ddsolver
         dds = ddsolver.DDSolver()
-        bidder_bots = [bots.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.dealer_i, dds, False, self.verbose) for idx, hand in enumerate(self.hands)]
+        bidder_bots = [botbidder.BotBid(self.vuln, hand, self.models, self.sampler, idx, self.dealer_i, dds, False, self.verbose) for idx, hand in enumerate(self.hands)]
 
         player_i = self.dealer_i
         bid_i = self.dealer_i
@@ -83,7 +83,7 @@ class CardByCard:
 
         print(self.play[0])
 
-        bot_lead = bots.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, (decl_i + 1) % 4, self.dealer_i, self.dds, False)
+        bot_lead = botbidder.BotLead(self.vuln, self.hands[(decl_i + 1) % 4], self.models, self.sampler, (decl_i + 1) % 4, self.dealer_i, self.dds, False)
 
         card_resp = bot_lead.find_opening_lead(self.padded_auction, {})
         card_resp = CardResp(Card.from_symbol(self.play[0]), card_resp.candidates, card_resp.samples, card_resp.hcp, card_resp.shape, card_resp.quality,'', claim = -1)
@@ -117,10 +117,10 @@ class CardByCard:
         dd = ddsolver.DDSolver()
 
         card_players = [
-            bots.CardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, dd, self.verbose),
-            bots.CardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, pimc, dd, self.verbose),
-            bots.CardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, dd, self.verbose),
-            bots.CardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, dd, self.verbose)
+            botcardplayer.CardPlayer(self.models, 0, lefty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, dd, self.verbose),
+            botcardplayer.CardPlayer(self.models, 1, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, pimc, dd, self.verbose),
+            botcardplayer.CardPlayer(self.models, 2, righty_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, dd, self.verbose),
+            botcardplayer.CardPlayer(self.models, 3, decl_hand, dummy_hand, contract, is_decl_vuln, self.sampler, pimc, dd, self.verbose)
         ]
 
         player_cards_played = [[] for _ in range(4)]
@@ -154,7 +154,7 @@ class CardByCard:
                 card52 = None
                 card_resp = None               
                 rollout_states = None
-                if isinstance(card_players[player_i], bots.CardPlayer):
+                if isinstance(card_players[player_i], botcardplayer.CardPlayer):
                     play_status = get_play_status(card_players[player_i].hand52,current_trick52, strain_i)
 
                     if play_status == "Forced":
@@ -244,7 +244,7 @@ class CardByCard:
 
             if self.models.pimc_use_declaring or self.models.pimc_use_defending:
                 for card_player in card_players:
-                    if isinstance(card_player, bots.CardPlayer) and card_player.pimc:
+                    if isinstance(card_player, botcardplayer.CardPlayer) and card_player.pimc:
                         card_player.pimc.reset_trick()
             
             # initializing for the next trick

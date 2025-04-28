@@ -39,3 +39,6 @@ print(explanation, bba_controlled, preempted)
 
 explanation, bba_controlled, preempted = bot.explain_auction(['1H','PASS', '2N', 'PASS', '3H', 'PASS', '3N', 'PASS', '4C', 'PASS', '4D', 'PASS', '4N', 'PASS', '5H', 'PASS', 'PASS', 'PASS'])
 print(explanation, bba_controlled, preempted)
+
+explanation = bot.explain_last_bid(['2C','PASS', '2D', 'PASS', '2H', 'PASS', '2S', 'PASS', '2N'])
+print(explanation)

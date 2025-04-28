@@ -240,7 +240,8 @@ class Sample:
                         needed_samples = needed_samples / 4
                         # Consider transferring found samples, but we also need score and quality then
                         accepted_samples = []
-                        return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples, aceking)
+                        accepted_samples, sorted_scores, p_hcp, p_shp, quality2, samplings = self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples, aceking)
+                        
                     else:
                         sys.stderr.write(f"{Fore.YELLOW}Could not update auction {auction_so_far}{Fore.RESET}\n")
 
@@ -251,7 +252,7 @@ class Sample:
             needed_samples = needed_samples / 4
             # Consider transferring found samples, but we also need score and quality then
             accepted_samples = []
-            return self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples, aceking)
+            accepted_samples, sorted_scores, p_hcp, p_shp, quality2, samplings = self.generate_samples_iterative(auction_so_far_copy, turn_to_bid, max_samples, needed_samples, rng, hand_str, vuln, models, accepted_samples, aceking)
 
         return accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings
 
@@ -986,7 +987,7 @@ class Sample:
             contract = bidding.get_contract(auction)
             strain = bidding.get_strain_i(contract)
             cards_in_suit = models.n_cards_play // 4
-            opening_lead = "AKQJTxxx"[ opening_lead_card % cards_in_suit]
+            opening_lead = "AKQJT98x"[ opening_lead_card % cards_in_suit]
             lead_type = "NT" if strain == 0 else "Suit"
             explanations = set()
             # We should probably ignore the lead if we know how the suit is divided
@@ -1184,7 +1185,7 @@ class Sample:
             # With 7 cards left we can generate all possible combinations
             worlds =  []
             if hidden_cards_no <= self.max_unknown_cards_for_sampling:
-                if models.alphamju_declaring and (player_i == 1 or player_i == 3) and trick_i > 6:
+                if models.alphamju_declaring and (player_i == 1 or player_i == 3) and trick_i > models.alphamju_trick:
                     # Generate all worlds for alphamju
                     # Played cards
                     hidden_cards52 = get_all_hidden_cards(played_cards)
@@ -1562,7 +1563,7 @@ class Sample:
             print(f"Returning {min(bidding_states[0].shape[0],n_samples)} {quality:.5f}")
         assert bidding_states[0].shape[0] > 0, "No samples generated for play"
 
-        probability_of_occurence = convert_to_probability_with_weight(sorted_min_bid_scores, bidding_states, counts, logical_play_scores, discard_scores)
+        probability_of_occurence = convert_to_probability_with_weight(sorted_min_bid_scores, bidding_states, counts, logical_play_scores, discard_scores, quality)
 
         return bidding_states, sorted_min_bid_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds
 

@@ -16,11 +16,11 @@ class Models:
 
     def __init__(self, name, tf_version, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, trick_model,binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, 
                  no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count, min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_our_cc, bba_their_cc, use_bba, consult_bba, use_bba_rollout, use_bba_to_count_aces, estimator, claim, play_reward_threshold_NN, play_reward_threshold_NN_factor, check_remaining_cards, check_discard, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
+                 lead_accept_nn, ns, ew, bba_our_cc, bba_their_cc, use_bba, consult_bba, bba_trust, use_bba_rollout, use_bba_to_count_aces, estimator, claim, play_reward_threshold_NN, play_reward_threshold_NN_factor, check_remaining_cards, check_discard, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
                  double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_use_discarding, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_stop_trick_declarer, pimc_stop_trick_defender, pimc_constraints, 
                  pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
                  pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples, pimc_bidding_quality, pimc_after_preempt, pimc_after_preempt_weight,
-                 alphamju_declaring, alphamju_defending, adjust_hcp, 
+                 alphamju_declaring, alphamju_defending, alphamju_trick, adjust_hcp, 
                  use_adjustment, adjust_NN, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
                  use_suitc, force_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
                  use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead, lead_convention, check_final_contract, max_samples_checked,  
@@ -61,6 +61,7 @@ class Models:
         self.bba_their_cc = bba_their_cc
         self.use_bba = use_bba
         self.consult_bba = consult_bba
+        self.bba_trust = bba_trust
         self.use_bba_rollout = use_bba_rollout
         self.use_bba_to_count_aces = use_bba_to_count_aces
         self.estimator = estimator
@@ -110,6 +111,7 @@ class Models:
         self.pimc_after_preempt_weight = pimc_after_preempt_weight
         self.alphamju_declaring = alphamju_declaring
         self.alphamju_defending = alphamju_defending
+        self.alphamju_trick = alphamju_trick
         self.adjust_hcp = adjust_hcp
         self.use_adjustment = use_adjustment
         self.adjust_NN = adjust_NN
@@ -234,6 +236,7 @@ class Models:
 
         alphamju_declaring = conf.getboolean('alphamju', 'alphamju_declaring', fallback=False)
         alphamju_defending = conf.getboolean('alphamju', 'alphamju_defending', fallback=False)
+        alphamju_trick = conf.getint('alphamju', 'alphamju_trick', fallback=6)
 
         use_adjustment = conf.getboolean('adjustments', 'use_adjustment', fallback=True)
         adjust_NN = conf.getint('adjustments', 'adjust_NN', fallback=50)
@@ -273,6 +276,7 @@ class Models:
         suppress_warnings = conf.getboolean('models', 'suppress_warnings', fallback=True)
         use_bba = conf.getboolean('models', 'use_bba', fallback=False)
         consult_bba = conf.getboolean('models', 'consult_bba', fallback=False)
+        bba_trust = conf.getfloat('models', 'bba_trust', fallback=0.2)
         use_bba_rollout = conf.getboolean('models', 'use_bba_rollout', fallback=False)
         use_bba_to_count_aces = conf.getboolean('models', 'use_bba_to_count_aces', fallback=False)
         bba_our_cc =conf.get('models', 'bba_our_cc', fallback=None)
@@ -350,6 +354,7 @@ class Models:
             bba_their_cc=bba_their_cc,
             use_bba=use_bba,
             consult_bba=consult_bba,
+            bba_trust=bba_trust,
             use_bba_rollout=use_bba_rollout,
             use_bba_to_count_aces=use_bba_to_count_aces,
             estimator=estimator,
@@ -401,6 +406,7 @@ class Models:
             pimc_after_preempt_weight = pimc_after_preempt_weight,
             alphamju_declaring=alphamju_declaring,
             alphamju_defending=alphamju_defending,
+            alphamju_trick=alphamju_trick,
             adjust_hcp=adjust_hcp,
             use_adjustment=use_adjustment,
             adjust_NN=adjust_NN,

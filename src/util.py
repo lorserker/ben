@@ -9,6 +9,9 @@ from typing import NamedTuple, List
 
 from binary import get_cards_from_binary_hand, get_binary_hand_from_cards32, get_binary_hand_from_cards
 
+symbols = 'AKQJT98765432'
+symbols_list = list(symbols)  # Convert the string to a list of characters
+
 def save_for_training(deal, auction):
     with open("training.ben", "a") as file:
         file.write(deal + " #" + auction + "\n")
@@ -36,9 +39,6 @@ def find_vuln_text(boolean_array):
 
 def hand_to_str(hand, n_cards=32):
     x = hand.reshape((4, n_cards // 4))
-    symbols = 'AKQJT98765432'
-    symbols_list = list(symbols)  # Convert the string to a list of characters
-
     if n_cards < 52:
         for i in range(13):
             if i >= (n_cards // 4) - 1:
@@ -142,7 +142,7 @@ def calculate_seed(input):
     hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
     return hash_integer
 
-def convert_to_probability_with_weight(x, states, counts, logical_scores, discard_scores):
+def convert_to_probability_with_weight(bidding_score, states, counts, logical_scores, discard_scores, quality):
     """Compute weighted softmax values for each set of scores in x using counts."""
     
     # Initialize weights array with the correct shape
@@ -161,9 +161,11 @@ def convert_to_probability_with_weight(x, states, counts, logical_scores, discar
         weights[i] = counts.get(sample, 0)  # Use .get to avoid KeyError
 
     # Apply weights to x before calculating probabilities
-    # Ensure x is 2D: (num_samples, num_features) and weights is 1D: (num_samples,)
-    
-    weighted_x = x * weights * logical_scores * discard_scores
+    if quality > 0.5:
+        weighted_x = bidding_score * weights * logical_scores * discard_scores
+    else:
+        weighted_x = weights * logical_scores * discard_scores
+
 
     sum_of_proba = np.sum(weighted_x, axis=0) 
 

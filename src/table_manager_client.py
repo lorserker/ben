@@ -49,7 +49,9 @@ import time
 import asyncio
 import numpy as np
 from sample import Sample
-import bots
+import botbidder
+import botopeninglead
+import botcardplayer
 import conf
 import datetime
 import pprint
@@ -66,7 +68,7 @@ import gc
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.6.11'
+version = '0.8.6.12'
 init()
 
 SEATS = ['North', 'East', 'South', 'West']
@@ -201,13 +203,12 @@ class TMClient:
         self._is_connected = True
         print(f"Connected to {host}:{port}")
 
-        await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18{". " + config if not bm else ""}')
+        await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18{" " + config if not bm else ""}')
 
         # Validate response Blue Chip can send: Error Team name mismatch
         await self.receive_line()
         
         await self.send_message(f'{self.seat} ready for teams')
-
 
         match_details = await self.receive_line()
         
@@ -237,7 +238,7 @@ class TMClient:
     async def bidding(self):
         vuln = [self.vuln_ns, self.vuln_ew]
 
-        self.bot = bots.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.dds, False, self.verbose)
+        self.bot = botbidder.BotBid(vuln, self.hand_str, self.models, self.sampler, self.player_i, self.dealer_i, self.dds, False, self.verbose)
 
         auction = ['PAD_START'] * self.dealer_i
 
@@ -285,7 +286,7 @@ class TMClient:
             # this player is on lead
             await self.receive_line()
 
-            bot_lead = bots.BotLead(
+            bot_lead = botopeninglead.BotLead(
                 [self.vuln_ns, self.vuln_ew], 
                 self.hand_str,
                 self.models,
@@ -367,10 +368,10 @@ class TMClient:
             pimc[2] = None
 
         card_players = [
-            bots.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[0], self.dds, self.verbose),
-            bots.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, pimc[1], self.dds, self.verbose),
-            bots.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[2], self.dds, self.verbose),
-            bots.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[3], self.dds, self.verbose)
+            botcardplayer.CardPlayer(self.models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[0], self.dds, self.verbose),
+            botcardplayer.CardPlayer(self.models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, pimc[1], self.dds, self.verbose),
+            botcardplayer.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[2], self.dds, self.verbose),
+            botcardplayer.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[3], self.dds, self.verbose)
         ]
 
         player_cards_played = [[] for _ in range(4)]
@@ -516,7 +517,7 @@ class TMClient:
 
             if self.models.pimc_use_declaring or self.models.pimc_use_defending:
                 for card_player in card_players:
-                    if isinstance(card_player, bots.CardPlayer) and card_player.pimc:
+                    if isinstance(card_player, botcardplayer.CardPlayer) and card_player.pimc:
                         card_player.pimc.reset_trick()
 
             # initializing for the next trick
@@ -560,15 +561,15 @@ class TMClient:
                 card_players[0].n_tricks_taken += 1
                 card_players[2].n_tricks_taken += 1
                 if self.models.pimc_use_defending:
-                    if isinstance(card_players[0], bots.CardPlayer) and card_players[0].pimc:
+                    if isinstance(card_players[0], botcardplayer.CardPlayer) and card_players[0].pimc:
                         card_players[0].pimc.update_trick_needed()
-                    if isinstance(card_players[2], bots.CardPlayer) and card_players[2].pimc:
+                    if isinstance(card_players[2], botcardplayer.CardPlayer) and card_players[2].pimc:
                         card_players[2].pimc.update_trick_needed()
             else:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
                 if self.models.pimc_use_declaring:
-                    if isinstance(card_players[3], bots.CardPlayer) and card_players[3].pimc :
+                    if isinstance(card_players[3], botcardplayer.CardPlayer) and card_players[3].pimc :
                         card_players[3].pimc.update_trick_needed()
 
             print('{}            trick {} cards={} won by {}'.format(datetime.datetime.now().strftime("%H:%M:%S"),trick_i+1, list(map(decode_card, current_trick52)), "NESW"[(trick_winner + self.decl_i + 1) % 4]))
@@ -727,7 +728,7 @@ class TMClient:
         else:
             who = self.opponents
 
-        print(f"Received {card_resp_parts} from {who}")
+        #print(f"Received {card_resp_parts} from {who}")
         cr = CardResp(
             card=Card.from_symbol(card_resp_parts[-1][::-1].upper()),
             candidates=[],
@@ -994,7 +995,7 @@ async def main():
     parser.add_argument("--biddingonly", type=str_to_bool, default=False, help="Only bid, no play")
     parser.add_argument("--nosearch", type=str_to_bool, default=False, help="Just use neural network")
     parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
-    parser.add_argument("--bm", type=str_to_bool, default=False, help="Bridge Moniteur is table manager")
+    parser.add_argument("--bm", type=str_to_bool, default=True, help="Bridge Moniteur is table manager")
     parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()

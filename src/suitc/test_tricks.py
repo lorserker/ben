@@ -2,7 +2,7 @@ import SuitC
 import gc
 import psutil
 import time
-suitc = SuitC.SuitCLib(True)
+suitc = SuitC.SuitCLib(False)
 
 # Get system memory info
 virtual_memory = psutil.virtual_memory()
@@ -11,12 +11,12 @@ print(f"Available memory: {available_memory:.2f} MB")
 
 t_start = time.time()
 
-#-F1 -u -c100 -ls6 KT63 972 AQJ854
-#card = suitc.calculate(4, "KT63", "972", "AQJ854")
-#card = suitc.calculate(4, "K83", "AJ942", "QT765")
-#card = suitc.calculate(3,  "KT6", "943", "J85", None, None, False, 0)
-card = suitc.calculate(3,  "K2", "AQ8", "JT9765435", None, None, False, 0)
+hand = "N:K2.K643.854.J762 T974.Q975.QJ2.83 AQ8.AT.AKT73.AKQ J653.J82.96.T954"
+hands = hand[2:].split(' ')
+declarer = hands[2]
+dummy = hands[0]
+tricks = suitc.get_trick_potential(declarer, dummy)
 
-print(card)
+print(tricks)
 
 print(f"Estimating took {(time.time() - t_start):0.4f} seconds")

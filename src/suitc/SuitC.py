@@ -57,6 +57,38 @@ class SuitCLib:
         self.suitc.version.restype = ctypes.c_char_p
         return self.suitc.version().decode('utf-8')
     
+    def get_suit_tricks(self, declarer, dummy, opponent):
+        if self.verbose:
+            input_str = " -a -b "
+        else:
+            input_str = ""
+        #input_str = ""
+
+        input_str += f"{dummy if dummy != '' else '.'} {declarer if declarer != '' else '.'} {opponent}"
+        try:
+            output, details = self.make_suitc_call(input_str)
+            response_dict = json.loads(output)
+            optimum_result = round(response_dict["SuitCAnalysis"]["Result"],2)
+            if self.verbose:
+                print("optimum_result", optimum_result, declarer, dummy, opponent)
+        except Exception as ex:
+            print('Error:', ex)
+            print( declarer, dummy, opponent)
+            raise ex
+        
+        return optimum_result
+
+    def get_trick_potential(self, declarer, dummy):
+        declarer_suits = declarer.split('.')
+        dummy_suits = dummy.split('.')
+        potential = []
+        for i in range(4):
+            eastwest =  ''.join(c for c in "AKQJT98765432" if c not in declarer_suits[i] and c not in dummy_suits[i])
+            optimum_result = self.get_suit_tricks(dummy_suits[i], declarer_suits[i], eastwest)
+            potential.append(optimum_result)
+            #print(f"{dummy_suits[i]} {declarer_suits[i]} {optimum_result}")
+        return potential
+
     def calculate(self, max_tricks, north, south, eastwest, east_vacant=None, west_vacant=None, trump = False, entries = 1 ):
         # if matchoint is true, then -M is used
         # if verbose is true, then -a and -b is used
@@ -76,45 +108,11 @@ class SuitCLib:
             input_str +=f'-ev{east_vacant} '
         #input_str = ""
         input_str += f"{north} {south} {eastwest}"
-        input_length = len(input_str)
-        if self.verbose:
-            print("SuitC Input: " + input_str)
-        
-        # Convert input string to a wide char buffer
-        input_buffer = create_unicode_buffer(input_str + '\0')  # Ensure null termination
-
-        # Create a pointer to the buffer
-        input_buffer_ptr = ctypes.pointer(c_wchar_p(input_buffer.value))
-        
-        # Create an output buffer
-        output_length = 8 * 32768
-        output_buffer = create_unicode_buffer(output_length)
-
-        # Create a variable to hold the output buffer size
-        output_size = ctypes.c_int()
-
-        # Create details buffer
-        details_length = 8 * 32768
-        details_buffer = create_unicode_buffer(details_length)
-        # Create a variable to hold the output buffer size
-        details_size = ctypes.c_int()
-
-        # Pointers to the output and details buffers
-        # Create pointers to the output and details buffers
-        output_buffer_ptr = c_wchar_p(ctypes.addressof(output_buffer))
-        details_buffer_ptr = c_wchar_p(ctypes.addressof(details_buffer))
-
-        result = self.suitc.call_suitc(input_buffer_ptr, input_length, output_buffer_ptr,  byref(output_size), details_buffer_ptr,  byref(details_size))
-        if result != 0:
-            print("Error: " + result)
-            sys.exit(1)
-        if self.verbose:
-            print(output_buffer.value)
-            print(details_buffer.value)
+        output, details = self.make_suitc_call(input_str)
 
         #print(f"{Fore.GREEN}SuitC Output: {len(output_buffer.value)}{Fore.RESET}")
         #print(f"{Fore.GREEN}SuitC Output details:  {len(details_buffer.value)}{Fore.RESET}")
-        response_dict = json.loads(output_buffer.value)
+        response_dict = json.loads(output)
         optimum_plays = response_dict["SuitCAnalysis"]["OptimumPlays"]
         # print("optimum_plays", optimum_plays)
         # We just take the play for MAX as we really don't know how many tricks are needed
@@ -154,3 +152,41 @@ class SuitCLib:
             print(f"SuitC found no Optimum play for MAX. {input_str}")
 
         return possible_cards
+
+    def make_suitc_call(self, input_str):
+        input_length = len(input_str)
+        if self.verbose:
+            print("SuitC Input: " + input_str)
+        
+        # Convert input string to a wide char buffer
+        input_buffer = create_unicode_buffer(input_str + '\0')  # Ensure null termination
+
+        # Create a pointer to the buffer
+        input_buffer_ptr = ctypes.pointer(c_wchar_p(input_buffer.value))
+        
+        # Create an output buffer
+        output_length = 8 * 32768
+        output_buffer = create_unicode_buffer(output_length)
+
+        # Create a variable to hold the output buffer size
+        output_size = ctypes.c_int()
+
+        # Create details buffer
+        details_length = 8 * 32768
+        details_buffer = create_unicode_buffer(details_length)
+        # Create a variable to hold the output buffer size
+        details_size = ctypes.c_int()
+
+        # Pointers to the output and details buffers
+        # Create pointers to the output and details buffers
+        output_buffer_ptr = c_wchar_p(ctypes.addressof(output_buffer))
+        details_buffer_ptr = c_wchar_p(ctypes.addressof(details_buffer))
+
+        result = self.suitc.call_suitc(input_buffer_ptr, input_length, output_buffer_ptr,  byref(output_size), details_buffer_ptr,  byref(details_size))
+        if result != 0:
+            print("Error: " + result)
+            sys.exit(1)
+        if self.verbose:
+            print(output_buffer.value)
+            print(details_buffer.value)
+        return output_buffer.value,details_buffer.value

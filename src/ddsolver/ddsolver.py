@@ -169,9 +169,11 @@ class DDSolver:
             return {card:round(sum(1 for x in values if x >= tricks_needed)/len(values),3) for card, values in card_results.items()}
         return fun
 
-    def print_dd_results(self, dd_solved, print_result=True):
-        print("DD Result")
-        print("\n".join(f"{Card.from_code(int(k))}: [{', '.join(f'{x:>2}' for x in v[:10])}..." for k, v in dd_solved.items()))
+    def print_dd_results(self, dd_solved, print_result=True, xcards=False):
+        print("DD Result\n".join(
+            f"{Card.from_code(int(k))}: [{', '.join(f'{x:>2}' for x in v[:20])}{' ]' if len(v) <= 20 else ' ...]'}"
+            for k, v in dd_solved.items()
+        ))
 
         # Create a new dictionary to store sorted counts for each key
         sorted_counts_dict = {}
@@ -189,6 +191,6 @@ class DDSolver:
 
         # Print the sorted counts for each key
         for key, sorted_counts in sorted_counts_dict.items():
-            print(f"Sorted counts for {Card.from_code(int(key))} DD:")
+            print(f"Sorted counts for {Card.from_code(int(key), xcards)} DD:")
             for value, count in sorted_counts:
                 print(f"  Tricks: {value}, Count: {count}")

@@ -37,7 +37,7 @@ import datetime
 
 import numpy as np
 
-from bots import BotBid
+from botbidder import BotBid
 from bidding import bidding
 from sample import Sample
 import uuid
@@ -103,7 +103,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     verbose = args.verbose
 
-    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.6.11{Fore.RESET}\n")
+    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.6.12{Fore.RESET}\n")
     sys.stderr.write(f'NS = {args.bidderNS}\n')
     sys.stderr.write(f'EW = {args.bidderEW}\n')    
     sys.stderr.write(f'DB = {args.db}\n')
@@ -139,6 +139,7 @@ if __name__ == '__main__':
 
     db_name = args.db
     #cleanup_shelf(f"{base_path}/{db_name}")
+    t_job_start = time.time()
 
     for index, line in enumerate(open(args.set)):        
         # To make the boards reproducable random is seeded at the beginning of each board
@@ -150,7 +151,7 @@ if __name__ == '__main__':
         vuln = parts[1]
         hands = parts[2:]
 
-        sys.stderr.write(f'Bidding board {index + 1} {verbose}\n')
+        sys.stderr.write(f'Bidding board {index + 1}\n')
         auction, bid_responses = bid_hand(hands, dealer, vuln, [models_ns, models_ew], [Sample.from_conf(configuration_ns), Sample.from_conf(configuration_ew)], dds, verbose)
 
         record = {
@@ -197,3 +198,4 @@ if __name__ == '__main__':
     if db_name:
         sys.stderr.write(f"Boards saved in {base_path}/{db_name}\n")
 
+    sys.stderr.write(f'{Fore.GREEN}{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Set Bid in {time.time() - t_job_start:0f} seconds.{Fore.RESET}\n')

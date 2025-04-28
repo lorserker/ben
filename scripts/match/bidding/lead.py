@@ -15,7 +15,7 @@ import json
 import conf
 import argparse
 
-from bots import BotLead
+from botopeninglead import BotLead
 from sample import Sample
 from objects import Card
 from auction import VULN

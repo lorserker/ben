@@ -87,6 +87,11 @@ def last_contract(auction):
             return bid
     return None
 
+def get_level(bid):
+    if bid =="P" or bid =="X" or bid == "XX":
+        return 0
+    return int(bid[0])
+
 def contract_level_step(contract):
     return int(contract[0])*5 + SUIT_RANK[contract[1]]
 
@@ -99,6 +104,30 @@ def can_bid_contract(bid, auction):
     if contract is None:
         return True
     return is_higher_contract(bid, contract)
+
+game_contracts = {'3N', '4N', '5N', '4H', '5H', '4S', '5S', '5C', '5D'}
+slam_contracts = {'6C', '6D', '6H', '6S', '6N'}
+grand_contracts = {'7C', '7D', '7H', '7S', '7N'}
+game_contract_with_x = {'2S', '2H', '2N', '3C', '3D', '3H', '3S', '4C', '4D'}
+game_contract_with_xx = {'1H', '1S', '1N', '2C', '3C'}
+# We assume we have a valid auction
+def is_game_bid(auction):
+    # Strip down to just non-PASS bids
+    print("Have we bid game?",auction)
+    non_pass_bids = [bid for bid in auction if bid != 'PASS']
+    last_bid = non_pass_bids[-1]
+    if last_bid == 'XX':
+        if non_pass_bids[-3] in game_contract_with_xx:
+            return True
+        last_bid = non_pass_bids[-2]
+
+    if last_bid == 'X':
+        if non_pass_bids[-2] in game_contract_with_x:
+            return True
+        last_bid = non_pass_bids[-2]
+    if last_bid in game_contracts or last_bid in slam_contracts or last_bid in grand_contracts:
+        return True
+    return False
 
 def auction_over(auction):
     if len(auction) < 4:

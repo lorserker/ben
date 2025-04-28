@@ -36,7 +36,9 @@ from gevent.pywsgi import WSGIServer
 import datetime 
 import time
 
-from bots import BotBid, BotLead, CardPlayer
+from botbidder import BotBid
+from botopeninglead import BotLead
+from botcardplayer import CardPlayer
 from bidding import bidding
 from objects import Card, CardResp
 import deck52
@@ -71,7 +73,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.6.11'
+version = '0.8.6.12'
 init()
 
 def handle_exception(e):

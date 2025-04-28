@@ -42,7 +42,9 @@ import argparse
 import numpy as np
 
 import human
-import bots
+import botbidder
+import botopeninglead
+import botcardplayer
 import conf
 
 from sample import Sample
@@ -61,7 +63,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.6.11'
+version = '0.8.6.12'
 
 init()
 
@@ -92,15 +94,15 @@ def random_deal_board(number=None):
     return deal_str, auction_str
 
 
-class AsyncBotBid(bots.BotBid):
+class AsyncBotBid(botbidder.BotBid):
     async def async_bid(self, auction, alert=None):
         return self.bid(auction)
 
-class AsyncBotLead(bots.BotLead):
+class AsyncBotLead(botopeninglead.BotLead):
     async def async_opening_lead(self, auction, aceking):
         return self.find_opening_lead(auction, aceking)
 
-class AsyncCardPlayer(bots.CardPlayer):
+class AsyncCardPlayer(botcardplayer.CardPlayer):
     async def async_play_card(self, trick_i, leader_i, current_trick52, tricks52, players_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores, features):
         return self.play_card(trick_i, leader_i, current_trick52, tricks52, players_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores, features)
     
@@ -618,7 +620,7 @@ class Driver:
                 if self.verbose:
                     print('play status', play_status)
 
-                if isinstance(card_players[player_i], bots.CardPlayer):
+                if isinstance(card_players[player_i], botcardplayer.CardPlayer):
                     if play_status == "Forced" and self.models.autoplaysingleton:
                         card = get_singleton(card_players[player_i].hand52,current_trick52)
                         card_resp = CardResp(
@@ -651,7 +653,7 @@ class Driver:
 
                 # if card_resp is None, we have to rollout
                 if card_resp == None:    
-                    if isinstance(card_players[player_i], bots.CardPlayer):
+                    if isinstance(card_players[player_i], botcardplayer.CardPlayer):
                         played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
                         rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, features["aceking"], current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
@@ -773,7 +775,7 @@ class Driver:
 
             if self.models.pimc_use_declaring or self.models.pimc_use_defending:
                 for card_player in card_players:
-                    if isinstance(card_player, bots.CardPlayer) and card_player.pimc:
+                    if isinstance(card_player, botcardplayer.CardPlayer) and card_player.pimc:
                         card_player.pimc.reset_trick()
 
             # initializing for the next trick
@@ -817,15 +819,15 @@ class Driver:
                 card_players[0].n_tricks_taken += 1
                 card_players[2].n_tricks_taken += 1
                 if self.models.pimc_use_defending:
-                    if isinstance(card_players[0], bots.CardPlayer) and card_players[0].pimc:
+                    if isinstance(card_players[0], botcardplayer.CardPlayer) and card_players[0].pimc:
                         card_players[0].pimc.update_trick_needed()
-                    if isinstance(card_players[2], bots.CardPlayer) and card_players[2].pimc:
+                    if isinstance(card_players[2], botcardplayer.CardPlayer) and card_players[2].pimc:
                         card_players[2].pimc.update_trick_needed()
             else:
                 card_players[1].n_tricks_taken += 1
                 card_players[3].n_tricks_taken += 1
                 if self.models.pimc_use_declaring:
-                    if isinstance(card_players[3], bots.CardPlayer) and card_players[3].pimc :
+                    if isinstance(card_players[3], botcardplayer.CardPlayer) and card_players[3].pimc :
                         card_players[3].pimc.update_trick_needed()
 
             if self.verbose:
@@ -855,7 +857,7 @@ class Driver:
         print("trick 13")
         for player_i in map(lambda x: x % 4, range(leader_i, leader_i + 4)):
             
-            if not isinstance(card_players[player_i], bots.CardPlayer):
+            if not isinstance(card_players[player_i], botcardplayer.CardPlayer):
                 await card_players[player_i].get_card_input()
                 who = "Human"
             else:

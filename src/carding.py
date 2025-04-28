@@ -6,7 +6,7 @@ import numpy as np
 from objects import Card
 import deck52
 import binary
-from util import save_for_suitc
+from util import save_for_suitc, symbols
 from colorama import Fore, Back, Style, init
 
 init()
@@ -128,7 +128,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
             if card // 13 == interesting_suit:
                 if card_index == 0:
                     suit_played = True
-                c = RANKS[card % 13]
+                c = symbols[card % 13]
                 if c in suits[interesting_suit]:
                     current_count -= 1
                 else:
@@ -158,7 +158,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     if verbose: 
                         print(f"SuitC: {suits_north} {suits_south} {suits_westeast}")
                         print("discards", discards)
-                    for c in RANKS:
+                    for c in symbols:
                         if c in suits_north:
                             continue
                         if c in suits_south:
@@ -182,12 +182,12 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     played_cards = [[], [], [], []]
                     for trick in tricks52:
                         for card in trick:
-                            played_cards[card // 13].append(RANKS[card % 13])   
+                            played_cards[card // 13].append(symbols[card % 13])   
 
                     entries = count_entries(hand_str, interesting_suit, played_cards, contract[1])
 
                     try:
-                        suitc_cards = suitc.calculate(max(len(suits_north),len(suits_south)), suits_north if suits_north != '' else '.', suits_south if suits_south != '' else '.', suits_westeast, trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
+                        suitc_cards = suitc.calculate(max(len(suits_north),len(suits_south)), suits_north, suits_south, suits_westeast, trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
                     except Exception as ex:
                         sys.stderr.write(f"{Fore.RED}{ex}{Fore.RESET}\n")
                         sys.stderr.write(f"{Fore.RED}SuitC failed. Input:{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}{Fore.RESET}\n")
@@ -364,25 +364,29 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
             # From touching honors lead the highest
             # From bad suit lead 2nd highest
             hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
-            if suit_length < 4:
-                if hcp_in_suit < 1:
-                    card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
-                else:
-                    if suit_length == 2:    
-                        # lead hihest from Hx
-                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
+            # lead highest if Tx
+            if suit_length == 2 and hand52.reshape((4, 13))[opening_suit][4] == 1 and hcp_in_suit == 0:
+                card_index = 4
+            else:
+                if suit_length < 4:
+                    if hcp_in_suit == 0 and hand52.reshape((4, 13))[opening_suit][4]:
+                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
                     else:
-                        indices = np.where(hand52.reshape((4, 13))[opening_suit])[0]
-
-                        # Check if the first two ones are consecutive
-                        if len(indices) >= 2 and indices[1] - indices[0] == 1:
-                            #lead highes
+                        if suit_length == 2:    
+                            # lead hihest from Hx
                             card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
                         else:
-                            card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
+                            indices = np.where(hand52.reshape((4, 13))[opening_suit])[0]
 
-            else:
-                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)
+                            # Check if the first two ones are consecutive
+                            if len(indices) >= 2 and indices[1] - indices[0] == 1:
+                                #lead highes
+                                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
+                            else:
+                                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
+
+                else:
+                    card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)
             return card_index + 13 * opening_suit
     else:
         if opening_suit == "SHDC".index(contract[1]):

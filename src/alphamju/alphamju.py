@@ -10,7 +10,7 @@ def alphamju(decisions, tricks, suit, cards, worlds, rng, verbose):
     exe_path = "alphamju/alphamju.exe"
     # Always minimum 2 decisions and due to timer no more than 4
     decisions = min(max(decisions,2),4)
-    loglevel = 0
+    loglevel = 1
     worlds = [f'[Deal "W:{deal}"]' for deal in worlds]    
 
     if len(worlds) > 100:
