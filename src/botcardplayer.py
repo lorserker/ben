@@ -15,7 +15,6 @@ import carding
 from alphamju.alphamju import alphamju
 from util import hand_to_str, follow_suit, calculate_seed, symbols
 from colorama import Fore, init
-from suitc.SuitC import SuitCLib
 init()
 class CardPlayer:
 
@@ -46,7 +45,9 @@ class CardPlayer:
         self.dds = ddsolver
         self.sampler = sampler
         self.claimer = Claimer(self.verbose, self.dds)
-        self.suitc = SuitCLib(self.verbose)
+        if self.models.use_suitc:
+            from suitc.SuitC import SuitCLib
+            self.suitc = SuitCLib(self.verbose)
         # If we don't get a hand, the class is just used for recording
         if hand_str != "...":
             self.sample_hands_for_review = models.sample_hands_for_review
