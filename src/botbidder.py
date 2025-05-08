@@ -845,6 +845,9 @@ class BotBid:
         if self.verbose:
             print("Getting bid candidates")
         explanation_partner_bid = None
+        explanations = False
+        bba_controlled = False
+        preempted = False
         if self.models.consult_bba:
 
             explanations, bba_controlled, preempted = self.explain_auction(auction)
