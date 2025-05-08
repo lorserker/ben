@@ -44,26 +44,35 @@ def load_deals(fin):
 
 def create_binary(data_it, n, out_dir):
     x = np.zeros((n, 66), dtype=np.float16)
-    y = np.zeros((n, 55), dtype=np.uint8)
+    # Contract
+    y = np.zeros((n, 40), dtype=np.uint8)
+    # Doubled
+    z = np.zeros((n, 1), dtype=np.uint8)
+    # Tricks
+    u = np.zeros((n, 14), dtype=np.uint8)
     k = 0
 
     for i, deal_data in enumerate(data_it):
         if (i+1) % 10000 == 0:
             sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} {i+1}\n')
             sys.stderr.flush()
-        x_part, y_part= deal_data.get_binary_contract()
+        x_part, y_part, z_part, u_part= deal_data.get_binary_contract()
         x[k] = x_part
         y[k] = y_part
+        z[k] = z_part
+        u[k] = u_part
         k += 1
 
     np.save(os.path.join(out_dir, 'x.npy'), x)
     np.save(os.path.join(out_dir, 'y.npy'), y)
+    np.save(os.path.join(out_dir, 'z.npy'), z)
+    np.save(os.path.join(out_dir, 'u.npy'), u)
 
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
         print("Usage: python contract_binary.py inputfile outputdirectory")
-        print("The input file is the BEN-format (1 line with hands, and next line with the contract/Bidding).")
+        print("The input file is the PAR-format (1 line with hands, next line with the vulnerability, and finally a line with optimum results).")
         sys.exit(1)
 
     infnm = sys.argv[1] # file where the data is

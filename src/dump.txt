@@ -1,0 +1,40 @@
+Error code=-14
+
+Deal data:
+trump=H
+first=W
+index1=0 index2=0 remainCards=8256
+index1=0 index2=1 remainCards=11264
+index1=0 index2=2 remainCards=3600
+index1=0 index2=3 remainCards=212
+index1=1 index2=0 remainCards=0
+index1=1 index2=1 remainCards=4256
+index1=1 index2=2 remainCards=28928
+index1=1 index2=3 remainCards=29728
+index1=2 index2=0 remainCards=2076
+index1=2 index2=1 remainCards=256
+index1=2 index2=2 remainCards=236
+index1=2 index2=3 remainCards=2560
+index1=3 index2=0 remainCards=21632
+index1=3 index2=1 remainCards=17020
+index1=3 index2=2 remainCards=0
+index1=3 index2=3 remainCards=256
+
+target=-1
+solutions=3
+mode=1
+
+
+        S K6
+        H KJT
+        D JT94
+        C 7642
+S AQT7          S --
+H A965432       H Q75
+D --            D AKQ8
+C 8             C AKQT5
+        S J432
+        H 8
+        D 76532
+        C J9
+

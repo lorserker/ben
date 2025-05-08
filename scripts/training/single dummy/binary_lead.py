@@ -1,13 +1,12 @@
 import itertools
 import os
 import sys
-sys.path.append('../../../src')
+sys.path.append('../../../../src')
 import numpy as np
 
 from bidding import bidding
 
-from lead_binary_util import DealMeta, convert_auction, encode_card
-from data_access import card_index_lookup
+from lead_binary_util import DealMeta, convert_auction, encode_card, card_index_lookup
 
 from nn.bid_info import BidInfo
 
@@ -126,7 +125,7 @@ def get_card_index(card, n_cards):
 
 def parse_hand_f(n_cards):
     def f(hand_str):
-        x = np.zeros((1, n_cards))
+        x = np.zeros((1, n_cards), dtype=np.float16)
         suits = hand_str.split('.')
         assert(len(suits) == 4)
         for suit_index in [0, 1, 2, 3]:

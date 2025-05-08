@@ -215,7 +215,7 @@ class Sample:
         
 
         if quality < self.bid_accept_threshold_bidding and binary.get_number_of_bids(auction_so_far) >= 8:
-            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}\n") 
+            sys.stderr.write(f"{Fore.YELLOW}Quality {quality:.2f} to low for auction {auction_so_far} - Samplings: {samplings} max {sample_boards_for_auction}{Fore.RESET}\n") 
         if self.sample_previous_round_if_needed and quality < self.bid_accept_threshold_bidding and binary.get_number_of_bids(auction_so_far) >= 8:
             # Was there a X or XX we can replace with P, then just try again
             auction_updated = False
@@ -246,7 +246,8 @@ class Sample:
                         sys.stderr.write(f"{Fore.YELLOW}Could not update auction {auction_so_far}{Fore.RESET}\n")
 
         if self.sample_previous_round_if_needed and len(accepted_samples) < self._min_sample_hands_auction and binary.get_number_of_bids(auction_so_far) >= 12:
-            sys.stderr.write(f"{Fore.YELLOW}Skipping last bidding round{Fore.RESET}\n")
+            if self.verbose:
+                sys.stderr.write(f"{Fore.YELLOW}Skipping last bidding round{Fore.RESET}\n")
             auction_so_far_copy = auction_so_far.copy()
             auction_so_far_copy = auction_so_far_copy[:-4]
             needed_samples = needed_samples / 4

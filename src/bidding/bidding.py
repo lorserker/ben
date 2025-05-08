@@ -113,7 +113,7 @@ game_contract_with_xx = {'1H', '1S', '1N', '2C', '3C'}
 # We assume we have a valid auction
 def is_game_bid(auction):
     # Strip down to just non-PASS bids
-    print("Have we bid game?",auction)
+    #print("Have we bid game?",auction)
     non_pass_bids = [bid for bid in auction if bid != 'PASS']
     last_bid = non_pass_bids[-1]
     if last_bid == 'XX':
@@ -128,6 +128,10 @@ def is_game_bid(auction):
     if last_bid in game_contracts or last_bid in slam_contracts or last_bid in grand_contracts:
         return True
     return False
+
+def undisturbed(auction):
+    their_bids = auction[::-2]
+    return len([bid for bid in their_bids if BID2ID[bid] > 3]) == 0
 
 def auction_over(auction):
     if len(auction) < 4:

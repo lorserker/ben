@@ -1,0 +1,4302 @@
+% PBN 2.1
+% EXPORT
+%Content-type: text/x-pbn; charset=ISO-8859-1
+%Creator: BridgeComposer Version 5.104.1
+%Created: Wed Nov 22 10:47:24 2023 -0000
+%BCOptions Center STBorder STShade SuboptPlay
+%BidAndCardSpacing Thin
+%BoardsPerPage 1
+%CardTableColors #008000,#ffffff,#aaaaaa
+%DDAFormat 0
+%DefaultPagination 0
+%Font:CardTable "Arial",11,400,0
+%Font:Commentary "Times New Roman",12,400,0
+%Font:Diagram "Times New Roman",12,400,0
+%Font:Event "Times New Roman",12,400,0
+%Font:FixedPitch "Courier New",10,400,0
+%Font:HandRecord "Arial",11,400,0
+%GutterSize 500,500
+%HRTitleDate 0
+%HRTitleEvent ""
+%HRTitleSetID ""
+%HRTitleSetIDPrefix ""
+%HRTitleSite ""
+%HtmlClubs entity,"https://bridgecomposer.com/suitimg/c.gif"
+%HtmlDiamonds entity,"https://bridgecomposer.com/suitimg/d.gif"
+%HtmlHearts entity,"https://bridgecomposer.com/suitimg/h.gif"
+%HtmlNavBar 0.75,#cfe2f3
+%HtmlSpades entity,"https://bridgecomposer.com/suitimg/s.gif"
+%Margins 1000,1000,1000,1000
+%PaperSize 1,2159,2794,14
+%ParaIndent 0
+%PipColors #000000,#ff0000,#ff0000,#000000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%ScoreTableColors #e6e6e6,#000000
+%SectionSpacing 0,0,0
+%SelectedBoard 64
+%ShowBoardLabels 2
+%ShowCardTable 2
+%TSTCustomSortOrder Default
+%TSTReport List
+%TSTReportOrder ByNumber
+%TSTReportShade Yes
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "2"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:Q6542.QJ7.AKT6.7 T987.K9.2.QJT986 AKJ3.AT2.9543.53 .86543.QJ87.AK42"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "7b8b37b8a32252a2252a"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 5S  = played by south: 450 points
+Feasability: 3 11 8 11 7 10 2 5 2 2 3 10 8 11 7 10 2 5 2 2
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "E"]
+[Contract "5CX"]
+[Result "11"]
+{PAR of the deal: 5S  = played by south: 450 points
+Feasability: 3 11 8 11 7 10 2 5 2 2 3 10 8 11 7 10 2 5 2 2}
+[OptimumScore "NS 450"]
+[ParContract "NS 5S="]
+[Auction "S"]
+1S Pass 2NT Pass
+3C X 4S 5C
+X Pass Pass Pass
+[Play "S"]
+DA D2 D9 D7
+HQ HK HA H3
+S6 S7 SA C2
+DK C8 D5 DQ
+S4 ST SJ CA
+D6 H9 D4 DJ
+H7 C9 H2 H4
+S2 S8 S3 C4
+HJ C6 HT H6
+S5 S9 SK CK
+DT CT D3 D8
+C7 CQ C5 H8
+SQ CJ C3 H5
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  7
+N  S 11
+N  H  8
+N  D 11
+N  C  3
+S NT  7
+S  S 11
+S  H  8
+S  D 10
+S  C  3
+E NT  2
+E  S  2
+E  H  5
+E  D  2
+E  C 10
+W NT  2
+W  S  2
+W  H  5
+W  D  2
+W  C 10
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "10"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:J2.J76.KJ743.Q62 KQ843.43.T52.A54 976.AT982.Q6.KT7 AT5.KQ5.A98.J983"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "44664446649966999669"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3NT = played by east: 600 points
+Feasability: 4 6 6 4 4 9 6 6 9 9 4 6 6 4 4 9 6 6 9 9
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "4S"]
+[Result "10"]
+{PAR of the deal: 3NT = played by east: 600 points
+Feasability: 4 6 6 4 4 9 6 6 9 9 4 6 6 4 4 9 6 6 9 9}
+[OptimumScore "EW 600"]
+[ParContract "EW 3N="]
+[Auction "S"]
+Pass Pass Pass 1C
+Pass 1S Pass 1NT
+Pass 2S Pass 3S
+Pass 3NT Pass 4S
+Pass Pass Pass
+[Play "N"]
+DQ DA D4 D2
+S6 S5 S2 SK
+H2 HQ H7 H3
+S7 ST SJ SQ
+HA H5 H6 H4
+C7 C8 CQ CA
+S9 SA D3 S4
+H8 HK HJ D5
+D6 D8 DK DT
+H9 D9 DJ S8
+CT CJ C6 C4
+CK C3 C2 C5
+HT C9 D7 S3
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 4
+N  S 4
+N  H 6
+N  D 6
+N  C 4
+S NT 4
+S  S 4
+S  H 6
+S  D 6
+S  C 4
+E NT 9
+E  S 9
+E  H 6
+E  D 6
+E  C 9
+W NT 9
+W  S 9
+W  H 6
+W  D 6
+W  C 9
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "22"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:J865.A2.J765.AJ7 KQ97.3.AK832.Q62 A42.QT875.QT.K53 T3.KJ964.94.T984"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3DX"]
+[Result "6"]
+{PAR of the deal: 1NT = played by East : 90 points
+PAR computation time: 00'06"
+Feasability: 7 7 7 7 6 6 6 6 6 7 7 7 7 7 6 5 6 6 6 6 }
+[BCFlags "1f"]
+[DoubleDummyTricks "67777677777666666665"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 90"]
+[ParContract "E 1N="]
+[Auction "E"]
+Pass 1D 1H Pass
+1NT 2S Pass 3D
+Pass Pass X Pass
+Pass Pass
+[Play "W"]
+H5 HK HA H3
+C3 C4 CA C2
+CK C8 C7 C6
+DQ D4 D7 DA
+C5 C9 CJ CQ
+SA S3 S6 SQ
+DT D9 D5 D2
+S4 ST SJ SK
+H7 H6 D6 DK
+H8 H4 DJ D3
+HQ H9 H2 S7
+S2 CT S5 S9
+HT HJ S8 D8
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 7
+N  H 7
+N  D 7
+N  C 7
+S NT 6
+S  S 7
+S  H 7
+S  D 7
+S  C 7
+E NT 7
+E  S 6
+E  H 6
+E  D 6
+E  C 6
+W NT 6
+W  S 6
+W  H 6
+W  D 6
+W  C 5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "22"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:J865.A2.J765.AJ7 KQ97.3.AK832.Q62 A42.QT875.QT.K53 T3.KJ964.94.T984"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "66665766666777767777"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 1NT = played by south: 90 points
+Feasability: 5 6 6 6 6 7 7 7 7 6 6 6 6 6 7 7 7 7 7 6
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "S"]
+[Contract "1S"]
+[Result "5"]
+{PAR of the deal: 1NT = played by south: 90 points
+Feasability: 5 6 6 6 6 7 7 7 7 6 6 6 6 6 7 7 7 7 7 6}
+[OptimumScore "NS 90"]
+[ParContract "S 1N="]
+[Auction "S"]
+Pass 1D 1H Pass
+1S Pass Pass Pass
+[Play "W"]
+DA DT D9 D5
+H3 HQ HK HA
+C2 H7 H9 H2
+DK DQ D4 D7
+D2 S4 ST D6
+SQ H5 HJ SJ
+D3 C5 S3 DJ
+C6 CK CT C7
+S7 SA C4 S6
+S9 HT H4 CJ
+CQ C3 C8 CA
+SK S2 C9 S5
+D8 H8 H6 S8
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 6
+N  H 6
+N  D 6
+N  C 5
+S NT 7
+S  S 6
+S  H 6
+S  D 6
+S  C 6
+E NT 6
+E  S 7
+E  H 7
+E  D 7
+E  C 7
+W NT 6
+W  S 7
+W  H 7
+W  D 7
+W  C 7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "23"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:Q974.KJ8.J732.K8 JT83.AQ5.A.AJ972 AK2.T62.KQT96.Q6 65.9743.854.T543"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3DX"]
+[Result "8"]
+{PAR of the deal: 3D  = played by North: 110 points
+PAR computation time: 00'00"
+Feasability: 4 9 6 8 6 9 4 7 5 5 4 9 6 8 6 9 4 7 5 5 }
+[BCFlags "1f"]
+[DoubleDummyTricks "68694686945574955749"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 110"]
+[ParContract "NS 3D="]
+[Auction "S"]
+Pass 1C 1D Pass
+1S Pass 1NT Pass
+2D Pass 2S Pass
+3D X Pass Pass
+Pass
+[Play "E"]
+H7 HJ HQ H2
+S6 S4 SJ SA
+D4 DJ DA D6
+S5 S7 S3 S2
+D5 D2 C2 DT
+D8 S9 S8 SK
+H3 H8 HA H6
+C5 SQ ST C6
+C3 CK CA CQ
+C4 C8 CJ D9
+H4 HK H5 HT
+CT D7 C7 DQ
+H9 D3 C9 DK
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 8
+N  H 6
+N  D 9
+N  C 4
+S NT 6
+S  S 8
+S  H 6
+S  D 9
+S  C 4
+E NT 5
+E  S 5
+E  H 7
+E  D 4
+E  C 9
+W NT 5
+W  S 5
+W  H 7
+W  D 4
+W  C 9
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "23"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:Q974.KJ8.J732.K8 JT83.AQ5.A.AJ972 AK2.T62.KQT96.Q6 65.9743.854.T543"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "55749557496869468694"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3D  = played by east: 110 points
+Feasability: 9 4 7 5 5 4 9 6 8 6 9 4 7 5 5 4 9 6 8 6
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "10"]
+{PAR of the deal: 3D  = played by east: 110 points
+Feasability: 9 4 7 5 5 4 9 6 8 6 9 4 7 5 5 4 9 6 8 6}
+[OptimumScore "EW 110"]
+[ParContract "EW 3D="]
+[Auction "W"]
+Pass 1C 1D Pass
+2D X Pass 2H
+Pass Pass 3D Pass
+3NT Pass Pass Pass
+[Play "N"]
+HQ H2 H7 HK
+DA D6 D4 D3
+CA C6 C4 C8
+HA H6 H4 H8
+C7 CQ C5 CK
+S3 SK S5 S4
+C2 DT D5 D2
+S8 D9 D8 D7
+C9 DK C3 DJ
+CJ DQ H3 HJ
+H5 HT H9 S7
+ST S2 S6 SQ
+SJ SA CT S9
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 5
+N  S 5
+N  H 7
+N  D 4
+N  C 9
+S NT 5
+S  S 5
+S  H 7
+S  D 4
+S  C 9
+E NT 6
+E  S 8
+E  H 6
+E  D 9
+E  C 4
+W NT 6
+W  S 8
+W  H 6
+W  D 9
+W  C 4
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "25"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:QJ42.Q973.93.864 K9.T54.KQ762.A53 AT75.62.A4.KJ972 863.AKJ8.JT85.QT"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "9"]
+{PAR of the deal: 3S X -1 played by North: -100 pts
+PAR computation time: 00'02"
+Feasability: 8 5 5 8 5 5 8 8 5 8 8 5 5 8 5 5 8 8 5 7 }
+[BCFlags "1f"]
+[DoubleDummyTricks "58558585588588575885"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS -100"]
+[ParContract "NS 3CX-1; NS 3SX-1"]
+[Auction "N"]
+Pass 1D 2C 3D
+Pass 3NT Pass Pass
+Pass
+[Play "S"]
+C2 CQ C6 C3
+DA D5 D3 DK
+SA S3 S2 S9
+CK CT C4 CA
+D4 DT D9 D2
+H2 DJ S4 D7
+H6 D8 H3 DQ
+S5 S6 SJ D6
+S7 HK H7 H5
+ST S8 SQ SK
+C7 HA H9 H4
+C9 H8 HQ HT
+CJ HJ C8 C5
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 5
+N  S 8
+N  H 5
+N  D 5
+N  C 8
+S NT 5
+S  S 8
+S  H 5
+S  D 5
+S  C 8
+E NT 8
+E  S 5
+E  H 8
+E  D 8
+E  C 5
+W NT 7
+W  S 5
+W  H 8
+W  D 8
+W  C 5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "29"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:K2.AT984.JT.A653 AQ874.6.654.KT87 J5.Q53.AQ83.QJ92 T963.KJ72.K972.4"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "4SX"]
+[Result "10"]
+{PAR of the deal: 3S  = played by East : 140 points
+PAR computation time: 00'21"
+Feasability: 7 5 7 4 6 6 7 5 9 7 7 5 7 3 6 6 7 5 9 7 }
+[BCFlags "1f"]
+[DoubleDummyTricks "64757637577957679576"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 140"]
+[ParContract "EW 1S+2"]
+[Auction "N"]
+1H 1S 2S 3S
+Pass Pass 4H Pass
+Pass 4S X Pass
+Pass Pass
+[Play "S"]
+CQ C4 CA C7
+D3 DK DJ D5
+S5 ST S2 SQ
+C2 D2 C6 CT
+SJ S3 SK SA
+C9 D7 C3 CK
+CJ D9 C5 C8
+DA S6 DT D4
+H5 H2 HA H6
+H3 HJ HT D6
+HQ H7 H4 S7
+D8 S9 H8 S4
+DQ HK H9 S8
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 4
+N  H 7
+N  D 5
+N  C 7
+S NT 6
+S  S 3
+S  H 7
+S  D 5
+S  C 7
+E NT 7
+E  S 9
+E  H 5
+E  D 7
+E  C 6
+W NT 7
+W  S 9
+W  H 5
+W  D 7
+W  C 6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "29"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:K2.AT984.JT.A653 AQ874.6.654.KT87 J5.Q53.AQ83.QJ92 T963.KJ72.K972.4"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "79576795766475763757"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3S  = played by south: 140 points
+Feasability: 6 7 5 9 7 7 5 7 4 6 6 7 5 9 7 7 5 7 3 6
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "S"]
+[Contract "3S"]
+[Result "8"]
+{PAR of the deal: 3S  = played by south: 140 points
+Feasability: 6 7 5 9 7 7 5 7 4 6 6 7 5 9 7 7 5 7 3 6}
+[OptimumScore "NS 140"]
+[ParContract "NS 1S+2"]
+[Auction "E"]
+1H 1S 3H 3S
+Pass Pass Pass
+[Play "W"]
+CQ C4 CA C7
+DA D2 DJ D4
+D3 DK DT D5
+S5 S6 S2 SA
+C2 D7 C3 CK
+H3 HK HA H6
+SJ S3 SK S4
+C9 S9 C5 C8
+HQ HJ H4 D6
+DQ D9 C6 S7
+CJ ST H8 CT
+H5 H2 HT S8
+D8 H7 H9 SQ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 7
+N  S 9
+N  H 5
+N  D 7
+N  C 6
+S NT 7
+S  S 9
+S  H 5
+S  D 7
+S  C 6
+E NT 6
+E  S 4
+E  H 7
+E  D 5
+E  C 7
+W NT 6
+W  S 3
+W  H 7
+W  D 5
+W  C 7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "34"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:QT765.Q95.T7.T93 AK982.4.J83.AQ76 J43.J83.A9542.82 .AKT762.KQ6.KJ54"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4H"]
+[Result "11"]
+{PAR of the deal: 6C  = played by North: 1370 points
+PAR computation time: 00'21"
+Feasability: 12 10 11 9 11 1 3 2 4 2 12 10 11 9 11 1 3 2 4 2 }
+[BCFlags "1f"]
+[DoubleDummyTricks "b9bacb9bac2423124231"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 1370"]
+[ParContract "NS 6C="]
+[Auction "E"]
+Pass 1S Pass 2H
+Pass 3NT Pass 4H
+Pass Pass Pass
+[Play "E"]
+DT D3 DA DQ
+C3 CQ C8 C4
+H5 H4 HJ HA
+D7 DJ D5 D6
+S7 SA S3 C5
+S5 SK S4 CJ
+S6 S2 SJ H7
+H9 C7 H8 HK
+HQ S8 H3 HT
+SQ S9 D2 H2
+C9 C6 C2 CK
+CT D8 D4 DK
+ST CA D9 H6
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT 11
+N  S  9
+N  H 11
+N  D 10
+N  C 12
+S NT 11
+S  S  9
+S  H 11
+S  D 10
+S  C 12
+E NT  2
+E  S  4
+E  H  2
+E  D  3
+E  C  1
+W NT  2
+W  S  4
+W  H  2
+W  D  3
+W  C  1
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "34"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:QT765.Q95.T7.T93 AK982.4.J83.AQ76 J43.J83.A9542.82 .AKT762.KQ6.KJ54"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "2423124231b9bacb9bac"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 6C  = played by east: 1370 points
+Feasability: 1 3 2 4 2 12 10 11 9 11 1 3 2 4 2 12 10 11 9 11
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "E"]
+[Contract "6C"]
+[Result "12"]
+{PAR of the deal: 6C  = played by east: 1370 points
+Feasability: 1 3 2 4 2 12 10 11 9 11 1 3 2 4 2 12 10 11 9 11}
+[OptimumScore "EW 1370"]
+[ParContract "EW 6C="]
+[Auction "S"]
+Pass 1S Pass 2H
+Pass 2S Pass 3C
+Pass 3NT Pass 4NT
+Pass 5H Pass 6C
+Pass Pass Pass
+[Play "S"]
+DT D3 DA DQ
+D7 D8 D9 DK
+C3 CQ C2 C4
+S5 SA S4 H2
+S7 SK S3 H6
+H5 H4 H3 HA
+H9 C6 H8 HT
+S6 S2 SJ C5
+HQ CA HJ H7
+C9 C7 C8 CK
+CT DJ D2 CJ
+ST S8 D4 D6
+SQ S9 D5 HK
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  2
+N  S  4
+N  H  2
+N  D  3
+N  C  1
+S NT  2
+S  S  4
+S  H  2
+S  D  3
+S  C  1
+E NT 11
+E  S  9
+E  H 11
+E  D 10
+E  C 12
+W NT 11
+W  S  9
+W  H 11
+W  D 10
+W  C 12
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "36"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AK5.83.T97.K8754 8.AQJ764.KJ.AQJ6 QJT93.952.AQ542. 7642.KT.863.T932"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "3a4a63a4a63393733837"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 5H X -2 played by east: -500 pts
+Feasability: 6 10 4 10 3 7 3 9 3 3 6 10 4 10 3 7 3 8 3 3
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "E"]
+[Contract "5H"]
+[Result "10"]
+{PAR of the deal: 5H X -2 played by east: -500 pts
+Feasability: 6 10 4 10 3 7 3 9 3 3 6 10 4 10 3 7 3 8 3 3}
+[OptimumScore "EW -500"]
+[ParContract "E 5HX-2"]
+[Auction "N"]
+Pass 2C Pass 2D
+Pass 2H Pass 2NT
+Pass 3C Pass 3S
+Pass 4H Pass 4NT
+Pass 5H Pass Pass
+Pass
+[Play "S"]
+SQ S2 S5 S8
+SJ S4 SK H4
+H2 HT H3 H7
+H5 C2 C4 CQ
+DA D3 D9 DJ
+D2 D6 DT DK
+H9 HK H8 H6
+D4 CT C7 C6
+D5 C3 C5 CJ
+S3 C9 C8 CA
+S9 D8 D7 HJ
+DQ S6 CK HA
+ST S7 SA HQ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  3
+N  S 10
+N  H  4
+N  D 10
+N  C  6
+S NT  3
+S  S 10
+S  H  4
+S  D 10
+S  C  6
+E NT  3
+E  S  3
+E  H  9
+E  D  3
+E  C  7
+W NT  3
+W  S  3
+W  H  8
+W  D  3
+W  C  7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "36"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:AK5.83.T97.K8754 8.AQJ764.KJ.AQJ6 QJT93.952.AQ542. 7642.KT.863.T932"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "10"]
+{PAR of the deal: 5H X -2 played by North: -500 pts
+PAR computation time: 00'01"
+Feasability: 7 3 9 3 3 6 10 4 10 3 7 3 8 3 3 6 10 4 10 3 }
+[BCFlags "1f"]
+[DoubleDummyTricks "33937338373a4a63a4a6"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS -500"]
+[ParContract "N 5HX-2"]
+[Auction "W"]
+Pass 1H 2H =1= Pass
+4S Pass Pass Pass
+[Note "1: Alert."]
+[Play "N"]
+S8 S3 S2 SA
+DJ DQ D3 D9
+DK SQ S4 SK
+H7 S9 S6 S5
+H6 SJ S7 C4
+H4 H2 HT H3
+HJ H5 HK H8
+CA H9 CT CK
+HA ST C3 C5
+C6 D2 D6 DT
+CJ DA D8 D7
+HQ D4 C2 C7
+CQ D5 C9 C8
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  3
+N  S  3
+N  H  9
+N  D  3
+N  C  7
+S NT  3
+S  S  3
+S  H  8
+S  D  3
+S  C  7
+E NT  3
+E  S 10
+E  H  4
+E  D 10
+E  C  6
+W NT  3
+W  S 10
+W  H  4
+W  D 10
+W  C  6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "37"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:J97653.Q.K872.T4 K2.AJ93.QJ63.KJ3 AQ4.KT7.A95.Q876 T8.86542.T4.A952"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2H"]
+[Result "7"]
+{PAR of the deal: 4S  = played by North: 620 points
+PAR computation time: 00'02"
+Feasability: 7 8 6 10 9 6 5 7 3 4 7 8 6 10 9 6 5 7 3 4 }
+[BCFlags "1f"]
+[DoubleDummyTricks "9a6879a6874375643756"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 620"]
+[ParContract "NS 4S="]
+[Auction "N"]
+Pass 1NT Pass 2D
+Pass 2H Pass Pass
+Pass
+[Play "S"]
+C7 C9 CT CJ
+HT H2 HQ H9
+SA S8 S7 SK
+SQ ST S3 S2
+DA D4 D7 D3
+D9 DT DK D6
+C6 CA C4 C3
+HK H4 S6 H3
+CQ C2 S5 CK
+H7 H5 S9 HA
+D5 C5 D2 DJ
+S4 H6 D8 DQ
+C8 H8 SJ HJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  9
+N  S 10
+N  H  6
+N  D  8
+N  C  7
+S NT  9
+S  S 10
+S  H  6
+S  D  8
+S  C  7
+E NT  4
+E  S  3
+E  H  7
+E  D  5
+E  C  6
+W NT  4
+W  S  3
+W  H  7
+W  D  5
+W  C  6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "37"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:J97653.Q.K872.T4 K2.AJ93.QJ63.KJ3 AQ4.KT7.A95.Q876 T8.86542.T4.A952"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "43756437569a6879a687"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 4S  = played by east: 620 points
+Feasability: 6 5 7 3 4 7 8 6 10 9 6 5 7 3 4 7 8 6 10 9
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "E"]
+[Contract "4SX"]
+[Result "10"]
+{PAR of the deal: 4S  = played by east: 620 points
+Feasability: 6 5 7 3 4 7 8 6 10 9 6 5 7 3 4 7 8 6 10 9}
+[OptimumScore "EW 620"]
+[ParContract "EW 4S="]
+[Auction "E"]
+Pass 1NT X 2D
+X 2H Pass Pass
+2S Pass 3S Pass
+4S Pass Pass X
+Pass Pass Pass
+[Play "S"]
+D6 DA D4 D2
+HA H7 H4 HQ
+DQ D5 DT DK
+SK SA S8 SJ
+H3 HT H6 S3
+S2 SQ ST S5
+H9 HK H2 C4
+CJ C6 C5 CT
+DJ D9 H5 D7
+D3 C7 C2 D8
+C3 S4 H8 S6
+HJ C8 C9 S7
+CK CQ CA S9
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  4
+N  S  3
+N  H  7
+N  D  5
+N  C  6
+S NT  4
+S  S  3
+S  H  7
+S  D  5
+S  C  6
+E NT  9
+E  S 10
+E  H  6
+E  D  8
+E  C  7
+W NT  9
+W  S 10
+W  H  6
+W  D  8
+W  C  7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "45"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:QJ4.KQ963.Q3.KQ9 K8762.JT.K654.A6 53.A7542.A87.JT5 AT9.8.JT92.87432"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3H"]
+[Result "10"]
+{PAR of the deal: 3S  = played by East : 140 points
+PAR computation time: 00'01"
+Feasability: 6 4 9 4 7 7 9 4 9 5 6 4 9 4 7 7 9 4 9 5 }
+[BCFlags "1f"]
+[DoubleDummyTricks "74946749465949759497"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 140"]
+[ParContract "EW 3S="]
+[Auction "N"]
+1H 1S 2S X =1=
+Pass Pass 3H Pass
+Pass Pass
+[Note "1: Alert."]
+[Play "E"]
+HJ H2 H8 HK
+HT HA C2 H6
+CA C5 C3 CK
+S6 S5 SA S4
+C6 CT C4 CQ
+D6 CJ C7 C9
+SK S3 S9 SQ
+D4 D7 D9 DQ
+S2 H4 ST SJ
+D5 DA D2 D3
+DK D8 DT H3
+S7 H7 C8 HQ
+S8 H5 DJ H9
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 7
+N  S 4
+N  H 9
+N  D 4
+N  C 6
+S NT 7
+S  S 4
+S  H 9
+S  D 4
+S  C 6
+E NT 5
+E  S 9
+E  H 4
+E  D 9
+E  C 7
+W NT 5
+W  S 9
+W  H 4
+W  D 9
+W  C 7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "45"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:QJ4.KQ963.Q3.KQ9 K8762.JT.K654.A6 53.A7542.A87.JT5 AT9.8.JT92.87432"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "59497594977494674946"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3S  = played by south: 140 points
+Feasability: 7 9 4 9 5 6 4 9 4 7 7 9 4 9 5 6 4 9 4 7
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "10"]
+{PAR of the deal: 3S  = played by south: 140 points
+Feasability: 7 9 4 9 5 6 4 9 4 7 7 9 4 9 5 6 4 9 4 7}
+[OptimumScore "NS 140"]
+[ParContract "NS 3S="]
+[Auction "E"]
+1NT Pass 2D Pass
+3H Pass 3NT Pass
+Pass Pass
+[Play "S"]
+S2 S3 SA S4
+SK S5 ST SQ
+DK DA D2 D3
+HT H2 H8 HK
+HJ HA C2 H3
+D4 H4 C4 H6
+CA C5 C3 C9
+D5 D7 D9 DQ
+C6 CT C7 CQ
+S7 CJ C8 CK
+S6 H5 DT H9
+S8 H7 S9 HQ
+D6 D8 DJ SJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 5
+N  S 9
+N  H 4
+N  D 9
+N  C 7
+S NT 5
+S  S 9
+S  H 4
+S  D 9
+S  C 7
+E NT 7
+E  S 4
+E  H 9
+E  D 4
+E  C 6
+W NT 7
+W  S 4
+W  H 9
+W  D 4
+W  C 6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "49"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:4.AQ87653.KT7.A6 T3.KJ92.Q86.J842 AKJ865.T.J5.QT73 Q972.4.A9432.K95"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "6"]
+{PAR of the deal: 3H  = played by North: 140 points
+PAR computation time: 00'21"
+Feasability: 7 6 9 8 6 6 6 4 5 6 7 7 8 8 7 6 6 4 5 6 }
+[BCFlags "1f"]
+[DoubleDummyTricks "68967788776546665466"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 140"]
+[ParContract "N 2H+1"]
+[Auction "N"]
+1H Pass 1S Pass
+3H Pass 3S Pass
+3NT Pass Pass Pass
+[Play "E"]
+C2 CT CK CA
+ST SJ SQ S4
+DQ D5 D9 D7
+CJ CQ C5 C6
+S3 SA S2 H7
+H2 SK S7 H6
+HK HT H4 HQ
+D8 DJ DA DT
+C4 S6 S9 H3
+C8 C3 C9 H5
+D6 C7 D2 DK
+H9 S5 D3 HA
+HJ S8 D4 H8
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 8
+N  H 9
+N  D 6
+N  C 7
+S NT 7
+S  S 8
+S  H 8
+S  D 7
+S  C 7
+E NT 6
+E  S 5
+E  H 4
+E  D 6
+E  C 6
+W NT 6
+W  S 5
+W  H 4
+W  D 6
+W  C 6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "49"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:4.AQ87653.KT7.A6 T3.KJ92.Q86.J842 AKJ865.T.J5.QT73 Q972.4.A9432.K95"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "65466654666896778877"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3H  = played by east: 140 points
+Feasability: 6 6 4 5 6 7 6 9 8 6 6 6 4 5 6 7 7 8 8 7
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "4S"]
+[Result "10"]
+{PAR of the deal: 3H  = played by east: 140 points
+Feasability: 6 6 4 5 6 7 6 9 8 6 6 6 4 5 6 7 7 8 8 7}
+[OptimumScore "EW 140"]
+[ParContract "E 2H+1"]
+[Auction "E"]
+1H Pass 1S Pass
+3H Pass 4S Pass
+Pass Pass
+[Play "N"]
+CK CA C2 C3
+S7 S4 S3 SA
+S2 H3 ST SK
+S9 H5 C4 S5
+SQ H6 H2 S6
+DA D7 D6 D5
+C9 C6 CJ CQ
+C5 H7 C8 CT
+D3 DT D8 C7
+D4 DK DQ DJ
+H4 HA H9 HT
+D2 H8 HJ SJ
+D9 HQ HK S8
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 5
+N  H 4
+N  D 6
+N  C 6
+S NT 6
+S  S 5
+S  H 4
+S  D 6
+S  C 6
+E NT 6
+E  S 8
+E  H 9
+E  D 6
+E  C 7
+W NT 7
+W  S 8
+W  H 8
+W  D 7
+W  C 7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "57"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AJ8.J873.T976.J4 QT752.KQ5.4.AQT6 K64.AT64.J82.987 93.92.AKQ53.K532"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "10"]
+{PAR of the deal: 3S  = played by East : 140 points
+PAR computation time: 00'01"
+Feasability: 3 4 6 3 4 10 9 7 9 8 3 4 6 3 4 10 9 7 9 8 }
+[BCFlags "1f"]
+[DoubleDummyTricks "43643436438979a8979a"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 140"]
+[ParContract "EW 1S+2"]
+[Auction "N"]
+Pass 1S Pass 2D
+Pass 2S Pass 2NT
+Pass 3C Pass 3NT
+Pass Pass Pass
+[Play "N"]
+H7 HQ HA H2
+SA S2 S4 S3
+SJ SQ SK S9
+D6 D4 D2 DK
+C4 CQ C7 C2
+CJ CA C8 C5
+D7 CT C9 C3
+S8 ST S6 D5
+H3 C6 H4 CK
+D9 S5 D8 DA
+DT H5 DJ DQ
+H8 S7 H6 D3
+HJ HK HT H9
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  4
+N  S  3
+N  H  6
+N  D  4
+N  C  3
+S NT  4
+S  S  3
+S  H  6
+S  D  4
+S  C  3
+E NT  8
+E  S  9
+E  H  7
+E  D  9
+E  C 10
+W NT  8
+W  S  9
+W  H  7
+W  D  9
+W  C 10
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "57"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:AJ8.J873.T976.J4 QT752.KQ5.4.AQT6 K64.AT64.J82.987 93.92.AKQ53.K532"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "8979a8979a4364343643"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3S  = played by south: 140 points
+Feasability: 10 9 7 9 8 3 4 6 3 4 10 9 7 9 8 3 4 6 3 4
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "8"]
+{PAR of the deal: 3S  = played by south: 140 points
+Feasability: 10 9 7 9 8 3 4 6 3 4 10 9 7 9 8 3 4 6 3 4}
+[OptimumScore "NS 140"]
+[ParContract "NS 1S+2"]
+[Auction "E"]
+Pass 1S Pass 2D
+Pass 2S Pass 2NT
+Pass 3C Pass 3D
+Pass 3NT Pass Pass
+Pass
+[Play "E"]
+H3 HQ H6 H2
+C4 CQ C7 C3
+CJ C6 C8 CK
+H8 HK HA H9
+HJ H5 H4 D3
+H7 S5 HT D5
+D7 D4 D2 DK
+D6 S2 D8 DQ
+D9 S7 DJ DA
+S8 CT C9 C5
+SJ CA S4 C2
+SA ST S6 S3
+DT SQ SK S9
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  8
+N  S  9
+N  H  7
+N  D  9
+N  C 10
+S NT  8
+S  S  9
+S  H  7
+S  D  9
+S  C 10
+E NT  4
+E  S  3
+E  H  6
+E  D  4
+E  C  3
+W NT  4
+W  S  3
+W  H  6
+W  D  4
+W  C  3
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "73"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KT8.AK73.84.K732 QJ97.Q96.AKQ2.T9 A432.T4.JT96.J85 65.J852.753.AQ64"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "2S"]
+[Result "7"]
+{PAR of the deal: 2C  = played by South : 90 points
+PAR computation time: 00'02"
+Feasability: 7 6 6 7 6 5 6 7 6 7 8 6 6 7 6 5 6 7 6 7 }
+[BCFlags "1f"]
+[DoubleDummyTricks "67667676687676576765"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 90"]
+[ParContract "S 2C="]
+[Auction "N"]
+1C X 1S 2H
+X Pass 2S Pass
+Pass Pass
+[Play "W"]
+HJ HK H6 H4
+D3 D4 DQ D6
+CA C2 CT CJ
+S6 S8 S9 SA
+C4 CK C9 C5
+D5 D8 DK D9
+S5 SK SQ S3
+H2 HA H9 HT
+H5 H3 HQ S4
+D7 ST D2 DT
+H8 H7 S7 S2
+C6 C3 DA DJ
+CQ C7 SJ C8
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 7
+N  H 6
+N  D 6
+N  C 7
+S NT 6
+S  S 7
+S  H 6
+S  D 6
+S  C 8
+E NT 7
+E  S 6
+E  H 7
+E  D 6
+E  C 5
+W NT 7
+W  S 6
+W  H 7
+W  D 6
+W  C 5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "73"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:KT8.AK73.84.K732 QJ97.Q96.AKQ2.T9 A432.T4.JT96.J85 65.J852.753.AQ64"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "76765767656766767668"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 2C  = played by west: 90 points
+Feasability: 5 6 7 6 7 7 6 6 7 6 5 6 7 6 7 8 6 6 7 6
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "N"]
+[Contract "1NT"]
+[Result "7"]
+{PAR of the deal: 2C  = played by west: 90 points
+Feasability: 5 6 7 6 7 7 6 6 7 6 5 6 7 6 7 8 6 6 7 6}
+[OptimumScore "EW 90"]
+[ParContract "W 2C="]
+[Auction "E"]
+1C X 1S 1NT
+Pass Pass Pass
+[Play "E"]
+HA H6 HT H2
+H3 H9 H4 HJ
+D8 DQ D6 D7
+HK HQ S4 H5
+D4 DK D9 D5
+S8 SQ SA S6
+CK C9 CJ CQ
+C2 CT C5 C6
+H7 DA DT D3
+ST D2 DJ S5
+C3 S7 C8 CA
+SK S9 S2 H8
+C7 SJ S3 C4
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 7
+N  S 6
+N  H 7
+N  D 6
+N  C 5
+S NT 7
+S  S 6
+S  H 7
+S  D 6
+S  C 5
+E NT 6
+E  S 7
+E  H 6
+E  D 6
+E  C 7
+W NT 6
+W  S 7
+W  H 6
+W  D 6
+W  C 8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "74"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:Q964.T.Q75.AKJ52 2.KQ852.AJ9632.7 A3.AJ643.T84.Q43 KJT875.97.K.T986"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4HX"]
+[Result "6"]
+{PAR of the deal: 3NT = played by East : 600 points
+PAR computation time: 00'06"
+Feasability: 4 7 7 5 4 9 5 6 8 9 4 7 7 5 4 9 6 6 8 9 }
+[BCFlags "1f"]
+[DoubleDummyTricks "45774457749865998669"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 600"]
+[ParContract "EW 3N="]
+[Auction "E"]
+1C 2NT Pass 4H
+Pass Pass X Pass
+Pass Pass
+[Play "E"]
+CA C7 C3 C6
+S6 S2 SA S5
+HT H5 HA H7
+SQ H2 S3 SJ
+S4 HK H6 H9
+D5 D2 D4 DK
+S9 D3 H3 SK
+CJ H8 C4 C8
+C2 HQ H4 S7
+D7 DA D8 S8
+DQ D6 DT C9
+CK D9 CQ CT
+C5 DJ HJ ST
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 4
+N  S 5
+N  H 7
+N  D 7
+N  C 4
+S NT 4
+S  S 5
+S  H 7
+S  D 7
+S  C 4
+E NT 9
+E  S 8
+E  H 6
+E  D 5
+E  C 9
+W NT 9
+W  S 8
+W  H 6
+W  D 6
+W  C 9
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "74"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:Q964.T.Q75.AKJ52 2.KQ852.AJ9632.7 A3.AJ643.T84.Q43 KJT875.97.K.T986"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "98669986594577445774"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3NT = played by south: 600 points
+Feasability: 9 6 6 8 9 4 7 7 5 4 9 5 6 8 9 4 7 7 5 4
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "E"]
+[Contract "3H"]
+[Result "6"]
+{PAR of the deal: 3NT = played by south: 600 points
+Feasability: 9 6 6 8 9 4 7 7 5 4 9 5 6 8 9 4 7 7 5 4}
+[OptimumScore "NS 600"]
+[ParContract "NS 3N="]
+[Auction "S"]
+1C 2NT =1= X 3H
+Pass Pass Pass
+[Note "1: Alert."]
+[Play "S"]
+HT HQ H6 H7
+S4 S2 SA S5
+S6 C7 S3 SK
+D7 D2 D4 DK
+C5 H2 HJ H9
+CJ H5 C3 C9
+D5 DA D8 S8
+DQ D3 DT S7
+CA D6 C4 C6
+CK D9 CQ CT
+C2 DJ H4 C8
+S9 H8 HA ST
+SQ HK H3 SJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 9
+N  S 8
+N  H 6
+N  D 6
+N  C 9
+S NT 9
+S  S 8
+S  H 6
+S  D 5
+S  C 9
+E NT 4
+E  S 5
+E  H 7
+E  D 7
+E  C 4
+W NT 4
+W  S 5
+W  H 7
+W  D 7
+W  C 4
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "85"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A.T64.QJT763.J92 9872.AKQ5.A2.T53 Q.J9732.54.AK764 KJT6543.8.K98.Q8"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "12"]
+{PAR of the deal: 4S  = played by East : 420 points
+PAR computation time: 00'00"
+Feasability: 7 7 7 1 4 5 6 5 10 8 7 7 7 1 4 5 6 5 10 8 }
+[BCFlags "1f"]
+[DoubleDummyTricks "41777417778a5658a565"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 420"]
+[ParContract "EW 4S="]
+[Auction "N"]
+2D X Pass 4S
+Pass Pass Pass
+[Play "N"]
+DQ DA D5 D8
+H4 HA H7 H8
+H6 HK H2 C8
+HT HQ H3 CQ
+SA S2 SQ SK
+DJ D2 D4 DK
+D6 S7 C6 D9
+C2 C3 CK S5
+D7 S8 C7 S3
+C9 C5 CA S6
+D3 S9 H9 S4
+CJ CT C4 SJ
+DT H5 HJ ST
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  4
+N  S  1
+N  H  7
+N  D  7
+N  C  7
+S NT  4
+S  S  1
+S  H  7
+S  D  7
+S  C  7
+E NT  8
+E  S 10
+E  H  5
+E  D  6
+E  C  5
+W NT  8
+W  S 10
+W  H  5
+W  D  6
+W  C  5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "85"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:A.T64.QJT763.J92 9872.AKQ5.A2.T53 Q.J9732.54.AK764 KJT6543.8.K98.Q8"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "8a5658a5654177741777"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 4S  = played by south: 420 points
+Feasability: 5 6 5 10 8 7 7 7 1 4 5 6 5 10 8 7 7 7 1 4
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "N"]
+[Contract "4S"]
+[Result "12"]
+{PAR of the deal: 4S  = played by south: 420 points
+Feasability: 5 6 5 10 8 7 7 7 1 4 5 6 5 10 8 7 7 7 1 4}
+[OptimumScore "NS 420"]
+[ParContract "NS 4S="]
+[Auction "E"]
+Pass 1C 1H 2S
+Pass 4S Pass Pass
+Pass
+[Play "E"]
+DQ D2 D5 DK
+H4 HQ H2 H8
+H6 HA H3 C8
+HT HK H7 CQ
+SA S2 SQ SK
+C2 C3 CK S5
+D3 DA D4 D8
+C9 C5 C4 S6
+DT S7 C6 D9
+D6 H5 HJ S4
+D7 S8 C7 S3
+CJ CT CA ST
+DJ S9 H9 SJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  8
+N  S 10
+N  H  5
+N  D  6
+N  C  5
+S NT  8
+S  S 10
+S  H  5
+S  D  6
+S  C  5
+E NT  4
+E  S  1
+E  H  7
+E  D  7
+E  C  7
+W NT  4
+W  S  1
+W  H  7
+W  D  7
+W  C  7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "87"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:Q8653.KQ9.J.KJ62 AK4.A7642.94.853 J7.J83.KT875.T94 T92.T5.AQ632.AQ7"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "2H"]
+[Result "8"]
+{PAR of the deal: 2H  = played by East : 110 points
+PAR computation time: 00'05"
+Feasability: 6 6 4 6 4 7 7 8 7 7 6 6 4 6 4 6 7 8 7 7 }
+[BCFlags "1f"]
+[DoubleDummyTricks "46466464667787777876"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 110"]
+[ParContract "EW 1H+1"]
+[Auction "S"]
+1S Pass Pass 2D
+Pass 2H Pass Pass
+Pass
+[Play "N"]
+SJ S2 S3 SA
+HJ H5 H9 H2
+S7 S9 SQ SK
+H3 HT HQ HA
+D5 DA DJ D4
+DT D2 HK D9
+H8 ST S8 S4
+CT C7 CJ C3
+D7 D3 S6 H6
+C4 CQ CK C5
+D8 D6 S5 H7
+C9 CA C6 C8
+DK DQ C2 H4
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 4
+N  S 6
+N  H 4
+N  D 6
+N  C 6
+S NT 4
+S  S 6
+S  H 4
+S  D 6
+S  C 6
+E NT 7
+E  S 7
+E  H 8
+E  D 7
+E  C 7
+W NT 7
+W  S 7
+W  H 8
+W  D 7
+W  C 6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "87"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:Q8653.KQ9.J.KJ62 AK4.A7642.94.853 J7.J83.KT875.T94 T92.T5.AQ632.AQ7"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "77876778774646646466"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 2H  = played by south: 110 points
+Feasability: 6 7 8 7 7 6 6 4 6 4 7 7 8 7 7 6 6 4 6 4
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "1S"]
+[Result "7"]
+{PAR of the deal: 2H  = played by south: 110 points
+Feasability: 6 7 8 7 7 6 6 4 6 4 7 7 8 7 7 6 6 4 6 4}
+[OptimumScore "NS 110"]
+[ParContract "NS 1H+1"]
+[Auction "W"]
+1S Pass Pass Pass
+[Play "N"]
+C8 C4 CA C2
+HA H3 HT H9
+H2 H8 H5 HK
+H6 HJ S9 HQ
+SK S7 ST S3
+C3 C9 CQ CK
+SA SJ S2 SQ
+H4 D5 D6 S6
+S4 D7 D2 S5
+C5 CT C7 C6
+D4 D8 DQ DJ
+D9 DT DA S8
+H7 DK D3 CJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 7
+N  S 7
+N  H 8
+N  D 7
+N  C 6
+S NT 7
+S  S 7
+S  H 8
+S  D 7
+S  C 7
+E NT 4
+E  S 6
+E  H 4
+E  D 6
+E  C 6
+W NT 4
+W  S 6
+W  H 4
+W  D 6
+W  C 6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "89"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KT3.A3.A75.QJ832 AJ754.T95.K83.54 86.8742.64.KT976 Q92.KQJ6.QJT92.A"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "4C"]
+[Result "9"]
+{PAR of the deal: 5S  = played by East : 650 points
+PAR computation time: 00'00"
+Feasability: 8 2 3 2 3 5 11 9 11 7 8 2 3 2 3 5 11 9 11 7 }
+[BCFlags "1f"]
+[DoubleDummyTricks "32328323287b9b57b9b5"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 650"]
+[ParContract "EW 5S="]
+[Auction "N"]
+1C 1S 3C 3S
+4C Pass Pass Pass
+[Play "E"]
+SA S6 S2 S3
+S7 S8 SQ SK
+C5 C9 CA C3
+D3 D4 DQ DA
+C4 CT S9 C2
+H5 H4 HJ HA
+SJ C6 D2 ST
+H9 H7 HQ H3
+D8 D6 DJ D5
+HT H2 HK C8
+DK C7 D9 D7
+S4 H8 H6 CJ
+S5 CK DT CQ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  3
+N  S  2
+N  H  3
+N  D  2
+N  C  8
+S NT  3
+S  S  2
+S  H  3
+S  D  2
+S  C  8
+E NT  7
+E  S 11
+E  H  9
+E  D 11
+E  C  5
+W NT  7
+W  S 11
+W  H  9
+W  D 11
+W  C  5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "89"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:KT3.A3.A75.QJ832 AJ754.T95.K83.54 86.8742.64.KT976 Q92.KQJ6.QJT92.A"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "7b9b57b9b53232832328"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 5S  = played by south: 650 points
+Feasability: 5 11 9 11 7 8 2 3 2 3 5 11 9 11 7 8 2 3 2 3
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "E"]
+[Contract "2C"]
+[Result "8"]
+{PAR of the deal: 5S  = played by south: 650 points
+Feasability: 5 11 9 11 7 8 2 3 2 3 5 11 9 11 7 8 2 3 2 3}
+[OptimumScore "NS 650"]
+[ParContract "NS 5S="]
+[Auction "E"]
+1C Pass 2C Pass
+Pass Pass
+[Play "S"]
+C5 C6 CA C2
+H5 H2 HK HA
+H9 H4 HJ H3
+D3 D4 DQ D5
+D8 D6 DJ DA
+C4 C7 D2 C3
+SA S6 S9 SK
+S5 S8 SQ S3
+HT H7 HQ C8
+DK C9 D9 D7
+S4 H8 H6 CQ
+S7 CT S2 CJ
+SJ CK DT ST
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  7
+N  S 11
+N  H  9
+N  D 11
+N  C  5
+S NT  7
+S  S 11
+S  H  9
+S  D 11
+S  C  5
+E NT  3
+E  S  2
+E  H  3
+E  D  2
+E  C  8
+W NT  3
+W  S  2
+W  H  3
+W  D  2
+W  C  8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "90"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:T82.J7.J832.T952 AKJ5.K8.Q7.AQ863 Q97.QT532.964.J4 643.A964.AKT5.K7"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "6NT"]
+[Result "10"]
+{PAR of the deal: 6NT = played by North: 1440 points
+PAR computation time: 00'04"
+Feasability: 12 12 11 12 12 1 1 2 1 1 12 12 11 12 12 1 1 2 1 1 }
+[BCFlags "1f"]
+[DoubleDummyTricks "ccbccccbcc1121111211"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 1440"]
+[ParContract "NS 6N="]
+[Auction "E"]
+Pass 1C Pass 1D
+Pass 2S Pass 3H
+Pass 3NT Pass 5NT
+Pass 6NT Pass Pass
+Pass
+[Play "W"]
+H2 H6 HJ HK
+D4 D5 D3 DQ
+S7 S6 S2 SK
+D6 DK D2 D7
+D9 DA D8 S5
+C4 CK C5 C3
+SQ S4 ST SJ
+HQ HA H7 H8
+S9 S3 S8 SA
+CJ C7 C2 CQ
+H3 H4 C9 CA
+H5 H9 CT C8
+HT DT DJ C6
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT 12
+N  S 12
+N  H 11
+N  D 12
+N  C 12
+S NT 12
+S  S 12
+S  H 11
+S  D 12
+S  C 12
+E NT  1
+E  S  1
+E  H  2
+E  D  1
+E  C  1
+W NT  1
+W  S  1
+W  H  2
+W  D  1
+W  C  1
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "90"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:T82.J7.J832.T952 AKJ5.K8.Q7.AQ863 Q97.QT532.964.J4 643.A964.AKT5.K7"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "1121111211ccbccccbcc"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 6NT = played by east: 1440 points
+Feasability: 1 1 2 1 1 12 12 11 12 12 1 1 2 1 1 12 12 11 12 12
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "6NT"]
+[Result "12"]
+{PAR of the deal: 6NT = played by east: 1440 points
+Feasability: 1 1 2 1 1 12 12 11 12 12 1 1 2 1 1 12 12 11 12 12}
+[OptimumScore "EW 1440"]
+[ParContract "EW 6N="]
+[Auction "S"]
+Pass 1C Pass 1D
+Pass 2S Pass 3H
+Pass 3NT Pass 4NT
+Pass 5H Pass 6NT
+Pass Pass Pass
+[Play "N"]
+CJ CK C5 C3
+S7 S3 S2 SA
+C4 C7 C2 CQ
+H5 H4 C9 CA
+D4 D5 D2 DQ
+H3 S4 CT C8
+S9 S6 ST SK
+D6 H6 D3 C6
+H2 HA H7 H8
+HT H9 HJ HK
+D9 DK D8 D7
+HQ DA DJ S5
+SQ DT S8 SJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  1
+N  S  1
+N  H  2
+N  D  1
+N  C  1
+S NT  1
+S  S  1
+S  H  2
+S  D  1
+S  C  1
+E NT 12
+E  S 12
+E  H 11
+E  D 12
+E  C 12
+W NT 12
+W  S 12
+W  H 11
+W  D 12
+W  C 12
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "95"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:J94.AJ.Q986.AQT8 KQT.KQ843.2.6543 A652.752.J75.K72 873.T96.AKT43.J9"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "2S"]
+[Result "6"]
+{PAR of the deal: 2H  = played by East : 110 points
+PAR computation time: 00'01"
+Feasability: 7 6 5 7 6 6 7 8 5 6 7 6 5 7 6 6 7 8 5 6 }
+[BCFlags "1f"]
+[DoubleDummyTricks "67567675676587665876"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 110"]
+[ParContract "EW 2H="]
+[Auction "S"]
+1D 1H X XX
+2C Pass 2D Pass
+2S Pass Pass Pass
+[Play "W"]
+SK SA S3 S4
+C6 C7 C9 CA
+C3 CK CJ C8
+C4 C2 S7 CQ
+D2 D5 DA D6
+HK H2 H9 HJ
+C5 H5 S8 CT
+ST D7 D4 D8
+SQ S5 D3 S9
+H3 H7 HT HA
+H4 DJ DK D9
+H8 S6 DT DQ
+HQ S2 H6 SJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 7
+N  H 5
+N  D 6
+N  C 7
+S NT 6
+S  S 7
+S  H 5
+S  D 6
+S  C 7
+E NT 6
+E  S 5
+E  H 8
+E  D 7
+E  C 6
+W NT 6
+W  S 5
+W  H 8
+W  D 7
+W  C 6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "95"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:J94.AJ.Q986.AQT8 KQT.KQ843.2.6543 A652.752.J75.K72 873.T96.AKT43.J9"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "65876658766756767567"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 2H  = played by south: 110 points
+Feasability: 6 7 8 5 6 7 6 5 7 6 6 7 8 5 6 7 6 5 7 6
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "N"]
+[Contract "3H"]
+[Result "7"]
+{PAR of the deal: 2H  = played by south: 110 points
+Feasability: 6 7 8 5 6 7 6 5 7 6 6 7 8 5 6 7 6 5 7 6}
+[OptimumScore "NS 110"]
+[ParContract "NS 2H="]
+[Auction "W"]
+1D 1H 1S 2H
+X =1= Pass 2S Pass
+Pass 3H Pass Pass
+Pass
+[Note "1: Alert."]
+[Play "E"]
+D5 DK D8 D2
+D7 DA D6 C5
+H2 HT HJ HK
+C2 CJ CQ C4
+H5 H6 HA H3
+SA S7 S4 SK
+H7 H9 D9 H4
+DJ D3 DQ H8
+S2 S3 S9 SQ
+S5 S8 SJ ST
+C7 C9 CA C6
+CK D4 CT C3
+S6 DT C8 HQ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 5
+N  H 8
+N  D 7
+N  C 6
+S NT 6
+S  S 5
+S  H 8
+S  D 7
+S  C 6
+E NT 6
+E  S 7
+E  H 5
+E  D 6
+E  C 7
+W NT 6
+W  S 7
+W  H 5
+W  D 6
+W  C 7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "97"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:T85.A73.K864.K73 J96.K942.975.985 AKQ743.J8.JT3.QJ 2.QT65.AQ2.AT642"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "11"]
+{PAR of the deal: 4S  = played by North: 420 points
+PAR computation time: 00'01"
+Feasability: 6 8 5 10 8 7 4 8 3 4 6 8 5 10 8 7 4 8 3 4 }
+[BCFlags "1f"]
+[DoubleDummyTricks "8a5868a5864384743847"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 420"]
+[ParContract "NS 4S="]
+[Auction "N"]
+Pass Pass 1S X
+XX 2H 2S 3H
+4S Pass Pass Pass
+[Play "W"]
+CA C3 C8 CJ
+C6 C7 C9 CQ
+S2 S5 S6 SQ
+C2 S8 S9 SK
+DA D4 D5 DT
+C4 CK C5 D3
+D2 DK D7 DJ
+DQ D8 D9 S7
+H5 ST SJ SA
+H6 HA H2 H8
+CT D6 H4 HJ
+HT H3 H9 S3
+HQ H7 HK S4
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  8
+N  S 10
+N  H  5
+N  D  8
+N  C  6
+S NT  8
+S  S 10
+S  H  5
+S  D  8
+S  C  6
+E NT  4
+E  S  3
+E  H  8
+E  D  4
+E  C  7
+W NT  4
+W  S  3
+W  H  8
+W  D  4
+W  C  7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "97"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:T85.A73.K864.K73 J96.K942.975.985 AKQ743.J8.JT3.QJ 2.QT65.AQ2.AT642"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "43847438478a5868a586"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 4S  = played by east: 420 points
+Feasability: 7 4 8 3 4 6 8 5 10 8 7 4 8 3 4 6 8 5 10 8
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "4S"]
+[Result "10"]
+{PAR of the deal: 4S  = played by east: 420 points
+Feasability: 7 4 8 3 4 6 8 5 10 8 7 4 8 3 4 6 8 5 10 8}
+[OptimumScore "EW 420"]
+[ParContract "EW 4S="]
+[Auction "E"]
+Pass Pass 1S X
+XX 2H 2S Pass
+3S Pass 4S Pass
+Pass Pass
+[Play "N"]
+H6 HA H9 H8
+S2 S5 S6 SK
+CA C3 C5 CJ
+C6 C7 C8 CQ
+C2 S8 S9 SQ
+C4 ST SJ SA
+D2 DK D7 D3
+CT CK C9 DJ
+DQ D4 D5 DT
+DA D6 D9 HJ
+HQ H3 H2 S4
+H5 D8 H4 S3
+HT H7 HK S7
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  4
+N  S  3
+N  H  8
+N  D  4
+N  C  7
+S NT  4
+S  S  3
+S  H  8
+S  D  4
+S  C  7
+E NT  8
+E  S 10
+E  H  5
+E  D  8
+E  C  6
+W NT  8
+W  S 10
+W  H  5
+W  D  8
+W  C  6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "102"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:K954.Q532.6543.8 T86.T64.KJ87.A64 Q732..AQT2.KQJ95 AJ.AKJ987.9.T732"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "5HX"]
+[Result "8"]
+{PAR of the deal: 5H X -3 played by North: -500 pts
+PAR computation time: 00'13"
+Feasability: 4 4 8 3 6 8 9 5 10 6 4 4 8 3 6 8 9 5 10 6 }
+[BCFlags "1f"]
+[DoubleDummyTricks "63844638446a5986a598"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS -500"]
+[ParContract "NS 5HX-3"]
+[Auction "E"]
+Pass Pass 1C 1H
+1S 2H 4S 5H
+X Pass Pass Pass
+[Play "E"]
+C8 CA CK C3
+H5 H4 S7 HK
+D6 DK DA D9
+S5 S6 SQ SA
+D3 C4 C9 C7
+SK S8 S2 SJ
+D4 DJ DQ H7
+D5 C6 CJ C2
+H2 D7 D2 H8
+HQ H6 C5 CT
+H3 HT S3 H9
+S4 D8 DT HJ
+S9 ST CQ HA
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  6
+N  S  3
+N  H  8
+N  D  4
+N  C  4
+S NT  6
+S  S  3
+S  H  8
+S  D  4
+S  C  4
+E NT  6
+E  S 10
+E  H  5
+E  D  9
+E  C  8
+W NT  6
+W  S 10
+W  H  5
+W  D  9
+W  C  8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "102"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:K954.Q532.6543.8 T86.T64.KJ87.A64 Q732..AQT2.KQJ95 AJ.AKJ987.9.T732"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "6a5986a5986384463844"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 5H X -3 played by east: -500 pts
+Feasability: 8 9 5 10 6 4 4 8 3 6 8 9 5 10 6 4 4 8 3 6
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "E"]
+[Contract "4H"]
+[Result "8"]
+{PAR of the deal: 5H X -3 played by east: -500 pts
+Feasability: 8 9 5 10 6 4 4 8 3 6 8 9 5 10 6 4 4 8 3 6}
+[OptimumScore "EW -500"]
+[ParContract "EW 5HX-3"]
+[Auction "S"]
+Pass Pass 1C 1H
+Pass 2H Pass 4H
+Pass Pass Pass
+[Play "S"]
+C8 CA C5 C2
+HQ H4 S2 H8
+D6 DK DA D9
+SK S6 S7 SJ
+S4 S8 SQ SA
+H3 H6 D2 H9
+H2 HT S3 H7
+S5 ST C9 C3
+D3 C4 CJ C7
+D4 C6 CK CT
+D5 D7 CQ HK
+H5 D8 DT HJ
+S9 DJ DQ HA
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  6
+N  S 10
+N  H  5
+N  D  9
+N  C  8
+S NT  6
+S  S 10
+S  H  5
+S  D  9
+S  C  8
+E NT  6
+E  S  3
+E  H  8
+E  D  4
+E  C  4
+W NT  6
+W  S  3
+W  H  8
+W  D  4
+W  C  4
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "109"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:97.AT63.K7652.Q4 3.854.QT84.J9872 AKQJ8.QJ.93.AT53 T6542.K972.AJ.K6"]
+[Scoring ""]
+[Declarer "N"]
+[Contract "3NT"]
+[Result "9"]
+{PAR of the deal: 4NT = played by North: 630 points
+PAR computation time: 00'03"
+Feasability: 8 9 10 10 10 5 4 3 3 3 8 9 10 10 10 5 4 3 3 3 }
+[BCFlags "1f"]
+[DoubleDummyTricks "aaa98aaa983334533345"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 630"]
+[ParContract "NS 3N+1"]
+[Auction "N"]
+Pass Pass 1S Pass
+1NT Pass 3C Pass
+3NT Pass Pass Pass
+[Play "E"]
+D4 D9 DJ DK
+S3 SJ S2 S9
+C2 SA S4 S7
+H4 SK S5 H6
+H8 HQ H7 H3
+H5 HJ H2 HT
+C8 C3 CK C4
+D8 D3 DA D5
+C7 S8 HK HA
+C9 CA C6 CQ
+DT SQ S6 D7
+CJ CT H9 D2
+DQ C5 ST D6
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT 10
+N  S 10
+N  H 10
+N  D  9
+N  C  8
+S NT 10
+S  S 10
+S  H 10
+S  D  9
+S  C  8
+E NT  3
+E  S  3
+E  H  3
+E  D  4
+E  C  5
+W NT  3
+W  S  3
+W  H  3
+W  D  4
+W  C  5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "109"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "All"]
+[Deal "E:97.AT63.K7652.Q4 3.854.QT84.J9872 AKQJ8.QJ.93.AT53 T6542.K972.AJ.K6"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "3334533345aaa98aaa98"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 4NT = played by east: 630 points
+Feasability: 5 4 3 3 3 8 9 10 10 10 5 4 3 3 3 8 9 10 10 10
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "3NT"]
+[Result "10"]
+{PAR of the deal: 4NT = played by east: 630 points
+Feasability: 5 4 3 3 3 8 9 10 10 10 5 4 3 3 3 8 9 10 10 10}
+[OptimumScore "EW 630"]
+[ParContract "EW 3N+1"]
+[Auction "E"]
+Pass Pass 1S Pass
+2D Pass 3C Pass
+3H Pass 3NT Pass
+Pass Pass
+[Play "N"]
+H7 H3 H8 HQ
+S6 S7 S3 SJ
+S4 S9 H4 SQ
+S2 D2 H5 SK
+HK HA C7 HJ
+DJ D5 DQ D3
+DA D6 D4 D9
+CK C4 C2 CA
+S5 H6 C8 SA
+C6 CQ C9 C3
+H2 DK D8 C5
+H9 HT CJ CT
+ST D7 DT S8
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  3
+N  S  3
+N  H  3
+N  D  4
+N  C  5
+S NT  3
+S  S  3
+S  H  3
+S  D  4
+S  C  5
+E NT 10
+E  S 10
+E  H 10
+E  D  9
+E  C  8
+W NT 10
+W  S 10
+W  H 10
+W  D  9
+W  C  8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "116"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:QT2.QJT73.A74.K4 J98.98.Q62.AQ632 AK743.5.KJ93.987 65.AK642.T85.JT5"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "2S"]
+[Result "8"]
+{PAR of the deal: 3S  = played by East : 140 points
+PAR computation time: 00'01"
+Feasability: 7 3 5 3 4 6 9 8 9 6 7 3 5 3 4 6 9 8 9 6 }
+[BCFlags "1f"]
+[DoubleDummyTricks "43537435376989669896"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 140"]
+[ParContract "EW 1S+2"]
+[Auction "W"]
+1H Pass 1S Pass
+1NT Pass 2S Pass
+Pass Pass
+[Play "S"]
+S5 S2 S8 SA
+S6 ST SJ S4
+D8 DA D2 D3
+D5 D4 D6 DJ
+DT D7 DQ DK
+HK H3 H8 H5
+CJ CK CA C8
+H6 SQ S9 S7
+C5 C4 CQ C9
+HA H7 H9 C7
+CT HT C3 SK
+H2 HJ C6 D9
+H4 HQ C2 S3
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 4
+N  S 3
+N  H 5
+N  D 3
+N  C 7
+S NT 4
+S  S 3
+S  H 5
+S  D 3
+S  C 7
+E NT 6
+E  S 9
+E  H 8
+E  D 9
+E  C 6
+W NT 6
+W  S 9
+W  H 8
+W  D 9
+W  C 6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "116"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:QT2.QJT73.A74.K4 J98.98.Q62.AQ632 AK743.5.KJ93.987 65.AK642.T85.JT5"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "69896698964353743537"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3S  = played by south: 140 points
+Feasability: 6 9 8 9 6 7 3 5 3 4 6 9 8 9 6 7 3 5 3 4
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "S"]
+[Contract "4S"]
+[Result "10"]
+{PAR of the deal: 3S  = played by south: 140 points
+Feasability: 6 9 8 9 6 7 3 5 3 4 6 9 8 9 6 7 3 5 3 4}
+[OptimumScore "NS 140"]
+[ParContract "NS 1S+2"]
+[Auction "N"]
+1H Pass 1S Pass
+1NT Pass 2C Pass
+2D Pass 2S Pass
+4S Pass Pass Pass
+[Play "W"]
+HA H3 H9 H5
+CJ C4 C2 C7
+D5 D4 DQ DK
+S6 SQ S8 S3
+H6 HQ H8 S4
+C5 CK CA C8
+DT DA D6 D9
+H2 HJ D2 S7
+CT S2 C3 C9
+S5 ST SJ SA
+D8 H7 S9 SK
+H4 D7 C6 DJ
+HK HT CQ D3
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 6
+N  S 9
+N  H 8
+N  D 9
+N  C 6
+S NT 6
+S  S 9
+S  H 8
+S  D 9
+S  C 6
+E NT 4
+E  S 3
+E  H 5
+E  D 3
+E  C 7
+W NT 4
+W  S 3
+W  H 5
+W  D 3
+W  C 7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "120"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:K876.J852.J.AK74 T2.T.T976543.932 AQJ943.KQ.AK.T85 5.A97643.Q82.QJ6"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "6S"]
+[Result "11"]
+{PAR of the deal: 6NT = played by East : 990 points
+PAR computation time: 00'00"
+Feasability: 2 7 5 1 1 10 6 8 11 12 2 7 5 1 1 10 6 8 11 12 }
+[BCFlags "1f"]
+[DoubleDummyTricks "1157211572cb86acb86a"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 990"]
+[ParContract "EW 6N="]
+[Auction "W"]
+1C Pass 2S Pass
+3S Pass 4D =1= Pass
+4S Pass 4NT Pass
+5H Pass 6S Pass
+Pass Pass
+[Note "1: Alert."]
+[Play "S"]
+HA H2 HT HQ
+H7 H5 S2 HK
+D2 DJ DT DA
+S5 SK ST S3
+C6 CA C3 C5
+CJ CK C2 C8
+H6 H8 D7 S4
+D8 S6 D4 DK
+H3 HJ D3 CT
+CQ C4 C9 SQ
+H4 S7 D6 S9
+H9 S8 D5 SA
+DQ C7 D9 SJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  1
+N  S  1
+N  H  5
+N  D  7
+N  C  2
+S NT  1
+S  S  1
+S  H  5
+S  D  7
+S  C  2
+E NT 12
+E  S 11
+E  H  8
+E  D  6
+E  C 10
+W NT 12
+W  S 11
+W  H  8
+W  D  6
+W  C 10
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "120"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:K876.J852.J.AK74 T2.T.T976543.932 AQJ943.KQ.AK.T85 5.A97643.Q82.QJ6"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "cb86acb86a1157211572"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 6NT = played by south: 990 points
+Feasability: 10 6 8 11 12 2 7 5 1 1 10 6 8 11 12 2 7 5 1 1
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "S"]
+[Contract "6S"]
+[Result "11"]
+{PAR of the deal: 6NT = played by south: 990 points
+Feasability: 10 6 8 11 12 2 7 5 1 1 10 6 8 11 12 2 7 5 1 1}
+[OptimumScore "NS 990"]
+[ParContract "NS 6N="]
+[Auction "N"]
+1C 2D =1= 3S 4D
+4S Pass 4NT Pass
+5H Pass 6S Pass
+Pass Pass
+[Note "1: Alert."]
+[Play "W"]
+HA H2 HT HQ
+H3 H5 S2 HK
+D2 DJ D3 DA
+S5 SK ST S4
+H4 S6 D4 S3
+H6 HJ D5 C5
+H7 H8 C2 S9
+D8 C7 D6 DK
+C6 CK C3 C8
+CJ CA C9 CT
+CQ C4 D7 SJ
+DQ S7 D9 SA
+H9 S8 DT SQ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT 12
+N  S 11
+N  H  8
+N  D  6
+N  C 10
+S NT 12
+S  S 11
+S  H  8
+S  D  6
+S  C 10
+E NT  1
+E  S  1
+E  H  5
+E  D  7
+E  C  2
+W NT  1
+W  S  1
+W  H  5
+W  D  7
+W  C  2
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "121"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:9543.AJT4.A32.Q3 AKJ.Q2.KQT975.J2 T82.K876.4.T9874 Q76.953.J86.AK65"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "3NT"]
+[Result "10"]
+{PAR of the deal: 4D  = played by East : 130 points
+PAR computation time: 00'01"
+Feasability: 7 3 8 6 5 6 10 5 7 8 7 3 8 6 5 6 10 5 7 8 }
+[BCFlags "1f"]
+[DoubleDummyTricks "5683756837875a6875a6"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 130"]
+[ParContract "EW 4D="]
+[Auction "N"]
+Pass 1NT Pass 3NT
+Pass Pass Pass
+[Play "S"]
+S8 S6 S9 SJ
+D4 D6 D3 DQ
+C4 D8 DA D5
+HK H3 HJ HQ
+ST S7 S5 SA
+C7 CK C3 C2
+H6 DJ D2 D7
+S2 SQ S3 SK
+H7 C5 H4 DT
+C8 C6 HT DK
+C9 H5 CQ D9
+CT CA S4 CJ
+H8 H9 HA H2
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  5
+N  S  6
+N  H  8
+N  D  3
+N  C  7
+S NT  5
+S  S  6
+S  H  8
+S  D  3
+S  C  7
+E NT  8
+E  S  7
+E  H  5
+E  D 10
+E  C  6
+W NT  8
+W  S  7
+W  H  5
+W  D 10
+W  C  6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "121"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:9543.AJT4.A32.Q3 AKJ.Q2.KQT975.J2 T82.K876.4.T9874 Q76.953.J86.AK65"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "875a6875a65683756837"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 4D  = played by south: 130 points
+Feasability: 6 10 5 7 8 7 3 8 6 5 6 10 5 7 8 7 3 8 6 5
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "S"]
+[Contract "3D"]
+[Result "10"]
+{PAR of the deal: 4D  = played by south: 130 points
+Feasability: 6 10 5 7 8 7 3 8 6 5 6 10 5 7 8 7 3 8 6 5}
+[OptimumScore "NS 130"]
+[ParContract "NS 4D="]
+[Auction "E"]
+Pass 1D Pass 1NT
+Pass 3D Pass Pass
+Pass
+[Play "W"]
+CT CK C3 C2
+D4 D6 D2 D7
+H7 D8 D3 D5
+S2 S6 S5 SK
+C7 CA CQ CJ
+C8 C5 H4 H2
+H6 H5 HA HQ
+S8 S7 S3 SA
+ST SQ S4 SJ
+C4 C6 DA D9
+H8 H3 HJ DT
+C9 DJ HT DK
+HK H9 S9 DQ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  8
+N  S  7
+N  H  5
+N  D 10
+N  C  6
+S NT  8
+S  S  7
+S  H  5
+S  D 10
+S  C  6
+E NT  5
+E  S  6
+E  H  8
+E  D  3
+E  C  7
+W NT  5
+W  S  6
+W  H  8
+W  D  3
+W  C  7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "126"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "E:5.KT43.AQJ3.Q965 KQ97643..K4.A432 8.Q75.T98762.KJT AJT2.AJ9862.5.87"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "5S"]
+[Result "12"]
+{PAR of the deal: 5S  = played by North: 450 points
+PAR computation time: 00'04"
+Feasability: 6 4 8 11 9 6 9 5 1 3 6 4 8 11 9 6 8 4 1 3 }
+[BCFlags "1f"]
+[DoubleDummyTricks "9b8469b8463159631486"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 450"]
+[ParContract "NS 5S="]
+[Auction "E"]
+1D 1S 2D 2S
+3D 3S 4D 4S
+Pass Pass 5D X
+Pass 5S Pass Pass
+Pass
+[Play "W"]
+DT D5 DA D4
+CT C7 CQ CA
+S8 ST S5 S7
+H7 HA H4 C3
+H5 H6 H3 S4
+D2 C8 D3 DK
+CJ S2 C5 C4
+HQ H9 HT S3
+CK SJ C6 C2
+D6 H8 HK S6
+D7 SA DJ S9
+D8 HJ C9 SQ
+D9 H2 DQ SK
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  9
+N  S 11
+N  H  8
+N  D  4
+N  C  6
+S NT  9
+S  S 11
+S  H  8
+S  D  4
+S  C  6
+E NT  3
+E  S  1
+E  H  5
+E  D  9
+E  C  6
+W NT  3
+W  S  1
+W  H  4
+W  D  8
+W  C  6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "126"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:5.KT43.AQJ3.Q965 KQ97643..K4.A432 8.Q75.T98762.KJT AJT2.AJ9862.5.87"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "31486315969b8469b846"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 5S  = played by east: 450 points
+Feasability: 6 8 4 1 3 6 4 8 11 9 6 9 5 1 3 6 4 8 11 9
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "4S"]
+[Result "12"]
+{PAR of the deal: 5S  = played by east: 450 points
+Feasability: 6 8 4 1 3 6 4 8 11 9 6 9 5 1 3 6 4 8 11 9}
+[OptimumScore "EW 450"]
+[ParContract "EW 5S="]
+[Auction "S"]
+1D 1S 4D 4S
+Pass Pass Pass
+[Play "N"]
+DT D5 DA D4
+CT C7 C6 CA
+S8 ST S5 S3
+H7 H2 HK S7
+D2 C8 D3 DK
+CJ S2 C5 C2
+H5 H6 H4 S6
+CK SJ C9 C4
+HQ H8 H3 SQ
+D7 SA CQ C3
+D6 H9 HT S9
+D8 HJ DJ S4
+D9 HA DQ SK
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  3
+N  S  1
+N  H  4
+N  D  8
+N  C  6
+S NT  3
+S  S  1
+S  H  5
+S  D  9
+S  C  6
+E NT  9
+E  S 11
+E  H  8
+E  D  4
+E  C  6
+W NT  9
+W  S 11
+W  H  8
+W  D  4
+W  C  6
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "128"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "W"]
+[Vulnerable "EW"]
+[Deal "W:T.Q84.98643.K843 QJ87532.T75..J96 96.96.AQ2.AQT752 AK4.AKJ32.KJT75."]
+[Scoring ""]
+[Declarer "N"]
+[Contract "6SX"]
+[Result "11"]
+{PAR of the deal: 7S  = played by North: 1510 points
+PAR computation time: 00'03"
+Feasability: 4 7 12 13 6 7 6 1 0 4 4 7 12 13 6 7 6 1 0 4 }
+[BCFlags "1f"]
+[DoubleDummyTricks "6dc746dc744016740167"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 1510"]
+[ParContract "NS 7S="]
+[Auction "W"]
+Pass 2S 3C 4C
+X 4S Pass 4NT
+5C Pass Pass 6S
+Pass Pass X Pass
+Pass Pass
+[Play "E"]
+CA S4 C4 C6
+S6 SA ST S5
+D2 D5 D3 SJ
+H9 HK H4 H7
+DQ D7 D4 S2
+H6 HJ HQ H5
+S9 H2 H8 HT
+CT SK C3 C9
+C2 HA D6 CJ
+C5 H3 C8 S3
+C7 DT D8 SQ
+CQ DJ CK S8
+DA DK D9 S7
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  6
+N  S 13
+N  H 12
+N  D  7
+N  C  4
+S NT  6
+S  S 13
+S  H 12
+S  D  7
+S  C  4
+E NT  4
+E  S  0
+E  H  1
+E  D  6
+E  C  7
+W NT  4
+W  S  0
+W  H  1
+W  D  6
+W  C  7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "128"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:T.Q84.98643.K843 QJ87532.T75..J96 96.96.AQ2.AQT752 AK4.AKJ32.KJT75."]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "40167401676dc746dc74"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 7S  = played by east: 1510 points
+Feasability: 7 6 1 0 4 4 7 12 13 6 7 6 1 0 4 4 7 12 13 6
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "E"]
+[Contract "6S"]
+[Result "11"]
+{PAR of the deal: 7S  = played by east: 1510 points
+Feasability: 7 6 1 0 4 4 7 12 13 6 7 6 1 0 4 4 7 12 13 6}
+[OptimumScore "EW 1510"]
+[ParContract "EW 7S="]
+[Auction "N"]
+Pass 2S Pass 4C =1=
+Pass 4D =2= Pass 4H =3=
+Pass 5D =4= Pass 6S
+Pass Pass Pass
+[Note "1: Alert."]
+[Note "2: Alert."]
+[Note "3: Alert."]
+[Note "4: Alert."]
+[Play "S"]
+CA S4 C8 C6
+D2 D5 D6 SQ
+H6 HK H4 H5
+DQ DJ D4 S3
+CT SK C3 C9
+DA DK D3 S8
+S6 SA ST S2
+S9 DT D8 CJ
+CQ H2 C4 S7
+H9 HJ HQ H7
+C5 H3 CK SJ
+C2 HA H8 HT
+C7 D7 D9 S5
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  4
+N  S  0
+N  H  1
+N  D  6
+N  C  7
+S NT  4
+S  S  0
+S  H  1
+S  D  6
+S  C  7
+E NT  6
+E  S 13
+E  H 12
+E  D  7
+E  C  4
+W NT  6
+W  S 13
+W  H 12
+W  D  7
+W  C  4
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "131"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "S:KQJ982.874.A3.T9 T63.KJT92.954.Q5 54.A6.KQJ6.K7432 A7.Q53.T872.AJ86"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "4S"]
+[Result "11"]
+{PAR of the deal: 3S  = played by North: 140 points
+PAR computation time: 00'02"
+Feasability: 7 6 5 9 5 5 6 7 3 3 7 6 5 8 5 5 6 7 3 3 }
+[BCFlags "1f"]
+[DoubleDummyTricks "59567585673376533765"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "NS 140"]
+[ParContract "N 1S+2"]
+[Auction "S"]
+1S Pass 2C Pass
+2S Pass 3NT Pass
+4S Pass Pass Pass
+[Play "W"]
+D4 D6 DT DA
+S3 S4 SA SJ
+C5 C3 CA C9
+CQ CK C6 CT
+S6 S5 S7 SQ
+ST C7 D2 SK
+D5 C2 C8 S2
+D9 C4 D7 S8
+H2 DJ D8 D3
+H9 DK CJ H7
+HT DQ H3 H4
+HJ HA H5 H8
+HK H6 HQ S9
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 5
+N  S 9
+N  H 5
+N  D 6
+N  C 7
+S NT 5
+S  S 8
+S  H 5
+S  D 6
+S  C 7
+E NT 3
+E  S 3
+E  H 7
+E  D 6
+E  C 5
+W NT 3
+W  S 3
+W  H 7
+W  D 6
+W  C 5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "131"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "NS"]
+[Deal "W:KQJ982.874.A3.T9 T63.KJT92.954.Q5 54.A6.KQJ6.K7432 A7.Q53.T872.AJ86"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "33765337655956758567"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3S  = played by east: 140 points
+Feasability: 5 6 7 3 3 7 6 5 9 5 5 6 7 3 3 7 6 5 8 5
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "3S"]
+[Result "10"]
+{PAR of the deal: 3S  = played by east: 140 points
+Feasability: 5 6 7 3 3 7 6 5 9 5 5 6 7 3 3 7 6 5 8 5}
+[OptimumScore "EW 140"]
+[ParContract "E 1S+2"]
+[Auction "W"]
+3S Pass Pass Pass
+[Play "N"]
+D5 D6 DT DA
+S6 S4 SA SQ
+S3 S5 S7 SK
+ST C2 D7 SJ
+H2 HA H3 H4
+D9 DK D2 D3
+D4 DQ D8 H8
+H9 DJ C6 H7
+HT H6 H5 S8
+C5 CK CA C9
+HJ C3 HQ CT
+CQ C4 CJ S9
+HK C7 C8 S2
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 3
+N  S 3
+N  H 7
+N  D 6
+N  C 5
+S NT 3
+S  S 3
+S  H 7
+S  D 6
+S  C 5
+E NT 5
+E  S 9
+E  H 5
+E  D 6
+E  C 7
+W NT 5
+W  S 8
+W  H 5
+W  D 6
+W  C 7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "139"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "S"]
+[Vulnerable "None"]
+[Deal "S:953.AJT73.KJ.A52 KQ876..T43.QJ976 T2.8542.AQ65.K83 AJ4.KQ96.9872.T4"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3H"]
+[Result "8"]
+{PAR of the deal: 4S X -2 played by East : -300 pts
+PAR computation time: 00'03"
+Feasability: 5 6 10 5 7 7 5 3 8 6 5 7 10 5 7 7 5 3 8 6 }
+[BCFlags "1f"]
+[DoubleDummyTricks "75a6575a756835768357"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW -300"]
+[ParContract "EW 4SX-2"]
+[Auction "S"]
+1H 2H =1= Pass 2S
+Pass Pass 3H Pass
+Pass Pass
+[Note "1: Alert."]
+[Play "W"]
+SK S2 S4 S5
+CQ C3 CT CA
+S7 H2 HQ HT
+S6 ST SA S3
+C9 CK C4 C5
+C6 H5 H6 H7
+D3 D6 D7 DK
+SQ C8 SJ S9
+CJ H4 H9 C2
+D4 D5 D2 DJ
+C7 H8 HK HA
+DT DQ D8 H3
+S8 DA D9 HJ
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  7
+N  S  5
+N  H 10
+N  D  6
+N  C  5
+S NT  7
+S  S  5
+S  H 10
+S  D  7
+S  C  5
+E NT  6
+E  S  8
+E  H  3
+E  D  5
+E  C  7
+W NT  6
+W  S  8
+W  H  3
+W  D  5
+W  C  7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "139"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:953.AJT73.KJ.A52 KQ876..T43.QJ976 T2.8542.AQ65.K83 AJ4.KQ96.9872.T4"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "683576835775a6575a75"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 4S X -2 played by south: -300 pts
+Feasability: 7 5 3 8 6 5 6 10 5 7 7 5 3 8 6 5 7 10 5 7
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "4H"]
+[Result "9"]
+{PAR of the deal: 4S X -2 played by south: -300 pts
+Feasability: 7 5 3 8 6 5 6 10 5 7 7 5 3 8 6 5 7 10 5 7}
+[OptimumScore "NS -300"]
+[ParContract "NS 4SX-2"]
+[Auction "W"]
+1H 2H 4H Pass
+Pass Pass
+[Play "N"]
+D4 D5 D9 DJ
+C6 H2 H6 HA
+DT D6 D2 DK
+C9 CK C4 C2
+D3 DA D7 C5
+S7 DQ D8 S3
+S6 H4 HQ H3
+C7 C3 CT CA
+S8 H5 HK HJ
+CJ H8 H9 HT
+SQ S2 S4 S5
+CQ C8 SJ H7
+SK ST SA S9
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  6
+N  S  8
+N  H  3
+N  D  5
+N  C  7
+S NT  6
+S  S  8
+S  H  3
+S  D  5
+S  C  7
+E NT  7
+E  S  5
+E  H 10
+E  D  6
+E  C  5
+W NT  7
+W  S  5
+W  H 10
+W  D  7
+W  C  5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "150"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "E:KT85.9873.AQ86.4 Q2.T642.J952.985 AJ96.A.KT3.QJ732 743.KQJ5.74.AKT6"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4S"]
+[Result "11"]
+{PAR of the deal: 5S  = played by East : 650 points
+PAR computation time: 00'05"
+Feasability: 5 3 5 1 4 8 9 7 11 9 5 3 5 1 4 8 9 7 11 9 }
+[BCFlags "1f"]
+[DoubleDummyTricks "41535415359b7989b798"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 650"]
+[ParContract "EW 4S+1"]
+[Auction "E"]
+Pass Pass 1C X
+1H Pass 1S Pass
+3S Pass 4S Pass
+Pass Pass
+[Play "N"]
+S7 S5 SQ SA
+H5 H3 H2 HA
+S4 S8 S2 S6
+HJ H7 H4 S9
+D4 DQ D2 D3
+HQ H8 H6 SJ
+CK C4 C5 CJ
+HK H9 HT C2
+CA ST C8 C3
+S3 SK C9 C7
+D7 D6 D5 DK
+C6 D8 D9 CQ
+CT DA DJ DT
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  4
+N  S  1
+N  H  5
+N  D  3
+N  C  5
+S NT  4
+S  S  1
+S  H  5
+S  D  3
+S  C  5
+E NT  9
+E  S 11
+E  H  7
+E  D  9
+E  C  8
+W NT  9
+W  S 11
+W  H  7
+W  D  9
+W  C  8
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "150"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:KT85.9873.AQ86.4 Q2.T642.J952.985 AJ96.A.KT3.QJ732 743.KQJ5.74.AKT6"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "9b7989b7984153541535"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 5S  = played by south: 650 points
+Feasability: 8 9 7 11 9 5 3 5 1 4 8 9 7 11 9 5 3 5 1 4
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "N"]
+[Contract "4S"]
+[Result "11"]
+{PAR of the deal: 5S  = played by south: 650 points
+Feasability: 8 9 7 11 9 5 3 5 1 4 8 9 7 11 9 5 3 5 1 4}
+[OptimumScore "NS 650"]
+[ParContract "NS 4S+1"]
+[Auction "S"]
+Pass Pass 1C Pass
+1H Pass 1S Pass
+2S Pass 4S Pass
+Pass Pass
+[Play "E"]
+CA C4 C5 C7
+HK H3 H6 HA
+C6 S5 C8 C2
+D7 D6 D5 DK
+D4 DQ D2 D3
+H5 H7 H2 S6
+CT H8 C9 CJ
+CK SK H4 C3
+S3 ST S2 SJ
+S4 D8 D9 DT
+S7 S8 SQ SA
+HQ H9 DJ CQ
+HJ DA HT S9
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  9
+N  S 11
+N  H  7
+N  D  9
+N  C  8
+S NT  9
+S  S 11
+S  H  7
+S  D  9
+S  C  8
+E NT  4
+E  S  1
+E  H  5
+E  D  3
+E  C  5
+W NT  4
+W  S  1
+W  H  5
+W  D  3
+W  C  5
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "151"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "S:K954.K.QJ98654.J QJ.Q932.K72.AK52 AT873.T5.A3.8763 62.AJ8764.T.QT94"]
+[Scoring ""]
+[Declarer "W"]
+[Contract "4H"]
+[Result "10"]
+{PAR of the deal: 5H X -1 played by East : -200 pts
+PAR computation time: 00'00"
+Feasability: 3 10 3 10 3 10 3 10 2 6 3 10 3 10 3 10 3 10 2 6 }
+[BCFlags "1f"]
+[DoubleDummyTricks "3a3a33a3a362a3a62a3a"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW -200"]
+[ParContract "EW 5CX-1; EW 5HX-1"]
+[Auction "S"]
+Pass 1NT Pass 2D
+X 2H Pass 4H
+Pass Pass Pass
+[Play "N"]
+DA DT D9 D2
+SA S2 S5 SJ
+S3 S6 SK SQ
+C3 C4 CJ CA
+H5 HA HK H2
+HT H4 D4 HQ
+C6 C9 D5 C5
+C7 CQ D6 C2
+C8 CT D8 CK
+D3 H6 DJ D7
+S7 H7 S4 H3
+S8 H8 S9 H9
+ST HJ DQ DK
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  3
+N  S 10
+N  H  3
+N  D 10
+N  C  3
+S NT  3
+S  S 10
+S  H  3
+S  D 10
+S  C  3
+E NT  6
+E  S  2
+E  H 10
+E  D  3
+E  C 10
+W NT  6
+W  S  2
+W  H 10
+W  D  3
+W  C 10
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "151"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "W:K954.K.QJ98654.J QJ.Q932.K72.AK52 AT873.T5.A3.8763 62.AJ8764.T.QT94"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "62a3a62a3a3a3a33a3a3"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 5H X -1 played by south: -200 pts
+Feasability: 10 3 10 2 6 3 10 3 10 3 10 3 10 2 6 3 10 3 10 3
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "W"]
+[Contract "3D"]
+[Result "10"]
+{PAR of the deal: 5H X -1 played by south: -200 pts
+Feasability: 10 3 10 2 6 3 10 3 10 3 10 3 10 2 6 3 10 3 10 3}
+[OptimumScore "NS -200"]
+[ParContract "NS 5CX-1; NS 5HX-1"]
+[Auction "W"]
+3D Pass Pass Pass
+[Play "N"]
+D7 DA DT D4
+DK D3 H4 DJ
+H2 H5 HA HK
+CK C3 CT CJ
+HQ HT H6 D9
+D2 S3 H7 D8
+C5 C6 H8 D6
+H3 C7 C4 DQ
+SJ SA S2 S9
+SQ ST S6 SK
+C2 S7 C9 S4
+CA C8 CQ D5
+H9 S8 HJ S5
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  6
+N  S  2
+N  H 10
+N  D  3
+N  C 10
+S NT  6
+S  S  2
+S  H 10
+S  D  3
+S  C 10
+E NT  3
+E  S 10
+E  H  3
+E  D 10
+E  C  3
+W NT  3
+W  S 10
+W  H  3
+W  D 10
+W  C  3
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "152"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "W:96.74.KQ753.T754 T853.A3.T964.AKJ AK74.K8.AJ.Q9632 QJ2.QJT9652.82.8"]
+[Scoring ""]
+[Declarer "E"]
+[Contract "1NT"]
+[Result "10"]
+{PAR of the deal: 4C  = played by East : 130 points
+PAR computation time: 00'00"
+Feasability: 3 4 7 6 6 10 9 4 7 6 3 4 7 6 5 10 9 4 7 6 }
+[BCFlags "1f"]
+[DoubleDummyTricks "66743567436749a6749a"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 130"]
+[ParContract "EW 3C+1"]
+[Auction "W"]
+Pass 1D 1NT Pass
+Pass Pass
+[Play "S"]
+HQ H4 HA H8
+C8 C4 CA C3
+H5 C5 CK C2
+S2 S6 S8 SA
+H6 C7 CJ CQ
+D2 D3 D6 DJ
+D8 D5 D4 DA
+H2 CT S3 C9
+H9 DK D9 C6
+HT DQ DT S4
+HJ D7 H3 S7
+SJ H7 S5 HK
+SQ S9 ST SK
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  6
+N  S  6
+N  H  7
+N  D  4
+N  C  3
+S NT  5
+S  S  6
+S  H  7
+S  D  4
+S  C  3
+E NT  6
+E  S  7
+E  H  4
+E  D  9
+E  C 10
+W NT  6
+W  S  7
+W  H  4
+W  D  9
+W  C 10
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "152"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:96.74.KQ753.T754 T853.A3.T964.AKJ AK74.K8.AJ.Q9632 QJ2.QJT9652.82.8"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "6749a6749a6674356743"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 4C  = played by south: 130 points
+Feasability: 10 9 4 7 6 3 4 7 6 6 10 9 4 7 6 3 4 7 6 5
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "S"]
+[Contract "4SX"]
+[Result "7"]
+{PAR of the deal: 4C  = played by south: 130 points
+Feasability: 10 9 4 7 6 3 4 7 6 6 10 9 4 7 6 3 4 7 6 5}
+[OptimumScore "NS 130"]
+[ParContract "NS 3C+1"]
+[Auction "N"]
+Pass 1D 1NT 2H
+Pass Pass 2S 3H
+Pass 4H Pass Pass
+X Pass 4S Pass
+Pass X Pass Pass
+Pass
+[Play "W"]
+C8 C7 CK C6
+HQ H4 HA H8
+D8 C5 CA C2
+S2 C4 CJ CQ
+D2 D7 D9 DA
+SJ S6 S5 SK
+SQ S9 S3 SA
+H6 D5 D4 DJ
+H2 H7 H3 HK
+H5 CT S8 C3
+H9 D3 DT S4
+HT DQ ST C9
+HJ DK D6 S7
+[OptimumResultTable "Declarer;Denomination\2R;Result\2R"]
+N NT  6
+N  S  7
+N  H  4
+N  D  9
+N  C 10
+S NT  6
+S  S  7
+S  H  4
+S  D  9
+S  C 10
+E NT  6
+E  S  6
+E  H  7
+E  D  4
+E  C  3
+W NT  5
+W  S  6
+W  H  7
+W  D  4
+W  C  3
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "153"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[South "eamon3"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:JT762.J9.Q3.J964 A543.87.74.KQ875 Q98.A54.KJ862.AT K.KQT632.AT95.32"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "3D"]
+[Result "6"]
+{PAR of the deal: 3H  = played by East : 140 points
+PAR computation time: 00'05"
+Feasability: 5 6 4 7 4 8 7 9 5 8 5 6 4 7 4 7 7 9 5 8 }
+[BCFlags "1f"]
+[DoubleDummyTricks "47465474658597885977"]
+[Generator "BridgeComposer Version 5.93"]
+[OptimumScore "EW 140"]
+[ParContract "EW 3H="]
+[Auction "N"]
+Pass Pass 1D 1H
+Pass 2C Pass 2H
+Pass Pass 3D Pass
+Pass Pass
+[Play "W"]
+C3 C6 CQ CA
+C2 C4 CK CT
+HQ H9 H8 H4
+H2 HJ H7 H5
+D5 CJ C5 S8
+HK D3 D7 HA
+DA DQ D4 D2
+HT S6 S5 D6
+D9 S7 S3 DJ
+DT S2 C7 DK
+SK ST S4 S9
+H3 C9 C8 D8
+H6 SJ SA SQ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 4
+N  S 7
+N  H 4
+N  D 6
+N  C 5
+S NT 4
+S  S 7
+S  H 4
+S  D 6
+S  C 5
+E NT 8
+E  S 5
+E  H 9
+E  D 7
+E  C 8
+W NT 8
+W  S 5
+W  H 9
+W  D 7
+W  C 7
+
+[Event ""]
+[Site ""]
+[Date ""]
+[Board "153"]
+[West ""]
+[North ""]
+[East ""]
+[South ""]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "E:JT762.J9.Q3.J964 A543.87.74.KQ875 Q98.A54.KJ862.AT K.KQT632.AT95.32"]
+[Scoring ""]
+[Declarer ""]
+[Contract ""]
+[Result ""]
+[BCFlags "1f"]
+[DoubleDummyTricks "85977859784746547465"]
+[Generator "BridgeComposer Version 5.93"]
+{PAR of the deal: 3H  = played by south: 140 points
+Feasability: 7 7 9 5 8 5 6 4 7 4 8 7 9 5 8 5 6 4 7 4
+[South "eamon3"]
+[West "WBridge5"]
+[North "eamon3"]
+[East "WBridge5"]
+[Declarer "N"]
+[Contract "4HX"]
+[Result "8"]
+{PAR of the deal: 3H  = played by south: 140 points
+Feasability: 7 7 9 5 8 5 6 4 7 4 8 7 9 5 8 5 6 4 7 4}
+[OptimumScore "NS 140"]
+[ParContract "NS 3H="]
+[Auction "E"]
+Pass Pass 1D 1H
+1S 1NT X =1= 2H
+Pass Pass 2S 3H
+Pass 3S Pass 4H
+Pass Pass X Pass
+Pass Pass
+[Note "1: Alert."]
+[Play "E"]
+DQ D4 D2 DA
+S2 S4 S8 SK
+C6 CQ CA C2
+H9 H7 H4 HK
+C9 CK CT C3
+S6 SA S9 D5
+S7 S3 SQ H3
+D3 D7 DJ D9
+HJ H8 H5 H6
+ST S5 D6 H2
+C4 C7 DK DT
+CJ C5 HA HT
+SJ C8 D8 HQ
+[OptimumResultTable "Declarer;Denomination\2R;Result\1R"]
+N NT 8
+N  S 5
+N  H 9
+N  D 7
+N  C 7
+S NT 8
+S  S 5
+S  H 9
+S  D 7
+S  C 8
+E NT 4
+E  S 7
+E  H 4
+E  D 6
+E  C 5
+W NT 4
+W  S 7
+W  H 4
+W  D 6
+W  C 5

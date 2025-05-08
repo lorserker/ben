@@ -63,7 +63,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.6.12'
+version = '0.8.7.0'
 
 init()
 
@@ -1116,13 +1116,21 @@ async def main():
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow
-            from nn.models import Models
+            from nn.models_tf2 import Models
     except KeyError:
             # Default to version 1. of Tensorflow
-            from nn.models import Models
+            from nn.models_tf2 import Models
+           
+    print("Config:", configfile)
+    if opponentfile != "":
+        # Override with information from opponent file
+        print("Opponent:", opponentfile)
+        configuration.read(opponentfile)
+        opponents = Opponents.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+        sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
     models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
-    
+
     if sys.platform != 'win32':
         print("Disabling PIMC/BBA/SuitC as platform is not win32")
         models.pimc_use_declaring = False
@@ -1132,18 +1140,6 @@ async def main():
         models.use_bba_rollout = False
         models.use_bba_to_count_aces = False
         models.use_suitc = False
-        
-    print("Config:", configfile)
-    print("System:", models.name)
-
-    if opponentfile != "":
-        # Override with information from opponent file
-        print("Opponent:", opponentfile)
-        opp_configuration = conf.load(opponentfile)
-        opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
-        models.opponent_model = opponents.opponent_model
-        models.bba_their_cc = opponents.bba_cc
-        sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
     if models.use_bba:
         print("Using BBA for bidding")

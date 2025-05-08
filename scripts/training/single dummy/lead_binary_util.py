@@ -12,6 +12,13 @@ def encode_card(card):
     x[get_card_index(card)] = 1
     return x
 
+card_index_lookup = dict(
+    zip(
+        ['A', 'K', 'Q', 'J', 'T', '9', '8', '7', '6', '5', '4', '3', '2'],
+        range(13)
+    )
+)
+
 
 card_index_lookup_x = dict(
     zip(

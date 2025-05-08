@@ -17,9 +17,9 @@ If you like the software, please consider making a donation to support the devel
 
 ### Installation
 
-The engine runs on Python 3.9, with the neural networks using tensorflow 2.0+
+The engine runs on Python 3.9, with the neural networks using tensorflow 2.16+
 
-The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html), but the current version can be run using Python 3.11 and Tensorflow 2.13 without any virtual environment.
+The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html), but the current version can be run using Python 3.12 and Tensorflow 2.18 without any virtual environment.
 
 For __Windows__ users: After installing anaconda, you  will have a new application called "Anaconda Prompt". Henceforth, you will have to run all commands in "Anaconda Prompt" not in "cmd". The title bar of your command prompt window should read *"Administrator: Anaconda Prompt (Miniconda3)"*
 
@@ -74,6 +74,7 @@ adding --boardno will start from that number in the file.
 And start the app server
 
 ```bash
+cd frontend
 python appserver.py
 ```
 
@@ -128,7 +129,7 @@ The examples run in jupyter notebooks, but it's also possible to just read them 
 To make the engine play against itself, execute this command:
 
 ```bash
-sudo python game.py
+python game.py
 ```
 
 After each board, it's possible to go through the play using the web UI.
@@ -153,8 +154,6 @@ Below is a list of features which aren't implemented in this engine yet, but you
 
 - can't understand explanations of bids
 - can't use or interpret defensive signals
-- can't claim or accept claims
-- it does reach good slams, but slam auctions are a bit weird
 - isn't deployed as a service which you could play with on the internet (you have to install it to use it)
 
 ## Articles

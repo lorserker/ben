@@ -257,6 +257,12 @@ class BotBid:
                 samples.append(deal)
             sample_count = hands_np.shape[0]
         else:
+            if self.verbose:
+                print(f"No sampling for aution: {auction} trying to find {self.sample_boards_for_auction}")
+                print(not self.sampler.no_samples_when_no_search and self.get_min_candidate_score(self.my_bid_no) != -1)
+                print(binary.get_number_of_bids(auction) > 4 and self.models.check_final_contract)
+                print(len(candidates) > 1)
+
             sample_count = 0
 
         # If quality = -1 we should probably just bid what BBA suggest, but even BBA might not have understood the bidding
@@ -342,7 +348,10 @@ class BotBid:
                         # So we add more trust to the NN
                         adjust += self.models.adjust_NN_Few_Samples * candidate.insta_score
                     else:
-                        adjust += self.models.adjust_NN * candidate.insta_score
+                        if bidding.undisturbed(auction):
+                            adjust += self.models.adjust_NN_undisturbed * candidate.insta_score 
+                        else:
+                            adjust += self.models.adjust_NN * candidate.insta_score
 
                 if self.verbose:
                     print(f"Adjusted for trust in NN {candidate.bid} {adjust:0.3f}")
@@ -353,9 +362,9 @@ class BotBid:
                     # If we are void in the suit, then we should not bid X, so we adjust
                     # We also adjust for a singleton
                     if meaning and "penalty" in meaning.lower():
-                        print(bidding.get_contract(auction + ["X", "PASS", "PASS", "PASS"]))
                         trump = bidding.get_strain_i(bidding.get_contract(auction + ["X", "PASS", "PASS", "PASS"]))
-                        print("trump", trump)
+                        if self.verbose:
+                            print(bidding.get_contract(auction + ["X", "PASS", "PASS", "PASS"]), "trump", trump)
                         if trump > 0:
                             #print(self.hand_bidding)
                             reshaped_array = self.hand_bidding.reshape(-1,int(self.models.n_cards_bidding / 4))
@@ -363,7 +372,8 @@ class BotBid:
                             aces = np.sum(reshaped_array[:, 0] == 1)
                             kings = np.sum(reshaped_array[:, 1] == 1)
                             controls = 2 * aces + kings
-                            print(trump, suits, controls)
+                            if self.verbose:
+                                print("trump", trump, "suits", suits, "aces", aces, "kings", kings, "controls", controls)
                             if suits[trump-1] == 1:
                                 adjust -= 0.5 * self.models.adjust_X
                             if suits[trump-1] == 0:
@@ -530,6 +540,7 @@ class BotBid:
             p_hcp, p_shp = self.sampler.get_bidding_info(n_steps, auction, self.seat, self.hand_bidding, self.vuln, self.models)
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
+            # If we found no samples, then we consult BBA if activated
             if sample_count == 0 and generate_samples:
                 if self.models.consult_bba:
                     bid_resp = self.bbabot.bid(auction)
@@ -917,13 +928,13 @@ class BotBid:
 
         # After preempts the model is lacking some bidding, so we will try to get a second bid
         if no_bids <= 4 and no_bids > 0:
-            if bidding.BID2ID[auction[-1]] > 14:
+            if preempted:
                 min_candidates = 2
                 # Reduce the score so we search
                 min_bid_score = self.get_min_candidate_score(self.my_bid_no + 2)
                 if self.verbose:
                     print("Extra candidate after opponents preempt might be needed")
-                elif no_bids > 1 and bidding.BID2ID[auction[-2]] > 14:
+                if no_bids > 1 and bidding.BID2ID[auction[-2]] > 14:
                     if self.verbose:
                         print("Extra candidate might be needed after partners preempt/bid over preempt")
 
@@ -933,7 +944,7 @@ class BotBid:
                 if len(candidates) >= min_candidates:
                     break
                 # Second candidate to low. Rescuebid should handle 
-                if bid_softmax[bid_i] <= 0.0005:
+                if bid_softmax[bid_i] <= 0.01:
                     break
             if bidding.can_bid(bidding.ID2BID[bid_i], auction):
                 if self.models.alert_supported:
@@ -997,6 +1008,9 @@ class BotBid:
                 if candidate.bid == bba_bid_resp.bid:
                     candidate.alert = bba_bid_resp.alert
                     candidate.explanation = bba_bid_resp.explanation
+                    if self.verbose:
+                        sys.stderr.write(f"{Fore.CYAN}BBA bid is candidate: {bba_bid_resp.bid} Alert: { bba_bid_resp.alert} Explaination: {bba_bid_resp.explanation} NN score: {candidate.insta_score:.3f}{Fore.RESET}\n")
+                    candidate.insta_score += self.models.bba_trust
                     break
             else:
                 if self.verbose:

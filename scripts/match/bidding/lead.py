@@ -70,10 +70,10 @@ if __name__ == '__main__':
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow
-            from nn.models import Models
+            from nn.models_tf2 import Models
     except KeyError:
             # Default to version 1. of Tensorflow
-            from nn.models import Models
+            from nn.models_tf2 import Models
 
     models = Models.from_conf(configuration,"../../..")
     sampler = Sample.from_conf(configuration)

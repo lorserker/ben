@@ -29,7 +29,7 @@ BUNDLE_TEMP_DIR = ''
 try:
     if getattr(sys, 'frozen') and hasattr(sys, '_MEIPASS'):
         BUNDLE_TEMP_DIR = sys._MEIPASS
-        FILES_DIR = "../BBA/CC/"
+        FILES_DIR = "./BBA/CC/"
         #Modify template
         bottle.TEMPLATE_PATH.insert(0,BUNDLE_TEMP_DIR + '/views')
 except:

@@ -13,7 +13,7 @@ def create_binary(data_it, n, out_dir):
     y = np.zeros((n, 14), dtype=np.float16)
 
     for i, (deal_str, meta_str, auction_str, play_str) in enumerate(data_it):
-        if i % 1000 == 0:
+        if (i != 0) and i % 10000 == 0:
             print(i)
 
         deal_meta = DealMeta.from_str(meta_str)
@@ -44,11 +44,11 @@ def create_binary(data_it, n, out_dir):
 
 if __name__ == '__main__':
 
-    out_dir = './lr3_bin'
+    out_dir = './lr3_keras'
 
     data_it = jack_data_iterator(itertools.chain(
-        open('../data/Jack/BW5C_N.txt'), 
-        open('../data/Jack/BW5C_S.txt'))) 
+        open('../../data/Jack/BW5C_N.txt'), 
+        open('../../data/Jack/BW5C_S.txt'))) 
 
     n = 272776
 

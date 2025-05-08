@@ -1,0 +1,60 @@
+
+    <!DOCTYPE html>
+    <html lang='en'>
+    <head>
+        <meta charset='utf-8'>
+        <title>Match deal</title>
+        <link rel='stylesheet' href='viz.css'>
+        <script src="viz.js"></script>  
+    </head>
+    <body>
+        <div id='deal'>
+            <div id='dealer-vuln'>
+                <div id='vul-north' class='red'>
+                    <span class='dealer'>N</span>
+                </div>
+                <div id='vul-east' class='white'>
+                    
+                </div>
+                <div id='vul-south' class='red'>
+                    
+                </div>
+                <div id='vul-west' class='white'>
+                    
+                </div>
+                <div id='boardno'>
+                    5
+                </div>
+            </div>
+            <div id='north'>
+                <div class='suit'><span>&spades;</span>AKQ98</div>
+                <div class='suit'><span><span class="font-red">&hearts;</span></span>AKJ</div>
+                <div class='suit'><span><span class="font-red">&diams;</span></span>AK</div>
+                <div class='suit'><span>&clubs;</span>AK3</div>
+            </div>
+            <div id='west'>
+                <div class='suit'><span>&spades;</span>T6</div>
+                <div class='suit'><span><span class="font-red">&hearts;</span></span>T854</div>
+                <div class='suit'><span><span class="font-red">&diams;</span></span>J743</div>
+                <div class='suit'><span>&clubs;</span>T86</div>
+            </div>
+            <div id='east'>
+                <div class='suit'><span>&spades;</span>J73</div>
+                <div class='suit'><span><span class="font-red">&hearts;</span></span>Q32</div>
+                <div class='suit'><span><span class="font-red">&diams;</span></span>82</div>
+                <div class='suit'><span>&clubs;</span>Q9752</div>
+            </div>
+            <div id='south'>
+                <div class='suit'><span>&spades;</span>542</div>
+                <div class='suit'><span><span class="font-red">&hearts;</span></span>976</div>
+                <div class='suit'><span><span class="font-red">&diams;</span></span>QT965</div>
+                <div class='suit'><span>&clubs;</span>J4</div>
+            </div>
+        </div>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('AKQ98.AKJ.AK.AK3 J73.Q32.82.Q9752 542.976.QT965.J4 T6.T854.J743.T86', 'N N-S')&P=0&A=x&board_no=5"> Se it played (no search for NS) </a><br>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('AKQ98.AKJ.AK.AK3 J73.Q32.82.Q9752 542.976.QT965.J4 T6.T854.J743.T86', 'N N-S')&P=1&A=x&board_no=5"> Se it played (no search for EW) </a><br>
+        <a href="http://127.0.0.1:8080/app/bridge.html?deal=('AKQ98.AKJ.AK.AK3 J73.Q32.82.Q9752 542.976.QT965.J4 T6.T854.J743.T86', 'N N-S')&P=4&A=x&board_no=5"> Se it played (Search for both) </a><br>
+        <div id="auction"></div>
+
+    </body>
+    </html>

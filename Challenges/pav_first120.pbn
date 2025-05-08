@@ -1,5 +1,6 @@
 % PBN 2.1
 % EXPORT
+% http://www.rpbridge.net/rpbp.htm
 %Content-type: text/x-pbn; charset=ISO-8859-1
 %Creator: BridgeComposer Version 5.105
 %Created: Mon Oct 28 02:00:26 2024 -0000
@@ -1990,14 +1991,14 @@ AC 1N AC 2D AC
 [Vulnerable "NS"]
 [Deal "N:AKQ52.962.A864.3 J6.AKT73.K9.Q942 3.J54.Q32.KJT876 T9874.Q8.JT75.A5"]
 [Scoring "Facit"]
-{2c 10 1n 7 2d 6 3c 5 2s 3 2n 2 3d 1}
+{w2cx 10 e2cx 10 2c 10 1n 7 2d 6 3c 5 2s 3 2n 2 3d 1}
 [Declarer ""]
 [Contract ""]
 [Result ""]
 [BCFlags "1f"]
 [Hidden "EW"]
 [Auction "N" ]
-AC X AC 2C
+AC X AC
 
 [Event ""]
 [Site ""]

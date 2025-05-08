@@ -1,0 +1,397 @@
+#deal {
+    border: 1px solid black;
+    width: 540px;
+    min-height: 540px;
+    background-color: #beecef;
+    padding: 2px;
+    margin: 2px;
+}
+
+#north {
+    position: absolute;
+    top: 32px;
+    left: 200px;
+    width: 180px;
+    height: 150px;
+}
+
+#west {
+    position: absolute;
+    top: 200px;
+    left: 32px;
+    width: 180px;
+    height: 150px;
+}
+
+#east {
+    position: absolute;
+    top: 200px;
+    left: 380px;
+    width: 180px;
+    height: 150px;
+}
+
+#south {
+    position: absolute;
+    top: 370px;
+    left: 200px;
+    width: 180px;
+    height: 150px;
+}
+
+#feedback {
+    position: absolute;
+    top: 370px;
+    left: 10px;
+    width: 180px;
+    height: 150px;
+}
+
+#model {
+    position: absolute;
+    top: 370px;
+    left: 380px;
+    width: 180px;
+    height: 150px;
+}
+
+.north {
+    position: absolute;
+    top: 0px;
+    left: 50px;
+    width: 40px;
+    height: 15px;
+}
+
+.west {
+    position: absolute;
+    top: 60px;
+    left: 2px;
+    width: 40px;
+    height: 15px;
+}
+
+.east {
+    position: absolute;
+    top: 60px;
+    left: 100px;
+    width: 40px;
+    height: 15px;
+}
+
+.south {
+    position: absolute;
+    top: 120px;
+    left: 50px;
+    width: 40px;
+    height: 15px;
+}
+
+#table {
+    position: absolute;
+    top: 200px;
+    left: 200px;
+    width: 180px;
+    height: 150px;
+}
+
+.suit {
+    position: relative;
+    margin-top: 3px;
+    width: 99%;
+    height: 18%;
+    padding-top: 4px;
+    font-size: 24px;
+    font-family: Arial, sans-serif;
+}
+
+#vul-north {
+    position: absolute;
+    top: 32px;
+    left: 52px;
+    width: 40px;
+    height: 20px;
+}
+
+#vul-west {
+    position: absolute;
+    top: 52px;
+    left: 32px;
+    width: 20px;
+    height: 40px;
+}
+
+#vul-south {
+    position: absolute;
+    top: 92px;
+    left: 52px;
+    width: 40px;
+    height: 20px;
+}
+
+#vul-east {
+    position: absolute;
+    top: 52px;
+    left: 92px;
+    width: 20px;
+    height: 40px;
+}
+
+.red {
+    background-color: red;
+}
+
+.white {
+    background-color: white;
+}
+
+#vul-north .dealer, #vul-south .dealer {
+    margin: auto;
+    position: absolute;
+    top: 2px;
+    left: 14px;
+}
+
+#vul-west .dealer, #vul-east .dealer {
+    margin: auto;
+    position: absolute;
+    top: 11px;
+    left: 4px;
+}
+
+.dealer {
+    font-family: Arial, sans-serif;
+}
+
+.font-red {
+    color: red;
+}
+
+#btn-start {
+    position: absolute;
+    top: 515px;
+    left: 20px;
+    border: 1px solid black;
+    width: 30px;
+    height: 24px;
+}
+
+#btn-start-play {
+    position: absolute;
+    top: 515px;
+    left: 60px;
+    border: 1px solid black;
+    width: 30px;
+    height: 24px;
+}
+
+#btn-prev {
+    position: absolute;
+    top: 515px;
+    left: 100px;
+    border: 1px solid black;
+    width: 30px;
+    height: 24px;
+}
+
+#btn-next {
+    position: absolute;
+    top: 515px;
+    left: 140px;
+    border: 1px solid black;
+    width: 30px;
+    height: 24px;
+}
+
+.button {
+    background-color: white;
+    text-align: center;
+    font-weight: bold;
+}
+
+.button:hover {
+    background-color: yellow;
+}
+
+#trick-card-north {
+    position: absolute;
+    top: 220px;
+    left: 250px;
+}
+
+#trick-card-south {
+    position: absolute;
+    top: 290px;
+    left: 250px;
+}
+
+#trick-card-east {
+    position: absolute;
+    top: 256px;
+    left: 290px;
+}
+
+#trick-card-west {
+    position: absolute;
+    top: 256px;
+    left: 210px;
+}
+
+.trick-card {
+    border: 1px solid black;
+    border-radius: 2px;
+    background-color: white;
+    width: 36px;
+    height: 28px;
+    font-size: 20px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+.trick-card.highlight {
+    background-color: yellow;
+}
+
+#auction {
+    position: absolute;
+    border: 1px solid black;
+    border-radius: 3px;
+    left: 378px;
+    top: 16px;
+    background-color: #efcdf5e0;
+}
+
+.bid {
+    border: 1px solid black;
+    border-radius: 3px;
+    background-color: #efcdf5e0;
+}
+
+#boardno {
+    position: absolute;
+    border: 1px solid black;
+    border-radius: 3px;
+    left: 55px;
+    top: 62px;
+    width: 32px;
+    text-align: center;
+    background-color: #efcdf5e0;
+}
+
+td {
+    text-align: center;
+}
+
+td.highlight {
+    background-color: yellow;
+}
+
+th {
+    border-bottom: 1px solid black;
+}
+
+
+#tricks-ns {
+    position: absolute;
+    top: 480px;
+    left: 440px;
+    width: 30px;
+    height: 40px;
+    padding-top: 10px;
+}
+
+#tricks-ew {
+    position: absolute;
+    top: 490px;
+    left: 480px;
+    width: 50px;
+    height: 30px;
+}
+
+.trick-count {
+    background-color: #aa0022;
+    border: 3px solid white;
+    border-radius: 5px;
+    text-align: center;
+}
+
+.trick-count span {
+    color: white;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: Arial, sans-serif;
+}
+
+#info td.candidate-card {
+    font-weight: bold;
+}
+
+#info td {
+    text-align: left
+}
+
+#info {
+    font-family: monospace;
+    position: absolute;
+    top: 0px;
+    left: 560px;
+}
+
+.samples {
+    cursor: pointer;
+    color: blue;
+    text-decoration: underline;
+}
+
+.hidden {
+    display: none;
+}
+
+form {
+    width: 100%;
+    display: block;
+    /* Ensure the form takes up the full width */
+}
+
+.content-wrapper {
+    max-width: 80%; /* Content wrapper takes up full width */
+    margin: 3%;
+}
+
+.example {
+    display: inline-block; /* Display links inline */
+    width: 120px;
+}
+
+.link {
+}
+
+.deal-cell {
+    position: relative; /* Ensures tooltip positions correctly */
+}
+
+.tooltip {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid black;
+    padding: 5px;
+    width: 150px;
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    text-align: left;
+    font-size: 12px;
+    z-index: 100;
+    white-space: nowrap;
+}
+
+.deal-cell:hover .tooltip {
+    display: block;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.right-align {
+    text-align: right !important;
+    padding-right: 10px;
+}

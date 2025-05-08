@@ -1,0 +1,3852 @@
+% PBN 2.1
+% EXPORT
+%BCOptions
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Margins 1000,0800,500,0800
+
+[Event "##pav_first120"]
+[Site "##BEN 0.8.7.0"]
+[Date "##2025.05.06"]
+[BCFlags "801f"]
+[Board "1"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AQ3.KJ97.A82.Q93 JT984.A65.93.K84 762.QT4.KQ7.JT76 K5.832.JT654.A52"]
+[Declarer "N"]
+[Contract "2N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2N =2= PASS
+PASS =3= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2: Nat. -- 5-!C; 5-!D; 4-!H; 4-!S; 8-9 HCP"]
+[Note "3:  -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-16 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 2N      10\n 1N       8\n 2\h       7\n 2\c       6\n 3\h       5\n 3\c       4\n 3N       3\n 4\h       2\n 4\c       1\n\n\n\n
+
+Facit Score:    10\nRunning Score:  10
+}
+
+[BCFlags "801f"]
+[Board "2"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:QJ2.AK43.A82.QJ9 A8.JT8.QJT7.K543 T9754.Q92.3.T862 K63.765.K9654.A7"]
+[Declarer "N"]
+[Contract "2S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2H =2= PASS
+2S =3= PASS PASS =4= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2: Transfer  -- 6-!H; 5+!S; 25- HCP; Forcing"]
+[Note "3: Transfer completed -- 2-6!C; 2-6!D; 2-5!H; 2-4!S; 15-17 HCP"]
+[Note "4:  -- 6-!H; 5+!S; 9- HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 2\s      10\n 2\c       8\n 2\h       7\n 3\s       6\n 3\c       4\n 3\h       3\n 1N       2\n 2N       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score:  20
+}
+
+[BCFlags "801f"]
+[Board "3"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:A82.KQJ43.62.KT2 QJ9.AT98.J83.Q84 K73.5.AT975.J953 T654.762.KQ4.A76"]
+[Declarer "S"]
+[Contract "1N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 1N =2= PASS
+PASS =3= PASS 
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2: Balanced -- 2-!H; 3-!S; 6-11 HCP"]
+[Note "3:  -- 5=!H; 6-!S; 11-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 1N      10\n 2\c       8\n 2\d       7\n 2N       6\n 2\h       5\n 3\c       3\n 3N       2\n 3\h       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score:  30
+}
+
+[BCFlags "801f"]
+[Board "4"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AQ874.A72.32.QJ8 J2.KJ86.JT97.K62 KT95.43.AKQ8.T93 63.QT95.654.A754"]
+[Declarer "N"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2N =2= PASS
+4S =3= PASS PASS =4= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:* Jacoby 2NT -- 4-!H; 4+!S; 11+ HCP; Artificial; GF"]
+[Note "3: Weak -- 2-4!C; 2-4!D; 2-4!H; 5-7!S; 11-13 HCP"]
+[Note "4:  -- 4-!H; 4+!S; 11-29 HCP; GF"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 4\s      10\n 2\s       7\n 3\s       7\n 2N       5\n 3N       4\n 5\s       1\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score:  40
+}
+
+[BCFlags "801f"]
+[Board "5"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:A32.KJ8.AK43.JT9 KJ87.32.987.K843 54.QT964.Q62.AQ5 QT96.A75.JT5.762"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2D =2= PASS
+2H =3= PASS 3N =4= PASS
+4H =5= PASS PASS =6= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2: Transfer  -- 5+!H; 6-!S; 25- HCP; Forcing"]
+[Note "3: Transfer completed -- 2-6!C; 2-6!D; 2-4!H; 2-5!S; 15-17 HCP"]
+[Note "4: Nat. -- 6-!C; 6-!D; 5=!H; 3-!S; 9-15 HCP"]
+[Note "5: Nat. -- 2-6!C; 2-6!D; 3-4!H; 2-5!S; 15-17 HCP"]
+[Note "6:  -- 6-!C; 6-!D; 5=!H; 3-!S; 9-15 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\h      10\n 5\h       7\n 3N       6\n 3\h       5\n 2N       4\n 3\d       3\n 6\h       2\n 4N       1\n 4\d       1\n\n\n\n
+
+Facit Score:    10\nRunning Score:  50
+}
+
+[BCFlags "801f"]
+[Board "6"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:3.AQ3.K92.KJ9765 QJ92.T5.AT8.Q842 A876.J864.Q654.T KT54.K972.J73.A3"]
+[Declarer "N"]
+[Contract "2C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1D =2= PASS
+2C =3= PASS PASS =4= PASS
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!C; 4+!D; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 6+!C; 3-!D; 3-!H; 3-!S; 11-14 HCP"]
+[Note "4:  -- 6-!C; 4+!D; 6-13 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 2\c      10\n 2\h       8\n 2\d       7\n 3\c       6\n 1N       5\n 3\h       4\n 3\d       3\n 2N       2\n 4\c       2\n 3N       1\n\n\n
+
+Facit Score:    10\nRunning Score:  60
+}
+
+[BCFlags "801f"]
+[Board "7"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:K96.A32.K9865.A2 873.K987.Q2.JT96 AQ2.QJ6.JT73.K85 JT54.T54.A4.Q743"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 2D =2= PASS
+2H =3= PASS 3N =4= PASS
+PASS =5= PASS 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2:* Inverted minors -- 6-!C; 4+!D; 3-!H; 3-!S; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Stopper !H -- 6-!C; 3+!D; 4-!H; 4-!S; 13-21 HCP"]
+[Note "4: Nat. -- 2-5!C; 4-6!D; 2-3!H; 2-3!S; 11-17 HCP"]
+[Note "5:  -- 6-!C; 3+!D; 4-!H; 4-!S; 13-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 3N      10\n 4N       7\n 5\d       6\n 5N       5\n 1N       4\n 2N       4\n 2\d       3\n 3\d       3\n 4\d       2\n\n\n\n
+
+Facit Score:    10\nRunning Score:  70
+}
+
+[BCFlags "801f"]
+[Board "8"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:K4.AK3.QJ8.A8654 QJT87.Q92.43.KT9 932.87.AKT95.QJ2 A65.JT654.762.73"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 3N =2= PASS
+PASS =3= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2: Nat. -- 5-!C; 5-!D; 4-!H; 4-!S; 9-15 HCP"]
+[Note "3:  -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 3N      10\n 4N       7\n 5\d       6\n 5\c       5\n 2N       4\n 1N       4\n 4\d       3\n 4\c       2\n\n\n\n\n
+
+Facit Score:    10\nRunning Score:  80
+}
+
+[BCFlags "801f"]
+[Board "9"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AQ43.KQ92.3.AQ82 J92.T84.AKJ4.976 K85.J763.9872.K5 T76.A5.QT65.JT43"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1D =2= PASS
+1H =3= PASS 2H =4= PASS
+4H =5= PASS PASS =6= PASS
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!C; 4+!D; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 3-9!C; 6-!D; 4-5!H; 4-!S; 11-16 HCP; Forcing"]
+[Note "4: Nat. -- 5-!C; 4-9!D; 4-9!H; 5-!S; 6-10 HCP"]
+[Note "5: Nat. -- 3-9!C; 6-!D; 4-5!H; 4-!S; 15-16 HCP"]
+[Note "6:  -- 5-!C; 4-9!D; 4-9!H; 5-!S; 6-10 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\h      10\n 5\h       7\n 2\h       6\n 3\h       6\n 2\s       5\n 3\s       4\n 4\s       3\n 1N       2\n 2N       1\n\n\n\n
+
+Facit Score:    10\nRunning Score:  90
+}
+
+[BCFlags "801f"]
+[Board "10"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:92.AK875.K53.QJT KJ84.QJT6.92.K43 AQ76.42.QJT4.876 T53.93.A876.A952"]
+[Declarer "N"]
+[Contract "1N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 1S =2= PASS
+1N =3= PASS PASS =4= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Balanced -- 6-!C; 6-!D; 5-6!H; 3-!S; 11-16 HCP"]
+[Note "4:  -- 6-!H; 4+!S; 6-13 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 1N      10\n 2\h       8\n 2\d       7\n 2N       6\n 3\h       3\n 3\d       2\n 3N       1\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 100
+}
+
+[BCFlags "801f"]
+[Board "11"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AKQ43.QJ97.K2.53 JT976.A2.QJ3.742 2.KT4.9654.KJ986 85.8653.AT87.AQT"]
+[Declarer "N"]
+[Contract "2H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 1N =2= PASS
+2H =3= PASS PASS =4= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2: Balanced -- 2-!S; 6-11 HCP"]
+[Note "3: Bidable suit -- 4-!C; 4-!D; 4-6!H; 5-9!S; 11-20 HCP"]
+[Note "4:  -- 2-!S; 6-11 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 2\h      10\n 2\c       8\n 1N       7\n 3\h       6\n 3\c       5\n 2N       4\n 2\s       3\n 4\h       2\n 3N       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 110
+}
+
+[BCFlags "801f"]
+[Board "12"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AQ2.KT2.AQJ6.K82 KT854.A73.42.976 976.QJ94.83.A543 J3.865.KT975.QJT"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1H =2= PASS
+2N =3= PASS 3N =4= PASS
+PASS =5= PASS 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Strong -- 2-6!C; 3-7!D; 1-3!H; 2-4!S; 18-19 HCP"]
+[Note "4: Nat. -- 2-5!C; 2-5!D; 4=!H; 2-3!S; 6-12 HCP"]
+[Note "5:  -- 2-6!C; 3-7!D; 1-3!H; 2-4!S; 18-19 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 3N      10\n 4\h       7\n 4N       6\n 5\h       5\n 2N       4\n 1N       4\n 3\h       3\n 2\h       3\n 3\c       2\n 2\c       2\n\n\n
+
+Facit Score:    10\nRunning Score: 120
+}
+
+[BCFlags "801f"]
+[Board "13"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AK2.AKQ72.43.862 9865.5.T6.AKQJT4 73.JT8.KQ72.9753 QJT4.9643.AJ985."]
+[Declarer "N"]
+[Contract "1N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS PASS =2= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:  -- ; 8- HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 3\h      10\n 2\h       8\n 1\h       8\n 1N       6\n 2N       5\n 3N       4\n 4\h       3\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 126
+}
+
+[BCFlags "801f"]
+[Board "14"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AQJ3.A93.KJ2.J82 97.KQJT54.T3.976 KT82.872.AQ98.43 654.6.7654.AKQT5"]
+[Declarer "N"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2C =2= PASS
+2S =3= PASS 4S =4= PASS
+PASS =5= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Note "4: Nat. -- 4+!S; 7-17 HCP"]
+[Note "5:  -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 4\s      10\n 3N       8\n 2\s       6\n 3\s       6\n 1N       5\n 2N       5\n 2\d       3\n 3\d       2\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 136
+}
+
+[BCFlags "801f"]
+[Board "15"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AKJ4.Q872.AQJ.A3 QT98752.3.852.86 3.KJT95.K94.KT42 6.A64.T763.QJ975"]
+[Declarer "N"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2N =1= PASS 3D =2= PASS
+3N =3= PASS 4C =4= PASS
+4H =5= PASS 4N =6= PASS
+5D =7= PASS 6H =8= PASS
+PASS =9= PASS 
+[Note "1: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 20-21 HCP"]
+[Note "2: Transfer  -- 5+!H; 6-!S; 20- HCP; Forcing"]
+[Note "3:* Extended acceptance after NT -- 2-5!C; 2-5!D; 4-5!H; 2-5!S; 20-21 HCP; Artificial; Forcing"]
+[Note "4:* Cue bid, a !C stopper -- 5+!H; 6-!S; 3-20 HCP; Artificial; Forcing"]
+[Note "5: Nat. -- 2-5!C; 2-5!D; 4-5!H; 2-5!S; 20-21 HCP"]
+[Note "6:* Blackwood 1430, for !H -- 5+!H; 6-!S; 4-20 HCP; Artificial; Forcing"]
+[Note "7:* A=0/5 or 3/5 -- 2-5!C; 2-5!D; 4-5!H; 2-5!S; 20-21 HCP; Artificial"]
+[Note "8:* Nat. -- 5-!D; 5+!H; 6-!S; 4-20 HCP"]
+[Note "9:*  -- 2-5!C; 2-5!D; 4-5!H; 2-5!S; 20-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\h      10\n 6N       8\n 5\h       6\n 4\h       6\n 5N       4\n 4N       4\n 3N       4\n 2\h       2\n 3\h       2\n 2N       1\n\n\n
+
+Facit Score:    10\nRunning Score: 146
+}
+
+[BCFlags "801f"]
+[Board "16"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:J92.43.Q843.T973 6.T6.AJ975.QJ654 AKQ43.AKQ5.KT2.2 T875.J9872.6.AK8"]
+[Declarer "S"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+PASS =1= PASS 2C =2= PASS
+2D =3= PASS 2S =4= PASS
+3S =5= PASS 4C =6= PASS
+4S =7= PASS PASS =8= PASS
+[Note "1:  -- ; 10- HCP"]
+[Note "2:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "3:* Waiting -- ; 10- HCP; Artificial; Forcing"]
+[Note "4: Bidable suit -- 6-!H; 5+!S; 19+ HCP; GF"]
+[Note "5: Nat. -- 3+!S; 3-10 HCP; Forcing"]
+[Note "6:* Cue bid, a !C stopper -- 6-!H; 5+!S; 22+ HCP; Artificial; GF"]
+[Note "7: Denies stoppers: !D -- 3+!S; 3-9 HCP"]
+[Note "8:  -- 6-!H; 5+!S; 22+ HCP; GF"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\s      10\n 5\s       7\n 1\s       6\n 2\s       6\n 3\s       6\n 1N       4\n 2N       3\n 3N       2\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 156
+}
+
+[BCFlags "801f"]
+[Board "17"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AK43.K5.KQT7.A84 JT86.A964.43.QT2 52.QT2.J9652.KJ9 Q97.J873.A8.7653"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 3D =2= PASS
+3N =3= PASS PASS =4= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!C; 4+!D; 3-!H; 3-!S; 7-9 HCP"]
+[Note "3: Nat. -- 2-6!C; 3-6!D; 2-4!H; 2-4!S; 17-21 HCP"]
+[Note "4:  -- 6-!C; 4+!D; 3-!H; 3-!S; 7-9 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 3N      10\n 5\d       7\n 4N       6\n 2N       5\n 1N       5\n 2\d       4\n 3\d       4\n 4\d       4\n 5N       2\n\n\n\n
+
+Facit Score:    10\nRunning Score: 166
+}
+
+[BCFlags "801f"]
+[Board "18"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AK2.KQ8.AK84.A92 T96.A6.QT62.KT65 Q73.JT942.9753.3 J854.753.J.QJ874"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2C =1= PASS 2D =2= PASS
+2N =3= PASS 3D =4= PASS
+3H =5= PASS 3N =6= PASS
+4H =7= PASS PASS =8= PASS
+[Note "1:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "2:* Waiting -- ; Artificial; Forcing"]
+[Note "3: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 22-24 HCP; GF"]
+[Note "4: Transfer  -- 5+!H; 6-!S; 18- HCP; Forcing"]
+[Note "5: Transfer completed -- 2-5!C; 2-5!D; 2-4!H; 2-5!S; 22-24 HCP; GF"]
+[Note "6: Nat. -- 6-!C; 6-!D; 5=!H; 3-!S; 2-8 HCP"]
+[Note "7: Nat. -- 2-5!C; 2-5!D; 3-4!H; 2-5!S; 22-24 HCP; GF"]
+[Note "8:  -- 6-!C; 6-!D; 5=!H; 3-!S; 2-8 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\h      10\n 5\h       8\n 5\d       6\n 2\h       3\n 3\h       3\n 3N       3\n 3\d       2\n 4\d       2\n 4N       2\n 5N       1\n\n\n
+
+Facit Score:    10\nRunning Score: 176
+}
+
+[BCFlags "801f"]
+[Board "19"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AQ84.K3.AQJ.9753 97.JT85.7654.KT6 KJT2.AQ2.K93.QJ4 653.9764.T82.A82"]
+[Declarer "N"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2C =2= PASS
+2S =3= PASS 3H =4= PASS
+4C =5= PASS 4D =6= PASS
+4N =7= PASS 5H =8= PASS
+6S =9= PASS PASS =10= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Note "4:* Artificial -- 4+!S; 14+ HCP; Artificial; Forcing"]
+[Note "5:* Cue bid, a !C stopper -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP; Artificial; Forcing"]
+[Note "6:* Cue bid, a !D stopper -- 4+!S; 14+ HCP; Artificial; Forcing"]
+[Note "7:* Blackwood 1430, for !S -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP; Artificial; Forcing"]
+[Note "8:* A=2/5 or 5/5, Q(S)=0 -- 4+!S; 14+ HCP; Artificial"]
+[Note "9:* Nat. -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Note "10:*  -- 4+!S; 14-25 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4N      10\n 3N       9\n 5N       8\n 4\s       7\n 5\s       5\n 6N       2\n 6\s       1\n\n\n\n\n\n
+
+Facit Score:     1\nRunning Score: 177
+}
+
+[BCFlags "801f"]
+[Board "20"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:J3.3.972.KQJ9876 AKT8.J952.A63.T5 9762.AQ876.KQ8.2 Q54.KT4.JT54.A43"]
+[Declarer "N"]
+[Contract "3C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+3C =1= PASS PASS =2= PASS
+[Note "1: Preemptive -- 7-8!C; 6-!D; 4-!H; 4-!S; 5-10 HCP"]
+[Note "2:  -- ; 17- HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 3\c      10\n 2\c       9\n 4\c       6\n 1N       5\n 1\h       4\n 2N       3\n 5\c       2\n 2\h       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 187
+}
+
+[BCFlags "801f"]
+[Board "21"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AQ8.Q92.J43.AK82 KJT4.865.QT7.JT4 3.JT43.AK82.9765 97652.AK7.965.Q3"]
+[Declarer "N"]
+[Contract "2N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2C =2= PASS
+2D =3= PASS 2N =4= PASS
+PASS =5= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
+[Note "3: No major suits -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
+[Note "4: Nat. -- 2-6!C; 2-6!D; 2-4!H; 2-4!S; 7-9 HCP"]
+[Note "5:  -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 2N      10\n 1N       9\n 2\c       7\n 3\c       6\n 2\h       5\n 3\h       4\n 2\d       4\n 3\d       3\n 3N       2\n 4\c       2\n\n\n
+
+Facit Score:    10\nRunning Score: 197
+}
+
+[BCFlags "801f"]
+[Board "22"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AQ976.Q82.AJ842. 43.764.QT7.A8765 KJT8.AK93.53.K92 52.JT5.K96.QJT43"]
+[Declarer "N"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2N =2= PASS
+3C =3= PASS 3S =4= PASS
+4D =5= PASS 4H =6= PASS
+4S =7= PASS PASS =8= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:* Jacoby 2NT -- 4-!H; 4+!S; 11+ HCP; Artificial; GF"]
+[Note "3:* Shortness  !C -- 1-!C; 6-!H; 5+!S; 11-20 HCP; Artificial; Forcing"]
+[Note "4: Nat. -- 4-!H; 4+!S; 13-34 HCP; GF"]
+[Note "5:* Cue bid, a !D stopper -- 1-!C; 6-!H; 5+!S; 12-20 HCP; Artificial; Forcing"]
+[Note "6:* Cue bid, a !C stopper -- 4-!H; 4+!S; 13-34 HCP; Artificial; GF"]
+[Note "7: Nat. -- 1-!C; 6-!H; 5+!S; 12-18 HCP"]
+[Note "8:  -- 4-!H; 4+!S; 13-28 HCP; GF"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\s      10\n 4\s       6\n 5\s       6\n 4\h       4\n 5\h       3\n 3N       3\n 4N       2\n 6\h       1\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 203
+}
+
+[BCFlags "801f"]
+[Board "23"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQJT.AJ8.A75.J43 9865.QT765.9.K86 2.3.KQJT863.AQ72 A743.K942.42.T95"]
+[Declarer "N"]
+[Contract "6D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 3C =2= PASS
+3D =3= PASS 4N =4= PASS
+5H =5= PASS 6D =6= PASS
+PASS =7= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* 1N-3C transfer to diamonds -- 6-!C; 6+!D; 4-!H; 4-!S; Artificial; Forcing"]
+[Note "3:* Automat -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP; Artificial"]
+[Note "4:* Blackwood 1430, for !D -- 6-!C; 6+!D; 4-!H; 4-!S; 11+ HCP; Artificial; Forcing"]
+[Note "5:* A=2/5 or 5/5, Q(D)=0 -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP; Artificial"]
+[Note "6:* Nat. -- 6-!C; 6+!D; 4-!H; 4-!S; 11+ HCP"]
+[Note "7:*  -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\d      10\n 3N       7\n 4N       6\n 5\d       5\n 5N       4\n 6N       4\n 6\s       3\n 4\s       2\n 5\s       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 213
+}
+
+[BCFlags "801f"]
+[Board "24"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AKT2.43.96.KQ974 J987.JT6.AJT74.3 53.AK97.82.AJT62 Q64.Q852.KQ53.85"]
+[Declarer "N"]
+[Contract "4C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1H =2= PASS
+1S =3= PASS 2D =4= PASS
+3C =5= PASS 4C =6= PASS
+PASS =7= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 3-9!C; 6-!D; 3-!H; 4-5!S; 11-16 HCP; Forcing"]
+[Note "4:* Fourth suit -- 4+!H; 6-!S; 11-29 HCP; Artificial; Forcing"]
+[Note "5: Bidable suit -- 4-9!C; 5-!D; 2-!H; 4-5!S; 11-16 HCP"]
+[Note "6: Nat. -- 4-9!C; 5-!D; 4-9!H; 5-!S; 11-14 HCP"]
+[Note "7:  -- 4-9!C; 5-!D; 2-!H; 4-5!S; 11-16 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 5\c      10\n 4\c       6\n 3\c       6\n 2\c       6\n 1N       5\n 2N       4\n 2\h       3\n 2\s       3\n 3N       2\n 6\c       1\n\n\n
+
+Facit Score:     6\nRunning Score: 219
+}
+
+[BCFlags "801f"]
+[Board "25"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:A83.K43.AQ4.QJ85 QJ97.J86.73.A973 42.A92.KJT986.T2 KT65.QT75.52.K64"]
+[Declarer "N"]
+[Contract "3D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 3C =2= PASS
+3D =3= PASS PASS =4= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* 1N-3C transfer to diamonds -- 6-!C; 6+!D; 4-!H; 4-!S; Artificial; Forcing"]
+[Note "3:* Automat -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP; Artificial"]
+[Note "4:  -- 6-!C; 6+!D; 4-!H; 4-!S; 9- HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 3N      10\n 2N       7\n 1N       7\n 3\d       6\n 2\d       6\n 4\d       5\n 5\d       2\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 225
+}
+
+[BCFlags "801f"]
+[Board "26"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AQ72.K73.A83.QJ4 KT8.AT94.JT76.T2 J965.QJ85.92.A63 43.62.KQ54.K9875"]
+[Declarer "N"]
+[Contract "3S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2C =2= PASS
+2S =3= PASS 3S =4= PASS
+PASS =5= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Note "4: Nat. -- 4+!S; 7-9 HCP"]
+[Note "5:  -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 3\s      10\n 2\s       7\n 1N       5\n 2N       4\n 3N       2\n 2\h       1\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 235
+}
+
+[BCFlags "801f"]
+[Board "27"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AJ83.K2.A987.JT3 QT94.AT4.QJ2.972 K2.QJ873.653.AQ4 765.965.KT4.K865"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1H =2= PASS
+1S =3= PASS 2C =4= PASS
+3N =5= PASS PASS =6= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 6-!C; 3-9!D; 3-!H; 4-6!S; 11-16 HCP; Forcing"]
+[Note "4:* Fourth suit -- 4+!H; 6-!S; 11-29 HCP; Artificial; Forcing"]
+[Note "5: Nat. -- 2-6!C; 3-6!D; 2-!H; 4=!S; 13-16 HCP"]
+[Note "6:  -- 4+!H; 6-!S; 11-27 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3N      10\n 2N       7\n 1N       7\n 4\h       6\n 2\h       5\n 3\h       4\n 2\d       3\n 3\d       2\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 245
+}
+
+[BCFlags "801f"]
+[Board "28"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AJ82.KQ93.K92.32 KT4.A82.QJ84.T97 Q963.JT65.A6.J85 75.74.T753.AKQ64"]
+[Declarer "S"]
+[Contract "2H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1H =2= PASS
+2H =3= PASS PASS =4= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Nat. -- 6-!C; 3-9!D; 4-6!H; 4-!S; 11-15 HCP"]
+[Note "4:  -- 4+!H; 6-!S; 6-13 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 2\h      10\n 2\s       9\n 3\h       8\n 3\s       7\n 1N       5\n 4\h       4\n 4\s       3\n 2N       2\n 3N       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 255
+}
+
+[BCFlags "801f"]
+[Board "29"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:T985.AJ8.J5.AK42 AQ64.K2.8742.J53 J72.QT76.KT93.Q8 K3.9543.AQ6.T976"]
+[Declarer "S"]
+[Contract "1N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1D =2= PASS
+1S =3= PASS 1N =4= PASS
+PASS =5= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!C; 4+!D; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 3-9!C; 6-!D; 3-!H; 4-5!S; 11-16 HCP; Forcing"]
+[Note "4: Balanced -- 6-!C; 4-6!D; 3-!S; 6-11 HCP"]
+[Note "5:  -- 3-9!C; 6-!D; 3-!H; 4-5!S; 11-16 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 1N      10\n 1\h       8\n 1\s       8\n 2N       6\n 2\h       4\n 2\s       4\n 3N       2\n 3\h       1\n 3\s       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 265
+}
+
+[BCFlags "801f"]
+[Board "30"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AQ3.KJ9.AK84.QT8 9654.QT8.QJT9.A9 KJ82.43.752.J765 T7.A7652.63.K432"]
+[Declarer "N"]
+[Contract "2N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1S =2= PASS
+2N =3= PASS PASS =4= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Strong -- 2-6!C; 3-7!D; 2-4!H; 1-3!S; 18-19 HCP"]
+[Note "4:  -- 6-!H; 4+!S; 6-6 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 2N      10\n 1N      10\n 2\s       7\n 3\s       6\n 2\c       5\n 2\d       4\n 3\c       3\n 3N       3\n 3\d       2\n 4\s       1\n\n\n
+
+Facit Score:    10\nRunning Score: 275
+}
+
+[BCFlags "801f"]
+[Board "31"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:3.A84.KJ6.KQ9653 J97.KJ73.T84.JT2 AQ654.962.Q973.7 KT82.QT5.A52.A84"]
+[Declarer "N"]
+[Contract "2C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1S =2= PASS
+2C =3= PASS PASS =4= PASS
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 6+!C; 6-!D; 4-!H; 3-!S; 11-14 HCP"]
+[Note "4:  -- 6-!H; 4+!S; 6-13 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 2\c      10\n 2\d       8\n 3\c       6\n 2\s       5\n 3\d       4\n 1N       3\n 2N       2\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 285
+}
+
+[BCFlags "801f"]
+[Board "32"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AK873.9.842.AQ95 QJ94.K75.A93.J82 2.QJ8642.KJ7.764 T65.AT3.QT65.KT3"]
+[Declarer "S"]
+[Contract "2H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 1N =2= PASS
+2C =3= PASS 2H =4= PASS
+PASS =5= PASS 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2: Balanced -- 2-!S; 6-11 HCP"]
+[Note "3: Bidable suit -- 4-6!C; 4-!D; 4-!H; 5-9!S; 11-17 HCP"]
+[Note "4: Bidable suit -- 6+!H; 2-!S; 6-10 HCP"]
+[Note "5:  -- 4-6!C; 4-!D; 4-!H; 5-9!S; 11-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 2\h      10\n 3\h       7\n 2\c       5\n 2\s       4\n 1N       3\n 3\c       2\n 2N       1\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 295
+}
+
+[BCFlags "801f"]
+[Board "33"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KJ963.93.AQ2.AQ6 A8.T865.J943.K98 QT74.AJ42.86.JT2 52.KQ7.KT75.7543"]
+[Declarer "N"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2C =2= PASS
+2S =3= PASS 3S =4= PASS
+4S =5= PASS PASS =6= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Note "4: Nat. -- 4+!S; 7-9 HCP"]
+[Note "5: Nat. -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Note "6:  -- 4+!S; 7-9 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\s      10\n 3\s       6\n 2\s       6\n 5\s       4\n 3N       3\n 2N       2\n 1N       2\n 4N       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 305
+}
+
+[BCFlags "801f"]
+[Board "34"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:A83.K2.AQ9654.43 KT7.QJ8.KT8.Q972 QJ654.AT76.2.AJ6 92.9543.J73.KT85"]
+[Declarer "S"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1S =2= PASS
+2D =3= PASS 2H =4= PASS
+4S =5= PASS PASS =6= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 6-!C; 6+!D; 4-!H; 3-!S; 11-14 HCP"]
+[Note "4: Bidable suit -- 4-!C; 4-!D; 4-6!H; 5-9!S; 10-29 HCP"]
+[Note "5: Nat. -- 4-!C; 6-10!D; 3-!H; 3=!S; 13-13 HCP"]
+[Note "6:  -- 4-!C; 4-!D; 4-6!H; 5-9!S; 10-27 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\s      10\n 3N       7\n 3\s       6\n 2\s       6\n 2N       5\n 2\d       4\n 3\d       3\n 5\s       2\n 6\s       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 315
+}
+
+[BCFlags "801f"]
+[Board "35"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A3.K75.AQ62.KT63 J962.AQ.K73.Q874 KQT75.84.984.AJ5 84.JT9632.JT5.92"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2H =2= PASS
+2S =3= PASS 3N =4= PASS
+PASS =5= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2: Transfer  -- 6-!H; 5+!S; 25- HCP; Forcing"]
+[Note "3: Transfer completed -- 2-6!C; 2-6!D; 2-5!H; 2-4!S; 15-17 HCP"]
+[Note "4: Nat. -- 6-!C; 6-!D; 3-!H; 5=!S; 9-15 HCP"]
+[Note "5:  -- 2-6!C; 2-6!D; 2-5!H; 2-4!S; 15-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 3N      10\n 4\s       7\n 2N       5\n 1N       5\n 3\s       4\n 2\s       4\n 4N       3\n 5N       2\n 5\s       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 325
+}
+
+[BCFlags "801f"]
+[Board "36"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQJ2.43.A82.A987 T76.KQ72.JT954.J A3.95.Q76.KQT654 9854.AJT86.K3.32"]
+[Declarer "N"]
+[Contract "3C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 2C =2= PASS
+2D =3= PASS 3C =4= PASS
+PASS =5= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2:* Inverted minors -- 4+!C; 6-!D; 3-!H; 3-!S; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Stopper !D -- 3+!C; 6-!D; 4-!H; 4-!S; 13-21 HCP"]
+[Note "4: Bidable suit -- 5+!C; 6-!D; 3-!H; 3-!S; 10-11 HCP"]
+[Note "5:  -- 3+!C; 6-!D; 4-!H; 4-!S; 13-14 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 5\c      10\n 4\s       8\n 5\s       7\n 4\c       6\n 3\s       6\n 2N       5\n 3N       4\n 4N       3\n 6\c       2\n 5N       1\n\n\n
+
+Facit Score:     6\nRunning Score: 331
+}
+
+[BCFlags "801f"]
+[Board "37"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:3.AK9762.Q84.976 T84.QJ84.KJ2.A53 KQJ976.3.A93.J84 A52.T5.T765.KQT2"]
+[Declarer "N"]
+[Contract "2H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2H =1= PASS PASS =2= PASS
+[Note "1: Weak natural 2M -- 6-7!H; 4-!S; 6-10 HCP"]
+[Note "2:  -- ; 14- HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\n\nScore Table:
+
+ 2\s      10\n 2\h       8\n 3\s       7\n 3\h       5\n 2N       4\n 4\s       2\n 3N       1\n\n\n\n\n\n
+
+Facit Score:     8\nRunning Score: 339
+}
+
+[BCFlags "801f"]
+[Board "38"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:A97.AQ85.J3.AJ62 QJT3.J94.A4.9753 2.K3.KQT9852.K84 K8654.T762.76.QT"]
+[Declarer "N"]
+[Contract "6D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 3C =2= PASS
+3D =3= PASS 4N =4= PASS
+5D =5= PASS 6D =6= PASS
+PASS =7= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* 1N-3C transfer to diamonds -- 6-!C; 6+!D; 4-!H; 4-!S; Artificial; Forcing"]
+[Note "3:* Automat -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP; Artificial"]
+[Note "4:* Blackwood 1430, for !D -- 6-!C; 6+!D; 4-!H; 4-!S; 11+ HCP; Artificial; Forcing"]
+[Note "5:* A=0/5 or 3/5 -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP; Artificial"]
+[Note "6:* Nat. -- 6-!C; 6=!D; 4-!H; 4-!S; 11+ HCP"]
+[Note "7:*  -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\d      10\n 5\d       7\n 6N       5\n 4\d       4\n 3\d       4\n 3N       3\n 4N       2\n 5N       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 349
+}
+
+[BCFlags "801f"]
+[Board "39"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A94.42.KQT765.84 QJ83.QJT.J8.A975 T75.AK95.A93.KT2 K62.8763.42.QJ63"]
+[Declarer "N"]
+[Contract "4D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2D =1= PASS 2N =2= PASS
+3S =3= PASS 4D =4= PASS
+PASS =5= PASS 
+[Note "1: Weak natural 2D -- 6-!C; 6-7!D; 3-!H; 3-!S; 6-10 HCP"]
+[Note "2:* Ogust -- ; 12+ HCP; Artificial; Forcing"]
+[Note "3: Artificial -- 6-!C; 6-7!D; 3-!H; 3-!S; 8-10 HCP"]
+[Note "4: Nat. -- 1+!D; 12-22 HCP"]
+[Note "5:  -- 6-!C; 6-7!D; 3-!H; 3-!S; 8-10 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 3N      10\n 2N       7\n 1N       7\n 4N       5\n 3\d       4\n 2\d       4\n 4\d       3\n 5\d       1\n\n\n\n\n
+
+Facit Score:     3\nRunning Score: 352
+}
+
+[BCFlags "801f"]
+[Board "40"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AK92.A3.KQ94.AJ2 T74.J5.AJT8.K965 QJ83.Q97642.32.3 65.KT8.765.QT874"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2N =1= PASS 3D =2= PASS
+3H =3= PASS 4H =4= PASS
+PASS =5= PASS 
+[Note "1: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 20-21 HCP"]
+[Note "2: Transfer  -- 5+!H; 6-!S; 20- HCP; Forcing"]
+[Note "3: Transfer completed -- 2-5!C; 2-5!D; 2-4!H; 2-5!S; 20-21 HCP"]
+[Note "4: Bidable suit -- 6+!H; 6-!S; 12- HCP"]
+[Note "5:  -- 2-5!C; 2-5!D; 2-4!H; 2-5!S; 20-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 4\s      10\n 4\h       8\n 5\s       7\n 5\h       6\n 3\s       4\n 2\s       4\n 3\h       3\n 2\h       3\n 2N       2\n\n\n\n
+
+Facit Score:     8\nRunning Score: 360
+}
+
+[BCFlags "801f"]
+[Board "41"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AKQ75.AJ3.AKQ.92 JT93.T7.J94.AQ87 42.Q8654.872.J65 86.K92.T653.KT43"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2C =1= PASS 2D =2= PASS
+2N =3= PASS 3D =4= PASS
+3H =5= PASS 3N =6= PASS
+4H =7= PASS PASS =8= PASS
+[Note "1:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "2:* Waiting -- ; Artificial; Forcing"]
+[Note "3: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 22-24 HCP; GF"]
+[Note "4: Transfer  -- 5+!H; 6-!S; 18- HCP; Forcing"]
+[Note "5: Transfer completed -- 2-5!C; 2-5!D; 2-4!H; 2-5!S; 22-24 HCP; GF"]
+[Note "6: Nat. -- 6-!C; 6-!D; 5=!H; 3-!S; 2-8 HCP"]
+[Note "7: Nat. -- 2-5!C; 2-5!D; 3-4!H; 2-5!S; 22-24 HCP; GF"]
+[Note "8:  -- 6-!C; 6-!D; 5=!H; 3-!S; 2-8 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\h      10\n 3\h       7\n 2\h       7\n 3N       6\n 4\s       5\n 2N       5\n 3\s       4\n 2\s       4\n 5\h       2\n\n\n\n
+
+Facit Score:    10\nRunning Score: 370
+}
+
+[BCFlags "801f"]
+[Board "42"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AKQ82..KQ963.AK2 T74.AT95.T52.JT4 J953.KJ842.A8.93 6.Q763.J74.Q8765"]
+[Declarer "N"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2C =1= PASS 2H =2= PASS
+2S =3= PASS 3S =4= PASS
+4N =5= PASS 5C =6= PASS
+6S =7= PASS PASS =8= PASS
+[Note "1:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "2: Bidable suit -- 5+!H; 6-!S; 7+ HCP; Forcing"]
+[Note "3: Bidable suit -- 6-!H; 5+!S; 19-33 HCP; GF"]
+[Note "4: Nat. -- 5-!C; 5-!D; 5-10!H; 3-6!S; 9-26 HCP; Forcing"]
+[Note "5:* Blackwood 1430, for !S -- 6-!H; 5+!S; 19-33 HCP; Artificial; GF"]
+[Note "6:* A=1/5 or 4/5 -- 5-!C; 5-!D; 5-10!H; 3-6!S; 9-26 HCP; Artificial"]
+[Note "7:* Nat. -- 7-!C; 6-!H; 5+!S; 19-33 HCP; GF"]
+[Note "8:*  -- 5-!C; 5-!D; 5-10!H; 3-6!S; 9-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 7\s      10\n 6\s       8\n 6\d       6\n 6N       5\n 5\s       4\n 4\s       4\n 3N       3\n 4N       3\n 5N       2\n 7\d       2\n\n\n
+
+Facit Score:     8\nRunning Score: 378
+}
+
+[BCFlags "801f"]
+[Board "43"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AQT865.72.872.J3 J72.QJ4.KT64.AT5 K93.AK85.A93.942 4.T963.QJ5.KQ876"]
+[Declarer "N"]
+[Contract "3S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2S =1= PASS 2N =2= PASS
+3D =3= PASS 3S =4= PASS
+PASS =5= PASS 
+[Note "1: Weak natural 2M -- 4-!H; 6-7!S; 6-10 HCP"]
+[Note "2:* Ogust -- ; 12+ HCP; Artificial; Forcing"]
+[Note "3: Artificial -- 4-!H; 6-7!S; 6-7 HCP"]
+[Note "4: Nat. -- 1+!S; 12-20 HCP"]
+[Note "5:  -- 4-!H; 6-7!S; 6-7 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 3\s      10\n 2\s      10\n 3N       9\n 2N       6\n 1N       6\n 4\s       4\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 388
+}
+
+[BCFlags "801f"]
+[Board "44"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KQ9764.2.KQ94.A2 3.A63.T752.JT987 JT82.KJ98.A3.KQ4 A5.QT754.J86.653"]
+[Declarer "N"]
+[Contract "5S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2N =2= PASS
+3H =3= PASS 3S =4= PASS
+4N =5= PASS 5C =6= PASS
+5S =7= PASS PASS =8= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:* Jacoby 2NT -- 4-!H; 4+!S; 11+ HCP; Artificial; GF"]
+[Note "3:* Shortness  !H -- 1-!H; 5+!S; 11-20 HCP; Artificial; Forcing"]
+[Note "4: Nat. -- 4-!H; 4+!S; 13-34 HCP; GF"]
+[Note "5:* Blackwood 1430, for !S -- 1-!H; 5+!S; 11-20 HCP; Artificial; Forcing"]
+[Note "6:* A=1/5 or 4/5 -- 4-!H; 4+!S; 13-34 HCP; Artificial; GF"]
+[Note "7:* Nat. -- 7-!C; 1-!H; 5+!S; 11-20 HCP"]
+[Note "8:*  -- 4-!H; 4+!S; 13-29 HCP; GF"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 5\s      10\n 4\s      10\n 3N       7\n 4N       7\n 5N       5\n 3\s       4\n 6\s       3\n 6N       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 398
+}
+
+[BCFlags "801f"]
+[Board "45"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:A5.KQ83.AKJ3.KJ4 T84.AT76.75.QT83 K9763.2.QT842.A2 QJ2.J954.96.9765"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2N =1= PASS 3H =2= PASS
+3S =3= PASS 3N =4= PASS
+PASS =5= PASS 
+[Note "1: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 20-21 HCP"]
+[Note "2: Transfer  -- 6-!H; 5+!S; 20- HCP; Forcing"]
+[Note "3: Transfer completed -- 2-5!C; 2-5!D; 2-5!H; 2-4!S; 20-21 HCP"]
+[Note "4: Nat. -- 6-!C; 6-!D; 4-!H; 5=!S; 4-10 HCP"]
+[Note "5:  -- 2-5!C; 2-5!D; 2-5!H; 2-4!S; 20-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 6\d      10\n 3N       8\n 4N       8\n 5N       5\n 4\s       4\n 5\d       3\n 5\s       2\n 6\s       1\n\n\n\n\n
+
+Facit Score:     8\nRunning Score: 406
+}
+
+[BCFlags "801f"]
+[Board "46"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KQ84.AK2.Q97.Q92 T93.984.AT4.JT85 AJ72.QT3.J83.AK3 65.J765.K652.764"]
+[Declarer "N"]
+[Contract "5S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2C =2= PASS
+2S =3= PASS 3H =4= PASS
+4C =5= PASS 4D =6= PASS
+4N =7= PASS 5H =8= PASS
+5S =9= PASS PASS =10= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Note "4:* Artificial -- 4+!S; 14+ HCP; Artificial; Forcing"]
+[Note "5:* Cue bid, a !C stopper -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP; Artificial; Forcing"]
+[Note "6:* Cue bid, a !D stopper -- 4+!S; 14+ HCP; Artificial; Forcing"]
+[Note "7:* Blackwood 1430, for !S -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP; Artificial; Forcing"]
+[Note "8:* A=2/5 or 5/5, Q(S)=0 -- 4+!S; 14+ HCP; Artificial"]
+[Note "9:* Nat. -- 2-5!C; 2-5!D; 2-3!H; 4-5!S; 15-17 HCP"]
+[Note "10:*  -- 4+!S; 14-25 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4N      10\n 3N      10\n 5N       7\n 4\s       6\n 5\s       4\n 2N       3\n 3\s       3\n 6N       2\n 6\s       1\n\n\n\n
+
+Facit Score:     4\nRunning Score: 410
+}
+
+[BCFlags "801f"]
+[Board "47"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:Q2.QJ976.A2.AK85 A84.82.QJ84.JT62 KJ53.AKT4.K93.43 T976.53.T765.Q97"]
+[Declarer "N"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 2N =2= PASS
+3H =3= PASS 3N =4= PASS
+4C =5= PASS 4N =6= PASS
+5S =7= PASS 6H =8= PASS
+PASS =9= PASS 
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2:* Jacoby 2NT -- 4+!H; 4-!S; 11+ HCP; Artificial; GF"]
+[Note "3: Strong balanced -- 2-4!C; 2-4!D; 5-7!H; 2-4!S; 16-20 HCP; Forcing"]
+[Note "4:* Cue bid, surplus -- 4+!H; 4-!S; 14+ HCP; Artificial; GF"]
+[Note "5:* Cue bid, a !C stopper -- 2-4!C; 2-4!D; 5-7!H; 2-4!S; 16-20 HCP; Artificial; Forcing"]
+[Note "6:* Blackwood 1430, for !H -- 4+!H; 4-!S; 14+ HCP; Artificial; GF"]
+[Note "7:* A=2/5 or 5/5, Q(H)=1 -- 2-4!C; 2-4!D; 5-7!H; 2-4!S; 16-20 HCP; Artificial"]
+[Note "8:* Nat. -- 4+!H; 4-!S; 14+ HCP; GF"]
+[Note "9:*  -- 2-4!C; 2-4!D; 5-7!H; 2-4!S; 16-20 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\h      10\n 5\h       7\n 4\h       7\n 3N       5\n 4N       5\n 5N       5\n 6N       3\n 3\h       2\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 420
+}
+
+[BCFlags "801f"]
+[Board "48"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:A3.KQ87.AKQ2.KQ9 KJT4.AT3.JT3.T72 98652.942.864.J3 Q7.J65.975.A8654"]
+[Declarer "N"]
+[Contract "3S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2C =1= PASS 2D =2= PASS
+2N =3= PASS 3H =4= PASS
+3S =5= PASS PASS =6= PASS
+[Note "1:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "2:* Waiting -- ; Artificial; Forcing"]
+[Note "3: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 22-24 HCP; GF"]
+[Note "4: Transfer  -- 6-!H; 5+!S; 18- HCP; Forcing"]
+[Note "5: Transfer completed -- 2-5!C; 2-5!D; 2-5!H; 2-4!S; 22-24 HCP; GF"]
+[Note "6:  -- 6-!H; 5+!S; 2- HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 2N      10\n 2\h       8\n 2\s       7\n 2\d       7\n 3\h       6\n 3\s       5\n 3\d       5\n 3N       4\n\n\n\n\n
+
+Facit Score:     5\nRunning Score: 425
+}
+
+[BCFlags "801f"]
+[Board "49"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AJ874.AKQ5.KJ5.3 KT.J972.93.A9742 Q632.83.AQ84.KQ8 95.T64.T762.JT65"]
+[Declarer "N"]
+[Contract "5S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2N =2= PASS
+3C =3= PASS 3S =4= PASS
+4N =5= PASS 5C =6= PASS
+5S =7= PASS PASS =8= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:* Jacoby 2NT -- 4-!H; 4+!S; 11+ HCP; Artificial; GF"]
+[Note "3:* Shortness  !C -- 1-!C; 6-!H; 5+!S; 11-20 HCP; Artificial; Forcing"]
+[Note "4: Nat. -- 4-!H; 4+!S; 13-34 HCP; GF"]
+[Note "5:* Blackwood 1430, for !S -- 1-!C; 6-!H; 5+!S; 11-20 HCP; Artificial; Forcing"]
+[Note "6:* A=1/5 or 4/5 -- 4-!H; 4+!S; 13-34 HCP; Artificial; GF"]
+[Note "7:* Nat. -- 1-!C; 6-!H; 5+!S; 11-20 HCP"]
+[Note "8:*  -- 4-!H; 4+!S; 13-29 HCP; GF"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\s      10\n 5\s       9\n 3N       8\n 4N       7\n 6N       5\n 6\s       4\n 5N       3\n 7\s       1\n\n\n\n\n
+
+Facit Score:     9\nRunning Score: 434
+}
+
+[BCFlags "801f"]
+[Board "50"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AJ762.K72.Q96.A5 Q4.J94.AKJ543.JT K5.AQ8653.2.KQ76 T983.T.T87.98432"]
+[Declarer "S"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2H =2= PASS
+4H =3= PASS 4N =4= PASS
+5D =5= PASS 6H =6= PASS
+PASS =7= PASS 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2: Bidable suit -- 5+!H; 6-!S; 10-29 HCP; Forcing"]
+[Note "3: Nat. -- 5-!C; 5-!D; 3-6!H; 5-10!S; 11-20 HCP"]
+[Note "4:* Blackwood 1430, for !H -- 5+!H; 6-!S; 14-29 HCP; Artificial; Forcing"]
+[Note "5:* A=0/5 or 3/5 -- 5-!C; 5-!D; 3-6!H; 5-10!S; 11-20 HCP; Artificial"]
+[Note "6:* Nat. -- 7-!D; 5+!H; 6-!S; 14-29 HCP"]
+[Note "7:*  -- 5-!C; 5-!D; 3-6!H; 5-10!S; 11-20 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\h      10\n 5\h       6\n 4\h       6\n 3N       4\n 6\s       3\n 7\h       2\n 4N       2\n 6N       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 444
+}
+
+[BCFlags "801f"]
+[Board "51"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:Q4.AKQT4.A.AKQ82 A765.98765.K94.5 JT82.J32.Q7652.4 K93..JT83.JT9763"]
+[Declarer "N"]
+[Contract "5H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2C =1= PASS 2D =2= PASS
+2H =3= PASS 3H =4= PASS
+3N =5= PASS 4C =6= PASS
+4D =7= PASS 4H =8= PASS
+4N =9= PASS 5D =10= PASS
+5H =11= PASS PASS =12= PASS
+[Note "1:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "2:* Waiting -- ; Artificial; Forcing"]
+[Note "3: Bidable suit -- 5+!H; 6-!S; 19+ HCP; GF"]
+[Note "4: Nat. -- 3+!H; 3-26 HCP; Forcing"]
+[Note "5:* Cue bid, surplus -- 5+!H; 6-!S; 22+ HCP; Artificial; GF"]
+[Note "6:* Cue bid, a !C stopper -- 3+!H; 3-26 HCP; Artificial; Forcing"]
+[Note "7:* Cue bid, a !D stopper -- 5+!H; 6-!S; 22+ HCP; Artificial; GF"]
+[Note "8: Nat. -- 3+!H; 3-9 HCP"]
+[Note "9:* Blackwood 1430, for !H -- 5+!H; 6-!S; 22+ HCP; Artificial; GF"]
+[Note "10:* A=0/5 or 3/5 -- 3+!H; 3-9 HCP; Artificial"]
+[Note "11:* Nat. -- 7-!D; 5+!H; 6-!S; 22+ HCP; GF"]
+[Note "12:*  -- 3+!H; 3-9 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\h      10\n 5\h       9\n 3N       6\n 4N       4\n 5N       2\n 6\h       1\n\n\n\n\n\n\n
+
+Facit Score:     9\nRunning Score: 453
+}
+
+[BCFlags "801f"]
+[Board "52"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:A94.KQ976.K652.2 K7652.JT52.T.JT3 83.4.AJ9874.AKQ4 QJT.A83.Q3.98765"]
+[Declarer "S"]
+[Contract "6D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 2D =2= PASS
+3D =3= PASS 4C =4= PASS
+4N =5= PASS 5S =6= PASS
+6D =7= PASS PASS =8= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2:* 10+ HCP if fit or 6+; 12+ F -- 6-!C; 4+!D; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Nat. -- 4-!C; 4-8!D; 5-9!H; 4-!S; 11-14 HCP"]
+[Note "4:* Cue bid, a !C stopper -- 6-!C; 4+!D; 14-29 HCP; Artificial; Forcing"]
+[Note "5:* Blackwood 1430, for !D -- 4-!C; 4-8!D; 5-9!H; 4-!S; 11-14 HCP; Artificial; Forcing"]
+[Note "6:* A=2/5 or 5/5, Q(D)=1 -- 6-!C; 4+!D; 14-29 HCP; Artificial"]
+[Note "7:* Nat. -- 4-!C; 4-8!D; 5-9!H; 4-!S; 11-14 HCP"]
+[Note "8:*  -- 6-!C; 4+!D; 14-29 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\d      10\n 3N       7\n 4N       6\n 5\d       5\n 4\d       4\n 5N       2\n 6N       1\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 463
+}
+
+[BCFlags "801f"]
+[Board "53"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KJ64.2.AK984.QJ2 5.AQJT9753.3.K84 AQT982.864.Q2.A3 73.K.JT765.T9765"]
+[Declarer "S"]
+[Contract "5S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1S =2= PASS
+3S =3= PASS 3N =4= PASS
+4C =5= PASS 4N =6= PASS
+5H =7= PASS 5S =8= PASS
+PASS =9= PASS 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Nat. -- 6-!C; 3-9!D; 3-!H; 4-6!S; 14-18 HCP"]
+[Note "4:* Cue bid, surplus -- 6-!H; 4+!S; 11-29 HCP; Artificial; Forcing"]
+[Note "5:* Cue bid, a !C stopper -- 6-!C; 3-9!D; 3-!H; 4-6!S; 14-18 HCP; Artificial; Forcing"]
+[Note "6:* Blackwood 1430, for !S -- 6-!H; 4+!S; 11-29 HCP; Artificial; Forcing"]
+[Note "7:* A=2/5 or 5/5, Q(S)=0 -- 6-!C; 3-9!D; 3-!H; 4-6!S; 14-18 HCP; Artificial"]
+[Note "8:* Nat. -- 6-!H; 4+!S; 11-29 HCP"]
+[Note "9:*  -- 6-!C; 3-9!D; 3-!H; 4-6!S; 14-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\s      10\n 4\s       6\n 5\s       6\n 3\s       3\n 3N       1\n\n\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 469
+}
+
+[BCFlags "801f"]
+[Board "54"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:2.AK8642.3.KQJT8 Q543.975.JT7.732 A76.3.AK9842.A96 KJT98.QJT.Q65.54"]
+[Declarer "N"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 2D =2= PASS
+3C =3= PASS 3D =4= PASS
+3H =5= PASS 4N =6= PASS
+5H =7= PASS 6H =8= PASS
+PASS =9= PASS 
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2:* 10+ HCP if fit or 6+; 12+ F -- 6-!C; 4+!D; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 4-6!C; 3-!D; 5-9!H; 3-!S; 15-20 HCP; Forcing"]
+[Note "4: Bidable suit -- 3-!C; 6+!D; 2-!H; 4-!S; 10-12 HCP; Forcing"]
+[Note "5: Bidable suit -- 4-6!C; 3-!D; 6-9!H; 3-!S; 15-20 HCP; Forcing"]
+[Note "6:* Blackwood 1430, for !H -- 3-!C; 6+!D; 2-!H; 4-!S; 12-12 HCP; Artificial; Forcing"]
+[Note "7:* A=2/5 or 5/5, Q(H)=0 -- 4-6!C; 3-!D; 6-9!H; 3-!S; 15-20 HCP; Artificial"]
+[Note "8:* Nat. -- 3-!C; 6-11!D; 2=!H; 4-!S; 12-12 HCP"]
+[Note "9:*  -- 4-6!C; 3-!D; 6-9!H; 3-!S; 15-20 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 7\c      10\n 6\c       8\n 6\h       4\n 6\d       3\n 4\h       3\n 5\c       2\n 5\h       2\n 4N       1\n\n\n\n\n
+
+Facit Score:     4\nRunning Score: 473
+}
+
+[BCFlags "801f"]
+[Board "55"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AQ84.82.AQ854.K4 J53.KQ7.T6.97653 K2.T4.KJ973.AQ82 T976.AJ9653.2.JT"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 3N =2= PASS
+PASS =3= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2: Nat. -- 5-!C; 5-!D; 4-!H; 4-!S; 9-15 HCP"]
+[Note "3:  -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 5\d      10\n 4\s       8\n 6\d       5\n 4\d       3\n 3N       3\n 4N       2\n 5N       1\n\n\n\n\n\n
+
+Facit Score:     3\nRunning Score: 476
+}
+
+[BCFlags "801f"]
+[Board "56"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AKQ7.KQT86.J2.76 653.43.AKQT85.T2 JT2.AJ97.3.AKJ93 984.52.9764.Q854"]
+[Declarer "N"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 4D =2= PASS
+4N =3= PASS 5H =4= PASS
+6H =5= PASS PASS =6= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2:* Splinter -- 1-!D; 4+!H; 11-19 HCP; Artificial; Forcing"]
+[Note "3:* Blackwood 1430, for !H -- 5+!H; 6-!S; 13-20 HCP; Artificial; Forcing"]
+[Note "4:* A=2/5 or 5/5, Q(H)=0 -- 1-!D; 4+!H; 11-19 HCP; Artificial"]
+[Note "5:* Nat. -- 5=!H; 6-!S; 13-20 HCP"]
+[Note "6:*  -- 1-!D; 4+!H; 11-19 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\h      10\n 6\s       7\n 5\h       5\n 4\h       5\n 5\s       3\n 4\s       3\n 7\h       2\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 486
+}
+
+[BCFlags "801f"]
+[Board "57"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:2.AK864.AK976.Q4 963.9.T83.A97632 AKQ4.QJT5.Q2.JT8 JT875.732.J54.K5"]
+[Declarer "N"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 2N =2= PASS
+4D =3= PASS 4N =4= PASS
+5D =5= PASS 5H =6= PASS
+6H =7= PASS PASS =8= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2:* Jacoby 2NT -- 4+!H; 4-!S; 11+ HCP; Artificial; GF"]
+[Note "3: Bidable suit -- 3-!C; 5-6!D; 5-8!H; 3-!S; 14-20 HCP; Forcing"]
+[Note "4:* Blackwood 1430, for !H -- 4+!H; 4-!S; 11+ HCP; Artificial; GF"]
+[Note "5:* A=0/5 or 3/5 -- 3-!C; 5-6!D; 5-8!H; 3-!S; 14-20 HCP; Artificial"]
+[Note "6:* Nat. -- 4+!H; 4-!S; 11+ HCP; GF"]
+[Note "7:* Nat. -- 3-!C; 5-6!D; 5=!H; 3-!S; 14-20 HCP"]
+[Note "8:*  -- 4+!H; 4-!S; 11-26 HCP; GF"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 5N      10\n 4N      10\n 3N      10\n 5\h       8\n 4\h       8\n 7\h       4\n 6\h       3\n 6N       2\n\n\n\n\n
+
+Facit Score:     3\nRunning Score: 489
+}
+
+[BCFlags "801f"]
+[Board "58"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AJ98.AK.Q94.KQT7 63.9643.KT7653.J KQT2.Q82.2.A8652 754.JT75.AJ8.943"]
+[Declarer "S"]
+[Contract "5S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1S =2= PASS
+4S =3= PASS 4N =4= PASS
+5H =5= PASS 5S =6= PASS
+PASS =7= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Nat. -- 3-9!C; 6-!D; 3-!H; 4-5!S; 16-21 HCP"]
+[Note "4:* Blackwood 1430, for !S -- 6-!H; 4+!S; 8-29 HCP; Artificial; Forcing"]
+[Note "5:* A=2/5 or 5/5, Q(S)=0 -- 3-9!C; 6-!D; 3-!H; 4-5!S; 16-21 HCP; Artificial"]
+[Note "6:* Nat. -- 6-!H; 4+!S; 8-29 HCP"]
+[Note "7:*  -- 3-9!C; 6-!D; 3-!H; 4-5!S; 16-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\s      10\n 6\c       7\n 5\s       5\n 4\s       5\n 3N       3\n 5\c       2\n 4\h       2\n 6N       1\n\n\n\n\n
+
+Facit Score:     5\nRunning Score: 494
+}
+
+[BCFlags "801f"]
+[Board "59"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:K86.85.KJ9.AQ873 AQT742.T2.AT4.T5 .AK7643.82.KJ964 J953.QJ9.Q7653.2"]
+[Declarer "N"]
+[Contract "5C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= 4S 5C =2= PASS
+PASS =3= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 5+!C; 6-!D; 12-23 HCP"]
+[Note "3:  -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 6\c      10\n 5\c       7\n 5\h       6\n E4\sX     4\n 7\c       3\n E4\s      2\n\n\n\n\n\n\n
+
+Facit Score:     7\nRunning Score: 501
+}
+
+[BCFlags "801f"]
+[Board "60"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AK9762.97.AQT93. J.J854.J87.AJT53 Q853.AK3.K2.Q862 T4.QT62.654.K974"]
+[Declarer "N"]
+[Contract "5S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2N =2= PASS
+3C =3= PASS 3S =4= PASS
+4C =5= PASS 4D =6= PASS
+4N =7= PASS 5C =8= PASS
+5S =9= PASS PASS =10= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:* Jacoby 2NT -- 4-!H; 4+!S; 11+ HCP; Artificial; GF"]
+[Note "3:* Shortness  !C -- 1-!C; 6-!H; 5+!S; 11-20 HCP; Artificial; Forcing"]
+[Note "4: Nat. -- 4-!H; 4+!S; 13-34 HCP; GF"]
+[Note "5:* Cue bid, a !C stopper -- 1-!C; 6-!H; 5+!S; 12-20 HCP; Artificial; Forcing"]
+[Note "6:* Cue bid, a !D stopper -- 4-!H; 4+!S; 13-34 HCP; Artificial; GF"]
+[Note "7:* Blackwood 1430, for !S -- 1-!C; 6-!H; 5+!S; 12-20 HCP; Artificial; Forcing"]
+[Note "8:* A=1/5 or 4/5 -- 4-!H; 4+!S; 13-34 HCP; Artificial; GF"]
+[Note "9:* Nat. -- 1-!C; 6-!H; 5+!S; 12-20 HCP"]
+[Note "10:*  -- 4-!H; 4+!S; 13-28 HCP; GF"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 7\s      10\n 6\s       7\n 7\d       6\n 6\d       5\n 5\s       4\n 4\s       4\n 4N       3\n 6N       2\n 7N       1\n\n\n\n
+
+Facit Score:     4\nRunning Score: 505
+}
+
+[BCFlags "801f"]
+[Board "61"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AQ94.A82.K82.AQ4 T.643.AJT975.J62 K862.KQJT975.3.3 J753..Q64.KT9875"]
+[Declarer "S"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1H =2= PASS
+2N =3= PASS 3H =4= PASS
+4H =5= PASS 4N =6= PASS
+5D =7= PASS 6H =8= PASS
+PASS =9= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Strong -- 3-7!C; 2-6!D; 1-3!H; 2-4!S; 18-19 HCP"]
+[Note "4: Bidable suit -- 6+!H; 6-!S; 6-22 HCP"]
+[Note "5: Nat. -- 3-7!C; 2-6!D; 2-3!H; 2-4!S; 18-19 HCP"]
+[Note "6:* Blackwood 1430, for !H -- 6+!H; 6-!S; 8-22 HCP; Artificial; Forcing"]
+[Note "7:* A=0/5 or 3/5 -- 3-7!C; 2-6!D; 2-3!H; 2-4!S; 18-19 HCP; Artificial"]
+[Note "8:* Nat. -- 5-!D; 6+!H; 6-!S; 8-22 HCP"]
+[Note "9:*  -- 3-7!C; 2-6!D; 2-3!H; 2-4!S; 18-19 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6N      10\n 6\h       8\n 6\s       7\n 5N       5\n 4N       5\n 3N       5\n 5\h       3\n 4\h       3\n 5\s       2\n 4\s       2\n\n\n
+
+Facit Score:     8\nRunning Score: 513
+}
+
+[BCFlags "801f"]
+[Board "62"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A8.JT54.KQJ8.QT7 KJ32.AQ97.54.942 75.2.AT9763.AKJ6 QT964.K863.2.853"]
+[Declarer "N"]
+[Contract "6D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 2D =2= PASS
+2H =3= PASS 4D =4= PASS
+4H =5= PASS 4N =6= PASS
+5S =7= PASS 6D =8= PASS
+PASS =9= PASS 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2:* Inverted minors -- 6-!C; 4+!D; 3-!H; 3-!S; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Stopper !H -- 6-!C; 3+!D; 4-!H; 4-!S; 13-21 HCP"]
+[Note "4: Slam try -- 6-!C; 5+!D; 3-!H; 3-!S; 13-29 HCP; Forcing"]
+[Note "5:* Cue bid, a !H stopper -- 6-!C; 3+!D; 4-!H; 4-!S; 13-21 HCP; Artificial; Forcing"]
+[Note "6:* Blackwood 1430, for !D -- 6-!C; 5+!D; 3-!H; 3-!S; 13-29 HCP; Artificial; Forcing"]
+[Note "7:* A=2/5 or 5/5, Q(D)=1 -- 6-!C; 3+!D; 4-!H; 4-!S; 13-21 HCP; Artificial"]
+[Note "8:* Nat. -- 6-!C; 5+!D; 3-!H; 3-!S; 13-29 HCP"]
+[Note "9:*  -- 6-!C; 3+!D; 4-!H; 4-!S; 13-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\d      10\n 3N       6\n 4N       6\n 5\d       4\n 5\c       2\n 5N       2\n 6\c       1\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 523
+}
+
+[BCFlags "801f"]
+[Board "63"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:QT8.AKQ2.AK2.QJ4 AK72.T8765.JT64. J963.43.3.AKT865 54.J9.Q9875.9732"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2N =1= PASS 3C =2= PASS
+3H =3= PASS 3N =4= PASS
+PASS =5= PASS 
+[Note "1: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 20-21 HCP"]
+[Note "2:* Stayman -- ; 5+ HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 2-5!C; 2-5!D; 4-5!H; 2-5!S; 20-21 HCP; Forcing"]
+[Note "4: Nat. -- 2-6!C; 2-6!D; 3-!H; 4=!S; 5-11 HCP"]
+[Note "5:  -- 2-5!C; 2-5!D; 4-5!H; 2-5!S; 20-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 3N      10\n 4N      10\n 5N      10\n 4\s       6\n 5\s       5\n 5\c       3\n 6N       2\n 6\c       1\n 4\c       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 533
+}
+
+[BCFlags "801f"]
+[Board "64"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:K85.K76.AQJ2.A84 AQT76.93.T874.53 2.AJ54.K3.KQJ976 J943.QT82.965.T2"]
+[Declarer "S"]
+[Contract "6C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2C =2= PASS
+2D =3= PASS 4C =4= PASS
+4D =5= PASS 4N =6= PASS
+6C =7= PASS PASS =8= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
+[Note "3: No major suits -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
+[Note "4: Slam try -- 5+!C; 11+ HCP; Forcing"]
+[Note "5: Bidable suit -- 2=!C; 5-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
+[Note "6:* Quantitative 4NT -- 5-6!C; 6-!D; 4-!H; 4-!S; 16-17 HCP; Artificial"]
+[Note "7: Nat. -- 2=!C; 5-6!D; 2-3!H; 2-3!S; 17-17 HCP"]
+[Note "8:  -- 5-6!C; 6-!D; 4-!H; 4-!S; 14-15 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6N      10\n 6\c       7\n 6\d       5\n 5N       4\n 4N       4\n 3N       4\n 4\h       3\n 5\h       2\n 5\c       2\n 6\h       1\n\n\n
+
+Facit Score:     7\nRunning Score: 540
+}
+
+[BCFlags "801f"]
+[Board "65"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:K8.2.QJT93.AQJ93 AQJT97.Q65..T654 3.AK4.K8762.K872 6542.JT9873.A54."]
+[Declarer "N"]
+[Contract "5D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 2D =2= PASS
+3H =3= PASS 4N =4= PASS
+5C =5= PASS 5D =6= PASS
+PASS =7= PASS 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2:* Inverted minors -- 6-!C; 4+!D; 3-!H; 3-!S; 10-29 HCP; Artificial; Forcing"]
+[Note "3:* Shortness  -- 6-!C; 3+!D; 1-!H; 4-!S; 13-21 HCP; Artificial; Forcing"]
+[Note "4:* Blackwood 1430, for !D -- 6-!C; 4+!D; 3-!H; 3-!S; 12-29 HCP; Artificial; Forcing"]
+[Note "5:* A=1/5 or 4/5 -- 6-!C; 3+!D; 1-!H; 4-!S; 13-21 HCP; Artificial"]
+[Note "6:* Bidable suit -- 6-!C; 5+!D; 3-!H; 3-!S; 12-29 HCP"]
+[Note "7:*  -- 6-!C; 3+!D; 1-!H; 4-!S; 13-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 5\d      10\n 5\c       7\n 3N       3\n 6\d       2\n 4N       1\n\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 550
+}
+
+[BCFlags "801f"]
+[Board "66"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQJ74.KQ9.AK8.43 9853.542.J9765.K 2.AJT.T4.AJT8652 AT6.8763.Q32.Q97"]
+[Declarer "S"]
+[Contract "5C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2C =2= PASS
+3N =3= PASS 4C =4= PASS
+4D =5= PASS 4N =6= PASS
+5C =7= PASS PASS =8= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:* 10+ HCP if fit or 6+; 12+ F -- 4+!C; 6-!D; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Nat. -- 2-6!C; 3-!D; 3-!H; 5=!S; 18-20 HCP"]
+[Note "4: Slam try -- 6+!C; 6-!D; 10-29 HCP; Forcing"]
+[Note "5:* Cue bid, a !D stopper -- 2-6!C; 3-!D; 3-!H; 5=!S; 18-20 HCP; Artificial; Forcing"]
+[Note "6:* Blackwood 1430, for !C -- 6+!C; 6-!D; 10-29 HCP; Artificial; Forcing"]
+[Note "7:* A=1/5 or 4/5 -- 2-6!C; 3-!D; 3-!H; 5=!S; 18-20 HCP; Artificial"]
+[Note "8:*  -- 6+!C; 6-!D; 10-22 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3N      10\n 4N       9\n 5N       8\n 4\s       6\n 5\c       4\n 6\c       3\n 6N       2\n\n\n\n\n\n
+
+Facit Score:     4\nRunning Score: 554
+}
+
+[BCFlags "801f"]
+[Board "67"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:3.A82.KQ4.AKJT94 AJ962.K96.7.8762 KQT87.43.AJT98.3 54.QJT75.6532.Q5"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1S =2= PASS
+3C =3= PASS 3N =4= PASS
+PASS =5= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 6+!C; 6-!D; 4-!H; 3-!S; 15-18 HCP"]
+[Note "4: Nat. -- 5-!C; 2-6!D; 2-3!H; 4=!S; 8-14 HCP"]
+[Note "5:  -- 6+!C; 6-!D; 4-!H; 3-!S; 15-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 6\d      10\n 5\d       7\n 6N       4\n 3N       4\n 4N       3\n 5N       2\n 5\c       2\n 6\c       1\n 4\s       1\n\n\n\n
+
+Facit Score:     4\nRunning Score: 558
+}
+
+[BCFlags "801f"]
+[Board "68"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:QT8.JT973.AK4.K9 A43.5.JT98.T8754 92.AK862.32.AQJ3 KJ765.Q4.Q765.62"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 2N =2= PASS
+4H =3= PASS PASS =4= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2:* Jacoby 2NT -- 4+!H; 4-!S; 11+ HCP; Artificial; GF"]
+[Note "3: Weak -- 2-4!C; 2-4!D; 5-7!H; 2-4!S; 11-13 HCP"]
+[Note "4:  -- 4+!H; 4-!S; 11-29 HCP; GF"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 4\h      10\n 5\h       8\n 3N       7\n 4N       6\n 5N       5\n 6\h       2\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 568
+}
+
+[BCFlags "801f"]
+[Board "69"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:KQJ.AT9.984.AQJ9 9432.742.A763.T3 AT76.KQJ65.Q2.K6 85.83.KJT5.87542"]
+[Declarer "N"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2C =2= PASS
+2D =3= PASS 3S =4= PASS
+4H =5= PASS 4N =6= PASS
+5H =7= PASS 6H =8= PASS
+PASS =9= PASS 
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
+[Note "3: No major suits -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
+[Note "4:* SMOLEN -- 4-!C; 4-!D; 5=!H; 4=!S; 10+ HCP; Artificial; Forcing"]
+[Note "5: Nat. -- 2-6!C; 2-6!D; 3=!H; 2-3!S; 15-17 HCP"]
+[Note "6:* Blackwood 1430, for !H -- 4-!C; 4-!D; 5=!H; 4=!S; 10+ HCP; Artificial; Forcing"]
+[Note "7:* A=2/5 or 5/5, Q(H)=0 -- 2-6!C; 2-6!D; 3=!H; 2-3!S; 15-17 HCP; Artificial"]
+[Note "8:* Nat. -- 4-!C; 4-!D; 5=!H; 4=!S; 10+ HCP"]
+[Note "9:*  -- 2-6!C; 2-6!D; 3=!H; 2-3!S; 15-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\h      10\n 5\h      10\n 3N       6\n 7\h       5\n 7N       4\n 6\h       3\n 6N       2\n 4N       2\n 5N       1\n\n\n\n
+
+Facit Score:     3\nRunning Score: 571
+}
+
+[BCFlags "801f"]
+[Board "70"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:K93.754.AQT5.KQT AT654.96.763.654 82.AKQ3.K4.AJ987 QJ7.JT82.J982.32"]
+[Declarer "N"]
+[Contract "6N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 2C =2= PASS
+3N =3= PASS 6N =4= PASS
+PASS =5= PASS 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2:* 10+ HCP if fit or 6+; 12+ F -- 4+!C; 6-!D; 4-!H; 4-!S; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Nat. -- 6-!C; 3-6!D; 2-4!H; 2-4!S; 14-20 HCP"]
+[Note "4: Nat. -- 4-6!C; 2-5!D; 2-4!H; 2-4!S; 18-27 HCP"]
+[Note "5:  -- 6-!C; 3-6!D; 2-4!H; 2-4!S; 14-20 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ N6N     10\n S6N      6\n 6\c       6\n N3N      5\n N4N      5\n N5N      5\n S3N      3\n S4N      2\n S5N      1\n 5\c       1\n\n\n
+
+Facit Score:    10\nRunning Score: 581
+}
+
+[BCFlags "801f"]
+[Board "71"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KQJ.KT4.AJ2.KQJ5 A7653.A532.5.764 T842.8.KQ8743.A2 9.QJ976.T96.T983"]
+[Declarer "N"]
+[Contract "6D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2N =1= PASS 3C =2= PASS
+3D =3= PASS 4D =4= PASS
+4H =5= PASS 4N =6= PASS
+5H =7= PASS 6D =8= PASS
+PASS =9= PASS 
+[Note "1: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 20-21 HCP"]
+[Note "2:* Stayman -- ; 5+ HCP; Artificial; Forcing"]
+[Note "3: No major suits -- 2-5!C; 2-5!D; 2-3!H; 2-3!S; 20-21 HCP; Forcing"]
+[Note "4: Slam try -- 5+!D; 6+ HCP; Forcing"]
+[Note "5: Bidable suit -- 2-5!C; 2-5!D; 3=!H; 2-3!S; 20-21 HCP"]
+[Note "6:* Quantitative 4NT -- 4-!C; 5-6!D; 4-!H; 4=!S; 10-11 HCP; Artificial"]
+[Note "7: Bidable suit -- 3-4!C; 3-4!D; 3=!H; 2-3!S; 20-21 HCP"]
+[Note "8: Nat. -- 4-!C; 5-6!D; 4-!H; 4=!S; 10-11 HCP"]
+[Note "9:  -- 3-4!C; 3-4!D; 3=!H; 2-3!S; 21-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3N      10\n 4N      10\n 5N       9\n 4\s       7\n 5\s       5\n 5\d       3\n 6\d       1\n\n\n\n\n\n
+
+Facit Score:     1\nRunning Score: 582
+}
+
+[BCFlags "801f"]
+[Board "72"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AT874.QJ4.AJ8.32 J965.A973.64.JT8 2.K2.K32.AKQ7654 KQ3.T865.QT975.9"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2C =2= PASS
+2S =3= PASS 3N =4= PASS
+PASS =5= PASS 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:* 10+ HCP if fit or 6+; 12+ F -- 4+!C; 6-!D; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 6-!H; 5+!S; 11-14 HCP"]
+[Note "4: Nat. -- 4-6!C; 2-6!D; 2-3!H; 2-!S; 13-19 HCP"]
+[Note "5:  -- 6-!H; 5+!S; 11-14 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 6\c      10\n 3N       6\n 4N       6\n 6N       5\n 5N       4\n 5\c       3\n\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 588
+}
+
+[BCFlags "801f"]
+[Board "73"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:T.KJ2.A975.AQJ96 A97.984.Q64.KT84 KQJ.A763.KJT8.32 865432.QT5.32.75"]
+[Declarer "S"]
+[Contract "6D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1D =2= PASS
+3D =3= PASS 4N =4= PASS
+5H =5= PASS 6D =6= PASS
+PASS =7= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!C; 4+!D; 6-29 HCP; Forcing"]
+[Note "3: Nat. -- 5-9!C; 4-6!D; 4-!H; 4-!S; 15-19 HCP"]
+[Note "4:* Blackwood 1430, for !D -- 6-!C; 4+!D; 9-29 HCP; Artificial; Forcing"]
+[Note "5:* A=2/5 or 5/5, Q(D)=0 -- 5-9!C; 4-6!D; 4-!H; 4-!S; 15-19 HCP; Artificial"]
+[Note "6:* Nat. -- 6-!C; 4+!D; 9-25 HCP"]
+[Note "7:*  -- 5-9!C; 4-6!D; 4-!H; 4-!S; 15-19 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3N      10\n 4N       9\n 5N       6\n 6\d       5\n 6N       4\n 5\d       3\n 6\c       2\n 5\c       1\n\n\n\n\n
+
+Facit Score:     5\nRunning Score: 593
+}
+
+[BCFlags "801f"]
+[Board "74"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQT4.A43.AQ9862. A876.Q965.T.AK64 J.KT2.KJ75.98532 9532.J87.43.QJT7"]
+[Declarer "N"]
+[Contract "3D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1N =2= PASS
+3D =3= PASS PASS =4= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Balanced -- 3+!C; 4-!D; 3-!H; 3-!S; 6-11 HCP"]
+[Note "3: Bidable suit -- 6-!C; 6+!D; 4-!H; 4-!S; 15-18 HCP"]
+[Note "4:  -- 3+!C; 4-!D; 3-!H; 3-!S; 6-9 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 6\d      10\n 5\d       7\n 3N       4\n 4\d       3\n 2N       2\n 7\d       1\n\n\n\n\n\n\n
+
+Facit Score:     3\nRunning Score: 596
+}
+
+[BCFlags "801f"]
+[Board "75"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AJ97.AQ852.43.62 54.976.98765.AJ9 KQT83.J3.AKQ.Q53 62.KT4.JT2.KT874"]
+[Declarer "S"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 1S =2= PASS
+2S =3= PASS 4H =4= PASS
+4S =5= PASS PASS =6= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Nat. -- 4-!C; 4-!D; 5-9!H; 4-6!S; 11-15 HCP"]
+[Note "4:* Cue bid, a !H stopper -- 6-!H; 4+!S; 11-29 HCP; Artificial; Forcing"]
+[Note "5: Denies a !D stopper -- 4-!C; 4-!D; 5-9!H; 4-6!S; 11-15 HCP"]
+[Note "6:  -- 6-!H; 4+!S; 11-29 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\s      10\n 5\s       7\n 3N       4\n 6\s       3\n 4N       2\n 5N       1\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 606
+}
+
+[BCFlags "801f"]
+[Board "76"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AJ97.AQ852.43.62 642.J74.876.Q943 KQT83.K3.A92.A87 5.T96.KQJT5.KJT5"]
+[Declarer "S"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= PASS 1S =2= PASS
+2S =3= PASS 4N =4= PASS
+5H =5= PASS 5N =6= PASS
+6C =7= PASS 6S =8= PASS
+PASS =9= PASS 
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Nat. -- 4-!C; 4-!D; 5-9!H; 4-6!S; 11-15 HCP"]
+[Note "4:* Blackwood 1430, for !S -- 6-!H; 4+!S; 13-29 HCP; Artificial; Forcing"]
+[Note "5:* A=2/5 or 5/5, Q(S)=0 -- 4-!C; 4-!D; 5-9!H; 4-6!S; 11-15 HCP; Artificial"]
+[Note "6:* King ask by 5NT -- 6-!H; 4+!S; 13-29 HCP; Artificial; Forcing"]
+[Note "7:* K=0 -- 4-!C; 4-!D; 5-9!H; 4-6!S; 11-15 HCP; Artificial"]
+[Note "8:* Nat. -- 6-!H; 4+!S; 13-29 HCP"]
+[Note "9:*  -- 4-!C; 4-!D; 5-9!H; 4-6!S; 11-15 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\s      10\n 5\s       6\n 4\s       6\n 4N       5\n 3N       5\n 6N       3\n 5N       1\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 616
+}
+
+[BCFlags "801f"]
+[Board "77"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KJ8.A5.KJ75.A752 A963.J7632.T.KQ6 Q72.KQT4.AQ984.8 T54.98.632.JT943"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS 2C =2= PASS
+2D =3= PASS 3D =4= PASS
+3N =5= PASS PASS =6= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:* Stayman -- ; 7+ HCP; Artificial; Forcing"]
+[Note "3: No major suits -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
+[Note "4: Bidable suit -- 6-!C; 5+!D; 4-!H; 4-!S; 9-25 HCP; Forcing"]
+[Note "5: Nat. -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 15-17 HCP"]
+[Note "6:  -- 6-!C; 5+!D; 4-!H; 4-!S; 9-25 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\d      10\n 3N       7\n 4N       6\n 5\d       5\n 6N       3\n 5N       2\n\n\n\n\n\n\n
+
+Facit Score:     7\nRunning Score: 623
+}
+
+[BCFlags "801f"]
+[Board "78"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KJ84.K82.3.AK852 95.A4.JT952.Q763 AQT2.QJ763.A86.4 763.T95.KQ74.JT9"]
+[Declarer "N"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1H =2= PASS
+1S =3= PASS 4S =4= PASS
+PASS =5= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 3-9!C; 6-!D; 3-!H; 4-5!S; 11-16 HCP; Forcing"]
+[Note "4: Nat. -- 5-!C; 5-!D; 4-9!H; 4-6!S; 11-21 HCP"]
+[Note "5:  -- 3-9!C; 6-!D; 3-!H; 4-5!S; 11-16 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 6\s      10\n 6\h       9\n 5\s       7\n 4\s       7\n 5\h       6\n 4\h       6\n 3N       3\n 4N       2\n 5N       1\n\n\n\n
+
+Facit Score:     7\nRunning Score: 630
+}
+
+[BCFlags "801f"]
+[Board "79"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AQ872.3.KQJ5.Q92 JT54.Q87.T63.K54 K3.KJ9.A874.A873 96.AT6542.92.JT6"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2C =2= PASS
+2D =3= PASS 3D =4= PASS
+3N =5= PASS PASS =6= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:* 10+ HCP if fit or 6+; 12+ F -- 4+!C; 6-!D; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 3-!C; 4-6!D; 4-!H; 5-9!S; 11-17 HCP"]
+[Note "4: Nat. -- 4-9!C; 4-6!D; 5-!H; 2-!S; 12-18 HCP"]
+[Note "5: Nat. -- 3-!C; 4-6!D; 3-!H; 5=!S; 11-17 HCP"]
+[Note "6:  -- 4-9!C; 4-6!D; 5-!H; 2-!S; 12-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3N      10\n 4N       8\n 4\s       6\n 6\d       5\n 5N       4\n 5\d       3\n 5\s       2\n 6\s       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 640
+}
+
+[BCFlags "801f"]
+[Board "80"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AK986.A2.AJT76.3 J.KQ64.84.KQT754 QT73.987.KQ3.982 542.JT53.952.AJ6"]
+[Declarer "N"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2S =2= PASS
+3D =3= PASS 4S =4= PASS
+PASS =5= PASS 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2: Nat. -- 3+!S; 6-9 HCP"]
+[Note "3:* Two way game tries -- 4-!C; 4-6!D; 4-!H; 5-9!S; 14-17 HCP; Artificial; Forcing"]
+[Note "4: Nat. -- 3+!S; 6-9 HCP"]
+[Note "5:  -- 4-!C; 4-6!D; 4-!H; 5-9!S; 14-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 6\s      10\n 5\s       7\n 4\s       7\n 5\d       3\n 3N       3\n 4N       2\n 5N       1\n\n\n\n\n\n
+
+Facit Score:     7\nRunning Score: 647
+}
+
+[BCFlags "801f"]
+[Board "81"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQT5.972.A.KQ752 983.AQJT654.86.T A2.8.JT94.A98643 J764.K3.KQ7532.J"]
+[Declarer "N"]
+[Contract "3C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 3C =2= PASS
+PASS =3= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!C; 6-!D; 3-!H; 3-!S; 7-9 HCP"]
+[Note "3:  -- 3+!C; 6-!D; 5-!H; 5-!S; 11-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 6\c      10\n 4\s       7\n 5\c       6\n 3\s       5\n 4\c       4\n 7\c       3\n 3N       2\n 6\s       1\n\n\n\n\n
+
+Facit Score:     4\nRunning Score: 651
+}
+
+[BCFlags "801f"]
+[Board "82"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A82.4.KQJ65.KT72 KQT4.9762.T973.6 963.AK85.4.AQ984 J75.QJT3.A82.J53"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 2C =2= PASS
+3C =3= PASS 3H =4= PASS
+3N =5= PASS PASS =6= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2:* 10+ HCP if fit or 6+; 12+ F -- 4+!C; 6-!D; 4-!H; 4-!S; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Nat. -- 4-6!C; 4-9!D; 4-!H; 4-!S; 11-14 HCP"]
+[Note "4: En passant -- 4+!C; 6-!D; 2-4!H; 4-!S; 14-29 HCP; Forcing"]
+[Note "5: Nat. -- 4-5!C; 4-5!D; 2-3!H; 2-3!S; 11-14 HCP"]
+[Note "6:  -- 4+!C; 6-!D; 2-4!H; 4-!S; 14-29 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3N      10\n 4N       7\n 5\c       5\n 6\c       4\n 4\c       3\n 5N       1\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 661
+}
+
+[BCFlags "801f"]
+[Board "83"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AKQJ954.A82.K4.A T87.KT.JT63.7632 2.973.Q82.KQJT84 63.QJ654.A975.95"]
+[Declarer "N"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2C =1= PASS 3C =2= PASS
+4S =3= PASS PASS =4= PASS
+[Note "1:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "2: Bidable suit -- 5+!C; 6-!D; 4-!H; 4-!S; 7+ HCP; Forcing"]
+[Note "3: Bidable suit -- 6-!C; 6-!D; 6-!H; 7+!S; 19-33 HCP; GF"]
+[Note "4:  -- 5+!C; 6-!D; 4-!H; 4-!S; 7-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 4\s      10\n 3N       9\n 4N       8\n 5\s       5\n 6\c       4\n 5N       3\n 6\s       2\n 6N       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 671
+}
+
+[BCFlags "801f"]
+[Board "84"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:KQ852.973.AKQ4.3 J974.6.JT8.KJ954 A3.AQT82.975.AT2 T6.KJ54.632.Q876"]
+[Declarer "S"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2H =2= PASS
+4C =3= PASS 4D =4= PASS
+4H =5= PASS 4N =6= PASS
+5C =7= PASS 6H =8= PASS
+PASS =9= PASS 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2: Bidable suit -- 5+!H; 6-!S; 10-29 HCP; Forcing"]
+[Note "3:* Splinter -- 1-!C; 5-!D; 3-6!H; 5-10!S; 12-20 HCP; Artificial; Forcing"]
+[Note "4:* Cue bid, surplus -- 5+!H; 6-!S; 13-29 HCP; Artificial; Forcing"]
+[Note "5: Nat. -- 1-!C; 5-!D; 3-6!H; 5-10!S; 12-18 HCP"]
+[Note "6:* Blackwood 1430, for !H -- 5+!H; 6-!S; 13-29 HCP; Artificial; Forcing"]
+[Note "7:* A=1/5 or 4/5 -- 1-!C; 5-!D; 3-6!H; 5-10!S; 12-18 HCP; Artificial"]
+[Note "8:* Nat. -- 7-!C; 5+!H; 6-!S; 13-29 HCP"]
+[Note "9:*  -- 1-!C; 5-!D; 3-6!H; 5-10!S; 12-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\h      10\n 5\h       7\n 4\h       7\n 4\s       5\n 5\s       4\n 3N       3\n 4N       2\n 7\h       2\n 6\s       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 681
+}
+
+[BCFlags "801f"]
+[Board "85"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AK742.J54.2.KQJ5 Q86..JT9743.T763 3.A98762.KQ8.A82 JT95.KQT3.A65.94"]
+[Declarer "S"]
+[Contract "5H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2H =2= PASS
+4D =3= PASS 4N =4= PASS
+5C =5= PASS 5H =6= PASS
+PASS =7= PASS 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2: Bidable suit -- 5+!H; 6-!S; 10-29 HCP; Forcing"]
+[Note "3:* Splinter -- 5-!C; 1-!D; 3-6!H; 5-10!S; 12-20 HCP; Artificial; Forcing"]
+[Note "4:* Blackwood 1430, for !H -- 5+!H; 6-!S; 13-29 HCP; Artificial; Forcing"]
+[Note "5:* A=1/5 or 4/5 -- 5-!C; 1-!D; 3-6!H; 5-10!S; 12-20 HCP; Artificial"]
+[Note "6:* Nat. -- 7-!C; 5+!H; 6-!S; 13-29 HCP"]
+[Note "7:*  -- 5-!C; 1-!D; 3-6!H; 5-10!S; 12-20 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\h      10\n 3N       8\n 5\h       7\n 4N       6\n 5N       4\n 4\s       2\n 6\h       1\n\n\n\n\n\n
+
+Facit Score:     7\nRunning Score: 688
+}
+
+[BCFlags "801f"]
+[Board "86"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:K765.2.AQJ4.AK97 JT.Q863.T963.Q52 A843.AK9754.72.3 Q92.JT.K85.JT864"]
+[Declarer "N"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1H =2= PASS
+1S =3= PASS 4S =4= PASS
+4N =5= PASS 5H =6= PASS
+5N =7= PASS 6D =8= PASS
+6S =9= PASS PASS =10= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 6-!C; 3-9!D; 3-!H; 4-6!S; 11-16 HCP; Forcing"]
+[Note "4: Nat. -- 5-!C; 5-!D; 4-9!H; 4-6!S; 11-21 HCP"]
+[Note "5:* Blackwood 1430, for !S -- 6-!C; 3-9!D; 3-!H; 4-6!S; 13-16 HCP; Artificial; Forcing"]
+[Note "6:* A=2/5 or 5/5, Q(S)=0 -- 5-!C; 5-!D; 4-9!H; 4-6!S; 11-21 HCP; Artificial"]
+[Note "7:* King ask by 5NT -- 6-!C; 3-9!D; 3-!H; 4-6!S; 13-16 HCP; Artificial; Forcing"]
+[Note "8:* K=1 -- 5-!C; 5-!D; 4-9!H; 4-6!S; 11-21 HCP; Artificial"]
+[Note "9:* Nat. -- 6-!C; 3-9!D; 3-!H; 4-6!S; 13-16 HCP"]
+[Note "10:*  -- 5-!C; 5-!D; 4-9!H; 4-6!S; 11-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\s      10\n 4\s       7\n 5\s       6\n 4\h       5\n 3N       4\n 5\h       3\n 4N       3\n 6\h       2\n 5N       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 698
+}
+
+[BCFlags "801f"]
+[Board "87"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A832.KJT.Q82.KJ7 T6.A74.KJ654.T96 KQJ975.3.AT3.A82 4.Q98652.97.Q543"]
+[Declarer "S"]
+[Contract "6S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1S =2= PASS
+2S =3= PASS 4N =4= PASS
+5C =5= PASS 6S =6= PASS
+PASS =7= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Nat. -- 3-9!C; 6-!D; 3-!H; 4-5!S; 11-15 HCP"]
+[Note "4:* Blackwood 1430, for !S -- 6-!H; 4+!S; 13-29 HCP; Artificial; Forcing"]
+[Note "5:* A=1/5 or 4/5 -- 3-9!C; 6-!D; 3-!H; 4-5!S; 11-15 HCP; Artificial"]
+[Note "6:* Nat. -- 6-!H; 4+!S; 13-29 HCP"]
+[Note "7:*  -- 3-9!C; 6-!D; 3-!H; 4-5!S; 11-15 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3N      10\n 4N      10\n 4\s       9\n 5N       6\n 5\s       5\n 6N       2\n 6\s       1\n\n\n\n\n\n
+
+Facit Score:     1\nRunning Score: 699
+}
+
+[BCFlags "801f"]
+[Board "88"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:KJ84.Q74.4.AK763 Q53.652.9852.954 972.AK93.AKJ.JT8 AT6.JT8.QT763.Q2"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1H =2= PASS
+1S =3= PASS 2D =4= PASS
+2H =5= PASS 3N =6= PASS
+PASS =7= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 3-9!C; 6-!D; 3-!H; 4-5!S; 11-16 HCP; Forcing"]
+[Note "4:* Fourth suit -- 4+!H; 6-!S; 11-29 HCP; Artificial; Forcing"]
+[Note "5: Nat. -- 3-6!C; 3-!D; 3=!H; 4=!S; 11-16 HCP"]
+[Note "6: Nat. -- 2-6!C; 2-6!D; 4=!H; 3-!S; 13-19 HCP"]
+[Note "7:  -- 3-6!C; 3-!D; 3=!H; 4=!S; 11-16 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3N      10\n 4N      10\n 4\h       6\n 4\s       6\n 6N       4\n 6\c       3\n 5\h       2\n 5\s       2\n 5N       2\n 5\c       1\n\n\n
+
+Facit Score:    10\nRunning Score: 709
+}
+
+[BCFlags "801f"]
+[Board "89"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:A74.83.AT8.A9843 K96.KQJT9.Q3.JT2 32.A72.KJ97652.K QJT85.654.4.Q765"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1D =2= PASS
+1N =3= PASS 3D =4= PASS
+3N =5= PASS PASS =6= PASS
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!C; 4+!D; 6-29 HCP; Forcing"]
+[Note "3: Balanced -- 3-6!C; 1-6!D; 2-3!H; 2-3!S; 11-16 HCP"]
+[Note "4: Bidable suit -- 6-!C; 5+!D; 4-!H; 4-!S; 13-29 HCP"]
+[Note "5: Nat. -- 3-6!C; 1-6!D; 2-3!H; 2-3!S; 11-16 HCP"]
+[Note "6:  -- 6-!C; 5+!D; 4-!H; 4-!S; 13-29 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\d      10\n 3N       6\n 4N       5\n 5N       4\n 5\d       3\n 4\d       2\n 6N       1\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 715
+}
+
+[BCFlags "801f"]
+[Board "90"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:A843.KQT.2.AJ982 T975.8765.AK6.53 KJ2.A2.T75.KQT74 Q6.J943.QJ9843.6"]
+[Declarer "N"]
+[Contract "6C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 2C =2= PASS
+3D =3= PASS 4N =4= PASS
+5H =5= PASS 6C =6= PASS
+PASS =7= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2:* Inverted minors -- 4+!C; 6-!D; 3-!H; 3-!S; 10-29 HCP; Artificial; Forcing"]
+[Note "3:* Shortness  -- 4+!C; 1-!D; 4-!H; 4-!S; 13-21 HCP; Artificial; Forcing"]
+[Note "4:* Blackwood 1430, for !C -- 4+!C; 6-!D; 3-!H; 3-!S; 11-29 HCP; Artificial; Forcing"]
+[Note "5:* A=2/5 or 5/5, Q(C)=0 -- 4+!C; 1-!D; 4-!H; 4-!S; 13-21 HCP; Artificial"]
+[Note "6:* Nat. -- 4+!C; 6-!D; 3-!H; 3-!S; 11-27 HCP"]
+[Note "7:*  -- 4+!C; 1-!D; 4-!H; 4-!S; 13-21 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\c      10\n 5\c       6\n 4\s       5\n 5\s       4\n 6\s       3\n 4\c       2\n 3N       1\n 4N       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 725
+}
+
+[BCFlags "801f"]
+[Board "91"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:2.Q83.AK.KQ97642 K95.9765.T8543.3 A43.KJT.J972.AJ8 QJT876.A42.Q6.T5"]
+[Declarer "N"]
+[Contract "6C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1D =2= PASS
+3C =3= PASS 4N =4= PASS
+5S =5= PASS 6C =6= PASS
+PASS =7= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!C; 4+!D; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 6+!C; 3-!D; 4-!H; 4-!S; 15-18 HCP"]
+[Note "4:* Blackwood 1430, for !C -- 6-!C; 4+!D; 13-29 HCP; Artificial; Forcing"]
+[Note "5:* A=2/5 or 5/5, Q(C)=1 -- 6+!C; 3-!D; 4-!H; 4-!S; 15-18 HCP; Artificial"]
+[Note "6:* Nat. -- 2-6!C; 4+!D; 4-!H; 4-!S; 13-29 HCP"]
+[Note "7:*  -- 6+!C; 3-!D; 4-!H; 4-!S; 15-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\c      10\n 3N       6\n 4N       6\n 6N       4\n 5\c       3\n 5N       2\n 4\c       1\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 735
+}
+
+[BCFlags "801f"]
+[Board "92"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:Q3.AT3.KQ96.QJ82 KT754.97.J4.AT54 A962.KJ864.A.K63 J8.Q52.T87532.97"]
+[Declarer "S"]
+[Contract "6H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1H =2= PASS
+1N =3= PASS 2D =4= PASS
+3H =5= PASS 4N =6= PASS
+5C =7= PASS 6H =8= PASS
+PASS =9= PASS 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Balanced -- 2-4!C; 3-5!D; 1-3!H; 2-3!S; 11-16 HCP"]
+[Note "4:* Two Way New Minor Forcing -- 4+!H; 6-!S; 13-29 HCP; Artificial; GF"]
+[Note "5:* Artificial -- 2-4!C; 3-5!D; 3=!H; 2-3!S; 13-16 HCP; Artificial; Forcing"]
+[Note "6:* Blackwood 1430, for !H -- 4+!H; 6-!S; 13-29 HCP; Artificial; GF"]
+[Note "7:* A=1/5 or 4/5 -- 2-4!C; 3-5!D; 3=!H; 2-3!S; 13-16 HCP; Artificial"]
+[Note "8:* Bidable suit -- 5-!C; 5+!H; 6-!S; 13-29 HCP; GF"]
+[Note "9:*  -- 2-4!C; 3-5!D; 3=!H; 2-3!S; 13-16 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ N3N     10\n N4N      9\n 4\h       8\n N6N      7\n N5N      6\n S3N      5\n S4N      4\n 5\h       3\n S5N      2\n 6\h       1\n\n\n
+
+Facit Score:     1\nRunning Score: 736
+}
+
+[BCFlags "801f"]
+[Board "93"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:J843.AK2.AJ74.43 9.QJ9753.983.A98 AQ752.4.Q2.KQJ72 KT6.T86.KT65.T65"]
+[Declarer "S"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1S =2= PASS
+2S =3= PASS 4H =4= PASS
+4S =5= PASS PASS =6= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Nat. -- 6-!C; 3-9!D; 3-!H; 4-6!S; 11-15 HCP"]
+[Note "4:* Cue bid, a !H stopper -- 6-!H; 4+!S; 12-29 HCP; Artificial; Forcing"]
+[Note "5: Denies a !D stopper -- 6-!C; 3-9!D; 3-!H; 4-6!S; 11-15 HCP"]
+[Note "6:  -- 6-!H; 4+!S; 12-29 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\s      10\n 5\s       9\n 3N       6\n 4N       5\n 6\s       4\n 6N       3\n 5N       2\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 746
+}
+
+[BCFlags "801f"]
+[Board "94"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:A87.4.QT987.AKJ3 KQJ653.Q9.64.T76 2.JT863.AKJ5.Q82 T94.AK752.32.954"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1H =2= PASS
+2C =3= PASS 2S =4= PASS
+3N =5= PASS PASS =6= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 4-6!C; 4-9!D; 3-!H; 3-!S; 11-17 HCP"]
+[Note "4:* Fourth suit -- 4+!H; 6-!S; 11-29 HCP; Artificial; Forcing"]
+[Note "5: Nat. -- 4-6!C; 4-6!D; 2-!H; 2-3!S; 13-17 HCP"]
+[Note "6:  -- 4+!H; 6-!S; 11-27 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\d      10\n 3N       7\n 4N       7\n 5\d       4\n 6\c       3\n 5\c       2\n 4\d       1\n\n\n\n\n\n
+
+Facit Score:     7\nRunning Score: 753
+}
+
+[BCFlags "801f"]
+[Board "95"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AK975.A82.AJ85.3 8.KQJ76.64.J9652 Q3.43.KQT2.AT874 JT642.T95.973.KQ"]
+[Declarer "N"]
+[Contract "6D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= PASS 2C =2= PASS
+2D =3= PASS 3D =4= PASS
+4N =5= PASS 5S =6= PASS
+6D =7= PASS PASS =8= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:* 10+ HCP if fit or 6+; 12+ F -- 4+!C; 6-!D; 10-29 HCP; Artificial; Forcing"]
+[Note "3: Bidable suit -- 3-!C; 4-6!D; 4-!H; 5-9!S; 11-17 HCP"]
+[Note "4: Nat. -- 4-9!C; 4-6!D; 5-!H; 2-!S; 12-18 HCP"]
+[Note "5:* Blackwood 1430, for !D -- 3-!C; 4-6!D; 4-!H; 5-9!S; 12-17 HCP; Artificial; Forcing"]
+[Note "6:* A=2/5 or 5/5, Q(D)=1 -- 4-9!C; 4-6!D; 5-!H; 2-!S; 12-18 HCP; Artificial"]
+[Note "7:* Nat. -- 3-!C; 4-6!D; 4-!H; 5-9!S; 12-17 HCP"]
+[Note "8:*  -- 4-9!C; 4-6!D; 5-!H; 2-!S; 12-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 6\d      10\n 4\s       8\n 5\s       7\n 6\s       5\n 3N       4\n 7\d       3\n 4N       3\n 5N       2\n 5\d       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 763
+}
+
+[BCFlags "801f"]
+[Board "96"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:KJ74.AQ94.2.KJT2 QT96.J73.T764.Q8 53.K2.KQJ95.A976 A82.T865.A83.543"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1D =2= PASS
+1H =3= PASS 1S =4= PASS
+3N =5= PASS PASS =6= PASS
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!C; 4+!D; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 3-9!C; 6-!D; 4-5!H; 4-!S; 11-16 HCP; Forcing"]
+[Note "4:* Fourth suit -- 6-!C; 4+!D; 10-29 HCP; Artificial; Forcing"]
+[Note "5: Nat. -- 3-6!C; 4-!D; 4=!H; 2-3!S; 14-16 HCP"]
+[Note "6:  -- 6-!C; 4+!D; 10-26 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3N      10\n 4N       8\n 5N       5\n 5\c       4\n 4\h       2\n 5\d       1\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 773
+}
+
+[BCFlags "801f"]
+[Board "97"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:QJ2.AK962.K52.43 A754.J7.8.KQJT85 KT86.3.Q974.A962 93.QT854.AJT63.7"]
+[Declarer "N"]
+[Contract "2H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= 2C X =2= PASS
+2H =3= PASS PASS =4= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2: Negative double -- 2-!H; 4-6!S; 9-17 HCP"]
+[Note "3: Bidable suit -- 5+!H; 3-!S; 11-14 HCP"]
+[Note "4:  -- 2-!H; 4-6!S; 9-13 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 2\s      10\n 2\d       8\n E2\cX     7\n E2\c      5\n 3\s       4\n 3\d       3\n 2\h       2\n 2N       1\n\n\n\n\n
+
+Facit Score:     2\nRunning Score: 775
+}
+
+[BCFlags "801f"]
+[Board "98"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:2.KJT95.A2.KQ763 JT84.A6.KQJT98.T A97653.Q4.543.A2 KQ.8732.76.J9854"]
+[Declarer "N"]
+[Contract "4H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= 2D 2S =2= PASS
+3C =3= PASS 3H =4= PASS
+4H =5= PASS PASS =6= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2: Bidable suit -- 6-!H; 5+!S; 8-17 HCP; Forcing"]
+[Note "3: Bidable suit -- 4-6!C; 4-!D; 5-9!H; 2-!S; 15-17 HCP"]
+[Note "4: Nat. -- 6-!C; 6-!D; 2-6!H; 5-11!S; 8-16 HCP"]
+[Note "5: Bidable suit -- 4-6!C; 3-!D; 6-9!H; 2-!S; 15-17 HCP"]
+[Note "6:  -- 6-!C; 6-!D; 2-6!H; 5-11!S; 8-11 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\h      10\n 3\h       6\n 4\c       5\n 5\c       4\n 2N       3\n 3\s       2\n 3N       1\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 785
+}
+
+[BCFlags "801f"]
+[Board "99"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:A2.43.AKQT87.AJ2 Q953.62.643.QT75 KJ74.QT5.52.9863 T86.AKJ987.J9.K4"]
+[Declarer "N"]
+[Contract "3D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= PASS 1S =2= 2H
+3D =3= PASS PASS =4= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3: Bidable suit -- 6-!C; 6+!D; 4-!H; 2-!S; 13-19 HCP"]
+[Note "4:  -- 6-!H; 4+!S; 6-11 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ S3N     10\n S2N      7\n 3\d       6\n 4\d       4\n S2N      3\n N3N      2\n 5\d       1\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 791
+}
+
+[BCFlags "801f"]
+[Board "100"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:82.AQT962.Q3.AJ2 AKT75.854.86.T97 Q3.3.AKJT97.K653 J964.KJ7.542.Q84"]
+[Declarer "S"]
+[Contract "5D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= 1S 2D =2= 2S
+3H =3= PASS 4D =4= PASS
+5D =5= PASS PASS =6= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2: Bidable suit -- 6-!C; 5+!D; 8-21 HCP; Forcing"]
+[Note "3: Bidable suit -- 6+!H; 6-!S; 14-17 HCP"]
+[Note "4: Bidable suit -- 6-!C; 6+!D; 11-11 HCP; Forcing"]
+[Note "5: Nat. -- 5-!C; 2-7!D; 6-11!H; 5-!S; 14-17 HCP"]
+[Note "6:  -- 6-!C; 6+!D; 11-11 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 5\d      10\n 4\h       8\n E2\sX     7\n 3\d       6\n 4\d       5\n 3\h       4\n 2N       3\n 6\d       2\n 3N       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 801
+}
+
+[BCFlags "801f"]
+[Board "101"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KT983.KQ2.A3.973 A652.J9.K954.AQJ QJ.A843.72.KT862 74.T765.QJT86.54"]
+[Declarer "W"]
+[Contract "2D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= 1N X =2= 2D
+PASS =3= PASS PASS =4= 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2: Penalty -- ; 10+ HCP"]
+[Note "3:  -- 6-!H; 5=!S; 11-14 HCP"]
+[Note "4:  -- ; 10-13 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\nScore Table:
+
+ 2\s      10\n 2\h       7\n 3\s       6\n 3\c       5\n W2\d      4\n W2\dX     3\n 3\h       2\n 2N       1\n\n\n\n\n
+
+Facit Score:     4\nRunning Score: 805
+}
+
+[BCFlags "801f"]
+[Board "102"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:AKQ52.962.A864.3 J6.AKT73.K9.Q942 3.J54.Q32.KJT876 T9874.Q8.JT75.A5"]
+[Declarer "N"]
+[Contract "1SX"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= X PASS =2= PASS
+PASS =3= 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:  -- ; 9- HCP"]
+[Note "3:  -- 6-!H; 5=!S; 11-19 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ W2\cX    10\n E2\cX    10\n 2\c      10\n 1N       7\n 2\d       6\n 3\c       5\n 2\s       3\n 2N       2\n 3\d       1\n\n\n\n
+
+Facit Score:     0\nRunning Score: 805
+}
+
+[BCFlags "801f"]
+[Board "103"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:A854.AKJ92.43.82 T.Q6.AJ75.AKT654 KQJ96.T3.KQT9.73 732.8754.862.QJ9"]
+[Declarer "E"]
+[Contract "5CX"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= 3C X =2= 5C
+X =3= PASS PASS =4= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2: Negative double -- 2-!H; 4-5!S; 10-23 HCP"]
+[Note "3: Penalty -- 2-4!C; 6-!D; 5-11!H; 6-!S; 11-20 HCP"]
+[Note "4:  -- 2-!H; 4-5!S; 8-14 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ E5\cX    10\n E5\c      6\n 5\s       4\n 5\h       2\n 6\s       1\n\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 815
+}
+
+[BCFlags "801f"]
+[Board "104"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AT876.AKJ2.43.43 43.QT94.KQJ2.AQ7 K2.863.AT85.KT86 QJ95.75.976.J952"]
+[Declarer "N"]
+[Contract "2S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= X XX =2= 2C
+2H =3= PASS 2S =4= PASS
+PASS =5= PASS 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2: Penalty -- ; 10+ HCP"]
+[Note "3: Bidable suit -- 4-!C; 4-!D; 4-6!H; 5-9!S; 11-13 HCP"]
+[Note "4: Nat. -- 3-!H; 2+!S; 10-11 HCP"]
+[Note "5:  -- 4-!C; 4-!D; 4-6!H; 5-9!S; 11-13 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ W2\cX    10\n 2N       7\n 2\h       6\n 2\s       5\n 3N       3\n 3\h       2\n 3\s       1\n\n\n\n\n\n
+
+Facit Score:     5\nRunning Score: 820
+}
+
+[BCFlags "801f"]
+[Board "105"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:KQ4.932.AQ2.QT64 97.AJT75.J85.A95 A82.KQ6.K97.8732 JT653.84.T643.KJ"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= 1H 3N =2= PASS
+PASS =3= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Stopper !H -- 4-!C; 5-!D; 4-!S; 13-19 HCP"]
+[Note "3:  -- 3+!C; 6-!D; 5-!H; 5-!S; 11-19 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 2N      10\n 2\c       7\n 3\c       6\n E1\hX     5\n E1\h      4\n 3N       3\n 4\c       2\n 4N       1\n\n\n\n\n
+
+Facit Score:     3\nRunning Score: 823
+}
+
+[BCFlags "801f"]
+[Board "106"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:K43.3.AKJT95.A62 QT.AKQ86.86.KQJT AJ982.752.Q3.853 765.JT94.742.974"]
+[Declarer "S"]
+[Contract "4S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= 1H 1S =2= 2H
+X =3= PASS 2S =4= PASS
+4S =5= PASS PASS =6= PASS
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 5+!S; 6-21 HCP; Forcing"]
+[Note "3:* Support double redouble -- 6-!C; 3+!D; 4-!H; 3=!S; 11-21 HCP; Artificial"]
+[Note "4: Nat. -- 6-!H; 5+!S; 6-10 HCP"]
+[Note "5: Nat. -- 6-!C; 3+!D; 4-!H; 3=!S; 14-21 HCP"]
+[Note "6:  -- 6-!H; 5+!S; 6-10 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 4\s      10\n 6\s       8\n 6\d       7\n 5\s       6\n 5\d       4\n 2\s       4\n 3\s       3\n 3\d       2\n 4\d       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 833
+}
+
+[BCFlags "801f"]
+[Board "107"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:A83.42.AKJ5.T643 KQJT6.QT97.763.A 42.AKJ3.QT2.J872 975.865.984.KQ95"]
+[Declarer "E"]
+[Contract "3S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= 1S X =2= 3S
+PASS =3= PASS PASS =4= 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Negative double -- 4-6!H; 6-!S; 6-21 HCP"]
+[Note "3:  -- 6-!C; 3+!D; 6-!H; 6-!S; 11-19 HCP"]
+[Note "4:  -- 4-6!H; 6-!S; 6-14 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\nScore Table:
+
+ E3\sX    10\n E3\s      7\n 4\c       4\n 3N       3\n 4\d       2\n 4\h       1\n\n\n\n\n\n\n
+
+Facit Score:     7\nRunning Score: 840
+}
+
+[BCFlags "801f"]
+[Board "108"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AK965.KQ862..862 Q74.JT94.KJ.AKJ9 3.753.AQ97652.Q3 JT82.A.T843.T754"]
+[Declarer "N"]
+[Contract "2H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= X 2D =2= PASS
+2H =3= PASS PASS =4= PASS
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2: Bidable suit -- 6-!C; 5+!D; 8-11 HCP"]
+[Note "3: Bidable suit -- 4-!C; 4-!D; 4-6!H; 5-9!S; 11-20 HCP"]
+[Note "4:  -- 6-!C; 5+!D; 8-11 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 2\h      10\n 3\h       6\n 2\d       5\n 3\d       3\n 4\h       2\n 4\d       1\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 850
+}
+
+[BCFlags "801f"]
+[Board "109"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:AKQ94.AK92.J72.3 J3.JT4.A.AQJT976 52.65.T86543.K42 T876.Q873.KQ9.85"]
+[Declarer "N"]
+[Contract "3S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= 2C PASS =2= 3C
+3H =3= PASS 3S =4= PASS
+PASS =5= PASS 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:  -- ; 13- HCP"]
+[Note "3: Bidable suit -- 4-!C; 4-!D; 4-6!H; 5-9!S; 16-20 HCP"]
+[Note "4: Nat. -- 3-!H; 2+!S; 6- HCP"]
+[Note "5:  -- 4-!C; 4-!D; 4-6!H; 5-9!S; 16-20 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ E3\cX    10\n 3\d       9\n 3\s       6\n 4\d       5\n N3\c      4\n 4\s       2\n 3N       1\n 5\d       1\n\n\n\n\n
+
+Facit Score:     6\nRunning Score: 856
+}
+
+[BCFlags "801f"]
+[Board "110"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQ73.T.K82.AJ863 J64.AKQ7.AT9.QT5 A92.J98654.Q73.2 T85.32.J654.K974"]
+[Declarer "S"]
+[Contract "2H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= 1N 2H =2= PASS
+PASS =3= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 5+!H; 6-!S; 7-12 HCP"]
+[Note "3:  -- 3+!C; 6-!D; 5-!H; 5-!S; 11-17 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 2\h      10\n 2\s       7\n N1N      6\n 3\h       5\n N3\s      4\n N1NX     3\n 2\c       2\n 2\d       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 866
+}
+
+[BCFlags "801f"]
+[Board "111"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:AKT654.AJ2.42.T3 Q9.Q87.AQT9865.4 3.T43.K73.AKJ987 J872.K965.J.Q652"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1S =1= 3D PASS =2= PASS
+3S =3= PASS 3N =4= PASS
+PASS =5= PASS 
+[Note "1: 5+ !S -- 6-!H; 5+!S; 11-20 HCP"]
+[Note "2:  -- ; 14- HCP"]
+[Note "3: Bidable suit -- 6-!H; 6+!S; 13-18 HCP"]
+[Note "4: Stopper !D -- 2-6!C; 2-6!D; 1-4!H; 1-!S; 10-14 HCP"]
+[Note "5:  -- 6-!H; 6+!S; 13-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 3N      10\n E3\dX     8\n 4N       7\n 3\s       5\n E3\d      5\n 4\s       4\n 4\c       3\n 5\c       2\n 6\c       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 876
+}
+
+[BCFlags "801f"]
+[Board "112"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:AQ4.AK954.962.43 KT.QT.AK7543.AJ2 9872.82.JT8.KQ95 J653.J763.Q.T876"]
+[Declarer "E"]
+[Contract "2D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= 2D PASS =2= PASS
+PASS =3= 
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2:  -- ; 13- HCP"]
+[Note "3:  -- 5=!H; 6-!S; 11-20 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ E2\d     10\n E2\dX     8\n 2\s       4\n 2\h       3\n 2N       1\n\n\n\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 886
+}
+
+[BCFlags "801f"]
+[Board "113"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:J2.72.AQT9765.A2 AKQT53.J96.43.64 94.AK84.K2.KT853 876.QT53.J8.QJ97"]
+[Declarer "N"]
+[Contract "5D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= 2S X =2= PASS
+3D =3= PASS 3S =4= PASS
+4D =5= PASS 5D =6= PASS
+PASS =7= PASS 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Negative double -- 4-5!H; 6-!S; 9-24 HCP"]
+[Note "3: Bidable suit -- 6-!C; 4+!D; 3-!H; 4-!S; 11-16 HCP"]
+[Note "4:* Strength cue bid -- 4-5!H; 6-!S; 14-24 HCP; Artificial; Forcing"]
+[Note "5: Bidable suit -- 6-!C; 5+!D; 3-!H; 4-!S; 11-16 HCP; Forcing"]
+[Note "6: Nat. -- 6-!C; 3-8!D; 4-5!H; 6-!S; 14-24 HCP"]
+[Note "7:  -- 6-!C; 5+!D; 3-!H; 4-!S; 11-16 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 5\d      10\n 4\d       6\n E2\sX     4\n 3\c       3\n 2N       3\n E2\s      2\n 4\c       2\n 3N       1\n 6\d       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 896
+}
+
+[BCFlags "801f"]
+[Board "114"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQ2.9762.A3.KJT8 6543.QJT5.54.542 JT97.A3.J82.Q963 A8.K84.KQT976.A7"]
+[Declarer "S"]
+[Contract "2S"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1C =1= PASS 1S =2= 2D
+X =3= PASS 2S =4= PASS
+PASS =5= PASS 
+[Note "1: 3+ !C -- 3+!C; 6-!D; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 4+!S; 6-29 HCP; Forcing"]
+[Note "3:* Support double redouble -- 3+!C; 6-!D; 4-!H; 3=!S; 11-21 HCP; Artificial"]
+[Note "4: Bidable suit -- 6-!H; 4+!S; 6-10 HCP"]
+[Note "5:  -- 3+!C; 6-!D; 4-!H; 3=!S; 11-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ 2\s      10\n 3\c       7\n W2\d      5\n 3\s       4\n 4\c       3\n 2N       2\n W2\dX     2\n 3N       1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 906
+}
+
+[BCFlags "801f"]
+[Board "115"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:6.KQ9754.AQ2.J73 KQT873.62.T9.A84 A2.AJT8.76.KQT92 J954.3.KJ8543.65"]
+[Declarer "N"]
+[Contract "5H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= 1S 2S =2= 4S
+5H =3= PASS PASS =4= PASS
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2:* Limit raise or better in !H -- 3+!H; 9+ HCP; Artificial; Forcing"]
+[Note "3: Nat. -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "4:  -- 3+!H; 9-18 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 6\h      10\n 6\c       6\n 5\h       5\n E4\sX     4\n 5\c       2\n E4\s      1\n\n\n\n\n\n\n
+
+Facit Score:     5\nRunning Score: 911
+}
+
+[BCFlags "801f"]
+[Board "116"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:Q.AKQT72.982.543 AJ982.6.QT654.T7 K54.J3.AK73.QJ82 T763.9854.J.AK96"]
+[Declarer "S"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1H =1= 2S 3N =2= PASS
+PASS =3= PASS 
+[Note "1: 5+ !H -- 5+!H; 6-!S; 11-20 HCP"]
+[Note "2: Stopper !S -- 6-!C; 6-!D; 2-!H; 13-19 HCP"]
+[Note "3:  -- 5+!H; 6-!S; 11-20 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\n\n\nScore Table:
+
+ 3N      10\n 3\h       7\n 2N       6\n 4\h       5\n 4N       3\n E2\s      2\n 5\h       1\n E2\sX     1\n\n\n\n\n
+
+Facit Score:    10\nRunning Score: 921
+}
+
+[BCFlags "801f"]
+[Board "117"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:A.AKQ2.AKQT84.43 J93.T6.J97.AKT98 862.J943.32.J765 KQT754.875.65.Q2"]
+[Declarer "S"]
+[Contract "5D"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+2C =1= PASS 2D =2= 4S
+5D =3= PASS PASS =4= PASS
+[Note "1:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "2:* Waiting -- ; Artificial; Forcing"]
+[Note "3: Bidable suit -- 6-!C; 6+!D; 25+ HCP; GF"]
+[Note "4:  -- ; 17- HCP"]
+[Play ""]
+[Hidden "EW"]
+{\n\nScore Table:
+
+ 5\h      10\n 5\d       7\n 4N       5\n W4\sX     4\n 6\h       3\n W4\s      2\n 5N       1\n\n\n\n\n\n
+
+Facit Score:     7\nRunning Score: 928
+}
+
+[BCFlags "801f"]
+[Board "118"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:KQ84.AJ73.KQ2.J3 AJT.KQT.AT9.KQ52 763.4.J843.T9864 952.98652.765.A7"]
+[Declarer "N"]
+[Contract "2H"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= X PASS =2= PASS
+XX =3= PASS 2C =4= PASS
+2H =5= PASS PASS =6= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:  -- ; 8- HCP"]
+[Note "3:* SOS -- 2-4!C; 2-4!D; 2-4!H; 2-4!S; 15-17 HCP; Artificial"]
+[Note "4:* Artificial -- 3+!C; 8- HCP; Artificial"]
+[Note "5: Bidable suit -- 2-4!C; 2-4!D; 4=!H; 2-4!S; 15-17 HCP"]
+[Note "6:  -- 3+!C; 8- HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 2\c      10\n 2\s       9\n 2\d       8\n 3\c       3\n 3\s       2\n 3\d       1\n 1NX      1\n\n\n\n\n\n
+
+Facit Score:     0\nRunning Score: 928
+}
+
+[BCFlags "801f"]
+[Board "119"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "EW"]
+[Deal "N:K3.972.AK83.AQT2 J754.65.Q964.K43 AT86.43.J72.J987 Q92.AKQJT8.T5.65"]
+[Declarer "N"]
+[Contract "3C"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1N =1= PASS PASS =2= 2H
+PASS =3= PASS X =4= PASS
+3C =5= PASS PASS =6= PASS
+[Note "1: NT style -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "2:  -- ; 8- HCP"]
+[Note "3:  -- 2-6!C; 2-6!D; 2-5!H; 2-5!S; 15-17 HCP"]
+[Note "4: Reopening double -- 1-5!C; 1-5!D; 2-!H; 1-5!S; 5-8 HCP"]
+[Note "5: Bidable suit -- 4-6!C; 2-5!D; 2-5!H; 2-4!S; 15-17 HCP"]
+[Note "6:  -- 1-5!C; 1-5!D; 2-!H; 1-5!S; 5-8 HCP"]
+[Play ""]
+[Hidden "EW"]
+{Score Table:
+
+ 3\c      10\n W2\hX     7\n W2\h      6\n 2N       5\n 2\s       4\n 4\c       3\n 3\d       2\n 5\c       1\n 3N       1\n\n\n\n
+
+Facit Score:    10\nRunning Score: 938
+}
+
+[BCFlags "801f"]
+[Board "120"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "All"]
+[Deal "N:T2.Q73.AK972.K95 AK76.T965.85.AQ7 QJ95.AKJ2.43.JT2 843.84.QJT6.8643"]
+[Declarer "N"]
+[Contract "3N"]
+[Scoring "Facit"]
+[ParScore "0"]
+[Auction "N"]
+1D =1= X XX =2= 1S
+1N =3= PASS 3N =4= PASS
+PASS =5= PASS 
+[Note "1: 3+ !D -- 6-!C; 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Penalty -- ; 10+ HCP"]
+[Note "3: Stopper !S -- 2-4!C; 3-5!D; 2-4!H; 2-4!S; 11-14 HCP"]
+[Note "4: Nat. -- 2-5!C; 2-4!D; 2-4!H; 2-4!S; 18-22 HCP"]
+[Note "5:  -- 2-4!C; 3-5!D; 2-4!H; 2-4!S; 11-14 HCP"]
+[Play ""]
+[Hidden "EW"]
+{\nScore Table:
+
+ W1\sX    10\n 1NXX    10\n 3N       7\n 2N       5\n 2\h       4\n 4N       3\n 4\h       3\n 3\h       2\n 2\d       1\n\n\n\n
+
+Facit Score:     7\nRunning Score: 945
+}
+

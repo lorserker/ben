@@ -2,12 +2,6 @@
 .ipynb_checkpoints
 __pycache__
 
-scripts/match/bidding/0.1
-scripts/match/bidding/0.2
-scripts/match/bidding/0.05
-scripts/match/bidding/0.1vs0.2
-scripts/match/bidding/0.1vs0.05
-scripts/match/bidding/0.2vs0.05
 scripts/match/bidding/training/html
 scripts/training/bidding/binary
 .vscode
@@ -40,11 +34,10 @@ scripts/training/opening lead/lead_bin
 scripts/training/opening lead/lead_model_b
 models/lead_model_c
 models/lead_model
-UCBC 2024/Boards/*.sql
-UCBC 2024/Boards/*.exe
-UCBC 2024/2023 Practice
-UCBC 2024/Boards/data
-UCBC 2024/Boards/All.PBN
+Boards/*.sql
+Boards/*.exe
+Boards/data
+Boards/All.PBN
 scripts/training/bidding/binfo_bin
 scripts/training/*/model
 scripts/training/**/*.npy
@@ -65,18 +58,17 @@ scripts/training/bidding/auctions.txt
 UCBC 2024/2024 Practice
 UCBC 2024/Boards/input.bba
 scripts/training/data/BBA*.txt
-UCBC 2024/Boards/BBA/Random 100.000-rotated.pbn
+Boards/BBA/Random 100.000-rotated.pbn
 scripts/training/data/WBC/play_ben.zip
 scripts/training/data/WBC/play_jackformat.zip
 scripts/training/data/input-2024.02.12.txt
-UCBC 2024/Boards/*.bba
-UCBC 2024/Boards/BBA/TMPbn2Cleaner.exe
+Boards/*.bba
+Boards/BBA/TMPbn2Cleaner.exe
 scripts/training/data/WBC/play.txt
 scripts/match/bidding/default
 scripts/training/data/*.bba
 scripts/training/data/*.pbn
 scripts/training/data/*.ben
-UCBC 2024/MvsM/models/*.ben
 gamedb*
 install/**/*.bak
 install/**/*.dir
@@ -87,12 +79,11 @@ scripts/training/bidding/html/*.html
 src/frontend/api.json
 src/CBE*.*
 src/GIB.*
-UCBC 2024/Boards/Thorvald/random.pbn
-UCBC 2024/Boards/Thorvald/BBA - 25.05.2024 14.08.ben
-UCBC 2024/Boards/Thorvald/issues.bba
+Boards/Thorvald/random.pbn
+Boards/Thorvald/BBA - 25.05.2024 14.08.ben
+Boards/Thorvald/issues.bba
 src/SuitC.pbn
 src/Suic.Pbn
-src/v0.8.*
 models/muppet/512/bidding_V2-1100000*
 gameapibiddb*
 scripts/training/**/logs/
@@ -105,8 +96,8 @@ scripts/match/bidding/speed/
 scripts/training/bidding/bad.*
 src/logs/app.log
 src/input.ben
-UCBC 2024/Boards/*.ben
-UCBC 2024/Boards/*.pbn
+Boards/*.ben
+Boards/*.pbn
 scripts/training/bidding/Old versions/
 src/logs/
 scripts/training/data/hands_data.pkl
@@ -119,7 +110,6 @@ install/BBA/
 install/*.zip
 src/TMCGUI.settings.json
 install/BENAll
-scripts/match/bidding/BEN-Sayc
 src/log.txt
 scripts/training/contract/jax
 src/suitc.txt
@@ -128,6 +118,6 @@ BBA/output*
 Challenges/Match
 src/deal00.txt
 src/lop00.txt
-UCBC 2024/site
 Challenges/EDGAR
 BBA/*.pbn
+Practice

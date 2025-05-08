@@ -21,7 +21,7 @@ class Models:
                  pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
                  pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples, pimc_bidding_quality, pimc_after_preempt, pimc_after_preempt_weight,
                  alphamju_declaring, alphamju_defending, alphamju_trick, adjust_hcp, 
-                 use_adjustment, adjust_NN, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
+                 use_adjustment, adjust_NN, adjust_NN_undisturbed, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
                  use_suitc, force_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
                  use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead, lead_convention, check_final_contract, max_samples_checked,  
                  alert_supported, alert_threshold,
@@ -115,6 +115,7 @@ class Models:
         self.adjust_hcp = adjust_hcp
         self.use_adjustment = use_adjustment
         self.adjust_NN = adjust_NN
+        self.adjust_NN_undisturbed = adjust_NN_undisturbed
         self.adjust_NN_Few_Samples = adjust_NN_Few_Samples
         self.adjust_XX = adjust_XX
         self.adjust_X = adjust_X
@@ -240,6 +241,7 @@ class Models:
 
         use_adjustment = conf.getboolean('adjustments', 'use_adjustment', fallback=True)
         adjust_NN = conf.getint('adjustments', 'adjust_NN', fallback=50)
+        adjust_NN_undisturbed = conf.getint('adjustments', 'adjust_NN_undisturbed', fallback=200)
         adjust_NN_Few_Samples = conf.getint('adjustments', 'adjust_NN_Few_Samples', fallback=200)
         adjust_XX = conf.getint('adjustments', 'adjust_XX', fallback=100)
         adjust_X = conf.getint('adjustments', 'adjust_X', fallback=100)
@@ -410,6 +412,7 @@ class Models:
             adjust_hcp=adjust_hcp,
             use_adjustment=use_adjustment,
             adjust_NN=adjust_NN,
+            adjust_NN_undisturbed=adjust_NN_undisturbed,
             adjust_NN_Few_Samples=adjust_NN_Few_Samples,
             adjust_XX=adjust_XX,
             adjust_X=adjust_X,

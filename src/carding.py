@@ -186,6 +186,7 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
                     entries = count_entries(hand_str, interesting_suit, played_cards, contract[1])
 
+                    # We need to find if playing safe should be needed. Currently we select the card with the highest expected score
                     try:
                         suitc_cards = suitc.calculate(max(len(suits_north),len(suits_south)), suits_north, suits_south, suits_westeast, trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
                     except Exception as ex:
@@ -240,6 +241,9 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                             continue
                         for suitc_card in suitc_cards:
                             if candidate_card.card.symbol() == f"{suit_str}{suitc_card}":
+                                # If losing to much in making, just play the card from the simulation
+                                if candidate_card.p_make_contract and candidate_card.p_make_contract < candidate_cards[0].p_make_contract - 0.15:
+                                    continue
                                 # Only play SuitC if not losing to much DD
                                 if models.use_real_imp_or_mp:
                                     if models.matchpoint:
@@ -355,7 +359,7 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
             # Need to check for honor in the suit
             hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
             if suit_length < 4 or hcp_in_suit < 2:
-                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
+                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
             else:
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, suit_length)
             return card_index + 13 * opening_suit
@@ -366,10 +370,12 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
             hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
             # lead highest if Tx
             if suit_length == 2 and hand52.reshape((4, 13))[opening_suit][4] == 1 and hcp_in_suit == 0:
+                # Leading T from Tx
                 card_index = 4
             else:
                 if suit_length < 4:
                     if hcp_in_suit == 0 and hand52.reshape((4, 13))[opening_suit][4]:
+                        # Leading T from Tx
                         card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
                     else:
                         if suit_length == 2:    
@@ -380,13 +386,19 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
 
                             # Check if the first two ones are consecutive
                             if len(indices) >= 2 and indices[1] - indices[0] == 1:
-                                #lead highes
+                                #lead highest
                                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
                             else:
                                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
 
                 else:
-                    card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)
+                    if hcp_in_suit == 0:
+                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
+                    else:
+                        # Leading 4th highest
+                        indices = np.where(hand52.reshape((4, 13))[opening_suit])[0]
+                        # Check if the first two ones are consecutive
+                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)
             return card_index + 13 * opening_suit
     else:
         if opening_suit == "SHDC".index(contract[1]):

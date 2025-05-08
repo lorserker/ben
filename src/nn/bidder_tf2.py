@@ -32,7 +32,7 @@ class Bidder:
         return bids, alerts
 
     def pred_fun_seq(self, x):
-            # Perform the model prediction (returns tensors)
+        # Perform the model prediction (returns tensors)
         bids, alerts = self.pred_fun_tf(x)
         return bids.numpy(), alerts.numpy()
 

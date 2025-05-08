@@ -93,11 +93,11 @@ def main():
         else: 
             # Default to version 1. of Tensorflow
             from nn.bidder import Bidder
-            from nn.models import Models
+            from nn.models_tf2 import Models
     except KeyError:
             # Default to version 1. of Tensorflow
             from nn.bidder import Bidder
-            from nn.models import Models
+            from nn.models_tf2 import Models
 
 
     models = Models.from_conf(config,"../../..")

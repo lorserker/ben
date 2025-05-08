@@ -73,7 +73,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.6.12'
+version = '0.8.7.0'
 init()
 
 def handle_exception(e):
@@ -455,19 +455,25 @@ try:
         from nn.models_tf2 import Models
     else: 
         # Default to version 1. of Tensorflow
-        from nn.models import Models
+        from nn.models_tf2 import Models
 except KeyError:
         # Default to version 1. of Tensorflow
-        from nn.models import Models
+        from nn.models_tf2 import Models
 
 models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""), verbose)
 if verbose:
     print("Loading sampler")
 sampler = Sample.from_conf(configuration, verbose)
+    
+print("Config:", configfile)
+if opponentfile != "":
+    # Override with information from opponent file
+    print("Opponent:", opponentfile)
+    configuration.read(opponentfile)
+    opponents = Opponents.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+    sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
-# Improve performance until it is supported
-models.claim = False
-
+models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 
 if sys.platform != 'win32':
     print("Disabling PIMC/BBA/SuitC as platform is not win32")
@@ -478,20 +484,6 @@ if sys.platform != 'win32':
     models.use_bba_rollout = False
     models.use_bba_to_count_aces = False
     models.use_suitc = False
-    
-print("Config:", configfile)
-print("System:", models.name)
-
-if opponentfile != "":
-    # Override with information from opponent file
-    print("Opponent:", opponentfile)
-    opp_configuration = conf.load(opponentfile)
-    opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
-    models.opponent_model = opponents.opponent_model
-    models.bba_their_cc = opponents.bba_cc
-    sys.stderr.write(f"Using: {opponents.bba_cc}\n")
-    sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
-
 
 if models.use_bba:
     print("Using BBA for bidding")
@@ -709,6 +701,7 @@ def bid():
         if models.use_bba:
             from bba.BBA import BBABotBid
             hint_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand, vuln, dealer_i, mp, verbose)
+            explanations = None
         else:
 
             hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, False, verbose)
@@ -717,7 +710,6 @@ def bid():
         with model_lock_bid:
             bid = hint_bot.bid(auction)
 
-        print("Bidding: ",bid.bid, "Alert" if bid.alert else "", bid.explanation if bid.explanation else "", f"by {bid.who}" if bid.who else "")
         result = bid.to_dict()
         if not details:
             if "candidates" in result: del result["candidates"]
@@ -1016,7 +1008,7 @@ def cuebid():
         hint_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, hand, vuln, dealer_i, models.matchpoint, verbose)
     else:
         hint_bot = BotBid(vuln, hand, models, sampler, position_i, dealer_i, dds, False, verbose)
-        explanations, bba_controlled, preempted = hint_bot.explain_auction(auction)
+        explanations, bba_controlled, preempted = hint_bot.explain_auction(auction, dealer_i)
         hint_bot.bba_is_controlling = bba_controlled
     with model_lock_bid:
         bid = hint_bot.bid(auction)

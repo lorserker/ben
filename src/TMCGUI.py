@@ -73,7 +73,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("Table Manager Interface. v0.8.6.12")
+        self.title("Table Manager Interface. v0.8.7.0")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -178,7 +178,7 @@ class TableManagerApp(tk.Tk):
         # Input fields (Host, Port, Name, Seat)
         fields = [
             ("Host:", self.settings.get("host", "")),
-            ("Port:", self.settings.get("port", "")),
+            ("Port:", self.settings.get("port", "2000")),
             ("Name:", self.settings.get("name", "")),
             ("Seat:", self.settings.get("seat", "")),
         ]
@@ -232,12 +232,14 @@ class TableManagerApp(tk.Tk):
         self.bidding_only = tk.BooleanVar(value=self.settings.get("bidding_only", False))
         self.nosearch = tk.BooleanVar(value=self.settings.get("nosearch", False))
         self.matchpoint = tk.BooleanVar(value=self.settings.get("matchpoint", False))
-        self.bm = tk.BooleanVar(value=self.settings.get("bm", False))
+        self.send_info = tk.BooleanVar(value=self.settings.get("send_info", False))
+        self.send_card_info = tk.BooleanVar(value=self.settings.get("send_card_info", False))
 
         ttk.Checkbutton(col_frames[2], text="Bidding Only", variable=self.bidding_only).grid(row=6, column=0, sticky="w", padx=5, pady=5)
         ttk.Checkbutton(col_frames[2], text="No simulation", variable=self.nosearch).grid(row=7, column=0, sticky="w", padx=5, pady=5)
         ttk.Checkbutton(col_frames[2], text="Match Point", variable=self.matchpoint).grid(row=8, column=0, sticky="w", padx=5, pady=5)
-        ttk.Checkbutton(col_frames[2], text="Using BM", variable=self.bm).grid(row=9, column=0, sticky="w", padx=5, pady=5)
+        ttk.Checkbutton(col_frames[2], text="Send Info", variable=self.send_info).grid(row=9, column=0, sticky="w", padx=5, pady=5)
+        ttk.Checkbutton(col_frames[2], text="Send Card Info", variable=self.send_card_info).grid(row=10, column=0, sticky="w", padx=5, pady=5)
 
         # Verbose checkbox and buttons (Start/Stop) in column 4
         self.verbose = tk.BooleanVar(value=self.settings.get("verbose", False))
@@ -380,9 +382,9 @@ class TableManagerApp(tk.Tk):
     def browse_opponent(self):
 
         # Get the current path from the Config entry field
-        current_path = self.config_entry.get()
+        current_path = self.opponent_entry.get()
         # Extract the directory
-        initial_dir = os.path.dirname(current_path) if os.path.isdir(os.path.dirname(current_path)) else "opponent"
+        initial_dir = os.path.dirname(current_path) if os.path.isdir(os.path.dirname(current_path)) else "config/opponent"
 
         # Open file dialog with the initial directory
         file_path = filedialog.askopenfilename(
@@ -800,14 +802,17 @@ class TableManagerApp(tk.Tk):
 
         # Get command-line parameters
         host = self.inputs["Host:"].get()
-        port = int(self.inputs["Port:"].get())
+        port = self.inputs["Port:"].get()
+        if not port:
+            port = "2000"
         name = self.inputs["Name:"].get()
         seat = self.inputs["Seat:"].get()
         config = self.config_entry.get()
         opponent = self.opponent_entry.get()
         bidding_only = self.bidding_only.get()
         matchpoint = self.matchpoint.get()
-        bm = self.bm.get()
+        send_info = self.send_info.get()
+        send_card_info = self.send_card_info.get()
         nosearch = self.nosearch.get()
         verbose = self.verbose.get()
         detached = self.detached.get()
@@ -835,11 +840,12 @@ class TableManagerApp(tk.Tk):
                 cmd.extend(["--matchpoint", str(matchpoint)])
                 if host:  
                     cmd.extend(["--host", str(host)])
-                cmd.extend(["--bm", str(bm)])
+                if send_info:
+                    cmd.extend(["--sendinfo", str(send_info)])
+                if send_card_info:
+                    cmd.extend(["--sendcardinfo", str(send_card_info)])
                 if port:  
-                    cmd.extend(["--port", str(port)])
-                if port:  
-                    cmd.extend(["--port", str(port)])
+                    cmd.extend(["--port", port])
                 if config:
                     cmd.extend(["--config", config])
                 if opponent:
@@ -960,10 +966,10 @@ class TableManagerApp(tk.Tk):
             new_port = port
             if seat == "NS open - EW Closed":
                 if single_seat == "East" or single_seat == "West":
-                    new_port = port + 1
+                    new_port = str(int(port) + 1)
             elif seat == "EW open - NS Closed":
                 if single_seat == "North" or single_seat == "South":
-                    new_port = port + 1
+                    new_port = str(int(port) + 1)
             threading.Thread(target=run_process, args=(single_seat, new_name, new_port, delay), daemon=True).start()
 
 
@@ -1280,7 +1286,8 @@ class TableManagerApp(tk.Tk):
         # Checkboxes (Bidding Only, Match Point) in column 3
         self.settings["bidding_only"] = self.bidding_only.get()
         self.settings["nosearch"] = self.nosearch.get()
-        self.settings["bm"] = self.bm.get()
+        self.settings["send_info"] = self.send_info.get()
+        self.settings["send_card_info"] = self.send_card_info.get()
         self.settings["matchpoint"] = self.matchpoint.get()
         self.settings["detached"] = self.detached.get()
         self.settings["verbose"] = self.verbose.get()

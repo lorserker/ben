@@ -1,0 +1,37 @@
+[Event "Random]"]
+[Site ""]
+[Date "2024.08.06"]
+[Board "79"]
+[West "WBridge5"]
+[North "jackos16"]
+[East "WBridge5"]
+[South "jackos16"]
+[Dealer "S"]
+[Vulnerable "NS"]
+[Deal "S:A64.AT42.K952.Q2 972.J65.J87.T843 KQ8.K3.AQT63.A76 JT53.Q987.4.KJ95"]
+[Scoring ""]
+[Declarer "S"]
+[Contract "6D"]
+[Result "11"]
+[Auction "S"]
+1D        Pass      2D        Pass      
+2NT       Pass      4C        Pass      
+4H        Pass      4S        Pass      
+4NT       Pass      5S        Pass      
+6D        Pass      Pass      Pass      
+[Play "W"]
+S2 S8 ST SA 
+D7 DA D4 D2 
+D8 D6 C5 DK 
+DJ DQ HQ D5 
+S7 DT H7 D9 
+C4 D3 H8 S6 
+S9 SK S5 S4 
+C3 SQ S3 H4 
+H5 HK H9 H2 
+H6 H3 C9 HA 
+HJ C6 SJ HT 
+CT C7 CK C2 
+C8 CA CJ CQ 
+[BidSystemNS "EthaMoscito"]
+[BidSystemEW "EthaMoscito"]

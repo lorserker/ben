@@ -10,32 +10,17 @@
 	</head> 
 <body> 
 <div class="center">
-<h1>Unofficial Computer Bridge Championship 2024</h1>
+<h1>Unofficial Computer Bridge Championship</h1>
 </div>
 
 
 <div class="container">
   <div class="content">
-<p>BEN is going to participate in UCBC2024, and you can help by playing with BEN and report any errors found.</p>
-<br>
-<p>The official site for the championship can be found at: <a href="https://robot-bridge.co.uk/2024-championships">UCBC 2024</a></p>
-<br>
-<p>From the condition of contest: </p>
-
-<ul>        
-  <li>For 2024 All bridge robots authors will use their preferred bidding system and conventions. The robot authors will have to be aware of systems and conventions used by the opposing bot.
-  <li>The bridge robots can use their preferred bidding system and conventions, providing that the opposing robot has the system or conventions in their setup.  
-  <br>This should be determined before the event starts. Table Manager alerts will be used by the Table Manager Controller to avoid bidding misunderstanding, which have to be picked up by sight otherwise.<br>
-  The systems and conventions used must comply with the ACBL list used at the World Computer Bridge Championships: <a href="http://www.allevybridge.com/allevy/computerbridge/WCBC_coc.html">Condition of contest</a>
-</ul>        
-
-<br>
-<p>We do not have access to all the participating robots, and currently we do not know, the system preferred by the different robots.</p>
 <br>
 <p>I have selected this configuration for BEN, but it might change:</p>
 
 <ul>     
-  <li>SAYC</li>	
+  <li>21-GF</li>	
   <li>1m opening allows 5M</li>
   <li>1M-3M inviting</li>
   <li>1X-(Y)-2Z forcing</li>

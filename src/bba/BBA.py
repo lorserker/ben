@@ -96,11 +96,12 @@ class BBABotBid:
             "5N": "King ask",
             "4C": "Gerber",
             "5C": "King ask",
+            "4S": "Exclusion",
             "5C": "Exclusion",
             "5D": "Exclusion",            
             "5H": "Exclusion",            
             "5S": "Exclusion"            
-        }        # Did partner ask for keycards
+        }       
 
 
     def __init__(self, our_system_file, their_system_file, position, hand, vuln, dealer, scoring_matchpoint, verbose):
@@ -355,14 +356,14 @@ class BBABotBid:
     def explain_auction(self, auction):
         if self.verbose:
             print(auction)
-            print("explain_auction", self.position, self.hand_str, 0, self.bba_vul(self.vuln_nsew))
+            print("explain_auction", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
-        self.players[self.position].new_hand(self.position, self.hand_str, 0, self.bba_vul(self.vuln_nsew))
+        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
         meaning_of_bids = []
         bba_controlling = False
         preempted = False
-        position = 0
+        position = self.dealer
         for k in range(len(auction)):
             bidid = bidding.BID2ID[auction[k]]
             if bidid < 2:
@@ -376,13 +377,14 @@ class BBABotBid:
             #print(auction[k], meaning)
             meaning_of_bids.append((auction[k], meaning))
             # Are we bidding
-            if (k % 2) == (len(auction) % 2):
+            if (position % 2 == self.position % 2):
                 if auction[k] in self.bba_controling and self.bba_controling[auction[k]] in meaning:
                     bba_controlling = True
-            if (k % 2) == ((len(auction) -1) % 2) :
+            if (position % 2 != self.position % 2):
                 lowered_meaning = meaning.lower()
                 if "weak" in lowered_meaning or "preempt" in lowered_meaning:
                     preempted = True
+            # We should also look for other keywaords, like splinter, void, exclusion
             position += 1
         
         return meaning_of_bids, bba_controlling, preempted

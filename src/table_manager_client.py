@@ -32,11 +32,11 @@ if gpus:
     try:
         for gpu in gpus:
             tf.config.experimental.set_memory_growth(gpu, True)
-        print("✅ GPU available and memory growth enabled.")
+        print("GPU available and memory growth enabled.")
     except RuntimeError as e:
-        print("⚠️ Error setting memory growth:", e)
+        print("Error setting memory growth:", e)
 else:
-    print("🧠 No GPU detected, using CPU.")
+    print("No GPU detected, using CPU.")
 
 
 import socket
@@ -68,7 +68,7 @@ import gc
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.6.12'
+version = '0.8.7.0'
 init()
 
 SEATS = ['North', 'East', 'South', 'West']
@@ -88,7 +88,7 @@ def handle_exception(e):
 
 class TMClient:
 
-    def __init__(self, name, seat, models, sampler, ddsolver, bm, verbose):
+    def __init__(self, name, seat, models, sampler, ddsolver, send_info, send_card_info, verbose):
         self.name = name
         self.seat = seat
         self.player_i = SEATS.index(self.seat)
@@ -104,7 +104,8 @@ class TMClient:
         self.dds = ddsolver
         self.partner = None
         self.last_explanations = ""
-        self.bm = bm
+        self.send_info = send_info
+        self.send_card_info = send_card_info
 
     @property
     def is_connected(self):
@@ -129,7 +130,7 @@ class TMClient:
             'version': version
         }
 
-    async def run(self, biddingonly, restart, bm):
+    async def run(self, biddingonly, restart, send_info, send_card_info):
 
         self.bid_responses = []
         self.card_responses = []
@@ -177,12 +178,12 @@ class TMClient:
         if self.player_i != (self.decl_i + 2) % 4:
             self.dummy_hand_str = await self.receive_dummy()
 
-        await self.play(auction, opening_lead52, features, bm)
+        await self.play(auction, opening_lead52, features, send_card_info)
 
         await self.receive_line()
         
 
-    async def connect(self, host, port, bm, config):
+    async def connect(self, host, port, send_info, send_card_info, config):
         try:
             # Check if the host is already an IP address
             ipaddress.ip_address(host)
@@ -203,7 +204,7 @@ class TMClient:
         self._is_connected = True
         print(f"Connected to {host}:{port}")
 
-        await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18{" " + config if not bm else ""}')
+        await self.send_message(f'Connecting "{self.name}" as {self.seat} using protocol version 18{" " + config if send_info else ""}')
 
         # Validate response Blue Chip can send: Error Team name mismatch
         await self.receive_line()
@@ -270,6 +271,7 @@ class TMClient:
                 else:
                     bid_resp = BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who=self.opponents, quality=None, alert=alert, explanation=explanation)
                 self.bid_responses.append(bid_resp)
+                # We will have to save the explanation, so it can be used in the sampling
                 auction.append(bid)
 
             player_i = (player_i + 1) % 4
@@ -311,8 +313,8 @@ class TMClient:
             # just send that we are ready for the opening lead
             return await self.receive_card_play_for(on_lead_i, 0)
 
-    async def play(self, auction, opening_lead52, features, bm ):
-        self.bm = bm
+    async def play(self, auction, opening_lead52, features, send_card_info ):
+        self.send_card_info = send_card_info
         contract = bidding.get_contract(auction)
         
         level = int(contract[0])
@@ -668,13 +670,13 @@ class TMClient:
 
 
     async def send_card_played(self, card_symbol, who):
-        msg_card = f'{self.seat} plays {card_symbol[::-1]} {who if not self.bm else ""}'
+        msg_card = f'{self.seat} plays {card_symbol[::-1]}{". " + who if self.send_card_info else ""}'
         await self.send_message(msg_card)
 
     async def send_card_played_for_dummy(self, card_symbol, who):
         dummy_i = (self.decl_i + 2) % 4
         seat = SEATS[dummy_i]
-        msg_card = f'{seat} plays {card_symbol[::-1]} {who if not self.bm else ""}'
+        msg_card = f'{seat} plays {card_symbol[::-1]}{". " + who if self.send_card_info else ""}'
         await self.send_message(msg_card)
 
     async def send_own_bid(self, bid_resp):
@@ -692,7 +694,7 @@ class TMClient:
                 msg_bid += ' Rescue.'
             self.last_explanations = bid_resp.explanation
         else:
-            if not self.bm:
+            if self.send_info:
                 if bid_resp.explanation:
                     if bid_resp.explanation not in self.last_explanations:
                         msg_bid += ' Infos. ' + bid_resp.explanation
@@ -716,7 +718,9 @@ class TMClient:
 
         card_resp = await self.receive_line()
 
-        card_resp_parts = card_resp.strip().split()
+        card_resp_parts = card_resp.strip().split('.')
+        card_info = card_resp_parts[1] if len(card_resp_parts) > 1 else None
+        card_resp_parts = card_resp_parts[0].strip().split()
         if self.verbose:
             print("card_resp_parts", card_resp_parts)
         if card_resp.lower() == "start of board":
@@ -728,9 +732,11 @@ class TMClient:
         else:
             who = self.opponents
 
-        #print(f"Received {card_resp_parts} from {who}")
+        if card_info:
+            who += " " + card_info
+
         cr = CardResp(
-            card=Card.from_symbol(card_resp_parts[-1][::-1].upper()),
+            card=Card.from_symbol(card_resp_parts[2][::-1].upper().replace(".", "")),
             candidates=[],
             samples=[],
             shape=-1,
@@ -995,7 +1001,8 @@ async def main():
     parser.add_argument("--biddingonly", type=str_to_bool, default=False, help="Only bid, no play")
     parser.add_argument("--nosearch", type=str_to_bool, default=False, help="Just use neural network")
     parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
-    parser.add_argument("--bm", type=str_to_bool, default=True, help="Bridge Moniteur is table manager")
+    parser.add_argument("--sendinfo", type=str_to_bool, default=False, help="Send information to Table Manager")
+    parser.add_argument("--sendcardinfo", type=str_to_bool, default=False, help="Send card information to Table Manager")
     parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
 
     args = parser.parse_args()
@@ -1010,7 +1017,8 @@ async def main():
     verbose = args.verbose
     biddingonly = args.biddingonly
     nosearch = args.nosearch
-    bm = args.bm
+    send_info = args.sendinfo
+    send_card_info = args.sendcardinfo
 
     np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
@@ -1047,10 +1055,18 @@ async def main():
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow
-            from nn.models import Models
+            from nn.models_tf2 import Models
     except KeyError:
             # Default to version 1. of Tensorflow
-            from nn.models import Models
+            from nn.models_tf2 import Models
+
+    print("Config:", configfile)
+    if opponentfile != "":
+        # Override with information from opponent file
+        print("Opponent:", opponentfile)
+        configuration.read(opponentfile)
+        opponents = Opponents.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+        sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
     models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 
@@ -1064,18 +1080,6 @@ async def main():
         models.use_bba_to_count_aces = False
         models.use_suitc = False
         
-    print("Config:", configfile)
-    print("System:", models.name)
-    if opponentfile != "":
-        # Override with information from opponent file
-        print("Opponent:", opponentfile)
-        opp_configuration = conf.load(opponentfile)
-        opponents = Opponents.from_conf(opp_configuration, config_path.replace(os.path.sep + "src",""))
-        # We only use the opponent model, and the BBA convention card
-        models.opponent_model = opponents.opponent_model
-        models.bba_their_cc = opponents.bba_cc
-        sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
-
     if models.use_bba:
         print("Using BBA for bidding")
     else:
@@ -1121,10 +1125,11 @@ async def main():
     else:
         print("Playing IMPS mode")
 
-    client = TMClient(name, seat, models, Sample.from_conf(configuration, verbose), dds, bm, verbose)
-    print(f"Connecting to {host}:{port} as {seat} {"using BM" if bm else ""}...")
+    sampling = Sample.from_conf(configuration, verbose=verbose)
+    client = TMClient(name, seat, models, sampling, dds, send_info, send_card_info, verbose)
+    print(f"Connecting to {host}:{port} as {seat} {"sending info" if send_info else ""}...")
     config = f"{models.name} {version} {configfile} {opponentfile}" 
-    await client.connect(host, port, bm, config)
+    await client.connect(host, port, send_info, send_card_info, config)
     first = True
 
     if client.is_connected:
@@ -1135,7 +1140,7 @@ async def main():
     while client.is_connected:
         t_start = time.time()
         try:
-            await client.run(biddingonly, restart, bm)
+            await client.run(biddingonly, restart, send_info, send_card_info)
         except RestartLogicException as e:
             print(f"{Fore.CYAN}{datetime.datetime.now():%H:%M:%S} Communication restarted from Table Manager{Fore.RESET}")
             restart = True

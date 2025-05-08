@@ -103,7 +103,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     verbose = args.verbose
 
-    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.6.12{Fore.RESET}\n")
+    sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} auction.py - Version 0.8.7.0{Fore.RESET}\n")
     sys.stderr.write(f'NS = {args.bidderNS}\n')
     sys.stderr.write(f'EW = {args.bidderEW}\n')    
     sys.stderr.write(f'DB = {args.db}\n')
@@ -120,10 +120,10 @@ if __name__ == '__main__':
             from nn.models_tf2 import Models
         else: 
             # Default to version 1. of Tensorflow
-            from nn.models import Models
+            from nn.models_tf2 import Models
     except KeyError:
             # Default to version 1. of Tensorflow
-            from nn.models import Models
+            from nn.models_tf2 import Models
 
 
     models_ns = Models.from_conf(configuration_ns,"../../..")

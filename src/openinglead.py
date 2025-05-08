@@ -53,6 +53,7 @@ def validate_lead(suit: str, lead: str, contract_type: str, verbose):
         Rule(r"^KQ", "K", "Leading from KQ doubleton vs suit", length_required=2, max_length=2),
         Rule(r"^QJ", "Q", "Leading from QJ doubleton vs suit", length_required=2, max_length=2),
         Rule(r"^JT", "J", "Leading from JT doubleton vs suit", length_required=2, max_length=2),
+        Rule(r"^T9", "T", "Leading from T9 doubleton vs suit", length_required=2, max_length=2),
         
         # Txx holding - now using lambda for leading T or x
         Rule(r"^T[^AKQJT][^AKQJT]$", "T", "Leading top from Txx vs suit", lambda_fn=lambda suit: 'T'),
@@ -96,10 +97,12 @@ def validate_lead(suit: str, lead: str, contract_type: str, verbose):
         Rule(r"^AKJ", "K", "Leading from AKJ sequence vs NT"),
         Rule(r"^KQT", "K", "Leading from KQT sequence vs NT"),
         Rule(r"^QJ9", "Q", "Leading from QJ9 sequence vs NT"),
+        Rule(r"^JT8", "J", "Leading from QJ9 sequence vs NT"),
         Rule(r"^AK", "K", "Leading from AK doubleton vs NT", length_required=2,max_length=2),
         Rule(r"^KQ", "K", "Leading from KQ doubleton vs NT", length_required=2,max_length=2),
         Rule(r"^QJ", "Q", "Leading from QJ doubleton vs NT", length_required=2,max_length=2),
         Rule(r"^JT", "J", "Leading from JT doubleton vs NT", length_required=2,max_length=2),
+        Rule(r"^T9", "T", "Leading from T9 vs NT"),
         
         # Txx holding - now using lambda for leading T or x
         Rule(r"^T[^AKQJT][^AKQJT]$", "T", "Leading top from Txx vs NT", lambda_fn=lambda suit: 'T'),
