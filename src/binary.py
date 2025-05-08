@@ -180,8 +180,10 @@ def get_hcp_adjusted(hand):
     T[:, :, 4] = 1
 
     points = 4.25 * A * x + 3 * K * x + 2 * Q * x + 1 * J * x + 0.25 * T * x
+
+    totalpoints = np.sum(points, axis=(1, 2))
     # We will not adjust non opening hands
-    if points < 14:
+    if totalpoints < 14:
         points = 4 * A * x + 3 * K * x + 2 * Q * x + 1 * J * x 
     
     # Could be a 6-card suit with 2 honors should be upgraded
