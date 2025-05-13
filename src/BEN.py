@@ -46,7 +46,7 @@ class BridgeApp:
     def __init__(self, root):
         self.root = root
         self.root.iconbitmap("ben.ico")
-        self.root.title("Bridge with BEN. v0.8.7.0")
+        self.root.title("Bridge with BEN. v0.8.7.1")
         self.root.geometry("1000x1000")
 
         # Center the window
@@ -80,10 +80,10 @@ class BridgeApp:
         self.board_manager_running = False
 
         # Buttons
-        self.ben_server_button = tk.Button(root, text="Start BEN Server and board manager", bg="green", command=self.toggle_ben_server)
+        self.ben_server_button = tk.Button(root, text="Start BEN Server and board manager", bg="green", fg="white",command=self.toggle_ben_server)
         self.ben_server_button.pack(pady=5)
 
-        self.play_button = tk.Button(root, text="Play", bg="red", state="disabled", command=self.on_play)
+        self.play_button = tk.Button(root, text="Play", bg="red", fg="white", state="disabled", command=self.on_play)
         self.play_button.pack(pady=20)
 
         output_label = ttk.Label(root, text="Application Output:")
@@ -390,7 +390,7 @@ class BridgeApp:
             self.play_button.config(state="disabled", bg="red", fg="black")
 
     def on_about(self):
-        messagebox.showinfo("About", "Play with BEN. Version 0.8.7.0")
+        messagebox.showinfo("About", "Play with BEN. Version 0.8.7.1")
 
     def terminate(self, signum, frame):
         """

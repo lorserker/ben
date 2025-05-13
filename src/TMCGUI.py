@@ -73,7 +73,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("Table Manager Interface. v0.8.7.0")
+        self.title("Table Manager Interface. v0.8.7.1")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -282,7 +282,7 @@ class TableManagerApp(tk.Tk):
         ttk.Button(col_frames[5], text="Start TM Mediator", command=self.start_tmmediator_window, width=button_width).grid(row=8, column=0, padx=5, pady=5)
         ttk.Button(col_frames[5], text="Start GIB client", command=self.start_gib_window, width=button_width).grid(row=9, column=0, padx=5, pady=5)
         ttk.Button(col_frames[5], text="Start Meadowlark client", command=self.start_meadowlark_window, width=button_width).grid(row=10, column=0, padx=5, pady=5)
-        ttk.Button(col_frames[5], text="Start BEN client", command=self.start_ben_window, width=button_width).grid(row=11, column=0, padx=5, pady=5)
+        ttk.Button(col_frames[5], text="Start BEN cmd file", command=self.start_ben_window, width=button_width).grid(row=11, column=0, padx=5, pady=5)
 
         # Add "Save Log" button
         self.save_log_button = ttk.Button(col_frames[3], text="Save Log", command=self.save_log)

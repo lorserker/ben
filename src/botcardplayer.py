@@ -742,7 +742,10 @@ class CardPlayer:
                 if insta_score < self.models.pimc_trust_NN:
                     continue
                 if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
-                    adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor,2)
+                    if self.models.matchpoint:
+                        adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor_MP,2)
+                    else:
+                        adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor_IMP,2)
             else:
                 # If we can take rest we don't adjust, then NN will decide if equal
                 # Another option could be to resample the hands without restrictions
@@ -877,7 +880,10 @@ class CardPlayer:
             if insta_score < self.models.pimc_trust_NN:
                 continue
             if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
-                adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor,2)
+                if self.models.matchpoint:
+                    adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor_MP,2)
+                else:
+                    adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor_IMP,2)
             # If we can take rest we don't adjust, then NN will decide if equal
             # Another option could be to resample the hands without restrictions
             if e_tricks == 13 - trick_i:

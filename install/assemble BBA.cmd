@@ -25,13 +25,13 @@ robocopy ..\src\config "BBA\config" BEN-21GF.conf
 robocopy ..\src\config "BBA\config" BEN-Sayc.conf
 robocopy ..\src\config "BBA\config" GIB-BBO.conf
 
-robocopy ..\src\config "BBA\config\Robots" BlueChip-Sayc.conf
-robocopy ..\src\config "BBA\config\Robots" GIB-21GF.conf
-robocopy ..\src\config "BBA\config\Robots" Lia-21GF.conf
-robocopy ..\src\config "BBA\config\Robots" QPlus-21GF.conf
-robocopy ..\src\config "BBA\config\Robots" Robo-Sayc.conf
-robocopy ..\src\config "BBA\config\Robots" Shark-Sayc.conf
-robocopy ..\src\config "BBA\config\Robots" WBridge5-Sayc.conf
+robocopy ..\src\config\Robots "BBA\config" BlueChip-Sayc.conf
+robocopy ..\src\config\Robots "BBA\config" GIB-21GF.conf
+robocopy ..\src\config\Robots "BBA\config" Lia-21GF.conf
+robocopy ..\src\config\Robots "BBA\config" QPlus-21GF.conf
+robocopy ..\src\config\Robots "BBA\config" Robo-Sayc.conf
+robocopy ..\src\config\Robots "BBA\config" Shark-Sayc.conf
+robocopy ..\src\config\Robots "BBA\config" WBridge5-Sayc.conf
 
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E righty*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E lefty*

@@ -10,7 +10,6 @@ from typing import NamedTuple, List
 from binary import get_cards_from_binary_hand, get_binary_hand_from_cards32, get_binary_hand_from_cards
 
 symbols = 'AKQJT98765432'
-symbols_list = list(symbols)  # Convert the string to a list of characters
 
 def save_for_training(deal, auction):
     with open("training.ben", "a") as file:
@@ -37,21 +36,22 @@ def find_vuln_text(boolean_array):
             return text
     return None  # If no match is found
 
+symbols = 'AKQJT98765432'
+
 def hand_to_str(hand, n_cards=32):
-    x = hand.reshape((4, n_cards // 4))
-    if n_cards < 52:
-        for i in range(13):
-            if i >= (n_cards // 4) - 1:
-                symbols_list[i] = 'x'  # Modify the character
+    base_symbols = 'AKQJT98765432'
+    cards_in_suit = n_cards // 4
 
-    symbols = ''.join(symbols_list)
+    # Pad with 'x' if fewer cards are used
+    symbols = base_symbols[:cards_in_suit - 1] + 'x' * (13 - (cards_in_suit - 1))
 
+    x = hand.reshape((4, cards_in_suit))
     suits = []
     for i in range(4):
         s = ''
-        for j in range(n_cards // 4):
-            if x[i,j] > 0:
-                s += symbols[j] * int(x[i,j])
+        for j in range(cards_in_suit):
+            if x[i, j] > 0:
+                s += symbols[j] * int(x[i, j])
         suits.append(s)
     return '.'.join(suits)
 

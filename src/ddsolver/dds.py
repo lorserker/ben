@@ -27,12 +27,25 @@ mac m1/m2/m3  : darwin / arm
 mac container : linux  / aarch64 (not ok yet)
 linux x8      : linux  / x86_64
 """
+
+# Get the directory of the current script
+script_dir = os.path.dirname(os.path.abspath(__file__))
+# Calculate the parent directory
+parent_dir = os.path.join(script_dir, "../..")
+# Add the parent directory to sys.path
+sys.path.append(parent_dir)
+
 # If running some of the analysis you have to set BEN_HOMe to the src directory, or use '../../..'
-BEN_HOME = os.getenv('BEN_HOME') or '..'
-if BEN_HOME == '.':
-    BIN_FOLDER = os.getcwd().replace(os.path.sep + "src","")+ os.path.sep + 'bin'
+if "src" in script_dir and "dds" in script_dir: 
+    # We are running inside the src/dds directory
+    BIN_FOLDER = parent_dir + os.path.sep + 'bin'
 else:
-    BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+    BEN_HOME = os.getenv('BEN_HOME') or '.'
+    if BEN_HOME == '.':
+        BIN_FOLDER = 'bin'
+    else:
+        BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+
 if sys.platform == 'win32':
     DDS_LIB = 'dds.dll'
 elif sys.platform == 'darwin':
@@ -48,6 +61,9 @@ except:  # could be mac/linux on aarch64
     if not sys.platform == 'win32':
         DDS_PATH = 'libdds.so' # use system lib from libdds-dev
         dds = cdll.LoadLibrary(DDS_PATH)
+    else:
+        print("Tried loading DDS:",DDS_PATH)
+        raise Exception("Could not load DDS library")
 
 #sys.stderr.write(f"Loaded lib { os.path.basename(DDS_PATH)}\n")
 

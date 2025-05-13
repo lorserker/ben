@@ -24,7 +24,7 @@ if "src" in script_dir and "pimc" in script_dir:
     BIN_FOLDER = parent_dir + os.path.sep + 'bin'
 else:
 
-    BEN_HOME = os.getenv('BEN_HOME')
+    BEN_HOME = os.getenv('BEN_HOME') or '.'
     if BEN_HOME == '.':
         BIN_FOLDER = 'bin'
     else:

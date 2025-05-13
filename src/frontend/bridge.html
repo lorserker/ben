@@ -29,7 +29,7 @@
 
 <body>
     <div class="center">
-        <h1>Play with BEN. Version 0.8.7.0</h1>
+        <h1>Play with BEN. Version 0.8.7.1</h1>
     </div>    
 <div id="loader"></div> 
 <!-- HTML for the dialog -->
@@ -92,6 +92,7 @@
         <div id="bidding" class="grid-item"></div>
     </div>
 
+    <div id="explain" class="explain"></div>        
     <div><a id="homeLink" href="/home">Home</a></div>
 
     <div id="auctionstr"></div>
@@ -371,11 +372,12 @@
             console.log(event.data)
             document.querySelector("#loader").style.visibility = "hidden";
             let data = JSON.parse(event.data)
-
+            explain = document.querySelector('#explain')
             if (data.message == "deal_start") {
 
                 deal = new Deal(data.dealer, data.vuln, data.hand, data.board_no)
                 deal.renderNumber(document.querySelector('.label-number'))
+                explain.innerHTML = ""
                 if (north) deal.hands[0].isPublic = true
                 if (east) deal.hands[1].isPublic = true
                 if (south) deal.hands[2].isPublic = true
@@ -407,6 +409,8 @@
             } else if (data.message == "bid_made") {
                 deal.auction = data.auction
                 deal.renderAuction(document.querySelector('#auction-container'))
+                explain.innerHTML += data.auction[data.auction.length - 1] +"=" + data.explanation + "<br>"
+
                 deal.turn = (deal.turn + 1) % 4
                 setTurn(deal.turn)
                 updateTable(deal)
@@ -427,6 +431,7 @@
                 } else if (data.message == "hint") {
                 console.log(data)
                 let msg = "BEN suggest: " + data.bids.bid + "\n"
+                msg += data.bids.explanation + "\n"
                 msg += "BEN considered: \n"
                 for (const element of data.bids.candidates) {
                     msg += " " + element.call + " Score: "

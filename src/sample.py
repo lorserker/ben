@@ -15,7 +15,7 @@ from util import hand_to_str
 from collections import defaultdict
 from colorama import Fore, Back, Style, init
 from objects import Card
-from openinglead import validate_lead
+from openinglead.openinglead import validate_lead
 import itertools
 import re
 
@@ -793,6 +793,7 @@ class Sample:
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         if self.verbose:    
             print(f"{Fore.YELLOW}Called shuffle_cards_bidding_info {n_samples} - {rng.bit_generator.state['state']['state']}{Fore.RESET}")
+            print(f"hand_str: {hand_str}, hand: {hand}, Auction: {auction}, use bidding_info: {self.use_biddinginfo} hidden: {hidden_cards}")
 
         # This is a constant and should probably be define globally
         card_hcp = [4, 3, 2, 1, 0, 0, 0, 0] * 4
@@ -973,34 +974,33 @@ class Sample:
         #print(f"{Fore.YELLOW} h1_h2 completed - {rng.bit_generator.state['state']['state']}{Fore.RESET}")
         assert np.sum(h1_h2) == n_samples * np.sum(n_cards_to_receive)
 
-        #arr_bytes = h1_h2.tobytes()  # Convert the array to bytes
-        #print(f"{Fore.YELLOW}Hash of h1_h2 after small: {hashlib.sha256(arr_bytes).hexdigest()} {Fore.RESET}")  # Compute a SHA-256 hashhashlib.sha256(arr_bytes).hexdigest() 
+        #print("h1_h2", h1_h2[0])
         return h1_h2, use_bidding_info_stats
 
 
     # This only focus on the card from the actual suit
-    def get_opening_lead_scores(self, auction, vuln, models, handsamples, opening_lead_card, partner):
+    def get_opening_lead_scores(self, auction, vuln, models, handsamples, opening_lead52, partner):
         if self.verbose:
-            print(f"get_opening_lead_scores. {models.lead_convention}") 
+            print(f"get_opening_lead_scores. {models.lead_convention} {opening_lead52} partner {partner}") 
         assert(handsamples.shape[1] == models.n_cards_play)
         opening_lead_scores = np.ones(handsamples.shape[0], dtype=np.float32)
         if models.lead_convention:
             contract = bidding.get_contract(auction)
             strain = bidding.get_strain_i(contract)
             cards_in_suit = models.n_cards_play // 4
-            opening_lead = "AKQJT98x"[ opening_lead_card % cards_in_suit]
+            opening_lead = "AKQJT98765432"[ opening_lead52 % 13]
             lead_type = "NT" if strain == 0 else "Suit"
             explanations = set()
             # We should probably ignore the lead if we know how the suit is divided
             for ix, hand in enumerate(handsamples):
-                suit = opening_lead_card // cards_in_suit
+                suit = opening_lead52 // 13
                 hand_str = deck52.suit32to52str(hand[suit * cards_in_suit: (suit + 1) * cards_in_suit])
                 valid, explanation = validate_lead(hand_str, opening_lead, lead_type, self.verbose)
+                #print(hand_str, opening_lead, lead_type, valid, explanation)
 
                 if self.verbose and not valid:
                     explanations.update(explanation)
                     
-
                 if not valid:
                     if partner:
                         opening_lead_scores[ix] = 0.1
@@ -1146,14 +1146,14 @@ class Sample:
         return min(math.ceil(X * (math.log(X) + H_X + ln_term)), max_samples)
 
 
-    def init_rollout_states(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
+    def init_rollout_states(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, opening_lead52, auction, hand_str, public_hand_str,vuln, models, rng):
         if self.verbose:
             print(f"Called init_rollout_states {self.sample_hands_play} - Contract {bidding.get_contract(auction)} - Player {player_i}")
-        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.init_rollout_states_iterative(trick_i, player_i, card_players, played_cards,player_cards_played, shown_out_suits, discards, aceking, current_trick, auction, hand_str, public_hand_str,vuln, models, rng)
+        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.init_rollout_states_iterative(trick_i, player_i, card_players, played_cards,player_cards_played, shown_out_suits, discards, aceking, current_trick, opening_lead52, auction, hand_str, public_hand_str,vuln, models, rng)
 
         return rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds
     
-    def init_rollout_states_iterative(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, auction, hand_str, public_hand_str,vuln, models, rng):
+    def init_rollout_states_iterative(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, opening_lead52, auction, hand_str, public_hand_str,vuln, models, rng):
         hand_bidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_samples = self.sample_hands_play
         contract = bidding.get_contract(auction)
@@ -1303,7 +1303,6 @@ class Sample:
                     tuple(states[2][i, 0, :32].astype(int)),
                     tuple(states[3][i, 0, :32].astype(int))                
                 )
-
                 if sample in samples:
                     unique_indices[i] = False
                 else:
@@ -1381,16 +1380,14 @@ class Sample:
         # reject samples inconsistent with the opening lead
         # We will only check opening lead if we have a lot of samples, as we can't trust other will follow the same lead rules
         if self.lead_accept_threshold > 0:
-            bidding_states_ol, sorted_min_bid_scores_ol, lead_scores_ol, lead_scores = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, bidding_states, sorted_min_bid_scores)
+            bidding_states_ol, sorted_min_bid_scores_ol, lead_scores_ol, lead_scores = self.validate_opening_lead_for_sample(trick_i, hidden_1_i, hidden_2_i, opening_lead52, models, auction, vuln, bidding_states, sorted_min_bid_scores)
             # Count how many samples we found matching the bidding
             valid_bidding_samples = np.sum(sorted_min_bid_scores_ol > self.bid_extend_play_threshold)
             if self.verbose:
                 print(f"Samples {bidding_states_ol[0].shape[0]} after checking lead. {valid_bidding_samples} possible samples. After validation: {bidding_states_ol[0].shape[0]}")
             # We trust bidding more than opening lead
-            if valid_bidding_samples > self.sample_hands_play / 2:
-                bidding_states, sorted_min_bid_scores, lead_scores = bidding_states_ol, sorted_min_bid_scores_ol, lead_scores_ol
-            #else:  
-            #    lead_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
+            #if valid_bidding_samples > self.sample_hands_play / 5:
+            bidding_states, sorted_min_bid_scores, lead_scores = bidding_states_ol, sorted_min_bid_scores_ol, lead_scores_ol
         else:  
             lead_scores = -np.ones(bidding_states[0].shape[0], dtype=np.float32)
 
@@ -1637,7 +1634,7 @@ class Sample:
 
         return accept, c_hcp, c_shp.flatten()
 
-    def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, current_trick, player_cards_played, models, auction, vuln, states, bid_scores):
+    def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, opening_lead52, models, auction, vuln, states, bid_scores):
         if self.verbose:
             print("validate_opening_lead_for_sample:", "lead_accept_threshold:", self.lead_accept_threshold, 
                   "lead_accept_threshold_partner_trust:", self.lead_accept_threshold_partner_trust,
@@ -1660,9 +1657,9 @@ class Sample:
                 # How much trust that opponents would have lead the actual card from the hand sampled
                 lead_accept_threshold = self.lead_accept_threshold
 
-            opening_lead = current_trick[0] if trick_i == 0 else player_cards_played[0][0]
-            lead_scores_nat = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead, hidden_2_i == 3 )
+            lead_scores_nat = self.get_opening_lead_scores(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead52, hidden_2_i == 3 )
             
+            opening_lead = deck52.card52to32(opening_lead52)
             lead_scores_unfiltered_nn = self.get_opening_lead_scores_nn(auction, vuln, models, states[0][:, 0, :models.n_cards_play], opening_lead)
 
             lead_scores_unfiltered = lead_scores_nat * lead_scores_unfiltered_nn
@@ -1713,19 +1710,26 @@ class Sample:
 
         # We should probably look at the positon the card is played in.
         # as it is often more significant which card to follow, than wich card to play
+        if player_i == 3:
+            play_accept_threshold = self.play_accept_threshold_opponents
+        # Implementation need to be changed to have different trust for partner and declarer
+        if player_i % 2 == 0:
+            play_accept_threshold = self.play_accept_threshold_declarer
+        else:
+            play_accept_threshold = self.play_accept_threshold_partner
 
         for p_i in [hidden_1_i, hidden_2_i]:
             # Opening lead is allready checked
             if trick_i == 0 and p_i == 0:
                 continue
-            if player_i == 3:
-                play_accept_threshold = self.play_accept_threshold_opponents
+            # Declarer haven't played any card
+            if trick_i == 0 and p_i == 3:
+                continue
+            if p_i == 3:
+                play_accept_threshold = self.play_accept_threshold_declarer
             else:
-                if p_i == 3:
-                    play_accept_threshold = self.play_accept_threshold_declarer
-                else:
-                    # We are defending, so we trust our partner
-                    play_accept_threshold = self.play_accept_threshold_partner 
+                # We are defending, so we trust our partner
+                play_accept_threshold = self.play_accept_threshold_partner 
             if self.verbose:
                 print(f"Validating play for player {player_i} against player {p_i}. Threshold: {play_accept_threshold}" )
 

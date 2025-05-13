@@ -26,7 +26,7 @@ class TableManagerApp(tk.Tk):
 
         # Window configuration
         self.iconbitmap("ben.ico")
-        self.title("BEN server Interface. v0.8.7.0")
+        self.title("BEN server Interface. v0.8.7.1")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
@@ -76,7 +76,7 @@ class TableManagerApp(tk.Tk):
 
         # Create borders around each column for better visibility
         col_frames = []
-        for i in range(6):
+        for i in range(5):
             col_frame = ttk.Frame(input_frame, relief="solid", borderwidth=1)
             col_frame.grid(row=0, column=i, rowspan=5, padx=2, pady=5, sticky="nswe")
             col_frames.append(col_frame)
@@ -126,16 +126,28 @@ class TableManagerApp(tk.Tk):
         browse_button.grid(row=2, column=0, padx=5, pady=5)
 
         # Config field (Label and Entry in column 3)
-        config_label = ttk.Label(col_frames[3], text="Boards:")
+        config_label = ttk.Label(col_frames[3], text="Opponent:")
         config_label.grid(row=3, column=0, padx=5, pady=5, sticky="w")
+        opponent_file = "" # self.settings.get("opponent", "")
+        self.opponent_entry = ttk.Entry(col_frames[3], width=25)
+        self.opponent_entry.insert(0, opponent_file)
+        self.opponent_entry.grid(row=4, column=0, padx=5, pady=5)
+
+        # Browse button for Config in column 3
+        browse_button = ttk.Button(col_frames[3], text="Browse", command=self.browse_opponent)
+        browse_button.grid(row=5, column=0, padx=5, pady=5)
+
+        # Config field (Label and Entry in column 3)
+        config_label = ttk.Label(col_frames[3], text="Boards:")
+        config_label.grid(row=7, column=0, padx=5, pady=5, sticky="w")
 
         self.boards_entry = ttk.Entry(col_frames[3], width=25)
         self.boards_entry.insert(0, "")
-        self.boards_entry.grid(row=4, column=0, padx=5, pady=5)
+        self.boards_entry.grid(row=8, column=0, padx=5, pady=5)
 
         # Browse button for Config in column 3
         browse_button = ttk.Button(col_frames[3], text="Browse", command=self.browse_boards)
-        browse_button.grid(row=5, column=0, padx=5, pady=5)
+        browse_button.grid(row=9, column=0, padx=5, pady=5)
 
         # Verbose checkbox and buttons (Start/Stop) in column 4
         self.verbose = tk.BooleanVar(value=False)
@@ -169,8 +181,8 @@ class TableManagerApp(tk.Tk):
         self.stop_button = ttk.Button(col_frames[4], text="Stop Application", command=self.stop_application, state="disabled")
         self.stop_button.grid(row=5, column=0, padx=5, pady=5)
 
-        self.next_button = ttk.Button(col_frames[5], text="Next", command=self.send_input, state="disabled")
-        self.next_button.grid(row=1, column=0, padx=5, pady=5)
+        #self.next_button = ttk.Button(col_frames[5], text="Next", command=self.send_input, state="disabled")
+        #self.next_button.grid(row=1, column=0, padx=5, pady=5)
 
         # Output frame
         output_frame = ttk.Frame(self)
@@ -240,6 +252,28 @@ class TableManagerApp(tk.Tk):
             self.config_entry.delete(0, tk.END)
             self.config_entry.insert(0, rel_path)
 
+    def browse_opponent(self):
+
+        # Get the current path from the Config entry field
+        current_path = self.opponent_entry.get()
+        # Extract the directory
+        initial_dir = os.path.dirname(current_path) if os.path.isdir(os.path.dirname(current_path)) else "config/opponent"
+
+        # Open file dialog with the initial directory
+        file_path = filedialog.askopenfilename(
+            initialdir=initial_dir, 
+            title="Select opponent File", 
+            filetypes=(("Opponent Files", "*.conf"), ("All Files", "*.*"))
+        )
+        if file_path:
+            # Save relative path if possible
+            rel_path = os.path.relpath(file_path, os.getcwd())
+            self.opponent_entry.delete(0, tk.END)
+            self.opponent_entry.insert(0, rel_path)
+            #self.settings["opponent"] = rel_path
+            #self.save_settings()
+
+
     def browse_boards(self):
         import os
         from tkinter import filedialog
@@ -265,7 +299,7 @@ class TableManagerApp(tk.Tk):
         # Disable start button, enable stop button
         self.start_button.config(state="disabled")
         self.stop_button.config(state="normal")
-        self.next_button.config(state="normal")
+        #self.next_button.config(state="normal")
 
         boardno = self.inputs["BoardNo:"].get()
         seed = self.inputs["Seed:"].get()
@@ -393,7 +427,7 @@ class TableManagerApp(tk.Tk):
                 # Toggle buttons back after termination
                 self.start_button.config(state="normal")
                 self.stop_button.config(state="disabled")
-                self.next_button.config(state="disabled")
+                #self.next_button.config(state="disabled")
 
         threading.Thread(target=run_process, daemon=True).start()
 

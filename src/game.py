@@ -63,7 +63,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.7.0'
+version = '0.8.7.1'
 
 init()
 
@@ -655,7 +655,7 @@ class Driver:
                 if card_resp == None:    
                     if isinstance(card_players[player_i], botcardplayer.CardPlayer):
                         played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, features["aceking"], current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, features["aceking"], current_trick, opening_lead52, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [self.vuln_ns, self.vuln_ew], self.models, card_players[player_i].get_random_generator())
                         assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
                     else: 
@@ -952,8 +952,8 @@ class Driver:
 
         for i, level in enumerate(self.human):
             if level == 1:
-                players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name))
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, False, self.verbose)
+                players.append(self.factory.create_human_bidder(vuln, hands_str[i], self.name, hint_bots[i]))
                 self.bot = None
             else:
                 self.bot = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, False, self.verbose)
@@ -1008,7 +1008,8 @@ class Driver:
                         await self.channel.send(json.dumps({
                             'message': 'bid_made',
                             'auction': auction,
-                            'alert': str(alert or bid_resp.alert)
+                            'alert': str(alert or bid_resp.alert),
+                            'explanation': bid_resp.explanation
                         }))
 
                     player_i = (player_i + 1) % 4
@@ -1139,7 +1140,7 @@ async def main():
         models.consult_bba = False
         models.use_bba_rollout = False
         models.use_bba_to_count_aces = False
-        models.use_suitc = False
+        #models.use_suitc = False
 
     if models.use_bba:
         print("Using BBA for bidding")

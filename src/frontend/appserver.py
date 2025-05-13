@@ -326,10 +326,11 @@ def index():
     if rotate: player += "&R=x"
     if visible: player += "&V=x"
     if matchpoint: player += "&M=x"
+    board_no = request.forms.get('board')
+    
     dealtext = request.forms.get('dealtext')
     if dealtext:
         dealer = request.forms.get('dealer')
-        board_no = request.forms.get('board')
         vulnerable = request.forms.get('vulnerable')
         direction = "N"
         dealtext = dealtext.upper().split(":")

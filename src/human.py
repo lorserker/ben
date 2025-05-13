@@ -7,6 +7,7 @@ from binary import *
 from bidding.binary import parse_hand_f
 from bidding.bidding import can_double, can_redouble
 from objects import Card, CardResp, BidResp
+from botbidder import BotBid
 
 
 def is_numeric(value):
@@ -82,16 +83,17 @@ class ChannelSocket:
 
 class HumanBid:
 
-    def __init__(self, vuln, hands_str, name):
+    def __init__(self, vuln, hands_str, name, botbidder):
         self.hands_str = hands_str
         self.vuln = vuln
         self.name = name
+        self.botbidder = botbidder
 
     async def async_bid(self, auction, alert=None):
         self.render_auction_hand(auction)
         print('\n')
         bid = input('enter bid: ').strip().upper()
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="Human", quality=None, alert=alert, explanation=None)
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="Human", quality=None, alert=alert, explanation="XXXX")
 
     def render_auction_hand(self, auction):
         clear_screen()
@@ -118,9 +120,10 @@ class HumanBid:
 
 class HumanBidSocket:
 
-    def __init__(self, socket, vuln, hands_str, name):
+    def __init__(self, socket, vuln, hands_str, name, botbidder):
         self.socket = socket
         self.name = name
+        self.botbidder = botbidder
 
     async def async_bid(self, auction, alert=None):
         await self.socket.send(json.dumps({
@@ -132,7 +135,12 @@ class HumanBidSocket:
 
         bid = await self.socket.recv()
 
-        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = "Human", quality=None, alert=alert, explanation=None)
+        print(f"Human bid: {bid}")
+        print("auction: ", auction)
+        new_auction = auction + [bid] 
+        explanation, alert = self.botbidder.explain(new_auction)
+
+        return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = "Human", quality=None, alert=alert, explanation=explanation)
     
 
 class HumanLead:
@@ -266,8 +274,8 @@ class HumanCardPlayerSocket(HumanCardPlayer):
 
 class ConsoleFactory:
 
-    def create_human_bidder(self, vuln, hands_str, name):
-        return HumanBid(vuln, hands_str, name)
+    def create_human_bidder(self, vuln, hands_str, name, botbidder):
+        return HumanBid(vuln, hands_str, name, botbidder)
 
     def create_human_leader(self):
         return HumanLead()
@@ -288,8 +296,8 @@ class WebsocketFactory:
         self.socket = socket
         self.verbose = verbose
 
-    def create_human_bidder(self, vuln, hands_str, name):
-        return HumanBidSocket(self.socket, vuln, hands_str, name)
+    def create_human_bidder(self, vuln, hands_str, name, botbidder):
+        return HumanBidSocket(self.socket, vuln, hands_str, name, botbidder)
 
     def create_human_leader(self):
         return HumanLeadSocket(self.socket)

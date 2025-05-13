@@ -555,3 +555,10 @@ span.bba {
     padding-right: 10px;
 }
 
+.explain {
+    background-color: white;
+    border: 1px solid black;
+    margin: 50px;
+    text-align: left;
+    font-size: 12px;
+}

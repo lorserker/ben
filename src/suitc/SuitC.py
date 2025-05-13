@@ -9,21 +9,28 @@ parent_dir = os.path.join(script_dir, "../..")
 sys.path.append(parent_dir)
 from colorama import Fore, Back, Style, init
 
-BEN_HOME = os.getenv('BEN_HOME') or '..'
-if BEN_HOME == '.':
-    BIN_FOLDER = os.getcwd().replace(os.path.sep + "src","")+ os.path.sep + 'bin'
+if "src" in script_dir and "suitc" in script_dir: 
+    # We are running inside the src/pimc directory
+    BIN_FOLDER = parent_dir + os.path.sep + 'bin'
 else:
-    BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
+
+    BEN_HOME = os.getenv('BEN_HOME') or '.'
+    if BEN_HOME == '.':
+        BIN_FOLDER = 'bin'
+    else:
+        BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 
 if sys.platform == 'win32':
-    SuitCLib = 'SuitCLib.dll'
+    suitclib = 'SuitCLib.dll'
 elif sys.platform == 'darwin':
-    SuitCLib_LIB = 'N/A'
+    suitclib = 'libsuitc.so'
 else:
-    SuitCLib_LIB = 'N/A'
+    suitclib = 'libsuitc.so'
 
-SuitCLib_PATH = os.path.join(BIN_FOLDER, SuitCLib)
+print(f"SuitCLib: {suitclib}")
+print(sys.platform)
 
+SuitCLib_PATH = os.path.join(BIN_FOLDER, suitclib)
 
 import ctypes
 from ctypes import c_wchar_p, c_int, POINTER, create_unicode_buffer, byref, cast, addressof
@@ -31,7 +38,7 @@ from ctypes import c_wchar_p, c_int, POINTER, create_unicode_buffer, byref, cast
 class SuitCLib:
     def __init__(self, verbose):
         if SuitCLib == 'N/A':
-            raise RuntimeError("SuitCLib.dll is not available on this platform.")
+            raise RuntimeError("suitclib is not available on this platform.")
         try:
             if verbose:
                 print(f"loading {SuitCLib_PATH}")
@@ -46,9 +53,9 @@ class SuitCLib:
             # Provide a message to the user if the assembly is not found
             print(f"{Fore.RED}Error:", ex)
             print("*****************************************************************************")
-            print("Error: Unable to load SuitCLib.dll. Make sure the DLL is in the ./bin directory")
-            print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
-            print("Make sure the dll is not write protected")
+            print(f"Error: Unable to load {SuitCLib_PATH}. Make sure the file is in the ./bin directory")
+            print("Make sure the file is not blocked by OS (Select properties and click unblock)")
+            print("Make sure the filw is not write protected")
             print(f"*****************************************************************************{Fore.RESET}")
             sys.exit(1)
         self.verbose = verbose
@@ -158,35 +165,58 @@ class SuitCLib:
         if self.verbose:
             print("SuitC Input: " + input_str)
         
-        # Convert input string to a wide char buffer
-        input_buffer = create_unicode_buffer(input_str + '\0')  # Ensure null termination
+        # --- Input Buffer (wchar_t** ppcharInput) ---
+        # C side will do (*ppcharInput)[i]
+        # So Python needs to create a wchar_t* and pass a pointer to it.
+        # Method 1: ctypes.c_wchar_p implicitly handles string literal
+        c_input_str_ptr = ctypes.c_wchar_p(input_str) # This is a wchar_t*
+        # To pass wchar_t**, we pass a pointer to this wchar_t*
+        pp_input_str = ctypes.byref(c_input_str_ptr)
 
-        # Create a pointer to the buffer
-        input_buffer_ptr = ctypes.pointer(c_wchar_p(input_buffer.value))
-        
-        # Create an output buffer
-        output_length = 8 * 32768
-        output_buffer = create_unicode_buffer(output_length)
+        # --- Output Buffer (wchar_t** ppcharOutput) ---
+        # C side will do (*ppcharOutput)[i] = ... to fill Python's buffer
+        # Python needs to create a buffer, get a wchar_t* to it, and pass a pointer to that wchar_t*
+        output_buffer_capacity = 8 * 32768  # Number of wchar_t characters
+        # This is the actual memory for the output string
+        actual_output_buffer = ctypes.create_unicode_buffer(output_buffer_capacity) 
+        # This is a wchar_t* pointing to the start of actual_output_buffer
+        c_output_buffer_ptr = ctypes.c_wchar_p(ctypes.addressof(actual_output_buffer)) 
+        # To pass wchar_t**, we pass a pointer to this c_output_buffer_ptr
+        pp_output_buffer = ctypes.byref(c_output_buffer_ptr)
+        output_size = ctypes.c_int() # For int* pCharOutputSize
 
-        # Create a variable to hold the output buffer size
-        output_size = ctypes.c_int()
+        # --- Details Buffer (wchar_t** ppcharOptimumDetails) ---
+        details_buffer_capacity = 8 * 32768
+        actual_details_buffer = ctypes.create_unicode_buffer(details_buffer_capacity)
+        c_details_buffer_ptr = ctypes.c_wchar_p(ctypes.addressof(actual_details_buffer))
+        pp_details_buffer = ctypes.byref(c_details_buffer_ptr)
+        details_size = ctypes.c_int() # For int* pcharOptimumDetailsSize
 
-        # Create details buffer
-        details_length = 8 * 32768
-        details_buffer = create_unicode_buffer(details_length)
-        # Create a variable to hold the output buffer size
-        details_size = ctypes.c_int()
+        result = self.suitc.call_suitc(
+            pp_input_str,
+            input_length,
+            pp_output_buffer,
+            ctypes.byref(output_size),
+            pp_details_buffer,
+            ctypes.byref(details_size)
+        )
 
-        # Pointers to the output and details buffers
-        # Create pointers to the output and details buffers
-        output_buffer_ptr = c_wchar_p(ctypes.addressof(output_buffer))
-        details_buffer_ptr = c_wchar_p(ctypes.addressof(details_buffer))
+        if self.verbose:
+            print(f"call_suitc returned: {result}")
+            print(f"Output size from C: {output_size.value}")
+            print(f"Details size from C: {details_size.value}")
 
-        result = self.suitc.call_suitc(input_buffer_ptr, input_length, output_buffer_ptr,  byref(output_size), details_buffer_ptr,  byref(details_size))
         if result != 0:
             print("Error: " + result)
             sys.exit(1)
+        # To get the string values from the buffers:
+        # The C code wrote into actual_output_buffer and actual_details_buffer
+        # via the pointers.
+        returned_output = actual_output_buffer.value[:output_size.value] # Slice to actual length
+        returned_details = actual_details_buffer.value[:details_size.value]
+
         if self.verbose:
-            print(output_buffer.value)
-            print(details_buffer.value)
-        return output_buffer.value,details_buffer.value
+            print(f"Returned output: '{returned_output}'")
+            print(f"Returned details: '{returned_details}'")
+
+        return returned_output, returned_details

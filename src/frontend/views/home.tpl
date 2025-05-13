@@ -40,13 +40,13 @@
 	</head> 
 <body> 
 <div class="center">
-    <h1>Play with BEN. Version 0.8.7.0</h1>
+    <h1>Play with BEN. Version 0.8.7.1</h1>
 </div>
 
 <div class="container {{ 'hidden' if play else '' }}">
     <h2>Use this server: </h2>
     <div class="content">
-        <label for="board">Server:</label>
+        <label for="server">Server:</label>
         <select id="server" name="server">
             <option value="0">BEN 2/1</option>
             <option value="1">BEN SAYC</option>
@@ -64,7 +64,7 @@
     <div class="border">
     <form id="form1">
         <label for="board">Board:</label>
-        <input type="text" name="board"><br>
+        <input type="text" id="board" name="board"><br>
         <label for="dealer">Dealer:</label>
         <select id="dealer" name="dealer">
             <option value="N">North</option>
@@ -121,7 +121,7 @@
     <div class="border">
     <form id="form5">
         <label for="board">Board:</label>
-        <input type="text" name="board"><br>
+        <input type="text" id="board"><br>
         <button type="submit" class="submit-button" data-form="form5">Play random</button>    
     </form>
     </div>
@@ -130,9 +130,9 @@
 
 <div class="container {{ 'hidden' if not play else '' }}">
     <form id="form5">
-        <label for="board">Board:</label>
-        <input type="text" name="board"><br>
-        <button type="submit" class="submit-button" data-form="form5">Play</button>    
+        <label for="board-play">Board:</label>
+        <input type="text" id="board-play" data-default=""><br>
+        <button type="submit" class="submit-button" data-form="form5">Play board</button>    
     </form>
 </div>
 
@@ -264,10 +264,15 @@
 
     // Retrieve the dropdown element
     const serverdropdown = document.getElementById('server');
+    const play = {{ 'true' if play else 'false' }};
 
-    // Check if there's a value in localStorage, if so, set the dropdown value to that
-    if (localStorage.getItem('serverValue')) {
-      serverdropdown.value = localStorage.getItem('serverValue');
+    if (play) {
+      serverdropdown.value = 3  
+    } else {
+        // Check if there's a value in localStorage, if so, set the dropdown value to that
+        if (localStorage.getItem('serverValue')) {
+        serverdropdown.value = localStorage.getItem('serverValue');
+        }
     }
 
     // Add an event listener to store the selected value in localStorage when the dropdown changes
@@ -341,13 +346,17 @@ function includeCheckboxValues(event) {
         });
 
         // Append input field value
-        const inputField = document.getElementById('name');
-        formData.append('name', inputField.value);
+        const nameField = document.getElementById('name');
+        formData.append('name', nameField.value);
 
         const play = {{ 'true' if play else 'false' }};
         if (play === true) {
+            // Append input field value
+            const boardField = document.getElementById('board-play');
+            formData.append('board', boardField.value);
             formData.append('play', 'True');
         }        
+
         // Append dropdown selected value
         const dropdown = document.getElementById('T');
         formData.append('T', dropdown.value);
@@ -371,8 +380,8 @@ function includeCheckboxValues(event) {
         })
         .catch(error => {
             // Handle error
+            alert(error)
         });
-        console.log('Form Data:', formData); // For demonstration purposes
         formerror = false
     };
 }

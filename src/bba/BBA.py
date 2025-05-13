@@ -20,11 +20,11 @@ from colorama import Fore, Back, Style, init
 init()
 
 if "src" in script_dir and "bba" in script_dir: 
-    # We are running inside the src/pimc directory
+    # We are running inside the src/bba directory
     BIN_FOLDER = parent_dir + os.path.sep + 'bin'
 else:
 
-    BEN_HOME = os.getenv('BEN_HOME')
+    BEN_HOME = os.getenv('BEN_HOME') or '.'
     if BEN_HOME == '.':
         BIN_FOLDER = 'bin'
     else:

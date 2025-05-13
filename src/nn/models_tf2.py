@@ -10,13 +10,13 @@ from nn.lead_singledummy_tf2 import LeadSingleDummy
 from nn.contract_tf2 import Contract
 from nn.bidder_tf2 import Bidder
 from nn.trick_tf2 import Trick
-from nn.model_path_provider import IsolatedModelPathProvider
+from nn.model_path_provider import IsolatedModelPathProvider, find_best_temp_drive
 
 class Models:
 
     def __init__(self, name, tf_version, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, trick_model,binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, 
                  no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count, min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
-                 lead_accept_nn, ns, ew, bba_our_cc, bba_their_cc, use_bba, consult_bba, bba_trust, use_bba_rollout, use_bba_to_count_aces, estimator, claim, play_reward_threshold_NN, play_reward_threshold_NN_factor, check_remaining_cards, check_discard, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
+                 lead_accept_nn, ns, ew, bba_our_cc, bba_their_cc, use_bba, consult_bba, bba_trust, use_bba_rollout, use_bba_to_count_aces, estimator, claim, play_reward_threshold_NN, play_reward_threshold_NN_factor_IMP, play_reward_threshold_NN_factor_MP, check_remaining_cards, check_discard, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
                  double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_use_discarding, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_stop_trick_declarer, pimc_stop_trick_defender, pimc_constraints, 
                  pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
                  pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples, pimc_bidding_quality, pimc_after_preempt, pimc_after_preempt_weight,
@@ -67,7 +67,8 @@ class Models:
         self.estimator = estimator
         self.claim = claim
         self.play_reward_threshold_NN = play_reward_threshold_NN
-        self.play_reward_threshold_NN_factor = play_reward_threshold_NN_factor
+        self.play_reward_threshold_NN_factor_IMP = play_reward_threshold_NN_factor_IMP
+        self.play_reward_threshold_NN_factor_MP = play_reward_threshold_NN_factor_MP
         self.check_remaining_cards = check_remaining_cards
         self.check_discard = check_discard
         self.double_dummy = double_dummy
@@ -202,7 +203,8 @@ class Models:
         double_dummy_calculator = conf.getboolean('eval', 'double_dummy_calculator', fallback=False)
         claim = conf.getboolean('cardplay', 'claim', fallback=True)
         play_reward_threshold_NN = conf.getfloat('cardplay', 'play_reward_threshold_NN', fallback=-1)
-        play_reward_threshold_NN_factor = conf.getfloat('cardplay', 'play_reward_threshold_NN_factor', fallback=0)
+        play_reward_threshold_NN_factor_IMP = conf.getfloat('cardplay', 'play_reward_threshold_NN_factor_IMP', fallback=0)
+        play_reward_threshold_NN_factor_MP = conf.getfloat('cardplay', 'play_reward_threshold_NN_factor_MP', fallback=0)
         check_remaining_cards = conf.getint('cardplay', 'check_remaining_cards', fallback=10)
         check_discard = conf.getboolean('cardplay', 'check_discard', fallback=False)
         pimc_verbose = conf.getboolean('pimc', 'pimc_verbose', fallback=True)
@@ -292,7 +294,15 @@ class Models:
         player_names = ['lefty_nt', 'dummy_nt', 'righty_nt', 'decl_nt', 'lefty_suit', 'dummy_suit', 'righty_suit', 'decl_suit']
         ns = int(conf['models']['ns'])
         ew = int(conf['models']['ew'])
-        path_provider = IsolatedModelPathProvider()
+
+        # Specify D then C as preference. Use "my_app_temp" as the subdir name.
+        # You can change "my_app_temp" to whatever you like.
+        auto_selected_path = find_best_temp_drive(
+            preferred_drives=['D', 'C'],
+            temp_subdir_name="my_model_temp_storage"
+        )
+
+        path_provider = IsolatedModelPathProvider(base_temp_storage_path=auto_selected_path)
         bidder_model = Bidder('bidder', path_provider.get_path(os.path.join(base_path, conf['bidding']['bidder'])), alert_supported=alert_supported)
         if conf.has_section('bidding') and conf.get('bidding', 'opponent', fallback=None) not in ('none', None):
             opponent_model = Bidder('opponent', path_provider.get_path(os.path.join(base_path, conf['bidding']['opponent'])),alert_supported=alert_supported)
@@ -362,7 +372,8 @@ class Models:
             estimator=estimator,
             claim=claim,
             play_reward_threshold_NN=play_reward_threshold_NN,
-            play_reward_threshold_NN_factor=play_reward_threshold_NN_factor,
+            play_reward_threshold_NN_factor_IMP=play_reward_threshold_NN_factor_IMP,
+            play_reward_threshold_NN_factor_MP=play_reward_threshold_NN_factor_MP,
             check_remaining_cards=check_remaining_cards,
             check_discard=check_discard,
             double_dummy=double_dummy,

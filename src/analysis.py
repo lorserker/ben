@@ -193,7 +193,7 @@ class CardByCard:
                     if card_resp == None:
                         played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
 
-                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, self.padded_auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, opening_lead52, self.padded_auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, self.vuln, self.models, card_players[player_i].get_random_generator())
 
                         card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
                         card_resp = card_players[player_i].play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores, features)

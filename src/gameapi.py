@@ -62,6 +62,9 @@ logging.getLogger().setLevel(logging.CRITICAL)
 import tensorflow as tf
 from nn.opponents import Opponents
 
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address # Default key function (limits by IP)
+
 import pprint
 import argparse
 import conf
@@ -73,7 +76,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.7.0'
+version = '0.8.7.1'
 init()
 
 def handle_exception(e):
@@ -252,7 +255,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                         return card_resp, player_i, play_status
                 played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
                 # No obvious play, so we roll out
-                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, features["aceking"], current_trick, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
+                rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = sampler.init_rollout_states(trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, features["aceking"], current_trick, opening_lead52, auction, card_players[player_i].hand_str, card_players[player_i].public_hand_str, [vuln_ns, vuln_ew], models, card_players[player_i].get_random_generator())
                 assert rollout_states[0].shape[0] > 0, "No samples for DDSolver"
                 
                 card_players[player_i].check_pimc_constraints(trick_i, rollout_states, quality)
@@ -461,9 +464,6 @@ except KeyError:
         from nn.models_tf2 import Models
 
 models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""), verbose)
-if verbose:
-    print("Loading sampler")
-sampler = Sample.from_conf(configuration, verbose)
     
 print("Config:", configfile)
 if opponentfile != "":
@@ -474,6 +474,9 @@ if opponentfile != "":
     sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
 models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+if verbose:
+    print("Loading sampler")
+sampler = Sample.from_conf(configuration, verbose)
 
 if sys.platform != 'win32':
     print("Disabling PIMC/BBA/SuitC as platform is not win32")
@@ -483,7 +486,7 @@ if sys.platform != 'win32':
     models.consult_bba = False
     models.use_bba_rollout = False
     models.use_bba_to_count_aces = False
-    models.use_suitc = False
+    #models.use_suitc = False
 
 if models.use_bba:
     print("Using BBA for bidding")
@@ -536,6 +539,15 @@ print(f'http://{host}:{port}/')
 app = Flask(__name__)
 CORS(app) 
 
+# --- Configure Flask-Limiter ---
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,  # Limits based on the remote IP address
+    default_limits=["200 per day", "50 per hour", "10 per minute"] # Example global default limits
+    # storage_uri="memory://" # Default, suitable for single-process test server.
+                               # For production with multiple workers, use Redis or Memcached:
+                               # "redis://localhost:6379"
+)
 # Initialize the lock
 model_lock_bid = Lock()
 model_lock_play = Lock()
@@ -605,6 +617,7 @@ log_handler.setFormatter(formatter)
 logger = logging.getLogger(__name__)
 logger.addHandler(log_handler)
 logger.setLevel(logging.INFO)
+logger.propagate = False  # Prevent log messages from going to the root logger
 
 # Define allowed hosts
 ALLOWED_HOSTS = {'localhost', '127.0.0.1', 'ben.aalborgdata.dk', 'remote.aalborgdata.dk'}
@@ -618,9 +631,29 @@ def log_request_info():
     # Check if the host is allowed
     if host not in ALLOWED_HOSTS:
         raise SilentAbort()  # Terminates connection silently
-    logger.info(f"Request: {request.method} {request.url}")
+    # --- Get the Referer header ---
+    # Use .get() with a default value in case the header is not present
+    referrer = request.headers.get("Referer", "None") # Use "None" or "" or None as default
+
+    # Log method, URL, and Referer
+    # You can format this however you like
+    logger.info(f"Request: {request.method} {request.url} Referer: {referrer}")
+
+    # Log POST body (unchanged from your original)
     if request.method == "POST":
-        logger.info(f"Body: {request.get_data()}")
+        # Consider potential security implications and size of logging raw body data
+        try:
+            # Decoding might fail if data isn't valid UTF-8, handle potential errors
+            # Also consider limiting the size logged
+            body_data = request.get_data(as_text=True)
+            max_log_len = 500 # Limit logged body size
+            logged_body = body_data[:max_log_len] + ('...' if len(body_data) > max_log_len else '')
+            logger.info(f"Body: {logged_body}")
+        except Exception as e:
+            logger.warning(f"Could not decode or log request body: {e}")
+            # Fallback to logging raw bytes info if needed
+            raw_body = request.get_data()
+            logger.info(f"Body (raw bytes, size): {len(raw_body)}")
 
 def log_memory_usage():
     # Get system memory info
@@ -1107,6 +1140,7 @@ def explain_auction():
 
     return json.dumps(result)
 @app.route('/bids')
+@limiter.limit("100/hour;10/minute")
 def bids():
     t_start = time.time()
     base_path = os.getenv('BEN_HOME') or '..'
@@ -1336,6 +1370,12 @@ def extract_from_pbn(cards, strain_i):
         for card in current_trick:
             cards.append(deck52.decode_card(card))
     return cards # HTTP status code 500 for internal server error
+
+# Optional: Custom error handler for rate limit exceeded (HTTP 429)
+@app.errorhandler(429)
+def ratelimit_handler(e):
+    # The `e.description` will contain the limit that was hit.
+    return jsonify(error="Rate limit exceeded. Please try again later.", limit=e.description), 429
 
 if __name__ == "__main__":
     print(Back.BLACK)

@@ -16,3 +16,5 @@ Typical filenames are NS1EW99-bidding-1494000, so we can identify system for NS 
 Version 2 is an expreiment, where we add an extra bid as input, hoping for better samples
 Naming convension as for version 1, but with a V2 in the name like: NS1EW99-bidding_V2-11260000
 
+Only model version 3 is now supported
+
