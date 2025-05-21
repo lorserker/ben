@@ -501,7 +501,7 @@ class CardPlayer:
 
         card_result = {}
         claim_cards = []
-        max_value = round(max(card_tricks.values()),0)
+        max_value = round(max(card_tricks.values()),1)
         claim_cards = [k for k, v in card_tricks.items() if abs(v - max_value) <= 0.0001]
         for key in dd_solved.keys():
             card_result[key] = (card_tricks[key], card_ev[key], making[key], "")
@@ -689,6 +689,7 @@ class CardPlayer:
 
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim, shown_out_suits, card_scores_nn):
         bad_play = []
+        print("Claim", claim)
         claim_cards, claim_tricks = claim
         if claim_cards :
             if claim_tricks > 10 - trick_i:
@@ -827,6 +828,7 @@ class CardPlayer:
 
     def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim, shown_out_suits, card_scores_nn):
         bad_play = []
+        print(f"Claim cards before check: {claim}")
         claim_cards, claim_tricks = claim
         if claim_cards :
             if claim_tricks > 10 - trick_i:
