@@ -1,0 +1,25 @@
+[project]
+name = "ben"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = "==3.12"
+dependencies = [
+    "bottle>=0.13.3",
+    "flask>=3.1.1",
+    "flask-cors>=6.0.0",
+    "flask-limiter>=3.12",
+    "gevent>=25.5.1",
+    "grpcio-tools>=1.71.0",
+    "jupyterlab>=4.4.3",
+    "keras==3.6.0",
+    "matplotlib>=3.10.3",
+    "numpy==1.26.4",
+    "pandas>=2.3.0",
+    "pythonnet>=3.0.5",
+    "scikit-learn>=1.7.0",
+    "scipy>=1.15.3",
+    "tensorflow-intel==2.18.0",
+    "tqdm>=4.67.1",
+    "websockets>=15.0.1",
+]
