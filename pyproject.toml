@@ -23,7 +23,3 @@ dependencies = [
     "tqdm>=4.67.1",
     "websockets>=15.0.1",
 ]
-
-[[tool.uv.index]]
-url = "https://pypi.tuna.tsinghua.edu.cn/simple"
-default = true
