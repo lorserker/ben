@@ -10,7 +10,7 @@ import logging # Optional: for better logging
 
 # --- Helper Function to Determine Best Temp Path ---
 def find_best_temp_drive(
-    preferred_drives: List[str] = ['D', 'C'],
+    preferred_drives: List[str] = ['D', 'F', 'C'],
     temp_subdir_name: str = "app_isolated_temp"
     ) -> Optional[str]:
     """

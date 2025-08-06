@@ -878,22 +878,25 @@ class CardPlayer:
             adjust_card = suit_adjust[card52 // 13]
             card32 = deck52.card52to32(card52)
             insta_score = self.get_nn_score(card32, card52, card_nn, play_status, tricks52)
+            if len(claim_cards) == 0:
             # Ignore cards not suggested by the NN
-            if insta_score < self.models.pimc_trust_NN:
-                continue
-            if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
-                if self.models.matchpoint:
-                    adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor_MP,2)
-                else:
-                    adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor_IMP,2)
-            # If we can take rest we don't adjust, then NN will decide if equal
-            # Another option could be to resample the hands without restrictions
-            if e_tricks == 13 - trick_i:
-                # Calculate valid claim cards
-                if card32 // 8 != self.strain_i - 1:
-                    adjust_card = 0
-            if card52 in bad_play:
-                adjust_card = -0.05            
+                if insta_score < self.models.pimc_trust_NN:
+                    continue
+                if insta_score > self.models.play_reward_threshold_NN and self.models.play_reward_threshold_NN > 0:
+                    if self.models.matchpoint:
+                        adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor_MP,2)
+                    else:
+                        adjust_card += round(insta_score * self.models.play_reward_threshold_NN_factor_IMP,2)
+            else:
+                # If we can take rest we don't adjust, then NN will decide if equal
+                # Another option could be to resample the hands without restrictions
+                if e_tricks == 13 - trick_i:
+                    # Calculate valid claim cards
+                    if card32 // 8 != self.strain_i - 1:
+                        adjust_card = 0
+                if card52 in bad_play:
+                    adjust_card = -0.05            
+                    
             card = self.create_card(suit_adjust, card52, e_tricks, e_score, e_make, msg, adjust_card, insta_score)
             # For now we want lowest card first - in deck it is from A->2 so highest value is lowest card
             if (card52 > current_card) and (insta_score == current_insta_score) and (card52 // 13 == current_card // 13):

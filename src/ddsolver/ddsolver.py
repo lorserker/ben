@@ -121,8 +121,7 @@ class DDSolver:
         res = dds.SolveAllBoards(ctypes.pointer(self.bo), ctypes.pointer(self.solved))
         if res != 1:
             error_message = dds.get_error_message(res)
-            print(f"{Fore.RED}Error Code: {res}, Error Message: {error_message}")
-            print(f"{hands_pbn[0].encode('utf-8')}{Style.RESET_ALL}")
+            print(f"{Fore.RED}Error Code: {res}, Error Message: {error_message} {hands_pbn[0].encode('utf-8')} {current_trick} {leader_i}{Style.RESET_ALL}")
             return None
 
         if solutions == 1:

@@ -63,7 +63,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.7.1'
+version = '0.8.7.2'
 
 init()
 
@@ -361,20 +361,6 @@ class Driver:
             # Remove declarer from contract
             pbn_str += f'[Contract "{self.contract[:-1]}"]\n'
 
-        if self.bidding_only == "NS":
-            pbn_str += f'[Scoring "Facit"]\n'
-        else:
-            pbn_str += f'[Result "{self.tricks_taken}"]\n'
-            if self.models.matchpoint:
-                pbn_str += '[Scoring "MP"]\n'
-            else:
-                pbn_str += '[Scoring "IMP"]\n'
-            if self.contract is not None:
-                if (self.contract[-1] == "N" or self.contract[-1] =="S"):
-                    pbn_str += f'[Score "NS {scoring.score(self.contract, self.vuln_ns, self.tricks_taken)}"]\n'
-                else:
-                    pbn_str += f'[Score "EW {scoring.score(self.contract, self.vuln_ew, self.tricks_taken)}"]\n'
-
         pbn_str += f'[ParScore "{self.parscore}"]\n'
         pbn_str += f'[Auction "{dealer}"]\n'
         auctionlines = ((len(self.bid_responses) + (self.dealer_i + 1) % 4) + 3)// 4
@@ -413,7 +399,7 @@ class Driver:
             pbn_str += f'[Play ""]\n'
 
         if self.bidding_only == "NS":
-            pbn_str += '[Hidden "EW"]\n'
+            pbn_str += f'[Scoring "Facit"]\n'
             pbn_str += '{'
             for i in range(max(0,(9-auctionlines))):
                 pbn_str += '\\n'
@@ -440,6 +426,20 @@ class Driver:
             pbn_str += 'Facit Score:   ' + f"{self.actual_score:>3}" + '\\n'            
             pbn_str += 'Running Score: ' + f"{self.facit_total:>3}"             
             pbn_str += '\n}\n'
+        else:
+            pbn_str += f'[Result "{self.tricks_taken}"]\n'
+            if self.models.matchpoint:
+                pbn_str += '[Scoring "MP"]\n'
+            else:
+                pbn_str += '[Scoring "IMP"]\n'
+            if self.contract is not None:
+                if (self.contract[-1] == "N" or self.contract[-1] =="S"):
+                    pbn_str += f'[Score "NS {scoring.score(self.contract, self.vuln_ns, self.tricks_taken)}"]\n'
+                else:
+                    pbn_str += f'[Score "EW {scoring.score(self.contract, self.vuln_ew, self.tricks_taken)}"]\n'
+
+        if self.bidding_only == "NS":
+            pbn_str += '[Hidden "EW"]\n'
         else:
             pbn_str += '[HomeTeam ""]\n'
             pbn_str += '[VisitTeam ""]\n'

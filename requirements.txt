@@ -9,7 +9,8 @@ tqdm
 
 websockets
 
-tensorflow>=2.16
+keras==3.6.0
+tensorflow==2.18
 grpcio-tools
 
 bottle

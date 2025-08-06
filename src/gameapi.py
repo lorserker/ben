@@ -44,7 +44,7 @@ from objects import Card, CardResp
 import deck52
 import binary
 
-from flask import Flask, request, jsonify, abort
+from flask import Flask, Response, request, jsonify, abort
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 import json
@@ -76,7 +76,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.7.1'
+version = '0.8.7.2'
 init()
 
 def handle_exception(e):
@@ -414,6 +414,7 @@ parser.add_argument("--port", type=int, default=8085, help="Port for appserver")
 parser.add_argument("--record", type=str_to_bool, default=True, help="Recording of responses")
 parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
+parser.add_argument("--nolimit", type=str_to_bool, default=False, help="Removed limit on number of requests to the API")
 
 args = parser.parse_args()
 
@@ -424,6 +425,7 @@ port = args.port
 record = args.record
 matchpoint = args.matchpoint
 seed = args.seed
+nolimit = args.nolimit
 
 np.set_printoptions(precision=2, suppress=True, linewidth=200)
 
@@ -543,7 +545,7 @@ CORS(app)
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,  # Limits based on the remote IP address
-    default_limits=["200 per day", "50 per hour", "10 per minute"] # Example global default limits
+    default_limits=["20000 per day", "5000 per hour", "100 per minute"]
     # storage_uri="memory://" # Default, suitable for single-process test server.
                                # For production with multiple workers, use Redis or Memcached:
                                # "redis://localhost:6379"
@@ -837,6 +839,7 @@ def lead():
 
 
 @app.route('/play')
+@limiter.limit("1000/hour;100/minute")
 def play():
     try:
         t_start = time.time()
@@ -876,7 +879,17 @@ def play():
             result = {"message":"No dummy provided"}
             print(result)
             return json.dumps(result)
-        
+
+        if len(dummy_str) != 16:
+            result = {"message":"Dummy should have 13 cards"}
+            print(result)
+            return json.dumps(result)
+
+        if len(hand_str) != 16:
+            result = {"message":"Hand should have 13 cards"}
+            print(result)
+            return json.dumps(result)
+    
         seat = request.args.get("seat")
         # Then vulnerability
         v = request.args.get("vul")
@@ -942,6 +955,9 @@ def play():
             explanation, _, preempted = bba_bot.explain_auction(auction)
             features["Explanation"] = explanation
             features["preempted"] = preempted
+        else:
+            features["aceking"] = aceking
+
         # Play
         with model_lock_play:
             card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, False, features, verbose)
@@ -1140,7 +1156,7 @@ def explain_auction():
 
     return json.dumps(result)
 @app.route('/bids')
-@limiter.limit("100/hour;10/minute")
+@limiter.limit("1000/hour;100/minute")
 def bids():
     t_start = time.time()
     base_path = os.getenv('BEN_HOME') or '..'
@@ -1376,6 +1392,11 @@ def extract_from_pbn(cards, strain_i):
 def ratelimit_handler(e):
     # The `e.description` will contain the limit that was hit.
     return jsonify(error="Rate limit exceeded. Please try again later.", limit=e.description), 429
+
+@app.route('/robots.txt')
+def robots_txt():
+    content = "User-agent: *\nDisallow: /"
+    return Response(content, mimetype='text/plain')
 
 if __name__ == "__main__":
     print(Back.BLACK)

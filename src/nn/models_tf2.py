@@ -298,8 +298,7 @@ class Models:
         # Specify D then C as preference. Use "my_app_temp" as the subdir name.
         # You can change "my_app_temp" to whatever you like.
         auto_selected_path = find_best_temp_drive(
-            preferred_drives=['D', 'C'],
-            temp_subdir_name="my_model_temp_storage"
+            temp_subdir_name="BEN_model_temp_storage"
         )
 
         path_provider = IsolatedModelPathProvider(base_temp_storage_path=auto_selected_path)

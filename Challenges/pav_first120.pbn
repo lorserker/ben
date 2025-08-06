@@ -18,7 +18,6 @@
 %Font:HandRecord "Arial",11,400,0
 %GutterSize 500,500
 %HRTitleDate 2015.06.12
-%HRTitleEvent "Recommended Bidding and Awards"
 %HRTitleSetID ""
 %HRTitleSetIDPrefix ""
 %HRTitleSite "Bidding 1F29"
@@ -47,7 +46,7 @@
 %FontEvent "Times New Roman",12,400,0
 %FontFixedPitch "Courier New",10,400,0
 %FontHandRecord "Arial",11,400,0
-[Event "Recommended Bidding and Awards"]
+[Event ""]
 [Site "Bidding 1F29"]
 [Date "2015.06.12"]
 [Board "1"]
@@ -59,7 +58,7 @@
 [Vulnerable "None"]
 [Deal "N:AQ3.KJ97.A82.Q93 JT984.A65.93.K84 762.QT4.KQ7.JT76 K5.832.JT654.A52"]
 [Scoring "Facit"]
-{2n 10 1n 8 2h 7 2c 6 3h 5 3c 4 3n 3 4h 2 4c 1 }
+{2n 10 2h 7 2c 6 3h 5 3c 4 3n 3 4h 2 4c 1 }
 [Declarer "N"]
 [Contract "2NT"]
 [Result ""]
@@ -275,7 +274,7 @@
 [BCFlags "1f"]
 [Hidden "EW"]
 
-[Event "Recommended Bidding and Awards"]
+[Event ""]
 [Site "Bidding 1N29"]
 [Date "2015.06.12"]
 [Board "13"]
@@ -777,7 +776,7 @@
 [North ""]
 [East ""]
 [South ""]
-[Dealer "N"]
+[Dealer "S"]
 [Vulnerable "NS"]
 [Deal "N:A94.42.KQT765.84 QJ83.QJT.J8.A975 T75.AK95.A93.KT2 K62.8763.42.QJ63"]
 [Scoring "Facit"]
@@ -1189,7 +1188,7 @@ AC 4S AC Pass
 [BCFlags "1f"]
 [Hidden "EW"]
 
-[Event "Recommended Bidding and Awards"]
+[Event ""]
 [Site "Bidding 3R53"]
 [Date "2015.06.12"]
 [Board "61"]
@@ -1417,7 +1416,7 @@ AC 4S AC Pass
 [BCFlags "1f"]
 [Hidden "EW"]
 
-[Event "Recommended Bidding and Awards"]
+[Event ""]
 [Site "Bidding 3S17"]
 [Date "2015.06.12"]
 [Board "73"]
@@ -1645,7 +1644,7 @@ AC 4S AC Pass
 [BCFlags "1f"]
 [Hidden "EW"]
 
-[Event "Recommended Bidding and Awards"]
+[Event ""]
 [Site "Bidding 3S41"]
 [Date "2015.06.12"]
 [Board "85"]
@@ -1873,7 +1872,7 @@ AC 4S AC Pass
 [BCFlags "1f"]
 [Hidden "EW"]
 
-[Event "Recommended Bidding and Awards"]
+[Event ""]
 [Site "Bidding 5V69"]
 [Date "2015.06.12"]
 [Board "97"]
@@ -2129,7 +2128,7 @@ AC
 [Auction "N"]
 AC X AC Pass
 
-[Event "Recommended Bidding and Awards"]
+[Event ""]
 [Site "Bidding 5V81"]
 [Date "2015.06.12"]
 [Board "109"]

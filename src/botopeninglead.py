@@ -303,6 +303,9 @@ class BotLead:
                 print(f"{Card.from_code(int(c), xcards=True)} {score:.3f}")
             candidates.append(c)
             lead_softmax_copy[0][c] = 0
+        
+        # Due to error in Keras (Using different versin, that the one used for training) we might get cards not in hand 
+        # So we should probably check, and exit if we have a version conflict
 
         return candidates, lead_softmax
 

@@ -108,8 +108,8 @@ def can_bid_contract(bid, auction):
 game_contracts = {'3N', '4N', '5N', '4H', '5H', '4S', '5S', '5C', '5D'}
 slam_contracts = {'6C', '6D', '6H', '6S', '6N'}
 grand_contracts = {'7C', '7D', '7H', '7S', '7N'}
-game_contract_with_x = {'2S', '2H', '2N', '3C', '3D', '3H', '3S', '4C', '4D'}
-game_contract_with_xx = {'1H', '1S', '1N', '2C', '3C'}
+game_contract_with_x = {'2H', '2S', '2N', '3C', '3D', '3H', '3S', '4C', '4D'}
+game_contract_with_xx = {'1H', '1S', '1N', '2C', '2D'}
 # We assume we have a valid auction
 def is_game_bid(auction):
     # Strip down to just non-PASS bids
