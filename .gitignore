@@ -121,3 +121,6 @@ src/lop00.txt
 Challenges/EDGAR
 BBA/*.pbn
 Practice
+.venv
+uv.lock
+.python-version
