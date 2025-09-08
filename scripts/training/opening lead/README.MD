@@ -27,7 +27,7 @@ Run the script to transform the data into binary format.
 You have these scripts available
 
 ```
-python binary_lead.py 
+python binary_lead_keras_suit_nt.py 
 ```
 
 The above command will create new files into the corresponding folder: `A.npy`, `B.npy`, `x.npy` and `y.npy` . `A.npy`, `B.npy`, `x.npy` contains the inputs to the neural network and `y.npy` contains the expected outputs. Both are stored in numpy array format.
@@ -35,7 +35,7 @@ The above command will create new files into the corresponding folder: `A.npy`, 
 Then, run the trainig script. This will take several hours to complete, but it will save snapshots of the model as it progresses. If you have a GPU, the training will run faster, but not much faster, because GPUs are not so well suited for the type of NN used.
 
 ```
-python lead_nn.py 
+python lead_nn_keras.py 
 ```
 
 When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the configuration file ([code here](https://github.com/lorserker/ben/blob/main/src/config/default.conf)) inserting the path to the network which you just trained.

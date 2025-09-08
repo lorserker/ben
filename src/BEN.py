@@ -46,7 +46,7 @@ class BridgeApp:
     def __init__(self, root):
         self.root = root
         self.root.iconbitmap("ben.ico")
-        self.root.title("Bridge with BEN. v0.8.7.2")
+        self.root.title("Bridge with BEN. v0.8.7.3")
         self.root.geometry("1000x1000")
 
         # Center the window
@@ -390,7 +390,7 @@ class BridgeApp:
             self.play_button.config(state="disabled", bg="red", fg="black")
 
     def on_about(self):
-        messagebox.showinfo("About", "Play with BEN. Version 0.8.7.2")
+        messagebox.showinfo("About", "Play with BEN. Version 0.8.7.3")
 
     def terminate(self, signum, frame):
         """

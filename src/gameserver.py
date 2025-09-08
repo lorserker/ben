@@ -46,7 +46,7 @@ from colorama import Fore, Back, Style, init
 import gc
 import psutil
 
-version = '0.8.7.2'
+version = '0.8.7.3'
 init()
 
 # Custom function to convert string to boolean

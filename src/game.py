@@ -63,7 +63,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.7.2'
+version = '0.8.7.3'
 
 init()
 
@@ -322,6 +322,8 @@ class Driver:
         pbn_str += '%PipColors #0000ff,#ff0000,#ffc000,#008000\n'
         pbn_str += '%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7\n'
         pbn_str += '%Font:FixedPitch "Courier New",14,700,0\n'
+        pbn_str += '%Font:Commentary "Courier New",14,700,0"\n'
+        pbn_str += '%BoardsPerPage 1\n'
         pbn_str += '%Margins 1000,0800,500,0800\n\n'
         pbn_str += f'[Event "##{event}"]\n'
         pbn_str += f'[Site "##BEN {version}"]\n'
@@ -332,7 +334,6 @@ class Driver:
     def asPBN(self):
         dealer = "NESW"[self.dealer_i]
         pbn_str = ""
-        pbn_str += '[BCFlags "801f"]\n'
         pbn_str += f'[Board "{self.board_number}"]\n'
         if self.bidding_only == "NS":
             pbn_str += '[West "Facit"]\n'
@@ -400,6 +401,7 @@ class Driver:
 
         if self.bidding_only == "NS":
             pbn_str += f'[Scoring "Facit"]\n'
+            pbn_str += f'[Result "{self.tricks_taken}"]\n'
             pbn_str += '{'
             for i in range(max(0,(9-auctionlines))):
                 pbn_str += '\\n'
@@ -1229,6 +1231,7 @@ async def main():
             # Optionally, reshape back to 1D if needed
             facit_score[i] = swapped_arr.flatten()            
     driver.facit_score = facit_score
+    t_startset = time.time()
     while True:
         if random: 
             if boardno:
@@ -1367,6 +1370,7 @@ async def main():
                 break
         np.empty(0) 
         gc.collect()
+    print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Set with {len(boards)} played in {time.time() - t_startset:0.1f} seconds.{Fore.RESET}')  
 
 if __name__ == '__main__':
     print(Back.BLACK)
