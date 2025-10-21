@@ -109,8 +109,18 @@
 		function displayBidDetails(xmlDoc) {
 			let i;
 			let table =	`<tr><th>Bid</th><th>Description</th></tr>`;
-			let x = xmlDoc.getElementsByTagName("r");
+			// Convert NodeList to array so we can use filter()
+    		var x1 = Array.from(xmlDoc.getElementsByTagName("r"));
 
+			// Extract special bids first, keep the rest unchanged
+			const passRows = x1.filter(r => r.getAttribute('b').toUpperCase() === 'P');
+			const doubleRows = x1.filter(r => r.getAttribute('b').toUpperCase() === 'D');
+			const redoubleRows = x1.filter(r => r.getAttribute('b').toUpperCase() === 'R');
+			const otherRows = x1.filter(r => !['P', 'D', 'R' ].includes(r.getAttribute('b').toUpperCase()));
+
+			// Combine in desired order
+			var x = [...passRows, ...otherRows, ...redoubleRows, ...doubleRows];
+			
 			const bValue = x[0].getAttribute('b').toUpperCase();
 			bValueHtml = bValue;
             const mValue = x[0].getAttribute('m');
@@ -146,7 +156,6 @@
 				mValueHtml = replaceSuits(mValueHtml);
 				table += "<tr class="+ who + "><td><a href=?bid="+  biddingsequence.substring(0,biddingsequence.length - 1) + bValue + "-*>" + bValueHtml + "</a></td><td>" + mValueHtml + "</td></tr>";
 			}
-
 			// Print the xml data in table form
 			document.getElementById("id").innerHTML = table;
 		}
