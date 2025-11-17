@@ -1,0 +1,49 @@
+% PBN 2.1
+% EXPORT
+%BCOptions
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Font:Commentary "Courier New",14,700,0"
+%BoardsPerPage 1
+%Margins 1000,0800,500,0800
+
+[Event "##CTC_mayjun20"]
+[Site "##BEN 0.8.7.4"]
+[Date "##2025.10.10"]
+[Board "1"]
+[West "Facit"]
+[East "Facit"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "None"]
+[Deal "N:AKT963.A6.AKT9.6 QJ4.KT94.7.KT852 85.QJ2.Q8652.943 72.8753.J43.AQJ7"]
+[Declarer "N"]
+[Contract "4S"]
+[ParScore "0"]
+[Auction "E"]
+PASS PASS =1= PASS 2C =2=
+PASS 2D =3= PASS 2S =4=
+PASS 3D =5= PASS 3S =6=
+PASS 4S =7= PASS PASS =8=
+PASS 
+[Note "1:  -- ; 11- HCP"]
+[Note "2:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "3:* Waiting -- ; 11- HCP; Artificial; Forcing"]
+[Note "4: Bidable suit -- 6-!H; 5+!S; 19+ HCP; GF"]
+[Note "5: Bidable suit -- 6-!C; 5+!D; 4-!H; 2-!S; 11- HCP"]
+[Note "6: Bidable suit -- 6-!H; 6+!S; 17+ HCP; GF"]
+[Note "7: Nat. -- 6-!C; 5+!D; 4-!H; 1-2!S; 11- HCP"]
+[Note "8:  -- 6-!H; 6+!S; 17-27 HCP; GF"]
+[Play ""]
+[Scoring "Facit"]
+[Result "0"]
+{Score Table:
+
+ 6\d      10\n 4\s       6\n 5\d       4\n 5\s       3\n 4\d       2\n 3\s       2\n 6\s       1\n\n\n\n\n\n
+
+Facit Score:     6\nRunning Score:   6
+}
+[Hidden "EW"]
+

@@ -828,7 +828,7 @@ class CardPlayer:
 
     def pick_card_after_dd_eval(self, trick_i, leader_i, current_trick, tricks52, players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim, shown_out_suits, card_scores_nn):
         bad_play = []
-        print(f"Claim cards before check: {claim}")
+        # print(f"Claim cards before check: {claim}")
         claim_cards, claim_tricks = claim
         if claim_cards :
             if claim_tricks > 10 - trick_i:

@@ -65,10 +65,10 @@ class SuitCLib:
         return self.suitc.version().decode('utf-8')
     
     def get_suit_tricks(self, declarer, dummy, opponent):
-        if self.verbose:
-            input_str = " -a -b "
-        else:
-            input_str = ""
+        #if self.verbose:
+        #    input_str = " -a -b "
+        #else:
+        input_str = ""
         #input_str = ""
 
         input_str += f"{dummy if dummy != '' else '.'} {declarer if declarer != '' else '.'} {opponent}"

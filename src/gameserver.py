@@ -46,7 +46,7 @@ from colorama import Fore, Back, Style, init
 import gc
 import psutil
 
-version = '0.8.7.3'
+version = '0.8.7.4'
 init()
 
 # Custom function to convert string to boolean
@@ -166,7 +166,7 @@ if sys.platform != 'win32':
     models.pimc_use_defending = False
     models.use_bba = False
     models.consult_bba = False
-    models.use_bba_rollouts = False
+    models.use_bba_rollout = False
     models.use_bba_to_count_aces = False
     models.use_suitc = False
 

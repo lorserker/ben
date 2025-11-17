@@ -19,4 +19,6 @@ pythonnet
 bottle_session
 flask
 flask_cors
+flask_limiter 
 psutil==5.9.0
+colorama
