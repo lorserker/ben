@@ -149,9 +149,20 @@ class CardPlayer:
         self.pimc.set_shape_constraints(min_values1, max_values1, min_values3, max_values3, quality)
 
     def check_pimc_constraints(self, trick_i, players_states, quality):
-        # If we are declarer and PIMC enabled - use PIMC
-        self.pimc_declaring = self.models.pimc_use_declaring and trick_i >= (self.models.pimc_start_trick_declarer - 1) and trick_i < (self.models.pimc_stop_trick_declarer)
-        self.pimc_defending = self.models.pimc_use_defending and trick_i >= (self.models.pimc_start_trick_defender - 1) and trick_i < (self.models.pimc_stop_trick_defender)
+        # If we are declarer and PIMC/ACE enabled - use PIMC/ACE
+        # ACE settings take priority if enabled
+        ace_declaring = getattr(self.models, 'ace_use_declaring', False)
+        ace_defending = getattr(self.models, 'ace_use_defending', False)
+
+        if ace_declaring:
+            self.pimc_declaring = trick_i >= (getattr(self.models, 'ace_start_trick_declarer', 1) - 1) and trick_i < getattr(self.models, 'ace_stop_trick_declarer', 8)
+        else:
+            self.pimc_declaring = self.models.pimc_use_declaring and trick_i >= (self.models.pimc_start_trick_declarer - 1) and trick_i < (self.models.pimc_stop_trick_declarer)
+
+        if ace_defending:
+            self.pimc_defending = trick_i >= (getattr(self.models, 'ace_start_trick_defender', 1) - 1) and trick_i < getattr(self.models, 'ace_stop_trick_defender', 8)
+        else:
+            self.pimc_defending = self.models.pimc_use_defending and trick_i >= (self.models.pimc_start_trick_defender - 1) and trick_i < (self.models.pimc_stop_trick_defender)
         if not self.pimc_defending and not self.pimc_declaring:
             return
         if self.models.pimc_constraints:
@@ -176,14 +187,21 @@ class CardPlayer:
             weight = 0.5
 
         for card52, (e_tricks, e_score, e_make, msg) in dd_resp.items():
-            pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card52]
-            new_e_tricks = round((pimc_e_tricks * weight + e_tricks * (1-weight)),2) if pimc_e_tricks is not None and e_tricks is not None else None
-            new_e_score = round((pimc_e_score * weight + e_score * (1-weight)),2) if pimc_e_score is not None and e_score is not None else None
-            new_e_make = round((pimc_e_make * weight + e_make * (1-weight)),2) if pimc_e_make is not None and e_make is not None else None
-            new_msg = msg +"|" if msg else "" + engine + f" {weight*100:.0f}%|" + (pimc_msg or '') 
-            new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
-            new_msg += f"|BEN DD {(1-weight)*100:.0f}%|" 
-            new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
+            if card52 in pimc_resp:
+                pimc_e_tricks, pimc_e_score, pimc_e_make, pimc_msg = pimc_resp[card52]
+                new_e_tricks = round((pimc_e_tricks * weight + e_tricks * (1-weight)),2) if pimc_e_tricks is not None and e_tricks is not None else None
+                new_e_score = round((pimc_e_score * weight + e_score * (1-weight)),2) if pimc_e_score is not None and e_score is not None else None
+                new_e_make = round((pimc_e_make * weight + e_make * (1-weight)),2) if pimc_e_make is not None and e_make is not None else None
+                new_msg = msg +"|" if msg else "" + engine + f" {weight*100:.0f}%|" + (pimc_msg or '')
+                new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
+                new_msg += f"|BEN DD {(1-weight)*100:.0f}%|"
+                new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
+            else:
+                # Card not in PIMC response, use DD values only
+                new_e_tricks = e_tricks
+                new_e_score = e_score
+                new_e_make = e_make
+                new_msg = msg + f"|{engine} N/A|BEN DD 100%|{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
             merged_cards[card52] = (new_e_tricks, new_e_score, new_e_make, new_msg)
 
         return merged_cards
@@ -689,7 +707,6 @@ class CardPlayer:
 
     def pick_card_after_pimc_eval(self, trick_i, leader_i, current_trick, tricks52,  players_states, card_dd, bidding_scores, quality, samples, play_status, missing_cards, claim, shown_out_suits, card_scores_nn):
         bad_play = []
-        print("Claim", claim)
         claim_cards, claim_tricks = claim
         if claim_cards :
             if claim_tricks > 10 - trick_i:

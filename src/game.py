@@ -396,38 +396,37 @@ class Driver:
                 for j in range(4):
                     pbn_str += Card.from_code(self.card_play[j][i]).symbol() + " "
                 pbn_str += "\n"
-        else:
-            pbn_str += f'[Play ""]\n'
 
         if self.bidding_only == "NS":
             pbn_str += f'[Scoring "Facit"]\n'
             pbn_str += f'[Result "{self.tricks_taken}"]\n'
-            pbn_str += '{'
-            for i in range(max(0,(9-auctionlines))):
-                pbn_str += '\\n'
-            pbn_str += 'Score Table:\n\n'
-            elements = self.facit_score[self.board_number - 1]
-            # Add a newline after every second element
-            str = ""
-            for i in range(len(elements) // 2):
-                contract = elements[i*2]
-                contract_length = len(contract)
-                str += ' '
-                contract = contract[0] + contract[1:].replace("S", "\\s").replace("H", "\\h").replace("D", "\\d").replace("C", "\\c")            
-                str += contract + ' ' * (5 - contract_length)
-                score_str = elements[i*2 +1]
-                str += ' ' * (5 - len(score_str))
-                str += score_str
-                str += '\\n'
+            if self.facit:
+                pbn_str += '{'
+                for i in range(max(0,(9-auctionlines))):
+                    pbn_str += '\\n'
+                pbn_str += 'Score Table:\n\n'
+                elements = self.facit_score[self.board_number - 1]
+                # Add a newline after every second element
+                str = ""
+                for i in range(len(elements) // 2):
+                    contract = elements[i*2]
+                    contract_length = len(contract)
+                    str += ' '
+                    contract = contract[0] + contract[1:].replace("S", "\\s").replace("H", "\\h").replace("D", "\\d").replace("C", "\\c")            
+                    str += contract + ' ' * (5 - contract_length)
+                    score_str = elements[i*2 +1]
+                    str += ' ' * (5 - len(score_str))
+                    str += score_str
+                    str += '\\n'
 
-            for i in range(12 - (len(elements) // 2)):
-                str += '\\n'
+                for i in range(12 - (len(elements) // 2)):
+                    str += '\\n'
 
-            # Replace the suit characters
-            pbn_str += str + '\n\n'
-            pbn_str += 'Facit Score:   ' + f"{self.actual_score:>3}" + '\\n'            
-            pbn_str += 'Running Score: ' + f"{self.facit_total:>3}"             
-            pbn_str += '\n}\n'
+                # Replace the suit characters
+                pbn_str += str + '\n\n'
+                pbn_str += 'Facit Score:   ' + f"{self.actual_score:>3}" + '\\n'            
+                pbn_str += 'Running Score: ' + f"{self.facit_total:>3}"             
+                pbn_str += '\n}\n'
         else:
             pbn_str += f'[Result "{self.tricks_taken}"]\n'
             if self.models.matchpoint:
@@ -537,7 +536,16 @@ class Driver:
 
         pimc = [None, None, None, None]
 
-        if self.models.pimc_use_declaring: 
+        # ACE takes priority over PIMC if both are enabled
+        if getattr(self.models, 'ace_use_declaring', False):
+            # No ACE for dummy, we want declarer to play both hands
+            from ace.ACE import ACEDLL
+            declarer = ACEDLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, self.verbose)
+            pimc[1] = declarer
+            pimc[3] = declarer
+            if self.verbose:
+                print("ACE (declarer)",dummy_hand, decl_hand, contract)
+        elif self.models.pimc_use_declaring:
             # No PIMC for dummy, we want declarer to play both hands
             from pimc.PIMC import BGADLL
             declarer = BGADLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, self.verbose)
@@ -548,7 +556,14 @@ class Driver:
         else:
             pimc[1] = None
             pimc[3] = None
-        if self.models.pimc_use_defending:
+
+        if getattr(self.models, 'ace_use_defending', False):
+            from ace.ACEDef import ACEDefDLL
+            pimc[0] = ACEDefDLL(self.models, dummy_hand, lefty_hand, contract, is_decl_vuln, 0, self.sampler, self.verbose)
+            pimc[2] = ACEDefDLL(self.models, dummy_hand, righty_hand, contract, is_decl_vuln, 2, self.sampler, self.verbose)
+            if self.verbose:
+                print("ACE (defender)",dummy_hand, lefty_hand, righty_hand, contract)
+        elif self.models.pimc_use_defending:
             from pimc.PIMCDef import BGADefDLL
             pimc[0] = BGADefDLL(self.models, dummy_hand, lefty_hand, contract, is_decl_vuln, 0, self.sampler, self.verbose)
             pimc[2] = BGADefDLL(self.models, dummy_hand, righty_hand, contract, is_decl_vuln, 2, self.sampler, self.verbose)
@@ -1170,6 +1185,14 @@ async def main():
         suitc = SuitCLib(verbose)
         print(f"SuitC enabled. Version {suitc.version()}")
 
+    if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
+        from ace.ACE import ACEDLL
+        ace = ACEDLL(None, None, None, None, None, None, None)
+        from ace.ACEDef import ACEDefDLL
+        acedef = ACEDefDLL(None, None, None, None, None, None, None, None)
+        print(f"ACE enabled. Version {ace.version()}")
+        print(f"ACEDef enabled. Version {acedef.version()}")
+
     if models.pimc_use_declaring or models.pimc_use_defending:
         from pimc.PIMC import BGADLL
         pimc = BGADLL(None, None, None, None, None, None, None)
@@ -1231,6 +1254,7 @@ async def main():
             # Optionally, reshape back to 1D if needed
             facit_score[i] = swapped_arr.flatten()            
     driver.facit_score = facit_score
+    driver.facit = facit
     t_startset = time.time()
     while True:
         if random: 
