@@ -20,7 +20,7 @@
 
 <body>
     <div>
-        <h1>API for BEN. Version 0.8.7.4</h1>
+        <h1>API for BEN. Version 0.8.7.5</h1>
     </div>
     <div id="loader"></div> 
     <div id="dealdiv">
@@ -61,10 +61,10 @@
 
         <label for="vulInput">Vulnerable:</label>
         <select id="vulInput">
-            <option value="">None</option>
-            <option value="@v">NS</option>
-            <option value="@V">EW</option>
-            <option value="@v@V">All</option>
+            <option value="None">None</option>
+            <option value="NS">NS</option>
+            <option value="EW">EW</option>
+            <option value="All">All</option>
         </select><br>
 
         <label for="biddingInput">Bidding:</label>
@@ -927,6 +927,8 @@
             const dealer = document.getElementById('dealerInput').value;
             const seat = document.getElementById('seatInput').value;
             const player = "NESW".indexOf(seat)
+
+            // Vulnerability in absolute format: None, NS, EW, All
             const vul = document.getElementById('vulInput').value;
             const mp = document.getElementById('matchpoint').checked;
             const explain = document.getElementById('explain').checked;

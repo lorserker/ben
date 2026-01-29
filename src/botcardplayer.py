@@ -803,15 +803,21 @@ class CardPlayer:
                 print(candidate_cards[i].card, f"{candidate_cards[i].insta_score:.3f}", candidate_cards[i].expected_tricks_dd, round(5 * candidate_cards[i].p_make_contract, 1), int(candidate_cards[i].expected_tricks_dd * 10) / 10)
 
         if self.models.matchpoint:
-            if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
-                who = "PIMC-BEN-MP" 
+            if self.models.ace_ben_dd_declaring or self.models.ace_ben_dd_defending:
+                who = "ACE-BEN-MP" 
             else:
-                who = "PIMC-MP" 
+                if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
+                    who = "PIMC-BEN-MP" 
+                else:
+                    who = "BEN-MP" 
         else:
-            if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
-                who = "PIMC-BEN-IMP" 
+            if self.models.ace_ben_dd_declaring or self.models.ace_ben_dd_defending:
+                who = "ACE-BEN-IMP" 
             else:
-                who = "BEN-IMP" 
+                if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
+                    who = "PIMC-BEN-IMP" 
+                else:
+                    who = "BEN-IMP" 
             
         right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, missing_cards, play_status, who, claim_cards,self.verbose)
         best_card_resp = CardResp(

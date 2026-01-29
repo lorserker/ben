@@ -38,9 +38,13 @@
         }
         </script>
 	</head> 
-<body> 
+<body>
 <div class="center">
-    <h1>Play with BEN. Version 0.8.7.4</h1>
+    <h1>Play with BEN. Version 0.8.7.5</h1>
+    <div style="margin-bottom: 15px;">
+        <a href="/autoplay" style="padding: 8px 16px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">Autoplay (Generate PBN)</a>
+        <a href="/api" style="padding: 8px 16px; background: #2196F3; color: white; text-decoration: none; border-radius: 4px; margin-left: 10px;">API Reference</a>
+    </div>
 </div>
 
 <div class="container {{ 'hidden' if play else '' }}">

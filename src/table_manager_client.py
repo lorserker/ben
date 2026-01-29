@@ -68,7 +68,7 @@ import gc
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.7.4'
+version = '0.8.7.5'
 init()
 
 SEATS = ['North', 'East', 'South', 'West']
@@ -343,29 +343,49 @@ class TMClient:
 
         pimc = [None, None, None, None]
 
-        # We should only instantiate the PIMC for the position we are playing
-        if self.models.pimc_use_declaring and (cardplayer_i == 1 or cardplayer_i == 3): 
+        # ACE takes priority over PIMC if both are enabled
+        # We should only instantiate the engine for the position we are playing
+        if getattr(self.models, 'ace_use_declaring', False) and (cardplayer_i == 1 or cardplayer_i == 3):
+            from ace.ACE import ACEDLL
+            declarer = ACEDLL(self.models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, self.verbose)
+            pimc[1] = declarer
+            pimc[3] = declarer
+            if self.verbose:
+                print("ACE", dummy_hand_str, decl_hand_str, contract)
+        elif self.models.pimc_use_declaring and (cardplayer_i == 1 or cardplayer_i == 3):
             from pimc.PIMC import BGADLL
             declarer = BGADLL(self.models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, self.verbose)
             pimc[1] = declarer
             pimc[3] = declarer
             if self.verbose:
-                print("PIMC",dummy_hand_str, decl_hand_str, contract)
+                print("PIMC", dummy_hand_str, decl_hand_str, contract)
         else:
             pimc[1] = None
             pimc[3] = None
-        if self.models.pimc_use_defending and cardplayer_i == 0:
+
+        if getattr(self.models, 'ace_use_defending', False) and cardplayer_i == 0:
+            from ace.ACEDef import ACEDefDLL
+            pimc[0] = ACEDefDLL(self.models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, self.sampler, self.verbose)
+            if self.verbose:
+                print("ACE", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+        elif self.models.pimc_use_defending and cardplayer_i == 0:
             from pimc.PIMCDef import BGADefDLL
             pimc[0] = BGADefDLL(self.models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, self.sampler, self.verbose)
             if self.verbose:
-                print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+                print("PIMC", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
         else:
             pimc[0] = None
-        if self.models.pimc_use_defending and cardplayer_i == 2:
+
+        if getattr(self.models, 'ace_use_defending', False) and cardplayer_i == 2:
+            from ace.ACEDef import ACEDefDLL
+            pimc[2] = ACEDefDLL(self.models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, self.sampler, self.verbose)
+            if self.verbose:
+                print("ACE", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+        elif self.models.pimc_use_defending and cardplayer_i == 2:
             from pimc.PIMCDef import BGADefDLL
             pimc[2] = BGADefDLL(self.models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, self.sampler, self.verbose)
             if self.verbose:
-                print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+                print("PIMC", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
         else:
             pimc[2] = None
 
@@ -1105,6 +1125,14 @@ async def main():
         pimcdef = BGADefDLL(None, None, None, None, None, None, None, verbose)
         print(f"PIMC enabled. Version {pimc.version()}")
         print(f"PIMCDef enabled. Version {pimcdef.version()}")
+
+    if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
+        from ace.ACE import ACEDLL
+        ace = ACEDLL(None, None, None, None, None, None, verbose)
+        from ace.ACEDef import ACEDefDLL
+        acedef = ACEDefDLL(None, None, None, None, None, None, None, verbose)
+        print(f"ACE enabled. Version {ace.version()}")
+        print(f"ACEDef enabled. Version {acedef.version()}")
 
     from ddsolver import ddsolver
     dds = ddsolver.DDSolver()

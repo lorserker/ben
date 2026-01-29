@@ -501,6 +501,10 @@ def index():
 def index():
     return template('bba.tpl', file_map=file_map)
 
+@app.route('/autoplay')
+def autoplay_page():
+    return template('autoplay.tpl')
+
 @app.route('/api/deals/<deal_id>')
 def deal_data(deal_id):
     print("Getting:", deal_id)

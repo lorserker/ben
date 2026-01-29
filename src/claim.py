@@ -88,7 +88,7 @@ class Claimer:
 
         if self.verbose:
             hands_pbn = ['N:' + ' '.join([deck52.deal_to_str(hand) for hand in hands])]
-            print("Claiming for player", player_i, hands_pbn)
+            print("Claimcheck for player", player_i, hands_pbn)
         
         hands[0] = deck52.deal_to_str(hands[0])
         hands[index_for_dummy] = deck52.deal_to_str(hands[index_for_dummy])
@@ -123,44 +123,63 @@ class Claimer:
                 hands[1] = deck52.deal_to_str(_hand_from_cards(52, remaining_cards))
             sampled_hands_pbn.append('N:' + ' '.join(hands))
 
-        #print('\n'.join(sampled_hands_pbn))
-        #print("Trump",strain_i)
-        dd_solved = self.dd.solve(strain_i, (4 - len(current_trick)) % 4, current_trick, sampled_hands_pbn, 3)
-        # Filter keys where all values in the list are equal
-        equal_value_keys = {key: values[0] for key, values in dd_solved.items() if all(value == values[0] for value in values)}
+        if self.verbose:
+            print(f"Claimcheck samples ({len(sampled_hands_pbn)}):")
+            for i, pbn in enumerate(sampled_hands_pbn):
+                print(f"  Sample {i+1}: {pbn}")
 
-        if equal_value_keys:
-            # Find the maximum value among keys with all equal values
-            max_value = max(equal_value_keys.values())
+        dd_solved = self.dd.solve(strain_i, (4 - len(current_trick)) % 4, current_trick, sampled_hands_pbn, 3)
+
+        if self.verbose:
+            print(f"DD solved results per card:")
+            for card, tricks_list in dd_solved.items():
+                card_str = deck52.decode_card(card)
+                print(f"  {card_str}: {tricks_list} (min={min(tricks_list)}, max={max(tricks_list)}, all_equal={all(t == tricks_list[0] for t in tricks_list)})")
+
+        # Check if any card in any sample can give MORE tricks than we're trying to claim
+        # If so, we should NOT claim but continue playing to try for the higher number
+        max_possible_tricks = max(max(values) for values in dd_solved.values()) if dd_solved else 0
+        if max_possible_tricks > tricks:
             if self.verbose:
-                print(f"Max value: {max_value}")
-            if  max_value < tricks:
+                print(f"Some samples show {max_possible_tricks} tricks possible, higher than claim of {tricks}. Should not claim.")
+            # All cards are bad for claiming - we should continue playing
+            bad_plays = claim_cards
+        else:
+            # Filter keys where all values in the list are equal
+            equal_value_keys = {key: values[0] for key, values in dd_solved.items() if all(value == values[0] for value in values)}
+
+            if equal_value_keys:
+                # Find the maximum value among keys with all equal values
+                max_value = max(equal_value_keys.values())
+                if self.verbose:
+                    print(f"Max value: {max_value}")
+                if  max_value < tricks:
+                    # None of the cards give same result for all combinations
+                    # So we just ignore our claimcheck
+                    if self.verbose:
+                        print(f"No cards yield the needed tricks {tricks} best {max_value}")
+                    bad_plays = claim_cards
+                else:
+                    # Collect keys that:
+                    # - Either have all equal values but are NOT the max
+                    # - Or have non-uniform values
+                    non_max_keys = [
+                        key
+                        for key, values in dd_solved.items()
+                        if (key in equal_value_keys and equal_value_keys[key] != max_value)
+                        or (key not in equal_value_keys)
+                    ]
+                    bad_plays = [key for key in non_max_keys if key in claim_cards]
+                    # This should probably be extended as we might have moved a card to be a pip
+                    # and DDSolver is not aware of that, and only reports the first card from a sequence
+                    # will create redundant cards, but that is OK
+                    for card in claim_cards:
+                        if card not in equal_value_keys:
+                            bad_plays.append(card)
+            else:
                 # None of the cards give same result for all combinations
                 # So we just ignore our claimcheck
-                if self.verbose:
-                    print(f"No cards yield the needed tricks {tricks} best {max_value}")
                 bad_plays = claim_cards
-            else:
-                # Collect keys that:
-                # - Either have all equal values but are NOT the max
-                # - Or have non-uniform values
-                non_max_keys = [
-                    key
-                    for key, values in dd_solved.items()
-                    if (key in equal_value_keys and equal_value_keys[key] != max_value)
-                    or (key not in equal_value_keys)
-                ]
-                bad_plays = [key for key in non_max_keys if key in claim_cards]
-                # This should probably be extended as we might have moved a card to be a pip
-                # and DDSolver is not aware of that, and only reports the first card from a sequence
-                # will create redundant cards, but that is OK
-                for card in claim_cards:
-                    if card not in equal_value_keys:
-                        bad_plays.append(card)
-        else:
-            # None of the cards give same result for all combinations
-            # So we just ignore our claimcheck
-            bad_plays = claim_cards
 
 
         if self.verbose:
@@ -171,25 +190,34 @@ class Claimer:
         t_start = time.time()
 
         hands_pbn = ['N:' + ' '.join([deck52.deal_to_str(hand) for hand in hands52])]
-        if self.verbose:
-            print(f"Claiming for player {player_i} {hands_pbn}")
         sampled_hands_pbn = []
         seen_hand_indexes = [player_i, 3 if player_i == 1 else 1]
         hidden_hand_indexes = [i for i in range(4) if i not in seen_hand_indexes]
         hidden_cards = list(np.nonzero(hidden_cards)[0])
 
+        if self.verbose:
+            print(f"Claimapi for player {player_i} {hands_pbn} {len(hidden_cards)} {hidden_cards} {current_trick} {n_samples}")
+
         hands = [None, None, None, None]
         hands[seen_hand_indexes[0]] = deck52.deal_to_str(hands52[seen_hand_indexes[0]])
         hands[seen_hand_indexes[1]] = deck52.deal_to_str(hands52[seen_hand_indexes[1]])
 
+        # With an odd number of cards, we give the extra card to the player at our left
+        if (player_i == 0 or player_i == 3):
+            n_cards = len(hidden_cards) // 2
+        else:
+            n_cards = (len(hidden_cards) + 1) // 2
+        if self.verbose:
+            print(f"Claimapi: Cards for player RHO {n_cards} {hidden_hand_indexes} {seen_hand_indexes}")
         for i in range(n_samples):
             np.random.shuffle(hidden_cards)
-            
-            n_cards = len(hidden_cards) // 2
             hands[hidden_hand_indexes[1]] = deck52.deal_to_str(_hand_from_cards(52, hidden_cards[:n_cards]))
             hands[hidden_hand_indexes[0]] = deck52.deal_to_str(_hand_from_cards(52, hidden_cards[n_cards:]))
 
             sampled_hands_pbn.append('N:' + ' '.join(hands))
+
+        if self.verbose:
+            print(f"Claimapi for player {player_i} {sampled_hands_pbn}")
 
         max_min_tricks = self._get_max_min_tricks(strain_i, player_i, sampled_hands_pbn, current_trick)
         
@@ -227,6 +255,9 @@ class Claimer:
             hands[hidden_hand_indexes[1]] = deck52.deal_to_str(_hand_from_cards(52, hidden_cards[n_cards:]))
 
             sampled_hands_pbn.append('N:' + ' '.join(hands))
+
+        if self.verbose:
+            print(f"Claiming for player {player_i} {sampled_hands_pbn}")
 
         max_min_tricks = min(
             self._get_max_min_tricks(strain_i, player_i, hands_pbn, []),

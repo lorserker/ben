@@ -63,7 +63,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.7.4'
+version = '0.8.7.5'
 
 init()
 
@@ -209,6 +209,7 @@ class Driver:
         self.card_responses = []
 
         if self.play_only:
+            self.bot = None
             for bid in self.auction:
                 if bidding.BID2ID[bid] > 1:
                     self.bid_responses.append(BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who="PlayOnly", quality=None, alert=None, explanation=None))
@@ -966,7 +967,6 @@ class Driver:
 
         players = []
         hint_bots = [None, None, None, None]
-
         for i, level in enumerate(self.human):
             if level == 1:
                 hint_bots[i] = AsyncBotBid(vuln, hands_str[i], self.models, self.sampler, i, self.dealer_i, self.dds, False, self.verbose)

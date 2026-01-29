@@ -30,8 +30,8 @@ parent_dir = os.path.join(script_dir, "../..")
 # Add the parent directory to sys.path
 sys.path.append(parent_dir)
 from colorama import Fore, Back, Style, init
-if "src" in script_dir and "pimc" in script_dir:
-    # We are running inside the src/pimc directory
+if "src" in script_dir and "ace" in script_dir:
+    # We are running inside the src/ace directory
     BIN_FOLDER = parent_dir + os.path.sep + 'bin'
 else:
 
@@ -65,7 +65,7 @@ class ACEDLL:
                         # Load the .NET assembly and import the types and classes from the assembly
                         util.load_dotnet_framework_assembly(ACEDLL_PATH, verbose)
 
-                        from Brill.Ace import Game, Engine, GameOptions, ConstraintSet, Constraints, Range, Model, Contract, Extensions
+                        from Brill.Ace import Game, Engine, GameOptions, ConstraintSet, Constraints, Range, Model, Contract, Extensions, BcalcddsSolver, HaglundSolver
                         Player = Extensions.Player
                         Suit = Extensions.Suit
 
@@ -79,7 +79,9 @@ class ACEDLL:
                             "Model": Model,
                             "Contract": Contract,
                             "Player": Player,
-                            "Suit": Suit
+                            "Suit": Suit,
+                            "BcalcddsSolver": BcalcddsSolver,
+                            "HaglundSolver": HaglundSolver
                         }
 
                     except Exception as ex:
@@ -119,9 +121,35 @@ class ACEDLL:
 
         # ACE configuration
         self.search_duration = getattr(models, 'ace_search_duration', 2000)  # ms
+        self.search_iterations = getattr(models, 'ace_search_iterations', 0)  # 0 = unlimited
         self.search_depth = getattr(models, 'ace_search_depth', 2)
         self.search_threads = getattr(models, 'ace_threads', 10)
         self.autoplay = models.autoplaysingleton
+        # Model configuration for evaluation
+        self.decl_opponent_model_str = getattr(models, 'ace_decl_opponent_model', 'SoftMin(0.5)')
+        self.decl_partner_model_str = getattr(models, 'ace_decl_partner_model', 'Optimistic')
+
+        # DDS library selection: 'bcalcdds' (default) or 'haglund' (Bo Haglund's dds.dll)
+        # The solver instance is created once and reused for all card play decisions
+        self.dds_library = getattr(models, 'ace_dds_library', 'bcalcdds').lower()
+
+        # Create the solver based on config
+        self.BcalcddsSolver = dll["BcalcddsSolver"]
+        self.HaglundSolver = dll["HaglundSolver"]
+
+        if self.dds_library == 'haglund':
+            if self.HaglundSolver.IsAvailable:
+                self.solver = self.HaglundSolver()
+                if verbose:
+                    print(f"ACE using Bo Haglund's dds.dll")
+            else:
+                self.solver = self.BcalcddsSolver()
+                if verbose:
+                    print(f"ACE: dds.dll not available, falling back to libbcalcdds")
+        else:
+            self.solver = self.BcalcddsSolver()
+            if verbose:
+                print(f"ACE using libbcalcdds")
 
         # Store hand information in PBN format for deal construction
         # BEN hands are in format like "AKQJ.T98.765.432" (S.H.D.C)
@@ -155,7 +183,53 @@ class ACEDLL:
         self.shown_voids_rho = set()
 
     def version(self):
-        return "Brill.Ace 1.0"
+        try:
+            dll = ACEDLL.get_dll(False)
+            if dll and "Engine" in dll:
+                return dll["Engine"].Version
+        except:
+            pass
+        return "Brill.Ace 1.0 (fallback)"
+
+    def _parse_model(self, model_str):
+        """Parse a model configuration string into a Brill.Ace Model object.
+
+        Supported formats:
+        - "Optimistic" - Best-case scenario (max value)
+        - "Adversarial" - Worst-case scenario (min value)
+        - "Expectation" - Average outcome
+        - "LinearBlend(0.3)" - Blend with lambda parameter
+        - "SoftMax(0.5)" - Soft maximum with tau parameter
+        - "SoftMin(0.5)" - Soft minimum with tau parameter
+        """
+        model_str = model_str.strip()
+
+        # Simple models without parameters
+        if model_str == "Optimistic":
+            return self.Model.Optimistic()
+        elif model_str == "Adversarial":
+            return self.Model.Adversarial()
+        elif model_str == "Expectation":
+            return self.Model.Expectation()
+
+        # Models with parameters: extract function name and parameter
+        import re
+        match = re.match(r'(\w+)\(([^)]+)\)', model_str)
+        if match:
+            func_name = match.group(1)
+            param = float(match.group(2))
+
+            if func_name == "LinearBlend":
+                return self.Model.LinearBlend(param)
+            elif func_name == "SoftMax":
+                return self.Model.SoftMax(param)
+            elif func_name == "SoftMin":
+                return self.Model.SoftMin(param)
+
+        # Default fallback
+        if self.verbose:
+            print(f"Warning: Unknown model '{model_str}', using SoftMin(0.5)")
+        return self.Model.SoftMin(0.5)
 
     def calculate_hcp(self, rank):
         """Calculate HCP value for a card rank (0=A, 1=K, 2=Q, 3=J)"""
@@ -472,81 +546,96 @@ class ACEDLL:
             # Create game and replay played cards
             game = self.Game.New(options)
 
-            # Replay all previously played cards
-            for card_str in self.played_cards:
-                if not game.Play(card_str, False):  # Don't check legality for replay
+            try:
+                # Replay all previously played cards
+                for card_str in self.played_cards:
+                    if not game.Play(card_str, False):  # Don't check legality for replay
+                        if self.verbose:
+                            print(f"Warning: Could not replay card {card_str}")
+
+                # Get legal moves
+                legal_moves = game.GetMoves()
+
+                if self.verbose:
+                    print(f"Legal moves: {[str(m) for m in legal_moves]}")
+
+                # If only one legal move, return it immediately
+                if len(legal_moves) == 1 and self.autoplay:
+                    card = legal_moves[0]
+                    card_str = str(card)
+                    card52 = self._ace_card_to_ben_code(card_str)
                     if self.verbose:
-                        print(f"Warning: Could not replay card {card_str}")
+                        print(f"Playing only possible card: {card_str}")
+                    return {card52: (-1, -1, -1, "Forced card - no calculation")}
 
-            # Get legal moves
-            legal_moves = game.GetMoves()
+                # Create engine and run search with the configured DDS solver
+                engine = self.Engine.New(self.search_threads, self.solver)
+                engine.SetGame(game)
 
-            if self.verbose:
-                print(f"Legal moves: {[str(m) for m in legal_moves]}")
+                # Set iteration limit if configured (0 = unlimited)
+                if self.search_iterations > 0:
+                    engine.SetIterations(self.search_iterations)
 
-            # If only one legal move, return it immediately
-            if len(legal_moves) == 1 and self.autoplay:
-                card = legal_moves[0]
-                card_str = str(card)
-                card52 = self._ace_card_to_ben_code(card_str)
+                # Calculate adaptive depth based on cards played to current trick
+                # More depth when leading (more uncertainty), less when last to play
+                # depth = max(1, min(3, cards_in_trick + 1))
+                adaptive_depth = max(1, min(3, self.cards_in_trick + 1))
+
+                # Run async search synchronously using .NET's blocking wait
+                # Use duration as interval since we don't report progress
+                task = engine.Search(self.search_duration, self.search_duration, adaptive_depth)
+                task.Wait()
+
                 if self.verbose:
-                    print(f"Playing only possible card: {card_str}")
-                return {card52: (-1, -1, -1, "Forced card - no calculation")}
+                    print(f"Search completed: {engine.Iterations} iterations in {engine.Elapsed.TotalMilliseconds:.0f}ms, depth={adaptive_depth} (trick cards={self.cards_in_trick})")
+                    print(f"Final relaxation level: {engine.FinalRelaxationLevel}")
 
-            # Create engine and run search
-            engine = self.Engine.New(self.search_threads)
-            engine.SetGame(game)
+                # Evaluate results using models from configuration
+                # For declarer play: opponent=defenders, partner=dummy
+                opponent_model = self._parse_model(self.decl_opponent_model_str)
+                partner_model = self._parse_model(self.decl_partner_model_str)
 
-            # Run async search synchronously using .NET's blocking wait
-            task = engine.Search(self.search_duration, 100, self.search_depth)
-            task.Wait()
+                if self.verbose:
+                    print(f"Using models - opponent: {self.decl_opponent_model_str}, partner: {self.decl_partner_model_str}")
 
-            if self.verbose:
-                print(f"Search completed: {engine.Iterations} iterations in {engine.Elapsed.TotalMilliseconds:.0f}ms")
-                print(f"Final relaxation level: {engine.FinalRelaxationLevel}")
+                evaluation = engine.EvaluatePython(opponent_model, partner_model)
 
-            # Evaluate results using appropriate models for declarer play
-            # Model selection rules:
-            # - Partner/dummy models: reward-maximizing (Optimistic, LinearBlend, SoftMax)
-            # - Opponent models: reward-reducing (SoftMin, LinearBlend)
-            # For declarer: we control dummy (Optimistic), defenders play well (SoftMin)
-            # tau parameter: lower = more pessimistic, higher = closer to average
-            evaluation = engine.EvaluatePython(
-                self.Model.SoftMin(0.5),    # opponents (defenders) play well against us
-                self.Model.Optimistic()     # dummy/partner - we control both, best-case
-            )
+                if self.verbose:
+                    print("Evaluation results:")
+                    for card in evaluation.Keys:
+                        print(f"  {card}: {evaluation[card]:.4f}")
 
-            if self.verbose:
-                print("Evaluation results:")
+                # Convert results to BEN format
+                # IMPORTANT: ACE's Evaluate() returns a SCORE (approx 0-1), NOT a trick count!
+                # Use score to RANK cards (higher = better). Do NOT convert score to tricks.
+                # For detailed stats including actual tricks, use EvaluateDetailedPython().
+                card_result = {}
                 for card in evaluation.Keys:
-                    print(f"  {card}: {evaluation[card]:.4f}")
+                    ace_score = evaluation[card]  # Score for ranking (0-1 range, higher = better)
+                    card_str = str(card)
+                    card52 = self._ace_card_to_ben_code(card_str)
 
-            # Convert results to BEN format
-            card_result = {}
-            for card in evaluation.Keys:
-                win_prob = evaluation[card]
-                card_str = str(card)
-                card52 = self._ace_card_to_ben_code(card_str)
+                    # Score is used for ranking - store directly as the primary ranking value
+                    # The first tuple element is used for card selection, so we use ace_score
+                    msg = f"Iterations: {engine.Iterations}|Relaxation: {engine.FinalRelaxationLevel}"
 
-                # ACE returns win probability (0-1)
-                # Estimate tricks based on win probability and contract
-                estimated_tricks = win_prob * (13 - self.tricks_taken)
+                    # Tuple: (ranking_score, display_score, ace_score, message)
+                    # ranking_score: Use ACE score directly for ranking (higher = better card)
+                    # display_score: Placeholder for UI compatibility (use score as percentage)
+                    # ace_score: Raw score from ACE for debugging
+                    card_result[card52] = (round(ace_score, 4), round(ace_score * 100), round(ace_score, 4), msg)
 
-                # Calculate expected score
-                if win_prob >= 0.5:
-                    # Likely to make - estimate overtricks
-                    expected_tricks = self.mintricks + int(win_prob * 3)
-                else:
-                    # Likely to fail - estimate undertricks
-                    expected_tricks = self.mintricks - int((1 - win_prob) * 3)
-                expected_tricks = max(0, min(13, expected_tricks)) + self.tricks_taken
-                score = self.score_by_tricks_taken[expected_tricks]
+                    if self.verbose:
+                        print(f"{Card.from_code(card52)} score:{ace_score:.4f}")
 
-                msg = f"Iterations: {engine.Iterations}|Relaxation: {engine.FinalRelaxationLevel}"
-                card_result[card52] = (round(estimated_tricks, 2), round(score), round(win_prob, 3), msg)
-
-                if self.verbose:
-                    print(f"{Card.from_code(card52)} tricks:{estimated_tricks:.2f} score:{score:.0f} prob:{win_prob:.3f}")
+            finally:
+                # IMPORTANT: Dispose game to release native DDS resources
+                # Prevents memory corruption from accumulating native handles
+                if game is not None:
+                    try:
+                        game.Dispose()
+                    except:
+                        pass
 
         except Exception as e:
             print(f'{Fore.RED}Error in ACE nextplay: {e}{Fore.RESET}')

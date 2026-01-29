@@ -11,6 +11,11 @@ import scoring
 import calculate
 from collections import Counter
 
+
+class PIMCNoPlayoutError(Exception):
+    """Raised when PIMC cannot find any valid playouts even after relaxing constraints."""
+    pass
+
 from bidding import bidding
 # Get the directory of the current script
 script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -546,8 +551,8 @@ class BGADefDLL:
                         print("Declarer", self.declarer_constraints.ToString(), "Partner", self.partner_constraints.ToString())               
                         print("Other hands",self.declarerhand.ToString(), self.partnerhand.ToString())
                     if self.declarer_constraints.MaxHCP == 99:
-                        print(f"{Fore.RED}Loop calling PIMCDef{Fore.RESET}")
-                        sys.exit(1)
+                        print(f"{Fore.RED}Loop calling PIMCDef - raising exception{Fore.RESET}")
+                        raise PIMCNoPlayoutError(f"PIMCDef cannot find any valid playouts. Legal moves: {self.pimc.LegalMovesToString}")
                     self.partner_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 99)
                     self.declarer_constraints = Constraints(0, 13, 0, 13, 0, 13, 0, 13, 0, 99)
                     card_result = self.nextplay(player_i, shown_out_suits, missing_cards)
@@ -592,6 +597,9 @@ class BGADefDLL:
                     if self.verbose:
                         print(f"{count} {card52} {tricks_avg:.2f} {score:.0f} {making_probability:.2f}")
 
+        except PIMCNoPlayoutError:
+            # Re-raise PIMC no-playout errors to be handled by caller
+            raise
         except Exception as e:
             print('Error legalMoves:', e)
             traceback_str = traceback.format_exception(type(e), e, e.__traceback__)

@@ -1,117 +1,415 @@
-# Using the BEN API
+# BEN API Documentation
 
-You can set up BEN as an api-server, where you can ask BEN for Bid or Play in any situation, but be aware, that BEN must have a system matching the meaning of the bids, otherwise the results might be bad.
+BEN (Bridge Engine Neural) provides a REST API for bridge bidding, card play, and analysis. This document describes all available endpoints.
 
-To start the server just type
+## Starting the Server
 
-```
+```bash
 python gameapi.py
 ```
 
-The api is using default_api.conf as configuration, but i can be overridden by the --config parameter
+The API uses `default_api.conf` as configuration (override with `--config`).
+Default port is 8085 (override with `--port`).
 
-The api will listen on port 8085 as default, but it can be overridden by the --port parameter
+## Common Parameters
 
-To test the api, you can start the appserver, and use the "Ask BEN" 
+These parameters are used across multiple endpoints:
 
-![image](ben_screenshot2.png)
+| Parameter | Description | Example |
+|-----------|-------------|---------|
+| `hand` | Hand in PBN format (dots or underscores as separators) | `AK97543.K.T3.AK7` or `AK97543_K_T3_AK7` |
+| `seat` | Player position | `N`, `E`, `S`, `W` |
+| `dealer` | Dealer position | `N`, `E`, `S`, `W` |
+| `vul` | Vulnerability: `@V` = We vul, `@V` = They vul | `@v@V` (both vul), empty (none) |
+| `ctx` | Bidding context as concatenated 2-char bids | `1C--1S` = 1C-Pass-1S |
+| `dummy` | Dummy's hand in PBN format | `QJ87.A95.K63.T42` |
+| `played` | Cards played as concatenated 2-char cards | `SJSQSKSA` |
+| `tournament` | Scoring type | `mp` (matchpoint) or `imps` |
+| `details` | Include extended information | `true` |
 
-The Api is a stateless api, so you must provide all information from the beginning to BEN to get the correct answer.
+### Bid Encoding in `ctx`
 
-All input is based on Querystring (will probably be changed to json post at some time), and the response is a json object.
+| Bid | Encoding |
+|-----|----------|
+| Pass | `--` or `Pa` |
+| Double | `Db` |
+| Redouble | `Rd` |
+| 1C-7N | As-is: `1C`, `2H`, `3N`, etc. |
 
-An example:
+---
 
-Dealer North
-None vulnerable
+## Endpoints
 
-You are sitting South with
+### `/bid` - Get Bid Recommendation
 
--    AK97543
--    K
--    T3
--    AK7
+Returns the recommended bid for a given hand and auction state.
 
-And would like to know what BEN would bid, after the first two hands both pass
+**Parameters:**
 
-So you create the following url
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `hand` | Yes | Your hand in PBN format |
+| `seat` | Yes | Your position (N/E/S/W) |
+| `dealer` | Yes | Dealer position (N/E/S/W) |
+| `vul` | Yes | Vulnerability string |
+| `ctx` | Yes | Current auction (can be empty for opening) |
+| `details` | No | Include candidates/samples if `true` |
+| `tournament` | No | `mp` for matchpoint scoring |
 
-http://your_server:8085/bid?user=Thorvald&dealer=N&seat=S&vul=&ctx=----&hand=AK97543.K.T3.AK7&dummy=&played=&tournament=
-
-There are 3 interesting operations on the server
-
-/bid
-/lead
-/play
-
-The parameters are:
-
-- ctx bidding replaceing pass with -- , double is Db and Redouble is Rd
-- hand the hand for BEN in PBN-notation
-- user name of the user asking or something unique
-- dealer N,S,E or W
-- seat  N,S,E or W
-- vul blank if no vulnerable @v if NS vulnerable @V if EW vulnerable and @v@V if both vulnerable
-- dummy the hand for dummy in PBN-notation
-- played the list of cards played like SJSQSKSA
-- tournament value mp if matchpoint otherwise it will be Imps
-
-Not all is mandatory for all 3 operations, just what makes sense
-
-Ok, but let us the look at the response:
+**Example Request:**
 ```
-{"bid": "1S", 
-"who": "NN", 
-"candidates": [
-    {"call": "1S", "insta_score": 0.998}], 
-    "hcp": [9.2, 7.3, 6.5], 
-    "shape": [1.9, 4.0, 3.7, 3.3, 2.4, 3.9, 3.5, 3.2, 2.2, 3.9, 3.6, 3.3]}
+GET /bid?hand=AK97543.K.T3.AK7&seat=S&dealer=N&vul=&ctx=----&tournament=mp
 ```
-So BEN is not in doubt, this is a 1S opening
 
-If more than one bid could be considered, the list of candidates would be longer, and for each candidate there can be generated samples for how the board might look based on the current bidding.
-
-When the bidding is done you can call the action /lead to get an opening lead. A response could look like this:
-```
+**Response:**
+```json
 {
-    "card": "CA", 
-    "who": "Simulation (MP)", 
-    "quality": "Good", 
-    "hcp": [7.7, 2.5, 12.4], 
-    "shape": [0.8, 4.3, 4.2, 3.7, 0.4, 4.6, 4.1, 3.9, 7.0, 2.2, 2.0, 1.9], 
-    "candidates": [
-        {"card": "CA", "insta_score": 0.325, "expected_tricks_sd": 5.28, "p_make_contract": 1.0, "expected_score_sd": 236}, 
-        {"card": "CK", "insta_score": 0.276, "expected_tricks_sd": 5.28, "p_make_contract": 1.0, "expected_score_sd": 236}, 
-        {"card": "HK", "insta_score": 0.273, "expected_tricks_sd": 5.33, "p_make_contract": 1.0, "expected_score_sd": 233}, 
-        {"card": "DT", "insta_score": 0.065, "expected_tricks_sd": 5.41, "p_make_contract": 1.0, "expected_score_sd": 230}], 
-        "samples": [
-            "AK9xxxx.K.Tx.AKx J.QJ9x.A98x.xxxx Q.8xxxx.QJxx.QT9 T8xx.ATx.Kxx.J8x 0.74974", 
-            "AK9xxxx.K.Tx.AKx x.AJxx.9xxx.JT9x .T9xxx.QJ8.Q8xxx QJT8x.Q8x.AKxx.x 0.73924", 
-            "AK9xxxx.K.Tx.AKx 8.QT8xx.KQxxx.xx QJ.J9x.8xx.QJ98x Txx.Axxx.AJ9.Txx 0.74969", 
-            "AK9xxxx.K.Tx.AKx 8.QJxx.A9xx.8xxx J.Txxx.KQJ8x.QJ9 QTxx.A98x.xx.Txx 0.74518", 
-            "AK9xxxx.K.Tx.AKx x.JTxx.AQxx.Qxxx Q.Q8xx.KJxx.JT98 JT8x.A9xx.98x.xx 0.74995", 
-            "AK9xxxx.K.Tx.AKx J8.ATx.J9x.QJxxx .Q98xx.Axxx.T9xx QTxx.Jxxx.KQ8x.8 0.74787", 
-            "AK9xxxx.K.Tx.AKx .98xx.AK8x.QJT9x .QJxx.Qxxxx.8xxx QJT8xx.ATxx.J9.x 0.72345", 
-            "AK9xxxx.K.Tx.AKx .AQxx.Q98xx.QT9x T.J98xxx.xxx.8xx QJ8xx.Tx.AKJ.Jxx 0.74054", 
-            "AK9xxxx.K.Tx.AKx .T9xxx.AKxx.T9xx J.AJxx.QJ98.Qxxx QT8xx.Q8x.xxx.J8 0.73949", 
-            "AK9xxxx.K.Tx.AKx T.xx.AKJ9x.Q8xxx J.AQTxx.Qxxx.T9x Q8xx.J98xx.8x.Jx 0.73921", 
-            "AK9xxxx.K.Tx.AKx x.QJ9xx.J8x.Q98x .T8xxx.KQ9xx.xxx QJT8x.Ax.Axx.JTx 0.74379", 
-            "AK9xxxx.K.Tx.AKx x.AJx.QJ98x.T8xx T.QT8xx.xx.J9xxx QJ8x.9xxx.AKxx.Q 0.74960", 
-            "AK9xxxx.K.Tx.AKx Q.Jxxx.AQ98x.xxx .Q98xx.Kxxxx.JTx JT8xx.ATx.J.Q98x 0.74266", 
-            "AK9xxxx.K.Tx.AKx x.xxx.AQxxx.Txxx T.AT9xx.8xx.Q98x QJ8x.QJ8x.KJ9.Jx 0.74816", 
-            "AK9xxxx.K.Tx.AKx .Q9xx.KJxxx.98xx J.8xxx.AQ98x.Txx QT8xx.AJTx.x.QJx 0.74260", 
-            "AK9xxxx.K.Tx.AKx x.AQ8x.Axxxx.8xx T.T9xxx.QJx.QT9x QJ8x.Jxx.K98.Jxx 0.73138", 
-            "AK9xxxx.K.Tx.AKx .8xxxx.AQJ9x.Jxx .QTxx.xxxx.Q98xx QJT8xx.AJ9.K8.Tx 0.74815", 
-            "AK9xxxx.K.Tx.AKx .Jxxx.AQ9xx.T9xx .T8xx.Jxxx.QJ8xx QJT8xx.AQ9x.K8.x 0.74835", 
-            "AK9xxxx.K.Tx.AKx x.ATxxx.K9xx.8xx .J98xx.J8x.QJxxx QJT8x.Qx.AQxx.T9 0.74635", 
-            "AK9xxxx.K.Tx.AKx .JTxx.KJ8xx.QJxx Tx.Q8xx.9xx.T98x QJ8x.A9xx.AQx.xx 0.74990"]}
-
+  "bid": "1S",
+  "who": "NN",
+  "quality": "Good",
+  "candidates": [
+    {"call": "1S", "insta_score": 0.998}
+  ],
+  "hcp": [9.2, 7.3, 6.5],
+  "shape": [1.9, 4.0, 3.7, 3.3, ...]
+}
 ```
 
-So also here you get a lot of information about possible cards, and some statistics for each card, but you can also just use the card suggested by BEN
+---
 
-And finally during play, you use the action /play and each time send all the cards in play order (The api is stateless) and you will get a response like the above
+### `/bids` - List All Possible Bids
 
-### What can the Api be used for?
+Returns all possible bids for an auction context with their meanings from the bidding system.
 
-You cvan use it to serve as robot for play sites, but you can also use it to give players hints, when they are in doubt. Some might find it interesting to look at the generated samples for more complex bidding.
+**Parameters:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `ctx` | Yes | Current auction |
+| `file_us` | No | Convention card file for our side |
+| `file_them` | No | Convention card file for opponents |
+
+**Example Request:**
+```
+GET /bids?ctx=1N--
+```
+
+**Response:**
+```json
+[
+  {"bid": "2C", "description": "Stayman"},
+  {"bid": "2D", "description": "Transfer to hearts"},
+  {"bid": "2H", "description": "Transfer to spades"},
+  ...
+]
+```
+
+---
+
+### `/lead` - Get Opening Lead
+
+Returns the recommended opening lead after the auction.
+
+**Parameters:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `hand` | Yes | Your hand in PBN format |
+| `seat` | Yes | Your position (N/E/S/W) |
+| `dealer` | Yes | Dealer position |
+| `vul` | Yes | Vulnerability string |
+| `ctx` | Yes | Complete auction |
+| `details` | No | Include candidates/samples if `true` |
+
+**Example Request:**
+```
+GET /lead?hand=KJ53.KJ7.AT92.K5&seat=W&dealer=N&vul=@v&ctx=1N--3N------
+```
+
+**Response:**
+```json
+{
+  "card": "CA",
+  "who": "Simulation (MP)",
+  "quality": "Good",
+  "hcp": [7.7, 2.5, 12.4],
+  "shape": [0.8, 4.3, 4.2, 3.7, ...],
+  "candidates": [
+    {"card": "CA", "insta_score": 0.325, "expected_tricks_sd": 5.28, "p_make_contract": 1.0, "expected_score_sd": 236},
+    {"card": "CK", "insta_score": 0.276, "expected_tricks_sd": 5.28, "p_make_contract": 1.0, "expected_score_sd": 236}
+  ],
+  "samples": [...]
+}
+```
+
+---
+
+### `/play` - Get Card to Play
+
+Returns the recommended card to play during the card play phase.
+
+**Parameters:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `hand` | Yes | Your hand in PBN format |
+| `dummy` | Yes | Dummy's hand in PBN format |
+| `seat` | Yes | Your position (N/E/S/W) |
+| `dealer` | Yes | Dealer position |
+| `vul` | Yes | Vulnerability string |
+| `ctx` | Yes | Complete auction |
+| `played` | Yes | Cards played so far (concatenated) |
+| `details` | No | Include candidates/samples if `true` |
+| `format` | No | `true` if cards are in PBN trick format |
+
+**Example Request:**
+```
+GET /play?hand=AK97543.K.T3.AK7&dummy=QJ87.A95.K63.T42&seat=S&dealer=N&vul=&ctx=1S--4S------&played=DJDKD3D2
+```
+
+**Response:**
+```json
+{
+  "card": "S7",
+  "who": "Simulation",
+  "quality": "Good",
+  "player": 3,
+  "matchpoint": false,
+  "candidates": [...],
+  "samples": [...]
+}
+```
+
+**Note:** The `player` field indicates the position relative to declarer:
+- `0` = LHO (Left Hand Opponent)
+- `1` = Dummy
+- `2` = RHO (Right Hand Opponent)
+- `3` = Declarer
+
+---
+
+### `/claim` - Verify a Claim
+
+Verifies whether a claim of a certain number of tricks is valid.
+
+**Parameters:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `tricks` | Yes | Number of tricks claimed |
+| `hand` | Yes | Your hand in PBN format |
+| `dummy` | Yes | Dummy's hand in PBN format |
+| `seat` | Yes | Your position (N/E/S/W) |
+| `dealer` | Yes | Dealer position |
+| `vul` | Yes | Vulnerability string |
+| `ctx` | Yes | Complete auction |
+| `played` | Yes | Cards played so far |
+
+**Example Request:**
+```
+GET /claim?tricks=10&hand=AK97.K.T3.AK7&dummy=QJ87.A95.K63.T42&seat=S&dealer=N&vul=&ctx=4S------&played=...
+```
+
+**Response:**
+```json
+{
+  "tricks": 10,
+  "result": "Contract: 4S Accepted declarers claim of 10 tricks"
+}
+```
+
+---
+
+### `/autoplay` - Auto-Play Complete Board
+
+Plays a complete board with BEN handling all 4 positions for bidding and card play.
+
+**Parameters:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `deal` | Yes | PBN deal string (4 hands space-separated) |
+| `board` | No | Board number 1-16 for dealer/vul (default: 1) |
+| `dealer` | No | Override dealer (N/E/S/W) |
+| `vul` | No | Override vulnerability (None/NS/EW/Both) |
+
+**Example Request:**
+```
+GET /autoplay?deal=862.62.AQT52.A96 AQJT9.Q875.97.K7 7543.AT943.8.JT8 K.KJ.KJ643.Q5432&board=5
+```
+
+**Response:**
+```json
+{
+  "deal": "862.62.AQT52.A96 AQJT9.Q875.97.K7 7543.AT943.8.JT8 K.KJ.KJ643.Q5432",
+  "dealer": "N",
+  "vulnerability": "N-S",
+  "auction": ["1D", "1S", "2H", "PASS", "4H", "PASS", "PASS", "PASS"],
+  "contract": "4H",
+  "declarer": "S",
+  "tricks": 10,
+  "score": 420,
+  "ns_score": 420,
+  "play": ["S2", "SA", "S3", "SK", ...],
+  "elapsed": 45.23
+}
+```
+
+---
+
+### `/contract` - Predict Contract
+
+Predicts the likely contract given two hands (for partnership simulation).
+
+**Parameters:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `hand` | Yes | First hand in PBN format |
+| `dummy` | Yes | Second hand in PBN format |
+| `seat` | Yes | Position of first hand |
+| `vul` | Yes | Vulnerability string |
+
+**Response:**
+```json
+{
+  "3N": {
+    "score": 0.85,
+    "Tricks": [9, 10],
+    "Percentage": [0.45, 0.35]
+  },
+  "4H": {
+    "score": 0.12,
+    "Tricks": [10],
+    "Percentage": [0.80]
+  }
+}
+```
+
+---
+
+### `/explain` - Explain a Bid
+
+Returns explanation for a specific bid in context.
+
+**Parameters:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `ctx` | Yes | Auction up to and including the bid to explain |
+
+**Example Request:**
+```
+GET /explain?ctx=1N--2C
+```
+
+---
+
+### `/explain_auction` - Explain Full Auction
+
+Returns explanations for all bids in an auction.
+
+**Parameters:**
+
+| Parameter | Required | Description |
+|-----------|----------|-------------|
+| `ctx` | Yes | Complete auction to explain |
+
+---
+
+## Response Fields
+
+### Common Response Fields
+
+| Field | Description |
+|-------|-------------|
+| `bid` / `card` | The recommended action |
+| `who` | Algorithm that made the decision (NN, Simulation, etc.) |
+| `quality` | Confidence level (Good, Fair, etc.) |
+| `candidates` | Alternative options with scores |
+| `samples` | Sample hands generated for analysis |
+| `hcp` | HCP distribution estimates |
+| `shape` | Shape distribution estimates |
+
+### Candidate Fields
+
+| Field | Description |
+|-------|-------------|
+| `call` / `card` | The bid or card |
+| `insta_score` | Neural network score |
+| `expected_tricks_sd` | Expected tricks from simulation |
+| `p_make_contract` | Probability of making contract |
+| `expected_score_sd` | Expected score from simulation |
+
+---
+
+## Error Handling
+
+All endpoints return HTTP 400 with an error message on failure:
+
+```json
+{
+  "error": "An error occurred: Invalid hand format"
+}
+```
+
+Rate limiting is enforced (default: 10000/hour, 100/minute). When exceeded:
+
+```json
+{
+  "error": "Rate limit exceeded. Please try again later.",
+  "limit": "100 per 1 minute"
+}
+```
+
+---
+
+## Usage Examples
+
+### Complete Bidding Sequence
+
+```python
+import requests
+
+BASE = "http://localhost:8085"
+
+# North opens
+r = requests.get(f"{BASE}/bid", params={
+    "hand": "AKQ.KQJ.AT98.KQ2",
+    "seat": "N", "dealer": "N", "vul": "", "ctx": ""
+})
+print(r.json()["bid"])  # "2C" (strong)
+
+# East passes
+r = requests.get(f"{BASE}/bid", params={
+    "hand": "432.432.432.4322",
+    "seat": "E", "dealer": "N", "vul": "", "ctx": "2C"
+})
+print(r.json()["bid"])  # "PASS"
+```
+
+### Getting Opening Lead
+
+```python
+r = requests.get(f"{BASE}/lead", params={
+    "hand": "KJ53.KJ7.AT92.K5",
+    "seat": "W",
+    "dealer": "N",
+    "vul": "@v",
+    "ctx": "2C--2D--2N--3N------"
+})
+print(r.json()["card"])  # e.g., "DA"
+```
+
+---
+
+## Integration with Other Systems
+
+The BEN API is designed to be stateless - you must provide all game state information with each request. This makes it easy to integrate with:
+
+- Online bridge platforms (as a robot player)
+- Training tools (hint systems)
+- Analysis tools (post-game review)
+- Tournament directors (claim verification)
+
+For integration with the Brill bidding system, use the same endpoint format - Brill's `/bid` endpoint accepts identical parameters.

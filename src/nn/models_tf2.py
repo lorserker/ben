@@ -20,9 +20,10 @@ class Models:
                  double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_use_discarding, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_stop_trick_declarer, pimc_stop_trick_defender, pimc_constraints, 
                  pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
                  pimc_ben_dd_declaring_weight, pimc_ben_dd_defending_weight, pimc_margin_suit, pimc_margin_hcp, pimc_margin_suit_bad_samples, pimc_margin_hcp_bad_samples, pimc_bidding_quality, pimc_after_preempt, pimc_after_preempt_weight,
-                 ace_verbose, ace_use_declaring, ace_use_defending, ace_search_duration, ace_search_depth, ace_threads,
+                 ace_verbose, ace_use_declaring, ace_use_defending, ace_search_duration, ace_search_iterations, ace_search_depth, ace_threads,
                  ace_start_trick_declarer, ace_start_trick_defender, ace_stop_trick_declarer, ace_stop_trick_defender,
                  ace_ben_dd_declaring, ace_ben_dd_defending, ace_ben_dd_declaring_weight, ace_ben_dd_defending_weight,
+                 ace_decl_opponent_model, ace_decl_partner_model, ace_def_opponent_model, ace_def_partner_model,
                  alphamju_declaring, alphamju_defending, alphamju_trick, adjust_hcp, 
                  use_adjustment, adjust_NN, adjust_NN_undisturbed, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
                  use_suitc, force_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
@@ -117,6 +118,7 @@ class Models:
         self.ace_use_declaring = ace_use_declaring
         self.ace_use_defending = ace_use_defending
         self.ace_search_duration = ace_search_duration
+        self.ace_search_iterations = ace_search_iterations
         self.ace_search_depth = ace_search_depth
         self.ace_threads = ace_threads
         self.ace_start_trick_declarer = ace_start_trick_declarer
@@ -127,6 +129,10 @@ class Models:
         self.ace_ben_dd_defending = ace_ben_dd_defending
         self.ace_ben_dd_declaring_weight = ace_ben_dd_declaring_weight
         self.ace_ben_dd_defending_weight = ace_ben_dd_defending_weight
+        self.ace_decl_opponent_model = ace_decl_opponent_model
+        self.ace_decl_partner_model = ace_decl_partner_model
+        self.ace_def_opponent_model = ace_def_opponent_model
+        self.ace_def_partner_model = ace_def_partner_model
         self.alphamju_declaring = alphamju_declaring
         self.alphamju_defending = alphamju_defending
         self.alphamju_trick = alphamju_trick
@@ -259,6 +265,7 @@ class Models:
         ace_use_declaring = conf.getboolean('ace', 'ace_use_declaring', fallback=False)
         ace_use_defending = conf.getboolean('ace', 'ace_use_defending', fallback=False)
         ace_search_duration = conf.getint('ace', 'ace_search_duration', fallback=2000)
+        ace_search_iterations = conf.getint('ace', 'ace_search_iterations', fallback=0)
         ace_search_depth = conf.getint('ace', 'ace_search_depth', fallback=2)
         ace_threads = conf.getint('ace', 'ace_threads', fallback=10)
         ace_start_trick_declarer = conf.getint('ace', 'ace_start_trick_declarer', fallback=1)
@@ -269,6 +276,12 @@ class Models:
         ace_ben_dd_defending = conf.getboolean('ace', 'ace_ben_dd_defending', fallback=True)
         ace_ben_dd_declaring_weight = conf.getfloat('ace', 'ace_ben_dd_declaring_weight', fallback=0.5)
         ace_ben_dd_defending_weight = conf.getfloat('ace', 'ace_ben_dd_defending_weight', fallback=0.5)
+        # ACE model settings for evaluation
+        # Available models: Optimistic, Adversarial, Expectation, LinearBlend(lambda), SoftMax(tau), SoftMin(tau)
+        ace_decl_opponent_model = conf.get('ace', 'ace_decl_opponent_model', fallback='SoftMin(0.5)')
+        ace_decl_partner_model = conf.get('ace', 'ace_decl_partner_model', fallback='Optimistic')
+        ace_def_opponent_model = conf.get('ace', 'ace_def_opponent_model', fallback='SoftMin(0.5)')
+        ace_def_partner_model = conf.get('ace', 'ace_def_partner_model', fallback='SoftMax(0.5)')
 
         alphamju_declaring = conf.getboolean('alphamju', 'alphamju_declaring', fallback=False)
         alphamju_defending = conf.getboolean('alphamju', 'alphamju_defending', fallback=False)
@@ -453,6 +466,7 @@ class Models:
             ace_use_declaring=ace_use_declaring,
             ace_use_defending=ace_use_defending,
             ace_search_duration=ace_search_duration,
+            ace_search_iterations=ace_search_iterations,
             ace_search_depth=ace_search_depth,
             ace_threads=ace_threads,
             ace_start_trick_declarer=ace_start_trick_declarer,
@@ -463,6 +477,10 @@ class Models:
             ace_ben_dd_defending=ace_ben_dd_defending,
             ace_ben_dd_declaring_weight=ace_ben_dd_declaring_weight,
             ace_ben_dd_defending_weight=ace_ben_dd_defending_weight,
+            ace_decl_opponent_model=ace_decl_opponent_model,
+            ace_decl_partner_model=ace_decl_partner_model,
+            ace_def_opponent_model=ace_def_opponent_model,
+            ace_def_partner_model=ace_def_partner_model,
             alphamju_declaring=alphamju_declaring,
             alphamju_defending=alphamju_defending,
             alphamju_trick=alphamju_trick,

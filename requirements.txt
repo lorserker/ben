@@ -7,7 +7,7 @@ pandas
 
 tqdm
 
-websockets
+websockets>=15.0.1
 
 keras==3.6.0
 tensorflow==2.18

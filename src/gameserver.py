@@ -31,6 +31,7 @@ import time
 import datetime
 import asyncio
 import websockets
+from packaging import version as pkg_version
 import argparse
 import game
 import human
@@ -46,8 +47,15 @@ from colorama import Fore, Back, Style, init
 import gc
 import psutil
 
-version = '0.8.7.4'
+version = '0.8.7.5'
 init()
+
+# Check websockets version - 15.0+ removed path as handler argument
+WEBSOCKETS_VERSION = pkg_version.parse(websockets.__version__)
+if WEBSOCKETS_VERSION < pkg_version.parse("15.0"):
+    sys.stderr.write(f"{Fore.RED}Error: websockets version {websockets.__version__} is not supported.{Fore.RESET}\n")
+    sys.stderr.write(f"{Fore.RED}Please upgrade to websockets >= 15.0: pip install --upgrade websockets{Fore.RESET}\n")
+    sys.exit(1)
 
 # Custom function to convert string to boolean
 def str_to_bool(value):
@@ -194,6 +202,14 @@ if models.use_suitc:
     suitc = SuitCLib(verbose)
     print(f"SuitC enabled. Version {suitc.version()}")
 
+if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
+    from ace.ACE import ACEDLL
+    ace = ACEDLL(None, None, None, None, None, None, None)
+    from ace.ACEDef import ACEDefDLL
+    acedef = ACEDefDLL(None, None, None, None, None, None, None, None)
+    print(f"ACE enabled. Version {ace.version()}")
+    print(f"ACEDef enabled. Version {acedef.version()}")
+
 if models.pimc_use_declaring or models.pimc_use_defending:
     from pimc.PIMC import BGADLL
     pimc = BGADLL(None, None, None, None, None, None, None)
@@ -241,8 +257,11 @@ def worker(driver):
     asyncio.new_event_loop().run_until_complete(driver.run())
 
 
-async def handler(websocket, path, board_no, seed):
+async def handler(websocket, board_no, seed):
     print('{} Got websocket connection'.format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+
+    # In websockets 15.0+, path is accessed via websocket.request.path
+    path = websocket.request.path
 
     driver = game.Driver(models, human.WebsocketFactory(websocket, verbose), Sample.from_conf(configuration, verbose), seed, dds, verbose)
     play_only = False
@@ -328,7 +347,9 @@ async def handler(websocket, path, board_no, seed):
 
 async def main():
     sys.stderr.write(f"{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Listening on port: {port}{Fore.RESET}\n")
-    start_server = websockets.serve(functools.partial(handler, board_no=board_no, seed=seed), "0.0.0.0", port, 
+    sys.stderr.write(f"websockets version: {websockets.__version__}\n")
+
+    start_server = websockets.serve(functools.partial(handler, board_no=board_no, seed=seed), "0.0.0.0", port,
         ping_timeout=60,  # 60 seconds timeout for pings
         close_timeout=60  # 60 seconds timeout for closing the connection
         )

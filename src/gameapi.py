@@ -44,6 +44,26 @@ from objects import Card, CardResp
 import deck52
 import binary
 
+# Import PIMC exceptions for fallback handling
+try:
+    from pimc.PIMC import PIMCNoPlayoutError as PIMCNoPlayoutErrorDeclarer
+except ImportError:
+    PIMCNoPlayoutErrorDeclarer = None
+try:
+    from pimc.PIMCDef import PIMCNoPlayoutError as PIMCNoPlayoutErrorDefender
+except ImportError:
+    PIMCNoPlayoutErrorDefender = None
+
+# Import ACE classes for alternative play engine
+try:
+    from ace.ACE import ACEDLL
+except ImportError:
+    ACEDLL = None
+try:
+    from ace.ACEDef import ACEDefDLL
+except ImportError:
+    ACEDefDLL = None
+
 from flask import Flask, Response, request, jsonify, abort
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
@@ -76,7 +96,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.7.4'
+version = '0.8.7.5'
 init()
 
 def handle_exception(e):
@@ -108,30 +128,50 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
 
     pimc = [None, None, None, None]
 
-    # We should only instantiate the PIMC for the position we are playing
-    if models.pimc_use_declaring and cardplayer_i == 3: 
+    # Check if ACE is enabled (takes priority over PIMC)
+    ace_use_declaring = getattr(models, 'ace_use_declaring', False)
+    ace_use_defending = getattr(models, 'ace_use_defending', False)
+
+    # We should only instantiate the play engine for the position we are playing
+    # ACE takes priority over PIMC when enabled
+    if ace_use_declaring and cardplayer_i == 3 and ACEDLL is not None:
+        declarer = ACEDLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
+        pimc[1] = declarer
+        pimc[3] = declarer
+        if verbose:
+            print("ACE", dummy_hand_str, decl_hand_str, contract)
+    elif models.pimc_use_declaring and cardplayer_i == 3:
         from pimc.PIMC import BGADLL
         declarer = BGADLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
         pimc[1] = declarer
         pimc[3] = declarer
         if verbose:
-            print("PIMC",dummy_hand_str, decl_hand_str, contract)
+            print("PIMC", dummy_hand_str, decl_hand_str, contract)
     else:
         pimc[1] = None
         pimc[3] = None
-    if models.pimc_use_defending and (cardplayer_i == 0):
+
+    if ace_use_defending and (cardplayer_i == 0) and ACEDefDLL is not None:
+        pimc[0] = ACEDefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
+        if verbose:
+            print("ACE", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+    elif models.pimc_use_defending and (cardplayer_i == 0):
         from pimc.PIMCDef import BGADefDLL
         pimc[0] = BGADefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
         if verbose:
-            print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+            print("PIMC", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
     else:
         pimc[0] = None
 
-    if models.pimc_use_defending and (cardplayer_i == 2):
+    if ace_use_defending and (cardplayer_i == 2) and ACEDefDLL is not None:
+        pimc[2] = ACEDefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
+        if verbose:
+            print("ACE", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+    elif models.pimc_use_defending and (cardplayer_i == 2):
         from pimc.PIMCDef import BGADefDLL
         pimc[2] = BGADefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
         if verbose:
-            print("PIMC",dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+            print("PIMC", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
     else:
         pimc[2] = None
 
@@ -198,9 +238,9 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                         hidden_cards=deck,
                         current_trick=current_trick52
                     )
+                    claimedbydeclarer = (player_i == 3) or (player_i == 1)
                     if (claim <= canclaim):
                         # player_i is relative to declarer
-                        claimedbydeclarer = (player_i == 3) or (player_i == 1)
                         if claimedbydeclarer:
                             msg = f"Contract: {contract} Accepted declarers claim of {claim} tricks"
                         else:
@@ -210,6 +250,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                             msg = f"Declarer claimed {claim} tricks - rejected {canclaim}"
                         else:
                             msg = f"Opponents claimed {claim} tricks - rejected {canclaim}"
+                    print(msg)
                     return None, player_i, msg
 
                 assert (player_i == cardplayer_i or (player_i == 1 and cardplayer_i == 3)), f"Cardplay order is not correct {play} {player_i} {cardplayer_i} (or another player to play a card)"
@@ -310,7 +351,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
         tricks.append(current_trick)
         tricks52.append(current_trick52)
 
-        if models.pimc_use_declaring or models.pimc_use_defending:
+        if models.pimc_use_declaring or models.pimc_use_defending or ace_use_declaring or ace_use_defending:
             for card_player in card_players:
                 if isinstance(card_player, CardPlayer) and card_player.pimc:
                     card_player.pimc.reset_trick()
@@ -356,7 +397,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
         if trick_winner % 2 == 0:
             card_players[0].n_tricks_taken += 1
             card_players[2].n_tricks_taken += 1
-            if models.pimc_use_defending:
+            if models.pimc_use_defending or ace_use_defending:
                 if isinstance(card_players[0], CardPlayer) and card_players[0].pimc:
                     card_players[0].pimc.update_trick_needed()
                 if isinstance(card_players[2], CardPlayer) and card_players[2].pimc:
@@ -364,8 +405,8 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
         else:
             card_players[1].n_tricks_taken += 1
             card_players[3].n_tricks_taken += 1
-            if models.pimc_use_declaring:
-                if isinstance(card_players[3], CardPlayer) and card_players[3].pimc :
+            if models.pimc_use_declaring or ace_use_declaring:
+                if isinstance(card_players[3], CardPlayer) and card_players[3].pimc:
                     card_players[3].pimc.update_trick_needed()
 
         if verbose:
@@ -395,6 +436,25 @@ def create_auction(bids, dealer_i):
     auction = [bid.upper().replace('--', "PASS").replace('DB', 'X').replace('RD', 'XX') for bid in bids]
     auction = ['PAD_START'] * dealer_i + auction
     return auction
+
+def parse_vuln(v):
+    """
+    Parse vulnerability from absolute format to [vuln_ns, vuln_ew].
+
+    Accepted formats:
+    - None, - (empty): No one vulnerable
+    - NS, N-S: North-South vulnerable
+    - EW, E-W: East-West vulnerable
+    - All, Both: Both sides vulnerable
+
+    Returns: [vuln_ns, vuln_ew] where each is True/False
+    """
+    if v is None:
+        v = ''
+    v_upper = v.upper().strip()
+    vuln_ns = v_upper in ['NS', 'N-S', 'BOTH', 'ALL']
+    vuln_ew = v_upper in ['EW', 'E-W', 'BOTH', 'ALL']
+    return [vuln_ns, vuln_ew]
 
 random = True
 # For some strange reason parameters parsed to the handler must be an array
@@ -435,7 +495,7 @@ if util.is_pyinstaller_executable():
 else:
     print(f"Running in a standard Python environment: {platform.python_version()}")
 
-print(f"Python version: {sys.version}{Fore.RESET}")
+print(f"Python version: {sys.version}{Fore.RESET} {verbose}")
 
 if sys.platform == 'win32':
     # Print the PythonNet version
@@ -521,6 +581,14 @@ if models.pimc_use_declaring or models.pimc_use_defending:
     pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
     print(f"PIMC enabled. Version {pimc.version()}")
     print(f"PIMCDef enabled. Version {pimcdef.version()}")
+
+if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
+    from ace.ACE import ACEDLL
+    ace = ACEDLL(None, None, None, None, None, None, None)
+    from ace.ACEDef import ACEDefDLL
+    acedef = ACEDefDLL(None, None, None, None, None, None, None, None)
+    print(f"ACE enabled. Version {ace.version()}")
+    print(f"ACEDef enabled. Version {acedef.version()}")
 
 from ddsolver import ddsolver
 dds = ddsolver.DDSolver()
@@ -709,11 +777,9 @@ def bid():
             else:
                 hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_bidding)
         seat = request.args.get("seat")
-        # Then vulnerability
+        # Vulnerability (absolute format: None, NS, EW, All/Both)
         v = request.args.get("vul")
-        vuln = []
-        vuln.append('@v' in v)
-        vuln.append('@V' in v)
+        vuln = parse_vuln(v)
         # And finally the bidding, where we deduct dealer and our position
         dealer = request.args.get("dealer")
         dealer_i = dealer_enum[dealer]
@@ -787,11 +853,9 @@ def lead():
                 hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_bidding)
             print(hand)
         seat = request.args.get("seat")
-        # Then vulnerability
+        # Vulnerability (absolute format: None, NS, EW, All/Both)
         v = request.args.get("vul")
-        vuln = []
-        vuln.append('@v' in v)
-        vuln.append('@V' in v)
+        vuln = parse_vuln(v)
         # And finally the dealer and bidding
         dealer = request.args.get("dealer")
         dealer_i = dealer_enum[dealer]
@@ -839,7 +903,7 @@ def lead():
 
 
 @app.route('/play')
-@limiter.limit("1000/hour;100/minute")
+@limiter.limit("10000/hour;100/minute")
 def play():
     try:
         t_start = time.time()
@@ -889,13 +953,11 @@ def play():
             result = {"message":"Hand should have 13 cards"}
             print(result)
             return json.dumps(result)
-    
+
         seat = request.args.get("seat")
-        # Then vulnerability
+        # Vulnerability (absolute format: None, NS, EW, All/Both)
         v = request.args.get("vul")
-        vuln = []
-        vuln.append('@v' in v)
-        vuln.append('@V' in v)
+        vuln = parse_vuln(v)
         # And finally the bidding, where we deduct dealer and our position
         dealer = request.args.get("dealer")
         dealer_i = dealer_enum[dealer]
@@ -1085,11 +1147,9 @@ def explain():
     from bba.BBA import BBABotBid
     # First we extract the hands and seat
     seat = request.args.get("seat")
-    # Then vulnerability
+    # Vulnerability (absolute format: None, NS, EW, All/Both)
     v = request.args.get("vul")
-    vuln = []
-    vuln.append('@v' in v)
-    vuln.append('@V' in v)
+    vuln = parse_vuln(v)
     mp = models.matchpoint
     if request.args.get("tournament"):
         mp = request.args.get("tournament").lower() == "mp"
@@ -1119,11 +1179,9 @@ def explain_auction():
     from bba.BBA import BBABotBid
     # First we extract the hands and seat
     seat = request.args.get("seat")
-    # Then vulnerability
+    # Vulnerability (absolute format: None, NS, EW, All/Both)
     v = request.args.get("vul")
-    vuln = []
-    vuln.append('@v' in v)
-    vuln.append('@V' in v)
+    vuln = parse_vuln(v)
     mp = models.matchpoint
     if request.args.get("tournament"):
         mp = request.args.get("tournament").lower() == "mp"
@@ -1156,7 +1214,7 @@ def explain_auction():
 
     return json.dumps(result)
 @app.route('/bids')
-@limiter.limit("1000/hour;100/minute")
+@limiter.limit("10000/hour;100/minute")
 def bids():
     t_start = time.time()
     base_path = os.getenv('BEN_HOME') or '..'
@@ -1184,7 +1242,7 @@ def bids():
     bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
 
     auction = create_auction(bids, dealer_i)
-    #print("auction", auction, ctx)
+    print("auction", auction, ctx)
 
     result = bot.list_bids(auction)
     
@@ -1204,11 +1262,9 @@ def contract():
         if 'X' in dummy_str:
             dummy_str = replace_x(dummy_str,get_random_generator(dummy_str), hand_str, [], models.n_cards_bidding)
         seat = request.args.get("seat")
-        # Then vulnerability
+        # Vulnerability (absolute format: None, NS, EW, All/Both)
         v = request.args.get("vul")
-        vuln = []
-        vuln.append('@v' in v)
-        vuln.append('@V' in v)
+        vuln = parse_vuln(v)
         # And finally we deduct our position
         position_i = dealer_enum[seat]
         X = get_binary_contract(position_i, vuln, hand_str, dummy_str, models.n_cards_bidding)
@@ -1254,7 +1310,7 @@ def contract():
 def claim():
     try:
         t_start = time.time()
-        claim = request.args.get("tricks")
+        claim = int(request.args.get("tricks"))
         # First we extract the hands and seat
         hand_str = request.args.get("hand").replace('_','.')
         dummy_str = request.args.get("dummy").replace('_','.')
@@ -1276,13 +1332,11 @@ def claim():
             result = {"message":"No dummy provided"}
             print(result)
             return json.dumps(result)
-        
+
         seat = request.args.get("seat")
-        # Then vulnerability
+        # Vulnerability (absolute format: None, NS, EW, All/Both)
         v = request.args.get("vul")
-        vuln = []
-        vuln.append('@v' in v)
-        vuln.append('@V' in v)
+        vuln = parse_vuln(v)
         # And finally the bidding, where we deduct dealer and our position
         dealer = request.args.get("dealer")
         dealer_i = dealer_enum[dealer]
@@ -1392,6 +1446,637 @@ def extract_from_pbn(cards, strain_i):
 def ratelimit_handler(e):
     # The `e.description` will contain the limit that was hit.
     return jsonify(error="Rate limit exceeded. Please try again later.", limit=e.description), 429
+
+@app.route('/autoplay')
+def autoplay():
+    """
+    Auto-play a complete board with all 4 hands played by BEN.
+
+    Parameters:
+        deal (str): PBN deal string (required) - e.g. "862.62.AQT52.A96 AQJT9.Q875.97.K7 7543.AT943.8.JT8 K.KJ.KJ643.Q5432"
+        board (int): Board number 1-16 for dealer/vulnerability (default: 1)
+        dealer (str): Optional dealer override (N/E/S/W)
+        vul (str): Optional vulnerability override (None/NS/EW/Both)
+        bidding_only (str): If "True", return after bidding without card play (default: "False")
+
+    Returns:
+        JSON with auction, play, contract, tricks, and score
+        If bidding_only=True: JSON with auction, contract, declarer, opening_leader (no play)
+    """
+    try:
+        t_start = time.time()
+
+        # Get parameters
+        board_number = request.args.get("board", 1, type=int)
+        deal_str = request.args.get("deal")
+        dealer_param = request.args.get("dealer")
+        vuln_param = request.args.get("vul")
+        bidding_only = request.args.get("bidding_only", "False")
+        fixed_auction_param = request.args.get("auction")  # Optional: comma-separated bids to use instead of generating
+
+        if deal_str is None:
+            return jsonify({"error": "'deal' parameter required"}), 400
+
+        # URL encoding may have converted spaces to + signs
+        deal_str = deal_str.replace('+', ' ')
+
+        # Set random seed based on deal hash (same as game.py)
+        # This ensures reproducible card play that matches game.py
+        hash_integer = calculate_seed(deal_str)
+        print(f"[Autoplay] Setting seed based on deal hash: {hash_integer}")
+        np.random.seed(hash_integer)
+        tf.random.set_seed(hash_integer)
+
+        mp = models.matchpoint      
+        if request.args.get("tournament"):
+            mp = request.args.get("tournament").lower() == "mp"
+            models.matchpoint = mp
+
+        # Get dealer and vulnerability from parameters or board number
+        if dealer_param:
+            dealer = dealer_param.upper()
+        else:
+            auction_str = deck52.board_dealer_vuln(board_number)
+            parts = auction_str.split()
+            dealer = parts[0]
+
+        if vuln_param:
+            vuln_str = vuln_param
+            vuln_ns = vuln_str.upper() in ['NS', 'N-S', 'BOTH', 'ALL']
+            vuln_ew = vuln_str.upper() in ['EW', 'E-W', 'BOTH', 'ALL']
+        else:
+            auction_str = deck52.board_dealer_vuln(board_number)
+            parts = auction_str.split()
+            vuln_str = parts[1] if len(parts) > 1 else 'None'
+            vuln_ns = vuln_str in ['N-S', 'Both']
+            vuln_ew = vuln_str in ['E-W', 'Both']
+
+        dealer_i = dealer_enum[dealer]
+        hands = deal_str.split()
+        vuln = [vuln_ns, vuln_ew]  # Set vuln early so it's available for both bidding and fixed auction paths
+
+        if verbose:
+            print(f"[Autoplay] Board: {board_number}, Deal hash: {hash_integer}")
+            print(f"[Autoplay] Deal: {deal_str}")
+            print(f"[Autoplay] Dealer: {dealer}, Vuln: {vuln_str}")
+
+        # Initialize bid explanations list
+        bid_explanations = []
+
+        # Check if a fixed auction was provided (for declare_only/defend_only modes)
+        if fixed_auction_param:
+            # Parse the fixed auction - expect comma-separated bids or JSON array
+            # Format: "Pass,1C,1S,Pass,2C,Pass,Pass,Pass" or similar
+            if fixed_auction_param.startswith('['):
+                import json
+                fixed_bids = json.loads(fixed_auction_param)
+            else:
+                fixed_bids = [b.strip() for b in fixed_auction_param.split(',')]
+
+            # Normalize bid names
+            normalized_bids = []
+            for bid in fixed_bids:
+                bid_upper = bid.upper().strip()
+                if bid_upper in ['PASS', 'P', '--']:
+                    normalized_bids.append('PASS')
+                elif bid_upper in ['X', 'DBL', 'DOUBLE']:
+                    normalized_bids.append('X')
+                elif bid_upper in ['XX', 'RDBL', 'REDOUBLE']:
+                    normalized_bids.append('XX')
+                else:
+                    # Convert NT variations
+                    bid_normalized = bid_upper.replace('NT', 'N')
+                    normalized_bids.append(bid_normalized)
+
+            # Build full auction with PAD_START tokens
+            auction = ['PAD_START'] * dealer_i + normalized_bids
+            print(f"[Autoplay] Using fixed auction: {normalized_bids}")
+
+            # For fixed auctions, we don't have explanations from the original generation
+            # Create empty explanation entries
+            current_bidder = dealer_i
+            for bid in normalized_bids:
+                bid_explanations.append({
+                    "bid": bid,
+                    "player": ['N','E','S','W'][current_bidder],
+                    "explanation": "",
+                    "alert": False
+                })
+                current_bidder = (current_bidder + 1) % 4
+
+        else:
+            # Run bidding for all 4 positions
+            # Start with PAD_START tokens for positions before dealer
+            auction = ['PAD_START'] * dealer_i
+            current_bidder = dealer_i
+            pass_count = 0
+
+            while True:
+                hand = hands[current_bidder]
+                vuln = [vuln_ns, vuln_ew]
+
+                if models.use_bba:
+                    from bba.BBA import BBABotBid
+                    hint_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, current_bidder, hand, vuln, dealer_i, models.matchpoint, False)
+                else:
+                    hint_bot = BotBid(vuln, hand, models, sampler, current_bidder, dealer_i, dds, False, False)
+                    # Initialize bbabot by calling explain_auction (needed for explain_last_bid)
+                    try:
+                        hint_bot.explain_auction(auction)
+                    except Exception as e:
+                        print(f"[Autoplay] Failed to initialize bbabot: {e}")
+
+                with model_lock_bid:
+                    bid_resp = hint_bot.bid(auction)
+
+                bid = bid_resp.bid
+                auction.append(bid)
+
+                # Get explanation for this bid
+                explanation = ""
+                alert = False
+                try:
+                    if models.use_bba:
+                        explanation, alert = hint_bot.explain_last_bid(auction)
+                    else:
+                        # Re-initialize bbabot with updated auction and get explanation
+                        hint_bot.explain_auction(auction)
+                        explanation, alert = hint_bot.bbabot.explain_last_bid(auction)
+                    if verbose:
+                        print(f"[Autoplay] {['N','E','S','W'][current_bidder]} bids {bid}: explanation='{explanation}', alert={alert}")
+                except Exception as e:
+                    print(f"[Autoplay] Could not get explanation for {['N','E','S','W'][current_bidder]}'s {bid}: {e}")
+
+                bid_explanations.append({
+                    "bid": bid,
+                    "player": ['N','E','S','W'][current_bidder],
+                    "explanation": explanation or "",
+                    "alert": alert
+                })
+
+                # Check for auction end
+                if bid == 'PASS':
+                    pass_count += 1
+                else:
+                    pass_count = 0
+
+                if pass_count >= 3 and len(auction) >= 4:
+                    break
+                if len(auction) == 4 and all(b == 'PASS' for b in auction):
+                    break
+
+                current_bidder = (current_bidder + 1) % 4
+
+        # Get contract
+        contract = bidding.get_contract(auction)
+
+        # Handle passed out
+        if contract is None:
+            # Filter out PAD_START from auction for output
+            auction_output = [bid for bid in auction if bid != 'PAD_START']
+            result = {
+                "deal": deal_str,
+                "dealer": dealer,
+                "vulnerability": vuln_str,
+                "auction": auction_output,
+                "auction_with_explanations": bid_explanations,
+                "contract": "PASS",
+                "declarer": None,
+                "tricks": 0,
+                "score": 0,
+                "ns_score": 0,
+                "play": [],
+                "elapsed": round(time.time() - t_start, 2)
+            }
+            print(f'[Autoplay] Passed out - took {(time.time() - t_start):0.2f} seconds')
+            return jsonify(result)
+
+        strain_i = bidding.get_strain_i(contract)
+        decl_i = bidding.get_decl_i(contract)
+        level = int(contract[0])
+        is_decl_vuln = [vuln_ns, vuln_ew, vuln_ns, vuln_ew][decl_i]
+
+        if verbose:
+            print(f"[Autoplay] Contract: {contract} by {['N','E','S','W'][decl_i]}")
+
+        # Print PBN after bidding (for use with game.py verification)
+        auction_for_pbn = [bid for bid in auction if bid != 'PAD_START']
+        print("\n=== PBN AFTER BIDDING (use as input to game.py) ===")
+        print(f'[Event "BEN Autoplay"]')
+        print(f'[Board "{board_number}"]')
+        print(f'[Dealer "{dealer}"]')
+        print(f'[Vulnerable "{vuln_str}"]')
+        print(f'[Deal "N:{deal_str}"]')
+        print(f'[Declarer "{["N","E","S","W"][decl_i]}"]')
+        print(f'[Contract "{contract}"]')
+        print(f'[Auction "{dealer}"]')
+        print(' '.join(auction_for_pbn))
+        print("=== END PBN ===\n")
+
+        # If bidding_only mode, return now without card play
+        # Check for various true values (True, true, TRUE, 1, yes)
+        bidding_only_value = str(bidding_only).upper().strip()
+        is_bidding_only = bidding_only_value in ["TRUE", "1", "YES"]
+
+        if verbose:
+            print(f"[Autoplay] bidding_only parameter: '{bidding_only}' -> is_bidding_only: {is_bidding_only}")
+
+        if is_bidding_only:
+            # Calculate opening leader (LHO of declarer)
+            leader_i = (decl_i + 1) % 4
+            opening_leader = ['N','E','S','W'][leader_i]
+
+            result = {
+                "deal": deal_str,
+                "dealer": dealer,
+                "vulnerability": vuln_str,
+                "auction": auction_for_pbn,
+                "auction_with_explanations": bid_explanations,
+                "contract": contract,
+                "declarer": ['N','E','S','W'][decl_i],
+                "opening_leader": opening_leader,
+                "bidding_only": True,
+                "elapsed": round(time.time() - t_start, 2)
+            }
+            print(f'[Autoplay] Bidding only: {contract} by {["N","E","S","W"][decl_i]} - took {(time.time() - t_start):0.2f} seconds')
+            return jsonify(result)
+
+        # Run card play
+        play_cards = []
+
+        # Opening lead from LHO of declarer
+        # leader_nesw is in NESW coordinates (for BotLead), leader_i is in CardPlayer coordinates (for card play tracking)
+        leader_nesw = (decl_i + 1) % 4
+        leader_i = 0  # Player 0 is always lefty (opening leader) in CardPlayer coordinates
+
+        # Get opening lead
+        # Need to find aces first if using BBA
+        aceking = {}
+        if models.use_bba:
+            from bba.BBA import BBABotBid
+            bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, leader_nesw, hands[leader_nesw], vuln, dealer_i, models.matchpoint, False)
+            aceking = bba_bot.find_aces(auction)
+
+        with model_lock_play:
+            lead_bot = BotLead(vuln, hands[leader_nesw], models, sampler, leader_nesw, dealer_i, dds, False)
+            lead_resp = lead_bot.find_opening_lead(auction, aceking)
+
+        opening_lead = lead_resp.card.code()
+        play_cards.append(deck52.decode_card(opening_lead))
+
+        # Print play header for comparison with game.py
+        print(f"\n=== PLAY (compare with game.py) ===")
+        print(f"Opening leader: {['N','E','S','W'][leader_nesw]} (LHO of declarer {['N','E','S','W'][decl_i]})")
+        print(f"Trick:   S   W   N   E   Winner")
+
+        if verbose:
+            print(f"[Autoplay] Opening lead: {deck52.decode_card(opening_lead)}")
+
+        # Setup card players
+        lefty_hand_str = hands[(decl_i + 1) % 4]
+        dummy_hand_str = hands[(decl_i + 2) % 4]
+        righty_hand_str = hands[(decl_i + 3) % 4]
+        decl_hand_str = hands[decl_i]
+
+        # Create PIMC/ACE objects based on model settings (following game.py pattern)
+        pimc = [None, None, None, None]
+
+        # ACE takes priority over PIMC if both are enabled
+        if getattr(models, 'ace_use_declaring', False):
+            from ace.ACE import ACEDLL
+            declarer_pimc = ACEDLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
+            pimc[1] = declarer_pimc
+            pimc[3] = declarer_pimc
+            if verbose:
+                print(f"[Autoplay] ACE (declarer) enabled")
+        elif getattr(models, 'pimc_use_declaring', False):
+            from pimc.PIMC import BGADLL
+            declarer_pimc = BGADLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
+            pimc[1] = declarer_pimc
+            pimc[3] = declarer_pimc
+            if verbose:
+                print(f"[Autoplay] PIMC (declarer) enabled")
+
+        if getattr(models, 'ace_use_defending', False):
+            from ace.ACEDef import ACEDefDLL
+            pimc[0] = ACEDefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
+            pimc[2] = ACEDefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
+            if verbose:
+                print(f"[Autoplay] ACE (defender) enabled")
+        elif getattr(models, 'pimc_use_defending', False):
+            from pimc.PIMCDef import BGADefDLL
+            pimc[0] = BGADefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
+            pimc[2] = BGADefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
+            if verbose:
+                print(f"[Autoplay] PIMC (defender) enabled")
+
+        card_players = [
+            CardPlayer(models, 0, lefty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[0], dds, verbose),
+            CardPlayer(models, 1, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, pimc[1], dds, verbose),
+            CardPlayer(models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[2], dds, verbose),
+            CardPlayer(models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[3], dds, verbose)
+        ]
+
+        # Play all 13 tricks
+        player_cards_played = [[] for _ in range(4)]
+        player_cards_played52 = [[] for _ in range(4)]
+        shown_out_suits = [set() for _ in range(4)]
+        discards = [set() for _ in range(4)]
+        tricks52 = []
+        current_trick52 = [opening_lead]
+        current_trick = [deck52.card52to32(opening_lead)]
+
+        # Features dict for play_card
+        features = {"aceking": aceking}
+
+        # Opening lead is already in current_trick/current_trick52
+        # player_cards_played is only updated AFTER a trick completes (following game.py pattern)
+        opening_lead32 = deck52.card52to32(opening_lead)
+
+        # Update card players with opening lead
+        card_players[0].hand52[opening_lead] -= 1
+        for i, card_player in enumerate(card_players):
+            card_player.set_real_card_played(opening_lead, 0, openinglead=True)
+            card_player.set_card_played(trick_i=0, leader_i=0, i=0, card=opening_lead32)
+
+        current_player_i = 1  # Dummy plays next after opening lead
+        trick_i = 0
+
+        for _ in range(51):  # 51 more cards to play
+            cardplayer_i = current_player_i
+
+            # Get play status
+            play_status = get_play_status(card_players[cardplayer_i].hand52, current_trick52, strain_i)
+
+            # Check for forced play (singleton in suit)
+            card_resp = None
+            if play_status == "Forced" and models.autoplaysingleton:
+                card = get_singleton(card_players[cardplayer_i].hand52, current_trick52)
+                card_resp = CardResp(
+                    card=Card.from_code(card),
+                    candidates=[],
+                    samples=[],
+                    shape=-1,
+                    hcp=-1,
+                    quality=None,
+                    who="Forced",
+                    claim=-1
+                )
+
+            # Check for equivalent cards (follow with same value cards)
+            if card_resp is None and play_status == "Follow":
+                high, low = get_possible_cards(card_players[cardplayer_i].hand52, current_trick52)
+                if high != -1:
+                    card = high if cardplayer_i == 3 else low
+                    card_resp = CardResp(
+                        card=Card.from_code(card),
+                        candidates=[],
+                        samples=[],
+                        shape=-1,
+                        hcp=-1,
+                        quality=None,
+                        who="Follow",
+                        claim=-1
+                    )
+
+            # Need to do rollout sampling
+            if card_resp is None:
+                played_cards = [card for row in player_cards_played52 for card in row] + current_trick52
+
+                try:
+                    with model_lock_play:
+                        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = sampler.init_rollout_states(
+                            trick_i, cardplayer_i, card_players, played_cards, player_cards_played,
+                            shown_out_suits, discards, features["aceking"], current_trick, opening_lead,
+                            auction, card_players[cardplayer_i].hand_str, card_players[cardplayer_i].public_hand_str,
+                            [vuln_ns, vuln_ew], models, card_players[cardplayer_i].get_random_generator()
+                        )
+
+                        card_players[cardplayer_i].check_pimc_constraints(trick_i, rollout_states, quality)
+
+                        card_resp = card_players[cardplayer_i].play_card(
+                            trick_i, leader_i, current_trick52, tricks52,
+                            rollout_states, worlds, bidding_scores, quality, probability_of_occurence,
+                            shown_out_suits, play_status, lead_scores, play_scores,
+                            logical_play_scores, discard_scores, features
+                        )
+                except Exception as e:
+                    # Log the actual error for debugging
+                    print(f"[Autoplay] Error in card play at trick {trick_i}, player {cardplayer_i}: {type(e).__name__}: {e}")
+
+                    # Check if this is a PIMC no-playout error - fallback to first legal card
+                    is_pimc_error = (
+                        (PIMCNoPlayoutErrorDeclarer and isinstance(e, PIMCNoPlayoutErrorDeclarer)) or
+                        (PIMCNoPlayoutErrorDefender and isinstance(e, PIMCNoPlayoutErrorDefender)) or
+                        "PIMCNoPlayoutError" in type(e).__name__
+                    )
+                    if is_pimc_error:
+                        print(f"[Autoplay] PIMC fallback for player {cardplayer_i} at trick {trick_i}: {e}")
+                        # Pick first legal card from hand
+                        hand52 = card_players[cardplayer_i].hand52
+                        if current_trick52:  # Must follow suit if possible
+                            lead_suit = current_trick52[0] // 13
+                            suit_cards = [i for i in range(lead_suit * 13, (lead_suit + 1) * 13) if hand52[i] == 1]
+                            if suit_cards:
+                                fallback_card = suit_cards[0]
+                            else:
+                                # No cards in lead suit, play any card
+                                fallback_card = next(i for i in range(52) if hand52[i] == 1)
+                        else:
+                            # Leading - play any card
+                            fallback_card = next(i for i in range(52) if hand52[i] == 1)
+                        card_resp = CardResp(
+                            card=Card.from_code(fallback_card),
+                            candidates=[],
+                            samples=[],
+                            shape=-1,
+                            hcp=-1,
+                            quality=None,
+                            who="PIMC Fallback",
+                            claim=-1
+                        )
+                    else:
+                        raise  # Re-raise non-PIMC errors
+
+            card52 = card_resp.card.code()
+            card32 = deck52.card52to32(card52)
+            play_cards.append(deck52.decode_card(card52))
+
+            # Update card players with played card
+            for card_player in card_players:
+                card_player.set_real_card_played(card52, cardplayer_i)
+                card_player.set_card_played(trick_i=trick_i, leader_i=leader_i, i=cardplayer_i, card=card32)
+
+            card_players[cardplayer_i].set_own_card_played52(card52)
+            if cardplayer_i == 1:
+                for i in [0, 2, 3]:
+                    card_players[i].set_public_card_played52(card52)
+            if cardplayer_i == 3:
+                card_players[1].set_public_card_played52(card52)
+
+            # Add to current trick (player_cards_played is updated only after trick completes)
+            current_trick52.append(card52)
+            current_trick.append(card32)
+
+            # Check for shown out
+            if len(current_trick52) > 1:
+                lead_card32 = current_trick[0]
+                lead_suit32 = lead_card32 // 8
+                card_suit32 = card32 // 8
+                if card_suit32 != lead_suit32:  # Player showed out of lead suit
+                    shown_out_suits[cardplayer_i].add(lead_suit32)  # Add the lead suit they can't follow
+                    discards[cardplayer_i].add((trick_i, card32))
+
+            if len(current_trick52) == 4:
+                # Determine trick winner
+                # Note: strain_i from bidding uses N=0,S=1,H=2,D=3,C=4
+                # But deck52.get_trick_winner_i expects suit indices S=0,H=1,D=2,C=3
+                # The formula (strain_i - 1) % 5 converts correctly (N=0 becomes 4 which never matches any suit)
+                winner_i = deck52.get_trick_winner_i(current_trick52, (strain_i - 1) % 5)
+                winner_pos = (leader_i + winner_i) % 4
+
+                if winner_pos in [0, 2]:  # Defenders (lefty/righty)
+                    card_players[0].n_tricks_taken += 1
+                    card_players[2].n_tricks_taken += 1
+                    # Update PIMC/ACE trick needed for defenders
+                    if getattr(models, 'pimc_use_defending', False) or getattr(models, 'ace_use_defending', False):
+                        if card_players[0].pimc:
+                            card_players[0].pimc.update_trick_needed()
+                        if card_players[2].pimc:
+                            card_players[2].pimc.update_trick_needed()
+                else:  # Declarers (dummy/declarer)
+                    card_players[1].n_tricks_taken += 1
+                    card_players[3].n_tricks_taken += 1
+                    # Update PIMC/ACE trick needed for declarer
+                    if getattr(models, 'pimc_use_declaring', False) or getattr(models, 'ace_use_declaring', False):
+                        if card_players[3].pimc:
+                            card_players[3].pimc.update_trick_needed()
+
+                tricks52.append(current_trick52)
+
+                # Print trick for comparison with game.py
+                # Cards are in CardPlayer order: lefty(0), dummy(1), righty(2), declarer(3)
+                # Convert to NESW order for PBN output
+                cardplayer_to_nesw = [(decl_i + 1) % 4, (decl_i + 2) % 4, (decl_i + 3) % 4, decl_i]
+                trick_cards_nesw = [''] * 4
+                for i, c52 in enumerate(current_trick52):
+                    nesw_pos = cardplayer_to_nesw[(leader_i + i) % 4]
+                    trick_cards_nesw[nesw_pos] = deck52.decode_card(c52)
+                # Print in order starting from South (opening leader for 3N by E is S)
+                winner_nesw = cardplayer_to_nesw[winner_pos]
+                print(f"Trick {trick_i + 1}: {trick_cards_nesw[2]:>3} {trick_cards_nesw[3]:>3} {trick_cards_nesw[0]:>3} {trick_cards_nesw[1]:>3}  Won by {['N','E','S','W'][winner_nesw]}")
+
+                # Update player_cards_played AFTER trick completes (following game.py pattern)
+                for i, c32 in enumerate(current_trick):
+                    player_cards_played[(leader_i + i) % 4].append(c32)
+                for i, c52 in enumerate(current_trick52):
+                    player_cards_played52[(leader_i + i) % 4].append(c52)
+
+                # Reset PIMC/ACE trick state if enabled
+                if getattr(models, 'pimc_use_declaring', False) or getattr(models, 'pimc_use_defending', False) or getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
+                    for card_player in card_players:
+                        if card_player.pimc:
+                            card_player.pimc.reset_trick()
+
+                # Initialize x_play for next trick (following game.py pattern)
+                # Skip for the last trick (trick_i == 12) since there's no trick 13
+                if trick_i < 12:
+                    # Initialize hands
+                    for i, c32 in enumerate(current_trick):
+                        card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0:32] = card_players[(leader_i + i) % 4].x_play[:, trick_i, 0:32]
+                        card_players[(leader_i + i) % 4].x_play[:, trick_i + 1, 0 + c32] -= 1
+
+                    # Initialize public hands
+                    for i in (0, 2, 3):
+                        card_players[i].x_play[:, trick_i + 1, 32:64] = card_players[1].x_play[:, trick_i + 1, 0:32]
+                    card_players[1].x_play[:, trick_i + 1, 32:64] = card_players[3].x_play[:, trick_i + 1, 0:32]
+
+                    for card_player in card_players:
+                        # Initialize last trick
+                        for i, c32 in enumerate(current_trick):
+                            card_player.x_play[:, trick_i + 1, 64 + i * 32 + c32] = 1
+
+                        # Initialize last trick leader
+                        card_player.x_play[:, trick_i + 1, 288 + leader_i] = 1
+
+                        # Initialize level
+                        card_player.x_play[:, trick_i + 1, 292] = level
+
+                        # Initialize strain
+                        card_player.x_play[:, trick_i + 1, 293 + strain_i] = 1
+
+                if verbose:
+                    # Convert winner_pos (CardPlayer index: 0=lefty, 1=dummy, 2=righty, 3=declarer) to NESW for display
+                    cardplayer_to_nesw = [(decl_i + 1) % 4, (decl_i + 2) % 4, (decl_i + 3) % 4, decl_i]
+                    winner_nesw = cardplayer_to_nesw[winner_pos]
+                    print(f"[Autoplay] Trick {trick_i+1}: {[deck52.decode_card(c) for c in current_trick52]} - won by {['N','E','S','W'][winner_nesw]}")
+
+                # Setup for next trick
+                trick_i += 1
+                leader_i = winner_pos
+                current_trick52 = []
+                current_trick = []
+                current_player_i = winner_pos
+            else:
+                current_player_i = (leader_i + len(current_trick52)) % 4
+
+        # Final tricks count from declarer's perspective
+        decl_tricks = card_players[3].n_tricks_taken
+
+        # Calculate score
+        from scoring import score as calculate_score
+        score = calculate_score(contract, is_decl_vuln, decl_tricks)
+        ns_score = score if decl_i in [0, 2] else -score
+
+        # Filter out PAD_START from auction for output
+        auction_output = [bid for bid in auction if bid != 'PAD_START']
+        result = {
+            "deal": deal_str,
+            "dealer": dealer,
+            "vulnerability": vuln_str,
+            "auction": auction_output,
+            "auction_with_explanations": bid_explanations,
+            "contract": contract,
+            "declarer": ['N','E','S','W'][decl_i],
+            "tricks": decl_tricks,
+            "score": score,
+            "ns_score": ns_score,
+            "play": play_cards,
+            "elapsed": round(time.time() - t_start, 2)
+        }
+
+        print(f"=== END PLAY ===")
+        print(f'[Autoplay] {contract} by {["N","E","S","W"][decl_i]}, {decl_tricks} tricks, score={score} - took {(time.time() - t_start):0.2f} seconds')
+
+        # Print PBN to console for verification with game.py
+        print("\n=== PBN OUTPUT (use as input to game.py) ===")
+        print(f'[Event "BEN Autoplay"]')
+        print(f'[Board "{board_number}"]')
+        print(f'[Dealer "{dealer}"]')
+        print(f'[Vulnerable "{vuln_str}"]')
+        print(f'[Deal "N:{deal_str}"]')
+        print(f'[Declarer "{["N","E","S","W"][decl_i]}"]')
+        print(f'[Contract "{contract}"]')
+        print(f'[Result "{decl_tricks}"]')
+        # Auction line - format bids in groups of 4
+        auction_line = ' '.join(auction_output)
+        print(f'[Auction "{dealer}"]')
+        print(auction_line)
+        # Play line - format cards
+        opening_leader_nesw = ["N","E","S","W"][(decl_i + 1) % 4]
+        print(f'[Play "{opening_leader_nesw}"]')
+        # Format play in groups of 4 (one trick per line)
+        for i in range(0, len(play_cards), 4):
+            trick_cards = play_cards[i:i+4]
+            print(' '.join(trick_cards))
+        print("=== END PBN ===\n")
+
+        return jsonify(result)
+
+    except Exception as e:
+        handle_exception(e)
+        error_message = "An error occurred: {}".format(str(e))
+        return jsonify({"error": error_message}), 400
 
 @app.route('/robots.txt')
 def robots_txt():
