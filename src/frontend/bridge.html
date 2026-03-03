@@ -162,7 +162,7 @@
 
             ws.addEventListener("error", function (event) {
                 console.log("WebSocket error:", event);
-                alert("Error on server: ", location.hostname + ":"+  serverport,  event )
+                alert("Cannot connect to server on port " + serverport + ".\nIs the correct BEN server running?\nStart it with: python gameserver.py")
                 document.querySelector('#auctionstr').innerHTML += 'No connection to server <br>'
             });
 
