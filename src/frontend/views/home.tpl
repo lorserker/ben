@@ -337,8 +337,22 @@ let selectedForm = null;
 
 
 // Function to include checkbox values in form submission
-function includeCheckboxValues(event) {
+async function includeCheckboxValues(event) {
     event.preventDefault(); // Prevents the default form submission
+
+    // Pre-flight: verify the selected server port is reachable before redirecting
+    const serverValue = document.getElementById('server').value;
+    const serverPort = '444' + serverValue;
+    const reachable = await new Promise((resolve) => {
+        const ws = new WebSocket('ws://localhost:' + serverPort + '/');
+        const timer = setTimeout(() => { ws.close(); resolve(false); }, 1500);
+        ws.onopen  = () => { clearTimeout(timer); ws.close(); resolve(true); };
+        ws.onerror = () => { clearTimeout(timer); resolve(false); };
+    });
+    if (!reachable) {
+        alert('No BEN server found on port ' + serverPort + '.\nPlease start the server or choose a different server in the dropdown.');
+        return;
+    }
 
     if (selectedForm && !formerror) {
         const formData = new FormData(selectedForm);
