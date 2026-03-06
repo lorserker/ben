@@ -127,15 +127,17 @@ def get_card_index(card, n_cards):
 
 
 def parse_hand_f(n_cards):
+    cards_per_suit = n_cards // 4
     def f(hand):
-        x = np.zeros((1, n_cards))
+        # Use plain Python list to avoid numpy scalar access violations
+        x = [0.0] * n_cards
         suits = hand.split('.')
         assert (len(suits) == 4)
-        for suit_index in [0, 1, 2, 3]:
+        for suit_index in range(4):
             for card in suits[suit_index]:
                 card_index = get_card_index(card, n_cards)
-                x[0, suit_index * n_cards // 4 + card_index] += 1
-        return x
+                x[suit_index * cards_per_suit + card_index] += 1
+        return np.array(x, dtype=np.float64).reshape(1, n_cards)
     return f
 
 

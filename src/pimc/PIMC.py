@@ -10,6 +10,7 @@ from binary import get_hcp, calculate_median
 import scoring
 import calculate
 from collections import Counter
+from nn.timing import ModelTimer
 
 
 class PIMCNoPlayoutError(Exception):

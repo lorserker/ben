@@ -1,7 +1,7 @@
 
 import sys
 import os
-from util import calculate_seed, load_dotnet_framework_assembly
+from util import calculate_seed, load_dotnet_framework_assembly, load_dotnet_core_assembly
 from threading import Lock
 import numpy as np
 import platform
@@ -19,7 +19,10 @@ from colorama import Fore, Back, Style, init
 
 init()
 
-if "src" in script_dir and "bba" in script_dir: 
+BBA_BIN = os.getenv('BBA_BIN')
+if BBA_BIN:
+    BIN_FOLDER = BBA_BIN
+elif "src" in script_dir and "bba" in script_dir:
     # We are running inside the src/bba directory
     BIN_FOLDER = parent_dir + os.path.sep + 'bin'
 else:
@@ -38,12 +41,26 @@ if sys.platform == 'win32':
         EPBot_LIB = 'EPBot64'
     else:
         EPBot_LIB = 'EPBot86'
-elif sys.platform == 'darwin':
-    EPBot_LIB = 'N/A'
 else:
-    EPBot_LIB = 'N/A'
+    # Linux/WSL/macOS - use .NET CoreCLR
+    # Prefer EPBot8739 (.NET 10 universal) if available, fall back to EPBot64
+    coreclr_dir = os.path.join(BIN_FOLDER, 'coreclr')
+    if os.path.isfile(os.path.join(coreclr_dir, 'EPBot8739.dll')):
+        EPBot_LIB = 'EPBot8739'
+    else:
+        EPBot_LIB = 'EPBot64'
 
-EPBot_PATH = os.path.join(BIN_FOLDER, EPBot_LIB)
+if sys.platform == 'win32':
+    EPBot_PATH = os.path.join(BIN_FOLDER, EPBot_LIB)
+else:
+    EPBot_PATH = os.path.join(BIN_FOLDER, 'coreclr', EPBot_LIB)
+
+def _str_array(lst):
+    """Convert Python list to .NET string array (needed for CoreCLR ref string[] params)."""
+    if sys.platform != 'win32':
+        import System
+        return System.Array[str](lst)
+    return lst
 
 
 class BBABotBid: 
@@ -60,11 +77,20 @@ class BBABotBid:
                     if EPBot_LIB == 'N/A':
                         raise RuntimeError(f"{EPBot_LIB}.dll is not available on this platform.")
                     try:
-                        load_dotnet_framework_assembly(EPBot_PATH, verbose)
-                        if python_arch == '64bit':
-                            from EPBot64 import EPBot
+                        if sys.platform == 'win32':
+                            load_dotnet_framework_assembly(EPBot_PATH, verbose)
+                            if python_arch == '64bit':
+                                from EPBot64 import EPBot
+                            else:
+                                from EPBot86 import EPBot
                         else:
-                            from EPBot86 import EPBot
+                            # Linux/WSL: use CoreCLR + Activator workaround
+                            load_dotnet_core_assembly(EPBot_PATH, verbose)
+                            import System
+                            t = System.Type.GetType(f"{EPBot_LIB}.EPBot, {EPBot_LIB}")
+                            if t is None:
+                                raise RuntimeError(f"Could not find type {EPBot_LIB}.EPBot in loaded assemblies")
+                            EPBot = lambda: System.Activator.CreateInstance(t)
                         # Load the .NET assembly and import the types and classes from the assembly
                         if verbose:
                             print(f"EPBot Version (DLL): {EPBot().version()}")
@@ -241,7 +267,7 @@ class BBABotBid:
             print("Searching info for this auction: ", auction)
             print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
-        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+        self.players[self.position].new_hand(self.position, _str_array(self.hand_str), self.dealer, self.bba_vul(self.vuln_nsew))
 
         arr_bids = []
 
@@ -264,7 +290,7 @@ class BBABotBid:
         if self.verbose:
             print("Bids sent to BBA", arr_bids)
         arr_bids.extend([''] * (64 - len(arr_bids)))
-        self.players[self.position].set_arr_bids(arr_bids)
+        self.players[self.position].set_arr_bids(_str_array(arr_bids))
 
         trump = 4
         info["trump"] = trump
@@ -358,7 +384,7 @@ class BBABotBid:
             print(auction)
             print("explain_auction", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
 
-        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+        self.players[self.position].new_hand(self.position, _str_array(self.hand_str), self.dealer, self.bba_vul(self.vuln_nsew))
 
         meaning_of_bids = []
         bba_controlling = False
@@ -406,10 +432,10 @@ class BBABotBid:
         no_bids = len(arr_bids)
         position = (no_bids + self.dealer) % 4
 
-        self.players[self.position].new_hand(position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+        self.players[self.position].new_hand(position, _str_array(self.hand_str), self.dealer, self.bba_vul(self.vuln_nsew))
 
         arr_bids.extend([''] * (64 - len(arr_bids)))
-        self.players[self.position].set_arr_bids(arr_bids)
+        self.players[self.position].set_arr_bids(_str_array(arr_bids))
 
         # Now ask for the bid we want explained
         position = (no_bids - 1 + self.dealer) % 4
@@ -446,7 +472,7 @@ class BBABotBid:
         if self.verbose:
             print(auction)
             print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
-        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+        self.players[self.position].new_hand(self.position, _str_array(self.hand_str), self.dealer, self.bba_vul(self.vuln_nsew))
 
         position = self.dealer
         for k in range(len(auction)):
@@ -523,7 +549,7 @@ class BBABotBid:
             print(auction)
             print("new_hand", self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
         position = (self.dealer + len(auction)) % 4
-        self.players[self.position].new_hand(position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+        self.players[self.position].new_hand(position, _str_array(self.hand_str), self.dealer, self.bba_vul(self.vuln_nsew))
 
         position = self.dealer
         for k in range(len(auction)):
@@ -670,10 +696,10 @@ class BBABotBid:
 
         no_bids = len(arr_bids)
 
-        self.players[self.position].new_hand(self.position, self.hand_str, self.dealer, self.bba_vul(self.vuln_nsew))
+        self.players[self.position].new_hand(self.position, _str_array(self.hand_str), self.dealer, self.bba_vul(self.vuln_nsew))
 
         arr_bids.extend([''] * (64 - len(arr_bids)))
-        self.players[self.position].set_arr_bids(arr_bids)
+        self.players[self.position].set_arr_bids(_str_array(arr_bids))
         # Temporary solution to call get_bid
         new_bid = self.players[self.position].get_bid()
         arr_suits = self.players[self.position].get_arr_suits()
@@ -707,7 +733,7 @@ class BBABotBid:
                 bba_vuln = self.bba_vul([self.vuln_wethey[1], self.vuln_wethey[0]])
             # The deal we get is always our hand first
             # First bid is opponent so we switch vulnerability
-            self.players[i].new_hand(i, hand_str, dealer, bba_vuln) 
+            self.players[i].new_hand(i, _str_array(hand_str), dealer, bba_vuln)
 
         # Update bidding until now
         passes = 0

@@ -124,3 +124,6 @@ Practice
 .venv
 uv.lock
 .python-version
+src/csharp/bin
+src/csharp/obj
+.claude/settings.local.json

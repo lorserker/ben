@@ -7,10 +7,13 @@ def check_array_lengths(dictionary):
 
 
 def calculate_mp_score_probability( data, probabilities_list):
-    scores = {key: 0 for key in data}  # Initialize scores for each key
+    scores = {key: 0.0 for key in data}  # Initialize scores for each key
     keys = list(data.keys())  # Get the list of keys
     num_arrays = len(keys)
     num_plays = check_array_lengths(data)
+    # Convert to plain Python lists to avoid numpy scalar overhead in tight loops
+    probs = [float(p) for p in probabilities_list[:num_plays]]
+    data_lists = {k: [float(v) for v in vals[:num_plays]] for k, vals in data.items()}
 
     if num_arrays == 1:
         scores[keys[0]] = 100
@@ -19,12 +22,14 @@ def calculate_mp_score_probability( data, probabilities_list):
     for i in range(num_arrays):
         for j in range(num_arrays):
             if i != j:
+                di = data_lists[keys[i]]
+                dj = data_lists[keys[j]]
                 # Compare data[keys[i]] with data[keys[j]] column by column
                 for k in range(num_plays):  # Iterate through each value (column)
-                    if data[keys[i]][k] > data[keys[j]][k]:
-                        scores[keys[i]] += 1 * probabilities_list[k] * num_plays
-                    elif data[keys[i]][k] < data[keys[j]][k]:
-                        scores[keys[i]] -= 1 * probabilities_list[k] * num_plays
+                    if di[k] > dj[k]:
+                        scores[keys[i]] += probs[k] * num_plays
+                    elif di[k] < dj[k]:
+                        scores[keys[i]] -= probs[k] * num_plays
     max_mp_score = 2 * num_plays * (num_arrays - 1)
     #print(max_mp_score, scores)
     #print(probabilities_list)
@@ -43,15 +48,18 @@ def calculate_mp_score( data):
         scores[keys[0]] = 100
         return scores
 
+    # Convert to plain Python lists to avoid numpy scalar overhead in tight loops
+    data_lists = {k: [float(v) for v in vals[:num_plays]] for k, vals in data.items()}
+
     # Compare each array with all others
     for i in range(num_arrays):
         for j in range(num_arrays):
             if i != j:
                 # Compare data[keys[i]] with data[keys[j]] column by column
                 for k in range(num_plays):  # Iterate through each value (column)
-                    if data[keys[i]][k] > data[keys[j]][k]:
+                    if data_lists[keys[i]][k] > data_lists[keys[j]][k]:
                         scores[keys[i]] += 1
-                    elif data[keys[i]][k] < data[keys[j]][k]:
+                    elif data_lists[keys[i]][k] < data_lists[keys[j]][k]:
                         scores[keys[i]] -= 1
     max_mp_score = 2 * num_plays * (num_arrays - 1)
     # print(max_mp_score, scores)
@@ -61,10 +69,13 @@ def calculate_mp_score( data):
     return scores
 
 def calculate_imp_score_probability( data, probabilities_list):
-    scores = {key: 0 for key in data}  # Initialize scores for each key
+    scores = {key: 0.0 for key in data}  # Initialize scores for each key
     keys = list(data.keys())  # Get the list of keys
     num_plays = len(keys)
     num_samples = check_array_lengths(data)
+    # Convert to plain Python lists to avoid numpy scalar overhead in tight loops
+    probs = [float(p) for p in probabilities_list[:num_samples]]
+    data_lists = {k: [float(v) for v in vals[:num_samples]] for k, vals in data.items()}
 
     if num_plays == 1:
         scores[keys[0]] = 0
@@ -74,17 +85,17 @@ def calculate_imp_score_probability( data, probabilities_list):
     for i in range(num_plays):
         for j in range(num_plays):
             if i != j:
+                di = data_lists[keys[i]]
+                dj = data_lists[keys[j]]
                 # Compare data[keys[i]] with data[keys[j]] column by column
                 for k in range(num_samples):  # Iterate through each value (column)
-                    diff = data[keys[i]][k] - data[keys[j]][k]
-                    imp_score = scoring.diff_to_imps(diff) * probabilities_list[k] * num_samples
-                    #if i == 0 and j == 5:
-                    #    print(diff, imp_score, probabilities_list[k])
+                    diff = di[k] - dj[k]
+                    imp_score = scoring.diff_to_imps(diff) * probs[k] * num_samples
                     # Add or subtract the IMP score based on the sign of diff
                     if diff >= 0:
                         scores[keys[i]] += imp_score
                     else:
-                        scores[keys[i]] -= imp_score        
+                        scores[keys[i]] -= imp_score
 
     num_scores = num_samples  * (num_plays - 1)
     #print(num_score, scores)
@@ -102,13 +113,18 @@ def calculate_imp_score( data):
     if num_plays == 1:
         scores[keys[0]] = 0
         return scores
+    # Convert to plain Python lists to avoid numpy scalar overhead in tight loops
+    data_lists = {k: [float(v) for v in vals[:num_samples]] for k, vals in data.items()}
+
     # Compare each array with all others
     for i in range(num_plays):
         for j in range(num_plays):
             if i != j:
+                di = data_lists[keys[i]]
+                dj = data_lists[keys[j]]
                 # Compare data[keys[i]] with data[keys[j]] column by column
                 for k in range(num_samples):  # Iterate through each value (column)
-                    diff = data[keys[i]][k] - data[keys[j]][k]
+                    diff = di[k] - dj[k]
                     imp_score = scoring.diff_to_imps(diff)
                     
                     # Add or subtract the IMP score based on the sign of diff
@@ -162,9 +178,11 @@ def get_card_ev( dd_solved, n_tricks_taken, player_i, score_by_tricks_taken):
 def get_card_ev_probability( dd_solved, probabilities_list, n_tricks_taken, player_i, score_by_tricks_taken):
     card_ev = {}
     sign = 1 if player_i % 2 == 1 else -1
+    # Convert to plain Python list to avoid numpy scalar overhead
+    probs = [float(p) for p in probabilities_list]
     for card, future_tricks in dd_solved.items():
-        ev_sum = 0
-        for ft, proba in zip(future_tricks, probabilities_list):
+        ev_sum = 0.0
+        for ft, proba in zip(future_tricks, probs):
             if ft < 0:
                 continue
             tot_tricks = n_tricks_taken + ft
@@ -180,9 +198,11 @@ def get_card_ev_probability( dd_solved, probabilities_list, n_tricks_taken, play
 
 def get_card_ev_mp_probability( dd_solved, probabilities_list):
     card_ev = {}
+    # Convert to plain Python list to avoid numpy scalar overhead
+    probs = [float(p) for p in probabilities_list]
     for card, future_tricks in dd_solved.items():
-        ev_sum = 0
-        for ft, proba in zip(future_tricks, probabilities_list):
+        ev_sum = 0.0
+        for ft, proba in zip(future_tricks, probs):
             if ft < 0:
                 continue
             ev_sum += ft * proba * 100

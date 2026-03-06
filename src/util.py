@@ -150,13 +150,14 @@ def convert_to_probability_with_weight(bidding_score, states, counts, logical_sc
     
     # Calculate weights based on counts
     for i in range(states[0].shape[0]):
+        # Use tobytes() for efficient hashing - matches sample.py get_unique_samples
         sample = (
-            tuple(states[0][i, 0, :32].astype(int)),
-            tuple(states[1][i, 0, :32].astype(int)),
-            tuple(states[2][i, 0, :32].astype(int)),
-            tuple(states[3][i, 0, :32].astype(int))                
+            states[0][i, 0, :32].tobytes(),
+            states[1][i, 0, :32].tobytes(),
+            states[2][i, 0, :32].tobytes(),
+            states[3][i, 0, :32].tobytes()
         )
-        
+
         # Ensure that you get a scalar count for each sample
         weights[i] = counts.get(sample, 0)  # Use .get to avoid KeyError
 
@@ -330,32 +331,68 @@ def load_dotnet_framework_assembly(assembly_path, verbose = False):
         raise RuntimeError(f"Failed to load .NET assembly '{assembly_path}': {e}")
 
 def load_dotnet_core_assembly(assembly_path, verbose = False):
-    """  
+    """
     Parameters:
         assembly_path (str): The path to the .NET assembly without the `.dll` extension.
-    
+
     Returns:
         The loaded assembly reference or raises an exception on failure.
     """
+    import json, tempfile
+
+    if 'DOTNET_ROOT' not in os.environ:
+        dotnet_root = os.path.expanduser("~/.dotnet")
+        if os.path.isdir(dotnet_root):
+            os.environ["DOTNET_ROOT"] = dotnet_root
+
     try:
-        import clr
         if verbose:
             print(f"Loading {assembly_path}")
-        # Pythonnet 3.x
+
         from clr_loader import get_coreclr
         from pythonnet import set_runtime
-        runtime = get_coreclr()
+
+        asm_name = os.path.basename(assembly_path)
+        if 'EPBot8739' in asm_name:
+            tfm, fw_ver = "net10.0", "10.0.0"
+        else:
+            tfm, fw_ver = "net9.0", "9.0.0"
+        rc = {
+            "runtimeOptions": {
+                "tfm": tfm,
+                "framework": {
+                    "name": "Microsoft.NETCore.App",
+                    "version": fw_ver
+                }
+            }
+        }
+        rc_path = os.path.join(tempfile.gettempdir(), f"{asm_name}.runtimeconfig.json")
+        with open(rc_path, "w") as f:
+            json.dump(rc, f)
+
+        runtime = get_coreclr(runtime_config=rc_path)
         set_runtime(runtime)
 
-        import System
-        load_context = System.Runtime.Loader.AssemblyLoadContext.Default
-        loaded_assembly = load_context.LoadFromAssemblyPath(assembly_path)
+        import clr
+        dll_dir = os.path.dirname(os.path.abspath(assembly_path + '.dll'))
+        if dll_dir not in sys.path:
+            sys.path.insert(0, dll_dir)
+        clr.AddReference(os.path.basename(assembly_path))
+
         if verbose:
-            print("Loaded .NET Core assembly using clr_loader")
-        return loaded_assembly
+            print(f"Loaded .NET Core assembly: {assembly_path}")
     except Exception as e:
-        print(f"Failed to load .NET Core assembly '{assembly_path}': {e}")
-        raise RuntimeError(f"Failed to load .NET Core assembly '{assembly_path}': {e}")
+        msg = f"Failed to load .NET Core assembly '{assembly_path}': {e}"
+        if tfm == "net10.0":
+            msg += (
+                "\n\n.NET 10 runtime is required for this assembly."
+                "\nInstall it with:"
+                "\n  curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0 --runtime dotnet"
+                "\nYou also need pythonnet and clr-loader:"
+                "\n  pip install pythonnet clr-loader"
+            )
+        print(msg)
+        raise RuntimeError(msg)
 
 
 def get_pythonnet_version():

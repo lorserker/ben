@@ -3,14 +3,91 @@ import os.path
 
 from configparser import ConfigParser
 
-from nn.player_tf2 import BatchPlayer
-from nn.bid_info_tf2 import BidInfo
-from nn.leader_tf2 import Leader
-from nn.lead_singledummy_tf2 import LeadSingleDummy
-from nn.contract_tf2 import Contract
-from nn.bidder_tf2 import Bidder
-from nn.trick_tf2 import Trick
+# TensorFlow implementations
+from nn.player_tf2 import BatchPlayer as BatchPlayerTF
+from nn.bid_info_tf2 import BidInfo as BidInfoTF
+from nn.leader_tf2 import Leader as LeaderTF
+from nn.lead_singledummy_tf2 import LeadSingleDummy as LeadSingleDummyTF
+from nn.contract_tf2 import Contract as ContractTF
+from nn.bidder_tf2 import Bidder as BidderTF
+from nn.trick_tf2 import Trick as TrickTF
+
 from nn.model_path_provider import IsolatedModelPathProvider, find_best_temp_drive
+
+# ONNX modules are loaded lazily to avoid requiring onnxruntime when using TF models
+_onnx_modules = {}
+
+def _get_onnx_module(name):
+    """Lazy-load ONNX implementation modules on first use."""
+    if name not in _onnx_modules:
+        if name == 'Leader':
+            from nn.leader_onnx import Leader as cls
+        elif name == 'BatchPlayer':
+            from nn.player_onnx import BatchPlayer as cls
+        elif name == 'BidInfo':
+            from nn.bid_info_onnx import BidInfo as cls
+        elif name == 'LeadSingleDummy':
+            from nn.lead_singledummy_onnx import LeadSingleDummy as cls
+        elif name == 'Contract':
+            from nn.contract_onnx import Contract as cls
+        elif name == 'Bidder':
+            from nn.bidder_onnx import Bidder as cls
+        elif name == 'Trick':
+            from nn.trick_onnx import Trick as cls
+        else:
+            raise ValueError(f"Unknown ONNX module: {name}")
+        _onnx_modules[name] = cls
+    return _onnx_modules[name]
+
+
+# Auto-detection factory functions based on file extension
+def Leader(model_path):
+    """Auto-select Leader implementation based on file extension"""
+    if model_path.endswith('.onnx'):
+        return _get_onnx_module('Leader')(model_path)
+    return LeaderTF(model_path)
+
+
+def BatchPlayer(name, model_path):
+    """Auto-select BatchPlayer implementation based on file extension"""
+    if model_path.endswith('.onnx'):
+        return _get_onnx_module('BatchPlayer')(name, model_path)
+    return BatchPlayerTF(name, model_path)
+
+
+def BidInfo(model_path):
+    """Auto-select BidInfo implementation based on file extension"""
+    if model_path.endswith('.onnx'):
+        return _get_onnx_module('BidInfo')(model_path)
+    return BidInfoTF(model_path)
+
+
+def LeadSingleDummy(model_path):
+    """Auto-select LeadSingleDummy implementation based on file extension"""
+    if model_path.endswith('.onnx'):
+        return _get_onnx_module('LeadSingleDummy')(model_path)
+    return LeadSingleDummyTF(model_path)
+
+
+def Contract(model_path):
+    """Auto-select Contract implementation based on file extension"""
+    if model_path.endswith('.onnx'):
+        return _get_onnx_module('Contract')(model_path)
+    return ContractTF(model_path)
+
+
+def Bidder(name, model_path, alert_supported):
+    """Auto-select Bidder implementation based on file extension"""
+    if model_path.endswith('.onnx'):
+        return _get_onnx_module('Bidder')(name, model_path, alert_supported)
+    return BidderTF(name, model_path, alert_supported)
+
+
+def Trick(model_path):
+    """Auto-select Trick implementation based on file extension"""
+    if model_path.endswith('.onnx'):
+        return _get_onnx_module('Trick')(model_path)
+    return TrickTF(model_path)
 
 class Models:
 
@@ -24,7 +101,10 @@ class Models:
                  ace_start_trick_declarer, ace_start_trick_defender, ace_stop_trick_declarer, ace_stop_trick_defender,
                  ace_ben_dd_declaring, ace_ben_dd_defending, ace_ben_dd_declaring_weight, ace_ben_dd_defending_weight,
                  ace_decl_opponent_model, ace_decl_partner_model, ace_def_opponent_model, ace_def_partner_model,
-                 alphamju_declaring, alphamju_defending, alphamju_trick, adjust_hcp, 
+                 ace_mcts_use_declaring, ace_mcts_use_defending, ace_mcts_search_duration, ace_mcts_max_iterations, ace_mcts_max_passed_samples, ace_mcts_search_depth, ace_mcts_threads,
+                 ace_mcts_start_trick_declarer, ace_mcts_start_trick_defender, ace_mcts_stop_trick_declarer, ace_mcts_stop_trick_defender,
+                 ace_mcts_confidence, ace_mcts_exploration, ace_mcts_dds_library, ace_mcts_verbose,
+                 alphamju_declaring, alphamju_defending, alphamju_trick, adjust_hcp,
                  use_adjustment, adjust_NN, adjust_NN_undisturbed, adjust_NN_Few_Samples, adjust_XX, adjust_X, adjust_X_remove, adjust_passout, adjust_passout_negative, adjust_min1, adjust_min2, adjust_min1_by, adjust_min2_by,
                  use_suitc, force_suitc, suitc_sidesuit_check, draw_trump_reward, draw_trump_penalty,       
                  use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead, lead_convention, check_final_contract, max_samples_checked,  
@@ -133,6 +213,21 @@ class Models:
         self.ace_decl_partner_model = ace_decl_partner_model
         self.ace_def_opponent_model = ace_def_opponent_model
         self.ace_def_partner_model = ace_def_partner_model
+        self.ace_mcts_use_declaring = ace_mcts_use_declaring
+        self.ace_mcts_use_defending = ace_mcts_use_defending
+        self.ace_mcts_search_duration = ace_mcts_search_duration
+        self.ace_mcts_max_iterations = ace_mcts_max_iterations
+        self.ace_mcts_max_passed_samples = ace_mcts_max_passed_samples
+        self.ace_mcts_search_depth = ace_mcts_search_depth
+        self.ace_mcts_threads = ace_mcts_threads
+        self.ace_mcts_start_trick_declarer = ace_mcts_start_trick_declarer
+        self.ace_mcts_start_trick_defender = ace_mcts_start_trick_defender
+        self.ace_mcts_stop_trick_declarer = ace_mcts_stop_trick_declarer
+        self.ace_mcts_stop_trick_defender = ace_mcts_stop_trick_defender
+        self.ace_mcts_confidence = ace_mcts_confidence
+        self.ace_mcts_exploration = ace_mcts_exploration
+        self.ace_mcts_dds_library = ace_mcts_dds_library
+        self.ace_mcts_verbose = ace_mcts_verbose
         self.alphamju_declaring = alphamju_declaring
         self.alphamju_defending = alphamju_defending
         self.alphamju_trick = alphamju_trick
@@ -170,6 +265,19 @@ class Models:
         self.reward_lead_partner_suit = reward_lead_partner_suit
         self.trump_lead_penalty = trump_lead_penalty
 
+    def warm_up(self):
+        """Run dummy predictions to trigger TensorFlow JIT compilation for player models."""
+        import numpy as np
+
+        # Only warm up player models - they have consistent 298-feature input
+        # and are called most frequently during card play
+        if self.player_models:
+            dummy_input = np.zeros((1, 1, 298), dtype=np.float16)
+            for player_model in self.player_models:
+                try:
+                    player_model.pred_fun(dummy_input)
+                except:
+                    pass
 
     @classmethod
     def from_conf(cls, conf: ConfigParser, base_path=None, verbose=False) -> "Models":
@@ -282,6 +390,23 @@ class Models:
         ace_decl_partner_model = conf.get('ace', 'ace_decl_partner_model', fallback='Optimistic')
         ace_def_opponent_model = conf.get('ace', 'ace_def_opponent_model', fallback='SoftMin(0.5)')
         ace_def_partner_model = conf.get('ace', 'ace_def_partner_model', fallback='SoftMax(0.5)')
+
+        # ACE-MCTS configuration
+        ace_mcts_use_declaring = conf.getboolean('ace_mcts', 'ace_mcts_use_declaring', fallback=False)
+        ace_mcts_use_defending = conf.getboolean('ace_mcts', 'ace_mcts_use_defending', fallback=False)
+        ace_mcts_search_duration = conf.getint('ace_mcts', 'ace_mcts_search_duration', fallback=2000)
+        ace_mcts_max_iterations = conf.getint('ace_mcts', 'ace_mcts_max_iterations', fallback=0)
+        ace_mcts_max_passed_samples = conf.getint('ace_mcts', 'ace_mcts_max_passed_samples', fallback=200)
+        ace_mcts_search_depth = conf.getint('ace_mcts', 'ace_mcts_search_depth', fallback=2)
+        ace_mcts_threads = conf.getint('ace_mcts', 'ace_mcts_threads', fallback=10)
+        ace_mcts_start_trick_declarer = conf.getint('ace_mcts', 'ace_mcts_start_trick_declarer', fallback=1)
+        ace_mcts_start_trick_defender = conf.getint('ace_mcts', 'ace_mcts_start_trick_defender', fallback=1)
+        ace_mcts_stop_trick_declarer = conf.getint('ace_mcts', 'ace_mcts_stop_trick_declarer', fallback=13)
+        ace_mcts_stop_trick_defender = conf.getint('ace_mcts', 'ace_mcts_stop_trick_defender', fallback=13)
+        ace_mcts_confidence = conf.getfloat('ace_mcts', 'ace_mcts_confidence', fallback=0.9004)
+        ace_mcts_exploration = conf.getfloat('ace_mcts', 'ace_mcts_exploration', fallback=0.6061)
+        ace_mcts_dds_library = conf.get('ace_mcts', 'ace_mcts_dds_library', fallback='bcalcdds')
+        ace_mcts_verbose = conf.getboolean('ace_mcts', 'ace_mcts_verbose', fallback=False)
 
         alphamju_declaring = conf.getboolean('alphamju', 'alphamju_declaring', fallback=False)
         alphamju_defending = conf.getboolean('alphamju', 'alphamju_defending', fallback=False)
@@ -481,6 +606,21 @@ class Models:
             ace_decl_partner_model=ace_decl_partner_model,
             ace_def_opponent_model=ace_def_opponent_model,
             ace_def_partner_model=ace_def_partner_model,
+            ace_mcts_use_declaring=ace_mcts_use_declaring,
+            ace_mcts_use_defending=ace_mcts_use_defending,
+            ace_mcts_search_duration=ace_mcts_search_duration,
+            ace_mcts_max_iterations=ace_mcts_max_iterations,
+            ace_mcts_max_passed_samples=ace_mcts_max_passed_samples,
+            ace_mcts_search_depth=ace_mcts_search_depth,
+            ace_mcts_threads=ace_mcts_threads,
+            ace_mcts_start_trick_declarer=ace_mcts_start_trick_declarer,
+            ace_mcts_start_trick_defender=ace_mcts_start_trick_defender,
+            ace_mcts_stop_trick_declarer=ace_mcts_stop_trick_declarer,
+            ace_mcts_stop_trick_defender=ace_mcts_stop_trick_defender,
+            ace_mcts_confidence=ace_mcts_confidence,
+            ace_mcts_exploration=ace_mcts_exploration,
+            ace_mcts_dds_library=ace_mcts_dds_library,
+            ace_mcts_verbose=ace_mcts_verbose,
             alphamju_declaring=alphamju_declaring,
             alphamju_defending=alphamju_defending,
             alphamju_trick=alphamju_trick,

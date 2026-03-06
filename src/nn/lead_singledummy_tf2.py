@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from nn.timing import ModelTimer
 
 class LeadSingleDummy:
 
@@ -13,11 +14,12 @@ class LeadSingleDummy:
 
     @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, 298], dtype=tf.float16)])
     def pred_fun_tf(self, x):
-        result = self.model.predict(x,verbose=0)
+        result = self.model(x, training=False)
         return result
 
 
     def pred_fun(self, x):
-        result = self.pred_fun_tf(x)
+        with ModelTimer.time_call('single_dummy'):
+            result = self.pred_fun_tf(x)
         return result.numpy()
 

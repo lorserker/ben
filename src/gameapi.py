@@ -64,6 +64,16 @@ try:
 except ImportError:
     ACEDefDLL = None
 
+# Import ACE-MCTS classes
+try:
+    from ace.ACEMCTS import ACEMCTSDLL
+except ImportError:
+    ACEMCTSDLL = None
+try:
+    from ace.ACEMCTSDef import ACEMCTSDefDLL
+except ImportError:
+    ACEMCTSDefDLL = None
+
 from flask import Flask, Response, request, jsonify, abort
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
@@ -71,6 +81,7 @@ import json
 import logging
 from logging.handlers import TimedRotatingFileHandler
 from threading import Lock
+from nn.timing import ModelTimer
 
 # Intil fixed in Keras, this is needed to remove a wrong warning
 import warnings
@@ -96,7 +107,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.7.5'
+version = '0.8.7.6'
 init()
 
 def handle_exception(e):
@@ -128,13 +139,20 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
 
     pimc = [None, None, None, None]
 
-    # Check if ACE is enabled (takes priority over PIMC)
+    # Check if engines are enabled (ACE-MCTS > ACE > PIMC priority)
+    ace_mcts_use_declaring = getattr(models, 'ace_mcts_use_declaring', False)
+    ace_mcts_use_defending = getattr(models, 'ace_mcts_use_defending', False)
     ace_use_declaring = getattr(models, 'ace_use_declaring', False)
     ace_use_defending = getattr(models, 'ace_use_defending', False)
 
     # We should only instantiate the play engine for the position we are playing
-    # ACE takes priority over PIMC when enabled
-    if ace_use_declaring and cardplayer_i == 3 and ACEDLL is not None:
+    if ace_mcts_use_declaring and cardplayer_i == 3 and ACEMCTSDLL is not None:
+        declarer = ACEMCTSDLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
+        pimc[1] = declarer
+        pimc[3] = declarer
+        if verbose:
+            print("ACE-MCTS", dummy_hand_str, decl_hand_str, contract)
+    elif ace_use_declaring and cardplayer_i == 3 and ACEDLL is not None:
         declarer = ACEDLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
         pimc[1] = declarer
         pimc[3] = declarer
@@ -151,7 +169,11 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
         pimc[1] = None
         pimc[3] = None
 
-    if ace_use_defending and (cardplayer_i == 0) and ACEDefDLL is not None:
+    if ace_mcts_use_defending and (cardplayer_i == 0) and ACEMCTSDefDLL is not None:
+        pimc[0] = ACEMCTSDefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
+        if verbose:
+            print("ACE-MCTS", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+    elif ace_use_defending and (cardplayer_i == 0) and ACEDefDLL is not None:
         pimc[0] = ACEDefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
         if verbose:
             print("ACE", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
@@ -163,7 +185,11 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
     else:
         pimc[0] = None
 
-    if ace_use_defending and (cardplayer_i == 2) and ACEDefDLL is not None:
+    if ace_mcts_use_defending and (cardplayer_i == 2) and ACEMCTSDefDLL is not None:
+        pimc[2] = ACEMCTSDefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
+        if verbose:
+            print("ACE-MCTS", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+    elif ace_use_defending and (cardplayer_i == 2) and ACEDefDLL is not None:
         pimc[2] = ACEDefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
         if verbose:
             print("ACE", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
@@ -181,6 +207,9 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
         CardPlayer(models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[2], dds, verbose),
         CardPlayer(models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[3], dds, verbose)
     ]
+
+    # Clear sample cache at start of new hand
+    sampler.clear_sample_cache()
 
     player_cards_played = [[] for _ in range(4)]
     player_cards_played52 = [[] for _ in range(4)]
@@ -433,9 +462,60 @@ def str_to_bool(value):
 
 
 def create_auction(bids, dealer_i):
-    auction = [bid.upper().replace('--', "PASS").replace('DB', 'X').replace('RD', 'XX') for bid in bids]
+    # Convert various bid notations to standard format:
+    # '--' or 'P' -> 'PASS', 'DB' or 'X' -> 'X', 'RD' or 'XX' -> 'XX'
+    def normalize_bid(bid):
+        b = bid.upper()
+        if b == 'P' or b == '--':
+            return 'PASS'
+        if b == 'DB':
+            return 'X'
+        if b == 'RD':
+            return 'XX'
+        return b
+    auction = [normalize_bid(bid) for bid in bids]
     auction = ['PAD_START'] * dealer_i + auction
     return auction
+
+def parse_ctx_to_bids(ctx):
+    """
+    Parse the ctx (auction context) parameter into a list of bids.
+
+    Accepts multiple formats:
+    - New dash-separated: "P-1S-P-3N-P-4S-P-P-P" (single dashes between bids)
+    - Old 2-char format: "P 1SP 3NP 4SP P P " or "--1N--3N------" (where -- = Pass)
+
+    Returns a list of bid strings.
+    """
+    if not ctx:
+        return []
+
+    # Detect format: if contains '--' (double dash = Pass in old format), use 2-char chunking
+    # New format uses single dashes to separate bids like "P-1N-P-3N"
+    # Old format uses '--' for Pass: "--1N--3N--" means "Pass, 1N, Pass, 3N, Pass"
+
+    if '--' in ctx:
+        # Old format with '--' for Pass - use 2-char chunking
+        ctx_clean = ctx.replace(' ', '')
+        bids = [ctx_clean[i:i+2] for i in range(0, len(ctx_clean), 2)]
+    elif '-' in ctx:
+        # New dash-separated format: "P-1N-P-3N-P-P-P"
+        bids = [b.strip() for b in ctx.split('-') if b.strip()]
+    elif ' ' in ctx and len(ctx.split()) > 1:
+        # Could be space-separated individual bids or the old format
+        parts = ctx.split()
+        # If parts look like individual bids (1-2 chars each), treat as space-separated
+        if all(len(p) <= 2 for p in parts):
+            bids = parts
+        else:
+            # Fall back to 2-char chunking
+            ctx_clean = ctx.replace(' ', '')
+            bids = [ctx_clean[i:i+2] for i in range(0, len(ctx_clean), 2)]
+    else:
+        # Concatenated format - split into 2-character chunks
+        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+
+    return bids
 
 def parse_vuln(v):
     """
@@ -536,19 +616,22 @@ if opponentfile != "":
     sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
 models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+
+# Enable model timing for performance analysis
+ModelTimer.enabled = True
+
 if verbose:
     print("Loading sampler")
 sampler = Sample.from_conf(configuration, verbose)
 
 if sys.platform != 'win32':
-    print("Disabling PIMC/BBA/SuitC as platform is not win32")
+    print("Disabling PIMC/BBA as platform is not win32")
     models.pimc_use_declaring = False
     models.pimc_use_defending = False
-    models.use_bba = False
-    models.consult_bba = False
-    models.use_bba_rollout = False
-    models.use_bba_to_count_aces = False
-    #models.use_suitc = False
+    #models.use_bba = False
+    #models.consult_bba = False
+    #models.use_bba_rollout = False
+    #models.use_bba_to_count_aces = False
 
 if models.use_bba:
     print("Using BBA for bidding")
@@ -590,9 +673,10 @@ if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defen
     print(f"ACE enabled. Version {ace.version()}")
     print(f"ACEDef enabled. Version {acedef.version()}")
 
-from ddsolver import ddsolver
-dds = ddsolver.DDSolver()
-print(f"DDSolver enabled. Version {dds.version()}")
+from ddsolver.ddssolver import DDSSolver
+dds_max_threads = configuration.getint('dds', 'dds_max_threads', fallback=0)
+dds = DDSSolver(max_threads=dds_max_threads)
+print(f"DDSSolver enabled. Version {dds.version()} Max threads {dds_max_threads}")
 
 log_file_path = os.path.join(config_path, 'logs')
 if not os.path.exists(log_file_path):
@@ -610,6 +694,21 @@ app = Flask(__name__)
 CORS(app) 
 
 # --- Configure Flask-Limiter ---
+def is_internal_request():
+    """Exempt internal requests from rate limiting (localhost and private networks)"""
+    from flask import request
+    remote_addr = request.remote_addr or ''
+    # Exempt localhost (IPv4 and IPv6)
+    if remote_addr in ('127.0.0.1', '::1', 'localhost'):
+        return True
+    # Exempt private network ranges (RFC 1918)
+    if remote_addr.startswith('192.168.') or \
+       remote_addr.startswith('10.') or \
+       remote_addr.startswith('172.16.') or \
+       remote_addr.startswith('172.17.'):  # Docker default bridge
+        return True
+    return False
+
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,  # Limits based on the remote IP address
@@ -785,8 +884,7 @@ def bid():
         dealer_i = dealer_enum[dealer]
         position_i = dealer_enum[seat]
         ctx = request.args.get("ctx")
-        # Split the string into chunks of every second character
-        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+        bids = parse_ctx_to_bids(ctx)
         auction = create_auction(bids, dealer_i)
         if bidding.auction_over(auction):
             result = {"message":"Bidding is over"}
@@ -861,25 +959,32 @@ def lead():
         dealer_i = dealer_enum[dealer]
         position = dealer_enum[seat]
         ctx = request.args.get("ctx")
-        # Split the string into chunks of every second character
-        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+        bids = parse_ctx_to_bids(ctx)
         auction = create_auction(bids, dealer_i)
         contract = bidding.get_contract(auction)
+        if contract is None:
+            result = {"error": "No contract found - auction context (ctx) is required"}
+            return json.dumps(result), 400
         decl_i = bidding.get_decl_i(contract)
         if "NESW"[(decl_i + 1) % 4] != seat:
             result = {"message":"Not this player to lead"}
             print(result)
             return json.dumps(result)
 
+        # Allow verbose to be enabled per-request via query parameter
+        request_verbose = request.args.get("verbose", "").lower() in ("true", "1", "yes")
+        effective_verbose = verbose or request_verbose
+
         # Find ace and kings
         aceking = {}
         if models.use_bba_to_count_aces:
             from bba.BBA import BBABotBid
-            bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position, hand, vuln, dealer_i, models.matchpoint, verbose)
+            bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position, hand, vuln, dealer_i, models.matchpoint, effective_verbose)
             aceking = bba_bot.find_aces(auction)
-            bba_bot.get_sample(auction)
+            if verbose:
+                bba_bot.get_sample(auction)
 
-        hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, dds, verbose)
+        hint_bot = BotLead(vuln, hand, models, sampler, position, dealer_i, dds, effective_verbose)
         with model_lock_play:
             card_resp = hint_bot.find_opening_lead(auction, aceking)
         user = request.args.get("user")
@@ -903,7 +1008,7 @@ def lead():
 
 
 @app.route('/play')
-@limiter.limit("10000/hour;100/minute")
+@limiter.limit("10000/hour;100/minute", exempt_when=is_internal_request)
 def play():
     try:
         t_start = time.time()
@@ -963,11 +1068,13 @@ def play():
         dealer_i = dealer_enum[dealer]
         position_i = dealer_enum[seat]
         ctx = request.args.get("ctx")
-        # Split the string into chunks of every second character
-        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+        bids = parse_ctx_to_bids(ctx)
         # Validate number of cards played according to position
         auction = create_auction(bids, dealer_i)
         contract = bidding.get_contract(auction)
+        if contract is None:
+            result = {"error": "No contract found - auction context (ctx) is required"}
+            return json.dumps(result), 400
         decl_i = bidding.get_decl_i(contract)
         strain_i = bidding.get_strain_i(contract)
         user = request.args.get("user")
@@ -1003,17 +1110,21 @@ def play():
             print(result)
             return json.dumps(result)
 
+        # Allow verbose to be enabled per-request via query parameter
+        request_verbose = request.args.get("verbose", "").lower() in ("true", "1", "yes")
+        effective_verbose = verbose or request_verbose
+
         # Find ace and kings, when defending
         # Find ace and kings
         features = {}
         aceking = {}
         if models.use_bba_to_count_aces:
             from bba.BBA import BBABotBid
-            bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint, verbose)
+            bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint, effective_verbose)
             aceking = bba_bot.find_aces(auction)
             features["aceking"] = aceking
             #bba_bot.get_sample(auction)
-            bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint, verbose)
+            bba_bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, models.matchpoint, effective_verbose)
             explanation, _, preempted = bba_bot.explain_auction(auction)
             features["Explanation"] = explanation
             features["preempted"] = preempted
@@ -1022,7 +1133,7 @@ def play():
 
         # Play
         with model_lock_play:
-            card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, False, features, verbose)
+            card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, False, features, effective_verbose)
         print("Playing:", card_resp.card.symbol(), msg)
         result = card_resp.to_dict()
         if not details:
@@ -1162,8 +1273,7 @@ def explain():
         print("models.bba_our_cc", models.bba_our_cc, "models.bba_their_cc", models.bba_their_cc)
     bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, mp, verbose)
     ctx = request.args.get("ctx")
-    # Split the string into chunks of every second character
-    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+    bids = parse_ctx_to_bids(ctx)
 
     auction = create_auction(bids, dealer_i)
 
@@ -1194,8 +1304,7 @@ def explain_auction():
         print("models.bba_our_cc", models.bba_our_cc, "models.bba_their_cc", models.bba_their_cc)
     bot = BBABotBid(models.bba_our_cc, models.bba_their_cc, position_i, "KJ53.KJ7.AT92.K5", vuln, dealer_i, mp, verbose)
     ctx = request.args.get("ctx")
-    # Split the string into chunks of every second character
-    bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+    bids = parse_ctx_to_bids(ctx)
 
     auction = create_auction(bids, dealer_i)
 
@@ -1214,7 +1323,7 @@ def explain_auction():
 
     return json.dumps(result)
 @app.route('/bids')
-@limiter.limit("10000/hour;100/minute")
+@limiter.limit("10000/hour;100/minute", exempt_when=is_internal_request)
 def bids():
     t_start = time.time()
     base_path = os.getenv('BEN_HOME') or '..'
@@ -1274,7 +1383,8 @@ def contract():
                 print(position_i, vuln, hand_str, dummy_str)
                 print(X)
             contract_id = models.contract_model.pred_fun(X)
-            contract_id = contract_id.numpy()
+            if hasattr(contract_id, 'numpy'):
+                contract_id = contract_id.numpy()
             for i in range(len(contract_id[0])):
                 if contract_id[0][i] > 0.05:
                     y = np.zeros(5)
@@ -1283,7 +1393,8 @@ def contract():
                     y[strain_i] = 1
                     Xt = [np.concatenate((X[0], y), axis=0)]
                     tricks = models.trick_model.pred_fun(Xt)
-                    tricks = tricks.numpy()
+                    if hasattr(tricks, 'numpy'):
+                        tricks = tricks.numpy()
                     for j in range(14):
                         if tricks[0][j] > 0.05:
                             if bidding.ID2BID[i] in result:
@@ -1342,11 +1453,13 @@ def claim():
         dealer_i = dealer_enum[dealer]
         position_i = dealer_enum[seat]
         ctx = request.args.get("ctx")
-        # Split the string into chunks of every second character
-        bids = [ctx[i:i+2] for i in range(0, len(ctx), 2)]
+        bids = parse_ctx_to_bids(ctx)
         # Validate number of cards played according to position
         auction = create_auction(bids, dealer_i)
         contract = bidding.get_contract(auction)
+        if contract is None:
+            result = {"error": "No contract found - auction context (ctx) is required"}
+            return json.dumps(result), 400
         decl_i = bidding.get_decl_i(contract)
         strain_i = bidding.get_strain_i(contract)
         user = request.args.get("user")
@@ -1465,6 +1578,7 @@ def autoplay():
     """
     try:
         t_start = time.time()
+        ModelTimer.reset()  # Reset timing stats for this request
 
         # Get parameters
         board_number = request.args.get("board", 1, type=int)
@@ -1649,6 +1763,7 @@ def autoplay():
                 "elapsed": round(time.time() - t_start, 2)
             }
             print(f'[Autoplay] Passed out - took {(time.time() - t_start):0.2f} seconds')
+            print(ModelTimer.get_summary())
             return jsonify(result)
 
         strain_i = bidding.get_strain_i(contract)
@@ -1699,6 +1814,7 @@ def autoplay():
                 "elapsed": round(time.time() - t_start, 2)
             }
             print(f'[Autoplay] Bidding only: {contract} by {["N","E","S","W"][decl_i]} - took {(time.time() - t_start):0.2f} seconds')
+            print(ModelTimer.get_summary())
             return jsonify(result)
 
         # Run card play
@@ -1776,6 +1892,9 @@ def autoplay():
             CardPlayer(models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[2], dds, verbose),
             CardPlayer(models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, sampler, pimc[3], dds, verbose)
         ]
+
+        # Clear sample cache at start of new hand
+        sampler.clear_sample_cache()
 
         # Play all 13 tricks
         player_cards_played = [[] for _ in range(4)]
@@ -2070,6 +2189,9 @@ def autoplay():
             trick_cards = play_cards[i:i+4]
             print(' '.join(trick_cards))
         print("=== END PBN ===\n")
+
+        # Print timing summary for this request
+        print(ModelTimer.get_summary())
 
         return jsonify(result)
 

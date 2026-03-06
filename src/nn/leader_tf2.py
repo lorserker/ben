@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from nn.timing import ModelTimer
 
 class Leader:
 
@@ -19,5 +20,6 @@ class Leader:
         return result
 
     def pred_fun(self, x, b):
-        result = self.pred_fun_tf(x, b)
+        with ModelTimer.time_call('leader'):
+            result = self.pred_fun_tf(x, b)
         return result.numpy()

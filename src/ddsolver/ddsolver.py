@@ -5,33 +5,35 @@ from collections import Counter
 from objects import Card
 from ddsolver import dds
 from colorama import Fore, Back, Style, init
+from nn.timing import ModelTimer
 
 init()
-
-# The number of threads is automatically configured by DDS on Windows, taking into account the number of processor cores and available memory.  
-# The number of threads can be influenced using by calling `SetMaxThreads`. 
-# This function should probably always be called on Linux/Mac, with a zero argument for auto-configuration.
-dds.SetMaxThreads(0)
 
 class DDSolver:
 
     # Default for dds_mode changed to 1
-    # Transport table will be reused if same trump suit and the same or nearly the same cards distribution, deal.first can be different. 
-    # Always search to find the score. Even when the hand to play has only one card, with possible equivalents, to play.  
+    # Transport table will be reused if same trump suit and the same or nearly the same cards distribution, deal.first can be different.
+    # Always search to find the score. Even when the hand to play has only one card, with possible equivalents, to play.
     # If zero, we not always find the score
     # If 2 transport tables ignore trump
- 
-    def __init__(self, dds_mode=1, verbose=False):
+
+    def __init__(self, dds_mode=1, max_threads=0, verbose=False):
+        # The number of threads is automatically configured by DDS on Windows,
+        # taking into account the number of processor cores and available memory.
+        # On Linux/Mac, SetMaxThreads should always be called (0 = auto-configure).
+        dds.SetMaxThreads(max_threads)
         if verbose:
-            sys.stderr.write(f"DDSolver being loaded version 2.9.0 - dds mode {dds_mode}\n")
+            sys.stderr.write(f"DDSolver being loaded version 2.9.0 - dds mode {dds_mode} - max threads {max_threads}\n")
         self.dds_mode = dds_mode
-        self.bo = dds.boardsPBN()
-        self.solved = dds.solvedBoards()
 
     def version(self):  
         return "2.9.0"
     
     def calculatepar(self, hand, vuln, print_result=True):
+        with ModelTimer.time_call('dds_par'):
+            return self._calculatepar_impl(hand, vuln, print_result)
+
+    def _calculatepar_impl(self, hand, vuln, print_result=True):
         tableDealPBN = dds.ddTableDealPBN()
         table = dds.ddTableResults()
         myTable = ctypes.pointer(table)
@@ -81,44 +83,59 @@ class DDSolver:
     #2	Find the maximum number of tricks for the side to play.  Return all optimum cards and their scores.
     #3	Return all cards that can be legally played, with their scores in descending order.
 
+    @staticmethod
+    def _trick_number(hands_pbn, current_trick):
+        """Derive trick number (1-13) from remaining cards in PBN hand."""
+        pbn = hands_pbn[0]
+        if ':' in pbn:
+            pbn = pbn.split(':', 1)[1]
+        remaining = sum(1 for c in pbn if c not in '. ')
+        return (52 - remaining - len(current_trick)) // 4 + 1
+
     def solve(self, strain_i, leader_i, current_trick, hands_pbn, solutions):
-        results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[:dds.MAXNOOFBOARDS], solutions)
-        if len(hands_pbn) > dds.MAXNOOFBOARDS:
-            i = dds.MAXNOOFBOARDS
-            while i < len(hands_pbn):
-                more_results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[i:i+dds.MAXNOOFBOARDS], solutions)
+        trick = self._trick_number(hands_pbn, current_trick)
+        with ModelTimer.time_call(f'dds_solve_t{trick:02d}', items=len(hands_pbn)):
+            results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[:dds.MAXNOOFBOARDS], solutions)
+            if len(hands_pbn) > dds.MAXNOOFBOARDS:
+                i = dds.MAXNOOFBOARDS
+                while i < len(hands_pbn):
+                    more_results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[i:i+dds.MAXNOOFBOARDS], solutions)
 
-                for card, values in more_results.items():
-                    results[card] = results[card] + values
+                    for card, values in more_results.items():
+                        results[card] = results[card] + values
 
-                i += dds.MAXNOOFBOARDS
+                    i += dds.MAXNOOFBOARDS
 
         return results 
 
     def solve_helper(self, strain_i, leader_i, current_trick, hands_pbn, solutions):
         card_rank = [0x4000, 0x2000, 0x1000, 0x0800, 0x0400, 0x0200, 0x0100, 0x0080, 0x0040, 0x0020, 0x0010, 0x0008, 0x0004]
 
-        self.bo.noOfBoards = min(dds.MAXNOOFBOARDS, len(hands_pbn))
+        # Allocate per-call structures to avoid race conditions with concurrent API workers
+        bo = dds.boardsPBN()
+        solved = dds.solvedBoards()
 
-        for handno in range(self.bo.noOfBoards):
-            self.bo.deals[handno].trump = (strain_i - 1) % 5
-            self.bo.deals[handno].first = leader_i
+        bo.noOfBoards = min(dds.MAXNOOFBOARDS, len(hands_pbn))
+
+        for handno in range(bo.noOfBoards):
+            bo.deals[handno].trump = (strain_i - 1) % 5
+            bo.deals[handno].first = leader_i
 
             for i in range(3):
-                self.bo.deals[handno].currentTrickSuit[i] = 0
-                self.bo.deals[handno].currentTrickRank[i] = 0
+                bo.deals[handno].currentTrickSuit[i] = 0
+                bo.deals[handno].currentTrickRank[i] = 0
                 if i < len(current_trick):
-                    self.bo.deals[handno].currentTrickSuit[i] = current_trick[i] // 13
-                    self.bo.deals[handno].currentTrickRank[i] = 14 - current_trick[i] % 13
+                    bo.deals[handno].currentTrickSuit[i] = current_trick[i] // 13
+                    bo.deals[handno].currentTrickRank[i] = 14 - current_trick[i] % 13
 
-            self.bo.deals[handno].remainCards = hands_pbn[handno].encode('utf-8')
+            bo.deals[handno].remainCards = hands_pbn[handno].encode('utf-8')
 
-            self.bo.target[handno] = -1
+            bo.target[handno] = -1
             # Return all cards that can be legally played, with their scores in descending order.
-            self.bo.solutions[handno] = solutions
-            self.bo.mode[handno] = self.dds_mode
+            bo.solutions[handno] = solutions
+            bo.mode[handno] = self.dds_mode
 
-        res = dds.SolveAllBoards(ctypes.pointer(self.bo), ctypes.pointer(self.solved))
+        res = dds.SolveAllBoards(ctypes.pointer(bo), ctypes.pointer(solved))
         if res != 1:
             error_message = dds.get_error_message(res)
             print(f"{Fore.RED}Error Code: {res}, Error Message: {error_message} {hands_pbn[0].encode('utf-8')} {current_trick} {leader_i}{Style.RESET_ALL}")
@@ -129,17 +146,17 @@ class DDSolver:
             card_results = {}
             card_results["max"] = []
             card_results["min"] = []
-            for handno in range(self.bo.noOfBoards):
-                fut = ctypes.pointer(self.solved.solvedBoards[handno])
+            for handno in range(bo.noOfBoards):
+                fut = ctypes.pointer(solved.solvedBoards[handno])
                 suit_i = fut.contents.suit[0]
                 card = suit_i * 13 + 14 - fut.contents.rank[0]
                 card_results["max"].append(fut.contents.score[0])
                 card_results["min"].append(fut.contents.score[fut.contents.cards-1])
 
-        else:    
+        else:
             card_results = {}
-            for handno in range(self.bo.noOfBoards):
-                fut = ctypes.pointer(self.solved.solvedBoards[handno])
+            for handno in range(bo.noOfBoards):
+                fut = ctypes.pointer(solved.solvedBoards[handno])
                 for i in range(fut.contents.cards):
                     suit_i = fut.contents.suit[i]
                     card = suit_i * 13 + 14 - fut.contents.rank[i]
@@ -153,6 +170,7 @@ class DDSolver:
                             if eq_card not in card_results:
                                 card_results[eq_card] = []
                             card_results[eq_card].append(fut.contents.score[i])
+
         return card_results
 
 
@@ -160,7 +178,9 @@ class DDSolver:
         return {card:round((sum(values)/len(values)),2) for card, values in card_results.items()}
 
     def expected_tricks_dds_probability(self, card_results, probabilities_list : List[float]):
-        return {card: round(sum([p*res for p, res in zip(probabilities_list, result_list)]),2) for card, result_list in card_results.items()}
+        # Convert to plain Python list to avoid numpy scalar overhead
+        probs = [float(p) for p in probabilities_list]
+        return {card: round(sum(p*res for p, res in zip(probs, result_list)),2) for card, result_list in card_results.items()}
 
     def p_made_target(self, tricks_needed):
 

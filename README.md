@@ -91,7 +91,7 @@ It could be tricky to setup them all correctly in your environment, container en
 `ghcr.io/lorserker/ben` [container package](https://github.com/lorserker/ben/pkgs/container/ben) is auto generated for each release. Inside it will execute the [start_ben_all.sh](start_ben_all.sh) to start above scripts automatically.
 
 ````
-$ podman run --rm -it -p 8080:8080 -p 4443:4443 ghcr.io/lorserker/ben  # <CTRL-C> to stop
+$ podman run --rm -it -p 8080:8080 -p 4443:4443 -p 8085:8085 ghcr.io/lorserker/ben  # <CTRL-C> to stop
 Reading deals from: /app/src/gamedb
 Bottle v0.12.25 server starting up (using GeventServer())...
 Listening on http://0.0.0.0:8080/
@@ -102,7 +102,10 @@ models loaded
 Listening on port:  4443
 ````
 
-Open browser to access http://localhost:8080 to play. 
+The container exposes three services:
+- **Web UI**: http://localhost:8080 - Play bridge in your browser
+- **WebSocket**: ws://localhost:4443 - Real-time game server
+- **REST API**: http://localhost:8085 - API for bidding, play, and analysis (see [README-api.md](README-api.md)) 
 
 You can build it locally like below to test local changes. New Mac is ARM based (not x86), you need to build locally as well.
 

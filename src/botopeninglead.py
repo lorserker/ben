@@ -38,6 +38,69 @@ class BotLead:
         #print(f"{Fore.BLUE}Fetching random generator for lead {self.hash_integer}{Style.RESET_ALL}")
         return np.random.default_rng(self.hash_integer)
 
+    def log_lead_model_input(self, x_ftrs, b_ftrs, contract):
+        """Log the lead model input tensors in human-readable format for ONNX comparison."""
+        # Card symbols for 32-card representation (8 cards per suit: A,K,Q,J,T,9,8,x)
+        ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', 'x']
+        suits = ['S', 'H', 'D', 'C']
+        strain_names = ['NT', 'S', 'H', 'D', 'C']
+
+        def decode_hand32(binary_hand):
+            """Convert 32-bit binary hand to readable string."""
+            result = []
+            for suit_i, suit in enumerate(suits):
+                cards = []
+                for rank_i, rank in enumerate(ranks):
+                    idx = suit_i * 8 + rank_i
+                    if idx < len(binary_hand) and binary_hand[idx] > 0:
+                        cards.append(rank * int(binary_hand[idx]))
+                result.append(''.join(cards) if cards else '-')
+            return '.'.join(result)
+
+        x = x_ftrs[0] if len(x_ftrs.shape) > 1 else x_ftrs
+
+        print(f"\n=== LEAD MODEL INPUT (contract: {contract}) ===")
+        print(f"x_ftrs shape: {x_ftrs.shape}, b_ftrs shape: {b_ftrs.shape}")
+
+        # x_ftrs structure (10 + n_cards_play features):
+        # [0]: level
+        # [1:6]: strain one-hot (NT, S, H, D, C)
+        # [6]: doubled
+        # [7]: redoubled
+        # [8]: vuln_us
+        # [9]: vuln_them
+        # [10:]: hand (32 cards for n_cards_play=32)
+
+        print(f"[0] Level: {int(x[0])}")
+
+        strain_onehot = x[1:6]
+        strain_idx = np.argmax(strain_onehot) if np.max(strain_onehot) > 0 else -1
+        print(f"[1:6] Strain: {strain_onehot} -> {strain_names[strain_idx] if strain_idx >= 0 else 'Unknown'}")
+
+        print(f"[6] Doubled: {int(x[6])}")
+        print(f"[7] Redoubled: {int(x[7])}")
+        print(f"[8] Vuln us: {int(x[8])}")
+        print(f"[9] Vuln them: {int(x[9])}")
+
+        hand = x[10:42] if len(x) >= 42 else x[10:]
+        print(f"[10:42] Hand: {decode_hand32(hand)}")
+
+        # b_ftrs structure (15 features from bidding info):
+        # [0:3]: p_hcp predictions (3 values)
+        # [3:15]: p_shp predictions (12 values = 4 suits x 3 opponents)
+        b = b_ftrs[0] if len(b_ftrs.shape) > 1 else b_ftrs
+
+        print(f"\n--- Bidding Info (b_ftrs) ---")
+        print(f"[0:3] HCP predictions: {b[:3]}")
+        print(f"[3:15] Shape predictions: {b[3:15]}")
+
+        # Print raw values for debugging ONNX
+        print(f"\n--- RAW x_ftrs ---")
+        print(x)
+        print(f"--- RAW b_ftrs ---")
+        print(b)
+        print("=" * 50)
+
     def find_opening_lead(self, auction, aceking):
         # Validate input
         # We should check that auction match, that we are on lead
@@ -279,10 +342,17 @@ class BotLead:
     def get_opening_lead_candidates(self, auction):
         x_ftrs, b_ftrs = binary.get_auction_binary_for_lead(auction, self.handbidding, self.handplay, self.vuln, self.dealer, self.models)
         contract = bidding.get_contract(auction)
+
+        if self.verbose:
+            self.log_lead_model_input(x_ftrs, b_ftrs, contract)
+
+        t_lead_start = time.time()
         if contract[1] == "N":
             lead_softmax = self.models.lead_nt_model.pred_fun(x_ftrs, b_ftrs)
         else:
             lead_softmax = self.models.lead_suit_model.pred_fun(x_ftrs, b_ftrs)
+        if self.verbose:
+            print(f"Lead model inference: {(time.time() - t_lead_start)*1000:.2f} ms")
 
         # We remove all cards suggested by NN not in hand, and rescale the softmax
         lead_softmax = follow_suit(lead_softmax, self.handplay, np.array([[0, 0, 0, 0]]))
@@ -397,9 +467,11 @@ class BotLead:
                 
             dd_solved = self.dds.solve(strain_i, onlead, [opening_lead52], hands_pbn, 1)
 
+            # Convert to plain Python list to avoid numpy scalar overhead in loop
+            dd_max = dd_solved["max"][:n_accepted].tolist() if hasattr(dd_solved["max"], 'tolist') else list(dd_solved["max"][:n_accepted])
             for i in range(n_accepted):
-                tricks[i, j, 0] = dd_solved["max"][i] 
-                tricks[i, j, 1] = 1 if (13 - dd_solved["max"][i]) >= tricks_needed else 0
+                tricks[i, j, 0] = dd_max[i]
+                tricks[i, j, 1] = 1 if (13 - dd_max[i]) >= tricks_needed else 0
 
             if self.verbose:
                 print(f'dds took: {(time.time() - t_start):0.4f}')

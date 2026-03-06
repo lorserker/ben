@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from nn.timing import ModelTimer
 
 class Bidder:
     
@@ -14,7 +15,6 @@ class Bidder:
         return load_model(self.model_path, compile=False)
     
     # Wrapping the function with @tf.function to optimize for graph execution
-    # @tf.function
     @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, None], dtype=tf.float16)])
     def pred_fun_tf(self, x):
         # Ensure that x is a tensor
@@ -33,6 +33,7 @@ class Bidder:
 
     def pred_fun_seq(self, x):
         # Perform the model prediction (returns tensors)
-        bids, alerts = self.pred_fun_tf(x)
+        with ModelTimer.time_call('bidder'):
+            bids, alerts = self.pred_fun_tf(x)
         return bids.numpy(), alerts.numpy()
 

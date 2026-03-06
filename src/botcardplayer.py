@@ -15,6 +15,7 @@ import carding
 from alphamju.alphamju import alphamju
 from util import hand_to_str, follow_suit, calculate_seed, symbols
 from colorama import Fore, init
+from nn.timing import ModelTimer
 init()
 class CardPlayer:
 
@@ -121,28 +122,24 @@ class CardPlayer:
         #print("Updating constraints", player_i)
         idx1 = 2 if player_i == 0 else 0
         idx2 = 3 if player_i % 2 == 0 else 2
-        h1 = []
-        h3 = []
-        s1 = []
-        s3 = []
-        for i in range(players_states[0].shape[0]):
-            h1.append(binary.get_hcp(hand = np.array(players_states[idx1][i, 0, :32].astype(int)).reshape(1,32)))
-            s1.append(binary.get_shape(hand = np.array(players_states[idx1][i, 0, :32].astype(int)).reshape(1,32))[0])
-            h3.append(binary.get_hcp(hand = np.array(players_states[idx2][i, 0, :32].astype(int)).reshape(1,32)))
-            s3.append(binary.get_shape(hand = np.array(players_states[idx2][i, 0, :32].astype(int)).reshape(1,32))[0])
-            #print(hand_to_str(players_states[idx2][i,0,:32].astype(int)))
-            #print(binary.get_shape(hand = np.array(players_states[idx2][i, 0, :32].astype(int)).reshape(1,32))[0])
-        min_h1 = int(min(h1))
-        max_h1 = int(max(h1))
-        min_h3 = int(min(h3))
-        max_h3 = int(max(h3))
+        # Vectorized: batch all samples at once instead of per-sample np.array/astype/reshape
+        hands1 = players_states[idx1][:, 0, :32].astype(int)
+        hands3 = players_states[idx2][:, 0, :32].astype(int)
+        h1 = binary.get_hcp(hand=hands1)
+        s1 = binary.get_shape(hand=hands1)
+        h3 = binary.get_hcp(hand=hands3)
+        s3 = binary.get_shape(hand=hands3)
+        min_h1 = int(np.min(h1))
+        max_h1 = int(np.max(h1))
+        min_h3 = int(np.min(h3))
+        max_h3 = int(np.max(h3))
         if self.verbose:
             print("HCP constraints:",min_h1, max_h1, min_h3, max_h3, quality)
         self.pimc.set_hcp_constraints(min_h1, max_h1, min_h3, max_h3, quality)
-        min_values1 = [min(col) for col in zip(*s1)]
-        max_values1 = [max(col) for col in zip(*s1)]
-        min_values3 = [min(col) for col in zip(*s3)]
-        max_values3 = [max(col) for col in zip(*s3)]
+        min_values1 = np.min(s1, axis=0).tolist()
+        max_values1 = np.max(s1, axis=0).tolist()
+        min_values3 = np.min(s3, axis=0).tolist()
+        max_values3 = np.max(s3, axis=0).tolist()
         if self.verbose:
             print("Shape constraints:",min_values1, max_values1, min_values3, max_values3)
 
@@ -151,15 +148,21 @@ class CardPlayer:
     def check_pimc_constraints(self, trick_i, players_states, quality):
         # If we are declarer and PIMC/ACE enabled - use PIMC/ACE
         # ACE settings take priority if enabled
+        ace_mcts_declaring = getattr(self.models, 'ace_mcts_use_declaring', False)
+        ace_mcts_defending = getattr(self.models, 'ace_mcts_use_defending', False)
         ace_declaring = getattr(self.models, 'ace_use_declaring', False)
         ace_defending = getattr(self.models, 'ace_use_defending', False)
 
-        if ace_declaring:
+        if ace_mcts_declaring:
+            self.pimc_declaring = trick_i >= (getattr(self.models, 'ace_mcts_start_trick_declarer', 1) - 1) and trick_i < getattr(self.models, 'ace_mcts_stop_trick_declarer', 13)
+        elif ace_declaring:
             self.pimc_declaring = trick_i >= (getattr(self.models, 'ace_start_trick_declarer', 1) - 1) and trick_i < getattr(self.models, 'ace_stop_trick_declarer', 8)
         else:
             self.pimc_declaring = self.models.pimc_use_declaring and trick_i >= (self.models.pimc_start_trick_declarer - 1) and trick_i < (self.models.pimc_stop_trick_declarer)
 
-        if ace_defending:
+        if ace_mcts_defending:
+            self.pimc_defending = trick_i >= (getattr(self.models, 'ace_mcts_start_trick_defender', 1) - 1) and trick_i < getattr(self.models, 'ace_mcts_stop_trick_defender', 13)
+        elif ace_defending:
             self.pimc_defending = trick_i >= (getattr(self.models, 'ace_start_trick_defender', 1) - 1) and trick_i < getattr(self.models, 'ace_stop_trick_defender', 8)
         else:
             self.pimc_defending = self.models.pimc_use_defending and trick_i >= (self.models.pimc_start_trick_defender - 1) and trick_i < (self.models.pimc_stop_trick_defender)
@@ -302,18 +305,28 @@ class CardPlayer:
         t_start = time.time()
         samples = []
 
-        for i in range(min(self.sample_hands_for_review, players_states[0].shape[0])):
+        # Pre-convert scores to plain Python to avoid numpy scalar overhead in loop
+        n_review = min(self.sample_hands_for_review, players_states[0].shape[0])
+        bidding_scores_list = bidding_scores[:n_review].tolist() if hasattr(bidding_scores, 'tolist') else list(bidding_scores[:n_review])
+        prob_list = probability_of_occurence[:n_review].tolist() if hasattr(probability_of_occurence, 'tolist') else list(probability_of_occurence[:n_review])
+        lead_scores_list = lead_scores[:n_review].tolist() if hasattr(lead_scores, 'tolist') else list(lead_scores[:n_review])
+        play_scores_list = play_scores[:n_review].tolist() if hasattr(play_scores, 'tolist') else list(play_scores[:n_review])
+        logical_play_scores_list = logical_play_scores[:n_review].tolist() if hasattr(logical_play_scores, 'tolist') else list(logical_play_scores[:n_review])
+        discard_scores_list = discard_scores[:n_review].tolist() if hasattr(discard_scores, 'tolist') else list(discard_scores[:n_review])
+        # Pre-extract hands as int arrays for hand_to_str (needs .reshape)
+        hands_arrays = [players_states[p][:n_review, 0, :32].astype(int) for p in range(4)]
+        for i in range(n_review):
             samples.append('%s %s %s %s - %.5f %.5f %.5f %.5f %.5f %.5f ' % (
-                hand_to_str(players_states[0][i,0,:32].astype(int)),
-                hand_to_str(players_states[1][i,0,:32].astype(int)),
-                hand_to_str(players_states[2][i,0,:32].astype(int)),
-                hand_to_str(players_states[3][i,0,:32].astype(int)),
-                bidding_scores[i],
-                probability_of_occurence[i],
-                lead_scores[i],
-                play_scores[i],
-                logical_play_scores[i],
-                discard_scores[i]
+                hand_to_str(hands_arrays[0][i]),
+                hand_to_str(hands_arrays[1][i]),
+                hand_to_str(hands_arrays[2][i]),
+                hand_to_str(hands_arrays[3][i]),
+                bidding_scores_list[i],
+                prob_list[i],
+                lead_scores_list[i],
+                play_scores_list[i],
+                logical_play_scores_list[i],
+                discard_scores_list[i]
             ))
         
         if quality < 0.1 and self.verbose:
@@ -339,11 +352,13 @@ class CardPlayer:
             card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)
         else:                    
             if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
-                pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
+                with ModelTimer.time_call('pimc_declaring'):
+                    pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
                 if self.verbose:
                     print("PIMC result:")
                     print("\n".join(f"{Card.from_code(k)}: {v}" for k, v in pimc_resp_cards.items()))
                 assert pimc_resp_cards is not None, "PIMC result is None"
+                claims = ([], None)
                 if self.models.pimc_ben_dd_declaring:
                     #print(pimc_resp_cards)
                     dd_resp_cards, claims = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence, quality)
@@ -359,12 +374,14 @@ class CardPlayer:
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)            
             else:
                 if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
-                    pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
+                    with ModelTimer.time_call('pimc_defending'):
+                        pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
                     if self.verbose:
                         print("PIMCDef result:")
                         print("\n".join(f"{Card.from_code(k)}: {v}" for k, v in pimc_resp_cards.items()))
 
                     assert pimc_resp_cards is not None, "PIMCDef result is None"
+                    claims = ([], None)
                     if self.models.pimc_ben_dd_defending:
                         #print(pimc_resp_cards)
                         dd_resp_cards, claims = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence, quality)
@@ -422,32 +439,37 @@ class CardPlayer:
             for j in range(4):
                 if hands[j] is None:
                     suits = []
-                    hand32 = players_states[j][i,trick_i,:32].copy().astype(int)
+                    # Use plain Python list to avoid numpy scalar operations in tight loop
+                    hand32 = players_states[j][i,trick_i,:32].tolist()
+                    hand32 = [int(x) for x in hand32]
 
                     # if already played to the trick, subtract the card from the hand
                     if j in current_trick_players:
                         card_of_j = current_trick52[current_trick_players.index(j)]
                         hand32[deck52.card52to32(card_of_j)] -= 1
-                    hand_suits = hand32.reshape((4, 8))
+                    # Reshape as plain Python: 4 suits of 8 cards
+                    hand_suits = [hand32[s*8:(s+1)*8] for s in range(4)]
 
                     for suit_i in range(4):
                         suit = []
-                        for card_i in np.nonzero(hand_suits[suit_i])[0]:
+                        for card_i in range(8):
+                            if hand_suits[suit_i][card_i] == 0:
+                                continue
                             if card_i < 7:
                                 if suit_i * 13 + card_i not in current_trick52:
                                     suit.append(card_i)
                             else:
-                                for _ in range(hand_suits[suit_i,card_i]):
+                                for _ in range(hand_suits[suit_i][card_i]):
                                     try:
                                         if pip_i[suit_i] < len(pips[suit_i]):
                                             pip = pips[suit_i][pip_i[suit_i]]
-                                            
+
                                             if suit_i * 13 + pip not in current_trick52:
                                                 suit.append(pip)
                                                 pip_i[suit_i] += 1
                                     except:
                                         import pdb; pdb.set_trace()
-                                    
+
                         suits.append(''.join([symbols[card] for card in sorted(suit)]))
                     hands[j] = '.'.join(suits)
             # We always use West as start, but hands are in BEN from LHO
@@ -544,7 +566,84 @@ class CardPlayer:
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_this_trick_lead_suit(),
         )
         return x.reshape(-1)
-    
+
+    def log_player_model_input(self, trick_i):
+        """Log the player model input tensor in human-readable format for ONNX comparison."""
+        x = self.x_play[:, trick_i, :]  # Shape: (1, 298)
+
+        # Card symbols for 32-card representation (8 cards per suit: A,K,Q,J,T,9,8,x)
+        ranks = ['A', 'K', 'Q', 'J', 'T', '9', '8', 'x']
+        suits = ['S', 'H', 'D', 'C']
+
+        def decode_hand32(binary_hand):
+            """Convert 32-bit binary hand to readable string."""
+            result = []
+            for suit_i, suit in enumerate(suits):
+                cards = []
+                for rank_i, rank in enumerate(ranks):
+                    idx = suit_i * 8 + rank_i
+                    if binary_hand[idx] > 0:
+                        cards.append(rank * int(binary_hand[idx]))
+                result.append(''.join(cards) if cards else '-')
+            return '.'.join(result)
+
+        def decode_card32(binary_card):
+            """Convert 32-bit one-hot to card string."""
+            idx = np.argmax(binary_card)
+            if np.max(binary_card) == 0:
+                return "--"
+            suit_i = idx // 8
+            rank_i = idx % 8
+            return f"{suits[suit_i]}{ranks[rank_i]}"
+
+        print(f"\n=== PLAYER MODEL INPUT (trick {trick_i+1}) ===")
+        print(f"Input shape: {x.shape}")
+
+        # Player hand (0:32)
+        player_hand = x[0, 0:32]
+        print(f"[0:32] Player hand: {decode_hand32(player_hand)}")
+
+        # Public/dummy hand (32:64)
+        public_hand = x[0, 32:64]
+        print(f"[32:64] Public hand: {decode_hand32(public_hand)}")
+
+        # Last trick cards (64:192 = 4 x 32)
+        print("[64:192] Last trick cards:")
+        for i in range(4):
+            start = 64 + i * 32
+            end = start + 32
+            card = decode_card32(x[0, start:end])
+            print(f"  [{start}:{end}] Card {i}: {card}")
+
+        # Current trick cards (192:288 = 3 x 32)
+        print("[192:288] Current trick cards (LHO, Partner, RHO):")
+        positions = ['LHO', 'Partner', 'RHO']
+        for i in range(3):
+            start = 192 + i * 32
+            end = start + 32
+            card = decode_card32(x[0, start:end])
+            print(f"  [{start}:{end}] {positions[i]}: {card}")
+
+        # Last trick lead (288:292) - one-hot
+        last_lead = x[0, 288:292]
+        lead_idx = np.argmax(last_lead) if np.max(last_lead) > 0 else -1
+        lead_positions = ['Declarer', 'Dummy', 'LHO', 'RHO']
+        print(f"[288:292] Last trick lead: {last_lead} -> {lead_positions[lead_idx] if lead_idx >= 0 else 'None'}")
+
+        # Level (292)
+        level = int(x[0, 292])
+        print(f"[292] Level: {level}")
+
+        # Strain (293:298) - one-hot for NT, S, H, D, C
+        strain = x[0, 293:298]
+        strain_names = ['NT', 'S', 'H', 'D', 'C']
+        strain_idx = np.argmax(strain) if np.max(strain) > 0 else -1
+        print(f"[293:298] Strain: {strain} -> {strain_names[strain_idx] if strain_idx >= 0 else 'Unknown'}")
+
+        # Print raw values for debugging ONNX
+        print(f"\n--- RAW INPUT TENSOR ---")
+        print(x[0])
+
     def calculate_sure_tricks(self, our_hands, missing_cards):
         def suit_indices(suit_index):
             """Returns the start and end indices for a suit."""
@@ -604,6 +703,10 @@ class CardPlayer:
 
             max_tricks_possible = max(len(our_hand1), len(our_hand2))
             if max_tricks_possible < 2:
+                results[suit_index] = 0
+                continue
+
+            if not hasattr(self, 'suitc'):
                 results[suit_index] = 0
                 continue
 

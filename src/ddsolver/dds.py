@@ -67,7 +67,7 @@ except:  # could be mac/linux on aarch64
 
 #sys.stderr.write(f"Loaded lib { os.path.basename(DDS_PATH)}\n")
 
-DDS_VERSION = 20700    
+DDS_VERSION = 20900    
 
 DDS_HANDS = 4
 DDS_SUITS = 4

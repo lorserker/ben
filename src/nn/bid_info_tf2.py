@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from nn.timing import ModelTimer
 
 class BidInfo:
     
@@ -21,6 +22,7 @@ class BidInfo:
         # Perform the model prediction (returns tensors)
         return self.model(input_tensor, training=False)  # Use model call instead of predict
 
-    def pred_fun(self,x):
-        out_hcp_seq, out_shape_seq = self.pred_fun_tf(x)  # Call the tf.function
+    def pred_fun(self, x):
+        with ModelTimer.time_call('bidinfo'):
+            out_hcp_seq, out_shape_seq = self.pred_fun_tf(x)  # Call the tf.function
         return out_hcp_seq.numpy(), out_shape_seq.numpy()  # Convert in this function

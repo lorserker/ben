@@ -10,7 +10,7 @@ training/
 models/eamon
 src/db
 demo/
-models/
+# models/ - included for Docker build
 src/Eastdb.*
 src/Westdb.*
 src/Northdb.*

@@ -16,6 +16,7 @@ from collections import defaultdict
 from colorama import Fore, Back, Style, init
 from objects import Card
 from openinglead.openinglead import validate_lead
+from nn.timing import ModelTimer
 import itertools
 import re
 
@@ -116,6 +117,9 @@ class Sample:
 
         self.verbose = verbose
 
+    def clear_sample_cache(self):
+        """Stub method for cache clearing. No caching currently implemented."""
+        pass
 
     @classmethod
     def from_conf(cls, conf: ConfigParser, verbose=False) -> "Sample":
@@ -457,42 +461,41 @@ class Sample:
             return lho_pard_rho
 
     def validate_aces_kings(self, hands, aceking, n_cards):
-        if len(aceking) == 0:   
+        if len(aceking) == 0:
             return True
+        cards_per_suit = int(n_cards / 4)
         for seat, (_, constraint) in enumerate(aceking.items()):
             if constraint[1] == -1 and constraint[2] == -1 and constraint[3] == 0:
                 continue
-            suits = hands[seat].reshape(4, int(n_cards/4))  # Reshape into 4 rows
-            # Check the first element of each group
-            aces = suits[:, 0]  # Extract the first element from each group
-            count_aces = np.sum(aces == 1)  # Count the number of aces
-            kings = suits[:, 1]  # Extract the second element from each group
-            count_kings = np.sum(kings == 1)  # Count the number of kings
+            # Use plain Python list to avoid numpy scalar operations (called in tight loop)
+            hand_list = hands[seat].tolist() if hasattr(hands[seat], 'tolist') else list(hands[seat])
+            # Count aces (first element of each suit group) and kings (second element)
+            count_aces = 0
+            count_kings = 0
+            for s in range(4):
+                if hand_list[s * cards_per_suit] == 1:
+                    count_aces += 1
+                if hand_list[s * cards_per_suit + 1] == 1:
+                    count_kings += 1
             queen = -1
-            #print(seat, count_aces, count_kings, aceking, suits, constraint)
             # NT
             if constraint[0] != 4:
                 # Check trump king
-                if suits[constraint[0], 1] == 1:
-                    #print("Adding trump king")
+                if hand_list[constraint[0] * cards_per_suit + 1] == 1:
                     count_aces += 1
                     count_kings -= 1
-                #print("Adding trump queen")
-                queen = suits[constraint[0], 2] 
+                queen = hand_list[constraint[0] * cards_per_suit + 2]
             if constraint[1] != -1:
                 if count_aces != constraint[1] and count_aces != constraint[1] + 3:
-                    #print("not valid aces", count_aces, constraint[1])
                     return False
             if constraint[2] != -1:
                 if count_kings != constraint[2]:
-                    #print("not valid kings", count_aces, constraint[2])
                     return False
             if constraint[3] != -1:
                 if queen != constraint[3]:
-                    #print("not valid queen", queen, constraint[3])
                     return False
 
-    
+
         return True
     
     def get_bidding_info(self, n_steps, auction, nesw_i, hand, vuln, models):
@@ -648,18 +651,8 @@ class Sample:
 
         max_distance = lho_bid_count + 2 * pard_bid_count + rho_bid_count  # Replace with the maximum possible distance in your context
         if self.use_distance:
-            # Initialize an array to store distances
-            distances = np.zeros(lho_pard_rho.shape[0], dtype=np.float32)
-            # Calculate the Euclidean distance for each index
-            # Small distance is good
-            for i in range(lho_pard_rho.shape[0]):
-                abs_diff_lho = 1 - min_scores_lho[i]
-                abs_diff_partner = 1 - min_scores_partner[i]
-                abs_diff_rho = 1 - min_scores_rho[i]
-              
-                # We have returned a set earlier if no bidding
-                #if no_of_bids > 0:
-                distances[i] = (abs_diff_lho * lho_bid_count + 2 * abs_diff_partner * pard_bid_count + abs_diff_rho * rho_bid_count)
+            # Vectorized distance calculation (avoids numpy scalar overhead in loop)
+            distances = ((1 - min_scores_lho) * lho_bid_count + 2 * (1 - min_scores_partner) * pard_bid_count + (1 - min_scores_rho) * rho_bid_count)
 
             #if distances[i] < max_distance * (1-self.bid_accept_threshold_bidding) :
             #    print(abs_diff_lho * lho_bids, 2 * abs_diff_partner * pard_bids, abs_diff_rho * rho_bids, no_of_bids)
@@ -1053,8 +1046,9 @@ class Sample:
         # convert the deck if different for play and bidding
         if models.n_cards_play != models.n_cards_bidding:
             handbidding = np.zeros((handsamples.shape[0], models.n_cards_bidding))
+            parse_hand = binary.parse_hand_f(models.n_cards_bidding)
             for i in range(handsamples.shape[0]):
-                handbidding[i] = binary.parse_hand_f(models.n_cards_bidding)(deck52.handxxto52str(handsamples[i], models.n_cards_play))
+                handbidding[i] = parse_hand(deck52.handxxto52str(handsamples[i], models.n_cards_play))
 
         A = binary.get_auction_binary_sampling(n_steps, auction, lead_index, handbidding, vuln, models, models.n_cards_bidding)
 
@@ -1068,32 +1062,22 @@ class Sample:
         else:
             lead_softmax = models.lead_suit_model.pred_fun(x, b)
         if self.lead_accept_threshold_suit:
-            # We count the probability for each suit
-            quartile_probabilities = []
-            for row in lead_softmax:
-                quartiles = np.array_split(row, 4)  # Split each row into 4 quartiles
-                quartile_probs = [np.sum(q) for q in quartiles]  # Sum each quartile
-                quartile_probabilities.append(quartile_probs)
-
-            # Convert to NumPy array for easier indexing
-            quartile_probabilities = np.array(quartile_probabilities)
+            # Sum probabilities per suit using vectorized reshape
+            # lead_softmax shape: (n_samples, 4*cards_per_suit) → reshape to (n_samples, 4, cards_per_suit) → sum
+            quartile_probabilities = lead_softmax.reshape(lead_softmax.shape[0], 4, -1).sum(axis=2)
             if self.verbose:
                 print(quartile_probabilities)
             return quartile_probabilities[:,opening_lead_card // cards_in_suit]
         
         if self.lead_accept_threshold_honors:
-            # Reduce each row by splitting it into 4 parts and summing the last 3 elements in each part
-            reduced_data = []
-            for row in lead_softmax:
-                parts = np.array_split(row, 4)  # Split row into 4 parts, each with 8 elements
-                reduced_row = []
-                for part in parts:
-                    reduced_part = np.concatenate([part[:5], [np.sum(part[5:])]])  # Keep first 5 elements, sum the last 3
-                    reduced_row.extend(reduced_part)
-                reduced_data.append(reduced_row)
-
-            # Convert reduced data to a 2D numpy array for easier handling if needed
-            reduced_data = np.array(reduced_data)
+            # Reduce each suit: keep first 5 cards, sum remaining into 1 → 6 per suit, 24 total
+            # Vectorized: reshape to (n_samples, 4, cards_per_suit), slice and sum
+            n_samples = lead_softmax.shape[0]
+            cards_per_suit = lead_softmax.shape[1] // 4
+            reshaped = lead_softmax.reshape(n_samples, 4, cards_per_suit)
+            first5 = reshaped[:, :, :5]                                    # (n_samples, 4, 5)
+            sum_rest = reshaped[:, :, 5:].sum(axis=2, keepdims=True)       # (n_samples, 4, 1)
+            reduced_data = np.concatenate([first5, sum_rest], axis=2).reshape(n_samples, -1)  # (n_samples, 24)
             new_lead_index = (opening_lead_card // cards_in_suit) * 6 + min(opening_lead_card % cards_in_suit, 5)
             return reduced_data[:, new_lead_index]
 
@@ -1107,8 +1091,9 @@ class Sample:
         # convert the deck if different for play and bidding
         if models.n_cards_play != models.n_cards_bidding:
             handbidding = np.zeros((sample_hands.shape[0], models.n_cards_bidding))
+            parse_hand = binary.parse_hand_f(models.n_cards_bidding)
             for i in range(sample_hands.shape[0]):
-                handbidding[i] = binary.parse_hand_f(models.n_cards_bidding)(deck52.handxxto52str(sample_hands[i], models.n_cards_play))
+                handbidding[i] = parse_hand(deck52.handxxto52str(sample_hands[i], models.n_cards_play))
         else:
             handbidding = sample_hands
 
@@ -1149,9 +1134,13 @@ class Sample:
     def init_rollout_states(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, opening_lead52, auction, hand_str, public_hand_str,vuln, models, rng):
         if self.verbose:
             print(f"Called init_rollout_states {self.sample_hands_play} - Contract {bidding.get_contract(auction)} - Player {player_i}")
-        rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds = self.init_rollout_states_iterative(trick_i, player_i, card_players, played_cards,player_cards_played, shown_out_suits, discards, aceking, current_trick, opening_lead52, auction, hand_str, public_hand_str,vuln, models, rng)
 
-        return rollout_states, bidding_scores, c_hcp, c_shp, quality, probability_of_occurence, lead_scores, play_scores, logical_play_scores, discard_scores, worlds
+        # Generate samples
+        with ModelTimer.time_call('sampling_play'):
+            return self.init_rollout_states_iterative(
+                trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking,
+                current_trick, opening_lead52, auction, hand_str, public_hand_str, vuln, models, rng
+            )
     
     def init_rollout_states_iterative(self, trick_i, player_i, card_players, played_cards, player_cards_played, shown_out_suits, discards, aceking, current_trick, opening_lead52, auction, hand_str, public_hand_str,vuln, models, rng):
         hand_bidding = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
@@ -1297,16 +1286,17 @@ class Sample:
             unique_indices = np.ones(states[0].shape[0], dtype=bool)  # Assuming this is a NumPy boolean mask
 
             for i in range(states[0].shape[0]):
+                # Use tobytes() for efficient hashing - avoids astype() which can cause issues in NumPy 2.0
                 sample = (
-                    tuple(states[0][i, 0, :32].astype(int)),
-                    tuple(states[1][i, 0, :32].astype(int)),
-                    tuple(states[2][i, 0, :32].astype(int)),
-                    tuple(states[3][i, 0, :32].astype(int))                
+                    states[0][i, 0, :32].tobytes(),
+                    states[1][i, 0, :32].tobytes(),
+                    states[2][i, 0, :32].tobytes(),
+                    states[3][i, 0, :32].tobytes()
                 )
                 if sample in samples:
                     unique_indices[i] = False
                 else:
-                    samples.add(sample)  
+                    samples.add(sample)
 
                 counts[sample] += 1
 
@@ -1852,28 +1842,29 @@ class Sample:
             p_cards = models.player_models[p_i+playermodelindex].pred_fun(states[p_i][:, :n_tricks_pred, :])
 
             remaining_cards = states[p_i][:, trick_i, :32]
-            #print("remaining_cards",remaining_cards)
-            for i in range(remaining_cards.shape[0]):
-                #print('Remaining cards:', remaining_cards[i])
+            # Convert to plain Python to avoid numpy scalar overhead in nested loops
+            n_samples = remaining_cards.shape[0]
+            rc_list = remaining_cards.tolist()
+            pc_list = p_cards.tolist()
+            ls_list = logical_play_scores.tolist()
+
+            for i in range(n_samples):
                 # We check only AKQJT
                 for j in range(4):
                     for k in range(5):
-                        if remaining_cards[i][j*8+k] == 1:
-                            #print("Checking card", Card.from_code(j*8+k, xcards=True).symbol(), k == 0)
-                            # If an ace that should have been played is not played, the score is reduced further
-                            # could be King should be considered also
+                        if rc_list[i][j*8+k] == 1:
                             for t in range(trick_i):
-                                if p_cards[i][t][j*8+k] > 0.95:
-                                    #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
-                                    logical_play_scores[i] *= 0.2 if k == 0 else 0.4
+                                if pc_list[i][t][j*8+k] > 0.95:
+                                    ls_list[i] *= 0.2 if k == 0 else 0.4
                                     continue
-                                if p_cards[i][t][j*8+k] > 0.9:
-                                    #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
-                                    logical_play_scores[i] *= 0.3 if k == 0 else 0.6
+                                if pc_list[i][t][j*8+k] > 0.9:
+                                    ls_list[i] *= 0.3 if k == 0 else 0.6
                                     continue
-                                if p_cards[i][t][j*8+k] > 0.8:
-                                    #print(f"{Card.from_code(j*8+k, xcards=True).symbol()} should have been played {p_cards[i][t][j*8+k]} at trick {t+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
-                                    logical_play_scores[i] *= 0.4 if k == 0 else 0.8
+                                if pc_list[i][t][j*8+k] > 0.8:
+                                    ls_list[i] *= 0.4 if k == 0 else 0.8
+
+            # Write back to numpy array
+            logical_play_scores[:] = ls_list
 
         return logical_play_scores
 
@@ -1919,20 +1910,26 @@ class Sample:
             # Check if opponent would have ruffed
             if strain_i != 0:
                 remaining_cards = states[p_i][:, trick_i, :32]
+                n_samples = remaining_cards.shape[0]
+                # Convert to plain Python to avoid numpy scalar overhead in loops
+                pc_list = p_cards.tolist()
+                ds_list = discard_scores.tolist()
                 for trick, card in discards[p_i]:
                     suit = card // 8 + 1
                     if suit == strain_i:
                         # If ruffed we do not see it as a discard
                         # We could check if the hand contains lower trump if ruffed with a honor
-                        continue 
-                    for i in range(remaining_cards.shape[0]):
-                        nn_card = np.argmax(p_cards[i][trick])
+                        continue
+                    for i in range(n_samples):
+                        pc_trick = pc_list[i][trick]
+                        nn_card = max(range(len(pc_trick)), key=lambda x: pc_trick[x])
                         if nn_card == card:
                             continue
                         if (nn_card // 8) + 1 == strain_i:
                             # nn would have trumped it
-                            discard_scores[i] = 1 - p_cards[i][trick][nn_card]
-                            #print(f"{Card.from_code(nn_card, xcards=True).symbol()} should have been played {p_cards[i][trick][nn_card]:0.3f} at trick {trick+1} with hand {hand_to_str(states[p_i][i,0,:32].astype(int))}")
+                            ds_list[i] = 1 - pc_trick[nn_card]
+                # Write back to numpy array
+                discard_scores[:] = ds_list
 
             # If discarding AKQ or J the hand would normally have the card below
             # If discard the hand would not give up a stopper. Like dropping a small from Kx, Qxx etc.

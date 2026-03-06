@@ -46,8 +46,9 @@ from pbn2ben import load
 from colorama import Fore, Back, Style, init
 import gc
 import psutil
+from nn.timing import ModelTimer
 
-version = '0.8.7.5'
+version = '0.8.7.6'
 init()
 
 # Check websockets version - 15.0+ removed path as handler argument
@@ -168,15 +169,18 @@ if opponentfile != "":
 
 models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 
+# Enable model timing for performance analysis
+ModelTimer.enabled = True
+
 if sys.platform != 'win32':
-    print("Disabling PIMC/BBA/SuitC as platform is not win32")
+    print("Disabling PIMC/BBA as platform is not win32")
     models.pimc_use_declaring = False
     models.pimc_use_defending = False
-    models.use_bba = False
-    models.consult_bba = False
-    models.use_bba_rollout = False
-    models.use_bba_to_count_aces = False
-    models.use_suitc = False
+    #models.use_bba = False
+    #models.consult_bba = False
+    #models.use_bba_rollout = False
+    #models.use_bba_to_count_aces = False
+    #models.use_suitc = False
 
 if models.use_bba:
     print("Using BBA for bidding")
@@ -202,6 +206,14 @@ if models.use_suitc:
     suitc = SuitCLib(verbose)
     print(f"SuitC enabled. Version {suitc.version()}")
 
+if getattr(models, 'ace_mcts_use_declaring', False) or getattr(models, 'ace_mcts_use_defending', False):
+    from ace.ACEMCTS import ACEMCTSDLL
+    acemcts = ACEMCTSDLL(None, None, None, None, None, None, None)
+    from ace.ACEMCTSDef import ACEMCTSDefDLL
+    acemctsdef = ACEMCTSDefDLL(None, None, None, None, None, None, None, None)
+    print(f"ACE-MCTS enabled. Version {acemcts.version()}")
+    print(f"ACE-MCTS Def enabled. Version {acemctsdef.version()}")
+
 if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
     from ace.ACE import ACEDLL
     ace = ACEDLL(None, None, None, None, None, None, None)
@@ -218,9 +230,10 @@ if models.pimc_use_declaring or models.pimc_use_defending:
     print(f"PIMC enabled. Version {pimc.version()}")
     print(f"PIMCDef enabled. Version {pimcdef.version()}")
 
-from ddsolver import ddsolver
-dds = ddsolver.DDSolver()
-print(f"DDSolver enabled. Version {dds.version()}")
+from ddsolver.ddssolver import DDSSolver
+dds_max_threads = configuration.getint('dds', 'dds_max_threads', fallback=0)
+dds = DDSSolver(max_threads=dds_max_threads)
+print(f"DDSSolver enabled. Version {dds.version()} Max threads {dds_max_threads}")
 
 if args.boards:
     filename = args.boards
@@ -328,11 +341,14 @@ async def handler(websocket, board_no, seed):
             driver.set_deal(board_no[0] + 1, rdeal, auction, play_only)
 
     log_memory_usage()
+    ModelTimer.reset()  # Reset timing stats for this request
     try:
         t_start = time.time()
         await driver.run(t_start)
 
-        print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Board played in {time.time() - t_start:0.1f} seconds.{Fore.RESET}')  
+        print(f'{Fore.CYAN}{datetime.datetime.now():%Y-%m-%d %H:%M:%S} Board played in {time.time() - t_start:0.1f} seconds.{Fore.RESET}')
+        # Print timing summary for this request
+        print(ModelTimer.get_summary())
         if not random and len(boards) > 0:
             board_no[0] = (board_no[0] + 1) % len(boards)
         gc.collect()

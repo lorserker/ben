@@ -28,7 +28,6 @@ else:
     suitclib = 'libsuitc.so'
 
 print(f"SuitCLib: {suitclib}")
-print(sys.platform)
 
 SuitCLib_PATH = os.path.join(BIN_FOLDER, suitclib)
 

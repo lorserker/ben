@@ -135,7 +135,8 @@ class ACEDefDLL:
 
         # ACE configuration
         self.search_duration = getattr(models, 'ace_search_duration', 2000)  # ms
-        self.search_iterations = getattr(models, 'ace_search_iterations', 0)  # 0 = unlimited
+        self.max_iterations = getattr(models, 'ace_max_iterations', 0)  # 0 = unlimited, total iterations including rejected
+        self.max_passed_samples = getattr(models, 'ace_max_passed_samples', 200)  # 0 = unlimited, samples that pass constraints
         self.search_depth = getattr(models, 'ace_search_depth', 2)
         self.search_threads = getattr(models, 'ace_threads', 10)
         self.autoplay = models.autoplaysingleton
@@ -607,9 +608,11 @@ class ACEDefDLL:
                 engine = self.Engine.New(self.search_threads, self.solver)
                 engine.SetGame(game)
 
-                # Set iteration limit if configured (0 = unlimited)
-                if self.search_iterations > 0:
-                    engine.SetIterations(self.search_iterations)
+                # Set limits if configured (0 = unlimited)
+                if self.max_iterations > 0:
+                    engine.SetMaxIterations(self.max_iterations)
+                if self.max_passed_samples > 0:
+                    engine.SetMaxPassedSamples(self.max_passed_samples)
 
                 # Calculate adaptive depth based on cards played to current trick
                 # More depth when leading (more uncertainty), less when last to play
@@ -622,7 +625,7 @@ class ACEDefDLL:
                 task.Wait()
 
                 if self.verbose:
-                    print(f"Search completed: {engine.Iterations} iterations in {engine.Elapsed.TotalMilliseconds:.0f}ms, depth={adaptive_depth} (trick cards={self.cards_in_trick})")
+                    print(f"Search completed: {engine.Iterations} iterations, {engine.PassedSamples} passed in {engine.Elapsed.TotalMilliseconds:.0f}ms, depth={adaptive_depth} (trick cards={self.cards_in_trick})")
                     print(f"Final relaxation level: {engine.FinalRelaxationLevel}")
 
                 # Evaluate results using models from configuration

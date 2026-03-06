@@ -1,5 +1,5 @@
-numpy
-scipy
+numpy>=2.0.0,<2.1.0
+scipy>=1.14.0
 matplotlib
 jupyter
 scikit-learn
@@ -9,9 +9,11 @@ tqdm
 
 websockets>=15.0.1
 
-keras==3.6.0
-tensorflow==2.18
+keras>=3.5.0,<3.6.0
+tensorflow==2.18.1
 grpcio-tools
+
+onnxruntime
 
 bottle
 gevent

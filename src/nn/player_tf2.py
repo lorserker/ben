@@ -1,5 +1,6 @@
 import tensorflow as tf
 from tensorflow.keras.models import load_model
+from nn.timing import ModelTimer
 
 class BatchPlayer:
 
@@ -16,7 +17,8 @@ class BatchPlayer:
         return self.model(x, training=False)
 
     def pred_fun(self, x):
-        card_logit = self.pred_fun_tf(x)
+        with ModelTimer.time_call(f'player_{self.name}'):
+            card_logit = self.pred_fun_tf(x)
         return card_logit.numpy()
 
     @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, 298], dtype=tf.float16)])
@@ -25,5 +27,6 @@ class BatchPlayer:
         return result
 
     def next_cards_softmax(self, x):
-        result = self.next_cards_softmax_tf(x)[:,-1,:]
+        with ModelTimer.time_call(f'player_{self.name}'):
+            result = self.next_cards_softmax_tf(x)[:,-1,:]
         return result.numpy()

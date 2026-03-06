@@ -8,29 +8,40 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
     apt-get clean
 
-# https://linuxhint.com/install-use-mono-ubuntu-22-04/
-
-# mono is needed for EPBot, skipped in container
-#RUN echo "deb https://download.mono-project.com/repo/ubuntu stable-focal main" | tee /etc/apt/sources.list.d/mono-official-stable.list 
-#RUN apt-get update && \
-#    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends mono-complete 
+# .NET 10 runtime for EPBot (CoreCLR)
+RUN apt-get -y install curl && \
+    curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0 --runtime dotnet --install-dir /usr/share/dotnet && \
+    apt-get clean
+ENV DOTNET_ROOT=/usr/share/dotnet
 
 ADD requirements.txt /app/
 
 WORKDIR /app
 RUN pip install -r requirements.txt
 
+# Suppress TensorFlow/CUDA warnings (no GPU in container)
+ENV TF_CPP_MIN_LOG_LEVEL=2
+ENV CUDA_VISIBLE_DEVICES=""
+
 COPY src/frontend /app/frontend/
 COPY src/*.py /app/
 ADD src/bidding /app/bidding/
 ADD src/nn /app/nn/
 ADD src/ddsolver /app/ddsolver/
-COPY "UCBC*2024/Models/" "/app/Models/"
-COPY "UCBC*2024/Conf/UCBC2024.conf" "/app/config/default.conf"
+ADD src/alphamju /app/alphamju/
+ADD src/ace /app/ace/
+ADD src/bba /app/bba/
+ADD src/pimc /app/pimc/
+ADD src/suitc /app/suitc/
+ADD src/openinglead /app/openinglead/
+ADD bin /app/bin/
+ADD src/config /app/config/
+ADD models /app/models/
+COPY "BBA/CC/" "/BBA/CC/"
 ADD start_ben_all.sh /app/
 
-# Grant execution permissions to the script
-RUN chmod +x /app/start_ben_all.sh
+# Grant execution permissions to the script and fix line endings
+RUN sed -i 's/\r$//' /app/start_ben_all.sh && chmod +x /app/start_ben_all.sh
 
-EXPOSE 8080 4443
+EXPOSE 8080 4443 8085
 CMD ./start_ben_all.sh

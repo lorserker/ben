@@ -14,6 +14,7 @@ from collections import defaultdict
 
 from util import hand_to_str, calculate_seed, find_vuln_text, save_for_training
 from colorama import Fore, Style, init
+from nn.timing import ModelTimer
 
 init()
 class BotBid:
@@ -624,7 +625,8 @@ class BotBid:
                         y[strain_i] = 1
                         Xt = [np.concatenate((X[0], y), axis=0)]
                         nn_tricks = self.models.trick_model.pred_fun(Xt)
-                        nn_tricks = nn_tricks.numpy()
+                        if hasattr(nn_tricks, 'numpy'):
+                            nn_tricks = nn_tricks.numpy()
                         max_tricks = None
                         for j in range(14):
                             trick_score = 0
@@ -867,7 +869,7 @@ class BotBid:
         bid_softmax, alerts = self.next_bid_np(auction)
 
         #print(bid_softmax, alerts)
-    
+
         if self.verbose:
             index_highest = np.argmax(bid_softmax)
             if self.models.alert_supported and alerts[0] > self.models.alert_threshold:
@@ -877,7 +879,7 @@ class BotBid:
 
         candidates = []
 
-        # If self.min_candidate_score == -1 we will just take what the neural network suggest 
+        # If self.min_candidate_score == -1 we will just take what the neural network suggest
         if (self.get_min_candidate_score(self.my_bid_no) == -1):
             while True:
                 # We have to loop to avoid returning an invalid bid
@@ -902,7 +904,7 @@ class BotBid:
                             sys.stderr.write(f"{Fore.GREEN}Please create samples for {'-'.join(auction).replace('PASS', 'P').replace('PAD_START-', '')}\n{Style.RESET_ALL}")
                             sys.stderr.write(f"{Fore.GREEN}Hand {self.hand_str}\n{Style.RESET_ALL}")
                             sys.stderr.write(f"Bid not valid {bidding.ID2BID[bid_i]} insta_score: {bid_softmax[bid_i]}\n")
-                        
+
                         #assert(bid_i > 1)
                 # set the score for the bid just processed to zero so it is out of the loop
                 bid_softmax[bid_i] = 0
@@ -1053,7 +1055,7 @@ class BotBid:
             bid_np = bid_np[-1:][0]
         assert len(bid_np) == 40, "Wrong Result: " + str(bid_np.shape)
         return bid_np, alerts
-    
+
     def sample_hands_for_auction(self, auction_so_far, turn_to_bid):
         # Reset randomizer
         self.rng = self.get_random_generator()
@@ -1144,17 +1146,20 @@ class BotBid:
                 assert bid_np.shape[1] == 40
                 # We can get invalid bids back from the neural network, so we need to filter those away first
                 invalid_bids = True
+                # Convert bid_np to plain Python lists for per-sample argmax to avoid numpy scalar overhead
+                bid_list = bid_np.tolist()
                 while invalid_bids:
                     invalid_bids = False
                     for i in range(n_samples):
                         auction = bidding.get_auction_as_list(auction_np[i])
                         if not bidding.auction_over(auction):
-                            bid = np.argmax(bid_np[i])
+                            bid = max(range(len(bid_list[i])), key=lambda k: bid_list[i][k])
                             # if Pass returned after the bidding really is over
                             # print("bid_np[i][bid]: ", bid_np[i][bid])
                             if (bid == 2 and bidding.auction_over(auction)):
                                 sys.stderr.write(str(auction))
-                                sys.stderr.write(f" Pass not valid as auction is over: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                                sys.stderr.write(f" Pass not valid as auction is over: {bidding.ID2BID[bid]} insta_score: {bid_list[i][bid]:.3f}\n")
+                                bid_list[i][1] = 1
                                 bid_np[i][1] = 1
                             # Pass is always allowed
                             if (bid > 2 and not bidding.can_bid(bidding.ID2BID[bid], auction)):
@@ -1167,7 +1172,8 @@ class BotBid:
                                     save_for_training(deal, '-'.join(auction).replace('PASS', 'P'))
                                     sys.stderr.write(f"{Fore.RED}Sampling: {'-'.join(auction_so_far).replace('PASS', 'P').replace('PAD_START-', '').replace('PAD_START', 'Opening')} with this deal {deal} ")
                                     sys.stderr.write(f"to avoid this auction {'-'.join(auction).replace('PASS', 'P')}\n{Style.RESET_ALL}")
-                                    sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_np[i][bid]:.3f}\n")
+                                    sys.stderr.write(f"Sample: {i}, Hand {hand_to_str(hands_np[i,turn_i,:], self.models.n_cards_bidding)} Bid not valid: {bidding.ID2BID[bid]} insta_score: {bid_list[i][bid]:.3f}\n")
+                                bid_list[i][bid] = 0
                                 bid_np[i][bid] = 0
                                 
 
@@ -1234,8 +1240,11 @@ class BotBid:
         #    lead_softmax = self.models.lead_nt_model.model(x_ftrs, b_ftrs)
         #else:
         #    lead_softmax = self.models.lead_suit_model.model(x_ftrs, b_ftrs)
-                
+
+        t_lead_start = time.time()
         lead_softmax = self.models.lead_suit_model.pred_fun(X_ftrs, B_ftrs)
+        if self.verbose:
+            print(f"Lead model inference ({X_ftrs.shape[0]} samples): {(time.time() - t_lead_start)*1000:.2f} ms")
         
         lead_cards = np.argmax(lead_softmax, axis=1)
         
@@ -1306,30 +1315,36 @@ class BotBid:
         decl_tricks_softmax = np.zeros((n_samples, 14), dtype=np.int32)
         contracts = []
         t_start = time.time()
-        
-        sum = 0
+
+        # First pass: determine contract/strain/leader for each sample
+        sample_info = []  # (index, strain, leader) for non-PASS samples
         for i in range(n_samples):
             sample_auction = [bidding.ID2BID[bid_i] for bid_i in list(auctions_np[i, :]) if bid_i != 1]
             contract = bidding.get_contract(sample_auction)
-            # All pass doesn't really fit, and is always 0 - we ignore it for now
             if contract is None:
                 contracts.append("PASS")
-                continue
+            else:
+                contracts.append(contract)
+                strain = 'NSHDC'.index(contract[1])
+                declarer = 'NESW'.index(contract[-1])
+                leader = (declarer + 1) % 4
+                leader = (leader + 4 - self.seat) % 4
+                sample_info.append((i, strain, leader))
 
-            contracts.append(contract)
-            strain = 'NSHDC'.index(contract[1])
-            declarer = 'NESW'.index(contract[-1])
-            leader = (declarer + 1) % 4
+        # Group samples by (strain, leader) for batched solving
+        groups = defaultdict(list)
+        for i, strain, leader in sample_info:
+            groups[(strain, leader)].append(i)
 
-            leader = (leader + 4 - self.seat) % 4
-
-            # Create PBN including pips
-            hands_pbn = [hands_np_as_pbn[i]]
-
-            # It will probably improve performance if all is calculated in one go
+        # Batch solve each group
+        sum = 0
+        for (strain, leader), indices in groups.items():
+            hands_pbn = [hands_np_as_pbn[i] for i in indices]
             dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1)
-            sum += 13 - dd_solved["max"][0]
-            decl_tricks_softmax[i,13 - dd_solved["max"][0]] = 1
+            for j, i in enumerate(indices):
+                tricks = 13 - dd_solved["max"][j]
+                sum += tricks
+                decl_tricks_softmax[i, tricks] = 1
 
         if self.verbose:
             print(f'dds took: {(time.time() - t_start):0.4f}')

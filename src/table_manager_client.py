@@ -68,7 +68,7 @@ import gc
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.7.5'
+version = '0.8.7.6'
 init()
 
 SEATS = ['North', 'East', 'South', 'West']
@@ -343,9 +343,15 @@ class TMClient:
 
         pimc = [None, None, None, None]
 
-        # ACE takes priority over PIMC if both are enabled
-        # We should only instantiate the engine for the position we are playing
-        if getattr(self.models, 'ace_use_declaring', False) and (cardplayer_i == 1 or cardplayer_i == 3):
+        # ACE-MCTS > ACE > PIMC priority for engine selection
+        if getattr(self.models, 'ace_mcts_use_declaring', False) and (cardplayer_i == 1 or cardplayer_i == 3):
+            from ace.ACEMCTS import ACEMCTSDLL
+            declarer = ACEMCTSDLL(self.models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, self.verbose)
+            pimc[1] = declarer
+            pimc[3] = declarer
+            if self.verbose:
+                print("ACE-MCTS", dummy_hand_str, decl_hand_str, contract)
+        elif getattr(self.models, 'ace_use_declaring', False) and (cardplayer_i == 1 or cardplayer_i == 3):
             from ace.ACE import ACEDLL
             declarer = ACEDLL(self.models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, self.sampler, self.verbose)
             pimc[1] = declarer
@@ -363,7 +369,12 @@ class TMClient:
             pimc[1] = None
             pimc[3] = None
 
-        if getattr(self.models, 'ace_use_defending', False) and cardplayer_i == 0:
+        if getattr(self.models, 'ace_mcts_use_defending', False) and cardplayer_i == 0:
+            from ace.ACEMCTSDef import ACEMCTSDefDLL
+            pimc[0] = ACEMCTSDefDLL(self.models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, self.sampler, self.verbose)
+            if self.verbose:
+                print("ACE-MCTS", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+        elif getattr(self.models, 'ace_use_defending', False) and cardplayer_i == 0:
             from ace.ACEDef import ACEDefDLL
             pimc[0] = ACEDefDLL(self.models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, self.sampler, self.verbose)
             if self.verbose:
@@ -376,7 +387,12 @@ class TMClient:
         else:
             pimc[0] = None
 
-        if getattr(self.models, 'ace_use_defending', False) and cardplayer_i == 2:
+        if getattr(self.models, 'ace_mcts_use_defending', False) and cardplayer_i == 2:
+            from ace.ACEMCTSDef import ACEMCTSDefDLL
+            pimc[2] = ACEMCTSDefDLL(self.models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, self.sampler, self.verbose)
+            if self.verbose:
+                print("ACE-MCTS", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
+        elif getattr(self.models, 'ace_use_defending', False) and cardplayer_i == 2:
             from ace.ACEDef import ACEDefDLL
             pimc[2] = ACEDefDLL(self.models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, self.sampler, self.verbose)
             if self.verbose:
@@ -395,6 +411,9 @@ class TMClient:
             botcardplayer.CardPlayer(self.models, 2, righty_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[2], self.dds, self.verbose),
             botcardplayer.CardPlayer(self.models, 3, decl_hand_str, dummy_hand_str, contract, is_decl_vuln, self.sampler, pimc[3], self.dds, self.verbose)
         ]
+
+        # Clear sample cache at start of new hand
+        self.sampler.clear_sample_cache()
 
         player_cards_played = [[] for _ in range(4)]
         player_cards_played52 = [[] for _ in range(4)]
@@ -1091,13 +1110,13 @@ async def main():
     models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 
     if sys.platform != 'win32':
-        print("Disabling PIMC/BBA/SuitC as platform is not win32")
+        print("Disabling PIMC/BBA as platform is not win32")
         models.pimc_use_declaring = False
         models.pimc_use_defending = False
-        models.use_bba = False
-        models.consult_bba = False
-        models.use_bba_rollout = False
-        models.use_bba_to_count_aces = False
+        #models.use_bba = False
+        #models.consult_bba = False
+        #models.use_bba_rollout = False
+        #models.use_bba_to_count_aces = False
         #models.use_suitc = False
         
     if models.use_bba:
@@ -1126,6 +1145,14 @@ async def main():
         print(f"PIMC enabled. Version {pimc.version()}")
         print(f"PIMCDef enabled. Version {pimcdef.version()}")
 
+    if getattr(models, 'ace_mcts_use_declaring', False) or getattr(models, 'ace_mcts_use_defending', False):
+        from ace.ACEMCTS import ACEMCTSDLL
+        acemcts = ACEMCTSDLL(None, None, None, None, None, None, verbose)
+        from ace.ACEMCTSDef import ACEMCTSDefDLL
+        acemctsdef = ACEMCTSDefDLL(None, None, None, None, None, None, None, verbose)
+        print(f"ACE-MCTS enabled. Version {acemcts.version()}")
+        print(f"ACE-MCTS Def enabled. Version {acemctsdef.version()}")
+
     if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
         from ace.ACE import ACEDLL
         ace = ACEDLL(None, None, None, None, None, None, verbose)
@@ -1134,9 +1161,10 @@ async def main():
         print(f"ACE enabled. Version {ace.version()}")
         print(f"ACEDef enabled. Version {acedef.version()}")
 
-    from ddsolver import ddsolver
-    dds = ddsolver.DDSolver()
-    print(f"DDSolver enabled. Version {dds.version()}")
+    from ddsolver.ddssolver import DDSSolver
+    dds_max_threads = configuration.getint('dds', 'dds_max_threads', fallback=0)
+    dds = DDSSolver(max_threads=dds_max_threads)
+    print(f"DDSSolver enabled. Version {dds.version()} Max threads {dds_max_threads}")
     
     # Not supported by TM, so no need to calculate
     models.claim = False
