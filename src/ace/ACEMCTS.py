@@ -134,10 +134,10 @@ class ACEMCTSDLL:
         self.verbose = verbose or getattr(models, 'ace_mcts_verbose', False)
 
         # ACE-MCTS configuration
-        self.search_duration = getattr(models, 'ace_mcts_search_duration', 2000)  # ms
+        self.search_duration = getattr(models, 'ace_mcts_search_duration', 5000)  # ms
         self.max_iterations = getattr(models, 'ace_mcts_max_iterations', 0)  # 0 = unlimited
         self.max_passed_samples = getattr(models, 'ace_mcts_max_passed_samples', 200)
-        self.search_depth = getattr(models, 'ace_mcts_search_depth', 2)
+        self.search_depth = getattr(models, 'ace_mcts_search_depth', 4)
         self.search_threads = getattr(models, 'ace_mcts_threads', 10)
         self.autoplay = models.autoplaysingleton
         # MCTS-specific parameters (no model concept)

@@ -415,7 +415,10 @@ class BotLead:
             sorted_scores = sorted_scores[selected_indices]
     
         # We return tricks and the conversion to MP or IMP is done at a higher level
-        if self.models.double_dummy:
+        n_accepted = accepted_samples.shape[0]
+        if n_accepted == 0:
+            tricks = np.zeros((0, len(lead_card_indexes), 2))
+        elif self.models.double_dummy:
             tricks = self.double_dummy_estimates(lead_card_indexes, contract, accepted_samples)
         else:
             tricks = self.single_dummy_estimates(lead_card_indexes, contract, accepted_samples)

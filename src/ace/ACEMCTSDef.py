@@ -143,10 +143,10 @@ class ACEMCTSDefDLL:
         self.player_i = player_i  # 0=West, 2=East
 
         # ACE-MCTS configuration
-        self.search_duration = getattr(models, 'ace_mcts_search_duration', 2000)
+        self.search_duration = getattr(models, 'ace_mcts_search_duration', 5000)
         self.max_iterations = getattr(models, 'ace_mcts_max_iterations', 0)
         self.max_passed_samples = getattr(models, 'ace_mcts_max_passed_samples', 200)
-        self.search_depth = getattr(models, 'ace_mcts_search_depth', 2)
+        self.search_depth = getattr(models, 'ace_mcts_search_depth', 4)
         self.search_threads = getattr(models, 'ace_mcts_threads', 10)
         self.autoplay = models.autoplaysingleton
         # MCTS-specific parameters

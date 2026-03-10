@@ -127,3 +127,4 @@ uv.lock
 src/csharp/bin
 src/csharp/obj
 .claude/settings.local.json
+logs/
