@@ -286,9 +286,14 @@ def validdeal(board, direction):
     return hands
 
 
+@app.route('/robots.txt')
+def robots():
+    response.content_type = 'text/plain'
+    return "User-agent: *\nAllow: /\nAllow: /home\nAllow: /play\nDisallow: /api\nDisallow: /gib\nDisallow: /bba\nDisallow: /autoplay\nDisallow: /submit\nDisallow: /error\nDisallow: /app/\n"
+
 @app.route('/')
-def index(): 
-    return template('index.tpl') 
+def index():
+    return template('index.tpl')
 
 @app.route('/error')
 def error_page():

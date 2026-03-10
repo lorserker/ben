@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <head>
+	<meta name="robots" content="noindex, nofollow">
 	<title>BBA Bidding</title>
 
 	<!-- CSS -->
