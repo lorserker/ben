@@ -113,7 +113,7 @@ class SuitCLib:
             input_str +=f'-wv{west_vacant} '
             input_str +=f'-ev{east_vacant} '
         #input_str = ""
-        input_str += f"{north} {south} {eastwest}"
+        input_str += f"{north or '.'} {south or '.'} {eastwest}"
         output, details = self.make_suitc_call(input_str)
 
         #print(f"{Fore.GREEN}SuitC Output: {len(output_buffer.value)}{Fore.RESET}")
