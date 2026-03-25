@@ -23,7 +23,7 @@ else:
 if sys.platform == 'win32':
     suitclib = 'SuitCLib.dll'
 elif sys.platform == 'darwin':
-    suitclib = 'libsuitc.so'
+    suitclib = 'libsuitc.dylib'
 else:
     suitclib = 'libsuitc.so'
 
@@ -56,7 +56,7 @@ class SuitCLib:
             print("Make sure the file is not blocked by OS (Select properties and click unblock)")
             print("Make sure the filw is not write protected")
             print(f"*****************************************************************************{Fore.RESET}")
-            sys.exit(1)
+            raise RuntimeError(f"Unable to load {SuitCLib_PATH}")
         self.verbose = verbose
 
     def version(self):
@@ -124,32 +124,26 @@ class SuitCLib:
         # We just take the play for MAX as we really don't know how many tricks are needed
         possible_cards = []
         for play in optimum_plays:
-            # If we can take all tricks we drop SuitC
-            if play['Plays'][0]['Tricks'] == max_tricks:
-                if play['Plays'][0]['Percentage'] == 100:
-                    if self.verbose:
-                        print(f"SuitC dropped as we can take all tricks")
-                    return possible_cards
             # We can have more than one play for MAX
-            # So currently we are then selecting higest card. Should that be different?
-            # We should probably look at the samples to find the best play
             if "MAX" in play["OptimumPlayFor"]:
                 if len(play["GameTree"]) > 0:
-                    for card in play["GameTree"]:
-                        for key, card in card.items():
-                            if key == "T":  
-                                actual_card = card[-1]
-                                if actual_card in north:
-                                    if self.verbose:
-                                        print(f"Skipping play from North {card} {input_str}")
-                                    continue
-                                if actual_card in south:
-                                    if self.verbose:
-                                        print(f"Play from South {card} {input_str}")
-                                    possible_cards.append(actual_card) 
-                                    continue
-                                if self.verbose:
-                                    print("SuitC found play not in North or South", card)
+                    for node in play["GameTree"]:
+                        for key, value in node.items():
+                            if key == "T":
+                                # Game tree cards have format "N:A" or "S:K"
+                                # North = leader (dummy in BEN's calling convention)
+                                # South = partner
+                                # We want the leader's (North) plays
+                                if value.startswith("N:"):
+                                    actual_card = value[-1]
+                                    if actual_card in north:
+                                        if self.verbose:
+                                            print(f"Play from North (leader) {value} {input_str}")
+                                        possible_cards.append(actual_card)
+                                    elif self.verbose:
+                                        print(f"SuitC card {actual_card} not in North hand {north}")
+                                elif self.verbose:
+                                    print(f"Skipping non-leader play {value} {input_str}")
                 else:
                     if self.verbose:
                         print(f"SuitC found no gametree. {input_str}")

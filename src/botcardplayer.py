@@ -1,4 +1,6 @@
 import time
+import json
+import os
 import numpy as np
 import tensorflow as tf
 
@@ -477,8 +479,9 @@ class CardPlayer:
 
 
         if self.verbose:
-            print('10 first samples:')
-            print('\n'.join(hands_pbn[:10]))
+            print(f'PBN hands ({len(hands_pbn)} samples):')
+            for idx, pbn in enumerate(hands_pbn):
+                print(f'  [{idx:2d}] {pbn}')
         
         t_start = time.time()
         if self.verbose:
@@ -494,7 +497,9 @@ class CardPlayer:
             tricks_needed = 13 - (level + 6) - self.n_tricks_taken + 1
 
         if self.verbose:
+            print(f"Tricks needed: {tricks_needed} (level={level}, n_tricks_taken={self.n_tricks_taken}, player_i={self.player_i})")
             print("Calculating tricks. Using probability {}".format(use_probability))
+            self.dds.print_dd_results(dd_solved)
         if use_probability:
             card_tricks = self.dds.expected_tricks_dds_probability(dd_solved, probabilities_list)
         else:
@@ -502,10 +507,14 @@ class CardPlayer:
         #print(card_tricks)
         making = self.dds.p_made_target(tricks_needed)(dd_solved)
 
+        if self.verbose:
+            print(f"Making probability (p_make with tricks_needed={tricks_needed}):")
+            for card, prob in making.items():
+                print(f"  {deck52.decode_card(card)}: {prob:.3f}")
+
         if self.models.use_real_imp_or_mp:
             if self.verbose:
                 print(f"Probabilities: [{', '.join(f'{x:>6.2f}' for x in probabilities_list[:20])}{' ]' if len(probabilities_list) <= 20 else '...]'}")
-                self.dds.print_dd_results(dd_solved)
 
             # print("Calculated scores")
             real_scores = calculate.calculate_score(dd_solved, self.n_tricks_taken, self.player_i, self.score_by_tricks_taken)
@@ -565,7 +574,35 @@ class CardPlayer:
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_player_hand(),
             binary.BinaryInput(self.x_play[:,trick_i,:]).get_this_trick_lead_suit(),
         )
+
+        # Log features + model output for cross-validation with C# implementation
+        log_path = os.environ.get("BEN_PLAY_LOG")
+        if log_path:
+            self._log_play_state(log_path, trick_i, cards_softmax[0], x.reshape(-1))
+
         return x.reshape(-1)
+
+    def _log_play_state(self, log_path, trick_i, raw_softmax, follow_suit_softmax):
+        """Append a JSON entry with features + model output for cross-validation."""
+        entry = {
+            "player_i": self.player_i,
+            "trick_i": trick_i,
+            "model_name": self.playermodel.name,
+            "contract": self.contract,
+            "level": self.level,
+            "strain_i": self.strain_i,
+            "x_play": self.x_play[0, :(trick_i + 1), :].tolist(),
+            "raw_softmax": raw_softmax.tolist(),
+            "follow_suit_softmax": follow_suit_softmax.tolist(),
+            "hand": self.x_play[0, trick_i, :32].tolist(),
+            "seen_hand": self.x_play[0, trick_i, 32:64].tolist(),
+        }
+        # Append to JSONL file (one JSON object per line)
+        try:
+            with open(log_path, "a") as f:
+                f.write(json.dumps(entry) + "\n")
+        except Exception as e:
+            print(f"Warning: could not write play log: {e}")
 
     def log_player_model_input(self, trick_i):
         """Log the player model input tensor in human-readable format for ONNX comparison."""

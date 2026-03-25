@@ -68,7 +68,7 @@ import gc
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.7.6'
+version = '0.8.7.7'
 init()
 
 SEATS = ['North', 'East', 'South', 'West']
@@ -1109,16 +1109,6 @@ async def main():
 
     models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
 
-    if sys.platform != 'win32':
-        print("Disabling PIMC/BBA as platform is not win32")
-        models.pimc_use_declaring = False
-        models.pimc_use_defending = False
-        #models.use_bba = False
-        #models.consult_bba = False
-        #models.use_bba_rollout = False
-        #models.use_bba_to_count_aces = False
-        #models.use_suitc = False
-        
     if models.use_bba:
         print("Using BBA for bidding")
     else:
@@ -1139,11 +1129,16 @@ async def main():
 
     if models.pimc_use_declaring or models.pimc_use_defending:
         from pimc.PIMC import BGADLL
-        pimc = BGADLL(None, None, None, None, None, None, verbose)
         from pimc.PIMCDef import BGADefDLL
-        pimcdef = BGADefDLL(None, None, None, None, None, None, None, verbose)
-        print(f"PIMC enabled. Version {pimc.version()}")
-        print(f"PIMCDef enabled. Version {pimcdef.version()}")
+        if BGADLL.get_dll() is not None:
+            pimc = BGADLL(None, None, None, None, None, None, verbose)
+            pimcdef = BGADefDLL(None, None, None, None, None, None, None, verbose)
+            print(f"PIMC enabled. Version {pimc.version()}")
+            print(f"PIMCDef enabled. Version {pimcdef.version()}")
+        else:
+            print("PIMC/PIMCDef disabled (BGADLL not available for this platform)")
+            models.pimc_use_declaring = False
+            models.pimc_use_defending = False
 
     if getattr(models, 'ace_mcts_use_declaring', False) or getattr(models, 'ace_mcts_use_defending', False):
         from ace.ACEMCTS import ACEMCTSDLL

@@ -44,6 +44,11 @@ else:
 
 BGADLL_PATH = os.path.join(BIN_FOLDER, BGADLL_LIB)
 
+# Check if native BGADLL is available (for cross-platform support)
+from pimc.BGADLL_Native import is_available as _native_available, \
+    NativePIMCDef, NativeHand, NativePlay, NativeConstraints, NativeExtensions, NativeMacros, NativeCard
+USE_NATIVE_BGA = _native_available()
+
 class BGADefDLL:
 
     _dll_loaded = None  # Class-level attribute to store the DLL singleton
@@ -55,31 +60,46 @@ class BGADefDLL:
         if cls._dll_loaded is None:
             with cls._lock:  # Ensure only one thread can enter this block at a time
                 if cls._dll_loaded is None:  # Double-checked locking
-                    try:
-                        # Load the .NET assembly and import the types and classes from the assembly
-                        util.load_dotnet_framework_assembly(BGADLL_PATH, verbose)
-
-                        from BGADLL import PIMCDef, Hand, Play, Constraints, Extensions, Macros, Card
-
+                    if USE_NATIVE_BGA:
+                        if verbose:
+                            print("Loading BGADLL (Def) via native ctypes interface")
                         cls._dll_loaded = {
-                            "PIMCDef": PIMCDef,
-                            "Hand": Hand,
-                            "Play": Play,
-                            "Constraints": Constraints,
-                            "Extensions": Extensions,
-                            "Macros": Macros,
-                            "PIMCCard": Card
+                            "PIMCDef": NativePIMCDef,
+                            "Hand": NativeHand,
+                            "Play": NativePlay,
+                            "Constraints": NativeConstraints,
+                            "Extensions": NativeExtensions,
+                            "Macros": NativeMacros,
+                            "PIMCCard": NativeCard
                         }
+                    elif sys.platform == 'win32':
+                        try:
+                            # Load the .NET assembly and import the types and classes from the assembly
+                            util.load_dotnet_framework_assembly(BGADLL_PATH, verbose)
 
-                    except Exception as ex:
-                        # Provide a message to the user if the assembly is not found
-                        print(f"{Fore.RED}Error: {ex}")
-                        print("*****************************************************************************")
-                        print("Error: Unable to load BGADLL.dll. Make sure the DLL is in the ./bin directory")
-                        print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
-                        print("Make sure the dll is not write protected")
-                        print(f"*****************************************************************************{Fore.RESET}")
-                        sys.exit(1)
+                            from BGADLL import PIMCDef, Hand, Play, Constraints, Extensions, Macros, Card
+
+                            cls._dll_loaded = {
+                                "PIMCDef": PIMCDef,
+                                "Hand": Hand,
+                                "Play": Play,
+                                "Constraints": Constraints,
+                                "Extensions": Extensions,
+                                "Macros": Macros,
+                                "PIMCCard": Card
+                            }
+
+                        except Exception as ex:
+                            # Provide a message to the user if the assembly is not found
+                            print(f"{Fore.RED}Error: {ex}")
+                            print("*****************************************************************************")
+                            print("Error: Unable to load BGADLL.dll. Make sure the DLL is in the ./bin directory")
+                            print("Make sure the dll is not blocked by OS (Select properties and click unblock)")
+                            print("Make sure the dll is not write protected")
+                            print(f"*****************************************************************************{Fore.RESET}")
+                            sys.exit(1)
+                    else:
+                        print(f"BGADLL not available for this platform ({sys.platform}). PIMCDef will be disabled.")
         return cls._dll_loaded
     
     def __init__(self, models, northhand, southhand, contract, is_decl_vuln, player_i, sampler, verbose):

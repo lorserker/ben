@@ -1,6 +1,5 @@
 - Add signals when defending
 - When declaring we want the declaring CardPlayer to play for Dummy (Sort of sharing knowledge)
-- Play on ben.aalborgdata from a uploaded PBN-file
 - When bidding rollout, consider expanding the tree for more that the best bid if other bids above threshold
 
 
@@ -17,14 +16,7 @@
 - Switch between the different simulation engines depending on level of bidding
 - Consider disabling simulation twhen responding to 4N
 
-- When rollout bidding, chack for bridge illogical sequences: 1H-2C-X-P-P-3C
-
-- Adding probability of bidding to the double dummy estimates
-
 - Rollout bidding should probably estimate based on how likely it matches partners hand (Camrose board 9)
-
-
- Had a few distractions here but should have answered sooner anyway sorry. I've been on the fence about bridgebots, whether to try and be a part of the current project or do something from the ground up. It's always tempting to go for the latter but there's a lot of work.
 
 Bidding and play are pretty separate, but if you're going to do either first, it should be play, because bidding is likely to use play (for simulation) a lot more than play uses bidding.
 

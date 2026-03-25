@@ -48,7 +48,7 @@ import gc
 import psutil
 from nn.timing import ModelTimer
 
-version = '0.8.7.6'
+version = '0.8.7.7'
 init()
 
 # Check websockets version - 15.0+ removed path as handler argument
@@ -172,16 +172,6 @@ models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src"
 # Enable model timing for performance analysis
 ModelTimer.enabled = True
 
-if sys.platform != 'win32':
-    print("Disabling PIMC/BBA as platform is not win32")
-    models.pimc_use_declaring = False
-    models.pimc_use_defending = False
-    #models.use_bba = False
-    #models.consult_bba = False
-    #models.use_bba_rollout = False
-    #models.use_bba_to_count_aces = False
-    #models.use_suitc = False
-
 if models.use_bba:
     print("Using BBA for bidding")
 else:
@@ -202,9 +192,13 @@ if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or model
     print(f"BBA enabled. Version {bot.version()}")    
 
 if models.use_suitc:
-    from suitc.SuitC import SuitCLib
-    suitc = SuitCLib(verbose)
-    print(f"SuitC enabled. Version {suitc.version()}")
+    try:
+        from suitc.SuitC import SuitCLib
+        suitc = SuitCLib(verbose)
+        print(f"SuitC enabled. Version {suitc.version()}")
+    except Exception as ex:
+        print(f"SuitC failed to load: {ex} - disabling SuitC")
+        models.use_suitc = False
 
 if getattr(models, 'ace_mcts_use_declaring', False) or getattr(models, 'ace_mcts_use_defending', False):
     from ace.ACEMCTS import ACEMCTSDLL
@@ -224,11 +218,16 @@ if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defen
 
 if models.pimc_use_declaring or models.pimc_use_defending:
     from pimc.PIMC import BGADLL
-    pimc = BGADLL(None, None, None, None, None, None, None)
     from pimc.PIMCDef import BGADefDLL
-    pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
-    print(f"PIMC enabled. Version {pimc.version()}")
-    print(f"PIMCDef enabled. Version {pimcdef.version()}")
+    if BGADLL.get_dll() is not None:
+        pimc = BGADLL(None, None, None, None, None, None, None)
+        pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
+        print(f"PIMC enabled. Version {pimc.version()}")
+        print(f"PIMCDef enabled. Version {pimcdef.version()}")
+    else:
+        print("PIMC/PIMCDef disabled (BGADLL not available for this platform)")
+        models.pimc_use_declaring = False
+        models.pimc_use_defending = False
 
 from ddsolver.ddssolver import DDSSolver
 dds_max_threads = configuration.getint('dds', 'dds_max_threads', fallback=0)

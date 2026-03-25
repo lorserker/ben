@@ -63,7 +63,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.7.6'
+version = '0.8.7.7'
 
 init()
 
@@ -1168,16 +1168,6 @@ async def main():
     from nn.timing import ModelTimer
     ModelTimer.enabled = True
 
-    if sys.platform != 'win32':
-        print("Disabling PIMC/BBA as platform is not win32")
-        models.pimc_use_declaring = False
-        models.pimc_use_defending = False
-        #models.use_bba = False
-        #models.consult_bba = False
-        #models.use_bba_rollout = False
-        #models.use_bba_to_count_aces = False
-        #models.use_suitc = False
-
     if models.use_bba:
         print("Using BBA for bidding")
     else:
@@ -1222,11 +1212,16 @@ async def main():
 
     if models.pimc_use_declaring or models.pimc_use_defending:
         from pimc.PIMC import BGADLL
-        pimc = BGADLL(None, None, None, None, None, None, None)
         from pimc.PIMCDef import BGADefDLL
-        pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
-        print(f"PIMC enabled. Version {pimc.version()}")
-        print(f"PIMCDef enabled. Version {pimcdef.version()}")
+        if BGADLL.get_dll() is not None:
+            pimc = BGADLL(None, None, None, None, None, None, None)
+            pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
+            print(f"PIMC enabled. Version {pimc.version()}")
+            print(f"PIMCDef enabled. Version {pimcdef.version()}")
+        else:
+            print("PIMC/PIMCDef disabled (BGADLL not available for this platform)")
+            models.pimc_use_declaring = False
+            models.pimc_use_defending = False
 
     from ddsolver.ddssolver import DDSSolver
     dds_max_threads = configuration.getint('dds', 'dds_max_threads', fallback=0)

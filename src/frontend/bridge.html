@@ -29,7 +29,7 @@
 
 <body>
     <div class="center">
-        <h1>Play with BEN. Version 0.8.7.6</h1>
+        <h1>Play with BEN. Version 0.8.7.7</h1>
     </div>    
 <div id="loader"></div> 
 <!-- HTML for the dialog -->
@@ -273,12 +273,16 @@
             if (!deal.expectBidInput || event.target.classList.contains("invalid")) {
                 return
             }
-            ws.send(event.target.textContent)
-            deal.expectBidInput = (event.target.textContent != "Hint")
-            // Start spinner if asking for Hint
-            if (!deal.expectBidInput)
-                document.querySelector("#loader").style.visibility = "visible"; 
-
+            let text = event.target.textContent
+            ws.send(text)
+            if (text == "Hint") {
+                deal.expectBidInput = false
+                document.querySelector("#loader").style.visibility = "visible";
+            } else if (text != "Alert") {
+                // PASS, X, XX — hide bidding box until next turn
+                deal.expectBidInput = false
+                document.querySelector('#bidding').textContent = ''
+            }
         }
 
         function bidSuitClick(event) {
@@ -293,6 +297,8 @@
             ws.send(bid)
 
             deal.expectBidInput = false
+            // Hide bidding box until next turn
+            document.querySelector('#bidding').textContent = ''
         }
 
         function claimClick(event) {

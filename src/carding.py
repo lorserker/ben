@@ -186,9 +186,19 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
                     entries = count_entries(hand_str, interesting_suit, played_cards, contract[1])
 
+                    # SuitC convention: North = leader. Swap hands if declarer is on lead.
+                    if player_i == 3:
+                        # Declarer leads: declarer = North (leader), dummy = South
+                        suitc_north = suits_south
+                        suitc_south = suits_north
+                    else:
+                        # Dummy leads: dummy = North (leader), declarer = South
+                        suitc_north = suits_north
+                        suitc_south = suits_south
+
                     # We need to find if playing safe should be needed. Currently we select the card with the highest expected score
                     try:
-                        suitc_cards = suitc.calculate(max(len(suits_north),len(suits_south)), suits_north, suits_south, suits_westeast, trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
+                        suitc_cards = suitc.calculate(max(len(suits_north),len(suits_south)), suitc_north, suitc_south, suits_westeast, trump = "SHDC"[interesting_suit] == contract[1], entries = entries )
                     except Exception as ex:
                         sys.stderr.write(f"{Fore.RED}{ex}{Fore.RESET}\n")
                         sys.stderr.write(f"{Fore.RED}SuitC failed. Input:{suits_north if suits_north != '' else '.'} {suits_south if suits_south != '' else '.'} {suits_westeast}{Fore.RESET}\n")

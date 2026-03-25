@@ -17,7 +17,8 @@ onnxruntime
 
 bottle
 gevent
-pythonnet
+pythonnet>=3.0.4
+clr-loader>=0.3.0
 bottle_session
 flask
 flask_cors

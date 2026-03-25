@@ -8,10 +8,11 @@ import sys
 import platform
 os.environ['FOR_DISABLE_CONSOLE_CTRL_HANDLER'] = 'T'
 # Just disables the warnings
-os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 os.environ["GRPC_VERBOSITY"] = "ERROR"
 os.environ["GLOG_minloglevel"] = "2"
 os.environ["TF_ENABLE_ONEDNN_OPTS"] = "0"
+os.environ["ABSL_MIN_LOG_LEVEL"] = "2"
 import logging
 import traceback
 import util
@@ -107,7 +108,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.7.6'
+version = '0.8.7.7'
 init()
 
 def handle_exception(e):
@@ -555,6 +556,7 @@ parser.add_argument("--record", type=str_to_bool, default=True, help="Recording 
 parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
 parser.add_argument("--nolimit", type=str_to_bool, default=False, help="Removed limit on number of requests to the API")
+parser.add_argument("--allowed-hosts", type=str, default=None, help="Comma-separated list of allowed Host header values (e.g. 'localhost,ben,myhost.example.com'). Default: localhost,127.0.0.1. Use '*' to allow all hosts.")
 
 args = parser.parse_args()
 
@@ -624,15 +626,6 @@ if verbose:
     print("Loading sampler")
 sampler = Sample.from_conf(configuration, verbose)
 
-if sys.platform != 'win32':
-    print("Disabling PIMC/BBA as platform is not win32")
-    models.pimc_use_declaring = False
-    models.pimc_use_defending = False
-    #models.use_bba = False
-    #models.consult_bba = False
-    #models.use_bba_rollout = False
-    #models.use_bba_to_count_aces = False
-
 if models.use_bba:
     print("Using BBA for bidding")
 else:
@@ -659,11 +652,16 @@ if models.use_suitc:
 
 if models.pimc_use_declaring or models.pimc_use_defending:
     from pimc.PIMC import BGADLL
-    pimc = BGADLL(None, None, None, None, None, None, None)
     from pimc.PIMCDef import BGADefDLL
-    pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
-    print(f"PIMC enabled. Version {pimc.version()}")
-    print(f"PIMCDef enabled. Version {pimcdef.version()}")
+    if BGADLL.get_dll() is not None:
+        pimc = BGADLL(None, None, None, None, None, None, None)
+        pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
+        print(f"PIMC enabled. Version {pimc.version()}")
+        print(f"PIMCDef enabled. Version {pimcdef.version()}")
+    else:
+        print("PIMC/PIMCDef disabled (BGADLL not available for this platform)")
+        models.pimc_use_declaring = False
+        models.pimc_use_defending = False
 
 if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
     from ace.ACE import ACEDLL
@@ -788,8 +786,19 @@ logger.addHandler(log_handler)
 logger.setLevel(logging.INFO)
 logger.propagate = False  # Prevent log messages from going to the root logger
 
-# Define allowed hosts
-ALLOWED_HOSTS = {'localhost', '127.0.0.1', 'ben.aalborgdata.dk', 'remote.aalborgdata.dk'}
+# Allowed hosts validation.
+# Requests with a Host header not in this set are rejected with HTTP 444 (silent drop).
+# When running in Docker, the container name (e.g. 'ben') is used as the hostname,
+# so it must be included here. Use --allowed-hosts to customize, or '*' to allow all.
+DEFAULT_ALLOWED_HOSTS = {'localhost', '127.0.0.1'}
+
+if args.allowed_hosts == '*':
+    ALLOWED_HOSTS = None  # None means allow all
+elif args.allowed_hosts:
+    ALLOWED_HOSTS = set(h.strip() for h in args.allowed_hosts.split(','))
+else:
+    ALLOWED_HOSTS = DEFAULT_ALLOWED_HOSTS
+
 class SilentAbort(HTTPException):
     code = 444  # Non-standard code to terminate without response
     description = "No Response"
@@ -797,9 +806,11 @@ class SilentAbort(HTTPException):
 def log_request_info():
     # Get the host from the request headers
     host = request.headers.get("Host", "").split(':')[0]  # Ignore port number if present
-    # Check if the host is allowed
-    if host not in ALLOWED_HOSTS:
-        raise SilentAbort()  # Terminates connection silently
+    # Check if the host is allowed (ALLOWED_HOSTS=None means all hosts allowed)
+    if ALLOWED_HOSTS is not None and host not in ALLOWED_HOSTS:
+        logger.warning(f"Rejected request from host '{host}' - not in ALLOWED_HOSTS. "
+                       f"Use --allowed-hosts to add it, or --allowed-hosts '*' to allow all.")
+        raise SilentAbort()  # Terminates connection with HTTP 444
     # --- Get the Referer header ---
     # Use .get() with a default value in case the header is not present
     referrer = request.headers.get("Referer", "None") # Use "None" or "" or None as default
@@ -917,6 +928,23 @@ def bid():
             if "hcp" in result: del result["hcp"]
         else:
             result["explanations"] = explanations
+
+        # Add explanation for the recommended bid
+        try:
+            auction_with_bid = auction + [bid.bid]
+            if models.use_bba:
+                explanation, alert = hint_bot.explain_last_bid(auction_with_bid)
+            else:
+                explanation, alert = hint_bot.bbabot.explain_last_bid(auction_with_bid)
+            result["explanation"] = explanation
+            result["alert"] = str(alert)
+            # Also add explanation to the top candidate
+            if "candidates" in result and len(result["candidates"]) > 0:
+                result["candidates"][0]["explanation"] = explanation
+                result["candidates"][0]["alert"] = str(alert)
+        except Exception as e:
+            if verbose:
+                print(f"Could not get explanation for bid: {e}")
 
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}

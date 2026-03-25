@@ -11,6 +11,25 @@ python gameapi.py
 The API uses `default_api.conf` as configuration (override with `--config`).
 Default port is 8085 (override with `--port`).
 
+### Host Validation
+
+The API validates the `Host` header on incoming requests. Only requests from allowed
+hosts are accepted — all others are silently rejected with HTTP 444.
+
+By default, only `localhost` and `127.0.0.1` are allowed. When running in Docker or
+behind a reverse proxy, you must add your hostname(s):
+
+```bash
+# Allow specific hosts (comma-separated)
+python gameapi.py --allowed-hosts 'localhost,127.0.0.1,ben'
+
+# Allow all hosts (useful in Docker / trusted networks)
+python gameapi.py --allowed-hosts '*'
+```
+
+> **Tip:** If you get HTTP 444 "No Response" on every request, this is almost certainly
+> the cause. Check the logs for a "Rejected request from host" warning.
+
 ## Common Parameters
 
 These parameters are used across multiple endpoints:

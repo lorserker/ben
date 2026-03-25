@@ -8,8 +8,8 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
     apt-get clean
 
-# .NET 10 runtime for EPBot (CoreCLR)
-RUN apt-get -y install curl && \
+# .NET 10 runtime for EPBot (CoreCLR) — libicu is required for .NET globalization
+RUN apt-get -y install curl libicu70 && \
     curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0 --runtime dotnet --install-dir /usr/share/dotnet && \
     apt-get clean
 ENV DOTNET_ROOT=/usr/share/dotnet
@@ -37,11 +37,14 @@ ADD src/openinglead /app/openinglead/
 ADD bin /app/bin/
 ADD src/config /app/config/
 ADD models /app/models/
-COPY "BBA/CC/" "/BBA/CC/"
+COPY "BBA/CC/" "/app/BBA/CC/"
 ADD start_ben_all.sh /app/
 
+# BBA imports from "src.objects" — create symlink so /app/src -> /app
 # Grant execution permissions to the script and fix line endings
-RUN sed -i 's/\r$//' /app/start_ben_all.sh && chmod +x /app/start_ben_all.sh
+RUN ln -s /app /app/src && \
+    ln -s /app/BBA /BBA && \
+    sed -i 's/\r$//' /app/start_ben_all.sh && chmod +x /app/start_ben_all.sh
 
 EXPOSE 8080 4443 8085
 CMD ./start_ben_all.sh

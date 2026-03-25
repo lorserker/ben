@@ -76,6 +76,9 @@ class BotBid:
     def explain(self, auction):
         if not self.models.consult_bba or self.bbabot is None:
             return None, False
+        # Don't call EPBot when there are no real bids to explain
+        if not any(bidding.BID2ID.get(bid, 0) >= 2 for bid in auction):
+            return None, False
         return self.bbabot.explain_last_bid(auction)
 
     def explain_auction(self, auction):
