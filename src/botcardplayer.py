@@ -150,22 +150,16 @@ class CardPlayer:
     def check_pimc_constraints(self, trick_i, players_states, quality):
         # If we are declarer and PIMC/ACE enabled - use PIMC/ACE
         # ACE settings take priority if enabled
-        ace_mcts_declaring = getattr(self.models, 'ace_mcts_use_declaring', False)
-        ace_mcts_defending = getattr(self.models, 'ace_mcts_use_defending', False)
         ace_declaring = getattr(self.models, 'ace_use_declaring', False)
         ace_defending = getattr(self.models, 'ace_use_defending', False)
 
-        if ace_mcts_declaring:
-            self.pimc_declaring = trick_i >= (getattr(self.models, 'ace_mcts_start_trick_declarer', 1) - 1) and trick_i < getattr(self.models, 'ace_mcts_stop_trick_declarer', 13)
-        elif ace_declaring:
-            self.pimc_declaring = trick_i >= (getattr(self.models, 'ace_start_trick_declarer', 1) - 1) and trick_i < getattr(self.models, 'ace_stop_trick_declarer', 8)
+        if ace_declaring:
+            self.pimc_declaring = trick_i >= (getattr(self.models, 'ace_start_trick_declarer', 1) - 1) and trick_i < getattr(self.models, 'ace_stop_trick_declarer', 13)
         else:
             self.pimc_declaring = self.models.pimc_use_declaring and trick_i >= (self.models.pimc_start_trick_declarer - 1) and trick_i < (self.models.pimc_stop_trick_declarer)
 
-        if ace_mcts_defending:
-            self.pimc_defending = trick_i >= (getattr(self.models, 'ace_mcts_start_trick_defender', 1) - 1) and trick_i < getattr(self.models, 'ace_mcts_stop_trick_defender', 13)
-        elif ace_defending:
-            self.pimc_defending = trick_i >= (getattr(self.models, 'ace_start_trick_defender', 1) - 1) and trick_i < getattr(self.models, 'ace_stop_trick_defender', 8)
+        if ace_defending:
+            self.pimc_defending = trick_i >= (getattr(self.models, 'ace_start_trick_defender', 1) - 1) and trick_i < getattr(self.models, 'ace_stop_trick_defender', 13)
         else:
             self.pimc_defending = self.models.pimc_use_defending and trick_i >= (self.models.pimc_start_trick_defender - 1) and trick_i < (self.models.pimc_stop_trick_defender)
         if not self.pimc_defending and not self.pimc_declaring:
@@ -943,21 +937,15 @@ class CardPlayer:
                 print(candidate_cards[i].card, f"{candidate_cards[i].insta_score:.3f}", candidate_cards[i].expected_tricks_dd, round(5 * candidate_cards[i].p_make_contract, 1), int(candidate_cards[i].expected_tricks_dd * 10) / 10)
 
         if self.models.matchpoint:
-            if self.models.ace_ben_dd_declaring or self.models.ace_ben_dd_defending:
-                who = "ACE-BEN-MP" 
+            if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
+                who = "PIMC-BEN-MP"
             else:
-                if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
-                    who = "PIMC-BEN-MP" 
-                else:
-                    who = "BEN-MP" 
+                who = "BEN-MP"
         else:
-            if self.models.ace_ben_dd_declaring or self.models.ace_ben_dd_defending:
-                who = "ACE-BEN-IMP" 
+            if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
+                who = "PIMC-BEN-IMP"
             else:
-                if self.models.pimc_ben_dd_declaring or self.models.pimc_ben_dd_defending:
-                    who = "PIMC-BEN-IMP" 
-                else:
-                    who = "BEN-IMP" 
+                who = "BEN-IMP"
             
         right_card, who = carding.select_right_card_for_play(candidate_cards, self.get_random_generator(), self.contract, self.models, self.hand_str, self.public_hand_str, self.player_i, tricks52, current_trick, missing_cards, play_status, who, claim_cards,self.verbose)
         best_card_resp = CardResp(

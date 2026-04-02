@@ -65,16 +65,6 @@ try:
 except ImportError:
     ACEDefDLL = None
 
-# Import ACE-MCTS classes
-try:
-    from ace.ACEMCTS import ACEMCTSDLL
-except ImportError:
-    ACEMCTSDLL = None
-try:
-    from ace.ACEMCTSDef import ACEMCTSDefDLL
-except ImportError:
-    ACEMCTSDefDLL = None
-
 from flask import Flask, Response, request, jsonify, abort
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
@@ -140,20 +130,12 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
 
     pimc = [None, None, None, None]
 
-    # Check if engines are enabled (ACE-MCTS > ACE > PIMC priority)
-    ace_mcts_use_declaring = getattr(models, 'ace_mcts_use_declaring', False)
-    ace_mcts_use_defending = getattr(models, 'ace_mcts_use_defending', False)
+    # Check if engines are enabled (ACE > PIMC priority)
     ace_use_declaring = getattr(models, 'ace_use_declaring', False)
     ace_use_defending = getattr(models, 'ace_use_defending', False)
 
     # We should only instantiate the play engine for the position we are playing
-    if ace_mcts_use_declaring and cardplayer_i == 3 and ACEMCTSDLL is not None:
-        declarer = ACEMCTSDLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
-        pimc[1] = declarer
-        pimc[3] = declarer
-        if verbose:
-            print("ACE-MCTS", dummy_hand_str, decl_hand_str, contract)
-    elif ace_use_declaring and cardplayer_i == 3 and ACEDLL is not None:
+    if ace_use_declaring and cardplayer_i == 3 and ACEDLL is not None:
         declarer = ACEDLL(models, dummy_hand_str, decl_hand_str, contract, is_decl_vuln, sampler, verbose)
         pimc[1] = declarer
         pimc[3] = declarer
@@ -170,11 +152,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
         pimc[1] = None
         pimc[3] = None
 
-    if ace_mcts_use_defending and (cardplayer_i == 0) and ACEMCTSDefDLL is not None:
-        pimc[0] = ACEMCTSDefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
-        if verbose:
-            print("ACE-MCTS", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
-    elif ace_use_defending and (cardplayer_i == 0) and ACEDefDLL is not None:
+    if ace_use_defending and (cardplayer_i == 0) and ACEDefDLL is not None:
         pimc[0] = ACEDefDLL(models, dummy_hand_str, lefty_hand_str, contract, is_decl_vuln, 0, sampler, verbose)
         if verbose:
             print("ACE", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
@@ -186,11 +164,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
     else:
         pimc[0] = None
 
-    if ace_mcts_use_defending and (cardplayer_i == 2) and ACEMCTSDefDLL is not None:
-        pimc[2] = ACEMCTSDefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
-        if verbose:
-            print("ACE-MCTS", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)
-    elif ace_use_defending and (cardplayer_i == 2) and ACEDefDLL is not None:
+    if ace_use_defending and (cardplayer_i == 2) and ACEDefDLL is not None:
         pimc[2] = ACEDefDLL(models, dummy_hand_str, righty_hand_str, contract, is_decl_vuln, 2, sampler, verbose)
         if verbose:
             print("ACE", dummy_hand_str, lefty_hand_str, righty_hand_str, contract)

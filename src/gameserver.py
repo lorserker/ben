@@ -200,21 +200,13 @@ if models.use_suitc:
         print(f"SuitC failed to load: {ex} - disabling SuitC")
         models.use_suitc = False
 
-if getattr(models, 'ace_mcts_use_declaring', False) or getattr(models, 'ace_mcts_use_defending', False):
-    from ace.ACEMCTS import ACEMCTSDLL
-    acemcts = ACEMCTSDLL(None, None, None, None, None, None, None)
-    from ace.ACEMCTSDef import ACEMCTSDefDLL
-    acemctsdef = ACEMCTSDefDLL(None, None, None, None, None, None, None, None)
-    print(f"ACE-MCTS enabled. Version {acemcts.version()}")
-    print(f"ACE-MCTS Def enabled. Version {acemctsdef.version()}")
-
 if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
     from ace.ACE import ACEDLL
     ace = ACEDLL(None, None, None, None, None, None, None)
     from ace.ACEDef import ACEDefDLL
     acedef = ACEDefDLL(None, None, None, None, None, None, None, None)
     print(f"ACE enabled. Version {ace.version()}")
-    print(f"ACEDef enabled. Version {acedef.version()}")
+    print(f"ACE Def enabled. Version {acedef.version()}")
 
 if models.pimc_use_declaring or models.pimc_use_defending:
     from pimc.PIMC import BGADLL

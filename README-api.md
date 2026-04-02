@@ -431,4 +431,3 @@ The BEN API is designed to be stateless - you must provide all game state inform
 - Analysis tools (post-game review)
 - Tournament directors (claim verification)
 
-For integration with the Brill bidding system, use the same endpoint format - Brill's `/bid` endpoint accepts identical parameters.

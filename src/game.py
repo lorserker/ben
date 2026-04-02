@@ -537,15 +537,8 @@ class Driver:
 
         pimc = [None, None, None, None]
 
-        # ACE-MCTS takes priority over ACE, which takes priority over PIMC
-        if getattr(self.models, 'ace_mcts_use_declaring', False):
-            from ace.ACEMCTS import ACEMCTSDLL
-            declarer = ACEMCTSDLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, self.verbose)
-            pimc[1] = declarer
-            pimc[3] = declarer
-            if self.verbose:
-                print("ACE-MCTS (declarer)",dummy_hand, decl_hand, contract)
-        elif getattr(self.models, 'ace_use_declaring', False):
+        # ACE takes priority over PIMC
+        if getattr(self.models, 'ace_use_declaring', False):
             from ace.ACE import ACEDLL
             declarer = ACEDLL(self.models, dummy_hand, decl_hand, contract, is_decl_vuln, self.sampler, self.verbose)
             pimc[1] = declarer
@@ -564,13 +557,7 @@ class Driver:
             pimc[1] = None
             pimc[3] = None
 
-        if getattr(self.models, 'ace_mcts_use_defending', False):
-            from ace.ACEMCTSDef import ACEMCTSDefDLL
-            pimc[0] = ACEMCTSDefDLL(self.models, dummy_hand, lefty_hand, contract, is_decl_vuln, 0, self.sampler, self.verbose)
-            pimc[2] = ACEMCTSDefDLL(self.models, dummy_hand, righty_hand, contract, is_decl_vuln, 2, self.sampler, self.verbose)
-            if self.verbose:
-                print("ACE-MCTS (defender)",dummy_hand, lefty_hand, righty_hand, contract)
-        elif getattr(self.models, 'ace_use_defending', False):
+        if getattr(self.models, 'ace_use_defending', False):
             from ace.ACEDef import ACEDefDLL
             pimc[0] = ACEDefDLL(self.models, dummy_hand, lefty_hand, contract, is_decl_vuln, 0, self.sampler, self.verbose)
             pimc[2] = ACEDefDLL(self.models, dummy_hand, righty_hand, contract, is_decl_vuln, 2, self.sampler, self.verbose)
@@ -1194,21 +1181,13 @@ async def main():
         suitc = SuitCLib(verbose)
         print(f"SuitC enabled. Version {suitc.version()}")
 
-    if getattr(models, 'ace_mcts_use_declaring', False) or getattr(models, 'ace_mcts_use_defending', False):
-        from ace.ACEMCTS import ACEMCTSDLL
-        acemcts = ACEMCTSDLL(None, None, None, None, None, None, None)
-        from ace.ACEMCTSDef import ACEMCTSDefDLL
-        acemctsdef = ACEMCTSDefDLL(None, None, None, None, None, None, None, None)
-        print(f"ACE-MCTS enabled. Version {acemcts.version()}")
-        print(f"ACE-MCTS Def enabled. Version {acemctsdef.version()}")
-
     if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
         from ace.ACE import ACEDLL
         ace = ACEDLL(None, None, None, None, None, None, None)
         from ace.ACEDef import ACEDefDLL
         acedef = ACEDefDLL(None, None, None, None, None, None, None, None)
         print(f"ACE enabled. Version {ace.version()}")
-        print(f"ACEDef enabled. Version {acedef.version()}")
+        print(f"ACE Def enabled. Version {acedef.version()}")
 
     if models.pimc_use_declaring or models.pimc_use_defending:
         from pimc.PIMC import BGADLL
