@@ -348,7 +348,8 @@ class CardPlayer:
             card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)
         else:                    
             if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
-                with ModelTimer.time_call('pimc_declaring'):
+                timer_label = 'ace_declaring' if self.pimc.__class__.__name__ == 'ACEDLL' else 'pimc_declaring'
+                with ModelTimer.time_call(timer_label):
                     pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
                 if self.verbose:
                     print("PIMC result:")
@@ -370,7 +371,8 @@ class CardPlayer:
                 card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)            
             else:
                 if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
-                    with ModelTimer.time_call('pimc_defending'):
+                    timer_label = 'ace_defending' if self.pimc.__class__.__name__ == 'ACEDefDLL' else 'pimc_defending'
+                    with ModelTimer.time_call(timer_label):
                         pimc_resp_cards = self.pimc.nextplay(self.player_i, shown_out_suits, self.missing_cards)
                     if self.verbose:
                         print("PIMCDef result:")
@@ -389,7 +391,9 @@ class CardPlayer:
                     card_resp = self.pick_card_after_pimc_eval(trick_i, leader_i, current_trick52, tricks52, players_states, merged_card_resp, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)            
                     
                 else:
-                    dd_resp_cards, claims = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence, quality)
+                    ben_timer = 'ben_declaring' if (self.player_i == 1 or self.player_i == 3) else 'ben_defending'
+                    with ModelTimer.time_call(ben_timer):
+                        dd_resp_cards, claims = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence, quality)
                     self.update_with_alphamju(card_resp_alphamju, dd_resp_cards)
                     card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)
 
