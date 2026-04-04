@@ -5,10 +5,10 @@ timeout /t 10 /nobreak >nul
 start "App Server - Local on port :8081" cmd /k python appserverold.py --port 8081
 timeout /t 10 /nobreak >nul
 rem Used from BBO 
-start "TF2 Api external :80 (BBO)" cmd /k python gameapi.py --config config\GIB-BBO.conf --port 80 --host 0.0.0.0
+start "TF2 Api external :80 (BBO)" cmd /k python gameapi.py --config config\GIB-BBO.conf --port 80 --host 0.0.0.0 --allowed-hosts "*"
 timeout /t 10 /nobreak >nul
 rem start "TF2 Api internal :8085" python gameapi.py --config config\default_TF2.conf --host 0.0.0.0
-start "TF2 Api internal :8085 (API)" cmd /k python gameapi.py --config config\GIB-BBO.conf --host 0.0.0.0
+start "TF2 Api internal :8085 (API)" cmd /k python gameapi.py --config config\GIB-BBO.conf --host 0.0.0.0 --allowed-hosts "*"
 timeout /t 10 /nobreak >nul
 start "BEN 2/1" cmd /k python gameserver.py --config config\BEN-21GF.conf --port 4440
 timeout /t 10 /nobreak >nul

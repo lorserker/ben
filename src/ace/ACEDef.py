@@ -62,7 +62,7 @@ class ACEDefDLL:
                     try:
                         util.load_dotnet_framework_assembly(ACEDLL_PATH, verbose)
 
-                        from Ace import Game, Engine, GameOptions, ConstraintSet, Constraints, Range, Config, Contract, Extensions
+                        from Ace import Game, Engine, GameOptions, ConstraintSet, Constraints, Range, Config, Contract, Extensions, Library
                         Player = Extensions.Player
                         Suit = Extensions.Suit
 
@@ -77,6 +77,7 @@ class ACEDefDLL:
                             "Contract": Contract,
                             "Player": Player,
                             "Suit": Suit,
+                            "Library": Library,
                         }
 
                     except Exception as ex:
@@ -149,8 +150,8 @@ class ACEDefDLL:
     def version(self):
         try:
             dll = ACEDefDLL.get_dll(False)
-            if dll and "Engine" in dll:
-                return "Ace Def"
+            if dll and "Library" in dll:
+                return dll['Library'].Version
         except:
             pass
         return "Ace 1.0 (fallback)"

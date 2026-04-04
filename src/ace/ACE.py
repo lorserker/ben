@@ -63,7 +63,7 @@ class ACEDLL:
                     try:
                         util.load_dotnet_framework_assembly(ACEDLL_PATH, verbose)
 
-                        from Ace import Game, Engine, GameOptions, ConstraintSet, Constraints, Range, Config, Contract, Extensions
+                        from Ace import Game, Engine, GameOptions, ConstraintSet, Constraints, Range, Config, Contract, Extensions, Library
                         Player = Extensions.Player
                         Suit = Extensions.Suit
 
@@ -78,6 +78,7 @@ class ACEDLL:
                             "Contract": Contract,
                             "Player": Player,
                             "Suit": Suit,
+                            "Library": Library,
                         }
 
                     except Exception as ex:
@@ -153,8 +154,10 @@ class ACEDLL:
     def version(self):
         try:
             dll = ACEDLL.get_dll(False)
-            if dll and "Engine" in dll:
-                return f"Ace (threads: {self.search_threads})"
+            if dll and "Library" in dll:
+                threads = getattr(self, 'search_threads', None)
+                ver = dll['Library'].Version
+                return f"{ver} (threads: {threads})" if threads else ver
         except:
             pass
         return "Ace 1.0 (fallback)"
