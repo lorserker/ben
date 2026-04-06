@@ -46,7 +46,8 @@ else:
 BGADLL_PATH = os.path.join(BIN_FOLDER, BGADLL_LIB)
 
 # Check if native BGADLL is available (for cross-platform support)
-from pimc.BGADLL_Native import is_available as _native_available, \
+import ctypes
+from pimc.BGADLL_Native import is_available as _native_available, _get_lib, _read_string, \
     NativePIMC, NativeHand, NativePlay, NativeConstraints, NativeExtensions, NativeMacros, NativeCard
 USE_NATIVE_BGA = _native_available()
 
@@ -153,6 +154,20 @@ class BGADLL:
         dll = BGADLL.get_dll()  # Retrieve the loaded DLL classes through the singleton
         PIMC = dll["PIMC"]
         return PIMC().version()
+
+    def dds_backend(self):
+        if USE_NATIVE_BGA:
+            try:
+                lib = _get_lib()
+                if hasattr(lib, 'bga_dds_backend'):
+                    lib.bga_dds_backend.argtypes = []
+                    lib.bga_dds_backend.restype = ctypes.c_void_p
+                    ptr = lib.bga_dds_backend()
+                    return _read_string(ptr)
+            except Exception:
+                pass
+            return "unknown"
+        return "libbcalcdds (.NET)"
 
     def calculate_hcp(self, rank):
         hcp_values = {

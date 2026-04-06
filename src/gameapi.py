@@ -630,7 +630,7 @@ if models.pimc_use_declaring or models.pimc_use_defending:
     if BGADLL.get_dll() is not None:
         pimc = BGADLL(None, None, None, None, None, None, None)
         pimcdef = BGADefDLL(None, None, None, None, None, None, None, None)
-        print(f"PIMC enabled. Version {pimc.version()}")
+        print(f"PIMC enabled. Version {pimc.version()} DDS: {pimc.dds_backend()}")
         print(f"PIMCDef enabled. Version {pimcdef.version()}")
     else:
         print("PIMC/PIMCDef disabled (BGADLL not available for this platform)")
