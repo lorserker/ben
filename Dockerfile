@@ -8,7 +8,7 @@ RUN apt-get update && \
     update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
     apt-get clean
 
-# .NET 10 runtime for EPBot (CoreCLR) — libicu is required for .NET globalization
+# .NET 10 runtime for ACE (CoreCLR) — libicu is required for .NET globalization
 RUN apt-get -y install curl libicu70 && \
     curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0 --runtime dotnet --install-dir /usr/share/dotnet && \
     apt-get clean

@@ -10,6 +10,11 @@ training/
 models/eamon
 src/db
 demo/
+# Not needed by either Docker image — keep them out of the build context
+Practice/
+Boards/
+Challenges/
+logs/
 # models/ - included for Docker build
 src/Eastdb.*
 src/Westdb.*

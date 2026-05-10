@@ -1,0 +1,58 @@
+# Play-API-only image for BEN.
+# Runs only gameapi.py on port 8085 — no UI, no websocket gameserver, no admin GUIs.
+# Intended for embedding BEN as a card-play engine behind another site.
+FROM docker.io/ubuntu:jammy
+
+# libdds-dev contains libdds.so
+RUN apt-get update && \
+    apt-get -y install libboost-thread-dev libdds-dev python3.10 python-is-python3 python3-pip && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# .NET 10 runtime for ACE (CoreCLR) — libicu is required for .NET globalization
+RUN apt-get update && apt-get -y install curl libicu70 && \
+    curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0 --runtime dotnet --install-dir /usr/share/dotnet && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+ENV DOTNET_ROOT=/usr/share/dotnet
+
+ADD requirements.txt /app/
+WORKDIR /app
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Suppress TensorFlow/CUDA warnings (no GPU in container)
+ENV TF_CPP_MIN_LOG_LEVEL=2
+ENV CUDA_VISIBLE_DEVICES=""
+
+# Python source: gameapi.py + the modules it pulls in (no GUIs, no game.py/gameserver.py)
+COPY src/gameapi.py \
+     src/botbidder.py src/botcardplayer.py src/botopeninglead.py \
+     src/sample.py src/claim.py src/util.py src/conf.py \
+     src/objects.py src/deck52.py src/binary.py src/carding.py \
+     src/calculate.py src/scoring.py \
+     /app/
+ADD src/bidding /app/bidding/
+ADD src/nn /app/nn/
+ADD src/ddsolver /app/ddsolver/
+ADD src/alphamju /app/alphamju/
+ADD src/ace /app/ace/
+ADD src/bba /app/bba/
+ADD src/pimc /app/pimc/
+ADD src/suitc /app/suitc/
+ADD src/openinglead /app/openinglead/
+
+# Native libraries — Linux only (Windows DLLs, macOS dylibs, BGA windows/macos dropped)
+COPY bin/libdds.so bin/libsuitc.so /app/bin/
+ADD bin/BBA/linux /app/bin/BBA/linux/
+ADD bin/BGA/linux /app/bin/BGA/linux/
+
+ADD src/config /app/config/
+ADD models /app/models/
+COPY "BBA/CC/" "/app/BBA/CC/"
+
+# BBA imports from "src.objects" — create symlink so /app/src -> /app
+RUN ln -s /app /app/src && ln -s /app/BBA /BBA
+
+EXPOSE 8085
+# --allowed-hosts '*' because this image is intended to be deployed behind a
+# reverse proxy or in a private Docker network. Override the CMD to tighten.
+CMD ["python3", "gameapi.py", "--host", "0.0.0.0", "--allowed-hosts", "*"]

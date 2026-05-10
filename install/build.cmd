@@ -1,3 +1,8 @@
+@echo off
+rem --- ensure we build from the conda 'TF2' env (see requirements.txt) ---
+call "check_env.cmd"
+if errorlevel 1 exit /b 1
+
 :: These builds are for windows
 pyinstaller "..\src\appserver.py" --onefile --path=..\src --add-data "..\src\frontend;frontend"
 pyinstaller "..\src\frontend\appserver.py" --onefile --path=..\src --add-data "..\src\frontend;."  --add-data "..\src\frontend\views;views"

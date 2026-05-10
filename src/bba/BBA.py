@@ -35,55 +35,48 @@ else:
     else:
         BIN_FOLDER = os.path.join(BEN_HOME, 'bin')
 
-# Determine the native library path based on platform and architecture
+# Determine the native EPBot library path based on platform and architecture.
+# BEN always uses the native (NativeAOT) EPBot build via ctypes — there is no
+# longer a .NET fallback (EPBot64/EPBot86/coreclr have been removed).
 machine = platform.machine().lower()
 if sys.platform == 'win32':
-    if machine in ('amd64', 'x86_64', 'x64'):
-        _native_arch = 'x64'
-    elif machine in ('arm64', 'aarch64'):
-        _native_arch = 'arm64'
-    else:
-        _native_arch = 'x64'  # default
+    _native_subdir = 'windows'
+    _native_arch = 'arm64' if machine in ('arm64', 'aarch64') else 'x64'
     _native_lib_name = 'EPBot.dll'
 elif sys.platform == 'darwin':
+    _native_subdir = 'macos'
     _native_arch = 'arm64'
     _native_lib_name = 'libEPBot.dylib'
 else:
-    # Linux
-    if machine in ('aarch64', 'arm64'):
-        _native_arch = 'arm64'
-    else:
-        _native_arch = 'x64'
+    _native_subdir = 'linux'
+    _native_arch = 'arm64' if machine in ('arm64', 'aarch64') else 'x64'
     _native_lib_name = 'libEPBot.so'
 
-_native_subdir = 'windows' if sys.platform == 'win32' else ('macos' if sys.platform == 'darwin' else 'linux')
 EPBot_NATIVE_PATH = os.path.join(BIN_FOLDER, 'BBA', _native_subdir, _native_arch, _native_lib_name)
-
-# Use native library on non-Windows platforms (Windows uses pythonnet/.NET directly)
-USE_NATIVE_EPBOT = os.path.isfile(EPBot_NATIVE_PATH) and sys.platform != 'win32'
-
-if not USE_NATIVE_EPBOT:
-    # Fall back to .NET loading
-    from util import load_dotnet_framework_assembly, load_dotnet_core_assembly
-    python_arch = platform.architecture()[0]
-    if sys.platform == 'win32':
-        if python_arch == '64bit':
-            EPBot_LIB = 'EPBot64'
-        else:
-            EPBot_LIB = 'EPBot86'
-        EPBot_PATH = os.path.join(BIN_FOLDER, EPBot_LIB)
-    else:
-        coreclr_dir = os.path.join(BIN_FOLDER, 'coreclr')
-        if os.path.isfile(os.path.join(coreclr_dir, 'EPBot8739.dll')):
-            EPBot_LIB = 'EPBot8739'
-        else:
-            EPBot_LIB = 'EPBot64'
-        EPBot_PATH = os.path.join(BIN_FOLDER, 'coreclr', EPBot_LIB)
 
 
 class EPBotNative:
-    """Wrapper around the native EPBot C library (ctypes).
-    Provides the same interface as the .NET EPBot class."""
+    """Wrapper around the native EPBot C library (ctypes), exposing the same
+    interface as the .NET EPBot class.
+
+    The native library is a NativeAOT build of EPBotNET and uses a
+    buffer-out-param ABI (recovered from the EPBotFFI shim that ships with the
+    wasm build):
+      * every entry point returns an int status: 0 = OK, -1 = null handle,
+        -2 = exception (call epbot_get_last_error for the message),
+        -3 = supplied buffer too small;
+      * value getters (version, get_bid, get_info_alerting, ...) return the
+        value directly (always >= 0 in practice);
+      * string results are written NUL-terminated UTF-8 into a caller buffer;
+      * int-array results are written into a caller int32 buffer plus a
+        count out-param;
+      * string-array params and results are passed as a single
+        "\n"-joined UTF-8 string (plus a count out-param when returned).
+    """
+
+    OK = 0
+    ERR_BUFFER_TOO_SMALL = -3
+    _DEFAULT_STR_BUF = 1 << 14
 
     _dll = None
     _dll_lock = Lock()
@@ -94,187 +87,203 @@ class EPBotNative:
             with cls._dll_lock:
                 if cls._dll is None:
                     dll = ctypes.CDLL(EPBot_NATIVE_PATH)
-                    # Setup function signatures
-                    dll.epbot_create.restype = c_void_p
-                    dll.epbot_create.argtypes = []
+                    p_int = ctypes.POINTER(c_int)
 
-                    dll.epbot_destroy.restype = None
-                    dll.epbot_destroy.argtypes = [c_void_p]
+                    def _sig(name, restype, argtypes):
+                        fn = getattr(dll, name)
+                        fn.restype = restype
+                        fn.argtypes = argtypes
 
-                    dll.epbot_version.restype = c_int
-                    dll.epbot_version.argtypes = [c_void_p]
-
-                    dll.epbot_new_hand.restype = None
-                    dll.epbot_new_hand.argtypes = [c_void_p, c_int, ctypes.POINTER(c_char_p), c_int, c_int]
-
-                    dll.epbot_set_system_type.restype = None
-                    dll.epbot_set_system_type.argtypes = [c_void_p, c_int, c_int]
-
-                    dll.epbot_set_conventions.restype = None
-                    dll.epbot_set_conventions.argtypes = [c_void_p, c_int, c_char_p, c_bool]
-
-                    dll.epbot_system_name.restype = c_char_p
-                    dll.epbot_system_name.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_set_scoring.restype = None
-                    dll.epbot_set_scoring.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_scoring.restype = c_int
-                    dll.epbot_get_scoring.argtypes = [c_void_p]
-
-                    dll.epbot_set_bid.restype = None
-                    dll.epbot_set_bid.argtypes = [c_void_p, c_int, c_int]
-
-                    dll.epbot_get_bid.restype = c_int
-                    dll.epbot_get_bid.argtypes = [c_void_p]
-
-                    dll.epbot_interpret_bid.restype = None
-                    dll.epbot_interpret_bid.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_meaning.restype = c_char_p
-                    dll.epbot_get_info_meaning.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_alerting.restype = c_int
-                    dll.epbot_get_info_alerting.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_feature.restype = ctypes.POINTER(c_int)
-                    dll.epbot_get_info_feature.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_min_length.restype = ctypes.POINTER(c_int)
-                    dll.epbot_get_info_min_length.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_max_length.restype = ctypes.POINTER(c_int)
-                    dll.epbot_get_info_max_length.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_probable_length.restype = ctypes.POINTER(c_int)
-                    dll.epbot_get_info_probable_length.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_strength.restype = ctypes.POINTER(c_int)
-                    dll.epbot_get_info_strength.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_stoppers.restype = ctypes.POINTER(c_int)
-                    dll.epbot_get_info_stoppers.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_honors.restype = ctypes.POINTER(c_int)
-                    dll.epbot_get_info_honors.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_get_info_suit_power.restype = ctypes.POINTER(c_int)
-                    dll.epbot_get_info_suit_power.argtypes = [c_void_p, c_int]
-
-                    dll.epbot_set_arr_bids.restype = None
-                    dll.epbot_set_arr_bids.argtypes = [c_void_p, ctypes.POINTER(c_char_p), c_int]
-
-                    dll.epbot_get_arr_suits.restype = ctypes.POINTER(c_char_p)
-                    dll.epbot_get_arr_suits.argtypes = [c_void_p]
-
-                    dll.epbot_get_str_bidding.restype = c_char_p
-                    dll.epbot_get_str_bidding.argtypes = [c_void_p]
+                    _sig('epbot_create', c_void_p, [])
+                    _sig('epbot_destroy', None, [c_void_p])
+                    _sig('epbot_get_last_error', c_char_p, [])
+                    _sig('epbot_version', c_int, [c_void_p])
+                    # new_hand(instance, position, hand("\n"-joined suits), dealer, vuln, repeating, b_playing)
+                    _sig('epbot_new_hand', c_int, [c_void_p, c_int, c_char_p, c_int, c_int, c_int, c_int])
+                    _sig('epbot_set_system_type', c_int, [c_void_p, c_int, c_int])
+                    _sig('epbot_set_conventions', c_int, [c_void_p, c_int, c_char_p, c_int])
+                    _sig('epbot_system_name', c_int, [c_void_p, c_int, c_char_p, c_int])
+                    _sig('epbot_get_scoring', c_int, [c_void_p])
+                    _sig('epbot_set_scoring', c_int, [c_void_p, c_int])
+                    # set_bid(instance, position, bidid, alert_text)
+                    _sig('epbot_set_bid', c_int, [c_void_p, c_int, c_int, c_char_p])
+                    _sig('epbot_get_bid', c_int, [c_void_p])
+                    _sig('epbot_interpret_bid', c_int, [c_void_p, c_int])
+                    _sig('epbot_get_info_meaning', c_int, [c_void_p, c_int, c_char_p, c_int])
+                    _sig('epbot_get_info_alerting', c_int, [c_void_p, c_int])
+                    for _name in ('feature', 'min_length', 'max_length', 'probable_length',
+                                  'strength', 'stoppers', 'honors', 'suit_power'):
+                        _sig('epbot_get_info_' + _name, c_int, [c_void_p, c_int, c_void_p, c_int, p_int])
+                    # set_arr_bids(instance, bids("\n"-joined))
+                    _sig('epbot_set_arr_bids', c_int, [c_void_p, c_char_p])
+                    # get_arr_suits(instance, current_longers, buffer, bufsize, countOut)
+                    _sig('epbot_get_arr_suits', c_int, [c_void_p, c_int, c_char_p, c_int, p_int])
+                    _sig('epbot_get_str_bidding', c_int, [c_void_p, c_char_p, c_int])
 
                     cls._dll = dll
         return cls._dll
 
+    # -- low-level helpers ---------------------------------------------------
+
+    @classmethod
+    def _last_error(cls):
+        try:
+            msg = cls._dll.epbot_get_last_error()
+        except Exception:
+            return ""
+        return msg.decode('utf-8', 'replace') if msg else ""
+
+    def _check(self, ret, what):
+        if ret is not None and ret < 0:
+            raise RuntimeError("EPBot %s failed (%d): %s" % (what, ret, self._last_error()))
+        return ret
+
+    def _str_call(self, what, fn, *args):
+        size = self._DEFAULT_STR_BUF
+        while True:
+            buf = ctypes.create_string_buffer(size)
+            ret = fn(self._handle, *args, buf, size)
+            if ret == self.ERR_BUFFER_TOO_SMALL:
+                size *= 4
+                continue
+            self._check(ret, what)
+            return buf.value.decode('utf-8', 'replace')
+
+    def _int_array_call(self, what, fn, *args, count_hint):
+        size = max(count_hint, 8)
+        while True:
+            arr = (c_int * size)()
+            count = c_int(0)
+            ret = fn(self._handle, *args, arr, size * 4, ctypes.byref(count))
+            if ret == self.ERR_BUFFER_TOO_SMALL:
+                size *= 4
+                continue
+            self._check(ret, what)
+            return [arr[i] for i in range(count.value)]
+
+    def _str_array_call(self, what, fn, *args, count_hint):
+        size = self._DEFAULT_STR_BUF
+        while True:
+            buf = ctypes.create_string_buffer(size)
+            count = c_int(0)
+            ret = fn(self._handle, *args, buf, size, ctypes.byref(count))
+            if ret == self.ERR_BUFFER_TOO_SMALL:
+                size *= 4
+                continue
+            self._check(ret, what)
+            n = count.value
+            if n == 0:
+                return []
+            parts = buf.value.decode('utf-8', 'replace').split('\n')
+            if len(parts) < n:
+                parts += [''] * (n - len(parts))
+            return parts[:n]
+
+    @staticmethod
+    def _enc(value):
+        if value is None:
+            return None
+        return value.encode('utf-8') if isinstance(value, str) else value
+
+    @staticmethod
+    def _join(seq):
+        return '\n'.join(s if isinstance(s, str) else s.decode('utf-8') for s in seq).encode('utf-8')
+
     def __init__(self):
         dll = EPBotNative._load_dll()
-        self._handle = dll.epbot_create()
         self._dll = dll
+        handle = dll.epbot_create()
+        if not handle:
+            raise RuntimeError("epbot_create failed: %s" % EPBotNative._last_error())
+        self._handle = handle
 
     def __del__(self):
-        if hasattr(self, '_handle') and self._handle and hasattr(self, '_dll') and self._dll:
-            self._dll.epbot_destroy(self._handle)
+        if getattr(self, '_handle', None) and getattr(self, '_dll', None):
+            try:
+                self._dll.epbot_destroy(self._handle)
+            except Exception:
+                pass
             self._handle = None
 
     def version(self):
-        return self._dll.epbot_version(self._handle)
+        return self._check(self._dll.epbot_version(self._handle), 'version')
 
     def new_hand(self, position, hand_str, dealer, vuln):
-        arr = (c_char_p * len(hand_str))(*[s.encode('utf-8') if isinstance(s, str) else s for s in hand_str])
-        self._dll.epbot_new_hand(self._handle, position, arr, dealer, vuln)
+        self._check(self._dll.epbot_new_hand(self._handle, position, self._join(hand_str), dealer, vuln, 0, 0), 'new_hand')
 
     def set_system_type(self, we_they, system_id):
-        self._dll.epbot_set_system_type(self._handle, we_they, system_id)
+        self._check(self._dll.epbot_set_system_type(self._handle, we_they, int(system_id)), 'set_system_type')
 
     def set_conventions(self, we_they, convention_name, selected):
-        name = convention_name.encode('utf-8') if isinstance(convention_name, str) else convention_name
-        self._dll.epbot_set_conventions(self._handle, we_they, name, selected)
+        self._check(self._dll.epbot_set_conventions(self._handle, we_they, self._enc(convention_name), 1 if selected else 0), 'set_conventions')
 
     def system_name(self, we_they):
-        result = self._dll.epbot_system_name(self._handle, we_they)
-        return result.decode('utf-8') if result else ""
+        return self._str_call('system_name', self._dll.epbot_system_name, we_they)
 
     @property
     def scoring(self):
-        return self._dll.epbot_get_scoring(self._handle)
+        return self._check(self._dll.epbot_get_scoring(self._handle), 'get_scoring')
 
     @scoring.setter
     def scoring(self, value):
-        self._dll.epbot_set_scoring(self._handle, value)
+        self._check(self._dll.epbot_set_scoring(self._handle, value), 'set_scoring')
 
     def set_bid(self, position, bidid):
-        self._dll.epbot_set_bid(self._handle, position, bidid)
+        self._check(self._dll.epbot_set_bid(self._handle, position, bidid, b''), 'set_bid')
 
     def get_bid(self):
-        return self._dll.epbot_get_bid(self._handle)
+        return self._check(self._dll.epbot_get_bid(self._handle), 'get_bid')
 
     def interpret_bid(self, bid):
-        self._dll.epbot_interpret_bid(self._handle, bid)
+        self._check(self._dll.epbot_interpret_bid(self._handle, bid), 'interpret_bid')
 
     def get_info_meaning(self, position):
-        result = self._dll.epbot_get_info_meaning(self._handle, position)
-        if result:
-            return result.decode('utf-8')
-        return None
+        meaning = self._str_call('get_info_meaning', self._dll.epbot_get_info_meaning, position)
+        return meaning if meaning else None
 
     def get_info_alerting(self, position):
-        return self._dll.epbot_get_info_alerting(self._handle, position)
+        # The .NET EPBot exposes this as a bool; mirror that (the FFI returns 0/1).
+        return bool(self._check(self._dll.epbot_get_info_alerting(self._handle, position), 'get_info_alerting'))
 
     def get_info_feature(self, position):
-        ptr = self._dll.epbot_get_info_feature(self._handle, position)
-        return [ptr[i] for i in range(512)]
+        feature = self._int_array_call('get_info_feature', self._dll.epbot_get_info_feature, position, count_hint=512)
+        if len(feature) < 512:
+            feature += [0] * (512 - len(feature))
+        return feature
 
     def get_info_min_length(self, position):
-        ptr = self._dll.epbot_get_info_min_length(self._handle, position)
-        return [ptr[i] for i in range(4)]
+        return self._int_array_call('get_info_min_length', self._dll.epbot_get_info_min_length, position, count_hint=4)
 
     def get_info_max_length(self, position):
-        ptr = self._dll.epbot_get_info_max_length(self._handle, position)
-        return [ptr[i] for i in range(4)]
+        return self._int_array_call('get_info_max_length', self._dll.epbot_get_info_max_length, position, count_hint=4)
 
     def get_info_probable_length(self, position):
-        ptr = self._dll.epbot_get_info_probable_length(self._handle, position)
-        return [ptr[i] for i in range(4)]
+        return self._int_array_call('get_info_probable_length', self._dll.epbot_get_info_probable_length, position, count_hint=4)
 
     def get_info_strength(self, position):
-        ptr = self._dll.epbot_get_info_strength(self._handle, position)
-        return [ptr[i] for i in range(4)]
+        return self._int_array_call('get_info_strength', self._dll.epbot_get_info_strength, position, count_hint=4)
 
     def get_info_stoppers(self, position):
-        ptr = self._dll.epbot_get_info_stoppers(self._handle, position)
-        return [ptr[i] for i in range(4)]
+        return self._int_array_call('get_info_stoppers', self._dll.epbot_get_info_stoppers, position, count_hint=4)
 
     def get_info_honors(self, position):
-        ptr = self._dll.epbot_get_info_honors(self._handle, position)
-        return [ptr[i] for i in range(4)]
+        return self._int_array_call('get_info_honors', self._dll.epbot_get_info_honors, position, count_hint=4)
 
     def get_info_suit_power(self, position):
-        ptr = self._dll.epbot_get_info_suit_power(self._handle, position)
-        return [ptr[i] for i in range(4)]
+        return self._int_array_call('get_info_suit_power', self._dll.epbot_get_info_suit_power, position, count_hint=4)
 
     def set_arr_bids(self, arr_bids):
-        encoded = [s.encode('utf-8') if isinstance(s, str) else s for s in arr_bids]
-        arr = (c_char_p * len(encoded))(*encoded)
-        self._dll.epbot_set_arr_bids(self._handle, arr, len(encoded))
+        self._check(self._dll.epbot_set_arr_bids(self._handle, self._join(arr_bids)), 'set_arr_bids')
 
     def get_arr_suits(self):
-        ptr = self._dll.epbot_get_arr_suits(self._handle)
-        return [ptr[i].decode('utf-8') if ptr[i] else "" for i in range(16)]
+        return self._str_array_call('get_arr_suits', self._dll.epbot_get_arr_suits, 0, count_hint=16)
 
     def get_str_bidding(self):
-        result = self._dll.epbot_get_str_bidding(self._handle)
-        return result.decode('utf-8') if result else ""
+        return self._str_call('get_str_bidding', self._dll.epbot_get_str_bidding)
 
 
 def _str_array(lst):
-    """Convert Python list for EPBot API - identity for native, .NET array for CoreCLR."""
+    """Thin alias kept for call-site readability — the native EPBot API takes plain Python lists."""
     return lst
 
 
@@ -285,41 +294,22 @@ class BBABotBid:
 
     @classmethod
     def get_dll(cls, verbose = False):
-        """Access the loaded DLL classes."""
+        """Load the native EPBot library (ctypes) once and cache it."""
         if cls._dll_loaded is None:
             with cls._lock:  # Ensure only one thread can enter this block at a time
                 if cls._dll_loaded is None:  # Double-checked locking
                     try:
-                        if USE_NATIVE_EPBOT:
-                            # Use native library (ctypes) - works on all platforms
-                            EPBot = EPBotNative
-                            if verbose:
-                                print(f"Loading native EPBot from {EPBot_NATIVE_PATH}")
-                        elif sys.platform == 'win32':
-                            load_dotnet_framework_assembly(EPBot_PATH, verbose)
-                            python_arch = platform.architecture()[0]
-                            if python_arch == '64bit':
-                                from EPBot64 import EPBot
-                            else:
-                                from EPBot86 import EPBot
-                        else:
-                            load_dotnet_core_assembly(EPBot_PATH, verbose)
-                            import System
-                            t = System.Type.GetType(f"{EPBot_LIB}.EPBot, {EPBot_LIB}")
-                            if t is None:
-                                raise RuntimeError(f"Could not find type {EPBot_LIB}.EPBot in loaded assemblies")
-                            EPBot = lambda: System.Activator.CreateInstance(t)
-                        # Load the .NET assembly and import the types and classes from the assembly
+                        EPBot = EPBotNative
                         if verbose:
+                            print(f"Loading native EPBot from {EPBot_NATIVE_PATH}")
                             print(f"EPBot Version (DLL): {EPBot().version()}")
                         cls._dll_loaded = {
                             "EPBot": EPBot,
                         }
                     except Exception as ex:
-                        lib_path = EPBot_NATIVE_PATH if USE_NATIVE_EPBOT else EPBot_PATH
-                        print(f"{Fore.RED}Error: Unable to load EPBot from {lib_path}")
-                        print("Make sure the library is not blocked by OS (Select properties and click unblock)")
-                        print(f"Make sure the library is not writeprotected{Fore.RESET}")
+                        print(f"{Fore.RED}Error: Unable to load EPBot from {EPBot_NATIVE_PATH}")
+                        print("Make sure the library exists and is not blocked by the OS (Properties > Unblock)")
+                        print(f"Make sure the library is not write-protected{Fore.RESET}")
                         print('Error:', ex)
                         sys.exit(1)
         return cls._dll_loaded
