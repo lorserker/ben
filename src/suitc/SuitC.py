@@ -181,14 +181,33 @@ class SuitCLib:
         pp_details_buffer = ctypes.byref(c_details_buffer_ptr)
         details_size = ctypes.c_int() # For int* pcharOptimumDetailsSize
 
-        result = self.suitc.call_suitc(
-            pp_input_str,
-            input_length,
-            pp_output_buffer,
-            ctypes.byref(output_size),
-            pp_details_buffer,
-            ctypes.byref(details_size)
-        )
+        # Some SuitC native builds print their analysis tree to the C-level
+        # stdout (fd 1) regardless of flags, which floods the console. Silence
+        # fd 1 around the call unless verbose. The JSON result is written to the
+        # output buffer, not stdout, so suppressing fd 1 does not affect it.
+        def _call():
+            return self.suitc.call_suitc(
+                pp_input_str,
+                input_length,
+                pp_output_buffer,
+                ctypes.byref(output_size),
+                pp_details_buffer,
+                ctypes.byref(details_size)
+            )
+
+        if self.verbose:
+            result = _call()
+        else:
+            sys.stdout.flush()
+            saved_fd = os.dup(1)
+            devnull_fd = os.open(os.devnull, os.O_WRONLY)
+            try:
+                os.dup2(devnull_fd, 1)
+                result = _call()
+            finally:
+                os.dup2(saved_fd, 1)
+                os.close(devnull_fd)
+                os.close(saved_fd)
 
         if self.verbose:
             print(f"call_suitc returned: {result}")

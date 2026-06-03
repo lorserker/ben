@@ -83,14 +83,22 @@ def _get_lib():
             for dds_path in candidates:
                 if os.path.isfile(dds_path):
                     ctypes.CDLL(dds_path)
-                    # NativeAOT P/Invoke looks for "dds.dll" by filename;
-                    # create a symlink next to libdds.so so it can be resolved
-                    dds_dll_link = os.path.join(os.path.dirname(dds_path), 'dds.dll')
-                    if not os.path.exists(dds_dll_link):
-                        try:
-                            os.symlink(os.path.basename(dds_path), dds_dll_link)
-                        except OSError:
-                            pass
+                    # BGADLL's [DllImport("dds")] resolves a platform-named file
+                    # next to the assembly: libdds.so on Linux, libdds.dylib /
+                    # dds.dylib on macOS. The vendored file may have a versioned
+                    # name (e.g. libdds.2.9.0.dylib), so create the expected
+                    # symlink(s) beside it if missing.
+                    if sys.platform == 'darwin':
+                        link_names = ['libdds.dylib', 'dds.dylib']
+                    else:
+                        link_names = ['libdds.so']
+                    for link_name in link_names:
+                        link = os.path.join(os.path.dirname(dds_path), link_name)
+                        if not os.path.exists(link):
+                            try:
+                                os.symlink(os.path.basename(dds_path), link)
+                            except OSError:
+                                pass
                     break
         _lib = ctypes.CDLL(_lib_path)
         _setup_functions(_lib)
