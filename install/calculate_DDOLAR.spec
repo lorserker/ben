@@ -6,10 +6,10 @@ block_cipher = None
 
 a = Analysis(
     ['..\\scripts\\training\\opening lead\\calculate_DDOLAR.py'],
-    pathex=['..\\src'],
-    binaries=[('..\\bin\\dds.dll', '.')],
+    pathex=['..\\src', '..\\bin\\dds3-win'],
+    binaries=[],
     datas=[],
-    hiddenimports=[],
+    hiddenimports=['dds3'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

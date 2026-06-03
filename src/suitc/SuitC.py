@@ -27,8 +27,6 @@ elif sys.platform == 'darwin':
 else:
     suitclib = 'libsuitc.so'
 
-print(f"SuitCLib: {suitclib}")
-
 SuitCLib_PATH = os.path.join(BIN_FOLDER, suitclib)
 
 import ctypes
@@ -36,8 +34,6 @@ from ctypes import c_wchar_p, c_int, POINTER, create_unicode_buffer, byref, cast
 
 class SuitCLib:
     def __init__(self, verbose):
-        if SuitCLib == 'N/A':
-            raise RuntimeError("suitclib is not available on this platform.")
         try:
             if verbose:
                 print(f"loading {SuitCLib_PATH}")

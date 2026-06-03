@@ -17,9 +17,9 @@ If you like the software, please consider making a donation to support the devel
 
 ### Installation
 
-The engine runs on Python 3.9, with the neural networks using tensorflow 2.16+
+The engine runs on **Python 3.12**, with the neural networks using TensorFlow 2.18.1 (Keras 3.5.x). All platforms standardise on Python 3.12.
 
-The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html), but the current version can be run using Python 3.12 and Tensorflow 2.18 without any virtual environment.
+The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html) (see [conda_setup.sh](conda_setup.sh)), but it can also be run in a plain `venv` / system Python 3.12 via `pip install -r requirements.txt`.
 
 For __Windows__ users: After installing anaconda, you  will have a new application called "Anaconda Prompt". Henceforth, you will have to run all commands in "Anaconda Prompt" not in "cmd". The title bar of your command prompt window should read *"Administrator: Anaconda Prompt (Miniconda3)"*
 
@@ -27,12 +27,48 @@ After installing conda, execute the commands in the [conda_setup.sh](conda_setup
 
 The bridge engine was developed on Linux. It will likely work on any other platform which runs Python, but was only tested on Windows 10 and Windows 11 and Mac M1/M2.
 
-For __Mac M1/M2__ users: you need to install [Homebrew](https://brew.sh/) if you don't have it already. Then, you need to `brew install boost`. You might need to open `./bin/darwin/libdds.so` in XCode before launching `ben` for the first time.
+For __Mac M1/M2__ users: you need to install [Homebrew](https://brew.sh/) if you don't have it already, then `brew install boost`.
 
 On __Amazon__, there is an image Public_Ben_Bot_V1.2 for starting an instance of BEN. After starting the instance just log in and execute [start_ben_bot_screens.sh].
 
-For __Ubuntu__ users: You might have to compile libdds.so and might have to install libboost using `sudo apt install libboost-thread-dev` 
-another option could be to try this first: `sudo apt-get install libdds-dev` as it should install all you need.
+For __Ubuntu__ users: you might have to install libboost using `sudo apt install libboost-thread-dev`.
+
+> **Double-dummy solver:** BEN's double-dummy solver uses the `dds3` extension (DDS 3.0.0), not the old `dds.dll` / `libdds.so`. Prebuilt copies are vendored per platform under `bin/dds3-win/`, `bin/dds3-linux/`, `bin/dds3-darwin/` and are loaded automatically. Each is a compiled extension **locked to Python 3.12**; to use a different Python or build for an unsupported platform, see [src/ddsolver/README.md](src/ddsolver/README.md). The `libdds` libraries kept under `bin/` are used only by the BGADLL/PIMC engine.
+
+#### Running natively on Linux (including WSL)
+
+Docker users need to do nothing — the image is built on Ubuntu 24.04 / Python 3.12. For a **native** (non-Docker) Linux install, note that the vendored `bin/dds3-linux/_dds3.so` is built on **Ubuntu 24.04** and therefore requires:
+
+- **glibc ≥ 2.38** — i.e. Ubuntu 24.04+, Debian 13+, Fedora 38+. On an older distro (e.g. Ubuntu 22.04, glibc 2.35) it fails at import with `version 'GLIBC_2.38' not found`. Run on a newer distro, or rebuild `dds3` against your glibc (see [src/ddsolver/README.md](src/ddsolver/README.md)).
+- **Python 3.12** — the extension is locked to the CPython minor version.
+
+**WSL quick start (Ubuntu 24.04)** — the simplest way to run/test the Linux build outside Docker.
+
+Fully automated, from **Windows PowerShell** in the repo root — [setup_wsl.ps1](setup_wsl.ps1) installs the distro (if needed) and then runs the Linux provisioning inside it:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File setup_wsl.ps1
+```
+
+(First run installs `Ubuntu-24.04` and opens its one-time username/password setup; complete that and re-run the script. If the distro already exists it provisions straight away.)
+
+Or do it in two steps — install the distro once on Windows, then run the setup script inside it:
+
+```powershell
+wsl --install Ubuntu-24.04        # Windows; installs alongside any existing distro
+```
+```bash
+# Inside Ubuntu 24.04 - the repo on your Windows drive is at /mnt/<drive>/...
+cd /mnt/d/GitHub/ben && bash setup_linux.sh
+```
+
+[setup_linux.sh](setup_linux.sh) is idempotent and does everything: system packages (incl. `python3-gdbm`), a Python 3.12 venv at `~/ben` with `requirements.txt`, and the .NET runtime for the ACE/BBA engines. When it finishes:
+
+```bash
+source ~/ben/bin/activate        # or 'ben-activate' in a new shell
+cd /mnt/d/GitHub/ben/src
+python game.py --boards ../Challenges/martens_declarer_first10.pbn --auto true
+```
 
 ### Running the Web App
 

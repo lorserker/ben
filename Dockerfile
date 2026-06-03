@@ -1,15 +1,14 @@
-# start with standard ubuntu:22.04
+# start with standard ubuntu:24.04 (noble) which ships Python 3.12
 # TODO: use multiple stage build for libdds.so & python dependance
-FROM docker.io/ubuntu:jammy
+FROM docker.io/ubuntu:noble
 
-# libdds-dev contains libdds.so
 RUN apt-get update && \
-    apt-get -y install libboost-thread-dev libdds-dev python3.10 python-is-python3 python3-pip  && \
-    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1 && \
+    apt-get -y install python3.12 python-is-python3 python3-pip python3-gdbm && \
+    update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.12 1 && \
     apt-get clean
 
 # .NET 10 runtime for ACE (CoreCLR) — libicu is required for .NET globalization
-RUN apt-get -y install curl libicu70 && \
+RUN apt-get -y install curl libicu74 && \
     curl -sSL https://dot.net/v1/dotnet-install.sh | bash /dev/stdin --channel 10.0 --runtime dotnet --install-dir /usr/share/dotnet && \
     apt-get clean
 ENV DOTNET_ROOT=/usr/share/dotnet
@@ -17,7 +16,8 @@ ENV DOTNET_ROOT=/usr/share/dotnet
 ADD requirements.txt /app/
 
 WORKDIR /app
-RUN pip install -r requirements.txt
+# noble enforces PEP 668 (externally-managed) - the container is the isolated env
+RUN pip install --break-system-packages -r requirements.txt
 
 # Suppress TensorFlow/CUDA warnings (no GPU in container)
 ENV TF_CPP_MIN_LOG_LEVEL=2
@@ -34,6 +34,10 @@ ADD src/bba /app/bba/
 ADD src/pimc /app/pimc/
 ADD src/suitc /app/suitc/
 ADD src/openinglead /app/openinglead/
+# bin/ includes the DDS 3.0.0 solver extension under bin/dds3-linux/.
+# It MUST be built for this image's Python (3.12): build from the DDS repo
+# (bazel build //python:_dds3 for 3.12) and vendor the dds3 package there before
+# building this image. A 3.10 _dds3.so will fail to import. See src/ddsolver/ddsolver.py.
 ADD bin /app/bin/
 ADD src/config /app/config/
 ADD models /app/models/

@@ -68,7 +68,7 @@ import gc
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.7.7'
+version = '0.8.8.0'
 init()
 
 SEATS = ['North', 'East', 'South', 'West']
@@ -1123,6 +1123,13 @@ async def main():
             models.pimc_use_declaring = False
             models.pimc_use_defending = False
 
+    # ACE (Ace.dll) is only supported on Windows - its DDS backend (libbcalcdds)
+    # has no Linux/macOS build. Disable it elsewhere so PIMC is used instead.
+    if sys.platform != 'win32' and (getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False)):
+        print("ACE is only supported on Windows - disabling ACE on this platform (PIMC will be used instead).")
+        models.ace_use_declaring = False
+        models.ace_use_defending = False
+
     if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defending', False):
         from ace.ACE import ACEDLL
         ace = ACEDLL(None, None, None, None, None, None, verbose)
@@ -1131,10 +1138,10 @@ async def main():
         print(f"ACE enabled. Version {ace.version()}")
         print(f"ACE Def enabled. Version {acedef.version()}")
 
-    from ddsolver.ddssolver import DDSSolver
+    from ddsolver.ddsolver import DDSolver
     dds_max_threads = configuration.getint('dds', 'dds_max_threads', fallback=0)
-    dds = DDSSolver(max_threads=dds_max_threads)
-    print(f"DDSSolver enabled. Version {dds.version()} Max threads {dds_max_threads}")
+    dds = DDSolver(max_threads=dds_max_threads)
+    print(f"DDSolver enabled. Version {dds.version()} Max threads {dds_max_threads}")
     
     # Not supported by TM, so no need to calculate
     models.claim = False

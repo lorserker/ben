@@ -6,10 +6,10 @@ block_cipher = None
 
 a = Analysis(
     ['..\\src\\table_manager_client.py'],
-    pathex=['..\\src'],
-    binaries=[('..\\bin\\dds.dll', 'bin'), ('..\\bin\\BGA\\windows\\x64\\BGADLL.dll', 'bin\\BGA\\windows\\x64'), ('..\\bin\\libbcalcdds.dll', 'bin'), ('..\\bin\\SuitCLib.dll', 'bin'), ('..\\bin\\BBA\\windows\\x64\\EPBot.dll', 'bin\\BBA\\windows\\x64')],
+    pathex=['..\\src', '..\\bin\\dds3-win'],
+    binaries=[('..\\bin\\BGA\\windows\\x64\\BGADLL.dll', 'bin\\BGA\\windows\\x64'), ('..\\bin\\libbcalcdds.dll', 'bin'), ('..\\bin\\SuitCLib.dll', 'bin'), ('..\\bin\\BBA\\windows\\x64\\EPBot.dll', 'bin\\BBA\\windows\\x64')],
     datas=[(r'..\src\nn\*.py','nn')],
-    hiddenimports=[],
+    hiddenimports=['dds3'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

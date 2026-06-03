@@ -336,15 +336,30 @@ class ACEDefDLL:
     def update_missing_cards(self, missing_cards):
         for i in range(4):
             value = int(missing_cards[i])
-            idx = i * 2
-            if value < self.declarer_constraints[idx]:
-                self.declarer_constraints[idx] = value
-            if value < self.declarer_constraints[idx + 1]:
-                self.declarer_constraints[idx + 1] = value
-            if value < self.partner_constraints[idx]:
-                self.partner_constraints[idx] = value
-            if value < self.partner_constraints[idx + 1]:
-                self.partner_constraints[idx + 1] = value
+            idx = i * 2  # [idx] = min length, [idx + 1] = max length
+            dec_min = self.declarer_constraints[idx]
+            dec_max = self.declarer_constraints[idx + 1]
+            par_min = self.partner_constraints[idx]
+            par_max = self.partner_constraints[idx + 1]
+            # Neither hidden hand can hold more cards of a suit than are still
+            # out, and neither can be required to hold more than that.
+            dec_max = min(dec_max, value)
+            par_max = min(par_max, value)
+            dec_min = min(dec_min, value)
+            par_min = min(par_min, value)
+            # The two minima must also be jointly possible: together they cannot
+            # require more cards than actually remain in the suit. When they do
+            # (e.g. 1 card out but both minima are 1 -> combined 2 > 1), drop each
+            # to the count it is *forced* to hold because the other hand cannot
+            # cover it. update_voids() has already run, so a void hand's max is 0
+            # here and the surviving hand is correctly forced to hold the rest.
+            if dec_min + par_min > value:
+                dec_min = max(0, min(value - par_max, dec_max))
+                par_min = max(0, min(value - dec_max, par_max))
+            self.declarer_constraints[idx] = dec_min
+            self.declarer_constraints[idx + 1] = dec_max
+            self.partner_constraints[idx] = par_min
+            self.partner_constraints[idx + 1] = par_max
 
     def update_voids(self, shown_out_suits):
         if self.player_i == 0:

@@ -390,16 +390,29 @@ class BGADLL:
         }
         for i, suit in suits.items():
             value = int(missing_cards[i])
-            # Update LHO constraints with minimum values
-            if value < getattr(self.lho_constraints, f"Min{suit}"):
-                setattr(self.lho_constraints, f"Min{suit}", value)
-            if value < getattr(self.lho_constraints, f"Max{suit}"):
-                setattr(self.lho_constraints, f"Max{suit}", int(value))
-            # Update RHO constraints with minimum values
-            if value < getattr(self.rho_constraints, f"Min{suit}"):
-                setattr(self.rho_constraints, f"Min{suit}", value)
-            if value < getattr(self.rho_constraints, f"Max{suit}"):
-                setattr(self.rho_constraints, f"Max{suit}", value)
+            lho_min = getattr(self.lho_constraints, f"Min{suit}")
+            lho_max = getattr(self.lho_constraints, f"Max{suit}")
+            rho_min = getattr(self.rho_constraints, f"Min{suit}")
+            rho_max = getattr(self.rho_constraints, f"Max{suit}")
+            # Neither defender can hold more cards of a suit than are still out,
+            # and neither can be required to hold more than that.
+            lho_max = min(lho_max, value)
+            rho_max = min(rho_max, value)
+            lho_min = min(lho_min, value)
+            rho_min = min(rho_min, value)
+            # The two minima must also be jointly possible: together they cannot
+            # require more cards than actually remain in the suit. When they do
+            # (e.g. 1 card out but both minima are 1 -> combined 2 > 1), drop each
+            # to the count it is *forced* to hold because the partner cannot cover
+            # it. update_voids() has already run, so a void partner's max is 0 here
+            # and the surviving hand is correctly forced to hold the remainder.
+            if lho_min + rho_min > value:
+                lho_min = max(0, min(value - rho_max, lho_max))
+                rho_min = max(0, min(value - lho_max, rho_max))
+            setattr(self.lho_constraints, f"Min{suit}", lho_min)
+            setattr(self.lho_constraints, f"Max{suit}", lho_max)
+            setattr(self.rho_constraints, f"Min{suit}", rho_min)
+            setattr(self.rho_constraints, f"Max{suit}", rho_max)
 
     def update_voids(self,shown_out_suits):
         # Define suits mapping

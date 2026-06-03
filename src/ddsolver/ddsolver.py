@@ -1,13 +1,101 @@
 import sys
-import ctypes
-from typing import Dict, List
+import os
+import threading
+from concurrent.futures import ThreadPoolExecutor
+from typing import List
 from collections import Counter
 from objects import Card
-from ddsolver import dds
 from colorama import Fore, Back, Style, init
 from nn.timing import ModelTimer
 
 init()
+
+
+def _load_dds3():
+    """Import the dds3 extension (DDS 3.0.0 Python interface).
+
+    Tries a normal import first (dds3 installed as a wheel). If that fails,
+    falls back to a copy vendored under BEN's bin/ directory.
+    """
+    # Keep the real failure around. A vendored _dds3.so that exists but won't
+    # load (e.g. built for a different Python version, or missing a dependent
+    # shared library) raises ImportError here; swallowing it hides the cause.
+    last_error = None
+    try:
+        import dds3
+        return dds3
+    except ImportError as ex:
+        last_error = ex
+
+    here = os.path.dirname(os.path.abspath(__file__))
+
+    if sys.platform == "win32":
+        plat = "win"
+    elif sys.platform == "darwin":
+        plat = "darwin"
+    else:
+        plat = "linux"
+
+    # Look for a vendored dds3 under bin/, covering the layouts BEN runs in:
+    #   repo:              src/ddsolver/ddsolver.py -> <repo>/bin       (here/../..)
+    #   flattened (Docker): /app/ddsolver/ddsolver.py -> /app/bin       (here/..)
+    #   plus BEN_HOME/bin and <cwd>/bin as fallbacks.
+    bin_roots = [
+        os.path.join(os.path.abspath(os.path.join(here, "..", "..")), "bin"),
+        os.path.join(os.path.abspath(os.path.join(here, "..")), "bin"),
+    ]
+    if os.getenv("BEN_HOME"):
+        bin_roots.append(os.path.join(os.getenv("BEN_HOME"), "bin"))
+    bin_roots.append(os.path.join(os.getcwd(), "bin"))
+
+    seen = set()
+    for root in bin_roots:
+        for cand in (os.path.join(root, "dds3-" + plat),
+                     os.path.join(root, "dds3"),
+                     root):
+            if cand in seen:
+                continue
+            seen.add(cand)
+            if os.path.isdir(cand) and cand not in sys.path:
+                sys.path.insert(0, cand)
+            try:
+                import dds3
+                return dds3
+            except ImportError as ex:
+                last_error = ex
+                continue
+
+    raise ImportError(
+        "Could not import the 'dds3' extension (DDS 3.0.0 Python interface).\n"
+        "Build it from the DDS repository and install or vendor it:\n"
+        "  bazel build -c opt //python:dds3_wheel_dist   # produces a wheel in dist/\n"
+        "  pip install dist/dds3-*.whl\n"
+        f"or place the built dds3 package in BEN's bin/dds3-{plat}/ directory.\n"
+        f"A _dds3.so built for a different Python than {sys.version_info.major}."
+        f"{sys.version_info.minor} will fail to load here.\n"
+        "See docs/python_interface.md in the DDS repository.\n"
+        f"\nUnderlying import error: {last_error!r}"
+    ) from last_error
+
+
+dds3 = _load_dds3()
+
+
+# DDS 3.0.0 removed internal multi-threading from the legacy batch API
+# (SolveAllBoards now solves sequentially). The modern model is one
+# SolverContext per worker thread; DDSolver parallelises with a thread pool,
+# and solve_board_pbn releases the GIL during the solve, so the threads run
+# concurrently. Each pool thread keeps its own SolverContext.
+_ctx_local = threading.local()
+
+
+def _thread_context():
+    ctx = getattr(_ctx_local, "ctx", None)
+    if ctx is None:
+        ctx = dds3.SolverContext()
+        _ctx_local.ctx = ctx
+    return ctx
+
 
 class DDSolver:
 
@@ -18,66 +106,53 @@ class DDSolver:
     # If 2 transport tables ignore trump
 
     def __init__(self, dds_mode=1, max_threads=0, verbose=False):
-        # The number of threads is automatically configured by DDS on Windows,
-        # taking into account the number of processor cores and available memory.
-        # On Linux/Mac, SetMaxThreads should always be called (0 = auto-configure).
-        dds.SetMaxThreads(max_threads)
-        if verbose:
-            sys.stderr.write(f"DDSolver being loaded version 2.9.0 - dds mode {dds_mode} - max threads {max_threads}\n")
         self.dds_mode = dds_mode
+        # max_threads is the size of the solver thread pool.
+        # 0 = one thread per CPU core.
+        workers = max_threads if (max_threads and max_threads > 0) else (os.cpu_count() or 4)
+        self._workers = workers
+        self._pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="dds")
+        if verbose:
+            sys.stderr.write(f"DDSolver loaded — DDS {self.version()} - dds mode {dds_mode} - {workers} solver threads\n")
 
-    def version(self):  
-        return "2.9.0"
-    
+    def version(self):
+        return "3.0.0"
+
     def calculatepar(self, hand, vuln, print_result=True):
         with ModelTimer.time_call('dds_par'):
             return self._calculatepar_impl(hand, vuln, print_result)
 
     def _calculatepar_impl(self, hand, vuln, print_result=True):
-        tableDealPBN = dds.ddTableDealPBN()
-        table = dds.ddTableResults()
-        myTable = ctypes.pointer(table)
-
-        line = ctypes.create_string_buffer(80)
-
-        # Need dealer
-        tableDealPBN.cards = ("N:"+hand).encode('utf-8')
-
-        res = dds.CalcDDtablePBN(tableDealPBN, myTable)
-
-        if res != 1:
-            error_message = dds.get_error_message(res)
-            sys.stderr.write(f"Error Code: {res}, Error Message: {error_message}, Hand {hand.encode('utf-8')}\n")
-            raise Exception(error_message)
-
-        pres = dds.parResults()
-
-        # vulnerable 
-        # 0: None 1: Both 2: NS 3: EW 
+        # vulnerable
+        # 0: None 1: Both 2: NS 3: EW
         v = 0
         if vuln[0]: v = 2
         if vuln[1]: v = 3
         if vuln[0] and vuln[1]: v = 1
 
-        res = dds.Par(myTable, pres, v)
+        # calc_all_tables_pbn computes the DD table and (mode != -1) the par score.
+        try:
+            result = dds3.calc_all_tables_pbn(["N:" + hand], mode=v)
+        except Exception as e:
+            sys.stderr.write(f"Error calculating par: {e}, Hand {hand.encode('utf-8')}\n")
+            raise
 
-        if res != 1:
-            error_message = dds.get_error_message(res)
-            sys.stderr.write(f"{Fore.RED}Error Code: {res}, Error Message: {error_message} {hand.encode('utf-8')}{Style.RESET_ALL}")
+        par_results = result.get("par_results") or []
+        if not par_results:
+            sys.stderr.write(f"{Fore.RED}No par result for hand {hand.encode('utf-8')}{Style.RESET_ALL}\n")
             return None
 
-        par = ctypes.pointer(pres)
+        par = par_results[0]
+        # par_score is a 2-element list of strings, e.g. "NS 420" / "EW -420".
+        ns_par = par["par_score"][0]
+        ew_par = par["par_score"][1]
 
         if print_result:
-            print("NS score: {}".format(par.contents.parScore[0].value.decode('utf-8')))
-            print("EW score: {}".format(par.contents.parScore[1].value.decode('utf-8')))
-            #print("NS list : {}".format(par.contents.parContractsString[0].value.decode('utf-8')))
-            #print("EW list : {}\n".format(par.contents.parContractsString[1].value.decode('utf-8')))
-        par = par.contents.parScore[0].value.decode('utf-8')
-        ns_score = par.split()[1]
-        return int(ns_score)
-    
-        
+            print("NS score: {}".format(ns_par))
+            print("EW score: {}".format(ew_par))
+
+        return int(ns_par.split()[1])
+
     # Solutions
     #1	Find the maximum number of tricks for the side to play.  Return only one of the optimum cards and its score.
     #2	Find the maximum number of tricks for the side to play.  Return all optimum cards and their scores.
@@ -95,50 +170,44 @@ class DDSolver:
     def solve(self, strain_i, leader_i, current_trick, hands_pbn, solutions):
         trick = self._trick_number(hands_pbn, current_trick)
         with ModelTimer.time_call(f'dds_solve_t{trick:02d}', items=len(hands_pbn)):
-            results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[:dds.MAXNOOFBOARDS], solutions)
-            if len(hands_pbn) > dds.MAXNOOFBOARDS:
-                i = dds.MAXNOOFBOARDS
-                while i < len(hands_pbn):
-                    more_results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn[i:i+dds.MAXNOOFBOARDS], solutions)
+            results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn, solutions)
 
-                    for card, values in more_results.items():
-                        results[card] = results[card] + values
-
-                    i += dds.MAXNOOFBOARDS
-
-        return results 
+        return results
 
     def solve_helper(self, strain_i, leader_i, current_trick, hands_pbn, solutions):
         card_rank = [0x4000, 0x2000, 0x1000, 0x0800, 0x0400, 0x0200, 0x0100, 0x0080, 0x0040, 0x0020, 0x0010, 0x0008, 0x0004]
 
-        # Allocate per-call structures to avoid race conditions with concurrent API workers
-        bo = dds.boardsPBN()
-        solved = dds.solvedBoards()
+        trump = (strain_i - 1) % 5
 
-        bo.noOfBoards = min(dds.MAXNOOFBOARDS, len(hands_pbn))
+        # The current trick is the same for every board in the batch.
+        trick_suit = [0, 0, 0]
+        trick_rank = [0, 0, 0]
+        for i in range(min(3, len(current_trick))):
+            trick_suit[i] = current_trick[i] // 13
+            trick_rank[i] = 14 - current_trick[i] % 13
+        trick_suit = tuple(trick_suit)
+        trick_rank = tuple(trick_rank)
+        dds_mode = self.dds_mode
 
-        for handno in range(bo.noOfBoards):
-            bo.deals[handno].trump = (strain_i - 1) % 5
-            bo.deals[handno].first = leader_i
+        # Solve each board on the thread pool. solve_board_pbn releases the GIL
+        # during the DDS search; each pool thread uses its own SolverContext.
+        def _solve_one(pbn):
+            return dds3.solve_board_pbn(
+                pbn,
+                trump=trump,
+                first=leader_i,
+                current_trick_suit=trick_suit,
+                current_trick_rank=trick_rank,
+                target=-1,
+                solutions=solutions,
+                mode=dds_mode,
+                context=_thread_context(),
+            )
 
-            for i in range(3):
-                bo.deals[handno].currentTrickSuit[i] = 0
-                bo.deals[handno].currentTrickRank[i] = 0
-                if i < len(current_trick):
-                    bo.deals[handno].currentTrickSuit[i] = current_trick[i] // 13
-                    bo.deals[handno].currentTrickRank[i] = 14 - current_trick[i] % 13
-
-            bo.deals[handno].remainCards = hands_pbn[handno].encode('utf-8')
-
-            bo.target[handno] = -1
-            # Return all cards that can be legally played, with their scores in descending order.
-            bo.solutions[handno] = solutions
-            bo.mode[handno] = self.dds_mode
-
-        res = dds.SolveAllBoards(ctypes.pointer(bo), ctypes.pointer(solved))
-        if res != 1:
-            error_message = dds.get_error_message(res)
-            print(f"{Fore.RED}Error Code: {res}, Error Message: {error_message} {hands_pbn[0].encode('utf-8')} {current_trick} {leader_i}{Style.RESET_ALL}")
+        try:
+            solved = list(self._pool.map(_solve_one, hands_pbn))
+        except Exception as e:
+            print(f"{Fore.RED}DDS error: {e} {hands_pbn[0].encode('utf-8')} {current_trick} {leader_i}{Style.RESET_ALL}")
             return None
 
         if solutions == 1:
@@ -146,30 +215,26 @@ class DDSolver:
             card_results = {}
             card_results["max"] = []
             card_results["min"] = []
-            for handno in range(bo.noOfBoards):
-                fut = ctypes.pointer(solved.solvedBoards[handno])
-                suit_i = fut.contents.suit[0]
-                card = suit_i * 13 + 14 - fut.contents.rank[0]
-                card_results["max"].append(fut.contents.score[0])
-                card_results["min"].append(fut.contents.score[fut.contents.cards-1])
+            for fut in solved:
+                card_results["max"].append(fut["score"][0])
+                card_results["min"].append(fut["score"][fut["cards"] - 1])
 
         else:
             card_results = {}
-            for handno in range(bo.noOfBoards):
-                fut = ctypes.pointer(solved.solvedBoards[handno])
-                for i in range(fut.contents.cards):
-                    suit_i = fut.contents.suit[i]
-                    card = suit_i * 13 + 14 - fut.contents.rank[i]
+            for fut in solved:
+                for i in range(fut["cards"]):
+                    suit_i = fut["suit"][i]
+                    card = suit_i * 13 + 14 - fut["rank"][i]
                     if card not in card_results:
                         card_results[card] = []
-                    card_results[card].append(fut.contents.score[i])
-                    eq_cards_encoded = fut.contents.equals[i]
+                    card_results[card].append(fut["score"][i])
+                    eq_cards_encoded = fut["equals"][i]
                     for k, rank_code in enumerate(card_rank):
                         if rank_code & eq_cards_encoded > 0:
                             eq_card = suit_i * 13 + k
                             if eq_card not in card_results:
                                 card_results[eq_card] = []
-                            card_results[eq_card].append(fut.contents.score[i])
+                            card_results[eq_card].append(fut["score"][i])
 
         return card_results
 
@@ -201,10 +266,10 @@ class DDSolver:
         for key, array in dd_solved.items():
             # Use Counter to count the occurrences of each element
             element_count = Counter(array)
-            
+
             # Sort the counts by frequency in descending order
             sorted_counts = sorted(element_count.items(), key=lambda x: x[1], reverse=True)
-            
+
             # Store the sorted result in the new dictionary
             sorted_counts_dict[key] = sorted_counts
 

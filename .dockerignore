@@ -15,6 +15,9 @@ Practice/
 Boards/
 Challenges/
 logs/
+# Only BBA/CC/ is copied into the image; exclude the rest of BBA/ (large)
+BBA/*
+!BBA/CC
 # models/ - included for Docker build
 src/Eastdb.*
 src/Westdb.*

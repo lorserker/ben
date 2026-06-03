@@ -321,15 +321,30 @@ class ACEDLL:
     def update_missing_cards(self, missing_cards):
         for i in range(4):
             value = int(missing_cards[i])
-            idx = i * 2
-            if value < self.lho_constraints[idx]:
-                self.lho_constraints[idx] = value
-            if value < self.lho_constraints[idx + 1]:
-                self.lho_constraints[idx + 1] = value
-            if value < self.rho_constraints[idx]:
-                self.rho_constraints[idx] = value
-            if value < self.rho_constraints[idx + 1]:
-                self.rho_constraints[idx + 1] = value
+            idx = i * 2  # [idx] = min length, [idx + 1] = max length
+            lho_min = self.lho_constraints[idx]
+            lho_max = self.lho_constraints[idx + 1]
+            rho_min = self.rho_constraints[idx]
+            rho_max = self.rho_constraints[idx + 1]
+            # Neither defender can hold more cards of a suit than are still out,
+            # and neither can be required to hold more than that.
+            lho_max = min(lho_max, value)
+            rho_max = min(rho_max, value)
+            lho_min = min(lho_min, value)
+            rho_min = min(rho_min, value)
+            # The two minima must also be jointly possible: together they cannot
+            # require more cards than actually remain in the suit. When they do
+            # (e.g. 1 card out but both minima are 1 -> combined 2 > 1), drop each
+            # to the count it is *forced* to hold because the partner cannot cover
+            # it. update_voids() has already run, so a void partner's max is 0 here
+            # and the surviving hand is correctly forced to hold the remainder.
+            if lho_min + rho_min > value:
+                lho_min = max(0, min(value - rho_max, lho_max))
+                rho_min = max(0, min(value - lho_max, rho_max))
+            self.lho_constraints[idx] = lho_min
+            self.lho_constraints[idx + 1] = lho_max
+            self.rho_constraints[idx] = rho_min
+            self.rho_constraints[idx + 1] = rho_max
 
     def update_voids(self, shown_out_suits):
         shown_suits_lho = set(shown_out_suits[0])

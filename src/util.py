@@ -304,16 +304,36 @@ def check_file_access(file_path):
         print(f"Error checking file access: {e}")
         return False
     
+_dotnet_runtime_selected = False
+
+def _ensure_dotnet_runtime():
+    """Pick pythonnet's CLR runtime once per process.
+
+    On Windows we let pythonnet use its default (.NET Framework). On Linux/macOS
+    pythonnet would otherwise default to Mono (which BEN does not ship), so we
+    select the installed CoreCLR runtime instead - this must happen before the
+    first `import clr`. Set DOTNET_ROOT if the runtime isn't auto-discovered.
+    """
+    global _dotnet_runtime_selected
+    if _dotnet_runtime_selected or sys.platform == "win32":
+        return
+    from pythonnet import set_runtime
+    from clr_loader import get_coreclr
+    set_runtime(get_coreclr())
+    _dotnet_runtime_selected = True
+
 def load_dotnet_framework_assembly(assembly_path, verbose = False):
-    """    
+    """
     Parameters:
         assembly_path (str): The path to the .NET assembly without the `.dll` extension.
-    
+
     Returns:
         The loaded assembly reference or raises an exception on failure.
     """
     check_file_access(assembly_path + '.dll')
     try:
+        # On non-Windows, select CoreCLR before clr is first imported.
+        _ensure_dotnet_runtime()
         import clr
         if verbose:
             print(f"Loading {assembly_path}")
@@ -327,7 +347,7 @@ def load_dotnet_framework_assembly(assembly_path, verbose = False):
             print("Loaded .NET assembly using clr.AddReference")
         return None  # Assembly types can be imported directly in this mode
     except Exception as e:
-        print(f"Failed to load .NET Framework assembly '{assembly_path}': {e}")
+        print(f"Failed to load .NET assembly '{assembly_path}': {e}")
         raise RuntimeError(f"Failed to load .NET assembly '{assembly_path}': {e}")
 
 def get_pythonnet_version():

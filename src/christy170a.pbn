@@ -1,0 +1,418 @@
+% PBN 2.1
+% EXPORT
+%BCOptions
+%PipColors #0000ff,#ff0000,#ffc000,#008000
+%PipFont "Symbol","Symbol",2,0xAA,0xA9,0xA8,0xA7
+%Font:FixedPitch "Courier New",14,700,0
+%Font:Commentary "Courier New",14,700,0"
+%BoardsPerPage 1
+%Margins 1000,0800,500,0800
+
+[Event "##martens_declarer_first10"]
+[Site "##BEN 0.8.8.0"]
+[Date "##2026.06.02"]
+[Board "1"]
+[West "BEN"]
+[East "BEN"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "None"]
+[Deal "N:QT876.QT984.3.T5 AK.J65.A9.Q87632 J952.2.JT65.KJ94 43.AK73.KQ8742.A"]
+[Declarer "E"]
+[Contract "3N"]
+[ParScore "-430"]
+[Auction "N"]
+PASS =1= 1C =2= PASS =3= 1D =4=
+PASS =5= 2C =6= PASS =7= 2H =8=
+PASS =9= 3N =10= PASS =11= PASS =12=
+PASS =13= 
+[Note "1:  -- ; 11- HCP"]
+[Note "2: 3+ !C -- 3+!C; 5-!H; 5-!S; 11-21 HCP"]
+[Note "3:  -- ; 14- HCP"]
+[Note "4: Bidable suit -- 6-!C; 4+!D; 6-29 HCP; Forcing"]
+[Note "5:  -- ; 11- HCP"]
+[Note "6: Bidable suit -- 6+!C; 3-!D; 3-!H; 3-!S; 11-14 HCP"]
+[Note "7:  -- ; 14- HCP"]
+[Note "8: Bidable suit -- 6-!C; 5+!D; 4-6!H; 6-!S; 12-29 HCP"]
+[Note "9:  -- ; 11- HCP"]
+[Note "10: Nat. -- 6=!C; 1-3!D; 1-3!H; 1-3!S; 12-14 HCP"]
+[Note "11:  -- ; 14- HCP"]
+[Note "12:  -- 6-!C; 5+!D; 4-6!H; 6-!S; 12-28 HCP"]
+[Note "13:  -- ; 11- HCP"]
+[Play "S"]
+S2 S3 SQ SA 
+C4 CA C5 C3 
+D5 D2 D3 DA 
+DT DK H4 D9 
+D6 DQ H8 C2 
+DJ D8 CT C6 
+S5 S4 ST SK 
+H2 HA H9 H6 
+C9 D4 S6 C7 
+SJ HK HT H5 
+CJ D7 S8 C8 
+S9 H3 HQ HJ 
+CK H7 S7 CQ 
+[Result "10"]
+[Scoring "IMP"]
+[Score "EW 430"]
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+[Board "2"]
+[West "BEN"]
+[East "BEN"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "NS"]
+[Deal "N:K4.Q976.JT8.9652 T987.432.K7.KJ43 A532.T85.Q9.QT87 QJ6.AKJ.A65432.A"]
+[Declarer "W"]
+[Contract "3N"]
+[ParScore "-420"]
+[Auction "E"]
+PASS =1= PASS =2= 1D =3= PASS =4=
+1S =5= PASS =6= 2N =7= PASS =8=
+3N =9= PASS =10= PASS =11= PASS =12=
+[Note "1:  -- ; 11- HCP"]
+[Note "2:  -- ; 11- HCP"]
+[Note "3: 3+ !D -- 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "4:  -- ; 14- HCP"]
+[Note "5: Bidable suit -- 6-!H; 4+!S; 6-11 HCP"]
+[Note "6:  -- ; 11- HCP"]
+[Note "7: Strong -- 2-4!C; 3-5!D; 2-4!H; 1-3!S; 18-19 HCP"]
+[Note "8:  -- ; 14- HCP"]
+[Note "9: Nat. -- 2-6!C; 1-6!D; 2-3!H; 4=!S; 6-11 HCP"]
+[Note "10:  -- ; 11- HCP"]
+[Note "11:  -- 2-4!C; 3-5!D; 2-4!H; 1-3!S; 18-19 HCP"]
+[Note "12:  -- ; 14- HCP"]
+[Play "N"]
+C6 C3 CT CA 
+DT DK DQ D6 
+DJ D7 D9 DA 
+D8 H2 S2 D2 
+H6 H3 HT HJ 
+H9 S7 S3 D3 
+H7 S8 H8 D4 
+HQ C4 C7 D5 
+C2 H4 H5 HA 
+C9 S9 C8 HK 
+SK ST S5 S6 
+S4 CJ SA SQ 
+C5 CK CQ SJ 
+[Result "10"]
+[Scoring "IMP"]
+[Score "EW 430"]
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+[Board "3"]
+[West "BEN"]
+[East "BEN"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "EW"]
+[Deal "N:J965.AK4.97.KT97 432.Q98.QT852.Q5 87.JT7652.6.J864 AKQT.3.AKJ43.A32"]
+[Declarer "W"]
+[Contract "3N"]
+[ParScore "-1100"]
+[Auction "S"]
+PASS =1= 2C =2= PASS =3= 2D =4=
+PASS =5= 2N =6= PASS =7= 3N =8=
+PASS =9= PASS =10= PASS =11= 
+[Note "1:  -- ; 11- HCP"]
+[Note "2:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "3:  -- ; 16- HCP"]
+[Note "4:* Waiting -- ; Artificial; Forcing"]
+[Note "5:  -- ; 11- HCP"]
+[Note "6: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 22-23 HCP; GF"]
+[Note "7:  -- ; 16- HCP"]
+[Note "8: Nat. -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 6- HCP"]
+[Note "9:  -- ; 11- HCP"]
+[Note "10:  -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 22-23 HCP; GF"]
+[Note "11:  -- ; 16- HCP"]
+[Play "N"]
+HK H8 H5 H3 
+HA H9 H6 C2 
+H4 HQ H2 C3 
+D7 D2 D6 DA 
+D9 D5 H7 DK 
+C7 DQ C4 D3 
+CT D8 HJ DJ 
+C9 C5 C6 CA 
+S5 DT S8 D4 
+S6 S4 S7 SA 
+S9 S2 HT SK 
+SJ S3 CJ SQ 
+CK CQ C8 ST 
+[Result "11"]
+[Scoring "IMP"]
+[Score "EW 660"]
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+[Board "4"]
+[West "BEN"]
+[East "BEN"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "All"]
+[Deal "N:743.QJ87.J872.52 T98.AT9.AK.AKQJ3 K6.K642.T43.9876 AQJ52.53.Q965.T4"]
+[Declarer "E"]
+[Contract "4S"]
+[ParScore "-2220"]
+[Auction "W"]
+PASS =1= PASS =2= 2N =3= PASS =4=
+3H =5= PASS =6= 3S =7= PASS =8=
+3N =9= PASS =10= 4S =11= PASS =12=
+PASS =13= PASS =14= 
+[Note "1:  -- ; 11- HCP"]
+[Note "2:  -- ; 11- HCP"]
+[Note "3: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 20-21 HCP"]
+[Note "4:  -- ; 17- HCP"]
+[Note "5: Transfer  -- 6-!H; 5+!S; 11- HCP; Forcing"]
+[Note "6:  -- ; 11- HCP"]
+[Note "7: Transfer completed -- 2-5!C; 2-5!D; 2-5!H; 2-4!S; 20-21 HCP"]
+[Note "8:  -- ; 17- HCP"]
+[Note "9: Nat. -- 6-!C; 6-!D; 4-!H; 5=!S; 4-10 HCP"]
+[Note "10:  -- ; 11- HCP"]
+[Note "11: Nat. -- 2-5!C; 2-5!D; 2-5!H; 3-4!S; 20-21 HCP"]
+[Note "12:  -- ; 17- HCP"]
+[Note "13:  -- 6-!C; 6-!D; 4-!H; 5=!S; 4-6 HCP"]
+[Note "14:  -- ; 11- HCP"]
+[Play "S"]
+C7 C4 C2 CA 
+SK SA S3 ST 
+S6 SQ S4 S9 
+H2 S2 S7 S8 
+C6 CT C5 C3 
+C9 SJ D2 CJ 
+D3 D5 D7 DA 
+C8 H3 H7 CK 
+D4 D6 D8 DK 
+H4 H5 H8 CQ 
+H6 D9 HJ HA 
+HK S5 HQ HT 
+DT DQ DJ H9 
+[Result "13"]
+[Scoring "IMP"]
+[Score "EW 710"]
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+[Board "5"]
+[West "BEN"]
+[East "BEN"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "N"]
+[Vulnerable "NS"]
+[Deal "N:93.432.9653.QJT3 JT65.KJ86.T2.K92 A42.Q97.KQ84.854 KQ87.AT5.AJ7.A76"]
+[Declarer "E"]
+[Contract "4S"]
+[ParScore "-450"]
+[Auction "N"]
+PASS =1= PASS =2= PASS =3= 1C =4=
+PASS =5= 1H =6= PASS =7= 2N =8=
+PASS =9= 3S =10= PASS =11= 4S =12=
+PASS =13= PASS =14= PASS =15= 
+[Note "1:  -- ; 11- HCP"]
+[Note "2:  -- ; 11- HCP"]
+[Note "3:  -- ; 11- HCP"]
+[Note "4: 3+ !C -- 3+!C; 5-!H; 5-!S; 11-21 HCP"]
+[Note "5:  -- ; 11- HCP"]
+[Note "6: Bidable suit -- 4+!H; 6-!S; 6-11 HCP"]
+[Note "7:  -- ; 11- HCP"]
+[Note "8: Strong -- 3-5!C; 2-4!D; 1-3!H; 2-4!S; 18-19 HCP"]
+[Note "9:  -- ; 11- HCP"]
+[Note "10: Bidable suit -- 4+!H; 4-6!S; 7-11 HCP; Forcing"]
+[Note "11:  -- ; 11- HCP"]
+[Note "12: Nat. -- 3-5!C; 2-4!D; 1-3!H; 4=!S; 18-19 HCP"]
+[Note "13:  -- ; 11- HCP"]
+[Note "14:  -- 4+!H; 4-6!S; 7-8 HCP"]
+[Note "15:  -- ; 11- HCP"]
+[Play "S"]
+DK DA D5 D2 
+SA SK S3 S5 
+DQ D7 D3 DT 
+C4 C6 CT CK 
+S2 S7 S9 SJ 
+S4 S8 H2 S6 
+D8 DJ D6 C2 
+C8 CA C3 C9 
+H7 HA H3 H6 
+HQ H5 H4 HJ 
+C5 C7 CJ ST 
+H9 HT D9 HK 
+D4 SQ CQ H8 
+[Result "10"]
+[Scoring "IMP"]
+[Score "EW 420"]
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+[Board "6"]
+[West "BEN"]
+[East "BEN"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "E"]
+[Vulnerable "EW"]
+[Deal "N:JT6.T973.T92.J87 85.KQ.K8653.A963 AQ973.J82.QJ4.QT K42.A654.A7.K542"]
+[Declarer "W"]
+[Contract "3N"]
+[ParScore "-600"]
+[Auction "E"]
+1D =1= 1S =2= X =3= 2S =4=
+PASS =5= PASS =6= X =7= PASS =8=
+3D =9= PASS =10= 3N =11= PASS =12=
+PASS =13= PASS =14= 
+[Note "1: 3+ !D -- 3+!D; 6-!H; 6-!S; 11-21 HCP"]
+[Note "2: Bidable suit -- 6-!H; 5+!S; 8-17 HCP"]
+[Note "3: Negative double -- 4-6!H; 6-!S; 6-21 HCP"]
+[Note "4: Preemptive -- 3+!S; 2-5 HCP"]
+[Note "5:  -- 3+!D; 6-!H; 6-!S; 11-18 HCP"]
+[Note "6:  -- 6-!H; 5+!S; 8-17 HCP"]
+[Note "7: Reopening double -- 3-6!C; 4-!D; 4-6!H; 2-!S; 11-21 HCP"]
+[Note "8:  -- 3+!S; 2-5 HCP"]
+[Note "9: Bidable suit -- 6-!C; 4+!D; 3-!H; 6-!S; 11-18 HCP"]
+[Note "10:  -- 6-!H; 5+!S; 8-17 HCP"]
+[Note "11: Stopper !S  -- 3-6!C; 1-4!D; 4=!H; 2=!S; 13-19 HCP"]
+[Note "12:  -- 3+!S; 2-5 HCP"]
+[Note "13:  -- 6-!C; 4+!D; 3-!H; 6-!S; 11-18 HCP"]
+[Note "14:  -- 6-!H; 5+!S; 8-17 HCP"]
+[Play "N"]
+SJ S5 S7 S2 
+S6 S8 SQ SK 
+ST D3 SA S4 
+C7 D5 S3 D7 
+D2 D6 DQ DA 
+C8 CA CT C2 
+CJ C6 CQ CK 
+H3 HQ H8 H4 
+D9 DK D4 H5 
+H7 C9 H2 C5 
+H9 HK HJ H6 
+DT C3 S9 C4 
+HT D8 DJ HA 
+[Result "10"]
+[Scoring "IMP"]
+[Score "EW 630"]
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+[Board "7"]
+[West "BEN"]
+[East "BEN"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "S"]
+[Vulnerable "All"]
+[Deal "N:A8742.AQ92.643.4 QJ5..QT98.987632 T963.T7543.2.QJT K.KJ86.AKJ75.AK5"]
+[Declarer "W"]
+[Contract "3N"]
+[ParScore "-1100"]
+[Auction "S"]
+PASS =1= 2C =2= PASS =3= 2D =4=
+PASS =5= 2N =6= PASS =7= 3N =8=
+PASS =9= PASS =10= PASS =11= 
+[Note "1:  -- ; 11- HCP"]
+[Note "2:* Strong -- ; 19+ HCP; Artificial; GF"]
+[Note "3:  -- ; 16- HCP"]
+[Note "4:* Waiting -- ; Artificial; Forcing"]
+[Note "5:  -- ; 11- HCP"]
+[Note "6: NT style -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 22-23 HCP; GF"]
+[Note "7:  -- ; 16- HCP"]
+[Note "8: Nat. -- 2-6!C; 2-6!D; 2-3!H; 2-3!S; 6- HCP"]
+[Note "9:  -- ; 11- HCP"]
+[Note "10:  -- 2-5!C; 2-5!D; 2-5!H; 2-5!S; 22-23 HCP; GF"]
+[Note "11:  -- ; 16- HCP"]
+[Play "N"]
+S4 S5 ST SK 
+D3 D8 D2 DA 
+C4 C2 CT CA 
+S2 C3 CJ CK 
+D4 DQ H3 D5 
+D6 DT H4 D7 
+SA SQ S3 C5 
+HQ C6 H5 HK 
+H2 D9 S9 DK 
+S8 C7 S6 DJ 
+HA C8 HT H6 
+H9 C9 H7 HJ 
+S7 SJ CQ H8 
+[Result "11"]
+[Scoring "IMP"]
+[Score "EW 660"]
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+
+[Board "8"]
+[West "BEN"]
+[East "BEN"]
+[North "BEN"]
+[South "BEN"]
+[Dealer "W"]
+[Vulnerable "None"]
+[Deal "N:T842.QJ7.98.J654 A.T9854.AKQJT.Q9 K9763.K63.7642.7 QJ5.A2.53.AKT832"]
+[Declarer "W"]
+[Contract "5C"]
+[ParScore "-920"]
+[Auction "W"]
+1C =1= PASS =2= 1H =3= PASS =4=
+2C =5= PASS =6= 3S =7= PASS =8=
+4S =9= PASS =10= 5C =11= PASS =12=
+PASS =13= PASS =14= 
+[Note "1: 3+ !C -- 3+!C; 5-!H; 5-!S; 11-21 HCP"]
+[Note "2:  -- ; 14- HCP"]
+[Note "3: Bidable suit -- 4+!H; 6-!S; 6-29 HCP; Forcing"]
+[Note "4:  -- ; 14- HCP"]
+[Note "5: Bidable suit -- 6+!C; 6-!D; 3-!H; 3-!S; 11-14 HCP"]
+[Note "6:  -- ; 14- HCP"]
+[Note "7:* Splinter -- 2+!C; 4+!H; 1-!S; 12-20 HCP; Artificial; Forcing"]
+[Note "8:  -- ; 14- HCP"]
+[Note "9:* Cue bid, a !S stopper -- 6+!C; 2-6!D; 2-3!H; 3-!S; 11-14 HCP; Artificial; Forcing"]
+[Note "10:  -- ; 14- HCP"]
+[Note "11: Nat. -- 2+!C; 4+!H; 1-!S; 12-20 HCP"]
+[Note "12:  -- ; 14- HCP"]
+[Note "13:  -- 6+!C; 2-6!D; 2-3!H; 3-!S; 11-14 HCP"]
+[Note "14:  -- ; 14- HCP"]
+[Play "N"]
+D9 DT D6 D3 
+C4 CQ C7 C2 
+C5 C9 S6 CA 
+C6 H4 D2 CK 
+CJ H5 S3 C3 
+HQ H8 H3 HA 
+S2 H9 S7 CT 
+S4 SA S9 S5 
+D8 DA D4 D5 
+H7 DK D7 H2 
+ST DQ H6 SJ 
+S8 DJ SK C8 
+HJ HT HK SQ 
+[Result "12"]
+[Scoring "IMP"]
+[Score "EW 420"]
+[HomeTeam ""]
+[VisitTeam ""]
+[ScoreIMP ""]
+[Room ""]
+

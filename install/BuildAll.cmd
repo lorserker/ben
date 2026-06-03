@@ -1,7 +1,7 @@
 @echo off
 rem ============================================================================
 rem  BuildAll.cmd  -  build the BEN release packages.
-rem    1. ensure we build from the conda 'TF2' env (see requirements.txt)
+rem    1. ensure we build from the conda 'ben' env (see requirements.txt)
 rem    2. clear the output folders + PyInstaller build/dist cache (no stale files)
 rem    3. run the PyInstaller / assemble steps
 rem    4. zip each output folder as  <name>-<version>.zip

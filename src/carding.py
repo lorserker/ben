@@ -13,6 +13,17 @@ init()
 
 RANKS = 'AKQJT98765432'
 
+def cards_equivalent(rank_a, rank_b, opponents_in_suit):
+    """Two cards in the same suit play identically when no opponent card ranks
+    between them (they are 'touching' in our combined holding), so choosing one
+    over the other makes no difference. opponents_in_suit is a string of the
+    ranks still held by the opponents in that suit."""
+    if rank_a == rank_b:
+        return True
+    a, b = RANKS.index(rank_a), RANKS.index(rank_b)
+    lo, hi = (a, b) if a < b else (b, a)
+    return not any(c in opponents_in_suit for c in RANKS[lo + 1:hi])
+
 def find_nth_occurrence(arr, target, nth):
     counter = 0
     idx = 0
@@ -186,15 +197,16 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
 
                     entries = count_entries(hand_str, interesting_suit, played_cards, contract[1])
 
-                    # SuitC convention: North = leader. Swap hands if declarer is on lead.
-                    if player_i == 3:
-                        # Declarer leads: declarer = North (leader), dummy = South
-                        suitc_north = suits_south
-                        suitc_south = suits_north
-                    else:
-                        # Dummy leads: dummy = North (leader), declarer = South
-                        suitc_north = suits_north
-                        suitc_south = suits_south
+                    # SuitC convention: North = leader, South = partner.
+                    # The acting hand (hand_str -> suits_south) is always the hand on
+                    # lead here (play_status == "Lead"), regardless of whether declarer
+                    # (player_i == 3) or dummy (player_i == 1) is leading. Its partner is
+                    # the other hand of the declaring side (public_hand_str -> suits_north):
+                    #   player_i == 3 (declarer leads): public_hand_str = dummy
+                    #   player_i == 1 (dummy leads):     public_hand_str = declarer
+                    # So North is always the acting hand and South is always its partner.
+                    suitc_north = suits_south   # leader = acting hand (hand_str)
+                    suitc_south = suits_north   # partner = public_hand_str
 
                     # We need to find if playing safe should be needed. Currently we select the card with the highest expected score
                     try:
@@ -247,7 +259,11 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                     # Only play the card from SuitC if it was a candidate
                     for candidate_card in candidate_cards:
                         if claim_cards != [] and candidate_card.card.code() not in claim_cards:
-                            print(f"Claim card not in candidate cards {claim_cards} {candidate_card.card.code()}")
+                            # Only let SuitC pick from the DD-optimal set (claim_cards);
+                            # skip candidates that are not among the best DD cards.
+                            if verbose:
+                                print(f"[SuitC] Skipping {candidate_card.card.symbol()}: not in DD-optimal set "
+                                      f"{[Card.from_code(c).symbol() for c in claim_cards]}")
                             continue
                         for suitc_card in suitc_cards:
                             if candidate_card.card.symbol() == f"{suit_str}{suitc_card}":
@@ -293,7 +309,21 @@ def select_right_card_for_play(candidate_cards, rng, contract, models, hand_str,
                                         if candidate_card.p_make_contract >= candidate_cards[0].p_make_contract - 0.1:
                                             if candidate_card.expected_tricks_sd and candidate_card.expected_tricks_sd >= candidate_cards[0].expected_tricks_sd - 0.2:
                                                 return candidate_card.card, "SuitC-SD"
-                    print(f"SuitC card not an acceptable card: {suit_str}{suitc_card}")
+                    # No SuitC suggestion was returned. If the card we will play
+                    # (the DD-optimal candidate_cards[0]) is equivalent to one of
+                    # SuitC's suggestions - i.e. touching it in our holding with no
+                    # opponent card between them - then SuitC's choice and ours are
+                    # interchangeable and there is nothing to report. Only flag it
+                    # (and only when verbose) when SuitC genuinely wanted a
+                    # materially different card than the one we are about to play.
+                    chosen_rank = candidate_cards[0].card.symbol()[1]
+                    equivalent = any(cards_equivalent(suitc_card, chosen_rank, suits_westeast) for suitc_card in suitc_cards)
+                    if not equivalent and verbose:
+                        print(f"[SuitC] Suggestion {suit_str}{suitc_cards} not played: DD-optimal card is "
+                              f"{suit_str}{chosen_rank} and they are not equivalent (opponents hold a card between them).")
+                        print(f"[SuitC] Candidate cards: {[candidate_card.card.symbol() for candidate_card in candidate_cards]}")
+                        print(f"[SuitC] Holdings N/S/opp: {suits_north} {suits_south} {suits_westeast}")
+
                 return candidate_cards[0].card, who
 
     if original_count == current_count:

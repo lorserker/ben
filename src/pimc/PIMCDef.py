@@ -377,16 +377,29 @@ class BGADefDLL:
         }
         for i, suit in suits.items():
             value = int(missing_cards[i])
-            # Update declarer constraints with minimum values
-            if value < getattr(self.declarer_constraints, f"Min{suit}"):
-                setattr(self.declarer_constraints, f"Min{suit}", value)
-            if value < getattr(self.declarer_constraints, f"Max{suit}"):
-                setattr(self.declarer_constraints, f"Max{suit}", int(value))
-            # Update partner constraints with minimum values
-            if value < getattr(self.partner_constraints, f"Min{suit}"):
-                setattr(self.partner_constraints, f"Min{suit}", value)
-            if value < getattr(self.partner_constraints, f"Max{suit}"):
-                setattr(self.partner_constraints, f"Max{suit}", value)
+            dec_min = getattr(self.declarer_constraints, f"Min{suit}")
+            dec_max = getattr(self.declarer_constraints, f"Max{suit}")
+            par_min = getattr(self.partner_constraints, f"Min{suit}")
+            par_max = getattr(self.partner_constraints, f"Max{suit}")
+            # Neither hidden hand can hold more cards of a suit than are still
+            # out, and neither can be required to hold more than that.
+            dec_max = min(dec_max, value)
+            par_max = min(par_max, value)
+            dec_min = min(dec_min, value)
+            par_min = min(par_min, value)
+            # The two minima must also be jointly possible: together they cannot
+            # require more cards than actually remain in the suit. When they do
+            # (e.g. 1 card out but both minima are 1 -> combined 2 > 1), drop each
+            # to the count it is *forced* to hold because the other hand cannot
+            # cover it. update_voids() has already run, so a void hand's max is 0
+            # here and the surviving hand is correctly forced to hold the rest.
+            if dec_min + par_min > value:
+                dec_min = max(0, min(value - par_max, dec_max))
+                par_min = max(0, min(value - dec_max, par_max))
+            setattr(self.declarer_constraints, f"Min{suit}", dec_min)
+            setattr(self.declarer_constraints, f"Max{suit}", dec_max)
+            setattr(self.partner_constraints, f"Min{suit}", par_min)
+            setattr(self.partner_constraints, f"Max{suit}", par_max)
             
     def update_voids(self,shown_out_suits):
         # Define suits mapping
