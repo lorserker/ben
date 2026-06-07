@@ -18,6 +18,13 @@ rem
 rem  'call'ed by BuildAll.cmd / build.cmd before any PyInstaller step.
 rem ============================================================================
 
+rem  Force conda-only package resolution: ignore the per-user site-packages
+rem  (%APPDATA%\Roaming\Python\Python3xx\site-packages). Without this, builds
+rem  silently freeze packages from the user-site instead of the 'ben' env,
+rem  producing non-reproducible bundles. The conda 'ben' env now carries the
+rem  full requirements.txt, so user-site is never needed.
+set "PYTHONNOUSERSITE=1"
+
 if /I "%CONDA_DEFAULT_ENV%"=="ben" goto :verify
 
 echo [check_env] activating conda env 'ben' ...

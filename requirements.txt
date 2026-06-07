@@ -24,3 +24,18 @@ flask_cors
 flask_limiter 
 psutil==5.9.0
 colorama
+
+# Build tool — frozen .exe builds (install/*.spec). Pinned so the conda `ben`
+# env is self-contained and reproduces the known-good bundle hooks.
+pyinstaller==6.10.0
+# setuptools 71+ moved pkg_resources' vendored deps (jaraco.*, more_itertools)
+# in a way PyInstaller 6.10's pkg_resources hook can't bundle, so frozen exes
+# crash at the pyi_rth_pkgres runtime hook with "No module named 'jaraco'".
+# 70.x keeps pkg_resources self-contained (vendored jaraco under _vendor). Pin <71.
+setuptools==70.3.0
+
+# TMCGUI (table manager GUI) dependencies. pywin32 was missing entirely, so the
+# frozen TMCGUI.exe shipped without win32gui and crashed at startup with
+# "No module named 'win32gui'" despite TMCGUI.spec declaring it as a hidden import.
+pywin32
+pygame

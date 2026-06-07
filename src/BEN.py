@@ -45,8 +45,16 @@ def is_process_running(process_name):
 class BridgeApp:
     def __init__(self, root):
         self.root = root
-        self.root.iconbitmap("ben.ico")
-        self.root.title("Bridge with BEN. v0.8.8.0")
+        # Cosmetic icon: resolve from the PyInstaller bundle (sys._MEIPASS) when
+        # frozen, else the script dir, and never let a missing icon crash startup
+        # (cwd-relative "ben.ico" raised TclError when launched from another dir).
+        try:
+            self.root.iconbitmap(os.path.join(
+                getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__))),
+                "ben.ico"))
+        except Exception:
+            pass
+        self.root.title("Bridge with BEN. v0.8.8.1")
         self.root.geometry("1000x1000")
 
         # Center the window
@@ -390,7 +398,7 @@ class BridgeApp:
             self.play_button.config(state="disabled", bg="red", fg="black")
 
     def on_about(self):
-        messagebox.showinfo("About", "Play with BEN. Version 0.8.8.0")
+        messagebox.showinfo("About", "Play with BEN. Version 0.8.8.1")
 
     def terminate(self, signum, frame):
         """

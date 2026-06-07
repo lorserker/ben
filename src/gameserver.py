@@ -31,6 +31,13 @@ import time
 import datetime
 import asyncio
 import websockets
+# Silence benign "opening handshake failed" ERROR logs. A health check, port
+# scan, or a browser hitting the ws:// port over plain HTTP opens a TCP
+# connection and closes it without a valid WebSocket handshake; websockets
+# logs that at ERROR (InvalidMessage / EOFError) even though it is harmless and
+# the server keeps running. Raise this one logger above ERROR to keep the
+# console clean without affecting BEN's own logging.
+logging.getLogger("websockets.server").setLevel(logging.CRITICAL)
 from packaging import version as pkg_version
 import argparse
 import game
@@ -48,7 +55,7 @@ import gc
 import psutil
 from nn.timing import ModelTimer
 
-version = '0.8.8.0'
+version = '0.8.8.1'
 init()
 
 # Check websockets version - 15.0+ removed path as handler argument

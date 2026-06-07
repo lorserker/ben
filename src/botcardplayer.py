@@ -1,6 +1,7 @@
 import time
 import json
 import os
+import sys
 import numpy as np
 import tensorflow as tf
 
@@ -748,7 +749,14 @@ class CardPlayer:
             our_hand1_symbols = extract_symbols(our_hands[0], suit_index)
             our_hand2_symbols = extract_symbols(our_hands[1], suit_index)
             opponents_hand_symbols = extract_symbols(missing_cards, suit_index)
-            tricks = self.suitc.get_suit_tricks(our_hand1_symbols, our_hand2_symbols, opponents_hand_symbols)
+            try:
+                tricks = self.suitc.get_suit_tricks(our_hand1_symbols, our_hand2_symbols, opponents_hand_symbols)
+            except Exception as ex:
+                # A SuitC failure/timeout must not abort the whole evaluation;
+                # skip this suit's adjustment (same fallback as no suitc above).
+                sys.stderr.write(f"{Fore.RED}SuitC get_suit_tricks failed: {ex}{Fore.RESET}\n")
+                results[suit_index] = 0
+                continue
             if max_tricks_possible == tricks:
                 results[suit_index] = 0
                 continue

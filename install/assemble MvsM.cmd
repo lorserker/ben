@@ -1,5 +1,7 @@
-python -m PyInstaller table_manager_client.spec --noconfirm
-python -m PyInstaller TMCGui.spec --noconfirm
+rem table_manager_client / TMCGUI are already built into dist\ by assemble.cmd
+rem (which BuildAll.cmd runs first). Re-running PyInstaller here just rebuilt the
+rem same exes - removed so each spec is frozen exactly once per BuildAll. This
+rem script only robocopies the existing dist\ output into the MvsM\ layout.
 
 if not exist "MvsM\config" mkdir "MvsM\config"
 robocopy ..\src\config "MvsM\config" BEN*

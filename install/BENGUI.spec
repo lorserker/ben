@@ -10,7 +10,20 @@ a = Analysis(
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    # Dev/notebook tooling + plotting/data libs that nothing in BEN imports at
+    # runtime. tkinter is kept (this GUI uses it). Excluding these drops
+    # thousands of files from Analysis -> much less Defender cold-scan.
+    excludes=[
+        'IPython', 'ipykernel', 'jedi', 'parso',
+        'notebook', 'nbformat', 'nbconvert', 'nbclient',
+        'jupyter', 'jupyter_client', 'jupyter_core', 'jupyterlab', 'qtconsole',
+        'matplotlib', 'pandas', 'pytest', '_pytest',
+        # requests imports simplejson only optionally and falls back to stdlib
+        # json. A partially-collected simplejson (no __init__/_speedups) imports
+        # as an empty namespace pkg, so `from simplejson import JSONDecodeError`
+        # fails at runtime. Excluding it forces the stdlib-json path.
+        'simplejson',
+    ],
     noarchive=False,
     optimize=0,
 )

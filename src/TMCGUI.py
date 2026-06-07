@@ -72,8 +72,18 @@ class TableManagerApp(tk.Tk):
         super().__init__()
 
         # Window configuration
-        self.iconbitmap("ben.ico")
-        self.title("Table Manager Interface. v0.8.8.0")
+        # The icon is cosmetic. Resolve it from the PyInstaller bundle
+        # (sys._MEIPASS) when frozen, else the script dir, and never let a
+        # missing/locked icon crash startup. The old iconbitmap("ben.ico")
+        # used a cwd-relative path and raised TclError ('bitmap "ben.ico" not
+        # defined') whenever TMCGUI was launched from a folder without ben.ico.
+        try:
+            self.iconbitmap(os.path.join(
+                getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__))),
+                "ben.ico"))
+        except Exception:
+            pass
+        self.title("Table Manager Interface. v0.8.8.1")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 

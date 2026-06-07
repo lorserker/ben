@@ -1,6 +1,7 @@
-python -m PyInstaller gameserver.spec --noconfirm
-python -m PyInstaller appserver.spec --noconfirm
-python -m PyInstaller BEN.spec --noconfirm
+rem gameserver / appserver / BEN are already built into dist\ by assemble.cmd
+rem (which BuildAll.cmd runs first). Re-running PyInstaller here just rebuilt the
+rem same exes - removed so each spec is frozen exactly once per BuildAll. This
+rem script only robocopies the existing dist\ output into the BEN\ layout.
 
 robocopy ..\models\TF2Models "BEN\models\TF2Models" /E righty*
 robocopy ..\models\TF2Models "BEN\models\TF2Models" /E lefty*

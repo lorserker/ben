@@ -25,8 +25,16 @@ class TableManagerApp(tk.Tk):
         super().__init__()
 
         # Window configuration
-        self.iconbitmap("ben.ico")
-        self.title("BEN server Interface. v0.8.8.0")
+        # Cosmetic icon: resolve from the PyInstaller bundle (sys._MEIPASS) when
+        # frozen, else the script dir, and never let a missing icon crash startup
+        # (cwd-relative "ben.ico" raised TclError when launched from another dir).
+        try:
+            self.iconbitmap(os.path.join(
+                getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(__file__))),
+                "ben.ico"))
+        except Exception:
+            pass
+        self.title("BEN server Interface. v0.8.8.1")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 
