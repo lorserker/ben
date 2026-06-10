@@ -194,9 +194,13 @@ class SuitCLib:
                 f"SuitC worker exited with code {proc.returncode}. stderr: {proc.stderr.strip()}"
             )
 
+        # Use raw_decode rather than json.loads: it parses the leading JSON
+        # object and ignores any trailing bytes, so a stray native-stdout
+        # fragment appended after the result (see suitc_worker.py) can't break
+        # parsing as defence-in-depth.
         try:
-            result = json.loads(proc.stdout)
-        except json.JSONDecodeError:
+            result, _ = json.JSONDecoder().raw_decode(proc.stdout.lstrip())
+        except (json.JSONDecodeError, ValueError):
             raise RuntimeError(
                 f"SuitC worker produced unparseable output: {proc.stdout[:500]!r} "
                 f"stderr: {proc.stderr[:500]!r}"

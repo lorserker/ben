@@ -34,7 +34,7 @@ class TableManagerApp(tk.Tk):
                 "ben.ico"))
         except Exception:
             pass
-        self.title("BEN server Interface. v0.8.8.1")
+        self.title("BEN server Interface. v0.8.8.2")
         self.geometry("880x750")  # Wider window size
         self.resizable(True, True)
 

@@ -13,9 +13,11 @@ Protocol:
              or, on failure:
                 {"rc": -1, "error": <str>}
 
-The native library prints its analysis tree to fd 1 regardless of flags; that
-flood is redirected to devnull around the call so stdout carries only the JSON.
-The JSON result comes from the output buffer, not stdout, so this is safe.
+The native library prints its analysis tree to fd 1 regardless of flags. fd 1 is
+permanently redirected to devnull for the whole worker lifetime and the JSON is
+written to a saved copy of the real stdout, so the native flood (including the
+C stdio buffer flushed at process exit) can never corrupt the JSON. The JSON
+result comes from the output buffer, not stdout, so this is safe.
 
 This file is intentionally self-contained (no imports from the rest of BEN) so
 that launching it is cheap and free of side effects.
@@ -32,10 +34,24 @@ BUFFER_CAPACITY = 8 * 32768
 
 def main():
     if len(sys.argv) < 2:
-        sys.stdout.write(json.dumps({"rc": -1, "error": "missing library path argument"}))
+        os.write(1, json.dumps({"rc": -1, "error": "missing library path argument"}).encode("utf-8"))
         return
     lib_path = sys.argv[1]
     input_str = sys.stdin.buffer.read().decode("utf-8")
+
+    # Pin fd 1 to devnull for the *entire* worker lifetime, then write our JSON
+    # result to a saved copy of the real stdout. The native lib prints its
+    # analysis tree to fd 1 using C stdio buffering: redirecting only around the
+    # call and then restoring fd 1 would let the residual buffer (and the
+    # exit-time flush) spill onto the real stdout *after* our JSON, producing
+    # "<valid JSON><native fragment>" that the parent cannot json.loads. Keeping
+    # fd 1 on devnull for good — including process exit — guarantees the saved
+    # fd carries only our JSON.
+    sys.stdout.flush()
+    real_stdout_fd = os.dup(1)
+    devnull_fd = os.open(os.devnull, os.O_WRONLY)
+    os.dup2(devnull_fd, 1)
+    os.close(devnull_fd)
 
     try:
         suitc = ctypes.CDLL(lib_path)
@@ -58,24 +74,16 @@ def main():
         pp_details = ctypes.byref(c_details_ptr)
         details_size = c_int()
 
-        # Silence the native lib's fd-1 flood around the call.
-        sys.stdout.flush()
-        saved_fd = os.dup(1)
-        devnull_fd = os.open(os.devnull, os.O_WRONLY)
-        try:
-            os.dup2(devnull_fd, 1)
-            rc = suitc.call_suitc(
-                pp_input_str,
-                input_length,
-                pp_output,
-                ctypes.byref(output_size),
-                pp_details,
-                ctypes.byref(details_size),
-            )
-        finally:
-            os.dup2(saved_fd, 1)
-            os.close(devnull_fd)
-            os.close(saved_fd)
+        # fd 1 is already pinned to devnull (see above), so the native lib's
+        # tree flood — during the call and at exit — is discarded.
+        rc = suitc.call_suitc(
+            pp_input_str,
+            input_length,
+            pp_output,
+            ctypes.byref(output_size),
+            pp_details,
+            ctypes.byref(details_size),
+        )
 
         result = {
             "rc": int(rc),
@@ -85,8 +93,10 @@ def main():
     except Exception as ex:  # report cleanly to the parent rather than crashing
         result = {"rc": -1, "error": f"{type(ex).__name__}: {ex}"}
 
-    sys.stdout.write(json.dumps(result))
-    sys.stdout.flush()
+    # Write to the saved real stdout, NOT sys.stdout (which now points at
+    # devnull). os.write is an unbuffered syscall, so there is nothing to flush.
+    os.write(real_stdout_fd, json.dumps(result).encode("utf-8"))
+    os.close(real_stdout_fd)
 
 
 if __name__ == "__main__":
