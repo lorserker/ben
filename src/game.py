@@ -63,7 +63,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.8.2'
+version = '0.8.8.3'
 
 init()
 
