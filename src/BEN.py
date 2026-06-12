@@ -54,7 +54,7 @@ class BridgeApp:
                 "ben.ico"))
         except Exception:
             pass
-        self.root.title("Bridge with BEN. v0.8.8.3")
+        self.root.title("Bridge with BEN. v0.8.8.4")
         self.root.geometry("1000x1000")
 
         # Center the window
@@ -398,7 +398,7 @@ class BridgeApp:
             self.play_button.config(state="disabled", bg="red", fg="black")
 
     def on_about(self):
-        messagebox.showinfo("About", "Play with BEN. Version 0.8.8.3")
+        messagebox.showinfo("About", "Play with BEN. Version 0.8.8.4")
 
     def terminate(self, signum, frame):
         """

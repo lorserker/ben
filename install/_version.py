@@ -1,6 +1,6 @@
 """Print the BEN release version, parsed from ../src/game.py.
 
-Used by BuildAll.cmd to name the release archives, e.g. MvsM-0.8.8.3.zip.
+Used by BuildAll.cmd to name the release archives, e.g. MvsM-0.8.8.4.zip.
 Prints 'unknown' (and exits 0) if it can't find the version line.
 """
 import os
