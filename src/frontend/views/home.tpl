@@ -344,8 +344,9 @@ async function includeCheckboxValues(event) {
     // Pre-flight: verify the selected server port is reachable before redirecting
     const serverValue = document.getElementById('server').value;
     const serverPort = '444' + serverValue;
+    const wsProtocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
     const reachable = await new Promise((resolve) => {
-        const ws = new WebSocket('ws://localhost:' + serverPort + '/');
+        const ws = new WebSocket(wsProtocol + location.hostname + ':' + serverPort + '/');
         const timer = setTimeout(() => { ws.close(); resolve(false); }, 1500);
         ws.onopen  = () => { clearTimeout(timer); ws.close(); resolve(true); };
         ws.onerror = () => { clearTimeout(timer); resolve(false); };

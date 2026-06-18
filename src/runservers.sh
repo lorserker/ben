@@ -45,7 +45,7 @@ launch() {
 
 # --- Web UI app server (frontend/appserver.py, default port 8080) ---
 launch appserver       "$SRC/frontend" appserver.py --host 0.0.0.0
-launch appserverold    "$SRC"          appserverold.py --port 8081
+launch appserverold    "$SRC"          appserverold.py --port 8081 --host 0.0.0.0
 
 # --- Play API (used from BBO) ---
 # NOTE: port 80 is privileged on macOS/Linux. Either run this script with sudo,
