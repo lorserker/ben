@@ -6,7 +6,7 @@ Information-Set MCTS with UCB selection for bridge cardplay.
 
 Ace uses suit-rank card format (e.g., "HA" for Ace of Hearts).
 Ace API: Game, Engine, GameOptions, ConstraintSet, Range, Config, Player, Contract
-engine.Evaluate() returns List<Evaluation> with .Move, .Value, .Visits, .Depth
+engine.Evaluate() returns List<Evaluation> with .Move, .Winrate, .Visits, .Depth
 """
 
 import traceback
@@ -428,7 +428,7 @@ class ACEDLL:
         card_result = {}
         for i in range(evaluations.Count):
             ev = evaluations[i]
-            reward = ev.Value
+            reward = ev.Winrate
             card_str = str(ev.Move)
             card52 = self._ace_card_to_ben_code(card_str)
 
