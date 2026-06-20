@@ -452,21 +452,40 @@ class ACEDefDLL:
             print(f"Evaluation count: {evaluations.Count}")
 
         card_result = {}
+        # Declarer tricks needed to make the contract (constant for the deal).
+        required = int(self.contract_str[0]) + 6
         for i in range(evaluations.Count):
             ev = evaluations[i]
-            reward = ev.Winrate
+            # From the defending engine's perspective:
+            #   Winrate = P(defeating the contract)            0..1
+            #   Utility = average undertrick margin             signed tricks (positive = declarer set)
+            # Ace's UCB only leans on the trick margin once the outcome is nearly
+            # certain, so when every defence beats the contract it picks by undertricks.
+            # Surface both, else BEN ties all setting cards at winrate=1.0 and ignores
+            # the "beat it the most" preference Ace computed.
+            winrate = ev.Winrate
+            margin = ev.Utility
             card_str = str(ev.Move)
             card52 = self._ace_card_to_ben_code(card_str)
 
+            # Convert to total defender tricks to match PIMCDef's tuple convention.
+            declarer_total = required - margin
+            defender_total = 13 - declarer_total
+            e_tricks = defender_total - self.tricks_taken             # remaining defender tricks
+            score_idx = max(0, min(13, int(round(defender_total))))
+            e_score = self.score_by_tricks_taken[score_idx]
+            e_make = winrate
+
             elapsed_ms = engine.Elapsed.TotalMilliseconds
             msg = (f"Iterations: {engine.Iterations}"
-                   f"|Win%: {reward * 100:.1f}|Visits: {ev.Visits}|Depth: {ev.Depth}"
+                   f"|Win%: {winrate * 100:.1f}|Margin: {margin:+.2f}|Visits: {ev.Visits}|Depth: {ev.Depth}"
                    f"|Time: {elapsed_ms:.0f}ms")
 
-            card_result[card52] = (round(reward, 4), round(reward * 100), round(reward, 4), msg)
+            card_result[card52] = (round(e_tricks, 2), round(e_score), round(e_make, 3), msg)
 
             if self.verbose:
-                print(f"{Card.from_code(card52)} reward:{reward:.4f} visits:{ev.Visits}")
+                print(f"{Card.from_code(card52)} win:{winrate:.4f} margin:{margin:+.2f} "
+                      f"tricks:{e_tricks:.2f} score:{e_score} visits:{ev.Visits}")
 
         return card_result
 

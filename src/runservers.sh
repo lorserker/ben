@@ -55,6 +55,8 @@ launch api-bbo-80      "$SRC"          gameapi.py --config config/GIB-BBO.conf -
 launch api-bbo-8085    "$SRC"          gameapi.py --config config/GIB-BBO.conf            --host 0.0.0.0 --allowed-hosts "*"
 
 # --- Game servers (websocket), one per bidding model/config ---
+# NOTE: gameserver.py already binds 0.0.0.0 (it's a raw websocket server with no
+#       Host-header check), so it accepts neither --host nor --allowed-hosts.
 launch ben-21gf-4440   "$SRC"          gameserver.py --config config/BEN-21GF.conf --port 4440
 launch ben-sayc-4441   "$SRC"          gameserver.py --config config/BEN-SAYC.conf --port 4441
 launch gib-bbo-4442    "$SRC"          gameserver.py --config config/GIB-BBO.conf  --port 4442
