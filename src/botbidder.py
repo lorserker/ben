@@ -9,12 +9,17 @@ import calculate
 import scoring
 
 from objects import BidResp, CandidateBid
-from bidding import bidding
+
 from collections import defaultdict
 
 from util import hand_to_str, calculate_seed, find_vuln_text, save_for_training
 from colorama import Fore, Style, init
 from nn.timing import ModelTimer
+
+from bidding import bidding
+
+
+
 
 init()
 class BotBid:
@@ -45,6 +50,9 @@ class BotBid:
         self.my_bid_no = 1
         self._bbabot_instance = None
         self.bba_is_controlling = bba_is_controlling
+        from rl_writer import RLWriter
+        self.rl_writer = RLWriter("selfplay_records.pkl")
+
 
     @property
     def bbabot(self):
@@ -101,8 +109,20 @@ class BotBid:
     def get_binary(self, auction, models):
         n_steps = self.get_bid_number_for_player_to_bid(auction)
         hand_ix = len(auction) % 4
-        X = binary.get_auction_binary(n_steps, auction, hand_ix, self.hand_bidding, self.vuln, models)
+        X = binary.get_auction_binary(
+            n_steps,
+            auction,
+            hand_ix,
+            self.hand_bidding,
+            self.vuln,
+            models
+        )
         return X
+
+
+
+
+
 
     def get_binary_contract(self, position, vuln, hand_str, dummy_str, n_cards=32):
         X = np.zeros(2 + 2 * n_cards, dtype=np.float16)
@@ -223,6 +243,8 @@ class BotBid:
 
     def bid(self, auction):
         # Validate input
+        value_targets = {}
+
         if (len(auction)) % 4 != self.seat:
             error_message = f"Dealer {self.dealer}, auction {auction}, and seat {self.seat} do not match!"
             raise ValueError(error_message)
@@ -270,14 +292,20 @@ class BotBid:
             sample_count = 0
 
         # If quality = -1 we should probably just bid what BBA suggest, but even BBA might not have understood the bidding
+        value_targets = {}
+
 
         if self.do_rollout(auction, candidates, self.get_max_candidate_score(self.my_bid_no), sample_count):
             ev_candidates = []
             ev_scores = {}
+            value_targets = {}  # NEW: store value target per bid
+
             # we would like to have the same samples including pips for all calculations
             if self.models.double_dummy_calculator:
                 hands_np_as_pbn = self.translate_hands(hands_np, self.hand_str, sample_count)
+
             for candidate in candidates:
+
                 if self.verbose:
                     print(f"Bid: {candidate.bid.ljust(4)} {candidate.insta_score:.3f}")
                 auctions_np = self.bidding_rollout(auction, candidate.bid, hands_np, hands_np_as_pbn)
@@ -328,8 +356,15 @@ class BotBid:
                 # We need to find a way to use how good the samples are
                 # Calculate the mean of the expected score
                 expected_score = np.mean(ev)
+
+                # NEW: store value target for RL
+                value_targets[candidate.bid] = float(expected_score)
+                candidate.value_target = float(expected_score)
+
                 if self.verbose:
-                    print("ev",ev)
+                    print("ev", ev)
+
+
 
                 adjust = 0
 
@@ -443,87 +478,175 @@ class BotBid:
                         if self.verbose:
                             print("Adjusted for double", adjust)
 
-                    if candidate.bid == "XX":
-                        # Don't redouble unless the expected score is positive with a margin
-                        # if they are vulnerable
-                        if self.vuln[(self.seat) % 2]:
-                            adjust -= 2 * self.models.adjust_XX
-                        else:
-                            adjust -= self.models.adjust_XX
-                        if self.verbose:
-                            print("Adjusted for double", adjust)
-                else:
-                    # Just a general adjustment of doubles
-                    # First round doubles are not included
-                    no_bids  = binary.get_number_of_bids(auction) 
-                    current_contract = bidding.get_contract(auction)
-                    if current_contract == None:
-                        current_level = 0
-                    else:
-                        current_level = int(current_contract[0:1])
 
-                    if candidate.bid == "X" and candidate.insta_score < 0.5 and no_bids > 4:
-                        if current_level > 5:
-                            adjust -= 2 * self.models.adjust_X
-                        else:
-                            adjust -= self.models.adjust_X
-                        if self.verbose:
-                            print("Adjusted for double if insta_score to low", adjust)
 
-                # The problem is that with a low score for X the expected bidding can be very wrong
-                if candidate.bid == "X" and candidate.insta_score < 0.1:
-                    adjust -= 2*self.models.adjust_X
+
+                # --- VALUE HEAD INTEGRATION (IMP‑correct, safe for old models) ---
+                use_value = False
+                try:
+                    if len(self.models.bidder_model.model.outputs) >= 3:
+                        use_value = True
+                except Exception:
+                    use_value = False
+
+                if use_value:
+                    # Use the SAME encoder as policy/shape: get_binary()
+                    x = self.get_binary(auction, self.models)
+                    x = x.astype(np.float32)
+
+                    preds = self.models.bidder_model.model(x, training=False)
+
+                    # --- DEBUG: SHOW VALUE HEAD SHAPE ---
+                    try:
+                        print("DEBUG VALUE HEAD SHAPE:", preds[2].shape)
+                        print("DEBUG VALUE HEAD RAW:", preds[2].numpy())
+                    except Exception as e:
+                        print("DEBUG VALUE HEAD ERROR:", e)
+                    # ------------------------------------
+
+                    value_score = float(preds[2].numpy()[0][0])   # already in IMPs
+
+
+                    
+
+
+                    # Convert DD points → IMPs using existing calculate module
+                    dd_imp_dict = calculate.calculate_imp_score({"_": [expected_score]})
+                    dd_imps = list(dd_imp_dict.values())[0]
+
+                    # Blend in IMP space
+                    alpha = 0.8
+                    blended_score = alpha * dd_imps + (1.0 - alpha) * value_score
+
                     if self.verbose:
-                        print("Adjusted for very low score in NN", adjust)
+                        print(f"Value head: NN={value_score:.2f}, "
+                              f"DD={dd_imps:.2f}, "
+                              f"blended={blended_score:.2f}")
 
-
-                # Consider adding a penalty for jumping to slam
-                # Another options could be to count number of times winning the slam
-
-                if not self.models.use_adjustment:
-                    adjust = 0
-                    if self.verbose:
-                        print("Removed all adjustments", adjust)
-
-                # Calculate the mean of the expected score
-                expected_score = np.mean(ev)
-
+                    # expected_score is now IMPs, not points
+                    expected_score = blended_score
+                # -----------------------------------------------------
                 ev_c = candidate.with_expected_score(expected_score, expected_tricks, adjust)
                 if self.verbose:
                     print(ev_c)
                 ev_candidates.append(ev_c)
 
+            # ← END OF CANDIDATE LOOP — IMP scoring begins AFTER this
+                        # -------------------------------------------------------------
+            # Compute DD IMPs for ALL bids (required for value-head blending)
+            dd_imp_scores = {}
+            if self.models.double_dummy_calculator:
+                dd_imp_scores = calculate.calculate_imp_score(ev_scores)
+            # -------------------------------------------------------------
+
+            # --- VALUE HEAD INTEGRATION (single correct block) ---
+            use_value = False
+            try:
+                if len(self.models.bidder_model.model.outputs) >= 3:
+                    use_value = True
+            except Exception:
+                use_value = False
+
+            if use_value:
+                x = self.get_binary(auction, self.models).astype(np.float32)
+                preds = self.models.bidder_model.model(x, training=False)
+                value_score = float(preds[2].numpy()[0][0])   # IMP prediction
+
+                for candidate in ev_candidates:
+                    if self.models.double_dummy_calculator and candidate.bid in dd_imp_scores:
+                        dd_imps = dd_imp_scores[candidate.bid]
+                        alpha = 0.8
+                        blended = alpha * dd_imps + (1.0 - alpha) * value_score
+                    else:
+                        blended = value_score
+
+                    candidate.expected_score = blended
+            # -------------------------------------------------------------
+
+
+            # -------------------------------------------------------------
+            # Compute DD IMPs for ALL bids (required for value-head blending)
+            dd_imp_scores = calculate.calculate_imp_score(ev_scores)
+            # -------------------------------------------------------------
+
             if self.models.use_real_imp_or_mp_bidding and self.models.double_dummy_calculator:
                 ev_candidates_mp_imp = []
-                #print(candidates)
-                #print("ev_scores",ev_scores)
-                if self.models.matchpoint:
-                    expected_score = calculate.calculate_mp_score(ev_scores)
-                    for bid, score in expected_score.items():
-                        for candidate in ev_candidates:
-                            if candidate.bid == bid:
-                                adjust = candidate.adjust / self.models.factor_to_translate_to_mp
-                                ev_c = candidate.with_expected_score_mp(score, adjust)
-                                #print("ev_c", ev_c)
-                                ev_candidates_mp_imp.append(ev_c)
-                else:
-                    expected_score = calculate.calculate_imp_score(ev_scores)
-                    for bid, score in expected_score.items():
-                        for candidate in ev_candidates:
-                            if candidate.bid == bid:
-                                adjust = candidate.adjust / self.models.factor_to_translate_to_imp
-                                ev_c = candidate.with_expected_score_imp(score, adjust)
-                                ev_candidates_mp_imp.append(ev_c)
 
                 if self.models.matchpoint:
-                    if self.verbose:
-                        print(f"Sorting for MP {expected_score}")
-                    candidates = sorted(ev_candidates_mp_imp, key=lambda c: (c.expected_mp + c.adjust, round(c.insta_score, 2)), reverse=True)
+                    # --- MATCHPOINT MODE ---
+                    expected_score = calculate.calculate_mp_score(ev_scores)
+
+                    for candidate in ev_candidates:
+                        score = expected_score.get(candidate.bid, 0.0)
+                        adjust = candidate.adjust / self.models.factor_to_translate_to_imp
+                        ev_c = candidate.with_expected_score_imp(score, adjust)
+                        ev_c.expected_score = score
+                        ev_candidates_mp_imp.append(ev_c)
+
+
+
+
                 else:
-                    if self.verbose:
-                        print(f"Sorting for IMP {expected_score}")
-                    candidates = sorted(ev_candidates_mp_imp, key=lambda c: (c.expected_imp + c.adjust, round(c.insta_score, 2)), reverse=True)
+                    # --- IMP MODE ---
+                    print("DEBUG ev_scores:", ev_scores)
+
+                    if use_value:
+                        print("DEBUG: VALUE HEAD ACTIVE — using blended IMPs")
+
+                        # Each candidate already has candidate.expected_score = blended IMP
+                        for candidate in ev_candidates:
+                            score = candidate.expected_score   # blended NN+DD IMP
+                            adjust = candidate.adjust / self.models.factor_to_translate_to_imp
+                            ev_c = candidate.with_expected_score_imp(score, adjust)
+                            ev_c.expected_score = score
+
+                            print(f"DEBUG BLENDED: {candidate.bid}  IMP={score:.3f}")
+
+                            ev_candidates_mp_imp.append(ev_c)
+
+                    else:
+                        print("DEBUG: NO VALUE HEAD — using DD-only IMPs")
+
+                        expected_score = calculate.calculate_imp_score(ev_scores)
+
+                        for candidate in ev_candidates:
+                            score = expected_score.get(candidate.bid, 0.0)
+                            adjust = candidate.adjust / self.models.factor_to_translate_to_imp
+                            ev_c = candidate.with_expected_score_imp(score, adjust)
+                            ev_c.expected_score = score
+                            ev_candidates_mp_imp.append(ev_c)
+
+                # --- DEBUG: SHOW IMP + NN COMBINED SCORE ---
+                for c in ev_candidates_mp_imp:
+                    combined = c.expected_imp + c.adjust
+                    print(
+                        f"DEBUG COMBINED: {c.bid}  "
+                        f"IMP={c.expected_imp:.3f}  "
+                        f"ADJ={c.adjust:.3f}  "
+                        f"TOTAL={combined:.3f}  "
+                        f"NN={c.insta_score:.3f}"
+                    )
+
+                # Sort by IMP + adjust (NN still used as tie-break)
+                candidates = sorted(
+                    ev_candidates_mp_imp,
+                    key=lambda c: (c.expected_imp + c.adjust, round(c.insta_score, 2)),
+                    reverse=True
+                )
+
                 ev_candidates = ev_candidates_mp_imp
+
+
+
+
+
+
+
+
+                    
+
+
+
             else:
                 # If the samples are bad we just trust the neural network
                 if self.models.use_biddingquality  and quality < self.sampler.bidding_threshold_sampling:
@@ -541,9 +664,12 @@ class BotBid:
                 print(f"Estimating took {(time.time() - t_start):0.4f} seconds")
         else:
             n_steps = binary.calculate_step_bidding_info(auction)
-            p_hcp, p_shp = self.sampler.get_bidding_info(n_steps, auction, self.seat, self.hand_bidding, self.vuln, self.models)
+            p_hcp, p_shp = self.sampler.get_bidding_info(
+                n_steps, auction, self.seat, self.hand_bidding, self.vuln, self.models
+            )
             p_hcp = p_hcp[0]
             p_shp = p_shp[0]
+
             # If we found no samples, then we consult BBA if activated
             if sample_count == 0 and generate_samples:
                 if self.models.consult_bba:
@@ -553,14 +679,39 @@ class BotBid:
                         if candidate.bid == bid_resp.bid:
                             if self.verbose:
                                 print(f"BBA bid {bid_resp.bid} is in candidates")
-                            # Move the found candidate to the first position
                             candidates.insert(0, candidates.pop(i))
                             found = True
                             break
                     if not found:
                         if self.verbose:
                             print(f"Adding BBA bid {bid_resp.bid} to candidates")
-                        candidates.insert(0, CandidateBid(bid=bid_resp.bid, insta_score=-1, alert = True, who="BBA", explanation=bid_resp.explanation))
+                        candidates.insert(
+                            0,
+                            CandidateBid(
+                                bid=bid_resp.bid,
+                                insta_score=-1,
+                                alert=True,
+                                who="BBA",
+                                explanation=bid_resp.explanation
+                            )
+                        )
+
+            # SAFETY: if still no candidates, fall back to PASS instead of crashing
+            if not candidates:
+                if self.verbose:
+                    print("No candidates available after NN/BBA — falling back to PASS")
+                return BidResp(
+                    bid="PASS",
+                    candidates=[],
+                    samples=[],
+                    shape=p_shp,
+                    hcp=p_hcp,
+                    who="Fallback",
+                    quality=quality,
+                    alert=False,
+                    explanation="No valid candidate bids"
+                )
+
                 
             who = "NN" if candidates[0].who is None else candidates[0].who
             if self.evaluate_rescue_bid(auction, passout, samples, candidates[0], quality, self.my_bid_no):    
@@ -582,6 +733,8 @@ class BotBid:
                 # Calculate the mean of the expected score
                 expected_score = np.mean(ev)
                 candidates[0] = candidates[0].with_expected_score(expected_score, expected_tricks, 0)
+
+
 
 
         if self.verbose:
@@ -814,12 +967,51 @@ class BotBid:
         if candidates[0].explanation is None:
             if self.models.consult_bba:
                 explain, alert = self.explain(auction + [candidates[0].bid])
+                
+        # --- RL TRAINING DATA COLLECTION ---
+        try:
+                if candidates and hasattr(candidates[0], 'bid'):
+
+                        features = self.current_features
+                        bid_label = candidates[0].bid
+
+                        # Use IMP value, not raw score
+                        value_target = candidates[0].expected_imp
+
+                        # Replace None with 0.0
+                        if value_target is None:
+                                value_target = 0.0
+
+                        print("RL WRITE:", bid_label, value_target)
+
+                        if self.rl_writer:
+                                self.rl_writer.write(features, bid_label, value_target)
+
+        except Exception as e:
+                print("RL writer error:", e)
+        # --- END RL TRAINING DATA COLLECTION ---
+
+
+
+
+
+
+
+
+
+
 
         #print("Final candidate", candidates[0].bid , explain)
         # We return the bid with the highest expected score or highest adjusted score 
         return BidResp(bid=candidates[0].bid, candidates=candidates, samples=samples[:self.sample_hands_for_review], shape=p_shp, hcp=p_hcp, who=who, quality=quality, alert = alert, explanation=explain)
     
     def do_rollout(self, auction, candidates, max_candidate_score, sample_count):
+        # SAFETY: avoid crashes when no candidates are available
+        if not candidates:
+            if self.verbose:
+                print("No candidates available for rollout — skipping rollout.")
+            return False
+
         if candidates[0].insta_score > max_candidate_score:
             if self.verbose:
                 print(f"A candidate above threshold {max_candidate_score}, so no need for rolling out the bidding")
@@ -1032,6 +1224,12 @@ class BotBid:
         if self.verbose:
             print("next_bid_np: Model:", self.models.name, "Version:", self.models.model_version, "NS:", self.models.ns, "Alert supported:", self.models.alert_supported)
         x = self.get_binary(auction, self.models)
+        self.current_features = x.copy()
+        print("Model outputs:", [o.name for o in self.models.bidder_model.model.outputs])
+
+
+        
+
         if self.models.model_version == 0:
             if self.models.ns != -1:
                 print("Different models for NS and EW not supported in this version")
