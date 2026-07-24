@@ -100,6 +100,17 @@ class ModelTimer:
             lines.append(f"{'TOTAL':<30} {total_count:>8} {total_time:>12.2f}")
             lines.append("=" * width)
 
+            # Explain the dds_solve_* rows if any are present. The label encodes
+            # both the trick (tNN) and the *purpose* of the DDS batch, so the
+            # same trick can legitimately show several rows (e.g. card-play
+            # evaluation plus one or more claim checks).
+            if any(k.startswith('dds_solve_t') for k in cls._stats):
+                lines.append("dds_solve_tNN_<purpose> = double-dummy solve at trick NN. Count = batches; Items = boards solved.")
+                lines.append("  purpose: play=card-play eval | claimcheck=is a claim safe | claimtricks=max claimable")
+                lines.append("           lead=opening-lead eval | bid=expected tricks during bidding | contract=bad-contract check")
+                lines.append("  Several rows for one trick just mean DDS ran for different purposes there (e.g. play + claim check).")
+                lines.append("=" * width)
+
             return "\n".join(lines)
 
     @classmethod

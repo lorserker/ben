@@ -43,7 +43,8 @@ class CardPlayer:
         self.n_tricks_taken = 0
         self.missing_cards = (13 -  np.array(binary.get_shape_array(self.hand52)) -  np.array(binary.get_shape_array(self.public52))).astype(int)
         self.missing_cards_initial = self.missing_cards.copy()
-        self.verbose = verbose
+        # Card-play output can be silenced independently of bidding via [cardplay] verbose
+        self.verbose = verbose and getattr(models, "play_verbose", True)
         self.level = int(contract[0])
         self.init_x_play(binary.parse_hand_f(32)(public_hand_str), self.level, self.strain_i)
         self.dds = ddsolver
@@ -486,7 +487,7 @@ class CardPlayer:
         if self.verbose:
             print("Samples:", n_samples, " Solving:",len(hands_pbn))
         
-        dd_solved = self.dds.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3)
+        dd_solved = self.dds.solve(self.strain_i, leader_i, current_trick52, hands_pbn, 3, purpose="play")
         
         # if defending the target is another
         level = int(self.contract[0])

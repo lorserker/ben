@@ -1,12 +1,14 @@
 import sys
 import os
 import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 from typing import List
 from collections import Counter
 from objects import Card
 from colorama import Fore, Back, Style, init
 from nn.timing import ModelTimer
+from ddsolver.ddsrecorder import DDSRecorder
 
 init()
 
@@ -114,13 +116,23 @@ class DDSolver:
         self._pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="dds")
         if verbose:
             sys.stderr.write(f"DDSolver loaded — DDS {self.version()} - dds mode {dds_mode} - {workers} solver threads\n")
+        # No-op unless --ddsrecord / BEN_DDS_RECORD asked for a recording. If the
+        # entry point already opened one, this just labels it with the DDS build
+        # actually in use. See ddsrecorder.py / ddsreplay.py.
+        DDSRecorder.configure(dds_version=self.version(), dds_mode=dds_mode,
+                              threads=workers)
 
     def version(self):
         return "3.0.0"
 
     def calculatepar(self, hand, vuln, print_result=True):
         with ModelTimer.time_call('dds_par'):
-            return self._calculatepar_impl(hand, vuln, print_result)
+            t0 = time.perf_counter()
+            result = self._calculatepar_impl(hand, vuln, print_result)
+            if DDSRecorder.enabled:
+                DDSRecorder.record_par(hand, vuln, result,
+                                       (time.perf_counter() - t0) * 1000)
+            return result
 
     def _calculatepar_impl(self, hand, vuln, print_result=True):
         # vulnerable
@@ -167,10 +179,24 @@ class DDSolver:
         remaining = sum(1 for c in pbn if c not in '. ')
         return (52 - remaining - len(current_trick)) // 4 + 1
 
-    def solve(self, strain_i, leader_i, current_trick, hands_pbn, solutions):
+    def solve(self, strain_i, leader_i, current_trick, hands_pbn, solutions, purpose=""):
+        """Solve a batch of sampled hands with double-dummy.
+
+        purpose is a short tag describing *why* DDS was invoked (e.g. "play",
+        "claimcheck", "lead", "bid"). It is folded into the timing label so the
+        MODEL TIMING SUMMARY separates, say, card-play evaluations from claim
+        checks at the same trick instead of lumping them into one opaque count.
+        """
         trick = self._trick_number(hands_pbn, current_trick)
-        with ModelTimer.time_call(f'dds_solve_t{trick:02d}', items=len(hands_pbn)):
+        label = f'dds_solve_t{trick:02d}_{purpose}' if purpose else f'dds_solve_t{trick:02d}'
+        with ModelTimer.time_call(label, items=len(hands_pbn)):
+            t0 = time.perf_counter()
             results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn, solutions)
+            elapsed_ms = (time.perf_counter() - t0) * 1000
+
+        if DDSRecorder.enabled:
+            DDSRecorder.record_solve(strain_i, leader_i, current_trick, hands_pbn,
+                                     solutions, purpose, trick, results, elapsed_ms)
 
         return results
 

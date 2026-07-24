@@ -43,6 +43,7 @@ import argparse
 import game
 import human
 import conf
+from ddsolver.ddsrecorder import DDSRecorder
 import functools
 import numpy as np
 from websockets.exceptions import ConnectionClosedOK, ConnectionClosedError
@@ -115,8 +116,12 @@ parser.add_argument("--auto", type=bool, default=False, help="BEN bids and plays
 parser.add_argument("--playonly", type=str_to_bool, default=False, help="Only play, no bidding")
 parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
 parser.add_argument("--seed", type=int, default=42, help="Seed for random")
+parser.add_argument("--ddsrecord", default=None, help="Record every DDS call to this file for later benchmarking with ddsreplay.py (.gz compresses; a directory gets one file per process)")
 
 args = parser.parse_args()
+
+# Before any DDSolver is built, so nothing is missed.
+DDSRecorder.configure(args.ddsrecord)
 
 configfile = args.config
 opponentfile = args.opponent

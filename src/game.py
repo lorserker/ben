@@ -53,6 +53,7 @@ from deck52 import board_dealer_vuln, decode_card, card52to32, get_trick_winner_
 from bidding.binary import DealData
 from objects import CardResp, Card, BidResp
 from claim import Claimer
+from ddsolver.ddsrecorder import DDSRecorder
 from pbn2ben import load
 from util import calculate_seed, get_play_status, get_singleton, get_possible_cards
 from colorama import Fore, Back, Style, init
@@ -149,6 +150,8 @@ class Driver:
         self.board_number = board_number
         self.deal_str = deal_str
         self.hands = deal_str.split()
+        # Tags the DDS calls that follow with this board (no-op unless recording).
+        DDSRecorder.start_board(board_number, deal_str, auction=auction_str)
         self.deal_data = DealData.from_deal_auction_string(self.deal_str, auction_str, "", self.ns, self.ew,  self.models.n_cards_bidding)
 
         if bidding_only != "False":
@@ -1082,8 +1085,12 @@ async def main():
     parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
     parser.add_argument("--seed", type=int, default=-1, help="Seed for random")
     parser.add_argument("--db", default="paronly", help="Db for board records")
+    parser.add_argument("--ddsrecord", default=None, help="Record every DDS call to this file for later benchmarking with ddsreplay.py (.gz compresses; a directory gets one file per process)")
 
     args = parser.parse_args()
+
+    # Before any DDSolver is built, so nothing is missed.
+    DDSRecorder.configure(args.ddsrecord)
 
     configfile = args.config
     opponentfile = args.opponent

@@ -35,7 +35,7 @@ def get_dd_score(hands, contract, is_vulnerable):
     strain_i = 'NSHDC'.index(contract[1])
     decl_i = 'NESW'.index(contract[-1])
     hands_pbn = 'N:' + ' '.join(hands)
-    sol = DD.solve(strain_i, (decl_i + 1) % 4, [], [hands_pbn],3)
+    sol = DD.solve(strain_i, (decl_i + 1) % 4, [], [hands_pbn],3, purpose="contract")
     dd_tricks = 13 - max(vals[0] for vals in sol.values())
     dd_score = scoring.score(contract, is_vulnerable, n_tricks=dd_tricks)
     dd_score = dd_score if decl_i % 2 == 0 else -dd_score

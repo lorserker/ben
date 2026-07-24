@@ -106,7 +106,8 @@ class Models:
                  use_real_imp_or_mp, use_real_imp_or_mp_bidding, use_real_imp_or_mp_opening_lead, lead_convention, check_final_contract, max_samples_checked,  
                  alert_supported, alert_threshold,
                  factor_to_translate_to_mp, factor_to_translate_to_imp, use_suit_adjust, suppress_warnings,
-                 reward_lead_partner_suit, trump_lead_penalty
+                 reward_lead_partner_suit, trump_lead_penalty,
+                 play_verbose=True, bidding_verbose=True
                  ):
         self.name = name
         self.tf_version = tf_version
@@ -203,6 +204,11 @@ class Models:
         self.ace_exploration = ace_exploration
         self.ace_limiter = ace_limiter
         self.ace_verbose = ace_verbose
+        # When False, card-play bots stay quiet even if the global verbose flag is on,
+        # so you can keep bidding verbose while silencing the play. Read from [cardplay] verbose.
+        self.play_verbose = play_verbose
+        # Likewise for bidding output, read from [bidding] verbose.
+        self.bidding_verbose = bidding_verbose
         self.alphamju_declaring = alphamju_declaring
         self.alphamju_defending = alphamju_defending
         self.alphamju_trick = alphamju_trick
@@ -357,6 +363,14 @@ class Models:
         ace_exploration = conf.getfloat('ace', 'ace_exploration', fallback=0.6061)
         ace_limiter = conf.getboolean('ace', 'ace_limiter', fallback=False)
         ace_verbose = conf.getboolean('ace', 'ace_verbose', fallback=False)
+
+        # Independent switch for card-play output. Default True = follow the global verbose flag.
+        # Set to False to keep bidding verbose while silencing the play.
+        play_verbose = conf.getboolean('cardplay', 'verbose', fallback=True)
+
+        # Independent switch for bidding output. Default True = follow the global verbose flag.
+        # Set to False to keep card play verbose while silencing the bidding.
+        bidding_verbose = conf.getboolean('bidding', 'verbose', fallback=True)
 
         alphamju_declaring = conf.getboolean('alphamju', 'alphamju_declaring', fallback=False)
         alphamju_defending = conf.getboolean('alphamju', 'alphamju_defending', fallback=False)
@@ -583,7 +597,9 @@ class Models:
             max_samples_checked=max_samples_checked,
             suppress_warnings=suppress_warnings,
             reward_lead_partner_suit=reward_lead_partner_suit,
-            trump_lead_penalty=trump_lead_penalty
+            trump_lead_penalty=trump_lead_penalty,
+            play_verbose=play_verbose,
+            bidding_verbose=bidding_verbose
         )
 
     @property

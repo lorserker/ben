@@ -128,7 +128,7 @@ class Claimer:
             for i, pbn in enumerate(sampled_hands_pbn):
                 print(f"  Sample {i+1}: {pbn}")
 
-        dd_solved = self.dd.solve(strain_i, (4 - len(current_trick)) % 4, current_trick, sampled_hands_pbn, 3)
+        dd_solved = self.dd.solve(strain_i, (4 - len(current_trick)) % 4, current_trick, sampled_hands_pbn, 3, purpose="claimcheck")
 
         if self.verbose:
             print(f"DD solved results per card:")
@@ -271,7 +271,7 @@ class Claimer:
         return max_min_tricks
 
     def _get_max_min_tricks(self, strain_i, player_i, hands_pbn, current_trick):
-        dd_solved = self.dd.solve(strain_i, (player_i-len(current_trick)) % 4, current_trick, hands_pbn, 1)
+        dd_solved = self.dd.solve(strain_i, (player_i-len(current_trick)) % 4, current_trick, hands_pbn, 1, purpose="claimtricks")
         
         max_min_tricks = 0
         for _, dd_tricks in dd_solved.items():

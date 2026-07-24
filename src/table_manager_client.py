@@ -59,6 +59,7 @@ from objects import Card, CardResp, BidResp
 from util import get_play_status, get_singleton, get_possible_cards
 from nn.opponents import Opponents
 
+from ddsolver.ddsrecorder import DDSRecorder
 from deck52 import card52to32, decode_card, get_trick_winner_i, hand_to_str
 from bidding import bidding
 
@@ -858,6 +859,8 @@ class TMClient:
 
         if match:
             self.board_number = match.group(1)
+            # Tags the DDS calls that follow (no-op unless recording).
+            DDSRecorder.start_board(self.board_number)
 
         await self.send_message(f'{self.seat} ready for cards')
         # "South's cards : S K J 9 3. H K 7 6. D A J. C A Q 8 7. \r\n"
@@ -1026,8 +1029,12 @@ async def main():
     parser.add_argument("--sendinfo", type=str_to_bool, default=False, help="Send information to Table Manager")
     parser.add_argument("--sendcardinfo", type=str_to_bool, default=False, help="Send card information to Table Manager")
     parser.add_argument("--verbose", type=str_to_bool, default=False, help="Output samples and other information during play")
+    parser.add_argument("--ddsrecord", default=None, help="Record every DDS call to this file for later benchmarking with ddsreplay.py (.gz compresses; a directory gets one file per process)")
 
     args = parser.parse_args()
+
+    # Before any DDSolver is built, so nothing is missed.
+    DDSRecorder.configure(args.ddsrecord)
 
     host = args.host
     port = args.port

@@ -30,7 +30,8 @@ class BotBid:
         self.seat = seat
         self.dealer = dealer
         self.sampler = sampler
-        self.verbose = verbose
+        # Bidding output can be silenced independently of card play via [bidding] verbose
+        self.verbose = verbose and getattr(models, "bidding_verbose", True)
         self.sample_boards_for_auction = sampler.sample_boards_for_auction
         self.samples = []
         self.eval_after_bid_count = models.eval_after_bid_count
@@ -1343,7 +1344,7 @@ class BotBid:
         sum = 0
         for (strain, leader), indices in groups.items():
             hands_pbn = [hands_np_as_pbn[i] for i in indices]
-            dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1)
+            dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1, purpose="bid")
             for j, i in enumerate(indices):
                 tricks = 13 - dd_solved["max"][j]
                 sum += tricks

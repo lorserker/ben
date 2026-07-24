@@ -28,8 +28,9 @@ class BotLead:
         self.seat = seat
         self.dealer = dealer
         self.sampler = sampler
-        self.verbose = verbose
-        self.hash_integer  = calculate_seed(hand_str)         
+        # Opening-lead output follows the card-play switch ([cardplay] verbose), not bidding
+        self.verbose = verbose and getattr(models, "play_verbose", True)
+        self.hash_integer  = calculate_seed(hand_str)
         if self.verbose:
             print(f"Setting seed (Sampling bidding info) from {hand_str}: {self.hash_integer}")
         self.dds = dds
@@ -468,7 +469,7 @@ class BotLead:
                 # lead is relative to the order in the PBN-file, so West is 0 here
             onlead = 0
                 
-            dd_solved = self.dds.solve(strain_i, onlead, [opening_lead52], hands_pbn, 1)
+            dd_solved = self.dds.solve(strain_i, onlead, [opening_lead52], hands_pbn, 1, purpose="lead")
 
             # Convert to plain Python list to avoid numpy scalar overhead in loop
             dd_max = dd_solved["max"][:n_accepted].tolist() if hasattr(dd_solved["max"], 'tolist') else list(dd_solved["max"][:n_accepted])
