@@ -17,8 +17,13 @@
     Do not create or push a git tag. Use when the tag already exists.
 
 .PARAMETER Notes
-    Release notes body. When omitted, GitHub generates notes from the merged
-    pull requests since the previous tag.
+    Release notes body, given inline.
+
+.PARAMETER NotesFile
+    Path to a markdown file holding the release notes. When neither -Notes nor
+    -NotesFile is given, a release-notes-<version>.md next to this script is used
+    if present; failing that, GitHub generates notes from the merged pull requests
+    since the previous tag.
 
 .PARAMETER Force
     Continue even when the working tree is dirty or the tag already exists.
@@ -43,6 +48,7 @@ param(
     [switch]$Publish,
     [switch]$SkipTag,
     [string]$Notes,
+    [string]$NotesFile,
     [switch]$Force,
     [switch]$DryRun,
     [string]$Version
@@ -166,7 +172,23 @@ if (-not $SkipTag) {
 
 # --- release ----------------------------------------------------------------
 $ghArgs = @('release', 'create', $tag, '--title', $tag)
-if ([string]::IsNullOrWhiteSpace($Notes)) {
+
+# Notes, in order of precedence: -NotesFile, -Notes, a release-notes-<version>.md
+# sitting next to this script, and finally GitHub's PR-generated notes.
+if ([string]::IsNullOrWhiteSpace($NotesFile) -and [string]::IsNullOrWhiteSpace($Notes)) {
+    $conventional = Join-Path $PSScriptRoot "release-notes-$version.md"
+    if (Test-Path $conventional) {
+        $NotesFile = $conventional
+        Step "using notes from release-notes-$version.md"
+    }
+}
+
+if (-not [string]::IsNullOrWhiteSpace($NotesFile)) {
+    if (-not (Test-Path $NotesFile)) { Fail "Notes file not found: $NotesFile" }
+    $ghArgs += @('--notes-file', (Resolve-Path $NotesFile).Path)
+}
+elseif ([string]::IsNullOrWhiteSpace($Notes)) {
+    Step "no release-notes-$version.md found - generating notes from merged PRs"
     $ghArgs += '--generate-notes'
 }
 else {
