@@ -71,13 +71,17 @@ function Step($message) {
 # Native commands that write to stderr raise a terminating NativeCommandError
 # under $ErrorActionPreference='Stop' in Windows PowerShell 5.1, even when they
 # exit 0. Run them with 'Continue' and judge them by $LASTEXITCODE instead.
+#
+# No param() block on purpose. With one, PowerShell binds dash-prefixed tokens
+# to this function's OWN parameters - 'git tag -a x -m y' has -a taken as a
+# prefix of -Arguments, and the call fails to bind. Without a param block every
+# token lands in $args verbatim, which is what a passthrough wrapper needs.
 function Invoke-Native {
-    param([Parameter(ValueFromRemainingArguments = $true)][string[]]$Arguments)
     $previous = $ErrorActionPreference
     $ErrorActionPreference = 'Continue'
     try {
-        $exe = $Arguments[0]
-        $rest = @($Arguments | Select-Object -Skip 1)
+        $exe = $args[0]
+        $rest = @($args | Select-Object -Skip 1)
         & $exe @rest 2>$null
     }
     finally {
