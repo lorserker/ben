@@ -56,7 +56,10 @@
             <option value="0">BEN 2/1</option>
             <option value="1">BEN SAYC</option>
             <option value="2">GIB-BBO</option>
-            <option value="3">Default (21GF)</option>
+            <!-- Default selection: port 4443, the one gameserver.py and
+                 start_ben.sh use. The other three only exist if you started
+                 the extra instances with src/runservers.sh. -->
+            <option value="3" selected>Default (21GF)</option>
         </select><br>
         </div>
     </div>
