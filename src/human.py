@@ -1,5 +1,6 @@
 import json
 import numpy as np
+import websockets
 
 import deck52
 
@@ -181,6 +182,14 @@ class HumanLeadSocket:
                 else:    
                     return CardResp(card=Card.from_symbol(human_card), candidates=candidates, samples=samples, shape=-1, hcp=-1, quality=None, who = "Human", claim = -1)
 
+            # Give up as soon as the socket is gone. Retrying a dead connection
+            # spins this loop at full CPU, which starves the event loop and
+            # stops the server answering anyone else. The "going away" check
+            # below only catches one of the several close reasons websockets
+            # reports - a browser tab closing yields "no close frame received
+            # or sent" or "received 1000 (OK)".
+            except websockets.exceptions.ConnectionClosed:
+                raise
             except Exception as ex:
                 print(f"Exception receiving card ", ex)
                 if "going away" in str(ex):
@@ -277,6 +286,10 @@ class HumanCardPlayerSocket(HumanCardPlayer):
                     return human_card
                 else:
                     return deck52.encode_card(human_card)
+            # See the note in HumanLead.async_lead - a closed socket must end
+            # the loop, not be retried forever.
+            except websockets.exceptions.ConnectionClosed:
+                raise
             except Exception as ex:
                 print(f"Exception receiving card", ex)
                 if "going away" in str(ex):
