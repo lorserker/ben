@@ -18,19 +18,37 @@ cd "$SRC"
 
 # Pick the interpreter: an activated venv first, then the repo's ../.venv,
 # then python3 (macOS often has no bare 'python'), then python.
+PY_FALLBACK=0
 if [ -n "${VIRTUAL_ENV:-}" ] && [ -x "$VIRTUAL_ENV/bin/python" ]; then
     PY="$VIRTUAL_ENV/bin/python"
 elif [ -x "$SRC/../.venv/bin/python" ]; then
     PY="$SRC/../.venv/bin/python"
 elif command -v python3 >/dev/null 2>&1; then
     PY="$(command -v python3)"
+    PY_FALLBACK=1
 elif command -v python >/dev/null 2>&1; then
     PY="$(command -v python)"
+    PY_FALLBACK=1
 else
     echo "No python found. Create the venv first: python3.12 -m venv ../.venv && source ../.venv/bin/activate && pip install -r ../requirements.txt" >&2
     exit 1
 fi
 echo "Using Python: $("$PY" -c 'import sys; print(sys.executable, sys.version.split()[0])')"
+
+# Falling back to a system python is almost always wrong: the vendored dds3
+# extension is built for one Python version, and a hardened-runtime build
+# (python.org installer) also fails to resolve PIMC's DDS backend.
+if [ "$PY_FALLBACK" -eq 1 ]; then
+    echo "WARNING: no virtualenv found - falling back to $PY" >&2
+    echo "         BEN expects ../.venv. Servers may fail to start, or abort mid-deal." >&2
+    echo "         Run 'bash run_api_bbo.sh' for a checked single-server start." >&2
+fi
+
+# Fail fast with a readable diagnosis rather than a traceback in each log.
+if ! "$PY" "$SRC/preflight.py"; then
+    echo "Pre-flight failed - fix the above before launching. Aborting." >&2
+    exit 1
+fi
 
 LOGS="$SRC/../logs"
 mkdir -p "$LOGS"

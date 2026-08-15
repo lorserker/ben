@@ -2,7 +2,6 @@ import faulthandler
 faulthandler.enable()
 from gevent import monkey
 monkey.patch_all()
-import gc
 import os
 import sys
 import platform
@@ -99,7 +98,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.8.4'
+version = '0.8.8.5'
 init()
 
 def handle_exception(e):
@@ -720,6 +719,8 @@ class PrefixedTimedRotatingFileHandler(TimedRotatingFileHandler):
         self.baseFilename = self.get_filename()
         self.mode = 'a'
         self.stream = self._open()
+        self.rolloverAt = self.computeRollover(int(time.time()))
+
 
 def get_random_generator(hand):
     hash_integer  = calculate_seed(hand)         
@@ -838,8 +839,6 @@ def log_response_info(response):
         return response
     logger.info(f"Response body: {response.status} {response.get_data()}")
     # Get system memory info
-    np.empty(0) 
-    gc.collect()  # Force garbage collection
     virtual_memory = psutil.virtual_memory()
     available_memory = virtual_memory.available / (1024 ** 2)  # Convert bytes to MB
     print(f"Available memory after request: {available_memory:.2f} MB")
