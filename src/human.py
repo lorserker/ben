@@ -137,7 +137,17 @@ class HumanBidSocket:
 
         print(f"Human bid: {bid}")
         print("auction: ", auction)
-        new_auction = auction + [bid] 
+
+        # "Hint" and "Alert" are UI controls, not calls - the driver handles them
+        # and never appends them to the auction. Explaining an auction with one
+        # of them tacked on reaches BBA's BID2ID lookup and raises KeyError,
+        # killing the connection with a 1011. (Only visible once BBA is enabled,
+        # and only after a real bid exists, since explain() bails out early in
+        # both of those cases.)
+        if bid in ("Hint", "Alert"):
+            return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = "Human", quality=None, alert=False, explanation=None)
+
+        new_auction = auction + [bid]
         explanation, alert = self.botbidder.explain(new_auction)
 
         return BidResp(bid=bid, candidates=[], samples=[], shape=-1, hcp=-1, who = "Human", quality=None, alert=alert, explanation=explanation)
