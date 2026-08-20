@@ -1,3 +1,7 @@
+Several of the tools used below (`MergePBNFiles`, `Split_PBN`, `ExtractDatumScore`) are not in this
+repository. They are built from [Bridge-Robot-Utilities](https://github.com/ThorvaldAagaard/Bridge-Robot-Utilities).
+`pbn2bba` and `pbn2ben` are in BEN itself, as `src/pbn2bba.py` and `src/pbn2ben.py`, with PyInstaller specs in `install/`.
+
 First run
 
 ```MergePBNFiles.exe -d -r .```
@@ -16,7 +20,7 @@ that will generate a file in BBA-format, input-YYYY-MM-DD.bba - and also print a
 
 Now to speed up the process, we split the file in files with 200.000 deals, as we can run BBA on each file in paralel.
 
-```python split_and_test_for_duplicates.py```
+```python split_and_testfordublicates.py```
 
 It will create files that can be used as input to BBA. (*.BBA)
 
@@ -47,11 +51,18 @@ type output*.pbn > GIBxxxx.pbn
 
 or whatever name match the system used - xxx can be the version of BBA
 
-As BBA have some pretty strange doubles, we filter the deals while converting ti to BEN-format
+As BBA have some pretty strange doubles, we filter the deals before using them for training. This is done with `Split_PBN.exe`, which splits the PBN-file into OK boards and bad boards:
 
 ```
->python ..\src\pbn2ben_skip_doubled_making.py filename
+Split_PBN.exe filename
 ```
+
+The boards that survive the filter end up in `<filename>-OK_boards.pbn`, and the rejected boards are written to companion files - `-disaster.pbn`, `-duplicates.pbn`, `-db_making.pbn`, `-db_not_making.pbn` and `-missing-DD.pbn`. It is the `-OK_boards.pbn` file that is used for training.
+
+`Split_PBN.exe` is not part of this repository - it is built from
+[Bridge-Robot-Utilities](https://github.com/ThorvaldAagaard/Bridge-Robot-Utilities) (`src/Split_PBN.py`,
+with a PyInstaller spec in `Install/`). The same repository also provides `MergePBNFiles` and
+`ExtractDatumScore` used elsewhere in this document.
 
 It will print the bad deals like this:
 
@@ -83,8 +94,8 @@ Before we start the training we have yet a filter we want to apply using the par
 So we execute 
 
 ```
-python ..\scripts\training\bidding\badcontracts.py input.ben
-
+python ..\src\badcontracts.py input.ben
+```
 
 Then run 
 ```pbn2ben.exe All.pbn```

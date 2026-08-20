@@ -3,7 +3,7 @@
 This is a game engine for [bridge](https://en.wikipedia.org/wiki/Contract_bridge).
 It can be used as a robot player, to do analysis, or to develop AI for bridge.
 
-The engine is built using machine learning (neural networks) and [double dummy solver](https://github.com/dds-bridge/dds) through the python wrapper [python-dds](https://github.com/Afwas/python-dds).
+The engine is built using machine learning (neural networks) and the [double dummy solver](https://github.com/dds-bridge/dds), used through the `dds3` Python extension (see [src/ddsolver/README.md](src/ddsolver/README.md)).
 
 To get a first impression of how the engine plays, please take a look at the [demo](https://lorserker.github.io/ben/demo/demo.html), or watch the bridge streamer Peter Hollands [demo the robot](https://www.youtube.com/watch?v=onG_V7vwxUk&t=150s) on IntoBridge.
 
@@ -28,8 +28,6 @@ After installing conda, execute the commands in the [conda_setup.sh](conda_setup
 The bridge engine was developed on Linux. It will likely work on any other platform which runs Python, but was only tested on Windows 10 and Windows 11 and Mac M1/M2.
 
 For __Mac M1/M2__ users: you need to install [Homebrew](https://brew.sh/) if you don't have it already, then `brew install boost`.
-
-On __Amazon__, there is an image Public_Ben_Bot_V1.2 for starting an instance of BEN. After starting the instance just log in and execute [start_ben_bot_screens.sh].
 
 For __Ubuntu__ users: you might have to install libboost using `sudo apt install libboost-thread-dev`.
 
@@ -161,7 +159,6 @@ The examples run in jupyter notebooks, but it's also possible to just read them 
 - __[Bidding](src/examples/Bidding.ipynb)__ shows how you can use the engine to bid hands and to sample hands which are consistent with a given auction
 - __[Opening Leads](src/examples/OpeningLead.ipynb)__ illustrates how the engine "decides" which card to lead
 - __[Card-by-card Analysis](src/examples/CardByCardAnalysis.ipynb)__ this example shows how the engine can go through an already played hand, analyse every bid made and every card played, and find possible mistakes. You can also give it a hand you played on BBO to see what the engine "thinks" about your play
-- __[Single Dummy Estimates](src/examples/SingleDummyEstimates.ipynb)__ this exemplifies the use of a neural network to predict how many tricks declarer will take in a given contract on a given opening lead. As opposed to double dummy solvers, the results are approximate, but much faster.
 
 ## Play against itself and against other bots
 
@@ -199,7 +196,6 @@ Below is a list of features which aren't implemented in this engine yet, but you
 
 - [Free and Open Source Bridge AI Engine Released](https://bridgewinners.com/article/view/free-and-open-source-bridge-ai-engine-released/)
 - [Bridge AI: How Neural Networks Learn to Bid](https://bridgewinners.com/article/view/bridge-ai-how-neural-networks-learn-to-bid/)
-- [Play with Ben on IntoBridge](https://intobridge.com/news/play-with-robots-on-intobridge/)
 - [Meet Ben, a Bridge AI with a Difference](https://greatbridgelinks.com/meet-ben-a-bridge-ai-with-a-difference/)
 
 ## How to cite
@@ -218,4 +214,4 @@ Below is a list of features which aren't implemented in this engine yet, but you
 On Mac i use python3 and pip3
 
 ## Discord
-You are welcome to join our Discord server "BEN the bridge engine" at https://discord.gg/9vaTn2Em 
+You are welcome to join our Discord server "BEN the bridge engine" at https://discord.gg/xmAAgNSyHT 

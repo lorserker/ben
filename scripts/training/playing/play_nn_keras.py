@@ -52,8 +52,8 @@ hand = "bidding"
 if len(sys.argv) > 2:
     hand = sys.argv[2]
 
-X_train = np.load(os.path.join(bin_dir, f'x_{hand}.npy'), mmap_mode='r')
-y_train = np.load(os.path.join(bin_dir, f'y_{hand}.npy'), mmap_mode='r')
+X_train = np.load(os.path.join(bin_dir, f'X_{hand}.npy'), mmap_mode='r')
+y_train = np.load(os.path.join(bin_dir, f'Y_{hand}.npy'), mmap_mode='r')
 
 n_examples = X_train.shape[0]
 n_sequence = X_train.shape[1]

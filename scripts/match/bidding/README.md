@@ -2,7 +2,7 @@
 
 This describes how to run ben vs ben matches where each deal stops after the opening lead and the double summy score after the lead is used as the result.
 
-Different models are provided using different configuration files, for example [A.conf](A.conf) and [B.conf](B.conf)
+Different models are provided using different configuration files, for example `A.conf` and `B.conf`
 
 It's not recommended to run very different systems against each other, because the engine still assumes that NS and EW are playing the same or very similar systems.
 

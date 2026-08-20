@@ -1,0 +1,55 @@
+# Large training data published as GitHub release assets.
+#
+# These files cannot live in the repository - they are far past what git should
+# carry - so they are uploaded once to a fixed release tag and linked from the
+# training documentation. Publish them with:
+#
+#     .\Publish-TrainingData.ps1 -DryRun      check what would be uploaded
+#     .\Publish-TrainingData.ps1              create/update the draft release
+#     .\Publish-TrainingData.ps1 -Publish     make it live
+#
+# One entry per line:   <source path> | <asset name>
+#
+# The source path may be absolute, or relative to the repository root. The asset
+# name is what the file is called on the release page, and therefore what the
+# documentation links to - keep it stable once published.
+#
+# Lines starting with # are ignored, as are blank lines.
+
+scripts/training/data/input 1 mill.bba              | 1mill.bba
+D:\Bridge\BEN\BEN 1.0\models\UCBC2024\GIB-Thorvald.ben | GIB-Thorvald.ben
+D:\Bridge\Software\BiddingAnalyser\BEN-UCBC.ben     | BEN-UCBC.ben
+
+# Play data - World Computer Bridge Championship boards with the play, used to
+# train the card-play neural networks (input to binary_keras_suit_nt.py).
+# The zips are published rather than the raw 403 MB play.txt: same data, a third
+# of the size.
+scripts/training/data/WBC/play_jackformat.zip       | play_jackformat.zip
+scripts/training/data/WBC/play_ben.zip              | play_ben.zip
+
+# Training boards - the -OK_boards.pbn set for the current BBA version (8730),
+# which is the complete input needed to retrain the bidding models.
+# Build these first with Compress-Boards.ps1; they are ~6 GB of PBN text that
+# compresses to well under 1 GB.
+install/data-staging/BEN-21GF-8730.pbn-OK_boards.zip        | BEN-21GF-8730-OK_boards.zip
+install/data-staging/BEN-sayc-8730.pbn-OK_boards.zip        | BEN-sayc-8730-OK_boards.zip
+install/data-staging/GIB-BBO-8730.pbn-OK_boards.zip         | GIB-BBO-8730-OK_boards.zip
+install/data-staging/Lia-21GF-8730.pbn-OK_boards.zip        | Lia-21GF-8730-OK_boards.zip
+install/data-staging/Meadowlark-8730.pbn-OK_boards.zip      | Meadowlark-8730-OK_boards.zip
+install/data-staging/QPlus-21GF-8730.pbn-OK_boards.zip      | QPlus-21GF-8730-OK_boards.zip
+install/data-staging/Robo-Sayc-8730.pbn-OK_boards.zip       | Robo-Sayc-8730-OK_boards.zip
+install/data-staging/Shark-Sayc-8730.pbn-OK_boards.zip      | Shark-Sayc-8730-OK_boards.zip
+install/data-staging/WBridge5-21GF-8730.pbn-OK_boards.zip   | WBridge5-21GF-8730-OK_boards.zip
+install/data-staging/WBridge5-Sayc-8730.pbn-OK_boards.zip   | WBridge5-Sayc-8730-OK_boards.zip
+
+# Needed to re-derive the OK_boards from raw BBA output (step 9 of the pipeline
+# in scripts/training/README2.md). Not needed just to train.
+BBA/Boards/DatumScores.pkl                          | DatumScores.pkl
+
+# Deliberately NOT published:
+#   1mill.pbn                  - dropped
+#   BEN-WBridge5-SAYC.ben      - dead, no longer used
+#   BBA/Boards/Version8712, Version8728  - superseded BBA versions
+#   BBA/Boards source .pbn     - intermediate, the OK_boards are derived from them
+#   *-disaster / *-duplicates / *-db_*   - rejects, diagnostics only
+#   Split_PBN.exe, ExtractDatumScore.exe - built from Bridge-Robot-Utilities

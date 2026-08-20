@@ -128,3 +128,7 @@ src/csharp/bin
 src/csharp/obj
 .claude/settings.local.json
 logs/
+
+demo/**/*.bak
+
+install/data-staging/

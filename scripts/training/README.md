@@ -5,8 +5,8 @@ This is a tutorial describing how to train a neural network to bid. There is a [
 What you will need:
 - make sure that you have successfully [installed](https://github.com/lorserker/ben/blob/main/README.md#installation) the bridge engine
 - the data is contained in the file `bidding_data.zip`
-- the script to transform the data into the binary format expected by the neural network is `bidding_binary.py`
-- the script which trains the neural network is `bidding_nn.py`
+- the script to transform the data into the binary format expected by the neural network is `bidding_binary_keras.py`
+- the script which trains the neural network is `bidding_nn_keras.py`
 
 ### Instructions
 
@@ -34,7 +34,7 @@ Run the script to transform the data into binary format. (the first argument is 
 ```
 mkdir -p binary/bidding models/bidding
 
-python bidding_binary.py bidding_data.txt binary/bidding
+python bidding_binary_keras.py bidding_data.txt None binary/bidding NS=1 EW=1
 ```
 Here there are 2 optional parameters as you can specify system used for both NS and EW.
 Specifying -1 for both will create a neural network without any information about bidding system.
@@ -48,16 +48,16 @@ The above command will create two new files into the `binary/bidding` folder: `x
 Then, run the trainig script. This will take several hours to complete, but it will save snapshots of the model as it progresses. If you have a GPU, the training will run faster, but not much faster, because GPUs are not so well suited for the type of NN used.
 
 ```
-python bidding_nn.py binary/bidding models/bidding
+python bidding_nn_keras.py binary/bidding bidding
 ```
 
-When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained. (Much better is to use the default.conf file, or create a new configuration file, that can be used)
+When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, set the path to the network which you just trained in a configuration file - either `src/config/default.conf` or a new configuration file of your own.
 
 #### How to continue training an already trained model
 
 This part describes how you can load an already trained model and continue training it (without the training starting from scratch)
 
-Let's say your already trained model is stored in the `model` folder and you want to continue training it and then store the results to the `model2` folder. You can do this by running the [bidding_nn_continue.py](bidding_nn_continue.py) script.
+Let's say your already trained model is stored in the `model` folder and you want to continue training it and then store the results to the `model2` folder. You can do this by running the [bidding_nn_continue.py](bidding/bidding_nn_continue.py) script.
 
 ```
 mkdir -p models/bidding-bis
@@ -71,28 +71,22 @@ This model is used to estimate the strength and shape of hidden hands based on t
 
 It is needed if you want to use a bidder neural network in the engine (so it can get information from the bidding)
 
-To train a bidding-info model, first transform the data into a binary format.
+There is no separate binary step any more - `bidding_binary_keras.py` already writes `HCP.npy` and `SHAPE.npy` alongside `x.npy`, `y.npy` and `z.npy`, and the bidding-info network is trained directly from that same directory.
+
+From `scripts/training/bidding_info` (run under WSL):
 
 ```
-mkdir -p binary/binfo models/binfo
-
-python binfo_binary.py 588735 bidding_data.txt binary/binfo
+python binfo_nn_keras.py ../bidding/binary/bidding binfo
 ```
 
-this will create the following files into the `binary/binfo` folder: `X.npy`, `y.npy`, `HCP.npy`, `SHAPE.npy`
-
-then you can start the script which trains the neural network (edit the paths in the scripts if necessary)
-
-```
-python binfo_nn.py binary/binfo models/binfo
-```
+The first argument is the directory produced by `bidding_binary_keras.py`, the second is the name given to the generated model.
 
 ### Making a test run
 
-To test the neural network, it is possible to feed it some [test hands](test_input.txt) and see how it bids them. No search is performed at all for the bidding, so this tests strictly the neural network.
+To test the neural network, it is possible to feed it a file of test hands and see how it bids them. `testrun.py` takes a configuration file and an input file of deals; sample input files are in `scripts/training/data/`.
 
 ```
-python testrun.py model/bidding-1000000 < test_input.txt
+python bidding/testrun.py default.conf ../data/1deal.txt
 ```
 
 this will generate the auctions as they are bid by the model and writes them in this format:

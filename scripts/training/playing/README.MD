@@ -34,30 +34,32 @@ E EW 1N.-1.E
 H4H7HTHKSKS8S3S9SJS7S5S2SQSTSAS4S6H2C9C6C4CKC8C5H3HQHAH8HJH9D3H6H5D2C3D6C2C7CACTCJCQD9D5DJDTD7DQD4DKDAD8
 ...
 ```
-All 4 for players scripts are using input with the same format, just extracting, what is needed for the specific network
-
-Run the script to transform the data into binary format.
-You have these scripts available
+Run the script to transform the data into binary format. A single script now covers all four seats, and splits each of them into a suit variant and a NT variant:
 
 ```
-python binary_dummy.py 
-python binary_decl.py 
-python binary_lefty.py 
-python binary_righty.py 
+python binary_keras_suit_nt.py
 ```
 
-The above command will create new files into the corresponding folder: `x.npy` and `y.npy` . `x.npy` contains the inputs to the neural network and `y.npy` contains the expected outputs. Both are stored in numpy array format.
+The input file is set inside the script (currently `../../data/WBC/play.txt`), so edit it there if you want to train on other data.
+
+This writes 16 files into the `binary` folder - `X_<seat>_<suit|nt>.npy` and `Y_<seat>_<suit|nt>.npy` for each of `lefty`, `righty`, `decl` and `dummy`. `X` contains the inputs to the neural network and `Y` the expected outputs, both in numpy array format.
 
 Then, run the trainig script. This will take several hours to complete, but it will save snapshots of the model as it progresses. If you have a GPU, the training will run faster, but not much faster, because GPUs are not so well suited for the type of NN used.
 
 ```
-python dummy_nn.py 
-python decl_nn.py 
-python lefty_nn.py 
-python righty_nn.py 
+python play_nn_keras.py binary decl_nt
+python play_nn_keras.py binary decl_suit
+python play_nn_keras.py binary dummy_nt
+python play_nn_keras.py binary dummy_suit
+python play_nn_keras.py binary lefty_nt
+python play_nn_keras.py binary lefty_suit
+python play_nn_keras.py binary righty_nt
+python play_nn_keras.py binary righty_suit
 ```
 
-When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, edit the [code here](https://github.com/lorserker/ben/blob/main/src/nn/models.py#L21) inserting the path to the network which you just trained. (Much better is to use the default.conf file, or create a new configuration file, that can be used)
+The first argument is the directory holding the binary files, the second selects which of them to train on. The generated model is named after that selection plus the date, and is written to the `model` folder.
+
+When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, set the path to the network which you just trained in a configuration file - either `src/config/default.conf` or a new configuration file of your own.
 
 The neural network for leads are using the same principles, but is generating more datasets.
 
