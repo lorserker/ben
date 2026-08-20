@@ -31,6 +31,13 @@ from ctypes import c_wchar_p, c_int, POINTER
 # Must match the buffer capacity used by SuitC.py.
 BUFFER_CAPACITY = 8 * 32768
 
+# Sentinel argv used when the worker cannot be started as a script. In a
+# PyInstaller build sys.executable is the BEN executable itself (there is no
+# python.exe and no suitc_worker.py on disk), so SuitC.py re-launches the
+# running exe as `<app> --suitc-worker <libpath>` and the entry point routes
+# that argv here via freeze_support().
+SUITC_WORKER_FLAG = "--suitc-worker"
+
 
 def main():
     if len(sys.argv) < 2:
@@ -97,6 +104,27 @@ def main():
     # devnull). os.write is an unbuffered syscall, so there is nothing to flush.
     os.write(real_stdout_fd, json.dumps(result).encode("utf-8"))
     os.close(real_stdout_fd)
+
+
+def freeze_support():
+    """Act as the SuitC worker when a frozen exe re-launches itself.
+
+    Entry points that can use SuitC must call this as their *first* statement,
+    before importing tensorflow and friends: without it the re-launched exe
+    runs the normal program and its argparse rejects the worker argv, and even
+    with it a late call would make every SuitC call pay the full import cost.
+
+    Returns immediately (and harmlessly) for a normal program start.
+    """
+    if len(sys.argv) > 1 and sys.argv[1] == SUITC_WORKER_FLAG:
+        # Drop the flag so main() finds the library path at argv[1].
+        del sys.argv[1]
+        try:
+            main()
+        finally:
+            # _exit, not sys.exit: skip atexit/C-stdio teardown entirely so the
+            # native library can never flush anything after our JSON.
+            os._exit(0)
 
 
 if __name__ == "__main__":

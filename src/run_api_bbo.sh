@@ -8,10 +8,13 @@
 # one Python version), and a PIMC DDS backend that loads as an error string and
 # aborts the process partway through the first trick.
 #
+# Port 80 is the default because that is what runservers.sh exposes as
+# 'api-bbo-80' and what the reverse proxy forwards to. Binding it needs root.
+#
 # Usage:
 #   cd ben/src
-#   bash run_api_bbo.sh                 # port 8085
-#   PORT=80 bash run_api_bbo.sh         # port 80 needs sudo on macOS/Linux
+#   sudo bash run_api_bbo.sh            # port 80, same as production
+#   PORT=8085 bash run_api_bbo.sh       # unprivileged port for a local test
 #   bash run_api_bbo.sh --verbose true  # extra args are passed to gameapi.py
 #
 # Stop with Ctrl-C. For all servers in the background, use runservers.sh.
@@ -21,7 +24,16 @@ SRC="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"   # .../ben/src
 cd "$SRC"
 
 CONFIG="config/GIB-BBO.conf"
-PORT="${PORT:-8085}"
+PORT="${PORT:-80}"
+
+# Fail here rather than letting Python raise PermissionError halfway through
+# loading the models.
+if [ "$PORT" -lt 1024 ] && [ "$(id -u)" -ne 0 ]; then
+    echo "Port $PORT is privileged and this is not root." >&2
+    echo "  sudo bash run_api_bbo.sh        # production port" >&2
+    echo "  PORT=8085 bash run_api_bbo.sh   # unprivileged, local testing only" >&2
+    exit 1
+fi
 
 # Pick the interpreter: an activated venv, else the repo's ../.venv. No bare
 # `python3` fallback on purpose - see the note above.

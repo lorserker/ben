@@ -389,7 +389,7 @@ class Models:
         adjust_min2 = conf.getfloat('adjustments', 'adjust_min2', fallback=0.0002)
         adjust_min1_by = conf.getint('adjustments', 'adjust_min1_by', fallback=200)
         adjust_min2_by = conf.getint('adjustments', 'adjust_min2_by', fallback=200)
-        factor_to_translate_to_mp = conf.getint('adjustments', 'factor_to_translate_to_mp', fallback=10)
+        factor_to_translate_to_mp = conf.getint('adjustments', 'factor_to_translate_to_mp', fallback=500)
         factor_to_translate_to_imp = conf.getint('adjustments', 'factor_to_translate_to_imp', fallback=25)
         use_suit_adjust = conf.getboolean('adjustments', 'use_suit_adjust', fallback=False)
 

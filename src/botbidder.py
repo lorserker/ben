@@ -348,7 +348,7 @@ class BotBid:
                     print("Adjust for trust in NN", candidate.bid, candidate.insta_score, candidate.bid[0] in ["5", "6", "7"], "Samples:", hands_np.shape[0])
                 if not candidate.bid[0] in ["5", "6", "7"]:
                 # Adding some bonus to the bid selected by the neural network
-                    if hands_np.shape[0] == self.sampler.min_sample_hands_auction:
+                    if hands_np.shape[0] <= self.sampler.min_sample_hands_auction:
                         # We only have the minimum number of samples, so they are often of bad quality
                         # So we add more trust to the NN
                         adjust += self.models.adjust_NN_Few_Samples * candidate.insta_score
@@ -516,14 +516,33 @@ class BotBid:
                                 ev_c = candidate.with_expected_score_imp(score, adjust)
                                 ev_candidates_mp_imp.append(ev_c)
 
+                # The MP/IMP estimate is only as good as the samples behind it. If the samples
+                # didn't really fit the auction, or we found almost none of them, the simulation
+                # is noise - with a single sample the MP values collapse to exactly -1/0/+1 -
+                # so we fall back on the neural network, like the expected score branch below
+                trust_simulation = True
+                if self.models.use_biddingquality:
+                    if quality < self.sampler.bidding_threshold_sampling:
+                        trust_simulation = False
+                        if self.verbose:
+                            print(f"Bidding quality to bad, so we select using NN {quality} - {self.sampler.bidding_threshold_sampling}")
+                    elif sample_count < self.sampler.min_sample_hands_auction:
+                        trust_simulation = False
+                        if self.verbose:
+                            print(f"To few samples to trust the simulation, so we select using NN {sample_count} - {self.sampler.min_sample_hands_auction}")
+
                 if self.models.matchpoint:
                     if self.verbose:
                         print(f"Sorting for MP {expected_score}")
-                    candidates = sorted(ev_candidates_mp_imp, key=lambda c: (c.expected_mp + c.adjust, round(c.insta_score, 2)), reverse=True)
+                    simulated = lambda c: c.expected_mp + c.adjust
                 else:
                     if self.verbose:
                         print(f"Sorting for IMP {expected_score}")
-                    candidates = sorted(ev_candidates_mp_imp, key=lambda c: (c.expected_imp + c.adjust, round(c.insta_score, 2)), reverse=True)
+                    simulated = lambda c: c.expected_imp + c.adjust
+                if trust_simulation:
+                    candidates = sorted(ev_candidates_mp_imp, key=lambda c: (simulated(c), round(c.insta_score, 2)), reverse=True)
+                else:
+                    candidates = sorted(ev_candidates_mp_imp, key=lambda c: (c.insta_score, simulated(c)), reverse=True)
                 ev_candidates = ev_candidates_mp_imp
             else:
                 # If the samples are bad we just trust the neural network

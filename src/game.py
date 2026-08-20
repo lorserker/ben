@@ -1,3 +1,11 @@
+# PyInstaller: a frozen build has no python.exe and no suitc_worker.py on disk,
+# so SuitC re-launches *this* exe as its worker (`--suitc-worker <libpath>`).
+# Handle that argv first — before the heavy imports and before argparse, which
+# would otherwise reject the worker argv with "required: --name, --seat".
+import sys
+from suitc.suitc_worker import freeze_support as _suitc_freeze_support
+_suitc_freeze_support()
+
 import os
 import sys
 import platform
@@ -64,7 +72,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.8.5'
+version = '0.8.8.6'
 
 init()
 

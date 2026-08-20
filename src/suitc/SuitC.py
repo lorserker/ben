@@ -32,6 +32,12 @@ SuitCLib_PATH = os.path.join(BIN_FOLDER, suitclib)
 # Standalone worker used to run call_suitc in an isolated, killable subprocess.
 SUITC_WORKER_PATH = os.path.join(script_dir, "suitc_worker.py")
 
+# In a PyInstaller build there is no python.exe and no suitc_worker.py on disk:
+# sys.executable is the BEN executable itself. Re-launch it with the worker
+# sentinel instead, which its entry point handles before argparse and before
+# the heavy imports (see suitc_worker.freeze_support).
+FROZEN = getattr(sys, "frozen", False)
+
 # Wall-clock budget for a single SuitC call. A runaway merge_quirk/check_quirk
 # loop is SIGKILLed at this point and the call fails (gracefully handled by
 # callers) instead of freezing the server. Override via SUITC_TIMEOUT_SECONDS.
@@ -39,6 +45,10 @@ DEFAULT_SUITC_TIMEOUT = float(os.getenv("SUITC_TIMEOUT_SECONDS", "10"))
 
 import ctypes
 import subprocess
+try:
+    from suitc.suitc_worker import SUITC_WORKER_FLAG
+except ImportError:  # running a script from inside src/suitc
+    from suitc_worker import SUITC_WORKER_FLAG
 from ctypes import c_wchar_p, c_int, POINTER, create_unicode_buffer, byref, cast, addressof
 
 
@@ -174,9 +184,14 @@ class SuitCLib:
         # (monkey.patch_all), so the wait yields to other greenlets and the
         # child is SIGKILLed on timeout. See suitc_worker.py and the project
         # memory note `suitc-hang-freezes-gameapi`.
+        if FROZEN:
+            worker_cmd = [sys.executable, SUITC_WORKER_FLAG, SuitCLib_PATH]
+        else:
+            worker_cmd = [sys.executable, SUITC_WORKER_PATH, SuitCLib_PATH]
+
         try:
             proc = subprocess.run(
-                [sys.executable, SUITC_WORKER_PATH, SuitCLib_PATH],
+                worker_cmd,
                 input=input_str,
                 capture_output=True,
                 text=True,
