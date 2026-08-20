@@ -40,7 +40,11 @@ Run the script to transform the data into binary format. A single script now cov
 python binary_keras_suit_nt.py
 ```
 
-The input file is set inside the script (currently `../../data/WBC/play.txt`), so edit it there if you want to train on other data.
+The input file is set inside the script (currently `../../data/WBC/play.txt`), so edit it there if you want to
+train on other data. That file is not in the repository - it is published on the
+[training-data release](https://github.com/lorserker/ben/releases/tag/training-data) as
+[play_jackformat.zip](https://github.com/lorserker/ben/releases/download/training-data/play_jackformat.zip)
+(the same boards in BEN format are in [play_ben.zip](https://github.com/lorserker/ben/releases/download/training-data/play_ben.zip)).
 
 This writes 16 files into the `binary` folder - `X_<seat>_<suit|nt>.npy` and `Y_<seat>_<suit|nt>.npy` for each of `lefty`, `righty`, `decl` and `dummy`. `X` contains the inputs to the neural network and `Y` the expected outputs, both in numpy array format.
 

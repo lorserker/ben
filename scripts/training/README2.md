@@ -19,7 +19,13 @@ Files are named `<System>-<BBAversion>.pbn`, for example `GIB-BBO-8730.pbn`, and
 | `<name>.pbn-duplicates.pbn` | boards removed as duplicates |
 | `<name>.pbn-missing-DD.pbn` | boards still missing a double dummy result |
 
-If you do not want to generate your own boards, a public starting set of one million deals is available in BBA-format: <https://www.netbridge.dk/bridge/Upload/BEN/Training/1mill.bba>
+The boards are published on the [training-data release](https://github.com/lorserker/ben/releases/tag/training-data),
+one zip per system - `GIB-BBO-8730-OK_boards.zip`, `BEN-21GF-8730-OK_boards.zip` and so on. Each unzips to the
+`-OK_boards.pbn` file used in step 1 below, so you can train without running the whole generation pipeline.
+`DatumScores.pkl` is there too, needed only if you want to re-derive the boards yourself.
+
+If you would rather start from raw deals, a set of one million is available in BBA-format:
+[1mill.bba](https://github.com/lorserker/ben/releases/download/training-data/1mill.bba).
 
 ## Producing the boards
 
