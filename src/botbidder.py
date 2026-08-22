@@ -139,8 +139,12 @@ class BotBid:
             sys.stderr.write("Rescue bid not supported for TF 1.x\n")
             return False
 
-        # If no samples we can't evaluate rescue bid
-        if len(samples) == 0:
+        # The rescue bid is decided by a majority vote over the samples and scored from
+        # their average, so with only a handful of samples it is noise, not a simulation.
+        # This mirrors the min_sample_hands_auction guard used for the normal simulation.
+        if len(samples) < self.models.min_samples_for_rescue:
+            if self.verbose:
+                print(f"No rescue, too few samples: {len(samples)} < {self.models.min_samples_for_rescue}")
             return False
 
         # never rescue on first bid
@@ -623,6 +627,13 @@ class BotBid:
                 sample for sample in samples if float(sample.split(" ")[5]) >= self.models.min_bidding_trust_for_sample_when_rescue
             ]
 
+            # min_bidding_trust_for_sample_when_rescue can shrink the set below the
+            # threshold we already checked on the unfiltered samples, so check again.
+            if len(filtered_samples) < self.models.min_samples_for_rescue:
+                if self.verbose:
+                    print(f"No rescue, too few samples above trust threshold: {len(filtered_samples)} < {self.models.min_samples_for_rescue}")
+                filtered_samples = []
+
             # Select random samples from the filtered list
             samples_to_check = self.rng.choice(filtered_samples, min(len(filtered_samples), self.models.max_samples_checked), replace=False)
 
@@ -651,8 +662,11 @@ class BotBid:
                         if hasattr(nn_tricks, 'numpy'):
                             nn_tricks = nn_tricks.numpy()
                         max_tricks = None
+                        # trick_score must be initialised outside the loop; resetting it per
+                        # iteration made the test below always true, so max_tricks became the
+                        # highest trick count above the threshold instead of the most likely one.
+                        trick_score = 0
                         for j in range(14):
-                            trick_score = 0
                             if nn_tricks[0][j] > 0.1:
                                 if bidding.ID2BID[i] in result:
                                     # Append new data to the existing entry

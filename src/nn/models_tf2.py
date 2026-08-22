@@ -92,7 +92,7 @@ def Trick(model_path):
 class Models:
 
     def __init__(self, name, tf_version, model_version, n_cards_bidding, n_cards_play, bidder_model, opponent_model, contract_model, trick_model,binfo_model, lead_suit_model, lead_nt_model, sd_model, sd_model_no_lead, player_models, search_threshold, lead_threshold, 
-                 no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count, min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score,
+                 no_search_threshold, eval_after_bid_count, eval_opening_bid,eval_pass_after_bid_count, no_biddingqualitycheck_after_bid_count, min_passout_candidates, min_rescue_reward, min_bidding_trust_for_sample_when_rescue, max_estimated_score, min_samples_for_rescue,
                  lead_accept_nn, ns, ew, bba_our_cc, bba_their_cc, use_bba, consult_bba, bba_trust, use_bba_rollout, use_bba_to_count_aces, estimator, claim, play_reward_threshold_NN, play_reward_threshold_NN_factor_IMP, play_reward_threshold_NN_factor_MP, check_remaining_cards, check_discard, double_dummy, lead_from_pips_nt, lead_from_pips_suit, min_opening_leads, sample_hands_for_review, use_biddingquality, use_biddingquality_in_eval, 
                  double_dummy_calculator, opening_lead_included, use_probability, matchpoint, pimc_verbose, pimc_use_declaring, pimc_use_defending, pimc_use_discarding, pimc_wait, pimc_start_trick_declarer, pimc_start_trick_defender, pimc_stop_trick_declarer, pimc_stop_trick_defender, pimc_constraints, 
                  pimc_constraints_each_trick, pimc_max_playouts, autoplaysingleton, pimc_max_threads, pimc_trust_NN, pimc_ben_dd_declaring, pimc_use_fusion_strategy, pimc_ben_dd_defending, pimc_apriori_probability, 
@@ -134,6 +134,7 @@ class Models:
         self.min_passout_candidates = min_passout_candidates
         self.min_rescue_reward = min_rescue_reward
         self.min_bidding_trust_for_sample_when_rescue = min_bidding_trust_for_sample_when_rescue
+        self.min_samples_for_rescue = min_samples_for_rescue
         self.max_estimated_score = max_estimated_score
         self._lead_accept_nn = lead_accept_nn
         self.ns = ns
@@ -298,6 +299,9 @@ class Models:
         min_passout_candidates = conf.getint('bidding', 'min_passout_candidates', fallback=2)
         min_rescue_reward = conf.getint('bidding', 'min_rescue_reward', fallback=250)
         min_bidding_trust_for_sample_when_rescue = conf.getfloat('bidding','min_bidding_trust_for_sample_when_rescue',fallback=0.5)
+        # A rescue bid is decided by a majority vote over the samples, so it is noise
+        # with only a handful. Below this count we never evaluate a rescue at all.
+        min_samples_for_rescue = conf.getint('bidding', 'min_samples_for_rescue', fallback=15)
         max_estimated_score = conf.getint('bidding', 'max_estimated_score', fallback=300)
         use_biddingquality = conf.getboolean('bidding', 'use_biddingquality', fallback=False)
         check_final_contract = conf.getboolean('bidding', 'check_final_contract', fallback=False)
@@ -492,6 +496,7 @@ class Models:
             min_passout_candidates = min_passout_candidates,
             min_rescue_reward = min_rescue_reward,
             min_bidding_trust_for_sample_when_rescue = min_bidding_trust_for_sample_when_rescue,
+            min_samples_for_rescue = min_samples_for_rescue,
             max_estimated_score = max_estimated_score,
             lead_accept_nn=lead_accept_nn,
             ns=ns,
