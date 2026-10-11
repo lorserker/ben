@@ -32,7 +32,7 @@ class Bidder:
         return bids, alerts
 
     def pred_fun_seq(self, x):
-        with ModelTimer.time_call('bidder'):
+        with ModelTimer.time_call('bidder', rows=x):
             bids, alerts = self.pred_fun_tf(x)
 
         return bids.numpy(), alerts.numpy()

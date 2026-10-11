@@ -19,7 +19,7 @@ class LeadSingleDummy:
 
 
     def pred_fun(self, x):
-        with ModelTimer.time_call('single_dummy'):
+        with ModelTimer.time_call('single_dummy', rows=x):
             result = self.pred_fun_tf(x)
         return result.numpy()
 

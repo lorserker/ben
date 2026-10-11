@@ -16,7 +16,7 @@ from collections import defaultdict
 from colorama import Fore, Back, Style, init
 from objects import Card
 from openinglead.openinglead import validate_lead
-from nn.timing import ModelTimer
+from nn.timing import ModelTimer, timed_step
 import itertools
 import re
 
@@ -261,6 +261,7 @@ class Sample:
 
         return accepted_samples, sorted_scores, p_hcp, p_shp, quality, samplings
 
+    @timed_step('deal')
     def sample_cards_vec(self, n_samples, c_hcp, c_shp, my_hand, rng, aceking, n_cards=32):
         #n_samples = 5
         if self.verbose:
@@ -498,6 +499,7 @@ class Sample:
 
         return True
     
+    @timed_step('bidding_info')
     def get_bidding_info(self, n_steps, auction, nesw_i, hand, vuln, models):
         assert n_steps > 0, "n_steps should be greater than zero"
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, models, models.n_cards_bidding)
@@ -516,6 +518,7 @@ class Sample:
 
         return c_hcp, c_shp
     
+    @timed_step('score_bids')
     def process_bidding(self, player, lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho, 
                     auction, nesw_i, hand, vuln, models, index, actual_bids, n_steps, size, model, verbose):
         position = player["position"]
@@ -564,6 +567,7 @@ class Sample:
         return lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho
 
         
+    @timed_step('auction_round')
     def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, n_samples, rng, models, old_c_hcp, old_c_shp, aceking, extend_samples = True, verbose = False):
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_steps = binary.calculate_step_bidding_info(auction)
@@ -723,6 +727,7 @@ class Sample:
             k = n - k
         return math.factorial(n) // (math.factorial(k) * math.factorial(n - k))
 
+    @timed_step('shuffle')
     def shuffle_cards(self, hidden_cards, shown_out_suits, n_cards_play, rng, models):
         if self.verbose:    
             print(f"{Fore.YELLOW}Called shuffle_cards - {rng.bit_generator.state['state']['state']}{Fore.RESET}")
@@ -782,6 +787,7 @@ class Sample:
         return h1_h2, False
 
     # shuffle the cards between the 2 hidden hands
+    @timed_step('shuffle_info')
     def shuffle_cards_bidding_info(self, n_samples, auction, hand_str, public_hand_str, vuln, known_nesw, h_1_nesw, h_2_nesw, current_trick, hidden_cards, cards_played, shown_out_suits, rng, models):
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         if self.verbose:    
@@ -1083,6 +1089,7 @@ class Sample:
 
         return lead_softmax[:, opening_lead_card]
 
+    @timed_step('score_bids')
     def get_bid_scores(self, nesw_i, partner, auction, vuln, sample_hands, models):
         n_steps = binary.calculate_step_bidding(auction)
         if self.verbose:
@@ -1578,6 +1585,7 @@ class Sample:
         #print(h_i, feature)
         return scores
     
+    @timed_step('check_shape')
     def validate_shape_and_hcp_for_sample(self, auction, known_nesw, hand, vuln, h_1_nesw, h_2_nesw, hidden_1_i, hidden_2_i, states, models):
         n_steps = binary.calculate_step_bidding_info(auction)
         cards_in_suit = models.n_cards_play // 4
@@ -1624,6 +1632,7 @@ class Sample:
 
         return accept, c_hcp, c_shp.flatten()
 
+    @timed_step('check_lead')
     def validate_opening_lead_for_sample(self, trick_i, hidden_1_i, hidden_2_i, opening_lead52, models, auction, vuln, states, bid_scores):
         if self.verbose:
             print("validate_opening_lead_for_sample:", "lead_accept_threshold:", self.lead_accept_threshold, 
@@ -1686,6 +1695,7 @@ class Sample:
     # In principle we do this to eliminated hands, where the card played is inconsistent with the sample
     # We should probably only validate partner as he follow our rules (what is in the neural net)
     # But it will also help us in eleminating hands, where the play would be illogical
+    @timed_step('check_play')
     def validate_play_until_now(self, player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states, bidding_scores, models, contract, lead_scores):
         # If they don't cover they dont have that card
         # Should be implemented as a logical rule TODO
@@ -1805,6 +1815,7 @@ class Sample:
         min_play_scores = min_play_scores[s_accepted]
         return states, bidding_scores, lead_scores, min_play_scores, min_play_scores_unfiltered
     
+    @timed_step('check_logic')
     def validate_logical_play(self, player_i, trick_i, current_trick, leader_i, player_cards_played, hidden_1_i, hidden_2_i, states, models, contract):
         # If they don't cover they dont have that card
         # Should be implemented as a logical rule TODO
@@ -1868,6 +1879,7 @@ class Sample:
 
         return logical_play_scores
 
+    @timed_step('check_discards')
     def check_discards(self, player_i, trick_i, current_trick, leader_i, player_cards_played, discards, hidden_1_i, hidden_2_i, states, models, contract):
         # If they don't cover they dont have that card
         # Should be implemented as a logical rule TODO

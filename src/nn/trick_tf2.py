@@ -19,6 +19,6 @@ class Trick:
         return tricks
 
     def pred_fun(self, x):
-        with ModelTimer.time_call('trick'):
+        with ModelTimer.time_call('trick', rows=x):
             result = self._pred_fun_tf(x)
         return result

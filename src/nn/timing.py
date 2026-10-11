@@ -121,27 +121,42 @@ class ModelTimer:
             cls._stats.clear()
 
     @classmethod
-    def time_call(cls, model_name: str, items: int = 0):
+    def time_call(cls, model_name: str, items: int = 0, rows=None):
         """Context manager for timing a model call.
 
         Args:
             model_name: Name of the model/operation
             items: Number of items processed (e.g. boards solved)
+            rows: for a neural network, the array it is about to score; only its first
+                  dimension is read, for the [robot-nn] line. It is not kept.
         """
-        return _TimingContext(model_name, items)
+        return _TimingContext(model_name, items, rows)
 
 
 class _TimingContext:
     """Context manager for timing model calls."""
 
-    def __init__(self, model_name: str, items: int = 0):
+    def __init__(self, model_name: str, items: int = 0, rows=None):
         self.model_name = model_name
         self.items = items
         self.start_time = None
+        self.cpu_start = None
+        # rows is the first dimension; cells is rows x the second when there is a third,
+        # which for the sequence networks is deals x steps of the auction or tricks played -
+        # the number the cost actually follows.
+        try:
+            self.rows = int(rows.shape[0]) if rows is not None else 0
+            self.cells = self.rows * (int(rows.shape[1]) if len(rows.shape) >= 3 else 1)
+        except Exception:
+            self.rows = 0
+            self.cells = 0
 
     def __enter__(self):
         if ModelTimer.enabled:
             self.start_time = time.perf_counter()
+            # [robot-nn] processor time of the whole process across the call. Against the
+            # wall time it says how many CPUs the network kept busy.
+            self.cpu_start = time.process_time()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -150,7 +165,8 @@ class _TimingContext:
             ModelTimer.record(self.model_name, duration_ms, self.items)
             # [robot-time] a neural network call also counts toward THIS decision's nn figure.
             if self.model_name.startswith(_NN_LABELS):
-                PlayClock.add_nn(duration_ms / 1000.0)
+                cpu = (time.process_time() - self.cpu_start) if self.cpu_start is not None else 0.0
+                PlayClock.add_nn(duration_ms / 1000.0, self.model_name, self.rows, cpu, self.cells)
         return False
 
 
@@ -213,7 +229,7 @@ class PlayClock:
                 pass
 
     @classmethod
-    def add_nn(cls, seconds):
+    def add_nn(cls, seconds, name=None, rows=0, cpu_seconds=0.0, cells=0):
         """
         [robot-time] Time inside a neural network. Most of it happens INSIDE a stage - the
         sampler scores its deals with the bidding and play networks - so it is also kept per
@@ -229,6 +245,63 @@ class PlayClock:
             inside = d.get('_in')
             if inside:
                 d['nn_in_' + inside] = d.get('nn_in_' + inside, 0.0) + ms
+            # [robot-nn] the same time again, by network: calls, rows scored, ms, CPU ms.
+            if name:
+                net = d.setdefault('nets', {}).setdefault(name, [0, 0, 0.0, 0.0, 0])
+                net[0] += 1
+                net[1] += int(rows or 0)
+                net[2] += ms
+                net[3] += cpu_seconds * 1000.0
+                net[4] += int(cells or 0)
+            # [robot-sampling] and to the sampler step it was made from, if any.
+            stack = d.get('_steps')
+            if stack:
+                stack[-1][3] += ms
+        except Exception:
+            pass
+
+    @classmethod
+    def step_in(cls, name):
+        """
+        [robot-sampling] One step of the sampler has started. Returns the frame to hand
+        back to step_out, or None when no decision is being timed. Steps nest - a round of
+        auction sampling deals, then scores the bids - and each is charged only its OWN
+        time, so the steps of a decision add up instead of counting the inner ones twice.
+        """
+        d = getattr(cls._local, 'd', None)
+        if d is None:
+            return None
+        try:
+            frame = [name, time.perf_counter(), 0.0, 0.0]     # name, started, children s, nn ms
+            d.setdefault('_steps', []).append(frame)
+            return frame
+        except Exception:
+            return None
+
+    @classmethod
+    def step_out(cls, frame):
+        if frame is None:
+            return
+        try:
+            elapsed = time.perf_counter() - frame[1]
+            d = getattr(cls._local, 'd', None)
+            if d is None:
+                return
+            stack = d.get('_steps') or []
+            # Normally the last one; searched for so that a frame lost to a new start()
+            # in between can never unbalance anybody else's.
+            for i in range(len(stack) - 1, -1, -1):
+                if stack[i] is frame:
+                    del stack[i:]
+                    break
+            else:
+                return
+            step = d.setdefault('steps', {}).setdefault(frame[0], [0, 0.0, 0.0])
+            step[0] += 1
+            step[1] += max(0.0, elapsed - frame[2]) * 1000.0   # its own time, networks included
+            step[2] += frame[3]                                # of which inside a network
+            if stack:
+                stack[-1][2] += elapsed
         except Exception:
             pass
 
@@ -287,6 +360,20 @@ class _PlayStage:
         PlayClock.leave(self.mine)
         PlayClock.add(self.name, time.perf_counter() - self.t)
         return False
+
+
+def timed_step(name):
+    """[robot-sampling] Decorator: the method is one named step of the sampler."""
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            frame = PlayClock.step_in(name)
+            try:
+                return func(*args, **kwargs)
+            finally:
+                PlayClock.step_out(frame)
+        return wrapper
+    return decorator
 
 
 def timed_stage(name):

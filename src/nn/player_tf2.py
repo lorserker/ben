@@ -17,7 +17,7 @@ class BatchPlayer:
         return self.model(x, training=False)
 
     def pred_fun(self, x):
-        with ModelTimer.time_call(f'player_{self.name}'):
+        with ModelTimer.time_call(f'player_{self.name}', rows=x):
             card_logit = self.pred_fun_tf(x)
         return card_logit.numpy()
 
@@ -27,6 +27,6 @@ class BatchPlayer:
         return result
 
     def next_cards_softmax(self, x):
-        with ModelTimer.time_call(f'player_{self.name}'):
+        with ModelTimer.time_call(f'player_{self.name}', rows=x):
             result = self.next_cards_softmax_tf(x)[:,-1,:]
         return result.numpy()
