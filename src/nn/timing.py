@@ -324,6 +324,16 @@ class PlayClock:
             pass
 
     @classmethod
+    def count(cls, key, n):
+        """[robot-time] Add n to a plain count kept for this decision (fresh=, reused=)."""
+        d = getattr(cls._local, 'd', None)
+        if d is not None:
+            try:
+                d[key] = d.get(key, 0) + int(n)
+            except Exception:
+                pass
+
+    @classmethod
     def enter(cls, name):
         """The outermost stage in progress, for add_nn. Returns True if this call set it."""
         d = getattr(cls._local, 'd', None)

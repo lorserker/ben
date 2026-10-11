@@ -57,4 +57,6 @@ RUN ln -s /app /app/src && \
     sed -i 's/\r$//' /app/start_ben_all.sh && chmod +x /app/start_ben_all.sh
 
 EXPOSE 8080 4443 8085
-CMD ./start_ben_all.sh
+# The exec form, so the script itself is the container's first process and receives the
+# stop signal. `CMD ./start_ben_all.sh` runs it under `sh -c`, which need not pass it on.
+CMD ["./start_ben_all.sh"]

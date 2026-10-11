@@ -588,8 +588,22 @@ class Models:
         lead_nt_model=Leader(path_provider.get_path(os.path.join(base_path, conf['lead']['lead_nt'])))
         if verbose:
             print(f"Loaded lead models")
-        sd_model=LeadSingleDummy(path_provider.get_path(os.path.join(base_path, conf['eval']['single_dummy_estimator'])))
-        sd_model_no_lead=LeadSingleDummy(path_provider.get_path(os.path.join(base_path, conf['eval']['double_dummy_estimator'])))
+        # sd AND sd_no_lead ARE LOADED ONLY WHEN A SETTING CAN REACH THEM (2026-10-11).
+        #   sd          the bidder's estimator when [eval] estimator is sde or both, and the
+        #               opening lead when [lead] double_dummy is off
+        #   sd_no_lead  the bidder's estimator when [eval] estimator is dde or both
+        # Those are the only three places either is called. With estimator = none and
+        # double_dummy = True, as the API runs, neither is ever asked - and at boot both
+        # were loaded and then failed to warm with a TypeError. Left as None, the warm-up
+        # passes over them. BEN_LOAD_UNUSED_MODELS=1 loads them regardless, as before.
+        _load_all = os.getenv('BEN_LOAD_UNUSED_MODELS', '0') == '1'
+        _need_sd = _load_all or estimator in ('sde', 'both') or not double_dummy
+        _need_sd_no_lead = _load_all or estimator in ('dde', 'both')
+        sd_model = LeadSingleDummy(path_provider.get_path(os.path.join(base_path, conf['eval']['single_dummy_estimator']))) if _need_sd else None
+        sd_model_no_lead = LeadSingleDummy(path_provider.get_path(os.path.join(base_path, conf['eval']['double_dummy_estimator']))) if _need_sd_no_lead else None
+        if not (_need_sd and _need_sd_no_lead):
+            print('[ben-models] not loaded, no setting uses them:%s%s' % (
+                '' if _need_sd else ' sd', '' if _need_sd_no_lead else ' sd_no_lead'), flush=True)
         if verbose:
             print(f"Loaded single dummy models")
 

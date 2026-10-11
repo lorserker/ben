@@ -16,7 +16,7 @@ from collections import defaultdict
 from colorama import Fore, Back, Style, init
 from objects import Card
 from openinglead.openinglead import validate_lead
-from nn.timing import ModelTimer, timed_step
+from nn.timing import ModelTimer, PlayClock, timed_step
 import itertools
 import re
 
@@ -592,6 +592,7 @@ class Sample:
 
         # Consider saving the generated boards, and add the result from previous sampling to this output
         n_samples = lho_pard_rho.shape[0]
+        PlayClock.count('fresh', n_samples)               # [robot-time] fresh=: layouts dealt, all rounds
         assert n_samples > 0, "No samples found"
         if verbose:
             print(f"n_samples {n_samples} from bidding info")
@@ -1238,6 +1239,7 @@ class Sample:
                 )
 
             hidden_hand1, hidden_hand2 = h1_h2[:, 0], h1_h2[:, 1]
+            PlayClock.count('fresh', h1_h2.shape[0])      # [robot-time] fresh=: layouts dealt for this card
             #print("hidden_hand1, hidden_hand2", hidden_hand1, hidden_hand2)
             states = [np.zeros((hidden_hand1.shape[0], 13, 298),dtype=np.int8) for _ in range(4)]
             # we can reuse the x_play array from card_players except the player's hand

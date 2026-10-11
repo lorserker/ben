@@ -41,6 +41,8 @@ import tensorflow as tf
 import psutil
 
 from gevent.pywsgi import WSGIServer
+import gevent
+import signal
 import datetime 
 import time
 
@@ -965,6 +967,10 @@ def _robot_time(kind, t_start, t_lock=None, t_work=None, t_done=None, path='-', 
                     sampling, dd, c.get('solve', 0.0), nn,
                     max(0.0, think - sampling - dd - nn),
                     c.get('deals', 0), c.get('threads', '-'), c.get('os_threads', '-'))
+                # fresh is the layouts DEALT for this decision, before any check - not the
+                # deals solved, which is deals=. reused is the layouts kept from the seat's
+                # previous card; nothing is kept between cards yet, so it reads 0.
+                line += ' reused=%d fresh=%d' % (c.get('reused', 0), c.get('fresh', 0))
             if wait > 200:
                 line += ' held_by=%s' % (held or '-')
         except Exception:
@@ -1346,6 +1352,86 @@ def log_memory_usage():
     available_memory = virtual_memory.available / (1024 ** 2)  # Convert bytes to MB
     print(f"Available memory before request: {available_memory:.2f} MB")
 
+# ---------------------------------------------------------------------------
+# A STOP THAT LETS THE REQUESTS IN FLIGHT FINISH (2026-10-11)
+#
+# When the service is replaced, the old process is sent SIGTERM and, some seconds later,
+# killed. It used to do nothing with the first of those: it went on taking requests until
+# the kill landed, and whatever was being thought about at that moment died with it - the
+# site saw "fetch failed" on a card.
+#
+# Now, on SIGTERM: the listening socket is closed, so no NEW connection reaches this
+# process; every answer from then on says "Connection: close", so a connection the site
+# was keeping open is given up after the answer it is waiting for and its next request
+# goes to the new process; and the process leaves when nothing is in flight, or after
+# STOP_GRACE_SECONDS whichever is first.
+#
+# Counting is done here rather than left to the server's own pool, because this server
+# has none - `http_server.spawn = 4` below is set after the server is built and makes no
+# pool - so its stop() would not wait for anybody.
+#
+# AND THE WAITING IS DONE AFTER serve_forever(), NOT IN THE SIGNAL HANDLER. Closing the
+# listening socket is what makes serve_forever() return - gevent's close() sets the very
+# event it waits on - and the lines after it are the end of the program. So the handler
+# only closes the socket, and _wait_for_requests_in_flight, called on the next line after
+# serve_forever(), is what keeps the process alive while the requests finish. Requests
+# already being handled are greenlets of their own and go on running while it sleeps.
+# ---------------------------------------------------------------------------
+STOP_GRACE_SECONDS = float(os.getenv('BEN_STOP_GRACE_SECONDS', '25'))
+_serving = {'in_flight': 0, 'stopping': False}
+
+
+@app.before_request
+def _count_request_in():
+    # Registered first, so it runs before anything that can turn the request away.
+    g.counted_in_flight = True
+    _serving['in_flight'] += 1
+
+
+@app.teardown_request
+def _count_request_out(_exc=None):
+    try:
+        if g.pop('counted_in_flight', False):
+            _serving['in_flight'] -= 1
+    except Exception:
+        pass
+
+
+def _graceful_stop(http_server):
+    """On the stop signal, once: stop taking connections. serve_forever() then returns."""
+    if _serving['stopping']:
+        return
+    _serving['stopping'] = True
+    print('[ben-stop] stop signal: no new connections, %d request(s) in flight, up to %ds to finish'
+          % (_serving['in_flight'], STOP_GRACE_SECONDS), flush=True)
+    try:
+        http_server.close()
+    except Exception as ex:
+        print('[ben-stop] the listening socket could not be closed (%s)' % ex, flush=True)
+
+
+def _wait_for_requests_in_flight():
+    """After serve_forever() has returned: hold the process open while requests finish."""
+    try:
+        if not _serving['stopping']:
+            return
+        until = time.time() + STOP_GRACE_SECONDS
+        # A request is counted from its first line, so one that had only just been
+        # accepted when the signal came may not be counted yet: look for a moment first.
+        quiet_since = None
+        while time.time() < until:
+            if _serving['in_flight'] > 0:
+                quiet_since = None
+            elif quiet_since is None:
+                quiet_since = time.time()
+            elif time.time() - quiet_since >= 0.5:
+                break
+            time.sleep(0.05)
+        print('[ben-stop] leaving with %d request(s) in flight' % _serving['in_flight'], flush=True)
+    except Exception as ex:
+        print('[ben-stop] could not wait (%s)' % ex, flush=True)
+
+
 @app.before_request
 def log_request_and_memory_info():
     log_request_info()  # Call the request logging function
@@ -1360,6 +1446,12 @@ def log_response_info(response):
         _rt = g.get('robot_time')
         if _rt:
             response.headers['X-Robot-Time'] = _rt
+    except Exception:
+        pass
+    try:
+        # See A STOP THAT LETS THE REQUESTS IN FLIGHT FINISH.
+        if _serving['stopping']:
+            response.headers['Connection'] = 'close'
     except Exception:
         pass
     logger.info(f"Response body: {response.status} {response.get_data()}")
@@ -2915,6 +3007,12 @@ if __name__ == "__main__":
         http_server = WSGIServer((host, port), app)
         http_server.spawn = 4 #Create 4 Workers
         http_server.connection_timeout = 120  # Set timeout to 120 seconds
+        try:
+            gevent.signal_handler(signal.SIGTERM, _graceful_stop, http_server)
+        except Exception as _stop_ex:
+            print('[ben-stop] no graceful stop (%s) - a stop signal ends the process at once, as before'
+                  % _stop_ex, flush=True)
         http_server.serve_forever()
+        _wait_for_requests_in_flight()
     finally:
         print(Style.RESET_ALL)        
