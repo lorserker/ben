@@ -72,7 +72,7 @@ try:
 except ImportError:
     ACEDefDLL = None
 
-from flask import Flask, Response, request, jsonify, abort
+from flask import Flask, Response, request, jsonify, abort, g
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 import json
@@ -838,6 +838,37 @@ def _ben_time_play(path, t_lock, t_work, t_done, source='fresh'):
         pass
 
 
+def _robot_time(kind, t_start, t_lock=None, t_work=None, t_done=None, path='-', source='fresh'):
+    """
+    [robot-time] ONE LINE PER ROBOT REQUEST, WRITTEN AS THE ANSWER LEAVES (measuring only).
+
+    kind is what was asked: bid, lead or play. wait_ms is the time spent queueing behind
+    another request for the model lock, think_ms the time BEN spent deciding, and total_ms
+    the whole request from its first line to its last - so other_ms, the remainder, is
+    everything [ben-time] never saw: reading the request, the BBA work a bid and a card do
+    BEFORE the lock, and shaping the answer after it.
+
+    rid is the table's room code and board number, which is all the site sends; no name
+    reaches this service and none is written.
+
+    The same three numbers go back to the site in an X-Robot-Time header so that its own
+    [robot-time] line can say how much of what it waited was this service and how much
+    was the road between the two. The body of the answer is not touched.
+
+    Wrapped: a fault here must never cost a bid or a card.
+    """
+    try:
+        total = (time.time() - t_start) * 1000
+        wait = (t_work - t_lock) * 1000 if (t_lock and t_work) else 0
+        think = (t_done - t_work) * 1000 if (t_work and t_done) else 0
+        print('[robot-time] kind=%s rid=%s path=%s source=%s wait_ms=%d think_ms=%d other_ms=%d total_ms=%d' % (
+            kind, _ben_rid(), str(path).replace(' ', '_'), source, wait, think,
+            max(0, total - wait - think), total), flush=True)
+        g.robot_time = '%d;%d;%d' % (wait, think, total)
+    except Exception:
+        pass
+
+
 # Cache the full result of recent /bid calculations.  Grand Slam Bridge first
 # requests the bid and then requests details for the same position; without this
 # cache BEN calculated the exact position twice.
@@ -1108,6 +1139,13 @@ def log_request_and_memory_info():
 def log_response_info(response):
     if response.status == 444:  # SilentAbort code, ignore status
         return response
+    try:
+        # [robot-time] wait;think;total in ms, for the site's own line. See _robot_time.
+        _rt = g.get('robot_time')
+        if _rt:
+            response.headers['X-Robot-Time'] = _rt
+    except Exception:
+        pass
     logger.info(f"Response body: {response.status} {response.get_data()}")
     # Get system memory info
     virtual_memory = psutil.virtual_memory()
@@ -1159,6 +1197,7 @@ def bid():
         if cached_result is not None:
             result = _shape_bid_response(cached_result, details)
             print(f'Request took {(time.time() - t_start):0.2f} seconds (bid cache hit)')
+            _robot_time('bid', t_start, path='cache', source='cached')
             return json.dumps(result)
 
         bids = parse_ctx_to_bids(ctx)
@@ -1241,6 +1280,8 @@ def bid():
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict(), "fast_mode": fast_mode}
             logger.info(f"Calculations bid: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        _robot_time('bid', t_start, _t_lock, _t_work, _t_done,
+                    'sampled' if full_result.get('samples') else 'no-search')
         return json.dumps(result)
     except Exception as e:
         handle_exception(e)
@@ -1343,6 +1384,7 @@ def lead():
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction,  "lead":result}
             logger.info(f"Calculations lead: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        _robot_time('lead', t_start, _t_lock, _t_work, _t_done, 'lead', _source)
         return json.dumps(result)
     except Exception as e:
         handle_exception(e)
@@ -1518,6 +1560,7 @@ def play():
             calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
             logger.info(f"Calculations play: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        _robot_time('play', t_start, _t_lock, _t_work, _t_done, msg, _source)
         return json.dumps(result)
     except Exception as e:
         print(e)
