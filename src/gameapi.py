@@ -709,7 +709,7 @@ if getattr(models, 'ace_use_declaring', False) or getattr(models, 'ace_use_defen
     print(f"ACE enabled. Version {ace.version()}")
     print(f"ACEDef enabled. Version {acedef.version()}")
 
-from ddsolver.ddsolver import DDSolver
+from ddsolver.ddsolver import DDSolver, SolveAbandoned, stop_solving_when
 dds_max_threads = configuration.getint('dds', 'dds_max_threads', fallback=0)
 dds = DDSolver(max_threads=dds_max_threads)
 print(f"DDSolver enabled. Version {dds.version()} Max threads {dds_max_threads}")
@@ -863,6 +863,51 @@ def _lock_take(name, kind):
 def _lock_drop(name):
     try:
         _lock_held_by[name] = None
+    except Exception:
+        pass
+
+
+# ---------------------------------------------------------------------------
+# A CLAIM CHECK GIVES WAY TO A CARD (2026-10-11)
+#
+# /claim takes model_lock_play, the lock every card and lead takes, and from sixteen hidden
+# cards down it solves EVERY way they can lie - up to 12,870 deals. The site waits 900 ms
+# for a robot's own claim check and then asks for the card instead; the check went on to
+# the end regardless, holding the lock, and the card queued behind it. Production: two
+# checks given up on at 900 ms, each followed at once by a card that waited (2,994 ms and
+# 156 ms) for a lock nobody was using for anything anyone wanted.
+#
+# THE SMALLEST CHANGE THAT IS SAFE: a claim check that says it may be abandoned (giveway=1)
+# is abandoned when a card or a lead arrives wanting the lock. It stops between two chunks
+# of deals, lets go of the lock, and answers with an error - which the site already treats
+# as "no claim this trick" and tries again at the next.
+#
+#   - Nothing is guessed about the caller having gone. A card ARRIVING is the fact: one
+#     table never asks for a card while it is still waiting for its own claim check, so
+#     when the card comes the check is no longer wanted. With several tables it can be
+#     another table's card - and then a robot that might have claimed plays one more trick
+#     first, which is the order the site already keeps: it does not start a claim check
+#     at all while a bid or card is in flight.
+#   - Only when asked. A robot ANSWERING somebody's claim sends no giveway, and is never
+#     abandoned: the site turns a failed answer into a rejection, so abandoning one would
+#     refuse a claim that was good.
+#   - Not a second lock. A claim replays the hand through the same sampler and models a
+#     card uses; letting the two run side by side would need those to be safe to share.
+#   - It stops only inside the solver, which is where a claim's time goes. A card that
+#     arrives while the check is still building its deals waits for that to finish.
+#
+# No bridge decision changes: a claim that is answered is answered exactly as before.
+# ---------------------------------------------------------------------------
+_claim_running = {'claim': None}
+
+
+def _claim_give_way(kind):
+    """Called as a card or a lead arrives: tell an abandonable claim check to stop."""
+    try:
+        c = _claim_running['claim']
+        if c is not None and c['giveway'] and not c['stop']:
+            c['by'] = '%s:%s' % (kind, _ben_rid())
+            c['stop'] = True
     except Exception:
         pass
 
@@ -1423,6 +1468,7 @@ def lead():
         _started_at = []
 
         _held = _lock_seen('play')
+        _claim_give_way('lead')
 
         def _compute_lead():
             with model_lock_play:
@@ -1602,6 +1648,7 @@ def play():
         _started_at = []
 
         _held = _lock_seen('play')
+        _claim_give_way('play')
 
         def _compute_play():
             with model_lock_play:
@@ -2000,12 +2047,18 @@ def claim():
         _t_lock = time.time()
         PlayClock.start()
         _held = _lock_seen('play')
+        # See A CLAIM CHECK GIVES WAY TO A CARD. Only a check that asks for it can be stopped.
+        _claim = {'giveway': query_bool(request.args.get("giveway"), default=False), 'stop': False, 'by': None}
         with model_lock_play:
             _t_work = time.time()
             _lock_take('play', 'claim')
+            _claim_running['claim'] = _claim
+            stop_solving_when(lambda: _claim['stop'])
             try:
                 card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, claim, aceking, verbose)
             finally:
+                stop_solving_when(None)
+                _claim_running['claim'] = None
                 _lock_drop('play')
         _t_done = time.time()
         result["result"] = msg
@@ -2015,6 +2068,11 @@ def claim():
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         _robot_time('claim', t_start, _t_lock, _t_work, _t_done, 'claim', held=_held)
         return json.dumps(result)
+    except SolveAbandoned as e:
+        # Not a fault, so no traceback: the check stood down for a card. The lock is free.
+        print('[ben-claim] abandoned rid=%s for=%s (%s)' % (_ben_rid(), _claim.get('by') or '-', e), flush=True)
+        _robot_time('claim', t_start, _t_lock, _t_work, time.time(), 'abandoned', held=_held)
+        return jsonify({"error": "Claim check abandoned: a card was waiting for the lock"}), 409
     except Exception as e:
         print(e)
         handle_exception(e)

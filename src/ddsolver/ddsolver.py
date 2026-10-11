@@ -18,6 +18,61 @@ try:
 except Exception:
     import threading as _threading
     _os_thread_id = getattr(_threading, 'get_native_id', lambda: 0)
+
+# ---------------------------------------------------------------------------
+# THE SOLVER ON REAL THREADS UNDER GEVENT (2026-10-11)
+#
+# gameapi.py runs monkey.patch_all(), and under it concurrent.futures' ThreadPoolExecutor
+# starts GREENLETS: every "thread" of the pool shares the one real thread, and a native
+# call such as solve_board_pbn cannot be switched away from. So a pool of two solved one
+# deal at a time - production logged os_threads=1 beside threads=2 on every solving line,
+# and an opening lead spent 5,274 ms solving 800 deals on one of its two CPUs.
+#
+# gevent ships the answer: gevent.threadpool.ThreadPoolExecutor "always uses native
+# threads, even when threading is monkey-patched", and waiting on its futures yields to
+# the hub like any other gevent wait. It is used ONLY when threading is patched. A
+# process that is not patched - gameserver.py, the scripts - keeps the pool it always had,
+# which there is already made of real threads.
+#
+# Same deals, same order, same answers: the deals are cut into consecutive chunks, each
+# chunk is solved in order by one thread, and the chunks are put back in the order they
+# were cut. Nothing about a single solve changes.
+#
+# BEN_DDS_REAL_THREADS=0 in the environment puts the old pool back without a new build.
+# ---------------------------------------------------------------------------
+_REAL_THREADS = False
+try:
+    if (os.getenv('BEN_DDS_REAL_THREADS', '1') != '0'
+            and _gevent_monkey.is_module_patched('threading')
+            and _os_thread_id() != 0):
+        from gevent.threadpool import ThreadPoolExecutor as _NativeThreadPoolExecutor
+        _REAL_THREADS = True
+except Exception:
+    _REAL_THREADS = False
+
+# Deals handed to a thread at a time on the real-thread pool. Large enough that the trip
+# through the hub is small beside the solving, small enough that the two threads stay
+# evenly loaded and that a solve told to stop (see stop_solving_when) stops soon.
+_CHUNK_DEALS = 16
+
+
+class SolveAbandoned(Exception):
+    """A batch was stopped part-way because its caller's stop test said so."""
+
+
+# The stop test of the caller in progress. threading.local here is the PATCHED one on
+# purpose: under gevent that makes it per request, which is what a caller is.
+_caller_local = threading.local()
+
+
+def stop_solving_when(test):
+    """
+    Give the solves made by THIS request a test that is asked between chunks; when it
+    returns true the batch raises SolveAbandoned instead of finishing. None removes it.
+    Only the real-thread pool asks. Used by /claim, so that a claim check nobody is
+    waiting for stops holding the lock a card needs.
+    """
+    _caller_local.stop = test
 from ddsolver.ddsrecorder import DDSRecorder
 
 init()
@@ -100,8 +155,19 @@ dds3 = _load_dds3()
 # concurrently. Each pool thread keeps its own SolverContext.
 _ctx_local = threading.local()
 
+# On the real-thread pool the contexts are kept by OPERATING SYSTEM thread id instead: the
+# patched threading.local is per greenlet, and what a SolverContext must be is per thread.
+_ctx_by_os_thread = {}
+
 
 def _thread_context():
+    if _REAL_THREADS:
+        tid = _os_thread_id()
+        ctx = _ctx_by_os_thread.get(tid)
+        if ctx is None:
+            ctx = dds3.SolverContext()
+            _ctx_by_os_thread[tid] = ctx
+        return ctx
     ctx = getattr(_ctx_local, "ctx", None)
     if ctx is None:
         ctx = dds3.SolverContext()
@@ -123,7 +189,16 @@ class DDSolver:
         # 0 = one thread per CPU core.
         workers = max_threads if (max_threads and max_threads > 0) else (os.cpu_count() or 4)
         self._workers = workers
-        self._pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="dds")
+        self._native = False
+        if _REAL_THREADS:
+            try:
+                self._pool = _NativeThreadPoolExecutor(max_workers=workers)
+                self._native = True
+            except Exception as ex:
+                print(f"[ben-dds] the real-thread pool could not be made ({ex}) - using the ordinary one", flush=True)
+        if not self._native:
+            self._pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="dds")
+        print(f"[ben-dds] solver pool: {workers} threads, {'real threads (gevent.threadpool)' if self._native else 'concurrent.futures'}", flush=True)
         if verbose:
             sys.stderr.write(f"DDSolver loaded — DDS {self.version()} - dds mode {dds_mode} - {workers} solver threads\n")
         # No-op unless --ddsrecord / BEN_DDS_RECORD asked for a recording. If the
@@ -205,7 +280,7 @@ class DDSolver:
             elapsed_ms = (time.perf_counter() - t0) * 1000
         # [robot-time] counted toward the decision in progress, if there is one. Never raises.
         PlayClock.add_solved(elapsed_ms / 1000.0, len(hands_pbn), self._workers,
-                             len(getattr(self, '_solved_on', ()) or ()))
+                             len(getattr(_caller_local, 'solved_on', ()) or ()))
 
         if DDSRecorder.enabled:
             DDSRecorder.record_solve(strain_i, leader_i, current_trick, hands_pbn,
@@ -230,8 +305,10 @@ class DDSolver:
 
         # Solve each board on the thread pool. solve_board_pbn releases the GIL
         # during the DDS search; each pool thread uses its own SolverContext.
+        # Kept per caller, not on self: with real threads a bid and a card can be in here
+        # at the same moment, and each must count its own.
         solved_on = set()
-        self._solved_on = solved_on
+        _caller_local.solved_on = solved_on
 
         def _solve_one(pbn):
             try:
@@ -250,8 +327,30 @@ class DDSolver:
                 context=_thread_context(),
             )
 
+        def _solve_chunk(chunk):
+            return [_solve_one(pbn) for pbn in chunk]
+
         try:
-            solved = list(self._pool.map(_solve_one, hands_pbn))
+            if self._native:
+                # submit() waits for a free thread, so at most a pool's worth of chunks is
+                # ever ahead of the solving - which is what lets a stop take effect at once,
+                # and what keeps an abandoned batch from leaving work queued in front of
+                # the next caller.
+                stop = getattr(_caller_local, 'stop', None)
+                n = len(hands_pbn)
+                size = max(1, min(_CHUNK_DEALS, -(-n // max(1, self._workers))))
+                futures = []
+                for at in range(0, n, size):
+                    if stop is not None and stop():
+                        raise SolveAbandoned(f"stopped after {at} of {n} deals")
+                    futures.append(self._pool.submit(_solve_chunk, hands_pbn[at:at + size]))
+                solved = []
+                for future in futures:
+                    solved.extend(future.result())
+            else:
+                solved = list(self._pool.map(_solve_one, hands_pbn))
+        except SolveAbandoned:
+            raise
         except Exception as e:
             print(f"{Fore.RED}DDS error: {e} {hands_pbn[0].encode('utf-8')} {current_trick} {leader_i}{Style.RESET_ALL}")
             return None
