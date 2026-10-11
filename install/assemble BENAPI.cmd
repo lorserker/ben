@@ -11,6 +11,8 @@ robocopy ..\src\config "BENAPI\config" BEN*
 robocopy ..\src\config "BENAPI\config" BBA*
 robocopy ..\src\config "BENAPI\config" GIB-BBO.conf*
 robocopy ..\src\config "BENAPI\config" default_api.conf
+rem systems.conf: the systems a request may ask for (ourSystem/theirSystem)
+robocopy ..\src\config "BENAPI\config" systems.conf
 if not exist "BENAPI\config\opponent" mkdir "BENAPI\config\opponent"
 robocopy ..\src\config\opponent "BENAPI\config\opponent" /E
 robocopy ..\BBA\CC "BENAPI\BBA\CC" /E

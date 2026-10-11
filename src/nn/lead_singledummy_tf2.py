@@ -13,7 +13,8 @@ class LeadSingleDummy:
     def load_model(self):
         return load_model(self.model_path, compile=False)
 
-    @tf.function(input_signature=[tf.TensorSpec(shape=[None, None, 298], dtype=tf.float16)])
+    # Rank 2, any width: the SD model takes 165 features, the no-lead (RPDD) model 133.
+    @tf.function(input_signature=[tf.TensorSpec(shape=[None, None], dtype=tf.float32)])
     def pred_fun_tf(self, x):
         result = self.model(x, training=False)
         return result
@@ -22,6 +23,6 @@ class LeadSingleDummy:
     def pred_fun(self, x):
         with tf_lock:
             with ModelTimer.time_call('single_dummy'):
-                result = self.pred_fun_tf(x)
+                result = self.pred_fun_tf(np.asarray(x, dtype=np.float32))
             return result.numpy()
 

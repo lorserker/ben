@@ -18,7 +18,7 @@ BEN's double-dummy solver wrapper. As of the DDS **3.0.0** upgrade this uses the
 > **Note:** `bin/dds.dll`, `bin/libdds.so` and `bin/darwin/libdds.2.9.0.dylib`
 > are **kept** — they are not used by `ddsolver` anymore, but the BGADLL / PIMC
 > native engine (`src/pimc/BGADLL_Native.py`) still P/Invokes the DDS C ABI and
-> preloads them. Do not delete them unless BGADLL is rebuilt against DDS 3.0.0.
+> preloads them. See [The DDS C library used by PIMC](#the-dds-c-library-used-by-pimc-bgadll).
 
 **Concurrency.** `DDSolver` runs a Python `ThreadPoolExecutor` and issues one
 `dds3.solve_board_pbn(..., context=ctx)` per board, keeping **one `SolverContext`
@@ -65,8 +65,35 @@ See `docs/python_interface.md` in the DDS repo for per-OS prerequisites
 > Ubuntu 24.04 (glibc 2.39) instead yields a `.so` that needs glibc ≥ 2.38, so it
 > will **not** run on Ubuntu 22.04 / Debian 12. The vendored `bin/dds3-linux/`
 > binary in this repo is currently a 24.04 build (glibc ≥ 2.38) — fine for Docker
-> and Ubuntu 24.04+, but a native install on an older distro needs a rebuild. For
-> macOS, set a low `MACOSX_DEPLOYMENT_TARGET` for the same reason.
+> and Ubuntu 24.04+, but a native install on an older distro needs a rebuild.
+
+> **macOS: always set a low deployment target.** Without it the extension is
+> stamped with the build machine's macOS version and links libc++ symbols that
+> older systems lack — the `_dds3.so` shipped before 0.8.8.8 had `minos 26.5` and
+> failed on anything older with
+> `Symbol not found: __ZNSt3__113__hash_memoryEPKvm`. Bazel is not needed; the
+> extension is two binding files plus the library sources:
+> ```bash
+> # in a DDS checkout, with a Python 3.12 venv that has pybind11 installed
+> mkdir -p inc && ln -sfn "$PWD/library/src" inc/dds     # for #include <dds/...>
+> SDK=$(xcrun --show-sdk-path)      # see the note below about CLT 27
+> MACOSX_DEPLOYMENT_TARGET=11.0 clang++ -isysroot "$SDK" -std=c++20 -O3 -flto=thin \
+>   -fPIC -shared -undefined dynamic_lookup -mmacosx-version-min=11.0 -arch arm64 \
+>   -Iinc -Ilibrary/src -Ilibrary/src/api -Ipython/src $(python -m pybind11 --includes) \
+>   python/src/bindings.cpp python/src/converters.cpp \
+>   $(find library/src -name '*.cpp' | grep -viE 'test|bench|_main|fuzz') \
+>   -o _dds3.so
+> otool -l _dds3.so | grep -A4 LC_BUILD_VERSION   # must say minos 11.0
+> ```
+> The macOS 27 Command Line Tools ship without libc++ headers (`'string' file not
+> found`); point at the 26.5 SDK instead:
+> `SDK=/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk` and add
+> `-nostdinc++ -isystem "$SDK/usr/include/c++/v1"`.
+>
+> Build from the same DDS commit as the other platforms. DDS commit `dbffab90`
+> (2026-08-17) renamed `initialise_static_memory` to `initialize_static_memory`,
+> and the vendored `__init__.py` imports the old name. The current binaries are
+> built from `671a4aa4`, the commit just before the rename.
 
 ### Make it importable — two options
 
@@ -90,6 +117,48 @@ See `docs/python_interface.md` in the DDS repo for per-OS prerequisites
 The Docker images expect option 2 (`bin/dds3-linux/`). PyInstaller builds
 expect option 1 (`dds3` installed in the build environment; the `.spec` files
 list it under `hiddenimports`).
+
+## The DDS C library used by PIMC (BGADLL)
+
+BGADLL (PIMC / PIMCDef) does not use `dds3`. On every platform except Windows
+x64 (which uses `libbcalcdds.dll`) it calls the DDS **C ABI** (`SolveBoardPBN`)
+from a native library next to it:
+
+| Platform       | File                                   | DDS   |
+|----------------|----------------------------------------|-------|
+| Windows x64    | `bin/BGA/windows/x64/dds.dll` (fallback only) | 2.9.0 |
+| Windows ARM64  | `bin/BGA/windows/arm64/dds.dll`        | 3.1.0 (`671a4aa4`) |
+| Linux x64      | `bin/BGA/linux/x64/libdds.so` (+ identical `dds.dll`, `bin/libdds.so`) | 3.1.0 (`671a4aa4`) |
+| Linux ARM64    | `bin/BGA/linux/arm64/libdds.so`        | 3.1.0 (`671a4aa4`) |
+| macOS ARM64    | `bin/BGA/macos/arm64/libdds.2.9.0.dylib` | 2.9.0 |
+
+> **The thread index must be accepted.** BGADLL spreads its solves over thread
+> indexes 0–7. DDS builds from before commit `15eb56fd` (2026-05-22) only accept
+> index 0 and return `-15` (`RETURN_THREAD_INDEX`) for the rest, which BGADLL
+> scored as 0 tricks: from 0.8.8.0 to 0.8.8.8 PIMC on Linux x64 decided on about
+> 1 in 8 of its samples. BGADLL 0.9.9.2+ prints a `BGADLL DDS warning` line on
+> stderr the first time a solve fails, so check the log after changing any of
+> these files.
+>
+> **Check the architecture.** Before 0.8.8.8 the Linux ARM64 and Windows ARM64
+> folders held x86-64 copies, which cannot load next to an ARM64 BGADLL.
+
+Build the Linux libraries in a manylinux container (glibc 2.28, static C++
+runtime, so only libc/libm/libpthread are needed):
+
+```bash
+# from a DDS checkout; use quay.io/pypa/manylinux_2_28_aarch64 for ARM64
+docker run --rm -v "$PWD:/dds:ro" -v "$PWD/out:/out" quay.io/pypa/manylinux_2_28_x86_64 bash -c '
+  mkdir -p /inc && ln -s /dds/library/src /inc/dds
+  g++ -std=c++20 -O3 -fPIC -shared -pthread -static-libstdc++ -static-libgcc \
+      -Wl,-soname,libdds.so -I/inc -I/dds/library/src -I/dds/library/src/api \
+      -o /out/libdds.so $(find /dds/library/src -name "*.cpp" | grep -viE "test|bench|_main|fuzz")
+  strip --strip-unneeded /out/libdds.so'
+```
+
+The Windows ARM64 `dds.dll` is the same sources compiled with MSVC from an
+`x64_arm64` developer prompt: `cl /std:c++20 /O2 /EHsc /MT /LD ... /link /MACHINE:ARM64`
+(`/MT` so it needs no VC++ redistributable).
 
 ## Benchmarking: record a real session, replay it
 

@@ -16,6 +16,7 @@ def load(fin):
     inside_auction_section = False
     inside_scoring_section = False
     dealer, vulnerable = None, None
+    hands_nesw = None
     recommendation = None
     scoring_lines = []
     for line in fin:

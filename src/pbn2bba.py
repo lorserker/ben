@@ -133,6 +133,7 @@ def load(fin):
     auction_lines = []
     inside_auction_section = False
     dealer, vulnerable = None, None
+    hands_nesw = None
     dealnumber = 0
     try:
         for line in fin:

@@ -389,6 +389,40 @@ def select_lowest_card_dynamic(candidates):
     # Return the lowest card
     return matching_cards[0] if matching_cards else None
 
+def lead_pip_24(hand52, opening_suit, suit_length):
+    # 2nd/4th: top of touching honours, 2nd highest from a weak suit, 4th best from an honour
+    hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
+    # lead highest if Tx
+    if suit_length == 2 and hand52.reshape((4, 13))[opening_suit][4] == 1 and hcp_in_suit == 0:
+        # Leading T from Tx
+        card_index = 4
+    else:
+        if suit_length < 4:
+            if hcp_in_suit == 0 and hand52.reshape((4, 13))[opening_suit][4]:
+                # Leading T from Tx
+                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
+            else:
+                if suit_length == 2:
+                    # lead hihest from Hx
+                    card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
+                else:
+                    indices = np.where(hand52.reshape((4, 13))[opening_suit])[0]
+
+                    # Check if the first two ones are consecutive
+                    if len(indices) >= 2 and indices[1] - indices[0] == 1:
+                        #lead highest
+                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
+                    else:
+                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
+
+        else:
+            if hcp_in_suit == 0:
+                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
+            else:
+                # Leading 4th highest
+                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)
+    return card_index
+
 def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
     if verbose:
         print("Select the right card")
@@ -405,41 +439,7 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
             return card_index + 13 * opening_suit
         
         if models.lead_from_pips_nt == "24" and suit_length > 1:
-            # From touching honors lead the highest
-            # From bad suit lead 2nd highest
-            hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
-            # lead highest if Tx
-            if suit_length == 2 and hand52.reshape((4, 13))[opening_suit][4] == 1 and hcp_in_suit == 0:
-                # Leading T from Tx
-                card_index = 4
-            else:
-                if suit_length < 4:
-                    if hcp_in_suit == 0 and hand52.reshape((4, 13))[opening_suit][4]:
-                        # Leading T from Tx
-                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
-                    else:
-                        if suit_length == 2:    
-                            # lead hihest from Hx
-                            card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
-                        else:
-                            indices = np.where(hand52.reshape((4, 13))[opening_suit])[0]
-
-                            # Check if the first two ones are consecutive
-                            if len(indices) >= 2 and indices[1] - indices[0] == 1:
-                                #lead highest
-                                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
-                            else:
-                                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
-
-                else:
-                    if hcp_in_suit == 0:
-                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
-                    else:
-                        # Leading 4th highest
-                        indices = np.where(hand52.reshape((4, 13))[opening_suit])[0]
-                        # Check if the first two ones are consecutive
-                        card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)
-            return card_index + 13 * opening_suit
+            return lead_pip_24(hand52, opening_suit, suit_length) + 13 * opening_suit
     else:
         if opening_suit == "SHDC".index(contract[1]):
             # when leading a trump always lead lowest from pips
@@ -455,6 +455,9 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
                 else:
                     card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 5)
             return card_index + 13 * opening_suit
+
+        if models.lead_from_pips_suit == "24" and suit_length > 1:
+            return lead_pip_24(hand52, opening_suit, suit_length) + 13 * opening_suit
 
     #Perhaps this is the right place to add generic rules like 2nd hand low and 3rd hand high
 

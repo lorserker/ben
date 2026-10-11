@@ -41,6 +41,8 @@ import tensorflow as tf
 import psutil
 
 from gevent.pywsgi import WSGIServer
+import gevent
+import signal
 import datetime 
 import time
 
@@ -72,7 +74,7 @@ try:
 except ImportError:
     ACEDefDLL = None
 
-from flask import Flask, Response, request, jsonify, abort
+from flask import Flask, Response, request, jsonify, abort, g
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
 import ipaddress
@@ -92,6 +94,8 @@ logging.getLogger().setLevel(logging.CRITICAL)
 # Just disables the warnings
 import tensorflow as tf
 from nn.opponents import Opponents
+from systems import Systems, UnknownName
+import copy
 
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address # Default key function (limits by IP)
@@ -108,7 +112,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.8.7'
+version = '0.8.8.8'
 init()
 
 def handle_exception(e):
@@ -248,7 +252,7 @@ def play_api(dealer_i, vuln_ns, vuln_ew, hands, models, sampler, contract, strai
                         strain_i=strain_i,
                         player_i=player_i,
                         hands52=[card_player.hand52 for card_player in card_players],
-                        n_samples=1,
+                        n_samples=200,
                         hidden_cards=deck,
                         current_trick=current_trick52
                     )
@@ -445,6 +449,12 @@ def str_to_bool(value):
         return False
     raise ValueError("Invalid boolean value")
 
+# Query parameters arrive as strings, so `if request.args.get("details")` is true
+# for details=false too. Only an explicit true value counts; absent means False.
+def query_flag(name):
+    value = request.args.get(name)
+    return value is not None and value.strip().lower() in ['true', '1', 't', 'y', 'yes']
+
 
 def create_auction(bids, dealer_i):
     # Convert various bid notations to standard format:
@@ -521,6 +531,23 @@ def parse_vuln(v):
     vuln_ew = v_upper in ['EW', 'E-W', 'BOTH', 'ALL']
     return [vuln_ns, vuln_ew]
 
+def parse_matchtype(args):
+    """
+    Read the scoring from the request: True for matchpoints, False for IMPs,
+    None when the request does not say.
+
+    `matchtype` is the Seat Robot API's name for it; `tournament` is the name
+    BEN has always read and `scoring` is Lia's, and both are still accepted.
+    When more than one is given, `matchtype` wins.
+
+    Matchpoints: MP, matchpoint, matchpoints, pairs (case-insensitive).
+    Anything else is IMPs.
+    """
+    value = args.get("matchtype") or args.get("tournament") or args.get("scoring")
+    if not value:
+        return None
+    return value.strip().lower() in ['mp', 'matchpoint', 'matchpoints', 'pairs']
+
 random = True
 # For some strange reason parameters parsed to the handler must be an array
 board_no = []
@@ -595,8 +622,6 @@ except KeyError:
         # Default to version 1. of Tensorflow
         from nn.models_tf2 import Models
 
-models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""), verbose)
-    
 print("Config:", configfile)
 if opponentfile != "":
     # Override with information from opponent file
@@ -605,7 +630,8 @@ if opponentfile != "":
     opponents = Opponents.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
     sys.stderr.write(f"Expecting opponent: {opponents.name}\n")
 
-models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""))
+# Loaded once, after the opponent file has been merged into the configuration
+models = Models.from_conf(configuration, config_path.replace(os.path.sep + "src",""), verbose)
 
 # Enable model timing for performance analysis
 ModelTimer.enabled = True
@@ -627,6 +653,24 @@ if models.matchpoint:
     print("Matchpoint mode on")
 else:
     print("Playing IMPS mode")
+
+# The systems a request may ask for (ourSystem/theirSystem/ourCarding/theirCarding)
+systems_file = os.path.join(config_path, "config", "systems.conf")
+if os.path.isfile(systems_file):
+    systems = Systems.load(systems_file, configuration, models, config_path.replace(os.path.sep + "src",""), verbose)
+    print("Systems: ", ", ".join(systems.capabilities()["readsSystems"]))
+else:
+    systems = None
+    print(f"No {systems_file}, so requests cannot choose a system")
+
+def request_models():
+    """The shared models with this request's scoring, systems and carding applied
+    to a copy, so one request cannot change what another one plays."""
+    this_request = systems.for_request(models, request.args) if systems else copy.copy(models)
+    requested_mp = parse_matchtype(request.args)
+    if requested_mp is not None:
+        this_request.matchpoint = requested_mp
+    return this_request
 
 if models.use_bba or models.use_bba_to_count_aces or models.consult_bba or models.use_bba_rollout:
     from bba.BBA import BBABotBid
@@ -858,26 +902,80 @@ def log_response_info(response):
     print(f"Available memory after request: {available_memory:.2f} MB")
     return response
 
+# Graceful stop for containers. As PID 1 in a container Python ignores SIGTERM, so
+# `docker stop` waited and then killed the process, losing any request in progress.
+# Now SIGTERM closes the listening socket, the requests in progress finish (at most
+# BEN_STOP_GRACE_SECONDS), and the process exits. Idea from grand-slam-bridge (PR #199).
+STOP_GRACE_SECONDS = float(os.getenv('BEN_STOP_GRACE_SECONDS', '25'))
+requests_in_flight = 0
+stopping = False
+
+@app.before_request
+def count_request_in():
+    global requests_in_flight
+    g.counted_in_flight = True
+    requests_in_flight += 1
+
+@app.teardown_request
+def count_request_out(exc=None):
+    global requests_in_flight
+    if g.pop('counted_in_flight', False):
+        requests_in_flight -= 1
+
+@app.after_request
+def close_connection_when_stopping(response):
+    # A kept-alive connection would otherwise bring the client back to this process
+    if stopping:
+        response.headers['Connection'] = 'close'
+    return response
+
+def stop_taking_requests(http_server):
+    global stopping
+    if not stopping:
+        stopping = True
+        print(f"Stop signal: no new connections, waiting for {requests_in_flight} request(s) in progress", flush=True)
+        http_server.close()  # serve_forever() returns
+
+def wait_for_requests_in_flight():
+    deadline = time.time() + STOP_GRACE_SECONDS
+    idle_since = None
+    # A request accepted just before the signal may not be counted yet, so require 0.5 s idle
+    while time.time() < deadline:
+        if requests_in_flight > 0:
+            idle_since = None
+        elif idle_since is None:
+            idle_since = time.time()
+        elif time.time() - idle_since >= 0.5:
+            break
+        gevent.sleep(0.05)
+    print(f"Stopped with {requests_in_flight} request(s) in progress", flush=True)
+
 
 @app.route('/')
 def home():
-    html = '<h1><a href="/">Play Now</a></h1>\n'
-    return html
+    # Seat Robot API: the names this server accepts in ourSystem/theirSystem/ourCarding/theirCarding
+    result = {"name": models.name}
+    if systems:
+        result.update(systems.capabilities())
+    return jsonify(result)
+
+@app.errorhandler(UnknownName)
+def unknown_name_handler(e):
+    return jsonify(error=str(e)), 400
 
 @app.route('/bid')
 def bid():
     try:
         t_start = time.time()
-        if request.args.get("dealno"):
-            dealno = request.args.get("dealno")
+        if request.args.get("dealno") or request.args.get("board"):
+            dealno = request.args.get("dealno") or request.args.get("board")
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
         else:
             dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))  
-        mp = models.matchpoint      
-        if request.args.get("tournament"):
-            mp = request.args.get("tournament").lower() == "mp"
-            models.matchpoint = mp
-        details = request.args.get("details")
+        # This request's scoring, systems and carding, on a copy of the shared models
+        models = request_models()
+        mp = models.matchpoint
+        details = query_flag("details")
         # First we extract our hand
         hand = request.args.get("hand").replace('_','.').upper()
         if 'X' in hand:
@@ -959,18 +1057,17 @@ def bid():
 def lead():
     try:
         t_start = time.time()
-        if request.args.get("dealno"):
-            dealno = request.args.get("dealno")
+        if request.args.get("dealno") or request.args.get("board"):
+            dealno = request.args.get("dealno") or request.args.get("board")
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
         else:
             dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))   
-        mp = models.matchpoint     
-        if request.args.get("tournament"):
-            mp = request.args.get("tournament").lower() == "mp"
-            models.matchpoint = mp
+        # This request's scoring, systems and carding, on a copy of the shared models
+        models = request_models()
+        mp = models.matchpoint
         # First we extract our hand and seat
         hand = request.args.get("hand").replace('_','.').upper()
-        details = request.args.get("details")
+        details = query_flag("details")
         if 'X' in hand:
             if '8' in hand or '9' in hand:
                 hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_play)
@@ -1039,20 +1136,19 @@ def lead():
 def play():
     try:
         t_start = time.time()
-        if request.args.get("dealno"):
-            dealno = request.args.get("dealno")
+        if request.args.get("dealno") or request.args.get("board"):
+            dealno = request.args.get("dealno") or request.args.get("board")
             dealno = "{}-{}".format(dealno, datetime.datetime.now().strftime("%Y-%m-%d"))    
         else:
             dealno = "-{}".format(datetime.datetime.now().strftime("%Y-%m-%d"))        
+        # This request's scoring, systems and carding, on a copy of the shared models
+        models = request_models()
         mp = models.matchpoint
-        if request.args.get("tournament"):
-            mp = request.args.get("tournament").lower() == "mp"
-            models.matchpoint = mp
         # First we extract the hands and seat
         hand_str = request.args.get("hand").replace('_','.')
         dummy_str = request.args.get("dummy").replace('_','.')
         played = request.args.get("played")
-        details = request.args.get("details")
+        details = query_flag("details")
         cards = [played[i:i+2] for i in range(0, len(played), 2)]
         #print(played)
         #print(cards, len(cards))
@@ -1288,10 +1384,9 @@ def explain():
     # Vulnerability (absolute format: None, NS, EW, All/Both)
     v = request.args.get("vul")
     vuln = parse_vuln(v)
+    # This request's scoring, systems and carding, on a copy of the shared models
+    models = request_models()
     mp = models.matchpoint
-    if request.args.get("tournament"):
-        mp = request.args.get("tournament").lower() == "mp"
-        models.matchpoint = mp
     # And finally we deduct our position
     position_i = dealer_enum[seat]
     dealer = request.args.get("dealer")
@@ -1319,10 +1414,9 @@ def explain_auction():
     # Vulnerability (absolute format: None, NS, EW, All/Both)
     v = request.args.get("vul")
     vuln = parse_vuln(v)
+    # This request's scoring, systems and carding, on a copy of the shared models
+    models = request_models()
     mp = models.matchpoint
-    if request.args.get("tournament"):
-        mp = request.args.get("tournament").lower() == "mp"
-        models.matchpoint = mp
     # And finally we deduct our position
     position_i = dealer_enum[seat]
     dealer = request.args.get("dealer")
@@ -1453,7 +1547,7 @@ def claim():
         hand_str = request.args.get("hand").replace('_','.')
         dummy_str = request.args.get("dummy").replace('_','.')
         played = request.args.get("played")
-        details = request.args.get("details")
+        details = query_flag("details")
         cards = [played[i:i+2] for i in range(0, len(played), 2)]
         #print(played)
         #print(cards, len(cards))
@@ -1629,10 +1723,9 @@ def autoplay():
         with tf_lock:
             tf.random.set_seed(hash_integer)
 
-        mp = models.matchpoint      
-        if request.args.get("tournament"):
-            mp = request.args.get("tournament").lower() == "mp"
-            models.matchpoint = mp
+        # This request's scoring, systems and carding, on a copy of the shared models
+        models = request_models()
+        mp = models.matchpoint
 
         # Get dealer and vulnerability from parameters or board number
         if dealer_param:
@@ -2234,12 +2327,17 @@ def robots_txt():
     return Response(content, mimetype='text/plain')
 
 if __name__ == "__main__":
+    # Before the port opens, so no request pays for the first inference
+    models.warm_up()
     print(Back.BLACK)
     try:
         # Run the Flask app with gevent server
+        # No connection limit and no timeout: gevent starts a greenlet per connection
         http_server = WSGIServer((host, port), app)
-        http_server.spawn = 4 #Create 4 Workers
-        http_server.connection_timeout = 120  # Set timeout to 120 seconds
+        if sys.platform != 'win32':
+            gevent.signal_handler(signal.SIGTERM, stop_taking_requests, http_server)
         http_server.serve_forever()
+        if stopping:
+            wait_for_requests_in_flight()
     finally:
         print(Style.RESET_ALL)        

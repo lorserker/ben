@@ -51,4 +51,5 @@ RUN ln -s /app /app/src && \
     sed -i 's/\r$//' /app/start_ben_all.sh && chmod +x /app/start_ben_all.sh
 
 EXPOSE 8080 4443 8085
-CMD ./start_ben_all.sh
+# Exec form, so the script is PID 1 and receives docker stop's signal (sh -c need not pass it on)
+CMD ["./start_ben_all.sh"]

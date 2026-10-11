@@ -14,6 +14,7 @@ def load(fin):
     auction_lines = []
     inside_auction_section = False
     dealer, vulnerable, par_contract = None, None, None
+    hands_nesw, side, tricks = None, None, None
     for line in fin:
         if line.startswith("% PBN") or line == "\n":
             if dealer != None:

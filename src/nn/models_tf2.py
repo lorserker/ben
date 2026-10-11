@@ -1,5 +1,7 @@
 import os
 import os.path
+import sys
+import time
 
 from configparser import ConfigParser
 
@@ -248,18 +250,34 @@ class Models:
         self.trump_lead_penalty = trump_lead_penalty
 
     def warm_up(self):
-        """Run dummy predictions to trigger TensorFlow JIT compilation for player models."""
+        """Run one dummy prediction through every model, so the first real request
+        does not pay for TensorFlow tracing. The dummy input has the shape the Keras
+        model declares, with 1 for each unknown dimension. A model that fails is
+        reported and skipped; warming up is about speed, never about correctness."""
         import numpy as np
 
-        # Only warm up player models - they have consistent 298-feature input
-        # and are called most frequently during card play
-        if self.player_models:
-            dummy_input = np.zeros((1, 1, 298), dtype=np.float16)
-            for player_model in self.player_models:
-                try:
-                    player_model.pred_fun(dummy_input)
-                except:
-                    pass
+        models = [("bidder", self.bidder_model), ("opponent", self.opponent_model),
+                  ("binfo", self.binfo_model), ("contract", self.contract_model),
+                  ("trick", self.trick_model), ("lead_suit", self.lead_suit_model),
+                  ("lead_nt", self.lead_nt_model), ("sd", self.sd_model),
+                  ("sd_no_lead", self.sd_model_no_lead)]
+        models += [(f"play{i}", m) for i, m in enumerate(self.player_models or [])]
+
+        t_start = time.time()
+        warmed = 0
+        for name, wrapper in models:
+            keras_model = getattr(wrapper, "model", None)
+            if keras_model is None:
+                continue  # ONNX wrappers have no Keras model to trace
+            predict = getattr(wrapper, "pred_fun", None) or getattr(wrapper, "pred_fun_seq")
+            try:
+                inputs = [np.zeros([1 if d is None else d for d in tensor.shape], dtype=np.float32)
+                          for tensor in keras_model.inputs]
+                predict(*inputs)
+                warmed += 1
+            except Exception as ex:
+                sys.stderr.write(f"Warm-up of the {name} model failed: {type(ex).__name__}: {ex}\n")
+        print(f"Warmed up {warmed} models in {time.time() - t_start:.2f} seconds")
 
     @classmethod
     def from_conf(cls, conf: ConfigParser, base_path=None, verbose=False) -> "Models":

@@ -77,7 +77,7 @@ import gc
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.8.7'
+version = '0.8.8.8'
 init()
 
 SEATS = ['North', 'East', 'South', 'West']

@@ -43,8 +43,24 @@ These parameters are used across multiple endpoints:
 | `ctx` | Bidding context as concatenated 2-char bids | `1C--1S` = 1C-Pass-1S |
 | `dummy` | Dummy's hand in PBN format | `QJ87.A95.K63.T42` |
 | `played` | Cards played as concatenated 2-char cards | `SJSQSKSA` |
-| `tournament` | Scoring type | `mp` (matchpoint) or `imps` |
+| `matchtype` | Scoring type (the Seat Robot API name). `MP`, `matchpoint`, `matchpoints` or `pairs` is matchpoints, anything else IMPs. Absent: the server's start-up setting. It applies to this request only | `MP` or `IMP` |
+| `tournament`, `scoring` | Other names for `matchtype` (BEN's older one and Lia's), still accepted; `matchtype` wins when more than one is sent | `mp` or `imps` |
+| `ourSystem` | Bidding system for the side of `seat` (us and partner), from `playsSystems` in `GET /` | `SAYC` |
+| `theirSystem` | Bidding system the opponents play, from `readsSystems` in `GET /` | `BEN:LIA-21GF` |
+| `ourCarding` | Our opening-lead carding, from `cardings` in `GET /` (see below) | `STANDARD-35` |
+| `theirCarding` | The opponents' carding. Accepted, but it changes nothing yet: BEN reads every lead with one rule table | `21GF-GIB` |
+| `board` | Board number, for the logs (`dealno` is the older name) | `7` |
 | `details` | Include extended information | `true` |
+
+The four system and carding parameters apply to one request only; without them the server plays
+what it was started with. They are accepted on `/bid`, `/lead`, `/play`, `/explain` and
+`/explain_auction`. A name the server does not know is answered with `400` and an `error` naming it.
+
+| Carding | Opening-lead pips |
+|---------|-------------------|
+| `STANDARD` | Top of touching honours, 2nd highest from a weak suit, 4th best from an honour, against notrump and suit contracts |
+| `STANDARD-35` | As `STANDARD` against notrump, 1st/3rd/5th best against suit contracts |
+| a system name | The carding that goes with that system, which today is the start-up rule (`lead_from_pips_nt` / `lead_from_pips_suit`) |
 
 ### Bid Encoding in `ctx`
 
@@ -58,6 +74,24 @@ These parameters are used across multiple endpoints:
 ---
 
 ## Endpoints
+
+### `/` - Server Capabilities
+
+Returns the systems and cardings a request may name, and what the server plays without them
+(the Seat Robot API's capability list). The names come from `src/config/systems.conf`.
+
+```json
+{
+  "name": "GIB as on BBO",
+  "playsSystems": ["21GF-GIB", "21GF", "SAYC"],
+  "readsSystems": ["21GF-GIB", "21GF", "SAYC", "BEN:LIA-21GF", "BEN:QPLUS-21GF", "BEN:WBRIDGE5-SAYC",
+                   "BEN:BLUECHIP-SAYC", "BEN:SHARK-SAYC", "BEN:ROBO-SAYC"],
+  "cardings": ["21GF-GIB", "21GF", "SAYC", "BEN:LIA-21GF", "...", "STANDARD", "STANDARD-35"],
+  "defaults": {"ourSystem": "21GF-GIB", "theirSystem": "21GF-GIB", "ourCarding": "STANDARD-35", "theirCarding": "21GF-GIB"}
+}
+```
+
+`BEN:` names are read with networks trained to imitate that robot; BEN cannot play them.
 
 ### `/bid` - Get Bid Recommendation
 
@@ -73,11 +107,11 @@ Returns the recommended bid for a given hand and auction state.
 | `vul` | Yes | Vulnerability string |
 | `ctx` | Yes | Current auction (can be empty for opening) |
 | `details` | No | Include candidates/samples if `true` |
-| `tournament` | No | `mp` for matchpoint scoring |
+| `matchtype` | No | `MP` for matchpoint scoring (`tournament` is accepted as an older name) |
 
 **Example Request:**
 ```
-GET /bid?hand=AK97543.K.T3.AK7&seat=S&dealer=N&vul=&ctx=----&tournament=mp
+GET /bid?hand=AK97543.K.T3.AK7&seat=S&dealer=N&vul=&ctx=----&matchtype=MP
 ```
 
 **Response:**

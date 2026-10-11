@@ -280,7 +280,9 @@ class BotBid:
             ev_candidates = []
             ev_scores = {}
             # we would like to have the same samples including pips for all calculations
-            if self.models.double_dummy_calculator:
+            # The PBN hands are only needed by the DD calculator and the BBA rollout
+            hands_np_as_pbn = None
+            if self.models.double_dummy_calculator or self.models.use_bba_rollout:
                 hands_np_as_pbn = self.translate_hands(hands_np, self.hand_str, sample_count)
             for candidate in candidates:
                 if self.verbose:

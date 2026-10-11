@@ -3,6 +3,7 @@ import deck52
 import random
 import numpy as np
 from itertools import combinations
+from math import comb
 
 class Claimer:
 
@@ -209,10 +210,12 @@ class Claimer:
             n_cards = (len(hidden_cards) + 1) // 2
         if self.verbose:
             print(f"Claimapi: Cards for player RHO {n_cards} {hidden_hand_indexes} {seen_hand_indexes}")
-        for i in range(n_samples):
-            np.random.shuffle(hidden_cards)
-            hands[hidden_hand_indexes[1]] = deck52.deal_to_str(_hand_from_cards(52, hidden_cards[:n_cards]))
-            hands[hidden_hand_indexes[0]] = deck52.deal_to_str(_hand_from_cards(52, hidden_cards[n_cards:]))
+        # The claim must hold whatever the hidden cards are, so check every split
+        # when there are few enough, otherwise n_samples distinct random splits.
+        for chosen in _hidden_splits(hidden_cards, n_cards, n_samples):
+            remaining = [card for card in hidden_cards if card not in chosen]
+            hands[hidden_hand_indexes[1]] = deck52.deal_to_str(_hand_from_cards(52, list(chosen)))
+            hands[hidden_hand_indexes[0]] = deck52.deal_to_str(_hand_from_cards(52, remaining))
 
             sampled_hands_pbn.append('N:' + ' '.join(hands))
 
@@ -279,6 +282,18 @@ class Claimer:
         
         return max_min_tricks
 
+
+CLAIM_MAX_EXHAUSTIVE_SPLITS = 500
+
+def _hidden_splits(hidden_cards, n_cards, n_samples):
+    """Ways to give n_cards of hidden_cards to one hidden hand: all of them when
+    there are at most CLAIM_MAX_EXHAUSTIVE_SPLITS, else n_samples distinct ones."""
+    if comb(len(hidden_cards), n_cards) <= max(CLAIM_MAX_EXHAUSTIVE_SPLITS, n_samples):
+        return list(combinations(hidden_cards, n_cards))
+    splits = set()
+    while len(splits) < n_samples:
+        splits.add(tuple(sorted(random.sample(hidden_cards, n_cards))))
+    return list(splits)
 
 def _hand_from_cards(n, cards):
     hand = np.zeros(n, dtype=np.int32)

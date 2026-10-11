@@ -83,12 +83,31 @@ def _load_dds3():
 dds3 = _load_dds3()
 
 
+def _gevent_patched_threading():
+    try:
+        from gevent import monkey
+        return monkey.is_module_patched('threading')
+    except ImportError:
+        return False
+
+
+# gameapi.py runs gevent's monkey.patch_all(), which turns the threads of a
+# concurrent.futures pool into greenlets sharing one OS thread, so the solves ran
+# one after the other (200 deals: 13 s instead of 2 s on 8 cores). Under gevent
+# the pool is gevent's own executor, which always uses native threads. Found by
+# grand-slam-bridge (PR #198).
+_REAL_THREADS = _gevent_patched_threading()
+if _REAL_THREADS:
+    from gevent.monkey import get_original
+    from gevent.threadpool import ThreadPoolExecutor as _NativeThreadPoolExecutor
+
 # DDS 3.0.0 removed internal multi-threading from the legacy batch API
 # (SolveAllBoards now solves sequentially). The modern model is one
 # SolverContext per worker thread; DDSolver parallelises with a thread pool,
 # and solve_board_pbn releases the GIL during the solve, so the threads run
-# concurrently. Each pool thread keeps its own SolverContext.
-_ctx_local = threading.local()
+# concurrently. Each pool thread keeps its own SolverContext - per OS thread,
+# so under gevent the original thread-local, not the patched per-greenlet one.
+_ctx_local = get_original('_thread', '_local')() if _REAL_THREADS else threading.local()
 
 
 def _thread_context():
@@ -113,9 +132,13 @@ class DDSolver:
         # 0 = one thread per CPU core.
         workers = max_threads if (max_threads and max_threads > 0) else (os.cpu_count() or 4)
         self._workers = workers
-        self._pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="dds")
+        if _REAL_THREADS:
+            self._pool = _NativeThreadPoolExecutor(max_workers=workers)
+        else:
+            self._pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="dds")
         if verbose:
-            sys.stderr.write(f"DDSolver loaded — DDS {self.version()} - dds mode {dds_mode} - {workers} solver threads\n")
+            sys.stderr.write(f"DDSolver loaded — DDS {self.version()} - dds mode {dds_mode} - {workers} solver threads"
+                             f"{' (native threads under gevent)' if _REAL_THREADS else ''}\n")
         # No-op unless --ddsrecord / BEN_DDS_RECORD asked for a recording. If the
         # entry point already opened one, this just labels it with the DDS build
         # actually in use. See ddsrecorder.py / ddsreplay.py.

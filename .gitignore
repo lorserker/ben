@@ -134,3 +134,4 @@ logs/
 demo/**/*.bak
 
 install/data-staging/
+debug.log

@@ -193,7 +193,7 @@ class CardPlayer:
                 new_e_tricks = round((pimc_e_tricks * weight + e_tricks * (1-weight)),2) if pimc_e_tricks is not None and e_tricks is not None else None
                 new_e_score = round((pimc_e_score * weight + e_score * (1-weight)),2) if pimc_e_score is not None and e_score is not None else None
                 new_e_make = round((pimc_e_make * weight + e_make * (1-weight)),2) if pimc_e_make is not None and e_make is not None else None
-                new_msg = msg +"|" if msg else "" + engine + f" {weight*100:.0f}%|" + (pimc_msg or '')
+                new_msg = (msg + "|" if msg else "") + engine + f" {weight*100:.0f}%|" + (pimc_msg or '')
                 new_msg += f"|{pimc_e_tricks:.2f} {pimc_e_score:.2f} {pimc_e_make:.2f}"
                 new_msg += f"|BEN DD {(1-weight)*100:.0f}%|"
                 new_msg += f"{e_tricks:.2f} {e_score:.2f} {e_make:.2f}"
@@ -341,12 +341,12 @@ class CardPlayer:
             if card_resp:
                 return card_resp
 
-        # When play_status is discard, it might be a good idea to use PIMC even if it is not enabled
         preempted = features.get("preempted", False)
 
-        if play_status == "discard" and not self.models.pimc_use_discard:
+        # pimc_use_discarding = False: discards are decided by BEN's own DD alone
+        if play_status == "Discard" and not self.models.pimc_use_discarding:
             dd_resp_cards, claims = self.get_cards_dd_evaluation(trick_i, leader_i, tricks52, current_trick52, players_states, probability_of_occurence, quality)
-            self.update_with_alphamju(card_resp_alphamju, merged_card_resp)
+            self.update_with_alphamju(card_resp_alphamju, dd_resp_cards)
             card_resp = self.pick_card_after_dd_eval(trick_i, leader_i, current_trick52, tricks52, players_states, dd_resp_cards, bidding_scores, quality, samples, play_status, self.missing_cards, claims, shown_out_suits, card_scores_nn)
         else:                    
             if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
