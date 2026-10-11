@@ -148,6 +148,9 @@ class _TimingContext:
         if ModelTimer.enabled and self.start_time is not None:
             duration_ms = (time.perf_counter() - self.start_time) * 1000
             ModelTimer.record(self.model_name, duration_ms, self.items)
+            # [robot-time] a neural network call also counts toward THIS decision's nn figure.
+            if self.model_name.startswith(_NN_LABELS):
+                PlayClock.add_nn(duration_ms / 1000.0)
         return False
 
 
@@ -178,6 +181,9 @@ def timed_inference(model_name: str):
 
 import threading
 
+# The ModelTimer labels that are a neural network being run - every wrapper under nn/ uses one
+# of these. Double dummy (dds_*), PIMC, ACE and 'sampling_play' are stages, not networks.
+_NN_LABELS = ('player_', 'bidder', 'bidinfo', 'contract', 'trick', 'leader', 'single_dummy')
 
 class PlayClock:
     """Milliseconds spent in each stage of ONE card decision."""
@@ -207,6 +213,59 @@ class PlayClock:
                 pass
 
     @classmethod
+    def add_nn(cls, seconds):
+        """
+        [robot-time] Time inside a neural network. Most of it happens INSIDE a stage - the
+        sampler scores its deals with the bidding and play networks - so it is also kept per
+        stage (nn_in_sampling, nn_in_dd, nn_in_pimc). That is what lets the line report
+        sampling and double dummy WITHOUT their network time, and the four parts add up.
+        """
+        d = getattr(cls._local, 'd', None)
+        if d is None:
+            return
+        try:
+            ms = seconds * 1000.0
+            d['nn'] = d.get('nn', 0.0) + ms
+            inside = d.get('_in')
+            if inside:
+                d['nn_in_' + inside] = d.get('nn_in_' + inside, 0.0) + ms
+        except Exception:
+            pass
+
+    @classmethod
+    def add_solved(cls, seconds, deals, pool_threads, os_threads):
+        """
+        [robot-time] One double-dummy batch: the time in the solver alone, how many deals it
+        solved, the size of the solver's pool and how many OPERATING SYSTEM threads actually
+        did the solving. The last two differ if the pool's threads are not real ones.
+        """
+        d = getattr(cls._local, 'd', None)
+        if d is None:
+            return
+        try:
+            d['solve'] = d.get('solve', 0.0) + seconds * 1000.0
+            d['deals'] = d.get('deals', 0) + int(deals)
+            d['threads'] = int(pool_threads)
+            d['os_threads'] = max(d.get('os_threads', 0), int(os_threads))
+        except Exception:
+            pass
+
+    @classmethod
+    def enter(cls, name):
+        """The outermost stage in progress, for add_nn. Returns True if this call set it."""
+        d = getattr(cls._local, 'd', None)
+        if d is None or d.get('_in'):
+            return False
+        d['_in'] = name
+        return True
+
+    @classmethod
+    def leave(cls, mine):
+        d = getattr(cls._local, 'd', None)
+        if mine and d is not None:
+            d['_in'] = None
+
+    @classmethod
     def get(cls):
         return getattr(cls._local, 'd', None) or {'sampling': 0.0, 'dd': 0.0, 'pimc': 0.0, 'playouts': 0}
 
@@ -221,9 +280,11 @@ class _PlayStage:
 
     def __enter__(self):
         self.t = time.perf_counter()
+        self.mine = PlayClock.enter(self.name)
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
+        PlayClock.leave(self.mine)
         PlayClock.add(self.name, time.perf_counter() - self.t)
         return False
 
@@ -234,9 +295,11 @@ def timed_stage(name):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
             t = time.perf_counter()
+            mine = PlayClock.enter(name)
             try:
                 return func(*args, **kwargs)
             finally:
+                PlayClock.leave(mine)
                 PlayClock.add(name, time.perf_counter() - t)
         return wrapper
     return decorator

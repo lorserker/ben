@@ -7,7 +7,17 @@ from typing import List
 from collections import Counter
 from objects import Card
 from colorama import Fore, Back, Style, init
-from nn.timing import ModelTimer
+from nn.timing import ModelTimer, PlayClock
+
+# [robot-time] The id of the OPERATING SYSTEM thread, not of the Python one. Under gevent's
+# monkey patching a ThreadPoolExecutor's "threads" can be greenlets sharing one real thread,
+# and then a pool of two solves one deal at a time. Counting real ids says which it is.
+try:
+    from gevent import monkey as _gevent_monkey
+    _os_thread_id = _gevent_monkey.get_original('threading', 'get_native_id')
+except Exception:
+    import threading as _threading
+    _os_thread_id = getattr(_threading, 'get_native_id', lambda: 0)
 from ddsolver.ddsrecorder import DDSRecorder
 
 init()
@@ -193,6 +203,9 @@ class DDSolver:
             t0 = time.perf_counter()
             results = self.solve_helper(strain_i, leader_i, current_trick, hands_pbn, solutions)
             elapsed_ms = (time.perf_counter() - t0) * 1000
+        # [robot-time] counted toward the decision in progress, if there is one. Never raises.
+        PlayClock.add_solved(elapsed_ms / 1000.0, len(hands_pbn), self._workers,
+                             len(getattr(self, '_solved_on', ()) or ()))
 
         if DDSRecorder.enabled:
             DDSRecorder.record_solve(strain_i, leader_i, current_trick, hands_pbn,
@@ -217,7 +230,14 @@ class DDSolver:
 
         # Solve each board on the thread pool. solve_board_pbn releases the GIL
         # during the DDS search; each pool thread uses its own SolverContext.
+        solved_on = set()
+        self._solved_on = solved_on
+
         def _solve_one(pbn):
+            try:
+                solved_on.add(_os_thread_id())
+            except Exception:
+                pass
             return dds3.solve_board_pbn(
                 pbn,
                 trump=trump,

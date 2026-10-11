@@ -838,7 +838,36 @@ def _ben_time_play(path, t_lock, t_work, t_done, source='fresh'):
         pass
 
 
-def _robot_time(kind, t_start, t_lock=None, t_work=None, t_done=None, path='-', source='fresh'):
+# [robot-time] WHO HAS EACH MODEL LOCK RIGHT NOW: 'bid' and 'play' -> (kind, rid), or None.
+# Written by the request that takes the lock and cleared as it lets go, read by a request as
+# it arrives. Nothing decides anything from it; it exists to be printed.
+_lock_held_by = {'bid': None, 'play': None}
+
+
+def _lock_seen(name):
+    """Who held this lock as the request arrived, as 'kind:rid', or None if it was free."""
+    try:
+        h = _lock_held_by.get(name)
+        return ('%s:%s' % h) if h else None
+    except Exception:
+        return None
+
+
+def _lock_take(name, kind):
+    try:
+        _lock_held_by[name] = (kind, _ben_rid())
+    except Exception:
+        pass
+
+
+def _lock_drop(name):
+    try:
+        _lock_held_by[name] = None
+    except Exception:
+        pass
+
+
+def _robot_time(kind, t_start, t_lock=None, t_work=None, t_done=None, path='-', source='fresh', held=None):
     """
     [robot-time] ONE LINE PER ROBOT REQUEST, WRITTEN AS THE ANSWER LEAVES (measuring only).
 
@@ -855,15 +884,47 @@ def _robot_time(kind, t_start, t_lock=None, t_work=None, t_done=None, path='-', 
     [robot-time] line can say how much of what it waited was this service and how much
     was the road between the two. The body of the answer is not touched.
 
+    WHERE THE THINKING WENT (2026-10-11), on a decision this request computed itself and that
+    was not a shortcut. Four parts that add up to think_ms:
+
+        sampling_ms   dealing layouts that fit the auction and the play, WITHOUT its networks
+        dd_ms         the double-dummy evaluation, WITHOUT its networks - building the deals,
+                      solving them and scoring the answers. solve_ms is the part of it spent
+                      inside the solver itself
+        nn_ms         every neural network call, wherever in the decision it was made
+        rest_ms       what is left: replaying the hand, the choice, PIMC when it is on
+
+    deals is how many layouts the solver was actually given. threads is the size of its pool
+    and os_threads how many operating-system threads did the solving - if that is 1 under a
+    pool of 2, the pool is not running side by side.
+
+    held_by, when wait_ms is over 200: the request that had the lock as this one arrived,
+    as kind:rid. It is who this one queued behind (or the first of them).
+
     Wrapped: a fault here must never cost a bid or a card.
     """
     try:
         total = (time.time() - t_start) * 1000
         wait = (t_work - t_lock) * 1000 if (t_lock and t_work) else 0
         think = (t_done - t_work) * 1000 if (t_work and t_done) else 0
-        print('[robot-time] kind=%s rid=%s path=%s source=%s wait_ms=%d think_ms=%d other_ms=%d total_ms=%d' % (
+        line = '[robot-time] kind=%s rid=%s path=%s source=%s wait_ms=%d think_ms=%d other_ms=%d total_ms=%d' % (
             kind, _ben_rid(), str(path).replace(' ', '_'), source, wait, think,
-            max(0, total - wait - think), total), flush=True)
+            max(0, total - wait - think), total)
+        try:
+            if source == 'fresh' and think and str(path) not in ('Forced', 'Follow', 'cache'):
+                c = PlayClock.get()
+                nn = c.get('nn', 0.0)
+                sampling = max(0.0, c.get('sampling', 0.0) - c.get('nn_in_sampling', 0.0))
+                dd = max(0.0, c.get('dd', 0.0) - c.get('nn_in_dd', 0.0))
+                line += ' sampling_ms=%d dd_ms=%d solve_ms=%d nn_ms=%d rest_ms=%d deals=%d threads=%s os_threads=%s' % (
+                    sampling, dd, c.get('solve', 0.0), nn,
+                    max(0.0, think - sampling - dd - nn),
+                    c.get('deals', 0), c.get('threads', '-'), c.get('os_threads', '-'))
+            if wait > 200:
+                line += ' held_by=%s' % (held or '-')
+        except Exception:
+            pass
+        print(line, flush=True)
         g.robot_time = '%d;%d;%d' % (wait, think, total)
     except Exception:
         pass
@@ -1232,10 +1293,16 @@ def bid():
         # [ben-time] one line per bid. The lock is the only place a request waits for
         # another, so the gap either side of it IS the queueing time.
         _t_lock = time.time()
+        PlayClock.start()                   # [robot-time] so a bid's networks and solves are counted too
+        _held = _lock_seen('bid')
         _log('start', _ben_rid())
         with model_lock_bid:
             _t_work = time.time()
-            bid = hint_bot.bid(auction)
+            _lock_take('bid', 'bid')
+            try:
+                bid = hint_bot.bid(auction)
+            finally:
+                _lock_drop('bid')
             _t_done = time.time()
 
         full_result = bid.to_dict()
@@ -1281,7 +1348,7 @@ def bid():
             logger.info(f"Calculations bid: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
         _robot_time('bid', t_start, _t_lock, _t_work, _t_done,
-                    'sampled' if full_result.get('samples') else 'no-search')
+                    'sampled' if full_result.get('samples') else 'no-search', held=_held)
         return json.dumps(result)
     except Exception as e:
         handle_exception(e)
@@ -1355,10 +1422,16 @@ def lead():
         # rather than queued behind. See _card_decide.
         _started_at = []
 
+        _held = _lock_seen('play')
+
         def _compute_lead():
             with model_lock_play:
                 _started_at.append(time.time())
-                return hint_bot.find_opening_lead(auction, aceking)
+                _lock_take('play', 'lead')
+                try:
+                    return hint_bot.find_opening_lead(auction, aceking)
+                finally:
+                    _lock_drop('play')
 
         card_resp, _source = _card_decide(
             _card_key('lead', hand=hand, seat=seat, dealer=dealer, vul=v, ctx=ctx),
@@ -1384,7 +1457,7 @@ def lead():
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction,  "lead":result}
             logger.info(f"Calculations lead: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
-        _robot_time('lead', t_start, _t_lock, _t_work, _t_done, 'lead', _source)
+        _robot_time('lead', t_start, _t_lock, _t_work, _t_done, 'lead', _source, held=_held)
         return json.dumps(result)
     except Exception as e:
         handle_exception(e)
@@ -1528,12 +1601,18 @@ def play():
         # with this one.
         _started_at = []
 
+        _held = _lock_seen('play')
+
         def _compute_play():
             with model_lock_play:
                 _started_at.append(time.time())
-                return play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract,
-                                strain_i, decl_i, auction, cards, cardplayer, False, features,
-                                effective_verbose)
+                _lock_take('play', 'play')
+                try:
+                    return play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract,
+                                    strain_i, decl_i, auction, cards, cardplayer, False, features,
+                                    effective_verbose)
+                finally:
+                    _lock_drop('play')
 
         (card_resp, player_i, msg), _source = _card_decide(
             _card_key('play', hand=hand_str, dummy=dummy_str, seat=seat, dealer=dealer,
@@ -1560,7 +1639,7 @@ def play():
             calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
             logger.info(f"Calculations play: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
-        _robot_time('play', t_start, _t_lock, _t_work, _t_done, msg, _source)
+        _robot_time('play', t_start, _t_lock, _t_work, _t_done, msg, _source, held=_held)
         return json.dumps(result)
     except Exception as e:
         print(e)
@@ -1915,13 +1994,26 @@ def claim():
         # Find ace and kings, when defending
         aceking = {}
 
+        # [robot-time] kind=claim. A claim takes the SAME lock as a card, and nothing here
+        # notices if the site has stopped waiting: it works to the end and holds the lock
+        # until it has.
+        _t_lock = time.time()
+        PlayClock.start()
+        _held = _lock_seen('play')
         with model_lock_play:
-            card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, claim, aceking, verbose)
+            _t_work = time.time()
+            _lock_take('play', 'claim')
+            try:
+                card_resp, player_i, msg =  play_api(dealer_i, vuln[0], vuln[1], hands, models, sampler, contract, strain_i, decl_i, auction, cards, cardplayer, claim, aceking, verbose)
+            finally:
+                _lock_drop('play')
+        _t_done = time.time()
         result["result"] = msg
         if record: 
             calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result, "claim":claim}
             logger.info(f"Calculations play: {json.dumps(calculations)}")
         print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        _robot_time('claim', t_start, _t_lock, _t_work, _t_done, 'claim', held=_held)
         return json.dumps(result)
     except Exception as e:
         print(e)
