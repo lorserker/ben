@@ -19,6 +19,6 @@ class Contract:
         return contract
 
     def pred_fun(self, x):
-        with ModelTimer.time_call('contract'):
+        with ModelTimer.time_call('contract', rows=x):
             result = self._pred_fun_tf(x)
         return result

@@ -23,6 +23,6 @@ class BidInfo:
         return self.model(input_tensor, training=False)  # Use model call instead of predict
 
     def pred_fun(self, x):
-        with ModelTimer.time_call('bidinfo'):
+        with ModelTimer.time_call('bidinfo', rows=x):
             out_hcp_seq, out_shape_seq = self.pred_fun_tf(x)  # Call the tf.function
         return out_hcp_seq.numpy(), out_shape_seq.numpy()  # Convert in this function

@@ -970,7 +970,117 @@ def _robot_time(kind, t_start, t_lock=None, t_work=None, t_done=None, path='-', 
         except Exception:
             pass
         print(line, flush=True)
+        _robot_detail(kind, source, think, path)
         g.robot_time = '%d;%d;%d' % (wait, think, total)
+    except Exception:
+        pass
+
+
+def _robot_detail(kind, source, think, path):
+    """
+    [robot-nn] and [robot-sampling] - TWO MORE LINES UNDER A [robot-time] LINE (2026-10-11),
+    on a lead or a calculated card this request computed itself. Logging only.
+
+    [robot-nn]        one entry for each network that ran:
+                          name=calls/rows/cells/ms/cpu_ms
+                      rows is deals scored, cells is deals x steps for the networks that read
+                      a sequence (the auction so far, the tricks so far) and is what their
+                      cost follows. cpu_ms is the processor time of the whole PROCESS across
+                      those calls: about equal to ms means one CPU was busy, about twice
+                      means both were. It is the process's, so anything else running at the
+                      same moment is in it too.
+
+    [robot-sampling]  one entry for each step of the sampler:
+                          step=calls/ms/nn_ms
+                      ms is the step's own time with the steps inside it taken out, so the
+                      entries add up; nn_ms is how much of that was inside a network.
+                      other_ms is the sampling no step accounts for.
+
+    The step names: auction_round (one batch of deals for a lead or a bid; its own time is
+    the filtering), deal, bidding_info, score_bids, and for a card shuffle / shuffle_info,
+    check_shape, check_lead, check_play, check_logic, check_discards.
+
+    Wrapped: a fault here must never cost a card.
+    """
+    try:
+        if source != 'fresh' or not think or kind not in ('lead', 'play'):
+            return
+        if str(path) in ('Forced', 'Follow'):
+            return
+        c = PlayClock.get()
+        rid = _ben_rid()
+        nets = c.get('nets') or {}
+        if nets:
+            print('[robot-nn] kind=%s rid=%s %s' % (kind, rid, ' '.join(
+                '%s=%d/%d/%d/%d/%d' % (name, v[0], v[1], v[4], v[2], v[3])
+                for name, v in sorted(nets.items(), key=lambda kv: -kv[1][2]))), flush=True)
+        steps = c.get('steps') or {}
+        if steps:
+            stepped = sum(v[1] for v in steps.values())
+            print('[robot-sampling] kind=%s rid=%s %s other_ms=%d' % (kind, rid, ' '.join(
+                '%s=%d/%d/%d' % (name, v[0], v[1], v[2])
+                for name, v in sorted(steps.items(), key=lambda kv: -kv[1][1])),
+                max(0.0, c.get('sampling', 0.0) - stepped)), flush=True)
+    except Exception:
+        pass
+
+
+def _tf_threads(when):
+    """
+    [ben-tf] WHAT TENSORFLOW HAS TO WORK WITH, at boot (2026-10-11). Logging only.
+
+    intra_op is the pool one operation may spread across, inter_op the pool for running
+    separate operations side by side; 0 means TensorFlow chooses, from the cores it can
+    SEE - which in a container is the host's count, not the service's share. The env
+    values are what the Dockerfile asked for. cpus is what Python is told it may use, and
+    cpu.max the container's real limit as "quota period" (200000 100000 is two CPUs).
+
+    threads is every operating-system thread this process has, and names counts them by
+    the name the kernel shows, which is how TensorFlow's own pools can be told from the
+    solver's and from Python's. Asked before the models warm and again after, because
+    TensorFlow starts its pools on first use.
+    """
+    try:
+        bits = ['[ben-tf] %s' % when]
+        try:
+            bits.append('intra_op=%s inter_op=%s' % (
+                tf.config.threading.get_intra_op_parallelism_threads(),
+                tf.config.threading.get_inter_op_parallelism_threads()))
+        except Exception as ex:
+            bits.append('tf_config=unreadable(%s)' % type(ex).__name__)
+        bits.append('env_intra=%s env_inter=%s env_omp=%s' % (
+            os.environ.get('TF_NUM_INTRAOP_THREADS', '-'),
+            os.environ.get('TF_NUM_INTEROP_THREADS', '-'),
+            os.environ.get('OMP_NUM_THREADS', '-')))
+        try:
+            seen = len(os.sched_getaffinity(0))
+        except Exception:
+            seen = '-'
+        bits.append('cpus=%s of %s' % (seen, os.cpu_count()))
+        for limit in ('/sys/fs/cgroup/cpu.max', '/sys/fs/cgroup/cpu/cpu.cfs_quota_us'):
+            try:
+                with open(limit) as f:
+                    bits.append('%s="%s"' % (os.path.basename(limit), f.read().strip()))
+                break
+            except Exception:
+                pass
+        try:
+            names = {}
+            for task in os.listdir('/proc/self/task'):
+                try:
+                    with open('/proc/self/task/%s/comm' % task) as f:
+                        name = f.read().strip()
+                except Exception:
+                    name = '?'
+                names[name] = names.get(name, 0) + 1
+            bits.append('threads=%d names=%s' % (sum(names.values()), ','.join(
+                '%s:%d' % kv for kv in sorted(names.items(), key=lambda kv: -kv[1]))))
+        except Exception:
+            try:
+                bits.append('threads=%d' % psutil.Process().num_threads())
+            except Exception:
+                bits.append('threads=-')
+        print(' '.join(bits), flush=True)
     except Exception:
         pass
 
@@ -2785,11 +2895,21 @@ if __name__ == "__main__":
     is logged and the service still starts; it will simply pay for that one model
     on its first real request, which is exactly where it was before.
     """
+    _tf_threads('before-warm-up')
+    _warm_wall, _warm_cpu = time.time(), time.process_time()
     try:
         models.warm_up_all()
     except Exception as _warm_ex:
         print('[ben-warm] warm-up could not run (%s: %s) - starting anyway'
               % (type(_warm_ex).__name__, _warm_ex), flush=True)
+    try:
+        # cpu_ms against wall_ms: above 1.0 means more than one CPU was at work in the warm-up.
+        _warm_wall, _warm_cpu = (time.time() - _warm_wall) * 1000, (time.process_time() - _warm_cpu) * 1000
+        print('[ben-tf] warm-up wall_ms=%d cpu_ms=%d cpu_per_wall=%.2f' % (
+            _warm_wall, _warm_cpu, (_warm_cpu / _warm_wall) if _warm_wall else 0), flush=True)
+    except Exception:
+        pass
+    _tf_threads('after-warm-up')
     try:
         # Run the Flask app with gevent server
         http_server = WSGIServer((host, port), app)

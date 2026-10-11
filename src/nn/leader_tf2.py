@@ -20,6 +20,6 @@ class Leader:
         return result
 
     def pred_fun(self, x, b):
-        with ModelTimer.time_call('leader'):
+        with ModelTimer.time_call('leader', rows=x):
             result = self.pred_fun_tf(x, b)
         return result.numpy()
