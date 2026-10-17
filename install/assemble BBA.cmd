@@ -37,14 +37,14 @@ robocopy ..\src\config\Robots "BBA\config" WBridge5-Sayc.conf
 
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E righty*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E lefty*
-robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Lead-*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Lead*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E dummy_*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E decl_*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E BEN-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Blue*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E GIB-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Lia-*
-robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Q-Plus*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E QPlus*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Shark-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Robo-Sayc-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E WBridge5-*

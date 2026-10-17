@@ -5,7 +5,7 @@ rem script only robocopies the existing dist\ output into the BEN\ layout.
 
 robocopy ..\models\TF2Models "BEN\models\TF2Models" /E righty*
 robocopy ..\models\TF2Models "BEN\models\TF2Models" /E lefty*
-robocopy ..\models\TF2Models "BEN\models\TF2Models" /E Lead-*
+robocopy ..\models\TF2Models "BEN\models\TF2Models" /E Lead*
 robocopy ..\models\TF2Models "BEN\models\TF2Models" /E dummy_*
 robocopy ..\models\TF2Models "BEN\models\TF2Models" /E decl_*
 robocopy ..\models\TF2Models "BEN\models\TF2Models" /E SD_*

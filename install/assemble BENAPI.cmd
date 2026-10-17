@@ -26,7 +26,7 @@ robocopy ..\models\TF2Models "BENAPI\models\TF2Models" Robo-*8730*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" WBridge5-*8730*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" righty*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" lefty*
-robocopy ..\models\TF2Models "BENAPI\models\TF2Models" Lead-*
+robocopy ..\models\TF2Models "BENAPI\models\TF2Models" Lead*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" dummy_*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" decl_*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" Contract*
