@@ -26,5 +26,5 @@ copy ..\src\ben.ico "BEN"
 robocopy dist\gameserver "BEN" /E
 robocopy dist\appserver "BEN" /E
 robocopy dist\BEN "BEN" /E
-robocopy ..\src\nn "BEN\nn" *tf2.py*
+robocopy ..\src\nn "BEN\nn" *tf2.py* keras_compat.py
 robocopy ..\bin "BEN\bin" /E

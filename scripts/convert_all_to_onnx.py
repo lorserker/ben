@@ -16,7 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 import numpy as np
 import tensorflow as tf
-from tensorflow.keras.models import load_model
+from nn.keras_compat import load_model
 
 # Suppress TF warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
@@ -227,7 +227,8 @@ def convert_dual_input_model(keras_path, onnx_path, x_shape, b_shape, test_input
         if use_fp16:
             x = tf.cast(x, tf.float16)
             b = tf.cast(b, tf.float16)
-        result = model({'X_input': x, 'B_input': b}, training=False)
+        # A list, not a dict - Keras <= 3.6 and >= 3.7 order dict inputs differently
+        result = model([x, b], training=False)
         return tf.cast(result, tf.float32)
 
     test_x, test_b = test_input_fn()
@@ -333,14 +334,14 @@ def main():
 
     # ========== Player Models (8 total) ==========
     player_models = [
-        ('lefty_nt', 'lefty_nt_2024-07-08-E20.keras'),
-        ('dummy_nt', 'dummy_nt_2024-07-08-E20.keras'),
-        ('righty_nt', 'righty_nt_2024-07-16-E20.keras'),
-        ('decl_nt', 'decl_nt_2024-07-08-E20.keras'),
-        ('lefty_suit', 'lefty_suit_2024-07-08-E20.keras'),
-        ('dummy_suit', 'dummy_suit_2024-07-08-E20.keras'),
-        ('righty_suit', 'righty_suit_2024-07-16-E20.keras'),
-        ('decl_suit', 'decl_suit_2024-07-08-E20.keras'),
+        ('lefty_nt', 'lefty_nt_hybrid_2026-10-16.keras'),
+        ('dummy_nt', 'dummy_nt_hybrid_2026-10-16.keras'),
+        ('righty_nt', 'righty_nt_hybrid_2026-10-16.keras'),
+        ('decl_nt', 'decl_nt_hybrid_2026-10-16.keras'),
+        ('lefty_suit', 'lefty_suit_hybrid_2026-10-16.keras'),
+        ('dummy_suit', 'dummy_suit_hybrid_2026-10-16.keras'),
+        ('righty_suit', 'righty_suit_hybrid_2026-10-16.keras'),
+        ('decl_suit', 'decl_suit_hybrid_2026-10-16.keras'),
     ]
 
     for name, keras_file in player_models:
@@ -354,7 +355,7 @@ def main():
 
     # ========== Lead Models (already done, but include for completeness) ==========
     results['lead_suit'] = convert_dual_input_model(
-        keras_path=os.path.join(tf2_dir, 'Lead-Suit_2024-11-04-E200.keras'),
+        keras_path=os.path.join(tf2_dir, 'LeadV3-Suit-Both_2026-10-16.keras'),
         onnx_path=os.path.join(onnx_dir, 'lead_suit.onnx'),
         x_shape=[None, 42],
         b_shape=[None, 15],
@@ -364,7 +365,7 @@ def main():
     )
 
     results['lead_nt'] = convert_dual_input_model(
-        keras_path=os.path.join(tf2_dir, 'Lead-NT_2024-11-04-E200.keras'),
+        keras_path=os.path.join(tf2_dir, 'LeadV3-NT-Both_2026-10-16.keras'),
         onnx_path=os.path.join(onnx_dir, 'lead_nt.onnx'),
         x_shape=[None, 42],
         b_shape=[None, 15],

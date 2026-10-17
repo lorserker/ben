@@ -335,6 +335,9 @@ class CardPlayer:
         if self.verbose:
             print(f'Next card response time: {time.time() - t_start:0.4f}')
 
+        if getattr(self.models, 'play_nn_only', False):
+            return self.pick_card_nn_only(current_trick52, tricks52, play_status, samples, quality, card_scores_nn)
+
         card_resp_alphamju = []
         if self.models.alphamju_declaring and (self.player_i == 1 or self.player_i == 3) and trick_i > self.models.alphamju_trick and play_status != "Discard":
             card_resp, card_resp_alphamju = self.alphamju_evaluation(trick_i, play_status,leader_i,current_trick52,quality,worlds, samples, card_scores_nn)
@@ -402,6 +405,31 @@ class CardPlayer:
         if self.verbose:
             print(f'Play card response time: {time.time() - t_start:0.4f}')
         return card_resp
+
+    def pick_card_nn_only(self, current_trick52, tricks52, play_status, samples, quality, card_scores_nn):
+        # The neural network's card, with nothing else deciding (config play_nn_only): the legal
+        # card with the highest NN score. The small cards share one NN slot, so equal scores go to
+        # the lowest card.
+        card_nn = {c: float(s) for c, s in enumerate(card_scores_nn)}
+        legal = [c for c in range(52) if self.hand52[c] > 0]
+        if current_trick52:
+            same_suit = [c for c in legal if c // 13 == current_trick52[0] // 13]
+            if same_suit:
+                legal = same_suit
+        scores = {c: self.get_nn_score(deck52.card52to32(c), c, card_nn, play_status, tricks52) for c in legal}
+        # card code = 13 * suit + rank with the ace as 0, so a higher code is a lower card
+        ranked = sorted(legal, key=lambda c: (-scores[c], -c))
+        candidates = [self.create_card([0, 0, 0, 0], c, 0, 0, 0, "NN only", 0, round(scores[c], 3)) for c in ranked]
+        return CardResp(
+            card=Card.from_code(ranked[0]),
+            candidates=candidates,
+            samples=samples,
+            shape=-1,
+            hcp=-1,
+            quality=quality,
+            who="NN-only",
+            claim=-1
+        )
 
     def update_with_alphamju(self, card_resp_alphamju, merged_card_resp):
         for card, percent in card_resp_alphamju:

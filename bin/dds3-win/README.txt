@@ -1,4 +1,4 @@
-Place the Windows DDS 3.0.0 solver extension here as:
+Place the Windows DDS 3.1.0 solver extension here as:
 
     bin/dds3-win/dds3/__init__.py
     bin/dds3-win/dds3/_dds3.pyd

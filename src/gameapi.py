@@ -112,7 +112,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.8.8.8'
+version = '0.9.0.0'
 init()
 
 def handle_exception(e):
@@ -608,6 +608,9 @@ except AttributeError:
 
 # Write to stderr
 sys.stderr.write(f"Loading TensorFlow {tf.__version__} - Keras version: {keras_version}\n")
+# Stop with an explanation if this Python has a TensorFlow/Keras the models cannot load in
+from version_check import check_tf_keras
+check_tf_keras(tf.__version__, keras_version)
 sys.stderr.write(f"NumPy Version : {np.__version__}\n")
 
 configuration = conf.load(configfile)
@@ -784,25 +787,46 @@ def get_random_generator(hand):
     hash_integer  = calculate_seed(hand)         
     return np.random.default_rng(hash_integer)
 
+def deal_problem(hand_str, dummy_str, cards):
+    # Why the hand, dummy and played cards cannot be one deal, or None. Checked before
+    # anything reaches DDS, which rejects a duplicated card with an error the caller
+    # would only see as a failed solve.
+    holder = {}
+    for who, hand in (("hand", hand_str), ("dummy", dummy_str)):
+        suits = hand.split('.')
+        if len(suits) != 4:
+            return f"{who} {hand} should have 4 suits"
+        for suit, holding in zip("SHDC", suits):
+            for rank in holding.upper():
+                card = suit + rank
+                if card in holder:
+                    where = f"twice in {who}" if holder[card] == who else f"in both {holder[card]} and {who}"
+                    return f"{card} is {where}"
+                holder[card] = who
+    upper = [card.upper() for card in cards]
+    for card in set(upper):
+        if upper.count(card) > 1:
+            return f"{card} is played twice"
+    return None
+
 def replace_x(input_str, rng, dummy, cards, n_cards):
+    # The highest spot card the 'x' stands for: 7 with 32 cards (A-8 shown), 9 with 24 (A-T)
+    top_spot = 15 - (n_cards // 4)
     # Function to replace 'x' in a section with unique digits
     def replace_in_section(suit, section, dummy, cards):
-        digits_used = set()  # To keep track of used digits in this section
-        for cards in cards:
-            if cards[0] == "SHDC"[suit]:
-                if cards[1].isdigit():
-                    digits_used.add(str(cards[1]))
-        for char in dummy:  
-            if char.isdigit():
-                digits_used.add(char)
+        # Spots already placed: played to a trick, in dummy, or named in this hand
+        digits_used = set(char for char in section + dummy if char.isdigit())
+        for card in cards:
+            if card[0] == "SHDC"[suit] and card[1].isdigit():
+                digits_used.add(card[1])
+        free = [str(d) for d in range(2, top_spot + 1) if str(d) not in digits_used]
         result = []
         for char in section:
             if char == 'X':
-                # Generate a unique digit not already used in this section
-                digit = None
-                while digit is None or digit in digits_used:
-                    digit = str(rng.integers(2, 15 - (n_cards // 4)))  # Random digit as string
-                digits_used.add(digit)  # Mark the digit as used
+                if not free:
+                    raise ValueError(f"No spot card left for the x in {'SHDC'[suit]} {section}")
+                # A random spot not already used in this suit
+                digit = free.pop(int(rng.integers(0, len(free))))
                 result.append(digit)
             else:
                 result.append(char)
@@ -1181,6 +1205,12 @@ def play():
             result = {"message":"Hand should have 13 cards"}
             print(result)
             return json.dumps(result)
+
+        problem = deal_problem(hand_str, dummy_str, cards)
+        if problem:
+            result = {"error": f"Not a possible deal: {problem}"}
+            print(result)
+            return json.dumps(result), 400
 
         seat = request.args.get("seat")
         # Vulnerability (absolute format: None, NS, EW, All/Both)
@@ -1564,6 +1594,12 @@ def claim():
             result = {"message":"No dummy provided"}
             print(result)
             return json.dumps(result)
+
+        problem = deal_problem(hand_str, dummy_str, cards)
+        if problem:
+            result = {"error": f"Not a possible deal: {problem}"}
+            print(result)
+            return json.dumps(result), 400
 
         seat = request.args.get("seat")
         # Vulnerability (absolute format: None, NS, EW, All/Both)

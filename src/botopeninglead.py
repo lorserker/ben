@@ -491,9 +491,7 @@ class BotLead:
         # The single dummy model takes 32-card hands (like the play models); the
         # samples are in the bidding encoding, which is 24 cards from model version 3.
         if self.models.n_cards_bidding != 32:
-            accepted_samples = np.apply_along_axis(
-                lambda hand: binary.parse_hand_f(32)(deck52.handxxto52str(hand, self.models.n_cards_bidding))[0],
-                2, accepted_samples)
+            accepted_samples = binary.convert_hands(accepted_samples, self.models.n_cards_bidding, 32)
 
         X_sd[:,32 + strain_i] = 1
         # lefty (That is us)

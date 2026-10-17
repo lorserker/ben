@@ -48,7 +48,9 @@ train on other data. That file is not in the repository - it is published on the
 
 This writes 16 files into the `binary` folder - `X_<seat>_<suit|nt>.npy` and `Y_<seat>_<suit|nt>.npy` for each of `lefty`, `righty`, `decl` and `dummy`. `X` contains the inputs to the neural network and `Y` the expected outputs, both in numpy array format.
 
-Then, run the trainig script. This will take several hours to complete, but it will save snapshots of the model as it progresses. If you have a GPU, the training will run faster, but not much faster, because GPUs are not so well suited for the type of NN used.
+Then, run the trainig script. The network is a 3-layer LSTM over the tricks, so the card played can depend on everything seen earlier in the play (signals, show-outs, suits already played), not only on the last trick. The models need Keras 3.15 or later to load.
+
+Use a GPU (on Windows that means WSL): on an RTX 4090 an epoch over the full data takes well under a minute. The last 5% of the deals are held out for validation, training stops when the validation loss stops improving, and a snapshot is saved after every epoch.
 
 ```
 python play_nn_keras.py binary decl_nt
@@ -61,7 +63,15 @@ python play_nn_keras.py binary righty_nt
 python play_nn_keras.py binary righty_suit
 ```
 
-The first argument is the directory holding the binary files, the second selects which of them to train on. The generated model is named after that selection plus the date, and is written to the `model` folder.
+The first argument is the directory holding the binary files, the second selects which of them to train on. Options can follow as `key=value`: `lstm_size` (128), `n_layers` (3), `epochs` (30), `batch_size` (1024), `learning_rate` (0.001), `keep` (0.8), `val_fraction` (0.05), `patience` (3), `max_examples` (0 = all) and `name`. The generated model is named after that selection plus the date, and is written to the `model` folder; `<name>_<date>-best.keras` is the snapshot with the best validation loss.
+
+To compare models on the held-out deals:
+
+```
+python eval_play_nn.py binary righty_suit ../../../models/TF2models/righty_suit_2024-07-16-E20.keras model/righty_suit_<date>-best.keras
+```
+
+It prints, per trick and in total, how often the model's top card is the card actually played, and `nll` - how unlikely the model found the card actually played. `nll` is what matters when BEN uses the model to score samples.
 
 When the network is completed, you can plug it back into the engine to use instead of the default one it came with. To do that, set the path to the network which you just trained in a configuration file - either `src/config/default.conf` or a new configuration file of your own.
 

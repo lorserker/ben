@@ -55,7 +55,7 @@ robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Trick*
 robocopy dist\TMCGUI "BBA" /E
 robocopy dist\table_manager_client "BBA" /E
 robocopy dist\table_manager_client\_internal\bin "BBA\bin" /E
-robocopy ..\src\nn "BBA\nn" *tf2.py*
+robocopy ..\src\nn "BBA\nn" *tf2.py* keras_compat.py
 robocopy ..\bin "BBA\bin" /E
 copy ..\src\ben.ico "BBA"
 copy ..\src\logo.png "BBA"

@@ -34,7 +34,7 @@ robocopy ..\models\TF2Models "BENAPI\models\TF2Models" Trick*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" SD_*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" RPDD_*
 robocopy dist\gameapi "BENAPI" /E
-robocopy ..\src\nn "BENAPI\nn" *tf2.py*
+robocopy ..\src\nn "BENAPI\nn" *tf2.py* keras_compat.py
 robocopy ..\bin "BENAPI\bin" /E
 copy ..\src\ben.ico "BENAPI"
 copy ..\src\logo.png "BENAPI"

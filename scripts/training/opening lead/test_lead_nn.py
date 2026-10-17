@@ -72,7 +72,7 @@ y_actual = y_test[0:n_samples,:]
 #    print(B_sample[i])
 
 # Predict using the model
-y_pred = model.predict({'X_input': X_sample, 'B_input': B_sample},verbose=1)
+y_pred = model.predict([X_sample, B_sample],verbose=1)
 
 # Compare the predicted value with the actual value
 predicted_label = np.argmax(y_pred, axis=1)

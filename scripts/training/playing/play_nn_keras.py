@@ -1,198 +1,168 @@
 import sys
 import datetime
 import os
-import numpy as np
-import tensorflow as tf
-from tensorflow.keras import layers, models, optimizers, callbacks, initializers, losses
-from tensorflow.keras.callbacks import Callback
-from tensorflow.keras.models import load_model
-from tensorflow.data import Dataset
 import time
+import numpy as np
 
 # Set logging level to suppress warnings
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
-
-# Limit the number of CPU threads used
-os.environ["OMP_NUM_THREADS"] = "32"
-os.environ["MKL_NUM_THREADS"] = "32"
-print("os.cpu_count()", os.cpu_count())
-# TensorFlow thread settings
-tf.config.threading.set_intra_op_parallelism_threads(32)
-tf.config.threading.set_inter_op_parallelism_threads(32)
-
+import tensorflow as tf
+import keras
+from keras import layers, models, optimizers, callbacks
 
 # Set TensorFlow to only allocate as much GPU memory as needed
 physical_devices = tf.config.list_physical_devices('GPU')
 print("physical_devices", physical_devices)
 if physical_devices:
-    try:
-        for device in physical_devices:
-            print("set_memory_growth", device)
-            tf.config.experimental.set_memory_growth(device, True)
-        tf.config.set_visible_devices(physical_devices, 'GPU')
-        print("Using GPU: ", physical_devices)
-    except RuntimeError as e:
-        print(e)
+    for device in physical_devices:
+        tf.config.experimental.set_memory_growth(device, True)
+    print("Using GPU: ", physical_devices)
 else:
-    # Ensure TensorFlow uses only CPU
-    tf.config.set_visible_devices([], 'GPU')
     print("Using CPU only")
 
-
 # Check for correct usage
-if len(sys.argv) < 2:
-    print("Usage: python play_nn_keras.py inputdirectory hand")
+if len(sys.argv) < 3:
+    print("Usage: python play_nn_keras.py inputdirectory hand [key=value ...]")
+    print("  hand: decl_nt, decl_suit, dummy_nt, dummy_suit, lefty_nt, lefty_suit, righty_nt, righty_suit")
+    print("  options: lstm_size=128 n_layers=3 dense_layers=0 dense_units=512 epochs=30 batch_size=1024 learning_rate=0.001")
+    print("           keep=0.8 val_fraction=0.05 patience=3 max_examples=0 name=<hand>")
     sys.exit(1)
 
 bin_dir = sys.argv[1]
+hand = sys.argv[2]
 print(sys.argv)
 
-hand = "bidding"
-if len(sys.argv) > 2:
-    hand = sys.argv[2]
+options = dict(arg.split('=', 1) for arg in sys.argv[3:])
+lstm_size = int(options.get('lstm_size', 128))
+n_layers = int(options.get('n_layers', 3))
+# Optional Dense layers per trick before the LSTM layers
+dense_layers = int(options.get('dense_layers', 0))
+dense_units = int(options.get('dense_units', 512))
+epochs = int(options.get('epochs', 30))
+batch_size = int(options.get("batch_size", 1024))
+learning_rate = float(options.get('learning_rate', 0.001))
+keep = float(options.get('keep', 0.8))
+# The last deals in the file are held out for validation; eval_play_nn.py uses the same split
+val_fraction = float(options.get('val_fraction', 0.05))
+patience = int(options.get('patience', 3))
+max_examples = int(options.get('max_examples', 0))
+name = options.get('name', hand)
 
-X_train = np.load(os.path.join(bin_dir, f'X_{hand}.npy'), mmap_mode='r')
-y_train = np.load(os.path.join(bin_dir, f'Y_{hand}.npy'), mmap_mode='r')
+X_all = np.load(os.path.join(bin_dir, f'X_{hand}.npy'), mmap_mode='r')
+y_all = np.load(os.path.join(bin_dir, f'Y_{hand}.npy'), mmap_mode='r')
+if max_examples:
+    X_all, y_all = X_all[:max_examples], y_all[:max_examples]
 
-n_examples = X_train.shape[0]
-n_sequence = X_train.shape[1]
-n_ftrs = X_train.shape[2]
-n_card = y_train.shape[2]
+n_all = X_all.shape[0]
+n_val = int(n_all * val_fraction)
+n_train = n_all - n_val
+n_ftrs = X_all.shape[2]
+n_card = y_all.shape[2]
 
-batch_size = 128  
-buffer_size = 10000
-epochs = 20  
-learning_rate = 0.0003
-keep = 0.8
+print("Loading data into memory")
+t = time.time()
+X_train, y_train = np.asarray(X_all[:n_train]), np.asarray(y_all[:n_train])
+X_val, y_val = np.asarray(X_all[n_train:]), np.asarray(y_all[n_train:])
+print(f"Loaded in {time.time() - t:0.1f} seconds")
 
-steps_per_epoch = n_examples // batch_size
-
-model_name = f'{hand}_{datetime.datetime.now().strftime("%Y-%m-%d")}'
+steps_per_epoch = n_train // batch_size
+model_name = f'{name}_{datetime.datetime.now().strftime("%Y-%m-%d")}'
 
 print("-------------------------")
-print("Examples for training:   ", n_examples)
-print("Model path:              ", model_name )
+print("Examples for training:   ", n_train)
+print("Examples for validation: ", n_val)
+print("Model path:              ", model_name)
 print("-------------------------")
-print("Size input hands:        ", n_ftrs)
-print("Size output card  :      ", n_card)
+print("Tricks per example:      ", X_all.shape[1])
+print("Size input:              ", n_ftrs)
+print("Size output card:        ", n_card)
 print("-------------------------")
-print("dtype X_train:           ", X_train.dtype)
-print("dtype y_train:           ", y_train.dtype)
-print("-------------------------")
+print("Dense layers:            ", dense_layers, "x", dense_units)
+print("LSTM size:               ", lstm_size)
+print("Layers:                  ", n_layers)
 print("Batch size:              ", batch_size)
-print("buffer_size:             ", buffer_size)
 print("steps_per_epoch          ", steps_per_epoch)
-print("-------------------------")
 print("Learning rate:           ", learning_rate)
 print("Keep:                    ", keep)
 
-n_hidden_units = 512
-n_layers = 3
 
-# Build the model
+def batches(X, y, batch_size, shuffle):
+    """Batches gathered from the in-memory arrays, prepared in parallel with training."""
+    with tf.device('/CPU:0'):
+        X_t, y_t = tf.constant(X), tf.constant(y)
+    ds = tf.data.Dataset.range(len(X))
+    if shuffle:
+        ds = ds.shuffle(len(X), reshuffle_each_iteration=True)
+    ds = ds.batch(batch_size, drop_remainder=shuffle)
+    ds = ds.map(lambda i: (tf.gather(X_t, i), tf.gather(y_t, i)), num_parallel_calls=tf.data.AUTOTUNE)
+    return ds.prefetch(tf.data.AUTOTUNE)
 
-def build_model(input_shape, n_hidden_units, n_tricks):
-    inputs = tf.keras.Input(shape=input_shape, dtype=tf.float16)
+
+def build_model():
+    # A recurrent model, so the card played can depend on everything seen earlier in
+    # the play (signals, show-outs, suits played), not only on the last trick.
+    # The output is a plain Dense layer: it works per trick on the sequence, and
+    # TimeDistributed is broken in Keras 3.15 for an unknown number of tricks.
+    inputs = keras.Input(shape=(None, n_ftrs), dtype='float16', name='x_play')
     x = inputs
-    for _ in range(n_layers):
-        x = layers.Dense(n_hidden_units, activation='relu', kernel_initializer=tf.keras.initializers.glorot_uniform(seed=1337))(x)
+    for _ in range(dense_layers):
+        x = layers.Dense(dense_units, activation='relu')(x)
         x = layers.Dropout(1 - keep)(x)
-    card_logits = layers.Dense(n_tricks, name='card_logits')(x)
-    card_out = layers.Softmax(name='card')(card_logits)
-    model = models.Model(inputs=inputs, outputs=card_out)
+    for _ in range(n_layers):
+        x = layers.LSTM(lstm_size, return_sequences=True)(x)
+        x = layers.Dropout(1 - keep)(x)
+    card = layers.Dense(n_card, activation='softmax', name='card')(x)
+    model = models.Model(inputs=inputs, outputs=card)
+    model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate),
+                  loss='categorical_crossentropy',
+                  metrics=['accuracy'])
+    return model
 
-    model.compile(optimizer=optimizers.Adam(learning_rate=learning_rate), 
-                loss={'card': 'categorical_crossentropy'},
-                metrics={'card': 'accuracy'})
 
-
-    print(model.summary())
-
-# Create datasets
-    print("Reading input")
-    def data_generator(X, y):
-        for xi, yi in zip(X, y):
-            yield xi, yi
-
-    output_signature = (
-        tf.TensorSpec(shape=X_train.shape[1:], dtype=X_train.dtype),
-        (
-            tf.TensorSpec(shape=y_train.shape[1:], dtype=y_train.dtype)
-        )
-    )
-
-    print("Shuffling input")
-    train_dataset = tf.data.Dataset.from_generator(
-        lambda: data_generator(X_train, y_train),
-        output_signature=output_signature
-    )
-    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE).repeat()
-    return model, train_dataset
-
-print("Building model")
-model, train_dataset = build_model((None, n_ftrs), n_hidden_units, n_card)
-
-# Define the path to save model weights
 checkpoint_dir = "model"
 os.makedirs(checkpoint_dir, exist_ok=True)
 
-# Load the latest saved model if it exists
+# Continue from the latest checkpoint for this name, if there is one
 initial_epoch = 0
-
-# Check for existing checkpoints and set the initial epoch
-checkpoints = sorted([f for f in os.listdir(checkpoint_dir) if f.endswith('.keras') and hand in f])
+checkpoints = sorted((int(f[len(model_name) + 2:-len('.keras')]), f) for f in os.listdir(checkpoint_dir)
+                     if f.startswith(model_name + '-E') and f.endswith('.keras') and f[len(model_name) + 2:-len('.keras')].isdigit())
 if checkpoints:
-    latest_checkpoint = checkpoints[-1]
-    model_path = os.path.join(checkpoint_dir, latest_checkpoint)
-    initial_epoch = int(latest_checkpoint.split('-E')[1].split('.')[0]) + 1
-    print(f"Loading saved model from {model_path}, starting at epoch {initial_epoch+1}")
-    model = load_model(model_path)
-    epochs = epochs - initial_epoch
+    initial_epoch, latest = checkpoints[-1]
+    model_path = os.path.join(checkpoint_dir, latest)
+    print(f"Loading saved model from {model_path}, continuing after epoch {initial_epoch}")
+    model = keras.models.load_model(model_path)
+else:
+    model = build_model()
+model.summary()
 
-if not epochs > 0:
+if initial_epoch >= epochs:
     print("Model training complete after", initial_epoch, "epochs")
     sys.exit(0)
 
-initial_epoch += 1
-# Define callbacks
 
-class CustomModelCheckpoint(Callback):
-    def __init__(self, save_path, initial_epoch=0, **kwargs):
-        super().__init__(**kwargs)
-        self.save_path = save_path
-        self.initial_epoch = initial_epoch
-        self.t_start = None
-
+class EpochTimer(callbacks.Callback):
     def on_epoch_begin(self, epoch, logs=None):
-        # Start time of the epoch
         self.t_start = time.time()
 
     def on_epoch_end(self, epoch, logs=None):
-        save_path = self.save_path.format(epoch=epoch + self.initial_epoch)
-        print()
-        print(f"Saving model to {save_path}")
-        self.model.save(save_path)
-        epoch_duration = time.time() - self.t_start
-        print(f'Epoch took {epoch_duration:0.4f} seconds')
-
-# Define the custom checkpoint callback
-custom_checkpoint_callback = CustomModelCheckpoint(
-    save_path=os.path.join(checkpoint_dir, f"{model_name}-E{{epoch:02d}}.keras"),
-    initial_epoch=initial_epoch
-)
+        print(f'Epoch took {time.time() - self.t_start:0.1f} seconds')
 
 
-early_stopping_callback = callbacks.EarlyStopping(monitor='loss', patience=10, verbose=1)
+train_batches = batches(X_train, y_train, batch_size, shuffle=True)
+val_batches = batches(X_val, y_val, 1024, shuffle=False)
 
 print("Training started")
-# Training the model
-model.fit(train_dataset, epochs=epochs, steps_per_epoch=steps_per_epoch,
-          callbacks=[custom_checkpoint_callback, early_stopping_callback])
+model.fit(train_batches, validation_data=val_batches,
+          epochs=epochs, initial_epoch=initial_epoch,
+          callbacks=[
+              callbacks.ModelCheckpoint(os.path.join(checkpoint_dir, f"{model_name}-E{{epoch:02d}}.keras")),
+              callbacks.ReduceLROnPlateau(monitor='val_loss', factor=0.3, patience=1, verbose=1),
+              callbacks.EarlyStopping(monitor='val_loss', patience=patience, restore_best_weights=True, verbose=1),
+              callbacks.CSVLogger(os.path.join(checkpoint_dir, f"{model_name}.csv"), append=True),
+              EpochTimer(),
+          ])
 
-# Save the final model with the last epoch number
-final_epoch = initial_epoch + epochs -1
-final_model_path = os.path.join(checkpoint_dir, f"{model_name}-E{(epochs):02d}.keras")
-
+final_model_path = os.path.join(checkpoint_dir, f"{model_name}-best.keras")
 model.save(final_model_path)
-print("Saved model:", final_model_path)
+print("Saved model with the best validation loss:", final_model_path)

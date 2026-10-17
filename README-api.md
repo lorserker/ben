@@ -217,13 +217,17 @@ Returns the recommended card to play during the card play phase.
 
 **Example Request:**
 ```
-GET /play?hand=AK97543.K.T3.AK7&dummy=QJ87.A95.K63.T42&seat=S&dealer=N&vul=&ctx=1S--4S------&played=DJDKD3D2
+GET /play?hand=AK97543.K.T3.AK7&dummy=QJ8.A95.K652.T42&seat=S&dealer=S&vul=&ctx=1S--4S------&played=DQD2D4
 ```
+
+South opens 1♠ and plays 4♠; West led the ♦Q, dummy and East followed, and South
+plays to the trick. Hand, dummy and played cards must be one possible deal: a card
+in both hand and dummy, or played twice, is answered with a 400 error.
 
 **Response:**
 ```json
 {
-  "card": "S7",
+  "card": "D3",
   "who": "Simulation",
   "quality": "Good",
   "player": 3,

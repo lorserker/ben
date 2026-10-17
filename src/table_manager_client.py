@@ -77,7 +77,7 @@ import gc
 import faulthandler
 faulthandler.enable()
 
-version = '0.8.8.8'
+version = '0.9.0.0'
 init()
 
 SEATS = ['North', 'East', 'South', 'West']
@@ -1083,6 +1083,9 @@ async def main():
 
     # Write to stderr
     sys.stderr.write(f"Loading TensorFlow {tf.__version__} - Keras version: {keras_version}\n")
+    # Stop with an explanation if this Python has a TensorFlow/Keras the models cannot load in
+    from version_check import check_tf_keras
+    check_tf_keras(tf.__version__, keras_version)
     sys.stderr.write(f"NumPy Version : {np.__version__}\n")
 
     configuration = conf.load(configfile)

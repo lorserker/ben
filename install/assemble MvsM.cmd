@@ -30,7 +30,7 @@ robocopy ..\models\TF2Models "MvsM\models\TF2Models" RPDD_*
 robocopy dist\TMCGUI "MvsM" /E
 robocopy dist\table_manager_client "MvsM" /E
 robocopy dist\table_manager_client\_internal\bin "MvsM\bin" /E
-robocopy ..\src\nn "MvsM\nn" *tf2.py*
+robocopy ..\src\nn "MvsM\nn" *tf2.py* keras_compat.py
 robocopy ..\bin "MvsM\bin" /E
 copy ..\src\ben.ico "MvsM"
 copy ..\src\logo.png "MvsM"

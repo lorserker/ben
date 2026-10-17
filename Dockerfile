@@ -34,7 +34,7 @@ ADD src/bba /app/bba/
 ADD src/pimc /app/pimc/
 ADD src/suitc /app/suitc/
 ADD src/openinglead /app/openinglead/
-# bin/ includes the DDS 3.0.0 solver extension under bin/dds3-linux/.
+# bin/ includes the DDS 3.1.0 solver extension under bin/dds3-linux/.
 # It MUST be built for this image's Python (3.12): build from the DDS repo
 # (bazel build //python:_dds3 for 3.12) and vendor the dds3 package there before
 # building this image. A 3.10 _dds3.so will fail to import. See src/ddsolver/ddsolver.py.

@@ -17,7 +17,9 @@ class Leader:
         tf.TensorSpec(shape=[None, 15], dtype=tf.float16)    # shape of b (adjust shape accordingly)
     ])
     def pred_fun_tf(self, x, b):
-        result = self.model({'X_input': x, 'B_input': b}, training=False) # Using model() instead of model.predict()
+        # Pass the inputs as a list, not a dict: Keras <= 3.6 and >= 3.7 order dict inputs
+        # differently, see scripts/training/opening lead/fix_lead_input_order.py
+        result = self.model([x, b], training=False) # Using model() instead of model.predict()
         return result
 
     def pred_fun(self, x, b):

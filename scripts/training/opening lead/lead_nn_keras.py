@@ -119,7 +119,9 @@ def build_model(input_shape, n_bi, n_hidden_units, n_cards):
     print(model.summary())
 
 # Create datasets
-    train_dataset = Dataset.from_tensor_slices(({'X_input': X_train, 'B_input': B_train}, y_train))
+    # Inputs as a tuple, not a dict: Keras <= 3.6 sorted dict inputs by key and
+    # concatenated [B, X], see fix_lead_input_order.py
+    train_dataset = Dataset.from_tensor_slices(((X_train, B_train), y_train))
     train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE).repeat()
     return model, train_dataset
 

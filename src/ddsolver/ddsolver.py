@@ -14,7 +14,7 @@ init()
 
 
 def _load_dds3():
-    """Import the dds3 extension (DDS 3.0.0 Python interface).
+    """Import the dds3 extension (DDS 3.x Python interface).
 
     Tries a normal import first (dds3 installed as a wheel). If that fails,
     falls back to a copy vendored under BEN's bin/ directory.
@@ -68,7 +68,7 @@ def _load_dds3():
                 continue
 
     raise ImportError(
-        "Could not import the 'dds3' extension (DDS 3.0.0 Python interface).\n"
+        "Could not import the 'dds3' extension (DDS 3.x Python interface).\n"
         "Build it from the DDS repository and install or vendor it:\n"
         "  bazel build -c opt //python:dds3_wheel_dist   # produces a wheel in dist/\n"
         "  pip install dist/dds3-*.whl\n"
@@ -146,7 +146,7 @@ class DDSolver:
                               threads=workers)
 
     def version(self):
-        return "3.0.0"
+        return "3.1.0"
 
     def calculatepar(self, hand, vuln, print_result=True):
         with ModelTimer.time_call('dds_par'):

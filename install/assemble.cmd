@@ -38,7 +38,7 @@ robocopy dist\TMCGUI "BENAll" /E
 robocopy dist\BENGUI "BENAll" /E
 robocopy dist\BEN "BENAll" /E
 robocopy dist\table_manager_client "BENAll" /E
-robocopy ..\src\nn "BENAll\nn" *tf2.py*
+robocopy ..\src\nn "BENAll\nn" *tf2.py* keras_compat.py
 robocopy ..\bin "BENAll\bin" /E
 copy ..\src\ben.ico "BENAll"
 copy ..\src\logo.png "BENAll"

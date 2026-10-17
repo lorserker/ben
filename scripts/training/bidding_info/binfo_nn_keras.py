@@ -61,9 +61,10 @@ if len(sys.argv) > 2:
     system = sys.argv[2]
 
 # Load training data
-X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
-HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'), mmap_mode='r')
-SHAPE_train = np.load(os.path.join(bin_dir, 'SHAPE.npy'), mmap_mode='r')
+# Loaded into memory: random batches from a memory map are far too slow
+X_train = np.load(os.path.join(bin_dir, 'x.npy'))
+HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'))
+SHAPE_train = np.load(os.path.join(bin_dir, 'SHAPE.npy'))
 
 n_examples = X_train.shape[0]
 n_sequence = X_train.shape[1]
@@ -71,8 +72,7 @@ n_ftrs = X_train.shape[2]
 n_dim_hcp = HCP_train.shape[2]
 n_dim_shape = SHAPE_train.shape[2]
 
-batch_size = 256  
-buffer_size =  25600
+batch_size = 256
 epochs = 30
 learning_rate = 0.0005
 keep = 0.8
@@ -97,7 +97,6 @@ print("dtype HCP_train:         ", HCP_train.dtype)
 print("dtype SHAPE_train:       ", SHAPE_train.dtype)
 print("-------------------------")
 print("Batch size:              ", batch_size)
-print("buffer_size:             ", buffer_size)
 print("steps_per_epoch          ", steps_per_epoch)
 print("-------------------------")
 print("Learning rate:           ", learning_rate)
@@ -131,27 +130,28 @@ def build_model(input_shape, lstm_size, n_layers, n_dim_hcp, n_dim_shape):
     print(model.summary())
 
 # Create datasets
-    print("Reading input")
-    def data_generator(X, y, z):
-        for xi, yi, zi in zip(X, y, z):
-            yield xi, (yi, zi)
+    # Yield whole batches from a fresh permutation each epoch. Feeding single
+    # examples through a Python generator kept the GPU waiting on one CPU core.
+    def batch_generator():
+        while True:
+            order = np.random.permutation(n_examples)
+            for start in range(0, n_examples - batch_size + 1, batch_size):
+                # Sorted indices make the gather from the big array much faster
+                idx = np.sort(order[start:start + batch_size])
+                yield X_train[idx], (HCP_train[idx], SHAPE_train[idx])
 
     output_signature = (
-        tf.TensorSpec(shape=X_train.shape[1:], dtype=X_train.dtype),
+        tf.TensorSpec(shape=(batch_size,) + X_train.shape[1:], dtype=X_train.dtype),
         (
-            tf.TensorSpec(shape=HCP_train.shape[1:], dtype=HCP_train.dtype),
-            tf.TensorSpec(shape=SHAPE_train.shape[1:], dtype=SHAPE_train.dtype)
+            tf.TensorSpec(shape=(batch_size,) + HCP_train.shape[1:], dtype=HCP_train.dtype),
+            tf.TensorSpec(shape=(batch_size,) + SHAPE_train.shape[1:], dtype=SHAPE_train.dtype)
         )
     )
 
-    print("Shuffling input")
-    train_dataset = tf.data.Dataset.from_generator(
-        lambda: data_generator(X_train, HCP_train, SHAPE_train),
-        output_signature=output_signature
-    )
+    print("Batching input")
+    train_dataset = tf.data.Dataset.from_generator(batch_generator, output_signature=output_signature)
 
-    train_dataset = train_dataset.shuffle(buffer_size=buffer_size).batch(batch_size).prefetch(tf.data.experimental.AUTOTUNE).repeat()
-    return model, train_dataset
+    return model, train_dataset.prefetch(tf.data.experimental.AUTOTUNE)
 
 print("Building model")
 model, train_dataset = build_model((None, n_ftrs), lstm_size, n_layers, n_dim_hcp, n_dim_shape)

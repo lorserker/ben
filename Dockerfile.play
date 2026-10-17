@@ -41,7 +41,7 @@ ADD src/suitc /app/suitc/
 ADD src/openinglead /app/openinglead/
 
 # Native libraries — Linux only (Windows DLLs, macOS dylibs, BGA windows/macos dropped)
-# dds3-linux/ holds the DDS 3.0.0 solver extension - it MUST be built for this
+# dds3-linux/ holds the DDS 3.1.0 solver extension - it MUST be built for this
 # image's Python (3.12); a 3.10 _dds3.so will fail to import (build from DDS repo).
 COPY bin/libsuitc.so /app/bin/
 COPY bin/dds3-linux /app/bin/dds3-linux/

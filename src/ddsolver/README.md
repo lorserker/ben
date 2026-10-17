@@ -1,7 +1,9 @@
 # DDS solver (`ddsolver`)
 
-BEN's double-dummy solver wrapper. As of the DDS **3.0.0** upgrade this uses the
+BEN's double-dummy solver wrapper. Since the DDS **3.0.0** upgrade this uses the
 `dds3` Python extension instead of the old `ctypes`-loaded `dds.dll` / `libdds.so`.
+The vendored extensions in `bin/dds3-*` are built from the DDS **v3.1.0** tag
+(`fe6a6581`).
 
 ## What changed
 
@@ -64,8 +66,15 @@ See `docs/python_interface.md` in the DDS repo for per-OS prerequisites
 > on every current distro **and** on the Ubuntu 24.04 Docker image. Building on
 > Ubuntu 24.04 (glibc 2.39) instead yields a `.so` that needs glibc ≥ 2.38, so it
 > will **not** run on Ubuntu 22.04 / Debian 12. The vendored `bin/dds3-linux/`
-> binary in this repo is currently a 24.04 build (glibc ≥ 2.38) — fine for Docker
-> and Ubuntu 24.04+, but a native install on an older distro needs a rebuild.
+> binary is a manylinux_2_28 build (needs glibc ≥ 2.25), made without Bazel the
+> same way as the PIMC library below, plus the two binding files and pybind11:
+> ```bash
+> docker run --rm -v "$PWD:/dds:ro" -v "$PWD/out:/out" quay.io/pypa/manylinux_2_28_x86_64 bash -c '
+>   PY=/opt/python/cp312-cp312/bin/python; $PY -m pip install pybind11
+>   mkdir -p /inc && ln -s /dds/library/src /inc/dds
+>   g++ -std=c++20 -O3 -fPIC -shared -pthread -static-libstdc++ -static-libgcc -DNDEBUG \n>       -I/inc -I/dds/library/src -I/dds/library/src/api -I/dds/python/src $($PY -m pybind11 --includes) \n>       /dds/python/src/bindings.cpp /dds/python/src/converters.cpp \n>       $(find /dds/library/src -name "*.cpp" | grep -viE "test|bench|_main|fuzz") -o /out/_dds3.so
+>   strip --strip-unneeded /out/_dds3.so'
+> ```
 
 > **macOS: always set a low deployment target.** Without it the extension is
 > stamped with the build machine's macOS version and links libc++ symbols that
@@ -90,10 +99,23 @@ See `docs/python_interface.md` in the DDS repo for per-OS prerequisites
 > `SDK=/Library/Developer/CommandLineTools/SDKs/MacOSX26.5.sdk` and add
 > `-nostdinc++ -isystem "$SDK/usr/include/c++/v1"`.
 >
-> Build from the same DDS commit as the other platforms. DDS commit `dbffab90`
-> (2026-08-17) renamed `initialise_static_memory` to `initialize_static_memory`,
-> and the vendored `__init__.py` imports the old name. The current binaries are
-> built from `671a4aa4`, the commit just before the rename.
+> Build all platforms from the same DDS commit and vendor that commit's
+> `python/dds3/__init__.py` with them: v3.1.0 renamed `initialise_static_memory`
+> to `initialize_static_memory`, so an `__init__.py` from one side of the rename
+> does not import an extension from the other.
+
+> **Windows without Bazel.** From an x64 Native Tools prompt, in a DDS checkout
+> with `library\src` also copied (or junctioned) to `inc\dds`, and a Python 3.12
+> that has pybind11 installed:
+> ```bat
+> cl /nologo /std:c++20 /O2 /EHsc /MT /permissive- /bigobj /DNDEBUG /DNOMINMAX ^
+>    /Iinc /Ilibrary\src /Ilibrary\src\api /Ipython\src ^
+>    /I<python>\Include /I<python>\Lib\site-packages\pybind11\include /MP ^
+>    python\src\bindings.cpp python\src\converters.cpp <all library\src\**\*.cpp except tests> ^
+>    /LD /Fe_dds3.pyd /link /LIBPATH:<python>\libs
+> ```
+> `/DNOMINMAX` is needed because `windows.h` otherwise defines `min`/`max` macros
+> that break `std::min` in the bindings.
 
 ### Make it importable — two options
 

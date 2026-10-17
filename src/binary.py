@@ -141,6 +141,22 @@ def parse_hand_f(n_cards):
     return f
 
 
+def convert_hands(hands, n_from, n_to):
+    # Convert hands between deck sizes, e.g. 32-card play hands to 24-card bidding hands.
+    # Same result as parse_hand_f(n_to)(deck52.handxxto52str(hand, n_from)) for each hand:
+    # the ranks above the last bucket keep their place (capped at the last bucket of the
+    # new deck), and the small cards in the last bucket go to the new last bucket.
+    # The hands are in the last axis, so any number of leading dimensions works.
+    from_per_suit, to_per_suit = n_from // 4, n_to // 4
+    lead = hands.shape[:-1]
+    x = hands.reshape(lead + (4, from_per_suit))
+    out = np.zeros(lead + (4, to_per_suit))
+    for j in range(from_per_suit - 1):
+        out[..., min(j, to_per_suit - 1)] += x[..., j] > 0
+    out[..., to_per_suit - 1] += x[..., from_per_suit - 1]
+    return out.reshape(lead + (n_to,))
+
+
 def get_shape(hand):
     return np.sum(hand.reshape((hand.shape[0], 4, -1)), axis=2)
 
