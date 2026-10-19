@@ -28,7 +28,7 @@ COPY src/gameapi.py \
      src/botbidder.py src/botcardplayer.py src/botopeninglead.py \
      src/sample.py src/claim.py src/util.py src/conf.py \
      src/objects.py src/deck52.py src/binary.py src/carding.py \
-     src/calculate.py src/scoring.py src/systems.py \
+     src/calculate.py src/scoring.py src/systems.py src/version_check.py \
      /app/
 ADD src/bidding /app/bidding/
 ADD src/nn /app/nn/
