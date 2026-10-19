@@ -65,6 +65,9 @@ class Systems:
             key(opponent_path): models.opponent_model,
             key(configuration.get('bidding', 'info')): models.binfo_model,
         }
+        opponent_info_path = configuration.get('bidding', 'opponent_info', fallback=None)
+        if opponent_info_path and getattr(models, 'opponent_binfo_model', None) is not None:
+            loaded[key(opponent_info_path)] = models.opponent_binfo_model
         alert_supported = configuration.getboolean('bidding', 'alert_supported', fallback=False)
         path_provider = IsolatedModelPathProvider(
             base_temp_storage_path=find_best_temp_drive(temp_subdir_name="BEN_model_temp_storage"))
@@ -85,7 +88,10 @@ class Systems:
                 raise FileNotFoundError(f"System {name}: convention card not found: {cc}")
             plays = section.getboolean('plays', fallback=False)
             bidder_model = load_model(section['bidder'], lambda p: Bidder('bidder', p, alert_supported=alert_supported))
-            info_model = load_model(section['info'], BidInfo) if plays else None
+            # A system we only read can still have an info network: sampling uses it for the opponents
+            info_model = load_model(section['info'], BidInfo) if 'info' in section else None
+            if plays and info_model is None:
+                raise ValueError(f"System {name}: a system BEN plays needs an info network")
             systems[name.upper()] = System(name.upper(), cc, plays, bidder_model, info_model)
 
         # The names of what the server plays when a request does not say
@@ -131,6 +137,7 @@ class Systems:
         if requested["theirSystem"]:
             system = self._system("theirSystem", requested["theirSystem"], must_play=False)
             request_models.opponent_model = system.bidder_model
+            request_models.opponent_binfo_model = system.info_model
             request_models.bba_their_cc = system.cc
         for parameter in ("ourCarding", "theirCarding"):
             name = requested[parameter]

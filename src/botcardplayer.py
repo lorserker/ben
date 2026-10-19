@@ -943,9 +943,9 @@ class CardPlayer:
                 # If we can take rest we don't adjust, then NN will decide if equal
                 # Another option could be to resample the hands without restrictions
                 if e_tricks >= 13 - trick_i:
-                    # Calculate valid claim cards
-                    # if card32 // 8 != self.strain_i - 1:
-                    adjust_card = 0
+                    # Keep the trump adjust, so drawing trump wins a tie with a side suit
+                    if card52 // 13 != self.strain_i - 1:
+                        adjust_card = 0
                 if card52 in bad_play:
                     adjust_card += -0.2            
 

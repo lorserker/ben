@@ -73,7 +73,8 @@ def validate_lead(suit: str, lead: str, contract_type: str, verbose):
         
         # Hxx holdings
         Rule(r"^[AKQJ][^AKQ][^AKQ]{0,}$", "x", "Leading small from Hxx vs suit", length_required=3, lambda_fn=lambda suit: [card for card in suit if card in '98765432x']),
-        Rule(r"^A[^AKQJT]{2}$", "A", "Leading Ace from Axx", length_required=2, lambda_fn=lambda suit: 'A'),  # Ace is always the valid lead
+        # Vs suit we do not underlead an ace, so the ace is a valid lead from any length
+        Rule(r"^A.+$", "A", "Leading Ace from Ax, Axx, Axxx... vs suit", length_required=2, lambda_fn=lambda suit: 'A'),
       
         # Jxxx case: leading lowest
         Rule(r"^J[^AKQJT]{3,}$", "x", "Leading low from Jxxx vs suit", length_required=4, lambda_fn=lambda suit: [card for card in suit if card in '98765432x']),

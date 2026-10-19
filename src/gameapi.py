@@ -112,7 +112,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.9.0.0'
+version = '0.9.0.1'
 init()
 
 def handle_exception(e):

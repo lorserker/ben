@@ -257,7 +257,8 @@ class Models:
         import numpy as np
 
         models = [("bidder", self.bidder_model), ("opponent", self.opponent_model),
-                  ("binfo", self.binfo_model), ("contract", self.contract_model),
+                  ("binfo", self.binfo_model), ("opponent_binfo", getattr(self, "opponent_binfo_model", None)),
+                  ("contract", self.contract_model),
                   ("trick", self.trick_model), ("lead_suit", self.lead_suit_model),
                   ("lead_nt", self.lead_nt_model), ("sd", self.sd_model),
                   ("sd_no_lead", self.sd_model_no_lead)]
@@ -469,6 +470,15 @@ class Models:
         contract_model=Contract(path_provider.get_path(os.path.join(base_path, conf['contract']['contract'])))
         trick_model=Trick(path_provider.get_path(os.path.join(base_path, conf['contract']['trick'])))
         binfo_model=BidInfo(path_provider.get_path(os.path.join(base_path, conf['bidding']['info'])))
+        # The opponents' bidding info network (set in the opponent configs). Sampling takes the
+        # HCP and shape of the opponents from it, and of partner from binfo_model
+        opponent_info = conf.get('bidding', 'opponent_info', fallback=None)
+        if not opponent_info:
+            opponent_binfo_model = None
+        elif os.path.normcase(os.path.normpath(opponent_info)) == os.path.normcase(os.path.normpath(conf['bidding']['info'])):
+            opponent_binfo_model = binfo_model
+        else:
+            opponent_binfo_model = BidInfo(path_provider.get_path(os.path.join(base_path, opponent_info)))
         if verbose:
             print(f"Loaded contract and bidding info models")
 
@@ -627,6 +637,7 @@ class Models:
         # Card play by the neural network alone: no double dummy, PIMC or SuitC. For measuring
         # the play models themselves; off by default.
         models.play_nn_only = conf.getboolean('cardplay', 'play_nn_only', fallback=False)
+        models.opponent_binfo_model = opponent_binfo_model
         return models
 
     @property

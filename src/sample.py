@@ -498,10 +498,27 @@ class Sample:
 
         return True
     
+    @staticmethod
+    def predict_bidding_info(A, models):
+        """HCP and shape for LHO, partner and RHO (in that order) from the auction A.
+        Each bidding info network reads the whole auction as its own system, so when the
+        opponents play another system and we have their network, LHO and RHO come from
+        it, and partner from ours."""
+        p_hcp, p_shp = models.binfo_model.pred_fun(A)
+        opponent_binfo_model = getattr(models, 'opponent_binfo_model', None)
+        if opponent_binfo_model is not None and opponent_binfo_model is not models.binfo_model:
+            o_hcp, o_shp = opponent_binfo_model.pred_fun(A)
+            p_hcp = np.array(p_hcp)
+            p_shp = np.array(p_shp)
+            p_hcp[..., [0, 2]] = o_hcp[..., [0, 2]]
+            p_shp[..., 0:4] = o_shp[..., 0:4]
+            p_shp[..., 8:12] = o_shp[..., 8:12]
+        return p_hcp, p_shp
+
     def get_bidding_info(self, n_steps, auction, nesw_i, hand, vuln, models):
         assert n_steps > 0, "n_steps should be greater than zero"
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, hand, vuln, models, models.n_cards_bidding)
-        p_hcp, p_shp = models.binfo_model.pred_fun(A)
+        p_hcp, p_shp = self.predict_bidding_info(A, models)
 
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
         p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
@@ -818,7 +835,7 @@ class Sample:
             #    print(f"{Fore.YELLOW}Hash of A{i}: {hashlib.sha256(arr_bytes).hexdigest()} {Fore.RESET}")  # Compute a SHA-256 hashhashlib.sha256(arr_bytes).hexdigest() 
             #print(A[:,0,:])
 
-            p_hcp, p_shp = models.binfo_model.pred_fun(A)
+            p_hcp, p_shp = self.predict_bidding_info(A, models)
 
             p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
             p_shp = p_shp.reshape((-1, n_steps, 12))[:, -1, :]
@@ -1582,7 +1599,7 @@ class Sample:
 
         A = binary.get_auction_binary_sampling(n_steps, auction, known_nesw, hand, vuln, models, models.n_cards_bidding)
 
-        p_hcp, p_shp = models.binfo_model.pred_fun(A)
+        p_hcp, p_shp = self.predict_bidding_info(A, models)
 
         # Only take the result from the latest bidding round
         p_hcp = p_hcp.reshape((-1, n_steps, 3))[:, -1, :]
