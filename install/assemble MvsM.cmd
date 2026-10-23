@@ -11,6 +11,7 @@ if not exist "MvsM\config\opponent" mkdir "MvsM\config\opponent"
 robocopy ..\src\config\opponent "MvsM\config\opponent" /E
 robocopy ..\BBA\CC "MvsM\BBA\CC" /E
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" BEN-*8730*
+robocopy ..\models\TF2Models "MvsM\models\TF2Models" BEN-*8742*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" BlueChip-*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" GIB-*8730*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" Lia-*8730*

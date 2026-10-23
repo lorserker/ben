@@ -17,6 +17,7 @@ if not exist "BENAPI\config\opponent" mkdir "BENAPI\config\opponent"
 robocopy ..\src\config\opponent "BENAPI\config\opponent" /E
 robocopy ..\BBA\CC "BENAPI\BBA\CC" /E
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" BEN-*8730*
+robocopy ..\models\TF2Models "BENAPI\models\TF2Models" BEN-*8742*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" BlueChip-*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" GIB-*8730*
 robocopy ..\models\TF2Models "BENAPI\models\TF2Models" Lia-*8730*
