@@ -12,7 +12,7 @@ from objects import BidResp, CandidateBid
 from bidding import bidding
 from collections import defaultdict
 
-from util import hand_to_str, calculate_seed, find_vuln_text, save_for_training
+from util import hand_to_str, calculate_seed, find_vuln_text, save_for_training, follow_suit
 from colorama import Fore, Style, init
 from nn.timing import ModelTimer
 
@@ -1282,17 +1282,22 @@ class BotBid:
 
                 X_ftrs[i,:], B_ftrs[i,:] = binary.get_auction_binary_for_lead(sample_auction, handbidding, handplay, self.vuln, self.dealer, self.models)
         
-        # We have a problem as we need to select different model based on the contract
-        # if contract[1] == "N":
-        #    lead_softmax = self.models.lead_nt_model.model(x_ftrs, b_ftrs)
-        #else:
-        #    lead_softmax = self.models.lead_suit_model.model(x_ftrs, b_ftrs)
-
+        # The lead model depends on the contract, as in botopeninglead.py: NT model for
+        # the notrump samples, suit model for the rest (all pass samples are ignored)
         t_lead_start = time.time()
-        lead_softmax = self.models.lead_suit_model.pred_fun(X_ftrs, B_ftrs)
+        nt_samples = strains == 0
+        lead_softmax = None
+        for samples, lead_model in ((nt_samples, self.models.lead_nt_model), (~nt_samples, self.models.lead_suit_model)):
+            if np.any(samples):
+                softmax = lead_model.pred_fun(X_ftrs[samples], B_ftrs[samples])
+                if lead_softmax is None:
+                    lead_softmax = np.zeros((n_samples, softmax.shape[1]))
+                lead_softmax[samples] = softmax
         if self.verbose:
             print(f"Lead model inference ({X_ftrs.shape[0]} samples): {(time.time() - t_lead_start)*1000:.2f} ms")
-        
+
+        # Only a card the leader holds can be led
+        lead_softmax = follow_suit(lead_softmax, hands_np_play[s_all, (declarers + 1) % 4], np.zeros((n_samples, 4)))
         lead_cards = np.argmax(lead_softmax, axis=1)
         
         X_sd = np.zeros((n_samples, 32 + 5 + 4*32))

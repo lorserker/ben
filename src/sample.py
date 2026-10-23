@@ -200,7 +200,9 @@ class Sample:
             accepted_samples.append(new_samples)
             sorted_scores.append(new_sorted_scores)
             samplings += step
-            extend_samples = (samplings + 3*step >= max_samples)
+            # Compare with the bound scaled for the bid count, not max_samples, so long auctions
+            # do not start extending before the end of the loop is near
+            extend_samples = (samplings + 3*step >= sample_boards_for_auction)
             # In the first iterations we did not find enough samples
             # so this time we are going to extend below threshold, and create a large sample
             # Another option could be to save doubted samples from earlier iterations

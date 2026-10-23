@@ -2,6 +2,7 @@ import tensorflow as tf
 from nn.keras_compat import load_model
 from nn.timing import ModelTimer
 from nn.tf_guard import tf_lock
+from nn.batch_pad import padded_size, pad, unpad
 
 class Bidder:
     
@@ -34,8 +35,9 @@ class Bidder:
 
     def pred_fun_seq(self, x):
         # Perform the model prediction (returns tensors)
+        n = len(x)
         with tf_lock:
             with ModelTimer.time_call('bidder'):
-                bids, alerts = self.pred_fun_tf(x)
+                bids, alerts = unpad(self.pred_fun_tf(pad(x, padded_size(n))), n)
             return bids.numpy(), alerts.numpy()
 

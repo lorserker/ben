@@ -42,6 +42,12 @@ install/data-staging/Shark-Sayc-8730.pbn-OK_boards.zip      | Shark-Sayc-8730-OK
 install/data-staging/WBridge5-21GF-8730.pbn-OK_boards.zip   | WBridge5-21GF-8730-OK_boards.zip
 install/data-staging/WBridge5-Sayc-8730.pbn-OK_boards.zip   | WBridge5-Sayc-8730-OK_boards.zip
 
+# The deal set of October 2026 (the Boards/ folders merged, each deal once), the
+# input every system bids with Boards/bid_with_epbot.py, and the BEN-21GF boards
+# bid by EPBot 8742 with all the Split_PBN files. Zipped from BBA/Boards.
+install/data-staging/Deals-2026-10-22.zip                   | Deals-2026-10-22.zip
+install/data-staging/BEN-21GF-8742.zip                      | BEN-21GF-8742.zip
+
 # Needed to re-derive the OK_boards from raw BBA output (step 9 of the pipeline
 # in scripts/training/README2.md). Not needed just to train.
 BBA/Boards/DatumScores.pkl                          | DatumScores.pkl

@@ -108,7 +108,7 @@ def smoke_test_bba_api(verbose=False):
 
     # --- bid_hand ----------------------------------------------------------
     bot = BBABotBid(gib, gib, 2, "AT762.K74.Q8.654", [True, True], 0, False, verbose)
-    deal = "N:5.AQ8652.AK.AQT7 AT762.K74.Q8.654 QJ43.T9.J9732.92 K98.J3.T654.KJ83"
+    deal = "N:AT762.K74.Q8.654 QJ43.T9.J9732.92 5.AQ8652.AK.AQT7 K98.J3.T654.KJ83"  # our hand (S) first
     finished = bot.bid_hand(["1H", "1S", "PASS", "PASS"], deal)
     print(f"bid_hand(...) -> auction of {len(finished)} calls, ends {finished[-3:]}")
     assert finished[-3:] == ["PASS", "PASS", "PASS"], f"bid_hand did not terminate the auction: {finished}"

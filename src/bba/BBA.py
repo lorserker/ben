@@ -329,7 +329,6 @@ class BBABotBid:
             "4N": "Blackwood",
             "5N": "King ask",
             "4C": "Gerber",
-            "5C": "King ask",
             "4S": "Exclusion",
             "5C": "Exclusion",
             "5D": "Exclusion",            
@@ -369,15 +368,15 @@ class BBABotBid:
         self.our_conventions, self.their_conventions = self.load_ccs()
         # Position is always N=0, E=1, S=2, W=3
         # Set system types for each player
+        # Our card belongs to our side and their card to the opponents, for all four players,
+        # so the opponents also bid with their own card in bid_hand
+        if self.position % 2 == 0:  # N (0) and S (2)
+            we = self.C_NS
+            they = self.C_WE
+        else:  # E (1) and W (3)
+            we = self.C_WE
+            they = self.C_NS
         for position in range(4):
-            if position % 2 == 0:  # N (0) and S (2)
-                we = self.C_NS
-                they = self.C_WE
-                self.vuln_wethey = self.vuln_nsew
-            else:  # E (1) and W (3)
-                we = self.C_WE
-                they = self.C_NS
-                self.vuln_wethey = [self.vuln_nsew[1], self.vuln_nsew[0]]
 
             # Set the system type for each player
             self.players[position].set_system_type(we, int(self.our_system))
@@ -924,28 +923,24 @@ class BBABotBid:
         return arr_suits
 
     def bid_hand(self, auction, deal):
-        # To get deterministic result the hand is always North
-        position = 0
-        dealer = ((self.dealer - self.position) + 4) % 4 
+        # deal must list our own hand first, then LHO, partner and RHO
+        # (as botbidder.translate_hands does) - not North first.
+        # Each hand is given to the player at its real seat, so the real dealer,
+        # vulnerability and each player's own convention card apply, as in bid()
+        vuln = self.bba_vul(self.vuln_nsew)
 
-        hands = deal.split(":")[1].split(' ') 
+        hands = deal.split(":")[1].split(' ')
         bba_auction = auction.copy()
-        bba_hand = []
         for i in range(4):
+            seat = (i + self.position) % 4
             hand_str = hands[i].split('.')
-            bba_hand.append(hand_str.copy())
             hand_str.reverse()
-            if self.position % 2 == 0:  # N (0) and S (2)
-                bba_vuln = self.bba_vul([self.vuln_wethey[0], self.vuln_wethey[1]])
-            else:
-                bba_vuln = self.bba_vul([self.vuln_wethey[1], self.vuln_wethey[0]])
-            # The deal we get is always our hand first
-            # First bid is opponent so we switch vulnerability
-            self.players[i].new_hand(i, _str_array(hand_str), dealer, bba_vuln)
+            self.players[seat].new_hand(seat, _str_array(hand_str), self.dealer, vuln)
 
         # Update bidding until now
         passes = 0
-        position = dealer
+        bid_made = False
+        position = self.dealer
         for k in range(len(auction)):
             bidid = bidding.BID2ID[auction[k]]
             if bidid < 2:
@@ -954,17 +949,18 @@ class BBABotBid:
                 bidid = bidid - 2
 
             for i in range(4):
-                self.players[(i) % 4].set_bid(position % 4, bidid)
+                self.players[i].set_bid(position % 4, bidid)
             if bidid == 0:
                 passes += 1
             else:
                 passes = 0
+                bid_made = True
             position += 1
-        
-        # Now bid the hand to the end
-        # Always LHO" to start
-        position = 1
-        while passes < 3:
+
+        # Now bid the hand to the end, starting with the player after the last call
+        # Three passes end the auction after a bid, four passes when nobody has bid
+        position = position % 4
+        while passes < 3 or (not bid_made and passes < 4):
 
             new_bid = self.players[position].get_bid()
             for i in range(4):
@@ -973,6 +969,7 @@ class BBABotBid:
                 passes += 1
             else:
                 passes = 0
+                bid_made = True
             if new_bid < 5:
                 new_bid += 2
             bba_auction.append(bidding.ID2BID[new_bid])

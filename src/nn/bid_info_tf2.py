@@ -3,6 +3,7 @@ import tensorflow as tf
 from nn.keras_compat import load_model
 from nn.timing import ModelTimer
 from nn.tf_guard import tf_lock
+from nn.batch_pad import padded_size, pad, unpad
 
 class BidInfo:
     
@@ -24,7 +25,8 @@ class BidInfo:
         return self.model(input_tensor, training=False)  # Use model call instead of predict
 
     def pred_fun(self, x):
+        n = len(x)
         with tf_lock:
             with ModelTimer.time_call('bidinfo'):
-                out_hcp_seq, out_shape_seq = self.pred_fun_tf(x)  # Call the tf.function
+                out_hcp_seq, out_shape_seq = unpad(self.pred_fun_tf(pad(x, padded_size(n))), n)  # Call the tf.function
             return out_hcp_seq.numpy(), out_shape_seq.numpy()  # Convert in this function

@@ -54,8 +54,10 @@ or whatever name match the system used - xxx can be the version of BBA
 As BBA have some pretty strange doubles, we filter the deals before using them for training. This is done with `Split_PBN.exe`, which splits the PBN-file into OK boards and bad boards:
 
 ```
-Split_PBN.exe filename
+Split_PBN.exe filename [DatumScores.pkl]
 ```
+
+Without the second argument it uses `DatumScores.pkl` in the current folder; without any argument it opens a file dialog. The command line needs Split_PBN 1.0.23 or later.
 
 The boards that survive the filter end up in `<filename>-OK_boards.pbn`, and the rejected boards are written to companion files - `-disaster.pbn`, `-duplicates.pbn`, `-db_making.pbn`, `-db_not_making.pbn` and `-missing-DD.pbn`. It is the `-OK_boards.pbn` file that is used for training.
 

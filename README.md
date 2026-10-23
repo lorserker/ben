@@ -17,7 +17,7 @@ If you like the software, please consider making a donation to support the devel
 
 ### Installation
 
-The engine runs on **Python 3.12**, with the neural networks using TensorFlow 2.18.1 (Keras 3.5.x). All platforms standardise on Python 3.12.
+The engine runs on **Python 3.12**, with the neural networks using TensorFlow 2.21.0 (Keras 3.15.x). All platforms standardise on Python 3.12.
 
 The recommended way of installing is in a [conda environment](https://docs.conda.io/en/latest/miniconda.html) (see [conda_setup.sh](conda_setup.sh)), but it can also be run in a plain `venv` / system Python 3.12 via `pip install -r requirements.txt`.
 
@@ -35,10 +35,10 @@ For __Ubuntu__ users: you might have to install libboost using `sudo apt install
 
 #### Running natively on Linux (including WSL)
 
-Docker users need to do nothing — the image is built on Ubuntu 24.04 / Python 3.12. For a **native** (non-Docker) Linux install, note that the vendored `bin/dds3-linux/_dds3.so` is built on **Ubuntu 24.04** and therefore requires:
+Docker users need to do nothing — the image is built on Ubuntu 24.04 / Python 3.12. For a **native** (non-Docker) Linux install, note that the vendored native libraries require:
 
-- **glibc ≥ 2.38** — i.e. Ubuntu 24.04+, Debian 13+, Fedora 38+. On an older distro (e.g. Ubuntu 22.04, glibc 2.35) it fails at import with `version 'GLIBC_2.38' not found`. Run on a newer distro, or rebuild `dds3` against your glibc (see [src/ddsolver/README.md](src/ddsolver/README.md)).
-- **Python 3.12** — the extension is locked to the CPython minor version.
+- **glibc ≥ 2.34** — i.e. Ubuntu 22.04+, Debian 12+, RHEL 9+, Fedora 35+. `bin/dds3-linux/_dds3.so` itself needs only glibc 2.25; the 2.34 floor comes from `libEPBot.so` (BBA) and `BGADLL.so` (PIMC). On an older distro they fail to load with `version 'GLIBC_2.34' not found`.
+- **Python 3.12** — the `dds3` extension is locked to the CPython minor version.
 
 **WSL quick start (Ubuntu 24.04)** — the simplest way to run/test the Linux build outside Docker.
 

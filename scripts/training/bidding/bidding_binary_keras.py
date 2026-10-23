@@ -393,6 +393,7 @@ if __name__ == '__main__':
 
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} created {k} hands\n')
 
+    os.makedirs(out_dir, exist_ok=True)
     np.save(os.path.join(out_dir, 'x.npy'), x)
     np.save(os.path.join(out_dir, 'y.npy'), y)
     np.save(os.path.join(out_dir, 'z.npy'), z)

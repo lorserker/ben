@@ -104,6 +104,7 @@ src/logs/
 scripts/training/data/hands_data.pkl
 src/test.py
 BBA/Boards
+BBA/Run*/
 install/dist
 install/BEN
 install/MvsM

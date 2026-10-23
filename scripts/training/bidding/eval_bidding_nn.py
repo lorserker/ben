@@ -42,7 +42,7 @@ def load_dd_tables(path):
                 inside = line.startswith('[OptimumResultTable')
                 continue
             if inside:
-                m = re.match(r'([NESW]) (NT|[SHDC]) (\d+)', line)
+                m = re.match(r'([NESW])\s+(NT|[SHDC])\s+(\d+)', line)
                 if m:
                     cur[(m.group(1), m.group(2)[0])] = int(m.group(3))
     return tables

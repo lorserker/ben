@@ -3,6 +3,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from nn.timing import ModelTimer
 from nn.tf_guard import tf_lock
+from nn.batch_pad import padded_size, pad, unpad
 
 class LeadSingleDummy:
 
@@ -21,8 +22,9 @@ class LeadSingleDummy:
 
 
     def pred_fun(self, x):
+        n = len(x)
         with tf_lock:
             with ModelTimer.time_call('single_dummy'):
-                result = self.pred_fun_tf(np.asarray(x, dtype=np.float32))
+                result = unpad(self.pred_fun_tf(pad(np.asarray(x, dtype=np.float32), padded_size(n))), n)
             return result.numpy()
 

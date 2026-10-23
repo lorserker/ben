@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from nn.timing import ModelTimer
 from nn.tf_guard import tf_lock
+from nn.batch_pad import padded_size, pad, unpad
 
 class Leader:
 
@@ -23,7 +24,9 @@ class Leader:
         return result
 
     def pred_fun(self, x, b):
+        n = len(x)
+        size = padded_size(n)
         with tf_lock:
             with ModelTimer.time_call('leader'):
-                result = self.pred_fun_tf(x, b)
+                result = unpad(self.pred_fun_tf(pad(x, size), pad(b, size)), n)
             return result.numpy()

@@ -2,6 +2,7 @@ import tensorflow as tf
 from tensorflow.keras.models import load_model
 from nn.timing import ModelTimer
 from nn.tf_guard import tf_lock
+from nn.batch_pad import padded_size, pad, unpad
 
 class Contract:
 
@@ -20,7 +21,8 @@ class Contract:
         return contract
 
     def pred_fun(self, x):
+        n = len(x)
         with tf_lock:
             with ModelTimer.time_call('contract'):
-                result = self._pred_fun_tf(x)
+                result = unpad(self._pred_fun_tf(pad(x, padded_size(n))), n)
         return result

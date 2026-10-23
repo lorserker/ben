@@ -39,6 +39,7 @@ absl.logging.set_stderrthreshold(absl.logging.FATAL)
 
 import tensorflow as tf
 import psutil
+import healthlog
 
 from gevent.pywsgi import WSGIServer
 import gevent
@@ -112,7 +113,7 @@ from claim import Claimer
 dealer_enum = {'N': 0, 'E': 1, 'S': 2, 'W': 3}
 from colorama import Fore, Back, Style, init
 
-version = '0.9.0.1'
+version = '0.9.0.2'
 init()
 
 def handle_exception(e):
@@ -855,6 +856,9 @@ logger.addHandler(log_handler)
 logger.setLevel(logging.INFO)
 logger.propagate = False  # Prevent log messages from going to the root logger
 
+# Request timing, memory and hang reports in logs/gameapi-<host>-<port>-health-<date>.log
+healthlog.start(f"logs/gameapi-{host}-{port}")
+
 # Allowed hosts validation.
 # Requests with a Host header not in this set are rejected with HTTP 444 (silent drop).
 # When running in Docker, the container name (e.g. 'ben') is used as the hostname,
@@ -939,12 +943,23 @@ def count_request_in():
     global requests_in_flight
     g.counted_in_flight = True
     requests_in_flight += 1
+    g.health_id = healthlog.request_started(request.method, request.url)
+
+@app.after_request
+def keep_status_for_health_log(response):
+    g.health_status = response.status_code
+    return response
 
 @app.teardown_request
 def count_request_out(exc=None):
     global requests_in_flight
     if g.pop('counted_in_flight', False):
         requests_in_flight -= 1
+    if 'health_id' in g:
+        status = g.pop('health_status', None) or ('error' if exc else None)
+        line = healthlog.request_finished(g.pop('health_id'), status)
+        if line:
+            logger.info(line)
 
 @app.after_request
 def close_connection_when_stopping(response):
