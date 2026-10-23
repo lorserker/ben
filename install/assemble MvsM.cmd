@@ -14,6 +14,7 @@ robocopy ..\models\TF2Models "MvsM\models\TF2Models" BEN-*8730*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" BEN-*8742*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" BlueChip-*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" GIB-*8730*
+robocopy ..\models\TF2Models "MvsM\models\TF2Models" GIB-*8742*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" Lia-*8730*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" QPlus-*8730*
 robocopy ..\models\TF2Models "MvsM\models\TF2Models" Shark-*8730*

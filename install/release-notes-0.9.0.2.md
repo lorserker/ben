@@ -19,6 +19,14 @@ auctions.
     on both sides) they won by 76 IMPs, +0.15 IMP per board, within the noise
     of a match this size.
   - Bidding takes about 16% longer because of the larger network.
+- **New GIB-BBO bidding and bidding-info models**
+  (`GIB-BBO-8742_2026-10-23-E30`, `GIB-BBO-8742-Info_2026-10-23-E30`),
+  trained the same way on the same deals bid by EPBot 8742 with the GIB-BBO
+  card. They are used by `default.conf`, `default_api.conf` (the API's default),
+  `GIB-BBO.conf`, `GIB-BBO-AlphaMju.conf`, the GIB-BBO opponent config and the
+  GIB-BBO system in `systems.conf`. In self-play 59% of the auctions are
+  identical to EPBot's, against 31% for the previous models; they have not
+  yet been compared with the previous models in a match.
 
 ## Bidding
 
