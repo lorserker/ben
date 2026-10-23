@@ -1,11 +1,24 @@
-EPBot 8742, fixes in the EPBot rollout used by the bidding search, a fix for
-memory that kept growing while bidding, and a new way to train the bidding
-models from EPBot auctions.
+EPBot 8742 with new BEN-21GF bidding models trained on its auctions, fixes in
+the EPBot rollout used by the bidding search, a fix for memory that kept
+growing while bidding, and a new way to train the bidding models from EPBot
+auctions.
 
-## EPBot 8742
+## EPBot 8742 and new BEN-21GF models
 
 - **BEN now ships EPBot 8742** for Windows, Linux and macOS (`bin/BBA`), the
   version of the latest Bridge Bot Analyzer.
+- **New BEN-21GF bidding and bidding-info models**
+  (`BEN-21GF-8742_2026-10-22-E30`, `BEN-21GF-8742-Info_2026-10-22-E30`),
+  trained on 1.25 million deals bid by EPBot 8742. The bidding network has
+  256 units instead of 128. They are used by `BEN-21GF.conf`, the ACE and
+  UCBC configs, `BBA-21GF.conf`, the BEN-21GF opponent config and the BEN-21GF
+  system in `systems.conf`.
+  - They reproduce EPBot 8742's auctions far better than the previous models:
+    in self-play 54% of the auctions are identical to EPBot's, against 25%.
+  - In a 500-board match against the previous models (same code and EPBot
+    on both sides) they won by 76 IMPs, +0.15 IMP per board, within the noise
+    of a match this size.
+  - Bidding takes about 16% longer because of the larger network.
 
 ## Bidding
 
