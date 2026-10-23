@@ -33,6 +33,38 @@ jobs:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           tags: |
             type=match,pattern=v(.*),group=1
+      # Build locally first and smoke-test the container before anything is
+      # pushed: Dockerfile.play copies src/*.py by name, so a new module that
+      # gameapi.py imports is otherwise only noticed when a server starts it.
+      - name: Build Docker image for smoke test
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: Dockerfile.play
+          load: true
+          tags: ben-play:smoke
+      - name: Smoke test /bid and /lead
+        run: |
+          docker run -d --name smoke -p 8085:8085 ben-play:smoke
+          ok=
+          for i in $(seq 1 60); do
+            if [ "$(docker inspect -f '{{.State.Running}}' smoke)" != true ]; then
+              echo "Container exited during startup"; break
+            fi
+            out=$(curl -sS --max-time 60 'http://localhost:8085/bid?user=smoketest&dealer=N&seat=N&vul=&ctx=&hand=AK52.KQ3.J84.T92&dummy=&played=&tournament=imp' || true)
+            case "$out" in *'"bid"'*) echo "bid: $out"; ok=1; break;; esac
+            sleep 10
+          done
+          if [ -n "$ok" ]; then
+            out=$(curl -sS --max-time 120 'http://localhost:8085/lead?user=smoketest&dealer=N&seat=E&vul=&ctx=1N--3N----&hand=KQT52.Q3.J84.T92&tournament=imp' || true)
+            echo "lead: $out"
+            case "$out" in *'"card"'*) ;; *) ok=;; esac
+          fi
+          if [ -z "$ok" ]; then
+            docker logs --tail 50 smoke
+            exit 1
+          fi
+          docker rm -f smoke
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
