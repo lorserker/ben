@@ -30,14 +30,19 @@ class Claimer:
         used_cards.sort()
         index_for_dummy = 2
         if player_i == 0:
-            index_for_dummy = 1  
+            index_for_dummy = 1
         if player_i == 2:
-            index_for_dummy = 3 
+            index_for_dummy = 3
+        # Hands are laid out relative to us (index 0); the sampled combination goes to
+        # chosen_i, the rest to remaining_i. Map them to absolute seats to look up voids
+        chosen_i, remaining_i = {2: (3, 1), 1: (3, 2), 3: (2, 1)}[index_for_dummy]
+        chosen_voids = set(shown_out_suits[(player_i + chosen_i) % 4])
+        remaining_voids = set(shown_out_suits[(player_i + remaining_i) % 4])
         n = 13 * 4  # Number of cards per hand
         hands = [np.zeros(n, dtype=np.int32) for _ in range(4)]
         for i in range(4):
-            # all cards know for this suit
-            if missing_cards[i] == 0:
+            # all cards know for this suit, or an opponent has shown out so we know where the cards are
+            if missing_cards[i] == 0 or i in chosen_voids or i in remaining_voids:
                 for j in range(13):
                     card52 = i * 13 + j
                     # Do not transfer cards if played in current trick
@@ -98,7 +103,19 @@ class Claimer:
         sampled_hands_pbn = []
         # Ensure the number of combinations is correct based on the number of hidden cards
         n_cards = len(hidden_cards) // 2
-        card_combinations = list(combinations(hidden_cards, n_cards))  # Get all possible splits
+
+        # A suit an opponent has shown out of must be held by the other opponent
+        forced_chosen = [c for c in hidden_cards if c // 13 in remaining_voids]
+        forced_remaining = [c for c in hidden_cards if c // 13 in chosen_voids]
+        free_cards = [c for c in hidden_cards if c not in forced_chosen and c not in forced_remaining]
+        n_free = n_cards - len(forced_chosen)
+        if n_free < 0 or n_free > len(free_cards):
+            # The voids do not fit the hand sizes, so ignore them
+            if self.verbose:
+                print("Claimcheck: shown out suits do not fit the hidden cards, ignoring them", shown_out_suits)
+            forced_chosen, free_cards, n_free = [], hidden_cards, n_cards
+
+        card_combinations = list(combinations(free_cards, n_free))  # Get all possible splits
 
         # Ensure the number of requested samples doesn't exceed available combinations
         n_possible_samples = min(n_samples, len(card_combinations))
@@ -106,22 +123,14 @@ class Claimer:
         # Select unique samples without replacement
         unique_combinations = random.sample(card_combinations, n_possible_samples)
 
-        # We should check shown_out_suits
-        #print("shown_out_suits", shown_out_suits)
-        for chosen_combination  in unique_combinations:
+        for combination in unique_combinations:
 
             # Create the hands based on the selected combination
-            remaining_cards = [card for card in hidden_cards if card not in chosen_combination]
-            
-            if index_for_dummy == 2:
-                hands[3] = deck52.deal_to_str(_hand_from_cards(52, list(chosen_combination)))
-                hands[1] = deck52.deal_to_str(_hand_from_cards(52, remaining_cards))
-            if index_for_dummy == 1:
-                hands[3] = deck52.deal_to_str(_hand_from_cards(52, list(chosen_combination)))
-                hands[2] = deck52.deal_to_str(_hand_from_cards(52, remaining_cards))
-            if index_for_dummy == 3:
-                hands[2] = deck52.deal_to_str(_hand_from_cards(52, list(chosen_combination)))
-                hands[1] = deck52.deal_to_str(_hand_from_cards(52, remaining_cards))
+            chosen_cards = forced_chosen + list(combination)
+            remaining_cards = [card for card in hidden_cards if card not in chosen_cards]
+
+            hands[chosen_i] = deck52.deal_to_str(_hand_from_cards(52, chosen_cards))
+            hands[remaining_i] = deck52.deal_to_str(_hand_from_cards(52, remaining_cards))
             sampled_hands_pbn.append('N:' + ' '.join(hands))
 
         if self.verbose:
