@@ -85,7 +85,7 @@ Returns the systems and cardings a request may name, and what the server plays w
   "name": "GIB as on BBO",
   "playsSystems": ["21GF-GIB", "21GF", "SAYC"],
   "readsSystems": ["21GF-GIB", "21GF", "SAYC", "BEN:LIA-21GF", "BEN:QPLUS-21GF", "BEN:WBRIDGE5-SAYC",
-                   "BEN:BLUECHIP-SAYC", "BEN:SHARK-SAYC", "BEN:ROBO-SAYC"],
+                   "BEN:BLUECHIP-SAYC", "BEN:SHARK-SAYC", "BEN:ROBO-SAYC", "BEN:MBRIDGE"],
   "cardings": ["21GF-GIB", "21GF", "SAYC", "BEN:LIA-21GF", "...", "STANDARD", "STANDARD-35"],
   "defaults": {"ourSystem": "21GF-GIB", "theirSystem": "21GF-GIB", "ourCarding": "STANDARD-35", "theirCarding": "21GF-GIB"}
 }

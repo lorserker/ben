@@ -12,7 +12,7 @@ robocopy ..\BBA\CC "BBA\BBA\CC" BlueChip-Sayc.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" GIB-21GF.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" GIB-BBO.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" Lia-21GF.bbsa
-robocopy ..\BBA\CC "BBA\BBA\CC" Micro Bridge 13.4.bbsa
+robocopy ..\BBA\CC "BBA\BBA\CC" MicroBridge.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" QPlus-21GF.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" Robo-Sayc.bbsa
 robocopy ..\BBA\CC "BBA\BBA\CC" Shark-Sayc.bbsa
@@ -44,6 +44,7 @@ robocopy ..\models\TF2Models "BBA\models\TF2Models" /E BEN-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Blue*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E GIB-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Lia-*
+robocopy ..\models\TF2Models "BBA\models\TF2Models" /E MicroBridge-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E QPlus*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Shark-*
 robocopy ..\models\TF2Models "BBA\models\TF2Models" /E Robo-Sayc-*
