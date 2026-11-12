@@ -432,9 +432,14 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
         if models.lead_from_pips_nt == "attitude" and suit_length > 1:
             # Need to check for honor in the suit
             hcp_in_suit = binary.get_hcp_suit(hand52.reshape((4, 13))[opening_suit])
-            if suit_length < 4 or hcp_in_suit < 2:
+            if suit_length == 2:
+                # Doubleton: the higher card (a low one would ask partner to continue)
+                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
+            elif hcp_in_suit < 2:
+                # No honour (Q or better): a high card, the second highest
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 2)
             else:
+                # An honour (Q or better), 3 cards or more: the lowest card
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, suit_length)
             return card_index + 13 * opening_suit
         
