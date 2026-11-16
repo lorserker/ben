@@ -58,6 +58,7 @@
 	</style>
 
 	<!--JavaScript-->
+	<script src="/app/wsurl.js"></script>
 	<script>
 		let biddingsequence = getQueryParam('bid')
 		if (!biddingsequence) {
@@ -69,7 +70,7 @@
 		function create_URL() {
 
 			// Construct the URL dynamically
-			var url = "http://" + window.location.hostname + ":8085/bids";
+			var url = benApiUrl() + "/bids";
 			var params = [];
 
 			if (fileUs) params.push("file_us=" + encodeURIComponent(fileUs));

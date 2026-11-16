@@ -75,6 +75,7 @@ try:
 except ImportError:
     ACEDefDLL = None
 
+import re
 from flask import Flask, Response, request, jsonify, abort, g
 from flask_cors import CORS
 from werkzeug.exceptions import HTTPException
@@ -734,11 +735,37 @@ print(f'http://{host}:{port}/')
 app = Flask(__name__)
 CORS(app) 
 
+# Behind a reverse proxy the web pages call the API as /gameapi/<port>/bid,
+# on the page's own origin (see frontend/wsurl.js), and the proxy routes that
+# path here unchanged. Drop the prefix so the routes below match.
+class StripProxyPrefix:
+    prefix = re.compile(r"^/gameapi/\d+(?=/|$)")
+
+    def __init__(self, wsgi_app):
+        self.wsgi_app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        path = environ.get("PATH_INFO", "")
+        stripped = self.prefix.sub("", path, count=1)
+        if stripped != path:
+            environ["PATH_INFO"] = stripped or "/"
+        return self.wsgi_app(environ, start_response)
+
+app.wsgi_app = StripProxyPrefix(app.wsgi_app)
+
+def client_address():
+    """The visitor's address. Behind a reverse proxy the socket peer is the
+    proxy, a loopback or private address, which would exempt every visitor
+    from rate limiting and put them all in one bucket; the proxy names the
+    visitor in a header."""
+    forwarded = (request.headers.get("CF-Connecting-IP")
+                 or request.headers.get("X-Forwarded-For", "").split(",")[0].strip())
+    return forwarded or request.remote_addr or ""
+
 # --- Configure Flask-Limiter ---
 def is_internal_request():
     """Exempt internal requests from rate limiting (localhost and private networks)"""
-    from flask import request
-    remote_addr = request.remote_addr or ''
+    remote_addr = client_address()
     if remote_addr == 'localhost':
         return True
     try:
@@ -751,7 +778,7 @@ def is_internal_request():
 
 limiter = Limiter(
     app=app,
-    key_func=get_remote_address,  # Limits based on the remote IP address
+    key_func=client_address,  # Limits based on the visitor's IP address
     default_limits=["20000 per day", "5000 per hour", "100 per minute"],
     # Only /play and /bids name the exemption themselves, so without this /bid
     # and /lead keep counting against the daily cap even on loopback - which a
