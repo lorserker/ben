@@ -10,6 +10,7 @@
 		<title>BEN - The open source bridge engine</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
         <link rel="stylesheet" href="/app/style.css">
+    <script src="/app/wsurl.js"></script>
     <script>
         var formerror = false
         function copyToClipboard(idx) {
@@ -347,9 +348,8 @@ async function includeCheckboxValues(event) {
     // Pre-flight: verify the selected server port is reachable before redirecting
     const serverValue = document.getElementById('server').value;
     const serverPort = '444' + serverValue;
-    const wsProtocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
     const reachable = await new Promise((resolve) => {
-        const ws = new WebSocket(wsProtocol + location.hostname + ':' + serverPort + '/');
+        const ws = new WebSocket(benGameServerUrl(serverPort));
         const timer = setTimeout(() => { ws.close(); resolve(false); }, 1500);
         ws.onopen  = () => { clearTimeout(timer); ws.close(); resolve(true); };
         ws.onerror = () => { clearTimeout(timer); resolve(false); };

@@ -8,6 +8,7 @@
 
   <link rel="stylesheet" href="style.css">
   <script src="bridge.js"></script>
+  <script src="wsurl.js"></script>
 
     <!-- Include jQuery and jQuery UI -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -156,9 +157,8 @@
         }
         try {
             var serverport = '444' + server
-            var protocol = location.protocol === 'https:' ? 'wss://' : 'ws://';
             var port = location.port !== '' ? ':' + location.port : ''; // Extracts the port number, if present
-            ws = new WebSocket(protocol + location.hostname + ":"+  serverport + "/" + queryString)
+            ws = new WebSocket(benGameServerUrl(serverport) + queryString)
 
             ws.addEventListener("error", function (event) {
                 console.log("WebSocket error:", event);
