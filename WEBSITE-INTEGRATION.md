@@ -46,10 +46,14 @@ responses.
 Pass the hostname(s) you actually use:
 
 ```bash
-python3 gameapi.py --host 0.0.0.0 --allowed-hosts 'localhost,127.0.0.1,ben,bridge.example.com'
+python3 gameapi.py --host 0.0.0.0 --allowed-hosts "localhost,127.0.0.1,ben,bridge.example.com"
 # or, for development only:
-python3 gameapi.py --host 0.0.0.0 --allowed-hosts '*'
+python3 gameapi.py --host 0.0.0.0 --allowed-hosts "*"
 ```
+
+Use double quotes: they work in bash, Windows `cmd` and PowerShell alike (`cmd`
+does not remove single quotes; gameapi now strips stray quotes, older versions
+did not and rejected everything).
 
 ### 1.3 CORS
 
@@ -302,7 +306,7 @@ on the frontend. BEN only answers "given this state, what do I do next?".
 ## 6. Operational checklist
 
 - **Container is up but every call hangs / returns nothing?** Almost always a
-  `Host` header rejection. Restart with `--allowed-hosts '*'` to confirm,
+  `Host` header rejection. Restart with `--allowed-hosts "*"` to confirm,
   then narrow it down. Look for `Rejected request from host '...'` in
   `/app/logs/gameapi-*.log`.
 - **CORS preflight fails from the browser?** `flask_cors.CORS(app)` allows

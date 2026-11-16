@@ -568,7 +568,7 @@ parser.add_argument("--record", type=str_to_bool, default=True, help="Recording 
 parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
 parser.add_argument("--nolimit", type=str_to_bool, default=False, help="Removed limit on number of requests to the API")
-parser.add_argument("--allowed-hosts", type=str, default=None, help="Comma-separated list of allowed Host header values (e.g. 'localhost,ben,myhost.example.com'). Default: localhost,127.0.0.1. Use '*' to allow all hosts.")
+parser.add_argument("--allowed-hosts", type=str, default=None, help="Comma-separated list of allowed Host header values (e.g. 'localhost,ben,myhost.example.com'). Default: localhost,127.0.0.1. Use \"*\" to allow all hosts.")
 parser.add_argument("--ddsrecord", default=None, help="Record every DDS call to this file for later benchmarking with ddsreplay.py (.gz compresses; a directory gets one file per process). Records are not tagged with a board here - requests are served concurrently.")
 
 args = parser.parse_args()
@@ -865,10 +865,14 @@ healthlog.start(f"logs/gameapi-{host}-{port}")
 # so it must be included here. Use --allowed-hosts to customize, or '*' to allow all.
 DEFAULT_ALLOWED_HOSTS = {'localhost', '127.0.0.1'}
 
-if args.allowed_hosts == '*':
+# Windows cmd does not remove single quotes, so --allowed-hosts '*' arrives as "'*'".
+# Strip stray quotes so the bash-style examples work on every shell.
+allowed_hosts_arg = (args.allowed_hosts or '').strip().strip('\'"')
+if allowed_hosts_arg == '*':
     ALLOWED_HOSTS = None  # None means allow all
-elif args.allowed_hosts:
-    ALLOWED_HOSTS = set(h.strip() for h in args.allowed_hosts.split(','))
+elif allowed_hosts_arg:
+    ALLOWED_HOSTS = set(h.strip().strip('\'"') for h in allowed_hosts_arg.split(','))
+    ALLOWED_HOSTS.discard('')
 else:
     ALLOWED_HOSTS = DEFAULT_ALLOWED_HOSTS
 

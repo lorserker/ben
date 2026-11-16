@@ -423,6 +423,14 @@ def lead_pip_24(hand52, opening_suit, suit_length):
                 card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 4)
     return card_index
 
+def lead_pip_135(hand52, opening_suit, suit_length):
+    # 1-3-5: top from a doubleton, 3rd best from 3-4 cards, 5th best from 5+
+    if suit_length < 3:
+        return find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
+    if suit_length < 5:
+        return find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 3)
+    return find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 5)
+
 def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
     if verbose:
         print("Select the right card")
@@ -445,6 +453,11 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
         
         if models.lead_from_pips_nt == "24" and suit_length > 1:
             return lead_pip_24(hand52, opening_suit, suit_length) + 13 * opening_suit
+
+        # 1-3-5 against notrump. Without this branch "135" fell through to the random-pip
+        # fallback below, so the setting had no effect in notrump.
+        if models.lead_from_pips_nt == "135":
+            return lead_pip_135(hand52, opening_suit, suit_length) + 13 * opening_suit
     else:
         if opening_suit == "SHDC".index(contract[1]):
             # when leading a trump always lead lowest from pips
@@ -452,14 +465,7 @@ def select_right_card(hand52, opening_lead, rng, contract, models, verbose):
             return card_index + 13 * opening_suit
 
         if models.lead_from_pips_suit == "135":
-            if suit_length < 3:
-                card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 1)
-            else:
-                if suit_length < 5:
-                    card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 3)
-                else:
-                    card_index = find_nth_occurrence(hand52.reshape((4, 13))[opening_suit], 1, 5)
-            return card_index + 13 * opening_suit
+            return lead_pip_135(hand52, opening_suit, suit_length) + 13 * opening_suit
 
         if models.lead_from_pips_suit == "24" and suit_length > 1:
             return lead_pip_24(hand52, opening_suit, suit_length) + 13 * opening_suit

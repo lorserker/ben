@@ -21,11 +21,15 @@ behind a reverse proxy, you must add your hostname(s):
 
 ```bash
 # Allow specific hosts (comma-separated)
-python gameapi.py --allowed-hosts 'localhost,127.0.0.1,ben'
+python gameapi.py --allowed-hosts "localhost,127.0.0.1,ben"
 
 # Allow all hosts (useful in Docker / trusted networks)
-python gameapi.py --allowed-hosts '*'
+python gameapi.py --allowed-hosts "*"
 ```
+
+Use double quotes: they work in bash, Windows `cmd` and PowerShell alike. Windows `cmd`
+does not remove single quotes, so older versions of gameapi saw `'*'` as a host name and
+rejected every request with 444; gameapi now strips stray quotes itself.
 
 > **Tip:** If you get HTTP 444 "No Response" on every request, this is almost certainly
 > the cause. Check the logs for a "Rejected request from host" warning.
