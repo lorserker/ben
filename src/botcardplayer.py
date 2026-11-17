@@ -164,22 +164,17 @@ class CardPlayer:
             self.pimc_defending = trick_i >= (getattr(self.models, 'ace_start_trick_defender', 1) - 1) and trick_i < getattr(self.models, 'ace_stop_trick_defender', 13)
         else:
             self.pimc_defending = self.models.pimc_use_defending and trick_i >= (self.models.pimc_start_trick_defender - 1) and trick_i < (self.models.pimc_stop_trick_defender)
-        if not self.pimc_defending and not self.pimc_declaring:
+        # Only the side that actually uses the engine has one: with PIMC enabled for
+        # defence but not declaring, the declarer's self.pimc is None
+        engine_in_use = (self.pimc_declaring and self.player_i in (1, 3)) or (self.pimc_defending and self.player_i in (0, 2))
+        if not engine_in_use or self.pimc is None:
             return
         if self.models.pimc_constraints:
-            if self.models.pimc_constraints_each_trick:
-                self.find_and_update_constraints(players_states, quality,self.player_i)
-            else:
-                if self.pimc.constraints_updated:
-                    return
-                if self.pimc_declaring and (self.player_i == 1 or self.player_i == 3):
-                    if self.verbose:
-                        print("Declaring", self.pimc_declaring, self.player_i, trick_i)
-                    self.find_and_update_constraints(players_states, quality,self.player_i)
-                if self.pimc_defending and (self.player_i == 0 or self.player_i == 2):
-                    if self.verbose:
-                        print("Defending", self.pimc_defending, self.player_i, trick_i)
-                    self.find_and_update_constraints(players_states, quality,self.player_i)
+            if not self.models.pimc_constraints_each_trick and self.pimc.constraints_updated:
+                return
+            if self.verbose:
+                print("Declaring" if self.player_i in (1, 3) else "Defending", self.player_i, trick_i)
+            self.find_and_update_constraints(players_states, quality, self.player_i)
 
     def merge_candidate_cards(self, pimc_resp, dd_resp, engine, weight, quality):
         merged_cards = {}
