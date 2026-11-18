@@ -528,9 +528,43 @@ def parse_vuln(v):
     if v is None:
         v = ''
     v_upper = v.upper().strip()
+    if v_upper not in ('', 'NONE', '-', 'NS', 'N-S', 'EW', 'E-W', 'BOTH', 'ALL'):
+        # A value we do not know must not be played as "nobody vulnerable"
+        raise ValueError(f"Unknown vul '{v}'. Use None, NS, EW or All")
     vuln_ns = v_upper in ['NS', 'N-S', 'BOTH', 'ALL']
     vuln_ew = v_upper in ['EW', 'E-W', 'BOTH', 'ALL']
     return [vuln_ns, vuln_ew]
+
+class BadRequest(Exception):
+    """A request the caller got wrong: answered 400 with this text as `error`."""
+
+
+def require_args(*names):
+    """The named query parameters; a missing one is the caller's error, named in the answer."""
+    for name in names:
+        if request.args.get(name) is None:
+            raise BadRequest(f"Missing '{name}' parameter")
+    return [request.args.get(name) for name in names]
+
+
+def as_bool(value):
+    """A flag that may arrive as a bool or as the text 'True'/'False'."""
+    return value.strip().lower() == 'true' if isinstance(value, str) else bool(value)
+
+
+def build_info():
+    """What a client records about the answering server (Seat Robot API, GET /)."""
+    info = {"engine": "BEN", "version": version}
+    try:
+        # A baked image notes the commit it was built from next to the source tree
+        with open(os.path.join(os.path.dirname(config_path), ".ben_sha")) as f:
+            sha = f.read().strip()
+        if sha:
+            info["build"] = f"{sha[:8]} {models.name}".strip()
+    except OSError:
+        pass
+    return info
+
 
 def parse_matchtype(args):
     """
@@ -998,12 +1032,17 @@ def wait_for_requests_in_flight():
 def home():
     # Seat Robot API: the names this server accepts in ourSystem/theirSystem/ourCarding/theirCarding
     result = {"name": models.name}
+    result.update(build_info())
     if systems:
         result.update(systems.capabilities())
     return jsonify(result)
 
 @app.errorhandler(UnknownName)
 def unknown_name_handler(e):
+    return jsonify(error=str(e)), 400
+
+@app.errorhandler(BadRequest)
+def bad_request_handler(e):
     return jsonify(error=str(e)), 400
 
 @app.route('/bid')
@@ -1020,6 +1059,7 @@ def bid():
         mp = models.matchpoint
         details = query_flag("details")
         # First we extract our hand
+        require_args("hand", "seat", "dealer")
         hand = request.args.get("hand").replace('_','.').upper()
         if 'X' in hand:
             if '8' in hand or '9' in hand:
@@ -1077,11 +1117,12 @@ def bid():
             else:
                 explanation, alert = hint_bot.bbabot.explain_last_bid(auction_with_bid)
             result["explanation"] = explanation
-            result["alert"] = str(alert)
+            # A JSON boolean: the text "False" is truthy to a JavaScript client
+            result["alert"] = as_bool(alert)
             # Also add explanation to the top candidate
             if "candidates" in result and len(result["candidates"]) > 0:
                 result["candidates"][0]["explanation"] = explanation
-                result["candidates"][0]["alert"] = str(alert)
+                result["candidates"][0]["alert"] = as_bool(alert)
         except Exception as e:
             if verbose:
                 print(f"Could not get explanation for bid: {e}")
@@ -1089,13 +1130,15 @@ def bid():
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "bid":bid.to_dict()}
             logger.info(f"Calculations bid: {json.dumps(calculations)}")
-        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        print(f'Request took {(time.time() - t_start):0.2f} seconds')
         return json.dumps(result)
+    except BadRequest as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
         handle_exception(e)
         error_message = "An error occurred: {}".format(str(e))
-        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error    
-    
+        return jsonify({"error": error_message}), 400  # HTTP status code 500 for internal server error
+
 @app.route('/lead')
 def lead():
     try:
@@ -1109,6 +1152,7 @@ def lead():
         models = request_models()
         mp = models.matchpoint
         # First we extract our hand and seat
+        require_args("hand", "seat", "dealer")
         hand = request.args.get("hand").replace('_','.').upper()
         details = query_flag("details")
         if 'X' in hand:
@@ -1134,9 +1178,7 @@ def lead():
             return json.dumps(result), 400
         decl_i = bidding.get_decl_i(contract)
         if "NESW"[(decl_i + 1) % 4] != seat:
-            result = {"message":"Not this player to lead"}
-            print(result)
-            return json.dumps(result)
+            raise BadRequest(f"Not this player to lead: the contract is {contract}, so {'NESW'[(decl_i + 1) % 4]} leads")
 
         # Allow verbose to be enabled per-request via query parameter
         request_verbose = request.args.get("verbose", "").lower() in ("true", "1", "yes")
@@ -1166,8 +1208,10 @@ def lead():
         if record: 
             calculations = {"hand":hand, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction,  "lead":result}
             logger.info(f"Calculations lead: {json.dumps(calculations)}")
-        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        print(f'Request took {(time.time() - t_start):0.2f} seconds')
         return json.dumps(result)
+    except BadRequest as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
         handle_exception(e)
         error_message = "An error occurred: {}".format(str(e))
@@ -1188,42 +1232,45 @@ def play():
         models = request_models()
         mp = models.matchpoint
         # First we extract the hands and seat
+        require_args("hand", "seat", "dealer")
         hand_str = request.args.get("hand").replace('_','.')
-        dummy_str = request.args.get("dummy").replace('_','.')
-        played = request.args.get("played")
+        played = request.args.get("played") or ""
         details = query_flag("details")
         cards = [played[i:i+2] for i in range(0, len(played), 2)]
         #print(played)
         #print(cards, len(cards))
+        # Board over (Seat Robot API): all 52 cards played, or a passed-out
+        # auction with nothing played. There is no card to choose, and a
+        # passed-out board has no dummy.
         if len(cards) > 51:
-            result = {"message": "Game is over, no cards to play"}
+            result = {"message": "Game is over, no cards to play", "boardOver": True}
             print(result)
             return json.dumps(result)
+        calls = [c.upper() for c in parse_ctx_to_bids(request.args.get("ctx"))]
+        if not cards and len(calls) >= 4 and all(c in ("--", "P", "PASS") for c in calls):
+            result = {"message": "Board passed out, no cards to play", "boardOver": True}
+            print(result)
+            return json.dumps(result)
+        require_args("dummy")
+        dummy_str = request.args.get("dummy").replace('_','.')
         if 'X' in hand_str:
             if '8' in hand_str or '9' in hand_str:
                 hand_str = replace_x(hand_str,get_random_generator(hand_str), dummy_str, cards, models.n_cards_play)
             else:
                 hand_str = replace_x(hand_str,get_random_generator(hand_str), dummy_str, cards, models.n_cards_bidding)
             print(hand_str)
+        # A request the caller got wrong is refused, never answered as if it were fine
         if hand_str == dummy_str:
-            result = {"message":"Hand and dummy are identical"}
-            print(result)
-            return json.dumps(result)
+            raise BadRequest("Hand and dummy are identical")
 
         if "" == dummy_str:
-            result = {"message":"No dummy provided"}
-            print(result)
-            return json.dumps(result)
+            raise BadRequest("No dummy provided")
 
         if len(dummy_str) != 16:
-            result = {"message":"Dummy should have 13 cards"}
-            print(result)
-            return json.dumps(result)
+            raise BadRequest("Dummy should have 13 cards")
 
         if len(hand_str) != 16:
-            result = {"message":"Hand should have 13 cards"}
-            print(result)
-            return json.dumps(result)
+            raise BadRequest("Hand should have 13 cards")
 
         problem = deal_problem(hand_str, dummy_str, cards)
         if problem:
@@ -1278,9 +1325,8 @@ def play():
         if (decl_i + 3) % 4 == position_i:
             cardplayer = 2
         if cardplayer == 1:
-            result = {"message": f"Called as dummy or with wrong dealer / seat {contract}"}
-            print(result)
-            return json.dumps(result)
+            raise BadRequest(f"Called as dummy or with wrong dealer / seat {contract}: "
+                             "send declarer's seat and hand, with dummy's cards in dummy")
 
         # Allow verbose to be enabled per-request via query parameter
         request_verbose = request.args.get("verbose", "").lower() in ("true", "1", "yes")
@@ -1319,8 +1365,10 @@ def play():
         if record: 
             calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result}
             logger.info(f"Calculations play: {json.dumps(calculations)}")
-        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        print(f'Request took {(time.time() - t_start):0.2f} seconds')
         return json.dumps(result)
+    except BadRequest as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
         print(e)
         handle_exception(e)
@@ -1684,8 +1732,10 @@ def claim():
         if record: 
             calculations = {"hand":hand_str, "dummy":dummy_str, "vuln":vuln, "dealer":dealer, "seat":seat, "auction":auction, "play":result, "claim":claim}
             logger.info(f"Calculations play: {json.dumps(calculations)}")
-        print(f'Request took {(time.time() - t_start):0.2f} seconds')       
+        print(f'Request took {(time.time() - t_start):0.2f} seconds')
         return json.dumps(result)
+    except BadRequest as e:
+        return jsonify({"error": str(e)}), 400
     except Exception as e:
         print(e)
         handle_exception(e)
