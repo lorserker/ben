@@ -822,6 +822,26 @@ def get_random_generator(hand):
     hash_integer  = calculate_seed(hand)         
     return np.random.default_rng(hash_integer)
 
+def hand_problem(hand):
+    # Why the text is not a hand of 13 cards, or None. Checked before the hand reaches the
+    # bidder or the sampler: with EPBot switched off nothing else looks at it, a 12-card hand
+    # was bid as if it were whole, and on /lead the sampler never finished dealing the other
+    # three hands, which stopped the whole server.
+    suits = hand.split('.')
+    if len(suits) != 4:
+        return f"{hand} should have 4 suits delimited by ."
+    count = 0
+    for suit, holding in zip("SHDC", suits):
+        for rank in holding:
+            if rank not in "AKQJT98765432":
+                return f"{suit}{rank} is not a card"
+            if holding.count(rank) > 1:
+                return f"{suit}{rank} is there twice"
+        count += len(holding)
+    if count != 13:
+        return f"{hand} has {count} cards, not 13"
+    return None
+
 def deal_problem(hand_str, dummy_str, cards):
     # Why the hand, dummy and played cards cannot be one deal, or None. Checked before
     # anything reaches DDS, which rejects a duplicated card with an error the caller
@@ -1066,6 +1086,9 @@ def bid():
                 hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_play)
             else:
                 hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_bidding)
+        problem = hand_problem(hand)
+        if problem:
+            raise BadRequest(f"Not a hand: {problem}")
         seat = request.args.get("seat")
         # Vulnerability (absolute format: None, NS, EW, All/Both)
         v = request.args.get("vul")
@@ -1161,6 +1184,9 @@ def lead():
             else:
                 hand = replace_x(hand,get_random_generator(hand), "...", [], models.n_cards_bidding)
             print(hand)
+        problem = hand_problem(hand)
+        if problem:
+            raise BadRequest(f"Not a hand: {problem}")
         seat = request.args.get("seat")
         # Vulnerability (absolute format: None, NS, EW, All/Both)
         v = request.args.get("vul")
