@@ -167,7 +167,8 @@ if [ -z "$DEALS" ]; then
     DEALS=$(cat "$RUN/deals.txt")
 fi
 
-# 2. Par scores and double-dummy tables for deals not yet in the datum file (only new deals take time)
+# 2. Double-dummy tables for deals not yet in the datum file (only new deals take time). The file holds
+#    tricks only; bid_with_epbot.py and Split_PBN compute par per board from them (its vulnerability).
 if run_step datum; then
     log "Adding missing deals to $DATUM (log: $RUN/datum.log)"
     "$PY" "$UTILS/src/ComputeDatumScores.py" "$DEALS" "$DATUM" > "$RUN/datum.log" 2>&1

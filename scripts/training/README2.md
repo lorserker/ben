@@ -22,7 +22,7 @@ bash Boards/train_bba_model.sh BEN-21GF                # deals already in Boards
 bash Boards/train_bba_model.sh BEN-21GF --scenarios    # first generate new Practice-Bidding-Scenarios deals
 ```
 
-It merges the deals in the subfolders of `Boards/`, adds par scores for new deals to the datum file, bids every deal with EPBot, splits against par, converts all the OK boards to binary, trains the bidding and the bidding-info network side by side, and measures how well the new model (and the model the card's config uses now) reproduces the auctions on 20,000 of the training boards. The merged deals are written once each to `BBA/Boards/Deals-<date>.pbn`; another system bids the same deals with `--deals BBA/Boards/Deals-<date>.pbn`. The run is named after the card and the EPBot version in `bin/BBA` (e.g. `BEN-21GF-8740`); logs and intermediate files go to `BBA/Run-<name>/`. With the April 2025 deals it takes about 30 minutes before training and 2 hours of training.
+It merges the deals in the subfolders of `Boards/`, adds double-dummy tables for new deals to the datum file, bids every deal with EPBot, splits against par, converts all the OK boards to binary, trains the bidding and the bidding-info network side by side, and measures how well the new model (and the model the card's config uses now) reproduces the auctions on 20,000 of the training boards. The merged deals are written once each to `BBA/Boards/Deals-<date>.pbn`; another system bids the same deals with `--deals BBA/Boards/Deals-<date>.pbn`. The run is named after the card and the EPBot version in `bin/BBA` (e.g. `BEN-21GF-8740`); logs and intermediate files go to `BBA/Run-<name>/`. With the April 2025 deals it takes about 30 minutes before training and 2 hours of training.
 
 Options: `--pull` (with `--scenarios`: `git pull` Practice-Bidding-Scenarios first), `--deals FILE` (bid this PBN instead of merging `Boards/`), `--datum FILE`, `--test N`, `--epochs N`, `--from STEP` (resume at `deals`, `datum`, `bid`, `split`, `binary`, `train` or `eval`), `--to STEP` (stop after it) and `--no-train` (`--to binary`). Run it without arguments for the full help.
 
@@ -41,13 +41,15 @@ The steps are described one by one below.
 - **One card at all four seats.** A BEN-21GF file is BEN-21GF against BEN-21GF. There is one file per system.
 - **Every auction is bid by EPBot.** The deal sources, including the boards tracked from BEN, contribute only dealer, vulnerability and the cards, so no human call reaches the training auctions.
 - **The result is double-dummy.** Each contract is scored with the double-dummy number of tricks. (Boards from the BBA program, such as the 8730 files, were scored with BBA's single-dummy play instead.)
-- **`-OK_boards` is a quality filter, not only "has a datum".** The datum is the double-dummy par score (`OptimumScore`, kept in `DatumScores.pkl`). `Split_PBN` keeps a board only if it:
+- **`-OK_boards` is a quality filter, not only "has a datum".** The datum is the double-dummy par score (`OptimumScore`), computed for each board at its own vulnerability from the deal's double-dummy table in `DatumScores.pkl`. `Split_PBN` keeps a board only if it:
   - is not a third or later copy of the same deal,
   - has a par score,
   - is not a doubled contract that made, and
   - scored within 2000 points of par.
 
   Doubled contracts that went down stay in, unless they are more than 2000 from par. Badly bid boards are therefore removed only when they are disasters; ordinary bidding mistakes stay in the data.
+
+  Until 2026-11-20 the pickle stored the par itself under the deal, so a deal that recurs at another vulnerability was judged against its twin's par. Re-judged with the correct par, the existing splits (8730, 8742, 8744, MicroBridge, PidginV2) had dropped 0-3 good boards and kept 0-13 real disasters each, out of 1.15-1.25M boards: too few to matter for the trained models. The pickle now holds only the tables, and `Split_PBN` 1.0.24 and `bid_with_epbot.py` compute par per board.
 
 ## Naming
 
@@ -70,7 +72,7 @@ The commands are Windows commands, run from a prompt with the `ben` environment 
 
 ### Step 1 - collect the deals
 
-1. **Practice-Bidding-Scenarios (optional):** `train_bba_model.sh --scenarios` generates 500 deals for every scenario script in the repository's `dlr/` folder with `dealerv2`. It leaves out each script's dealer and actions, so the dealer rotates from board to board, and seeds by the scenario name, so a run is reproducible. Every file is written a second time with the hands turned one seat (`-rotated`), and the result replaces the files in `Boards/Practice Bidding Scenarios`. New deals need par scores in the datum file (step 3), which takes a while.
+1. **Practice-Bidding-Scenarios (optional):** `train_bba_model.sh --scenarios` generates 500 deals for every scenario script in the repository's `dlr/` folder with `dealerv2`. It leaves out each script's dealer and actions, so the dealer rotates from board to board, and seeds by the scenario name, so a run is reproducible. Every file is written a second time with the hands turned one seat (`-rotated`), and the result replaces the files in `Boards/Practice Bidding Scenarios`. New deals need double-dummy tables in the datum file (step 3), which takes a while.
 2. **Deals tracked from BEN:** BEN-format lines are collected in `Boards/BEN/deals.ben`. From `Boards/BEN`, run the commands in `run.cmd`:
 
    ```
@@ -101,7 +103,7 @@ python Boards\bid_with_epbot.py BBA\Boards\Deals-<date>.pbn BEN-21GF BBA\Boards\
 - The second argument is the card name in `BBA/CC`.
 - The deals are bid in parallel on all cores. 1.17M boards take about 3 minutes.
 - Repeated boards (same cards, dealer and vulnerability) are bid once.
-- `--datum` must be a `DatumScores.pkl` **with double-dummy tables**. Download `DatumScores.zip` from the [latest Bridge-Robot-Utilities release](https://github.com/ThorvaldAagaard/Bridge-Robot-Utilities/releases/latest). It covers all 1.26M deals of the October 2026 set, including the Practice-Bidding-Scenarios deals. The `DatumScores.pkl` in the training-data release has par scores but no tables.
+- `--datum` must be a `DatumScores.pkl` **with double-dummy tables**. Download `DatumScores.zip` from the [latest Bridge-Robot-Utilities release](https://github.com/ThorvaldAagaard/Bridge-Robot-Utilities/releases/latest). It covers all 1.26M deals of the October 2026 set, including the Practice-Bidding-Scenarios deals (2,799,646 deals in all, from Bridge-Robot-Utilities 1.0.24). The `DatumScores.pkl` in the training-data release is the same data. Since 1.0.24 the pickle holds only the tables (an older one with stored par scores still works, but only its tables are used); par is computed per board.
 - `--limit 2000` bids only the first 2000 deals, for a quick test.
 
 Boards whose deal is not in the pickle are written without a result and end up in `-missing-DD.pbn` in step 4. Add them with `ComputeDatumScores` from Bridge-Robot-Utilities and run step 3 again:

@@ -61,6 +61,8 @@ Without the second argument it uses `DatumScores.pkl` in the current folder; wit
 
 The boards that survive the filter end up in `<filename>-OK_boards.pbn`, and the rejected boards are written to companion files - `-disaster.pbn`, `-duplicates.pbn`, `-db_making.pbn`, `-db_not_making.pbn` and `-missing-DD.pbn`. It is the `-OK_boards.pbn` file that is used for training.
 
+Only `-disaster` (more than 2000 from par) depends on the par score. Until 2026-11-20 the datum pickle stored par under the DEAL, so a deal that recurs at another vulnerability was judged against its twin's par. The pickle now holds only the double-dummy tricks, and Split_PBN and `bid_with_epbot.py` compute par for each board at its own vulnerability. Re-judged with the correct par, the existing splits (the ten `*-8730`, the 8742/8744 sets, MicroBridge and PidginV2) wrongly dropped 0-3 boards per set (24 in all) and wrongly kept 0-13 real disasters per set (85 in all), out of 1.15-1.25M boards each: about one board in 100,000, too few to matter for the models already trained. New splits are correct.
+
 `Split_PBN.exe` is not part of this repository - it is built from
 [Bridge-Robot-Utilities](https://github.com/ThorvaldAagaard/Bridge-Robot-Utilities) (`src/Split_PBN.py`,
 with a PyInstaller spec in `Install/`). The same repository also provides `MergePBNFiles` and

@@ -6,6 +6,9 @@ The same convention card is used at all four seats. The result of each contract
 is the double-dummy number of tricks, taken from DatumScores.pkl (with DD tables,
 as in the Bridge-Robot-Utilities release); deals not found there are written
 without Result/Score and end up in -missing-DD.pbn when Split_PBN runs.
+[OptimumScore]/[ParContract] are computed for each board from those tricks at the
+board's own vulnerability (datumscore.py); a stored par in an old pickle is ignored,
+because the pickle is keyed by the deal and par is not.
 
 Usage:
     python bid_with_epbot.py input.pbn CC output.pbn [--datum DatumScores.pkl] [--workers N] [--limit N]
@@ -27,6 +30,7 @@ sys.path.insert(0, os.path.join(BEN_HOME, 'src'))
 
 from bba.BBA import EPBotNative, BBABotBid  # noqa: E402
 from scoring import score  # noqa: E402
+import datumscore  # noqa: E402  (beside this file: copy of Bridge-Robot-Utilities/src/datumscore.py)
 
 SEATS = 'NESW'
 STRAINS = 'CDHSN'
@@ -160,11 +164,18 @@ def final_contract(dealer_i, calls):
 
 
 def lookup_datum(datums, nesw):
-    """DatumScores.pkl is keyed by the [Deal] text as it was written, which can start at any seat"""
+    """The deal's 20 double-dummy trick counts (N/E/S/W x S/H/D/C/NT), or None.
+
+    DatumScores.pkl is keyed by the [Deal] text as it was written, which can start at any seat;
+    the table is in absolute seats either way. Only the tricks are taken: an old-format entry also
+    stores a par, but par depends on the board's vulnerability and the key does not, so a deal that
+    recurs at another vulnerability got the other copy's par. Par is computed per board instead."""
     for first in range(4):
         key = f'[Deal "{SEATS[first]}:{" ".join(nesw[(first + j) % 4] for j in range(4))}"]'
         if key in datums:
-            return datums[key]
+            tricks = datumscore.tricks_of(datums[key])
+            if tricks is not None:
+                return tricks
     return None
 
 
@@ -174,10 +185,10 @@ def format_board(number, result, date, system_name, datums):
     deal = 'N:' + ' '.join(nesw)
     contract, declarer = final_contract(dealer_i, calls)
 
-    datum = lookup_datum(datums, nesw)
+    dd = lookup_datum(datums, nesw)
     tricks = score_str = None
-    if contract and datum is not None and len(datum) > 3:
-        tricks = datum[3][declarer * 5 + DD_STRAIN_INDEX[contract[1]]]
+    if contract and dd is not None:
+        tricks = dd[declarer * 5 + DD_STRAIN_INDEX[contract[1]]]
         vuln_ns, vuln_ew = VULN[vulnerable]
         points = score(contract, vuln_ns if declarer % 2 == 0 else vuln_ew, tricks)
         if declarer % 2 == 1:
@@ -209,13 +220,14 @@ def format_board(number, result, date, system_name, datums):
     lines += [f'[Note "{i}:{m}"]' for i, m in enumerate(notes, 1)]
     lines += ['[Room "Open"]', f'[Score "{score_str or ""}"]',
               f'[BidSystemEW "{system_name}"]', f'[BidSystemNS "{system_name}"]']
-    if datum is not None:
-        lines += [datum[0], datum[1]]
-        if len(datum) > 3:
-            # Columns separated by ';' as in the PBN standard, so endplay (Split_PBN) keeps all three
-            lines.append('[OptimumResultTable "Declarer;Denomination\\2R;Result\\2R"]')
-            lines += [f'{seat} {"NT" if strain == "N" else strain} {datum[3][s * 5 + DD_STRAIN_INDEX[strain]]}'
-                      for s, seat in enumerate(SEATS) for strain in 'SHDCN']
+    if dd is not None:
+        # Par for THIS board's vulnerability, from the deal's tricks (DDS Par(), BBA's notation).
+        optimum, par_contract = datumscore.par_tags(dd, vulnerable)
+        lines += [f'[OptimumScore "{optimum}"]', f'[ParContract "{par_contract}"]']
+        # Columns separated by ';' as in the PBN standard, so endplay (Split_PBN) keeps all three
+        lines.append('[OptimumResultTable "Declarer;Denomination\\2R;Result\\2R"]')
+        lines += [f'{seat} {"NT" if strain == "N" else strain} {dd[s * 5 + DD_STRAIN_INDEX[strain]]}'
+                  for s, seat in enumerate(SEATS) for strain in 'SHDCN']
     return '\n'.join(lines) + '\n\n'
 
 
