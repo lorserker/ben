@@ -494,6 +494,7 @@ class Models:
         player_models=[
             BatchPlayer(name, path_provider.get_path(os.path.join(base_path, conf['cardplay'][name]))) for name in player_names
         ]
+        path_provider.release()     # every model is loaded: the temporary copies can go
 
         if verbose:
             print(f"loaded {len(player_models)} player models")
