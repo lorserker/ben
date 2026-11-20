@@ -93,6 +93,7 @@ class Systems:
             if plays and info_model is None:
                 raise ValueError(f"System {name}: a system BEN plays needs an info network")
             systems[name.upper()] = System(name.upper(), cc, plays, bidder_model, info_model)
+        path_provider.release()     # every network is loaded: the temporary copies can go
 
         # The names of what the server plays when a request does not say
         def find(path, cc):
