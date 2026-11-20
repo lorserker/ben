@@ -85,7 +85,14 @@ class IsolatedModelPathProvider:
     conflicts between concurrent processes.
 
     Provides paths to these temporary copies for external loading.
-    Ensures temporary directories are cleaned up on script exit.
+
+    A copy is only needed while its model is being loaded: the loaders read the whole file
+    into memory. So the copies a provider has handed out are removed as soon as the next one
+    is asked for, and by release() when the caller has loaded its last model. Load each model
+    before asking for the next path. Removal at script exit (atexit) remains as the fallback
+    for a copy that could not be removed, but it must not be the only removal: atexit does
+    not run in a worker process that a multiprocessing pool terminates, and every such worker
+    then left all its copies behind (about 0.4 GB a process).
     """
     _temp_dirs: List[str] = []  # Class attribute to track all temp dirs
     _cleanup_registered: bool = False # Ensure atexit is registered only once
@@ -101,6 +108,7 @@ class IsolatedModelPathProvider:
                 directory will be used. This path must exist and be writable.
         """
         self._base_temp_storage_path = base_temp_storage_path
+        self._handed_out: List[str] = []  # copies of this provider whose models may still be loading
 
         if self._base_temp_storage_path:
             # You might want to add checks here:
@@ -124,9 +132,29 @@ class IsolatedModelPathProvider:
             atexit.register(self._cleanup_all)
             IsolatedModelPathProvider._cleanup_registered = True
 
+    def release(self) -> None:
+        """
+        Removes the copies this provider has handed out. Call it when the models have been
+        loaded from them. A copy that cannot be removed now (still open) stays for atexit.
+        """
+        handed_out, self._handed_out = self._handed_out, []
+        for temp_dir in handed_out:
+            try:
+                shutil.rmtree(temp_dir)
+            except FileNotFoundError:
+                pass
+            except Exception as e:
+                logging.warning(f"Could not remove temporary directory '{temp_dir}' yet: {e}. Left for exit.")
+                continue
+            try:
+                IsolatedModelPathProvider._temp_dirs.remove(temp_dir)
+            except ValueError:
+                pass
+
     def get_path(self, original_path: str) -> str:
         """
         Copies the model file to a unique temporary location and returns its path.
+        The copies handed out before are removed first: their models are loaded by now.
 
         Args:
             original_path: The path to the original model file (.keras, etc.).
@@ -140,6 +168,7 @@ class IsolatedModelPathProvider:
         """
         if not os.path.exists(original_path):
             raise FileNotFoundError(f"Original model file not found: {original_path}")
+        self.release()
 
         instance_temp_dir: Optional[str] = None
         try:
@@ -153,6 +182,7 @@ class IsolatedModelPathProvider:
                 dir=self._base_temp_storage_path  # <<< THIS IS THE KEY CHANGE
             )
             self._temp_dirs.append(instance_temp_dir) # Track for cleanup
+            self._handed_out.append(instance_temp_dir)
 
             # Construct the path for the copied file
             copied_model_path = os.path.join(instance_temp_dir, os.path.basename(original_path))
@@ -171,6 +201,8 @@ class IsolatedModelPathProvider:
                     shutil.rmtree(instance_temp_dir)
                     if instance_temp_dir in self._temp_dirs: # Should be, but good to check
                         self._temp_dirs.remove(instance_temp_dir)
+                    if instance_temp_dir in self._handed_out:
+                        self._handed_out.remove(instance_temp_dir)
                 except Exception as cleanup_e:
                     logging.error(f"Failed to cleanup temporary directory '{instance_temp_dir}' after an error: {cleanup_e}")
             raise # Re-raise the original exception
