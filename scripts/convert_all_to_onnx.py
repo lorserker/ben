@@ -2,7 +2,8 @@
 Convert all BEN neural network models from Keras to ONNX format.
 
 Usage:
-    python convert_all_to_onnx.py
+    python convert_all_to_onnx.py                  # all models
+    python convert_all_to_onnx.py bidder bidinfo   # only these
 
 This will create ONNX versions of all models in models/onnx/
 """
@@ -272,65 +273,75 @@ def main():
     tf2_dir = os.path.join(base_path, 'models', 'TF2models')
 
     results = {}
+    wanted = set(sys.argv[1:])
+
+    def want(name):
+        return not wanted or name in wanted
 
     # ========== Contract Model ==========
-    results['contract'] = convert_single_input_model(
-        keras_path=os.path.join(tf2_dir, 'Contract_2024-12-09-E50.keras'),
-        onnx_path=os.path.join(onnx_dir, 'contract.onnx'),
-        input_shape=[None, 50],
-        test_input_fn=lambda: np.random.randn(1, 50).astype(np.float32),
-        model_name='Contract'
-    )
+    if want('contract'):
+        results['contract'] = convert_single_input_model(
+            keras_path=os.path.join(tf2_dir, 'Contract_2024-12-09-E50.keras'),
+            onnx_path=os.path.join(onnx_dir, 'contract.onnx'),
+            input_shape=[None, 50],
+            test_input_fn=lambda: np.random.randn(1, 50).astype(np.float32),
+            model_name='Contract'
+        )
 
     # ========== Trick Model ==========
-    results['trick'] = convert_single_input_model(
-        keras_path=os.path.join(tf2_dir, 'Tricks_2024-12-09-E50.keras'),
-        onnx_path=os.path.join(onnx_dir, 'trick.onnx'),
-        input_shape=[None, 55],
-        test_input_fn=lambda: np.random.randn(1, 55).astype(np.float32),
-        model_name='Trick'
-    )
+    if want('trick'):
+        results['trick'] = convert_single_input_model(
+            keras_path=os.path.join(tf2_dir, 'Tricks_2024-12-09-E50.keras'),
+            onnx_path=os.path.join(onnx_dir, 'trick.onnx'),
+            input_shape=[None, 55],
+            test_input_fn=lambda: np.random.randn(1, 55).astype(np.float32),
+            model_name='Trick'
+        )
 
     # ========== Bidder Model ==========
     # Bidder: input [None, None, 193] dtype=float16 → output [None, None, 40]
-    results['bidder'] = convert_single_input_model(
-        keras_path=os.path.join(tf2_dir, 'GIB-BBO-8730_2025-04-19-E30.keras'),
-        onnx_path=os.path.join(onnx_dir, 'bidder.onnx'),
-        input_shape=[None, None, 193],
-        test_input_fn=lambda: np.random.randn(1, 10, 193).astype(np.float32),
-        model_name='Bidder'
-    )
+    if want('bidder'):
+        results['bidder'] = convert_single_input_model(
+            keras_path=os.path.join(tf2_dir, 'GIB-BBO-8744_2026-11-11-E30.keras'),
+            onnx_path=os.path.join(onnx_dir, 'bidder.onnx'),
+            input_shape=[None, None, 193],
+            test_input_fn=lambda: np.random.randn(1, 10, 193).astype(np.float32),
+            model_name='Bidder'
+        )
 
     # ========== BidInfo Model ==========
     # BidInfo: input [None, None, 193] dtype=float16 → outputs [None, None, 3], [None, None, 12]
-    results['bidinfo'] = convert_multi_output_model(
-        keras_path=os.path.join(tf2_dir, 'GIB-BBOInfo-8730_2025-04-19-E30.keras'),
-        onnx_path=os.path.join(onnx_dir, 'bidinfo.onnx'),
-        input_shape=[None, None, 193],
-        test_input_fn=lambda: np.random.randn(1, 10, 193).astype(np.float32),
-        model_name='BidInfo',
-        num_outputs=2
-    )
+    if want('bidinfo'):
+        results['bidinfo'] = convert_multi_output_model(
+            keras_path=os.path.join(tf2_dir, 'GIB-BBO-8744-Info_2026-11-11-E30.keras'),
+            onnx_path=os.path.join(onnx_dir, 'bidinfo.onnx'),
+            input_shape=[None, None, 193],
+            test_input_fn=lambda: np.random.randn(1, 10, 193).astype(np.float32),
+            model_name='BidInfo',
+            num_outputs=2
+        )
 
     # ========== Single Dummy Estimator ==========
     # SD: input [None, 165] dtype=float32 → output [None, 14]
-    results['sd'] = convert_single_input_model(
-        keras_path=os.path.join(tf2_dir, 'SD_2024-07-08-E20.keras'),
-        onnx_path=os.path.join(onnx_dir, 'single_dummy.onnx'),
-        input_shape=[None, 165],
-        test_input_fn=lambda: np.random.randn(1, 165).astype(np.float32),
-        model_name='SingleDummy'
-    )
+    if want('sd'):
+        results['sd'] = convert_single_input_model(
+            keras_path=os.path.join(tf2_dir, 'SD_2024-07-08-E20.keras'),
+            onnx_path=os.path.join(onnx_dir, 'single_dummy.onnx'),
+            input_shape=[None, 165],
+            test_input_fn=lambda: np.random.randn(1, 165).astype(np.float32),
+            model_name='SingleDummy'
+        )
 
     # ========== Double Dummy Estimator (RPDD) ==========
     # RPDD: input [None, 133] dtype=float32 → output [None, 14]
-    results['rpdd'] = convert_single_input_model(
-        keras_path=os.path.join(tf2_dir, 'RPDD_2024-07-08-E02.keras'),
-        onnx_path=os.path.join(onnx_dir, 'double_dummy.onnx'),
-        input_shape=[None, 133],
-        test_input_fn=lambda: np.random.randn(1, 133).astype(np.float32),
-        model_name='DoubleDummy (RPDD)'
-    )
+    if want('rpdd'):
+        results['rpdd'] = convert_single_input_model(
+            keras_path=os.path.join(tf2_dir, 'RPDD_2024-07-08-E02.keras'),
+            onnx_path=os.path.join(onnx_dir, 'double_dummy.onnx'),
+            input_shape=[None, 133],
+            test_input_fn=lambda: np.random.randn(1, 133).astype(np.float32),
+            model_name='DoubleDummy (RPDD)'
+        )
 
     # ========== Player Models (8 total) ==========
     player_models = [
@@ -345,6 +356,8 @@ def main():
     ]
 
     for name, keras_file in player_models:
+        if not want(name):
+            continue
         results[name] = convert_single_input_model(
             keras_path=os.path.join(tf2_dir, keras_file),
             onnx_path=os.path.join(onnx_dir, f'{name}.onnx'),
@@ -354,25 +367,27 @@ def main():
         )
 
     # ========== Lead Models (already done, but include for completeness) ==========
-    results['lead_suit'] = convert_dual_input_model(
-        keras_path=os.path.join(tf2_dir, 'LeadV3-Suit-Both_2026-10-16.keras'),
-        onnx_path=os.path.join(onnx_dir, 'lead_suit.onnx'),
-        x_shape=[None, 42],
-        b_shape=[None, 15],
-        test_input_fn=lambda: (np.random.randn(1, 42).astype(np.float32),
-                               np.random.randn(1, 15).astype(np.float32)),
-        model_name='Lead Suit'
-    )
+    if want('lead_suit'):
+        results['lead_suit'] = convert_dual_input_model(
+            keras_path=os.path.join(tf2_dir, 'LeadV3-Suit-Both_2026-10-16.keras'),
+            onnx_path=os.path.join(onnx_dir, 'lead_suit.onnx'),
+            x_shape=[None, 42],
+            b_shape=[None, 15],
+            test_input_fn=lambda: (np.random.randn(1, 42).astype(np.float32),
+                                   np.random.randn(1, 15).astype(np.float32)),
+            model_name='Lead Suit'
+        )
 
-    results['lead_nt'] = convert_dual_input_model(
-        keras_path=os.path.join(tf2_dir, 'LeadV3-NT-Both_2026-10-16.keras'),
-        onnx_path=os.path.join(onnx_dir, 'lead_nt.onnx'),
-        x_shape=[None, 42],
-        b_shape=[None, 15],
-        test_input_fn=lambda: (np.random.randn(1, 42).astype(np.float32),
-                               np.random.randn(1, 15).astype(np.float32)),
-        model_name='Lead NT'
-    )
+    if want('lead_nt'):
+        results['lead_nt'] = convert_dual_input_model(
+            keras_path=os.path.join(tf2_dir, 'LeadV3-NT-Both_2026-10-16.keras'),
+            onnx_path=os.path.join(onnx_dir, 'lead_nt.onnx'),
+            x_shape=[None, 42],
+            b_shape=[None, 15],
+            test_input_fn=lambda: (np.random.randn(1, 42).astype(np.float32),
+                                   np.random.randn(1, 15).astype(np.float32)),
+            model_name='Lead NT'
+        )
 
     # ========== Summary ==========
     print("\n" + "="*60)

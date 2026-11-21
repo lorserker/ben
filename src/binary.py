@@ -315,8 +315,10 @@ def  get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mo
 
     n_samples = hand.shape[0]
     bids = 4 if models.model_version >= 2 else 3
-    # Do not add 2 cells for biddingsystem, we will add the at the end of the function
-    X = np.zeros((n_samples, n_steps, 2 + 1 + 4 + n_cards + bids*40), dtype=np.float16)
+    # The 2 cells for the bidding systems come first; X is the array after them
+    add_system = not (models.model_version == 0 or models.ns == -1)
+    X_system = np.zeros((n_samples, n_steps, (2 if add_system else 0) + 2 + 1 + 4 + n_cards + bids*40), dtype=np.float16)
+    X = X_system[:, :, 2:] if add_system else X_system
 
     vuln_us_them = np.array([vuln[hand_ix % 2], vuln[(hand_ix + 1) % 2]], dtype=np.float16)
     shp = (get_shape(hand) - 3.25) / 1.75
@@ -328,9 +330,8 @@ def  get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mo
     if isinstance(auction, list):
         #print("Using auction list")
         auction_input = auction_input + ['PAD_END'] * 4 * n_steps
-        auction = bidding.BID2ID['PAD_END'] * np.ones((n_samples, len(auction_input)), dtype=np.int32)
-        for i, bid in enumerate(auction_input):
-            auction[:, i] = bidding.BID2ID[bid]
+        # Every sample has the same auction
+        auction = np.broadcast_to(np.array([bidding.BID2ID[bid] for bid in auction_input], dtype=np.int32), (n_samples, len(auction_input)))
         while np.all(auction[:, bid_i] == bidding.BID2ID['PAD_START']):
             bid_i += 4
     else:
@@ -344,7 +345,7 @@ def  get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mo
     X[:, :, 7:7+n_cards] = hand.reshape((n_samples, 1, n_cards))
 
     step_i = 0
-    s_all = np.arange(n_samples, dtype=np.int32)
+    s_all = slice(None)
     while step_i < n_steps:
         #print(step_i, bid_i, n_steps)
         if bid_i - 4 >= 0:
@@ -385,20 +386,19 @@ def  get_auction_binary_sampling(n_steps, auction_input, hand_ix, hand, vuln, mo
         bid_i += 4
 
     # Insert bidding system, -1 means no system
-    if models.model_version == 0 or models.ns == -1 :
+    if not add_system:
         #print("Skipping bidding system")
         return X
 
-    # Better to add these at the beginning of this function
-    padding_width = ((0, 0), (0, 0), (1, 0))
+    # Our system, then theirs
     if (hand_ix % 2 == 0):
-        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(models.ew))
-        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(models.ns))
+        X_system[:, :, 0] = models.ns
+        X_system[:, :, 1] = models.ew
     else:
-        X_padded = np.pad(X, padding_width, mode='constant', constant_values=(models.ns))
-        X_padded = np.pad(X_padded, padding_width, mode='constant', constant_values=(models.ew))
+        X_system[:, :, 0] = models.ew
+        X_system[:, :, 1] = models.ns
     
-    return X_padded
+    return X_system
 
 def get_number_of_bids(auction):
     bids = 0

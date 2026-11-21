@@ -461,10 +461,14 @@ class Models:
 
         path_provider = IsolatedModelPathProvider(base_temp_storage_path=auto_selected_path)
         bidder_model = Bidder('bidder', path_provider.get_path(os.path.join(base_path, conf['bidding']['bidder'])), alert_supported=alert_supported)
+        opponent_path = conf['bidding']['bidder']
         if conf.has_section('bidding') and conf.get('bidding', 'opponent', fallback=None) not in ('none', None):
-            opponent_model = Bidder('opponent', path_provider.get_path(os.path.join(base_path, conf['bidding']['opponent'])),alert_supported=alert_supported)
+            opponent_path = conf['bidding']['opponent']
+        if os.path.normcase(os.path.normpath(opponent_path)) == os.path.normcase(os.path.normpath(conf['bidding']['bidder'])):
+            # The same network for both sides: share it rather than load it twice
+            opponent_model = bidder_model
         else:
-            opponent_model = Bidder('opponent', path_provider.get_path(os.path.join(base_path, conf['bidding']['bidder'])),alert_supported=alert_supported)
+            opponent_model = Bidder('opponent', path_provider.get_path(os.path.join(base_path, opponent_path)),alert_supported=alert_supported)
         if verbose:
             print(f"Loaded bidding models")
         contract_model=Contract(path_provider.get_path(os.path.join(base_path, conf['contract']['contract'])))

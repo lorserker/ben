@@ -9,7 +9,7 @@ import binary
 
 from bidding import bidding
 import deck52
-from util import get_all_hidden_cards32, get_all_hidden_cards, convert_to_probability_with_weight
+from util import get_all_hidden_cards32, get_all_hidden_cards, convert_to_probability_with_weight, sample_keys
 from configparser import ConfigParser
 from util import hand_to_str
 from collections import defaultdict
@@ -18,6 +18,7 @@ from objects import Card
 from openinglead.openinglead import validate_lead
 from nn.timing import ModelTimer
 import itertools
+import sample_jit
 import re
 
 init()
@@ -116,10 +117,50 @@ class Sample:
         self.sample_previous_round_if_needed = sample_previous_round_if_needed
 
         self.verbose = verbose
+        self._row_cache = {}
+        self._row_cache_bytes = 0
+        self._order_stats = {}
+
+    # Bytes (keys and results) kept in the per-board cache before it is emptied
+    ROW_CACHE_MAX_BYTES = 512 * 1024 * 1024
 
     def clear_sample_cache(self):
-        """Stub method for cache clearing. No caching currently implemented."""
-        pass
+        """Forget the per-row results cached for the previous board."""
+        self._row_cache = {}
+        self._row_cache_bytes = 0
+        self._order_stats = {}
+
+    def cached_rows(self, context, rows, compute):
+        """One result per row of rows (a 2D array), computed by compute(rows_subset), which
+        must return one result per row. A row's result does not depend on the other rows in
+        the batch (the networks predict every row on its own, and give bit-identical
+        results for any batch), so results are kept for the board: context must hold
+        everything else the result depends on (model, seat, auction, vulnerability, ...).
+        Each distinct new row is computed once, in one batch.
+        The exception is a batch of one row: TensorFlow takes another kernel for it, which
+        can differ in the last bit, so single rows are cached apart from batched rows, and a
+        single new row of a larger batch is computed in a batch of two."""
+        single = rows.shape[0] == 1
+        context = (context, single)
+        if self._row_cache_bytes > self.ROW_CACHE_MAX_BYTES:
+            self.clear_sample_cache()
+        cache = self._row_cache.setdefault(context, {})
+        flat = np.ascontiguousarray(rows).reshape(rows.shape[0], -1)
+        keys = [row.tobytes() for row in flat]
+        missing = {}
+        for i, key in enumerate(keys):
+            if key not in cache and key not in missing:
+                missing[key] = i
+        if missing:
+            index = list(missing.values())
+            if len(index) == 1 and not single:
+                results = compute(rows[index * 2])[:1]
+            else:
+                results = compute(rows[index])
+            for key, result in zip(missing, results):
+                cache[key] = result
+            self._row_cache_bytes += sum(len(key) + 100 + getattr(result, 'nbytes', 8) for key, result in zip(missing, results))
+        return np.array([cache[key] for key in keys])
 
     @classmethod
     def from_conf(cls, conf: ConfigParser, verbose=False) -> "Sample":
@@ -350,6 +391,12 @@ class Sample:
         # distribute AK
         loop_counter = 0
         js = np.zeros(generate_samples, dtype=int)
+        if sample_jit.usable((r_shp, np.float64), (r_hcp, np.float64), (cards_received, np.int64), (lho_pard_rho, np.int64)):
+            # Every sample receives one honour per round (no hand can reach 13 cards),
+            # so dealing to the samples with cards left is dealing to all of them
+            sample_jit.deal(rng, ak_out_i, r_shp, r_hcp, cards_received, lho_pard_rho, np.full(3, 13), cards_in_suit, True,
+                            self.use_biddinginfo, 3 * hcp_reduction_factor, self.use_biddinginfo, self.shp_reduction_factor)
+            js[:] = ak_out_i.shape[1]
         while np.min(js) < ak_out_i.shape[1]:
             cards = ak_out_i[s_all, js]
             receivers = distr_ak_vec(r_shp[s_all, :, cards//cards_in_suit], r_hcp, rng)
@@ -366,13 +413,20 @@ class Sample:
 
         valid_aces_kings = 0
         mask = np.zeros(generate_samples, dtype=bool) 
-        for i in range(generate_samples):
-            if self.validate_aces_kings(lho_pard_rho[i, :, :], aceking, n_cards):
-                mask[i] = True
-                valid_aces_kings += 1
-            # We break when we have the needed samples
-            if valid_aces_kings == n_samples:
-                break
+        valid = self.validate_aces_kings_vec(lho_pard_rho, aceking, n_cards)
+        if valid is not None:
+            # The first n_samples valid samples, as the loop below picks them
+            first_valid = np.flatnonzero(valid)[:n_samples]
+            mask[first_valid] = True
+            valid_aces_kings = len(first_valid)
+        else:
+            for i in range(generate_samples):
+                if self.validate_aces_kings(lho_pard_rho[i, :, :], aceking, n_cards):
+                    mask[i] = True
+                    valid_aces_kings += 1
+                # We break when we have the needed samples
+                if valid_aces_kings == n_samples:
+                    break
                 
         valid_samples = np.sum(mask)
         # Probably a problem with aces if we find less than 100, so we just ignore it and take the first up til n_samples
@@ -394,6 +448,10 @@ class Sample:
         js = np.zeros(n_samples, dtype=int)
         loop_counter = 0
         s_all_r = s_all[js < small_out_i.shape[1]]
+        if sample_jit.usable((r_shp, np.float64), (r_hcp, np.float64), (cards_received, np.int64), (lho_pard_rho, np.int64)):
+            sample_jit.deal(rng, small_out_i[:n_samples], r_shp, r_hcp, cards_received, lho_pard_rho, np.full(3, 13), cards_in_suit, False,
+                            False, 0.0, True, self.shp_reduction_factor)
+            js[:] = small_out_i.shape[1]
         while True:
             s_all_r = s_all[js < small_out_i.shape[1]]
             if len(s_all_r) == 0:
@@ -461,6 +519,41 @@ class Sample:
                 return lho_pard_rho
         else:
             return lho_pard_rho
+
+    def validate_aces_kings_vec(self, hands, aceking, n_cards):
+        """validate_aces_kings for every sample of hands (samples, 3, n_cards) at once;
+        None when the per-sample loop must be used."""
+        n = hands.shape[0]
+        if len(aceking) == 0:
+            return np.ones(n, dtype=bool)
+        if len(aceking) > hands.shape[1]:
+            return None
+        cards_per_suit = int(n_cards / 4)
+        valid = np.ones(n, dtype=bool)
+        for seat, (_, constraint) in enumerate(aceking.items()):
+            if constraint[1] == -1 and constraint[2] == -1 and constraint[3] == 0:
+                continue
+            hand = hands[:, seat, :]
+            count_aces = np.zeros(n, dtype=np.int64)
+            count_kings = np.zeros(n, dtype=np.int64)
+            for s in range(4):
+                count_aces += hand[:, s * cards_per_suit] == 1
+                count_kings += hand[:, s * cards_per_suit + 1] == 1
+            queen = np.full(n, -1, dtype=np.int64)
+            # NT
+            if constraint[0] != 4:
+                # Check trump king
+                trump_king = hand[:, constraint[0] * cards_per_suit + 1] == 1
+                count_aces += trump_king
+                count_kings -= trump_king
+                queen = hand[:, constraint[0] * cards_per_suit + 2]
+            if constraint[1] != -1:
+                valid &= (count_aces == constraint[1]) | (count_aces == constraint[1] + 3)
+            if constraint[2] != -1:
+                valid &= count_kings == constraint[2]
+            if constraint[3] != -1:
+                valid &= queen == constraint[3]
+        return valid
 
     def validate_aces_kings(self, hands, aceking, n_cards):
         if len(aceking) == 0:
@@ -541,27 +634,12 @@ class Sample:
         bid_count = player["bid_count"]
         actual_bids = player["actual_bids"]        
         if bid_count > 0:
-            X = np.zeros((lho_pard_rho.shape[0], n_steps, size), dtype=np.float16)
-            # Create the input for bidding sequence - we use our hand and will overwrite it in next step
-            A = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + position) % 4, hand, vuln, models, models.n_cards_bidding)
-            X[:, :, :] = A
-            # Overwrite hand information withthe samples
-            X[:, :, 7+index:7+models.n_cards_bidding+index] = lho_pard_rho[:, position-1:position, :]
-            X[:, :, 2+index] = (binary.get_hcp(lho_pard_rho[:, position-1, :]).reshape((-1, 1)) - 10) / 4
-            X[:, :, 3+index:7+index] = (binary.get_shape(lho_pard_rho[:, position-1, :]).reshape((-1, 1, 4)) - 3.25) / 1.75
-
-            # Predict bids based on the model for the specific position
-            sample_bids, _ = model.pred_fun_seq(X)
-            if verbose:
-                print("Model:   ", os.path.basename(model.model_path), "position", position, "bids", sample_bids.shape, "Exclude samples", self.exclude_samples)
-
-            sample_bids = sample_bids.reshape((lho_pard_rho.shape[0], n_steps, -1))
-
-            # Update min scores based on actual bids
-            min_scores = np.ones_like(min_scores_lho)
-            for i in range(n_steps):
-                if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
-                    min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
+            # The score of a sample depends only on the hand of this position, and the same
+            # hands are drawn again in the later sampling rounds of this auction
+            context = ('process_bidding', id(model), (nesw_i + position) % 4, tuple(auction), tuple(vuln), n_steps, index, size, tuple(actual_bids))
+            min_scores = self.cached_rows(context, lho_pard_rho[:, position-1, :],
+                                          lambda hands: self.compute_position_bid_scores(position, hands, auction, nesw_i, hand, vuln, models, index, actual_bids, n_steps, size, model, verbose))
+            min_scores = min_scores.astype(min_scores_lho.dtype, copy=False)
 
             # Filter samples and update all min scores arrays based on `exclude_samples`
             mask = min_scores >= self.exclude_samples
@@ -583,6 +661,53 @@ class Sample:
         return lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho
 
         
+    def filter_samples_by_bidding(self, players, lho_pard_rho, auction, nesw_i, hand, vuln, models, index, n_steps, size, order_stats):
+        """The deals consistent with every player's bids, checked in the order of players, and
+        each player's scores; None if no deal is left. order_stats (if given) gets the share of
+        the deals each player keeps."""
+        # Initialize min scores arrays for each position
+        min_scores_lho = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
+        min_scores_partner = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
+        min_scores_rho = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
+        for player in players:
+            n_before = lho_pard_rho.shape[0]
+            # Call process_bidding for the current player, updating all `min_scores` arrays
+            lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho = self.process_bidding(
+                player, lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho,
+                auction, nesw_i, hand, vuln, models, index, player["actual_bids"], n_steps, size, models.bidder_model if player["position"] == 2 else models.opponent_model, self.verbose
+            )
+            if order_stats is not None and player["bid_count"] > 0:
+                order_stats[player["position"]] = lho_pard_rho.shape[0] / n_before
+            #print(f"Processed bidding for player {player['position']} lho_pard_rho shape", lho_pard_rho.shape)
+            if lho_pard_rho.shape[0] == 0:
+                return None
+        return lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho
+
+    def compute_position_bid_scores(self, position, position_hands, auction, nesw_i, hand, vuln, models, index, actual_bids, n_steps, size, model, verbose):
+        """For each hand of the position, the lowest score the bidder gives the bids actually made."""
+        X = np.zeros((position_hands.shape[0], n_steps, size), dtype=np.float16)
+        # Create the input for bidding sequence - we use our hand and will overwrite it in next step
+        A = binary.get_auction_binary_sampling(n_steps, auction, (nesw_i + position) % 4, hand, vuln, models, models.n_cards_bidding)
+        X[:, :, :] = A
+        # Overwrite hand information withthe samples
+        X[:, :, 7+index:7+models.n_cards_bidding+index] = position_hands[:, np.newaxis, :]
+        X[:, :, 2+index] = (binary.get_hcp(position_hands).reshape((-1, 1)) - 10) / 4
+        X[:, :, 3+index:7+index] = (binary.get_shape(position_hands).reshape((-1, 1, 4)) - 3.25) / 1.75
+
+        # Predict bids based on the model for the specific position
+        sample_bids, _ = model.pred_fun_seq(X)
+        if verbose:
+            print("Model:   ", os.path.basename(model.model_path), "position", position, "bids", sample_bids.shape, "Exclude samples", self.exclude_samples)
+
+        sample_bids = sample_bids.reshape((position_hands.shape[0], n_steps, -1))
+
+        # Update min scores based on actual bids
+        min_scores = np.ones(position_hands.shape[0], dtype=np.float32)
+        for i in range(n_steps):
+            if actual_bids[i] not in (bidding.BID2ID['PAD_START'], bidding.BID2ID['PAD_END']):
+                min_scores = np.minimum(min_scores, sample_bids[:, i, actual_bids[i]])
+        return min_scores
+
     def sample_cards_auction(self, auction, nesw_i, hand_str, vuln, n_samples, rng, models, old_c_hcp, old_c_shp, aceking, extend_samples = True, verbose = False):
         hand = binary.parse_hand_f(models.n_cards_bidding)(hand_str)
         n_steps = binary.calculate_step_bidding_info(auction)
@@ -647,24 +772,30 @@ class Sample:
         # Rearrange the players in the order [2, 3, 1]
         players = [players[1], players[2], players[0]]
 
-        # Initialize min scores arrays for each position
-        min_scores_lho = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
-        min_scores_partner = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
-        min_scores_rho = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
+        # We will now validate the generated deals against the actual bidding, one player at a
+        # time. A deal is dropped as soon as one player's bids are too unlikely with it, so the
+        # players that drop the most deals are checked first: the order is learned from the
+        # earlier sampling rounds for this auction. The deals kept and their scores do not
+        # depend on the order (every deal is scored on its own).
+        order_key = (tuple(auction), nesw_i, hand.tobytes())
+        order_stats = self._order_stats.setdefault(order_key, {})
+        if all(p["position"] in order_stats for p in players if p["bid_count"] > 0):
+            ordered_players = sorted(players, key=lambda p: order_stats.get(p["position"], 1.0))
+        else:
+            ordered_players = players  # learn from the usual order first
 
-        # We will now validate the generated deals against the actual bidding.
-        # We take one player at a time, and start with the most difficult one (based on number of bids)
-        for player in players:         
-            # Call process_bidding for the current player, updating all `min_scores` arrays
-            lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho = self.process_bidding(
-                player, lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho, 
-                auction, nesw_i, hand, vuln, models, index, actual_bids, n_steps, size, models.bidder_model if player["position"] == 2 else models.opponent_model, self.verbose
-            )
-            #print(f"Processed bidding for player {player['position']} lho_pard_rho shape", lho_pard_rho.shape)
-            if lho_pard_rho.shape[0] == 0:
-                bidding_scores = []
-                quality = -1
-                return lho_pard_rho, bidding_scores, c_hcp, c_shp, quality
+        result = self.filter_samples_by_bidding(ordered_players, lho_pard_rho, auction, nesw_i, hand, vuln, models, index, n_steps, size, order_stats)
+        if ordered_players != players and (result is None or result[0].shape[0] <= 1):
+            # With two deals or more left, every player's batch had two deals or more, in the
+            # usual order too. With fewer, the usual order may have scored a deal alone, and a
+            # batch of one can differ in the last bit: then check the deals in the usual order
+            # (the deals already scored in batches come from the cache).
+            result = self.filter_samples_by_bidding(players, lho_pard_rho, auction, nesw_i, hand, vuln, models, index, n_steps, size, None)
+        if result is None:
+            bidding_scores = []
+            quality = -1
+            return lho_pard_rho[:0], bidding_scores, c_hcp, c_shp, quality
+        lho_pard_rho, min_scores_lho, min_scores_partner, min_scores_rho = result
 
         min_scores = np.ones(lho_pard_rho.shape[0], dtype=np.float32)
 
@@ -934,6 +1065,11 @@ class Sample:
         n_max_cards = np.zeros((n_samples, 2), dtype=int) + n_cards_to_receive
 
         js = np.zeros(n_samples, dtype=int)
+        use_jit = sample_jit.usable((r_shp, np.float64), (r_hcp, np.float64), (cards_received, np.int64), (h1_h2, np.int64))
+        if use_jit:
+            sample_jit.deal(rng, ak_out_i, r_shp, r_hcp, cards_received, h1_h2, n_cards_to_receive, cards_in_suit, True,
+                            use_bidding_info_stats, 3 * hcp_reduction_factor, use_bidding_info_stats, shp_reduction_factor)
+            js[:] = ak_out_i.shape[1]
         # Distribute AK
         loop = 0
         while True:
@@ -965,6 +1101,10 @@ class Sample:
         #print("Loop counter", loop)
 
         js = np.zeros(n_samples, dtype=int)
+        if use_jit:
+            sample_jit.deal(rng, small_out_i, r_shp, r_hcp, cards_received, h1_h2, n_cards_to_receive, cards_in_suit, False,
+                            False, 0.0, True, shp_reduction_factor)
+            js[:] = small_out_i.shape[1]
         loop = 0
         while True:
             s_all_r = s_all[js < small_out_i.shape[1]]
@@ -1028,6 +1168,12 @@ class Sample:
 
     def get_opening_lead_scores_nn(self, auction, vuln, models, handsamples, opening_lead_card):
         assert(handsamples.shape[1] == models.n_cards_play)
+        # The score depends only on the leader's hand, which comes back at every card of the board
+        context = ('lead_scores_nn', tuple(auction), tuple(vuln), opening_lead_card)
+        return self.cached_rows(context, handsamples,
+                                lambda hands: self.compute_opening_lead_scores_nn(auction, vuln, models, hands, opening_lead_card))
+
+    def compute_opening_lead_scores_nn(self, auction, vuln, models, handsamples, opening_lead_card):
         cards_in_suit = models.n_cards_play // 4
         #handsamples = handsamples[:1,:]
         contract = bidding.get_contract(auction)
@@ -1100,7 +1246,6 @@ class Sample:
         return lead_softmax[:, opening_lead_card]
 
     def get_bid_scores(self, nesw_i, partner, auction, vuln, sample_hands, models):
-        n_steps = binary.calculate_step_bidding(auction)
         if self.verbose:
             print(f"Get bid scores for samples for {nesw_i}. First hand {hand_to_str(sample_hands[0])}")
 
@@ -1110,6 +1255,16 @@ class Sample:
         else:
             handbidding = sample_hands
 
+        # The score depends only on the hand (with the pips grouped as the bidder sees them),
+        # and the same hands come back at every card of the board
+        model = models.bidder_model if partner else models.opponent_model
+        context = ('bid_scores', id(model), nesw_i, tuple(auction), tuple(vuln))
+        return self.cached_rows(context, handbidding,
+                                lambda hands: self.compute_bid_scores(nesw_i, partner, auction, vuln, hands, models)).astype(np.float32, copy=False)
+
+    def compute_bid_scores(self, nesw_i, partner, auction, vuln, handbidding, models):
+        n_steps = binary.calculate_step_bidding(auction)
+        sample_hands = handbidding
 
         A = binary.get_auction_binary_sampling(n_steps, auction, nesw_i, handbidding, vuln, models, models.n_cards_bidding)
 
@@ -1245,27 +1400,6 @@ class Sample:
 
             hidden_hand1, hidden_hand2 = h1_h2[:, 0], h1_h2[:, 1]
             #print("hidden_hand1, hidden_hand2", hidden_hand1, hidden_hand2)
-            states = [np.zeros((hidden_hand1.shape[0], 13, 298),dtype=np.int8) for _ in range(4)]
-            # we can reuse the x_play array from card_players except the player's hand
-            for k in range(4):
-                for i in range(trick_i + 1):
-                    states[k][:, i, 32:] = card_players[k].x_play[0, i, 32:]
-
-            # for player_i we can use the hand from card_players x_play (because the cards are known)
-            for i in range(trick_i + 1):
-                states[player_i][:, i, :32] = card_players[player_i].x_play[0, i, :32]
-
-            # all players know dummy's cards
-            if player_i in (0, 2, 3):
-                for i in range(trick_i + 1):
-                    states[player_i][:, i, 32:64] = card_players[1].x_play[0, i, :32]
-                    states[1][:, i, :32] = card_players[1].x_play[0, i, :32]
-
-            # dummy knows declarer's cards
-            if player_i == 1:
-                for i in range(trick_i + 1):
-                    states[player_i][:, i, 32:64] = card_players[3].x_play[0, i, :32]
-                    states[3][:, i, :32] = card_players[3].x_play[0, i, :32]
 
             # add the current trick cards to the hidden hands
             if len(current_trick) > 0:
@@ -1275,42 +1409,68 @@ class Sample:
                     if (leader_i + i) % 4 == hidden_2_i:
                         hidden_hand2[:, card] += 1
 
-            for k in range(trick_i + 1):
-                states[hidden_1_i][:, k, :32] = hidden_hand1
-                states[hidden_2_i][:, k, :32] = hidden_hand2
-                for card in player_cards_played[hidden_1_i][k:]:
-                    states[hidden_1_i][:, k, card] += 1
-                for card in player_cards_played[hidden_2_i][k:]:
-                    states[hidden_2_i][:, k, card] += 1
+            def build_states(rows, n_tricks=13):
+                # The play states of the samples in rows. The samples only differ in the
+                # hidden hands, so the filters below work on the first trick's hands
+                # (n_tricks=1) and the full states are built for the samples that are kept.
+                h1 = hidden_hand1[rows]
+                h2 = hidden_hand2[rows]
+                tricks = range(min(trick_i + 1, n_tricks))
+                states = [np.zeros((h1.shape[0], n_tricks, 298),dtype=np.int8) for _ in range(4)]
+                # we can reuse the x_play array from card_players except the player's hand
+                for k in range(4):
+                    for i in tricks:
+                        states[k][:, i, 32:] = card_players[k].x_play[0, i, 32:]
+
+                # for player_i we can use the hand from card_players x_play (because the cards are known)
+                for i in tricks:
+                    states[player_i][:, i, :32] = card_players[player_i].x_play[0, i, :32]
+
+                # all players know dummy's cards
+                if player_i in (0, 2, 3):
+                    for i in tricks:
+                        states[player_i][:, i, 32:64] = card_players[1].x_play[0, i, :32]
+                        states[1][:, i, :32] = card_players[1].x_play[0, i, :32]
+
+                # dummy knows declarer's cards
+                if player_i == 1:
+                    for i in tricks:
+                        states[player_i][:, i, 32:64] = card_players[3].x_play[0, i, :32]
+                        states[3][:, i, :32] = card_players[3].x_play[0, i, :32]
+
+                for k in tricks:
+                    states[hidden_1_i][:, k, :32] = h1
+                    states[hidden_2_i][:, k, :32] = h2
+                    for card in player_cards_played[hidden_1_i][k:]:
+                        states[hidden_1_i][:, k, card] += 1
+                    for card in player_cards_played[hidden_2_i][k:]:
+                        states[hidden_2_i][:, k, card] += 1
+                return states
+
+            states = build_states(slice(None), n_tricks=1)
         else:
             # In cheat mode all cards are known
             known_nesw = player_to_nesw_i(player_i, contract)
-            states = [np.zeros((1, 13, 298),dtype=np.int8) for _ in range(4)]
+            full_states = [np.zeros((1, 13, 298),dtype=np.int8) for _ in range(4)]
             for k in range(4):
                 for i in range(13):
-                    states[k][0, i, :32] = card_players[k].x_play[0, i, :32]
+                    full_states[k][0, i, :32] = card_players[k].x_play[0, i, :32]
+
+            def build_states(rows):
+                return [s[rows] for s in full_states]
+
+            states = full_states
 
         if self.verbose:
             print(f"players_states {states[0].shape[0]} trick {trick_i+1}")
 
         def get_unique_samples(states):
             counts = defaultdict(int)
-            samples = set()  # Use a set instead of a list for O(1) lookups
             unique_indices = np.ones(states[0].shape[0], dtype=bool)  # Assuming this is a NumPy boolean mask
 
-            for i in range(states[0].shape[0]):
-                # Use tobytes() for efficient hashing - avoids astype() which can cause issues in NumPy 2.0
-                sample = (
-                    states[0][i, 0, :32].tobytes(),
-                    states[1][i, 0, :32].tobytes(),
-                    states[2][i, 0, :32].tobytes(),
-                    states[3][i, 0, :32].tobytes()
-                )
-                if sample in samples:
+            for i, sample in enumerate(sample_keys(states)):
+                if sample in counts:
                     unique_indices[i] = False
-                else:
-                    samples.add(sample)
-
                 counts[sample] += 1
 
             return unique_indices, counts  # Returning counts only if needed
@@ -1318,6 +1478,8 @@ class Sample:
         unique_indices, counts = get_unique_samples(states)
 
         # Use the unique_indices to filter player_states
+        # rows: the samples kept so far, in order; states holds only their first trick
+        rows = np.flatnonzero(unique_indices)
         states = [state[unique_indices] for state in states]
         
         if self.verbose:
@@ -1330,6 +1492,7 @@ class Sample:
                 accept = np.ones_like(accept).astype(bool)
 
             states = [s[accept] for s in states]
+            rows = rows[accept]
 
         else:
             c_hcp, c_shp = None, None
@@ -1364,17 +1527,18 @@ class Sample:
 
         sorted_min_bid_scores = min_bid_scores[sorted_indices]
         # Sort second dimension within each array in states based on min_bid_scores
-        bidding_states = [s[sorted_indices] for s in states]
+        rows = rows[sorted_indices]
 
         #print(bidding_states[0].shape[0])
         valid_bidding_samples_good = np.sum(sorted_min_bid_scores > self.bidding_threshold_sampling)
         #valid_bidding_samples = np.sum(sorted_min_bid_scores > self.bid_extend_play_threshold)
         #print(valid_bidding_samples_good, valid_bidding_samples, sample_boards_for_play)
-        if bidding_states[0].shape[0] > 2 * self.sample_hands_play and valid_bidding_samples_good > 10:
+        if rows.shape[0] > 2 * self.sample_hands_play and valid_bidding_samples_good > 10:
             # We drop the samples we are not going to use
             mask = sorted_min_bid_scores > self.bid_extend_play_threshold/2
-            bidding_states = [s[mask] for s in bidding_states]
+            rows = rows[mask]
             sorted_min_bid_scores = sorted_min_bid_scores[mask]
+        bidding_states = build_states(rows)
         assert bidding_states[0].shape[0] > 0, "No samples after checking bidding"
 
         if self.verbose:
@@ -1709,7 +1873,12 @@ class Sample:
         keys = [row.tobytes() for row in flat]
         missing = [i for i, key in enumerate(keys) if key not in cache]
         if missing:
-            for i, p in zip(missing, model.pred_fun(x[missing])):
+            # The rows this decision has not predicted yet were often predicted at an earlier
+            # card of the board (the same hidden hand, the same play so far); cached_rows
+            # keeps them, and predicts the others with the batch-of-one kernel exactly when
+            # this decision would have (one missing row).
+            predicted = self.cached_rows(('play', model.name, x.shape[1:], x.dtype.str), x[missing], model.pred_fun)
+            for i, p in zip(missing, predicted):
                 cache[keys[i]] = p
         return np.stack([cache[key] for key in keys])
 

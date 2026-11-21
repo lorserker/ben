@@ -2,6 +2,7 @@ import time
 import deck52
 import random
 import numpy as np
+from collections.abc import Sequence
 from itertools import combinations
 from math import comb
 
@@ -115,7 +116,7 @@ class Claimer:
                 print("Claimcheck: shown out suits do not fit the hidden cards, ignoring them", shown_out_suits)
             forced_chosen, free_cards, n_free = [], hidden_cards, n_cards
 
-        card_combinations = list(combinations(free_cards, n_free))  # Get all possible splits
+        card_combinations = _Combinations(free_cards, n_free)  # Get all possible splits
 
         # Ensure the number of requested samples doesn't exceed available combinations
         n_possible_samples = min(n_samples, len(card_combinations))
@@ -303,6 +304,44 @@ def _hidden_splits(hidden_cards, n_cards, n_samples):
     while len(splits) < n_samples:
         splits.add(tuple(sorted(random.sample(hidden_cards, n_cards))))
     return list(splits)
+
+class _Combinations(Sequence):
+    """list(combinations(items, r)) without building the list: random.sample only needs
+    its length and the combinations at the indices it draws, and draws the same random
+    numbers for this sequence as for the list."""
+
+    def __init__(self, items, r):
+        self.items = list(items)
+        self.r = r
+        self.n = comb(len(self.items), r)
+
+    def __len__(self):
+        return self.n
+
+    def __iter__(self):
+        return combinations(self.items, self.r)
+
+    def __getitem__(self, j):
+        if j < 0:
+            j += self.n
+        if not 0 <= j < self.n:
+            raise IndexError("combination index out of range")
+        # The j-th combination in itertools (lexicographic) order
+        m = len(self.items)
+        r = self.r
+        result = []
+        start = 0
+        while r > 0:
+            for i in range(start, m):
+                with_i = comb(m - i - 1, r - 1)
+                if j < with_i:
+                    result.append(self.items[i])
+                    start = i + 1
+                    r -= 1
+                    break
+                j -= with_i
+        return tuple(result)
+
 
 def _hand_from_cards(n, cards):
     hand = np.zeros(n, dtype=np.int32)

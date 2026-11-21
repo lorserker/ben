@@ -64,6 +64,18 @@ from claim import Claimer
 from ddsolver.ddsrecorder import DDSRecorder
 from pbn2ben import load
 from util import calculate_seed, get_play_status, get_singleton, get_possible_cards
+
+# BEN_HEADLESS=1: no GUI is drawing the game, so skip the pauses after every bid
+# (0.1 s) and around every card (0.01 s) that give a GUI client time to redraw.
+# Read once at import, like a compile-time switch. Leave it unset for gameserver.py
+# and other GUI front ends; set it for game.py --auto, batch runs and benchmarks.
+HEADLESS = os.getenv('BEN_HEADLESS', '').strip().lower() in ('1', 'true', 'yes')
+
+
+async def redraw_pause(seconds):
+    if not HEADLESS:
+        await asyncio.sleep(seconds)
+
 from colorama import Fore, Back, Style, init
 import gc
 import psutil
@@ -72,7 +84,7 @@ from nn.opponents import Opponents
 import faulthandler
 faulthandler.enable()
 
-version = '0.9.0.3'
+version = '0.9.0.4'
 
 init()
 
@@ -702,7 +714,7 @@ class Driver:
                         discard_scores = []
                         worlds = []
                         
-                    await asyncio.sleep(0.01)
+                    await redraw_pause(0.01)
 
                     while card_resp is None:
                         card_resp =  await card_players[player_i].async_play_card(trick_i, leader_i, current_trick52, tricks52, rollout_states, worlds, bidding_scores, quality, probability_of_occurence, shown_out_suits, play_status, lead_scores, play_scores, logical_play_scores, discard_scores, features)
@@ -756,7 +768,7 @@ class Driver:
                         pprint.pprint(card_resp.to_dict(), width=200)
                         print(f"{Fore.RESET}")
                     
-                    await asyncio.sleep(0.01)
+                    await redraw_pause(0.01)
 
                 self.card_responses.append(card_resp)
 
@@ -950,7 +962,7 @@ class Driver:
 
         hands_str = self.deal_str.split()
 
-        await asyncio.sleep(0.01)
+        await redraw_pause(0.01)
 
         if self.human[(decl_i + 1) % 4]:
             card_resp = await self.factory.create_human_leader().async_lead()
@@ -969,7 +981,7 @@ class Driver:
             )
             card_resp = await bot_lead.async_opening_lead(auction, aceking)
 
-        await asyncio.sleep(0.01)
+        await redraw_pause(0.01)
 
         return card_resp
 
@@ -1019,7 +1031,7 @@ class Driver:
                     'message': 'alert',
                     'alert': str(alert)
                 }))
-                await asyncio.sleep(0.1)
+                await redraw_pause(0.1)
             else:
                 if bid_resp.bid == "Hint":
                     bid_resp = await hint_bots[player_i].async_bid(auction)
@@ -1028,7 +1040,7 @@ class Driver:
                         'bids': bid_resp.to_dict()
                     }))
 
-                    await asyncio.sleep(0.1)
+                    await redraw_pause(0.1)
                 else :
                     self.bid_responses.append(bid_resp)
                     auction.append(bid_resp.bid)
@@ -1044,7 +1056,7 @@ class Driver:
 
                     player_i = (player_i + 1) % 4
                     # give time to client to redraw
-                    await asyncio.sleep(0.1)
+                    await redraw_pause(0.1)
                     alert = False
                 
         return auction

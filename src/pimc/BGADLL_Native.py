@@ -55,6 +55,11 @@ def _get_lib():
     if _lib is None:
         if not os.path.isfile(_lib_path):
             raise FileNotFoundError(f"BGADLL native library not found: {_lib_path}")
+        # PIMC solves on the dds library beside BGADLL (bridge-solver since 2026-11), not on
+        # libbcalcdds, which BGADLL would otherwise prefer on Windows x64: on 8 boards PIMC took
+        # 15.3 s on bridge-solver against 27.9 s on bcalcdds, with the same cards played.
+        # BGADLL reads this once, when it first solves. BGA_DDS_BACKEND=bcalcdds brings it back.
+        os.environ.setdefault("BGA_DDS_BACKEND", "haglund")
         # BGADLL depends on dds.dll (Haglund) - preload it so NativeAOT P/Invoke can resolve it
         lib_dir = os.path.dirname(os.path.abspath(_lib_path))
         bin_dir = os.path.dirname(os.path.dirname(os.path.dirname(lib_dir)))  # bin/BGA/platform/arch -> bin/

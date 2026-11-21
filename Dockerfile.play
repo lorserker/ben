@@ -26,7 +26,7 @@ ENV CUDA_VISIBLE_DEVICES=""
 # Python source: gameapi.py + the modules it pulls in (no GUIs, no game.py/gameserver.py)
 COPY src/gameapi.py \
      src/botbidder.py src/botcardplayer.py src/botopeninglead.py \
-     src/sample.py src/claim.py src/util.py src/conf.py \
+     src/sample.py src/sample_jit.py src/claim.py src/util.py src/conf.py \
      src/objects.py src/deck52.py src/binary.py src/carding.py \
      src/calculate.py src/scoring.py src/systems.py src/version_check.py \
      src/healthlog.py \
@@ -46,6 +46,9 @@ ADD src/openinglead /app/openinglead/
 # image's Python (3.12); a 3.10 _dds3.so will fail to import (build from DDS repo).
 COPY bin/libsuitc.so /app/bin/
 COPY bin/dds3-linux /app/bin/dds3-linux/
+# bridge-solver, BEN's double-dummy solver where it is built (dds3 is the fallback)
+COPY bin/bsolver/linux-x64 /app/bin/bsolver/linux-x64/
+COPY bin/bsolver/linux-arm64 /app/bin/bsolver/linux-arm64/
 ADD bin/BBA/linux /app/bin/BBA/linux/
 ADD bin/BGA/linux /app/bin/BGA/linux/
 

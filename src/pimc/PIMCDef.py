@@ -547,8 +547,8 @@ class BGADefDLL:
         except Exception as ex:
             print('Error AwaitEvaluation:', ex)
             sys.exit(1)
-        # Allow running threads to finalize
-        time.sleep(0.05)
+        # No sleep needed here: since BGA 0.9.9.0 AwaitEvaluation drains all
+        # worker threads before returning, so every result is already written.
         if self.verbose:    
             print("max_playout",self.max_playout)
             print(f"Playouts: {self.pimc.Playouts}")

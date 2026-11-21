@@ -42,6 +42,10 @@ a = Analysis(
         # as an empty namespace pkg, so `from simplejson import JSONDecodeError`
         # fails at runtime. Excluding it forces the stdlib-json path.
         'simplejson',
+        # numba (optional, src/sample_jit.py) is left out: frozen builds use the
+        # numpy dealing loops, which give the same samples, and need no llvmlite DLL.
+        'numba',
+        'llvmlite',
     ],
     noarchive=False,
     optimize=0,

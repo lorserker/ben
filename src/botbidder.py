@@ -237,6 +237,9 @@ class BotBid:
         # Reseed the rng, so that we get the same result each time in this situation
         # We should perhaps add current auction to the seed
         self.rng = self.get_random_generator()
+        # Double dummy results for the samples of this bid; the candidates' rollouts often
+        # end in the same contract for a sample, and its result is then known
+        self.dd_cache = {}
 
         self.my_bid_no = self.get_bid_number_for_player_to_bid(auction)
         candidates, passout = self.get_bid_candidates(auction)
@@ -1388,13 +1391,21 @@ class BotBid:
         for i, strain, leader in sample_info:
             groups[(strain, leader)].append(i)
 
-        # Batch solve each group
+        # Batch solve each group. A double dummy result is exact, so a deal already solved
+        # for the same strain and leader (for another candidate of this bid) is not solved again
+        dd_cache = getattr(self, 'dd_cache', None)
+        if dd_cache is None:
+            dd_cache = self.dd_cache = {}
         sum = 0
         for (strain, leader), indices in groups.items():
-            hands_pbn = [hands_np_as_pbn[i] for i in indices]
-            dd_solved = self.ddsolver.solve(strain, leader, [], hands_pbn, 1, purpose="bid")
-            for j, i in enumerate(indices):
-                tricks = 13 - dd_solved["max"][j]
+            unsolved = list(dict.fromkeys(hands_np_as_pbn[i] for i in indices
+                                          if (hands_np_as_pbn[i], strain, leader) not in dd_cache))
+            if unsolved:
+                dd_solved = self.ddsolver.solve(strain, leader, [], unsolved, 1, purpose="bid")
+                for j, pbn in enumerate(unsolved):
+                    dd_cache[(pbn, strain, leader)] = dd_solved["max"][j]
+            for i in indices:
+                tricks = 13 - dd_cache[(hands_np_as_pbn[i], strain, leader)]
                 sum += tricks
                 decl_tricks_softmax[i, tricks] = 1
 

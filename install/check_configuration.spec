@@ -16,13 +16,13 @@ ml_dtypes_libs = [(os.path.join(_mld_libs, f), 'ml_dtypes.libs') for f in os.lis
 a = Analysis(
     ['..\\src\\check_configuration.py'],
     pathex=['..\\src', '..\\bin\\dds3-win'],
-    binaries=[('..\\bin\\BGA\\windows\\x64\\BGADLL.dll', 'bin\\BGA\\windows\\x64'), ('..\\bin\\libbcalcdds.dll', 'bin'), ('..\\bin\\SuitCLib.dll', 'bin'), ('..\\bin\\BBA\\windows\\x64\\EPBot.dll', 'bin\\BBA\\windows\\x64')] + ml_dtypes_libs,
+    binaries=[('..\\bin\\BGA\\windows\\x64\\BGADLL.dll', 'bin\\BGA\\windows\\x64'), ('..\\bin\\BGA\\windows\\x64\\dds.dll', 'bin\\BGA\\windows\\x64'), ('..\\bin\\bsolver\\windows-x64\\bsolver-dds.dll', 'bin\\bsolver\\windows-x64'), ('..\\bin\\libbcalcdds.dll', 'bin'), ('..\\bin\\SuitCLib.dll', 'bin'), ('..\\bin\\BBA\\windows\\x64\\EPBot.dll', 'bin\\BBA\\windows\\x64')] + ml_dtypes_libs,
     datas=[],
     hiddenimports=['dds3'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
-    excludes=[],
+    excludes=['numba', 'llvmlite'],
     noarchive=False,
     optimize=0,
 )

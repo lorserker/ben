@@ -19,7 +19,7 @@ block_cipher = None
 a = Analysis(
     ['..\\src\\table_manager_client.py'],
     pathex=['..\\src', '..\\bin\\dds3-win'],
-    binaries=[('..\\bin\\BGA\\windows\\x64\\BGADLL.dll', 'bin\\BGA\\windows\\x64'), ('..\\bin\\libbcalcdds.dll', 'bin'), ('..\\bin\\SuitCLib.dll', 'bin'), ('..\\bin\\BBA\\windows\\x64\\EPBot.dll', 'bin\\BBA\\windows\\x64')] + ml_dtypes_libs,
+    binaries=[('..\\bin\\BGA\\windows\\x64\\BGADLL.dll', 'bin\\BGA\\windows\\x64'), ('..\\bin\\BGA\\windows\\x64\\dds.dll', 'bin\\BGA\\windows\\x64'), ('..\\bin\\bsolver\\windows-x64\\bsolver-dds.dll', 'bin\\bsolver\\windows-x64'), ('..\\bin\\libbcalcdds.dll', 'bin'), ('..\\bin\\SuitCLib.dll', 'bin'), ('..\\bin\\BBA\\windows\\x64\\EPBot.dll', 'bin\\BBA\\windows\\x64')] + ml_dtypes_libs,
     datas=[(r'..\src\nn\*.py','nn')],
     # h5py 3.16 added the compiled submodule h5py._npystrings which the bundled
     # PyInstaller h5py hook does NOT auto-collect (every other h5py .pyd is).
@@ -47,6 +47,10 @@ a = Analysis(
         # as an empty namespace pkg, so `from simplejson import JSONDecodeError`
         # fails at runtime. Excluding it forces the stdlib-json path.
         'simplejson',
+        # numba (optional, src/sample_jit.py) is left out: frozen builds use the
+        # numpy dealing loops, which give the same samples, and need no llvmlite DLL.
+        'numba',
+        'llvmlite',
     ],
     win_no_prefer_redirects=False,
     win_private_assemblies=False,

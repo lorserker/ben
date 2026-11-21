@@ -1,4 +1,6 @@
 numpy>=2.0.0,<2.1.0
+# Optional: compiles the card-dealing loops in src/sample_jit.py (same samples without it)
+numba>=0.60
 scipy>=1.14.0
 matplotlib
 jupyter

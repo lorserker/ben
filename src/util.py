@@ -142,24 +142,17 @@ def calculate_seed(input):
     hash_integer = int.from_bytes(hash_bytes[:4], byteorder='big') % (2**32 - 1)
     return hash_integer
 
+def sample_keys(states):
+    """A bytes key per sample: its four hands at the first trick (states[k][i, 0, :32])."""
+    hands = np.concatenate([np.ascontiguousarray(s[:, 0, :32]) for s in states], axis=1)
+    return hands.view(np.dtype((np.void, hands.shape[1] * hands.itemsize))).ravel().tolist()
+
 def convert_to_probability_with_weight(bidding_score, states, counts, logical_scores, discard_scores, quality):
     """Compute weighted softmax values for each set of scores in x using counts."""
     
-    # Initialize weights array with the correct shape
-    weights = np.ones(states[0].shape[0])    
-    
-    # Calculate weights based on counts
-    for i in range(states[0].shape[0]):
-        # Use tobytes() for efficient hashing - matches sample.py get_unique_samples
-        sample = (
-            states[0][i, 0, :32].tobytes(),
-            states[1][i, 0, :32].tobytes(),
-            states[2][i, 0, :32].tobytes(),
-            states[3][i, 0, :32].tobytes()
-        )
-
-        # Ensure that you get a scalar count for each sample
-        weights[i] = counts.get(sample, 0)  # Use .get to avoid KeyError
+    # Calculate weights based on counts (keys as in sample.py get_unique_samples)
+    weights = np.array([counts.get(key, 0) for key in sample_keys(states)], dtype=np.float64)
+    weights = weights.reshape(states[0].shape[0])
 
     # Apply weights to x before calculating probabilities
     if quality > 0.5:

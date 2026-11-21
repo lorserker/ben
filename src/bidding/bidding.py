@@ -22,7 +22,8 @@ ID2BID = {bid:i for i, bid in BID2ID.items()}
 
 def get_auction_as_string(auction):
     bid_strings = []
-    for bid in auction:
+    # Python ints compare and hash much faster than numpy scalars
+    for bid in (auction.tolist() if isinstance(auction, np.ndarray) else auction):
         # Ignore PAD_START and PAD_END
         if (bid > 4):
             bid_strings.append(ID2BID[bid])

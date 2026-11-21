@@ -80,7 +80,29 @@ def _load_dds3():
     ) from last_error
 
 
-dds3 = _load_dds3()
+def _choose_backend():
+    """bridge-solver when its library is there (bin/bsolver/<platform>-<arch>/), else dds3.
+    BEN_DDS=dds3 or BEN_DDS=bsolver forces one; a forced bridge-solver that is missing is
+    an error, not a silent fallback."""
+    forced = os.getenv("BEN_DDS", "").strip().lower()
+    if forced in ("bsolver", "bridge-solver"):
+        from ddsolver.bsolver import find_library
+        path = find_library()
+        if path is None:
+            raise ImportError("BEN_DDS=bsolver, but there is no bridge-solver library for this "
+                              "platform under bin/bsolver/ (or set BEN_BSOLVER_LIB)")
+        return path
+    if forced and forced != "dds3":
+        raise ImportError(f"BEN_DDS={forced!r}: use 'bsolver' or 'dds3'")
+    if forced == "dds3":
+        return None
+    from ddsolver.bsolver import find_library
+    return find_library()
+
+
+# The bridge-solver library path, or None when BEN solves with dds3.
+_BSOLVER_PATH = _choose_backend()
+dds3 = _load_dds3() if _BSOLVER_PATH is None else None
 
 
 def _gevent_patched_threading():
@@ -132,7 +154,15 @@ class DDSolver:
         # 0 = one thread per CPU core.
         workers = max_threads if (max_threads and max_threads > 0) else (os.cpu_count() or 4)
         self._workers = workers
-        if _REAL_THREADS:
+        self._bs = None
+        if _BSOLVER_PATH is not None:
+            # bridge-solver solves a batch on its own threads (workers of them). Under gevent
+            # the blocking call runs on one of a few native threads, so other requests keep
+            # being served meanwhile; without gevent it is called directly.
+            from ddsolver.bsolver import BridgeSolver
+            self._bs = BridgeSolver(_BSOLVER_PATH, workers)
+            self._pool = _NativeThreadPoolExecutor(max_workers=4) if _REAL_THREADS else None
+        elif _REAL_THREADS:
             self._pool = _NativeThreadPoolExecutor(max_workers=workers)
         else:
             self._pool = ThreadPoolExecutor(max_workers=workers, thread_name_prefix="dds")
@@ -146,7 +176,13 @@ class DDSolver:
                               threads=workers)
 
     def version(self):
-        return "3.1.0"
+        return "bridge-solver" if self._bs is not None else "3.1.0"
+
+    def _bs_call(self, fn, *args):
+        """Run a bridge-solver call, under gevent on a native thread."""
+        if self._pool is not None:
+            return self._pool.submit(fn, *args).result()
+        return fn(*args)
 
     def calculatepar(self, hand, vuln, print_result=True):
         with ModelTimer.time_call('dds_par'):
@@ -165,22 +201,29 @@ class DDSolver:
         if vuln[1]: v = 3
         if vuln[0] and vuln[1]: v = 1
 
-        # calc_all_tables_pbn computes the DD table and (mode != -1) the par score.
-        try:
-            result = dds3.calc_all_tables_pbn(["N:" + hand], mode=v)
-        except Exception as e:
-            sys.stderr.write(f"Error calculating par: {e}, Hand {hand.encode('utf-8')}\n")
-            raise
+        if self._bs is not None:
+            try:
+                ns_par, ew_par = self._bs_call(self._bs.par, "N:" + hand, v)
+            except Exception as e:
+                sys.stderr.write(f"Error calculating par: {e}, Hand {hand.encode('utf-8')}\n")
+                raise
+        else:
+            # calc_all_tables_pbn computes the DD table and (mode != -1) the par score.
+            try:
+                result = dds3.calc_all_tables_pbn(["N:" + hand], mode=v)
+            except Exception as e:
+                sys.stderr.write(f"Error calculating par: {e}, Hand {hand.encode('utf-8')}\n")
+                raise
 
-        par_results = result.get("par_results") or []
-        if not par_results:
-            sys.stderr.write(f"{Fore.RED}No par result for hand {hand.encode('utf-8')}{Style.RESET_ALL}\n")
-            return None
+            par_results = result.get("par_results") or []
+            if not par_results:
+                sys.stderr.write(f"{Fore.RED}No par result for hand {hand.encode('utf-8')}{Style.RESET_ALL}\n")
+                return None
 
-        par = par_results[0]
-        # par_score is a 2-element list of strings, e.g. "NS 420" / "EW -420".
-        ns_par = par["par_score"][0]
-        ew_par = par["par_score"][1]
+            par = par_results[0]
+            # par_score is a 2-element list of strings, e.g. "NS 420" / "EW -420".
+            ns_par = par["par_score"][0]
+            ew_par = par["par_score"][1]
 
         if print_result:
             print("NS score: {}".format(ns_par))
@@ -254,7 +297,11 @@ class DDSolver:
             )
 
         try:
-            solved = list(self._pool.map(_solve_one, hands_pbn))
+            if self._bs is not None:
+                solved = self._bs_call(self._bs.solve_boards, hands_pbn, trump, leader_i,
+                                       trick_suit, trick_rank, solutions, dds_mode)
+            else:
+                solved = list(self._pool.map(_solve_one, hands_pbn))
         except Exception as e:
             print(f"{Fore.RED}DDS error: {e} {hands_pbn[0].encode('utf-8')} {current_trick} {leader_i}{Style.RESET_ALL}")
             return None
@@ -271,19 +318,25 @@ class DDSolver:
         else:
             card_results = {}
             for fut in solved:
+                suits = fut["suit"]
+                ranks = fut["rank"]
+                scores = fut["score"]
+                equals = fut["equals"]
                 for i in range(fut["cards"]):
-                    suit_i = fut["suit"][i]
-                    card = suit_i * 13 + 14 - fut["rank"][i]
+                    suit_i = suits[i]
+                    score = scores[i]
+                    card = suit_i * 13 + 14 - ranks[i]
                     if card not in card_results:
                         card_results[card] = []
-                    card_results[card].append(fut["score"][i])
-                    eq_cards_encoded = fut["equals"][i]
-                    for k, rank_code in enumerate(card_rank):
-                        if rank_code & eq_cards_encoded > 0:
-                            eq_card = suit_i * 13 + k
-                            if eq_card not in card_results:
-                                card_results[eq_card] = []
-                            card_results[eq_card].append(fut["score"][i])
+                    card_results[card].append(score)
+                    eq_cards_encoded = equals[i]
+                    if eq_cards_encoded:
+                        for k, rank_code in enumerate(card_rank):
+                            if rank_code & eq_cards_encoded > 0:
+                                eq_card = suit_i * 13 + k
+                                if eq_card not in card_results:
+                                    card_results[eq_card] = []
+                                card_results[eq_card].append(score)
 
         return card_results
 

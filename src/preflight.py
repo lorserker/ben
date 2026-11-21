@@ -69,7 +69,8 @@ def check_dds3():
         return None
 
     solver = DDSolver(max_threads=1)
-    report(OK, f"dds3 {solver.version()}")
+    name = solver.version()
+    report(OK, name if name == "bridge-solver" else f"dds3 {name}")
     return solver
 
 
