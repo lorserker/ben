@@ -23,6 +23,8 @@ import re
 
 app = Bottle()
 script_dir = os.path.dirname(os.path.abspath(__file__))
+# Set by --direct-ports: see wsurl() below
+DIRECT_PORTS = False
 
 BUNDLE_TEMP_DIR = ''
 
@@ -480,6 +482,18 @@ def home():
     deals = read_deals()
     return template('home.tpl', deals=deals, play=True)
 
+@app.route('/app/wsurl.js')
+def wsurl():
+    # wsurl.js gives the pages the addresses of the game servers and the API. With
+    # --direct-ports they keep their own ports even when the page is on the default port:
+    # a proxy that routes by port (ben.aalborgdata.dk) instead of by path.
+    if not DIRECT_PORTS:
+        return static_file('wsurl.js', root=script_dir)
+    with open(os.path.join(script_dir, 'wsurl.js'), encoding='utf-8') as f:
+        body = "var BEN_DIRECT_PORTS = true;\n" + f.read()
+    response.content_type = 'application/javascript; charset=UTF-8'
+    return body
+
 @app.route('/app/<filename>')
 def frontend(filename):
     if '?' in filename:
@@ -573,10 +587,17 @@ if __name__ == "__main__":
     parser.add_argument("--host", default="localhost", help="Hostname for appserver")
     parser.add_argument("--port", type=int, default=8080, help="Port for appserver")
     parser.add_argument("--db", default=DB_NAME, help="Db for appserver")
+    parser.add_argument("--direct-ports", action="store_true",
+                        help="The pages reach the game servers and the API on their own ports (wss://host:4443/, "
+                             "https://host:8085) even when the page is on the default port: for a reverse proxy "
+                             "that routes by port, not by the /ws/<port>/ and /gameapi/<port>/ paths")
 
     args = parser.parse_args()
 
     DB_NAME =  args.db
+    DIRECT_PORTS = args.direct_ports
+    if DIRECT_PORTS:
+        print("Game servers and API on their own ports (--direct-ports)")
     print("Reading deals from: "+DB_NAME)
 
     host = args.host

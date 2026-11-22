@@ -10,9 +10,20 @@
 // path on its own origin, wss://host/ws/4443/, and the proxy routes
 // /ws/<port>/ to that port. gameserver.py reads only the query string of the
 // request, so it accepts the path as it is.
+//
+// A proxy can also route by port, as on ben.aalborgdata.dk: the page is on the
+// default port, but the game servers and the API keep their own ports
+// (wss://host:4443/, https://host:8085). appserver.py --direct-ports serves
+// this file with BEN_DIRECT_PORTS = true in front for that case.
+var BEN_DIRECT_PORTS = (typeof BEN_DIRECT_PORTS !== 'undefined') && BEN_DIRECT_PORTS === true;
+
+function benBehindPathProxy() {
+    return location.port === '' && !BEN_DIRECT_PORTS;
+}
+
 function benGameServerUrl(serverPort) {
     var base = (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.hostname;
-    if (location.port === '') {
+    if (benBehindPathProxy()) {
         return base + '/ws/' + serverPort + '/';
     }
     return base + ':' + serverPort + '/';
@@ -23,7 +34,7 @@ function benGameServerUrl(serverPort) {
 // the /gameapi/<port> prefix from the request path.
 function benApiUrl(apiPort) {
     apiPort = apiPort || 8085;
-    if (location.port === '') {
+    if (benBehindPathProxy()) {
         return location.protocol + '//' + location.hostname + '/gameapi/' + apiPort;
     }
     return location.protocol + '//' + location.hostname + ':' + apiPort;

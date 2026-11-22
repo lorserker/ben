@@ -633,7 +633,7 @@
         let bids = 0;
         function displayBid(data) {
             let alerted = "";
-            if (data.alert == "True") {
+            if (data.alert === true || data.alert == "True") {
                 alerted = "*";
             }
             let explanation = "";
@@ -983,7 +983,7 @@
                 }
 
                 if (action == 'bid') {
-                    if (data.alert == "True") {
+                    if (data.alert === true || data.alert == "True") {
                         document.getElementById('result').innerText = `BEN Suggest: ${data.bid}*`;
                     } else {
                         document.getElementById('result').innerText = `BEN Suggest: ${data.bid}`;
