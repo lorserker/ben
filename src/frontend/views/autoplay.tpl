@@ -251,6 +251,7 @@
             font-weight: 700;
         }
     </style>
+    <script src="/app/wsurl.js"></script>
 </head>
 <body>
 <div class="autoplay-container">
@@ -267,7 +268,7 @@
         <div class="form-row-inline">
             <div class="form-row">
                 <label for="api-url">API URL</label>
-                <input type="text" id="api-url" value="http://localhost:8085">
+                <input type="text" id="api-url" value="">
             </div>
             <div class="form-row">
                 <label for="board">Board #</label>
@@ -320,6 +321,9 @@
         document.getElementById('pbn-output').value = '';
         document.getElementById('status').innerHTML = '';
     }
+
+    // The API of the server this page came from, unless the user types another
+    document.getElementById('api-url').value = benApiUrl();
 
     async function runAutoplay() {
         const apiUrl = document.getElementById('api-url').value.trim();

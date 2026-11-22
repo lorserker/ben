@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="/app/style.css">
     <link rel="stylesheet" href="/app/viz.css">
     <script src="/app/samplesTable.js"></script>
+    <script src="/app/wsurl.js"></script>
 
     <!-- Include jQuery and jQuery UI -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -945,7 +946,7 @@
                 port = 8088
             }
 
-            var url = `${protocol}//${hostname}:${port}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&tournament=${matchpoint}&explain=${explain}&format=${format}&details=${details}`;
+            var url = `${benApiUrl(port)}/${action}?user=${user}&dealer=${dealer}&seat=${seat}&vul=${vul}&ctx=${bidding}&hand=${hand}&tournament=${matchpoint}&explain=${explain}&format=${format}&details=${details}`;
             if (action == "play" || action == "claim")
                 url += `&dummy=${dummy}&played=${played}`;
             if (action == "contract")
