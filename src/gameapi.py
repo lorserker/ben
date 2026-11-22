@@ -1292,11 +1292,14 @@ def play():
         if "" == dummy_str:
             raise BadRequest("No dummy provided")
 
-        if len(dummy_str) != 16:
-            raise BadRequest("Dummy should have 13 cards")
+        # Length 16 is not enough: "AKQJT9876543...Z" passes it
+        problem = hand_problem(dummy_str.upper())
+        if problem:
+            raise BadRequest(f"Dummy is not a hand: {problem}")
 
-        if len(hand_str) != 16:
-            raise BadRequest("Hand should have 13 cards")
+        problem = hand_problem(hand_str.upper())
+        if problem:
+            raise BadRequest(f"Not a hand: {problem}")
 
         problem = deal_problem(hand_str, dummy_str, cards)
         if problem:
