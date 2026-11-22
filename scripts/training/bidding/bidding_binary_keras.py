@@ -4,6 +4,7 @@ sys.path.append('../../../src')
 import copy
 
 import datetime
+import multiprocessing
 from collections import Counter, defaultdict
 import numpy as np
 from bidding import bidding
@@ -214,6 +215,100 @@ def create_binary(data_it, ns, ew, alternating, x, y, z, HCP, SHAPE, k):
 
     return x, y, z, HCP, SHAPE, k
 
+# --- The same work spread over worker processes -------------------------------------------
+# Parsing the deals and building the arrays is per-deal Python, about 0.6 ms a deal in one
+# process. The workers get slices of the input lines; the parent only applies the limit of
+# boards per auction, in file order, so the result is the same as from one process.
+
+CHUNK_DEALS = 4000
+
+def auction_key(deal_data, ns, ew):
+    v = 0
+    if deal_data.vuln_ns and not deal_data.vuln_ew: v = 1
+    if not deal_data.vuln_ns and deal_data.vuln_ew: v = 2
+    if deal_data.vuln_ns and deal_data.vuln_ew: v = 3
+    return f"{ew}-{ns} {' '.join([x.replace('PASS', 'P') for x in deal_data.auction if x != 'PAD_START'])} {v}"
+
+def load_pbn_parallel(pool, pbnlines, n_parts):
+    # load_pbn on parts of the file that each start after the empty line ending a board
+    cuts = [0]
+    size = max(1, len(pbnlines) // n_parts)
+    i = size
+    while i < len(pbnlines):
+        while i < len(pbnlines) and pbnlines[i] != "\n":
+            i += 1
+        if i + 1 < len(pbnlines):
+            cuts.append(i + 1)
+        i += size
+    cuts.append(len(pbnlines))
+    lines = []
+    for part in pool.imap(load_pbn, [pbnlines[a:b] for a, b in zip(cuts, cuts[1:])]):
+        lines.extend(part)
+    return lines
+
+def keys_chunk(args):
+    lines, ns, ew, n_cards = args
+    return [auction_key(DealData.from_deal_auction_string(lines[j], lines[j + 1], "", ns, ew, n_cards, rotate=False), ns, ew)
+            for j in range(0, len(lines), 2)]
+
+def count_deals_parallel(pool, lines, ns, ew, n_cards, max_occurrences):
+    # Returns the indexes of the deals to keep, their auction keys and the count per key
+    n_deals = len(lines) // 2
+    sys.stderr.write('Counting deals with same auction\n')
+    tasks = [(lines[2 * a:2 * min(a + CHUNK_DEALS, n_deals)], ns, ew, n_cards) for a in range(0, n_deals, CHUNK_DEALS)]
+    kept, auctions, key_counts = [], [], Counter()
+    i = 0
+    for keys in pool.imap(keys_chunk, tasks):
+        for auction in keys:
+            if key_counts[auction] < max_occurrences:
+                auctions.append(auction)
+                key_counts[auction] += 1
+                kept.append(i)
+            i += 1
+    return kept, auctions, key_counts
+
+def binary_chunk(args):
+    lines, first, ns, ew, n_cards, alternating, out_dir = args
+    n = len(lines) // 2
+    x, y, z, HCP, SHAPE = create_arrays(n, n_cards)
+    for j in range(n):
+        deal_data = DealData.from_deal_auction_string(lines[2 * j], lines[2 * j + 1], "", ns, ew, n_cards, rotate=False)
+        if alternating and ((first + j) % 2) == 1:
+            parts = get_binary_hcp_shape(deal_data, ew, ns)
+        else:
+            parts = get_binary_hcp_shape(deal_data, ns, ew)
+        x[4 * j:4 * j + 4], y[4 * j:4 * j + 4], HCP[4 * j:4 * j + 4], SHAPE[4 * j:4 * j + 4], z[4 * j:4 * j + 4] = parts
+    # One write per array at this slice's place in the .npy file
+    for name, array in (('x', x), ('y', y), ('z', z), ('HCP', HCP), ('SHAPE', SHAPE)):
+        path = os.path.join(out_dir, name + '.npy')
+        data_start = np.load(path, mmap_mode='r').offset
+        with open(path, 'r+b') as f:
+            f.seek(data_start + 4 * first * array[0].nbytes)
+            f.write(array.data)
+    return n
+
+def create_binary_parallel(pool, lines, kept, ns, ew, alternating, n_cards, out_dir):
+    # Writes x, y, z, HCP and SHAPE straight into .npy files in out_dir; returns the number of hands
+    n = len(kept)
+    sys.stderr.write(f'Creating binary data for {n} deals\n')
+    os.makedirs(out_dir, exist_ok=True)
+    shapes = {'x': ((8, 2 + 2 + 1 + 4 + n_cards + 4 * 40), np.float16), 'y': ((8, 40), np.uint8), 'z': ((8, 1), np.uint8),
+              'HCP': ((8, 3), np.float16), 'SHAPE': ((8, 12), np.float16)}
+    for name, (shape, dtype) in shapes.items():
+        array = np.lib.format.open_memmap(os.path.join(out_dir, name + '.npy'), mode='w+', dtype=dtype, shape=(4 * n,) + shape)
+        del array
+    tasks = []
+    for a in range(0, n, CHUNK_DEALS):
+        chunk_lines = []
+        for i in kept[a:a + CHUNK_DEALS]:
+            chunk_lines.append(lines[2 * i])
+            chunk_lines.append(lines[2 * i + 1])
+        tasks.append((chunk_lines, a, ns, ew, n_cards, alternating, out_dir))
+    done = 0
+    for count in pool.imap_unordered(binary_chunk, tasks):
+        done += count
+    return 4 * done
+
 # Function to extract value from command-line argument
 def extract_value_cmd(arg):
     return arg.split('=')[1]
@@ -233,7 +328,7 @@ def to_numeric(value, default=0):
 if __name__ == '__main__':
 
     if len(sys.argv) < 4:
-        print("Usage: python bidding_binary_keras.py inputfile inputfile2 outputdirectory NS=<x> EW=<y> alternate=True n_cards=32 rotate=true alert_supported=True max_occurrences=<z>")
+        print("Usage: python bidding_binary_keras.py inputfile inputfile2 outputdirectory NS=<x> EW=<y> alternate=True n_cards=32 rotate=true alert_supported=True max_occurrences=<z> workers=<n>")
         print("The input file is the BEN-format or PBN-format")
         print("Use None if no inputfile2")
         print("alternate is signaling, that the input file has both open and closed room, so NS/EW will be alternated")
@@ -241,6 +336,7 @@ if __name__ == '__main__':
         print("Setting rotate to true will rotate all deals, so North is first to bid")
         print("Setting alert_supported to true will record alert in the output")
         print("Setting max_occurrences will limit the number of boards per auction")
+        print("workers is the number of processes (default: half the logical CPUs, at most 64; 1 for a single process)")
         sys.exit(1)
 
     infnm1 = sys.argv[1] # file where the data is
@@ -258,6 +354,7 @@ if __name__ == '__main__':
     rotate = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("rotate=")), False)
     max_occurrences = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("max_occurrences=")), 25)
     alert_supported = next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("alert_supported=")), False)
+    workers = to_numeric(next((extract_value_cmd(arg) for arg in sys.argv[3:] if arg.startswith("workers=")), max(1, min(64, (os.cpu_count() or 2) // 2))), 1)
     version = 3
     add_missing_vulns = False
     max_filler_occurrences = 0
@@ -268,6 +365,12 @@ if __name__ == '__main__':
     n_cards = to_numeric(n_cards, 24)
 
     
+    # Worker processes when there is one input file; with a second (filler) file, a single process
+    parallel = workers > 1 and infnm2 is None and not add_missing_vulns
+    if parallel:
+        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Using {workers} processes\n')
+        pool = multiprocessing.Pool(workers)
+
     # Count the occurrences of each line
     key_counts = Counter()
     auctions = []
@@ -278,7 +381,14 @@ if __name__ == '__main__':
     if file_extension == ".pbn":
         with open(infnm1, "r", encoding='utf-8') as file:  # Open the input file with UTF-8 encoding
             pbnlines = file.readlines()
-            lines = load_pbn(pbnlines)
+            lines = None
+            if parallel:
+                try:
+                    lines = load_pbn_parallel(pool, pbnlines, 4 * workers)
+                except Exception as e:   # a board that leans on tags of the board before it
+                    sys.stderr.write(f'Reading the PBN file in parts failed ({e}), reading it in one process\n')
+            if lines is None:
+                lines = load_pbn(pbnlines)
     else:
         with open(infnm1, 'r') as file:
 
@@ -298,8 +408,12 @@ if __name__ == '__main__':
         if user_input.lower() == "n":
             sys.exit()
 
-    data_it = load_deals(lines, n_cards, rotate)
-    filtered_deals, auctions, key_counts = count_deals(data_it, max_occurrences, auctions, key_counts, [])
+    if parallel:
+        kept, auctions, key_counts = count_deals_parallel(pool, lines, ns, ew, n_cards, max_occurrences)
+        filtered_deals = kept
+    else:
+        data_it = load_deals(lines, n_cards, rotate)
+        filtered_deals, auctions, key_counts = count_deals(data_it, max_occurrences, auctions, key_counts, [])
 
     # Create a new Counter to count all occurrences without limit
     sys.stderr.write(f"Loaded {len(auctions)} auctions\n")   
@@ -388,17 +502,23 @@ if __name__ == '__main__':
 
     sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} Creating arrays with deals\n')
 
-    x, y, z, HCP, SHAPE = create_arrays(len(filtered_deals), n_cards)
-    x, y, z, HCP, SHAPE, k = create_binary(filtered_deals, ns, ew, alternating, x, y, z, HCP, SHAPE,  k)
+    if parallel:
+        k = create_binary_parallel(pool, lines, kept, ns, ew, bool(alternating), n_cards, out_dir)
+        pool.close()
+        pool.join()
+        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} created {k} hands\n')
+    else:
+        x, y, z, HCP, SHAPE = create_arrays(len(filtered_deals), n_cards)
+        x, y, z, HCP, SHAPE, k = create_binary(filtered_deals, ns, ew, alternating, x, y, z, HCP, SHAPE,  k)
 
-    sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} created {k} hands\n')
+        sys.stderr.write(f'{datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} created {k} hands\n')
 
-    os.makedirs(out_dir, exist_ok=True)
-    np.save(os.path.join(out_dir, 'x.npy'), x)
-    np.save(os.path.join(out_dir, 'y.npy'), y)
-    np.save(os.path.join(out_dir, 'z.npy'), z)
-    np.save(os.path.join(out_dir, 'HCP.npy'), HCP)
-    np.save(os.path.join(out_dir, 'SHAPE.npy'), SHAPE)
+        os.makedirs(out_dir, exist_ok=True)
+        np.save(os.path.join(out_dir, 'x.npy'), x)
+        np.save(os.path.join(out_dir, 'y.npy'), y)
+        np.save(os.path.join(out_dir, 'z.npy'), z)
+        np.save(os.path.join(out_dir, 'HCP.npy'), HCP)
+        np.save(os.path.join(out_dir, 'SHAPE.npy'), SHAPE)
 
 
     sys.stderr.write(f"Saved to {out_dir}")

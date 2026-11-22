@@ -70,6 +70,11 @@ def legal_mask(auction):
 
 
 def pick(probs, auction):
+    # The most probable legal call. Trying the calls in order of probability needs one or two
+    # legality checks instead of one per call; ties go to the lower id, as with argmax.
+    for i in np.argsort(-probs, kind='stable'):
+        if i >= 2 and bidding.can_bid(bidding.ID2BID[int(i)], auction):
+            return bidding.ID2BID[int(i)]
     p = np.where(legal_mask(auction), probs, -1)
     return bidding.ID2BID[int(np.argmax(p))]
 
@@ -140,20 +145,31 @@ def main():
             print(f'   {key:16} {100 * hits[key] / totals[key]:6.2f}%  of {totals[key]}')
 
     # 2. Self play
+    # The input rows of a seat are filled in as the auction grows: the features of the hand
+    # are those of the teacher forced input, and round t adds the four calls before the
+    # seat's turn. Rows after the current round stay empty; the network only looks back.
     t0 = time.time()
+    n_bids = len(bidding.BID2ID)
+    n_static = X.shape[2] - 4 * n_bids
+    XS = np.zeros((n, 4, N_STEPS, X.shape[2]), dtype=np.float16)
+    XS[:, :, :, :n_static] = X.reshape(n, 4, N_STEPS, -1)[:, :, :1, :n_static]
     auctions = [['PAD_START'] * d.dealer for d in deals]
     open_boards = list(range(n))
     while open_boards:
-        xs, ts = [], []
+        seats, ts = [], []
         for b in open_boards:
             d, auction = deals[b], auctions[b]
-            seat = len(auction) % 4
-            t = (len(auction) - seat_first_index(seat, d.dealer)) // 4
-            partial = DealData(d.dealer, d.vuln_ns, d.vuln_ew, d.hands, auction, '', args.ns, args.ew, d.deal_str, '', args.n_cards)
-            partial.shapes, partial.hcp = d.shapes, d.hcp
-            xs.append(get_binary_hcp_shape(partial, args.ns, args.ew)[0][seat])
+            i = len(auction)
+            seat = i % 4
+            t = (i - seat_first_index(seat, d.dealer)) // 4
+            if t < N_STEPS:
+                row = XS[b, seat, t]
+                for k in range(4):
+                    bid = auction[i - 4 + k] if i - 4 + k >= 0 else 'PAD_START'
+                    row[n_static + n_bids * k + bidding.BID2ID[bid]] = 1
+            seats.append(seat)
             ts.append(t)
-        probs = predict(model, np.stack(xs))
+        probs = predict(model, XS[open_boards, seats])
         still_open = []
         for k, b in enumerate(open_boards):
             auction = auctions[b]

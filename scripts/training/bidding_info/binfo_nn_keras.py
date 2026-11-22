@@ -15,6 +15,8 @@ from tensorflow.keras.models import load_model
 import time
 import psutil
 import GPUtil
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
+import gpu_epochs
 
 sys.stderr.write(f"Loading tensorflow {tf.__version__}\n")
 sys.stderr.write(f"NumPy Version : {np.__version__}\n")
@@ -50,7 +52,8 @@ else:
 
 # Check for correct usage
 if len(sys.argv) < 2:
-    print("Usage: python binfo_nn_keras.py inputdirectory system")
+    print("Usage: python binfo_nn_keras.py inputdirectory system [epochs=30] [gpu_data=1]")
+    print("gpu_data=0: feed batches from memory with model.fit() even when a GPU is present")
     sys.exit(1)
 
 bin_dir = sys.argv[1]
@@ -61,10 +64,18 @@ if len(sys.argv) > 2:
     system = sys.argv[2]
 
 # Load training data
-# Loaded into memory: random batches from a memory map are far too slow
-X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 HCP_train = np.load(os.path.join(bin_dir, 'HCP.npy'))
 SHAPE_train = np.load(os.path.join(bin_dir, 'SHAPE.npy'))
+X_train = np.load(os.path.join(bin_dir, 'x.npy'), mmap_mode='r')
+# With a GPU the training set is held on it in compact form (see gpu_epochs.py); otherwise, or
+# when the array is not of the expected form, it is loaded into memory for model.fit()
+# (random batches from a memory map are far too slow)
+gpu_inputs = None
+if physical_devices and int(next((arg.split('=', 1)[1] for arg in sys.argv[3:] if arg.startswith('gpu_data=')), 1)):
+    gpu_inputs = gpu_epochs.compact_inputs(X_train)
+    print("Training data on the GPU:", gpu_inputs is not None)
+if gpu_inputs is None:
+    X_train = np.load(os.path.join(bin_dir, 'x.npy'))
 
 n_examples = X_train.shape[0]
 n_sequence = X_train.shape[1]
@@ -73,7 +84,7 @@ n_dim_hcp = HCP_train.shape[2]
 n_dim_shape = SHAPE_train.shape[2]
 
 batch_size = 256
-epochs = 30
+epochs = int(next((arg.split('=', 1)[1] for arg in sys.argv[3:] if arg.startswith('epochs=')), 30))
 learning_rate = 0.0005
 keep = 0.8
 steps_per_epoch = n_examples // batch_size
@@ -179,6 +190,31 @@ if not epochs > 0:
 
 initial_epoch += 1
 
+# Train with the LSTM layers unrolled over the fixed number of bidding rounds and the training
+# step compiled by XLA. On the GPU that step is several times faster than the cuDNN LSTM
+# kernel (5 ms against 29 ms for a batch of 256 on an RTX 5080); unrolling without XLA is
+# slower than cuDNN. Keras only compiles with XLA when no layer can use cuDNN, which it
+# decides when the layer is created, so supports_jit is set here too. The weights are the
+# same either way. The layers are switched back while saving, so a saved model still takes
+# auctions of any length.
+lstm_layers = [layer for layer in model.layers if isinstance(layer, layers.LSTM)]
+
+def set_unroll(value):
+    for layer in lstm_layers:
+        layer.unroll = value
+        layer.supports_jit = value
+
+def save_model(save_path):
+    set_unroll(False)
+    try:
+        model.save(save_path)
+    finally:
+        set_unroll(True)
+
+set_unroll(True)
+model.jit_compile = True
+print("LSTM layers unrolled for training:", len(lstm_layers), "XLA:", model.jit_compile)
+
 # Define callbacks
 class ResourceMonitor(tf.keras.callbacks.Callback):
     def on_epoch_end(self, epoch, logs=None):
@@ -212,7 +248,7 @@ class CustomModelCheckpoint(Callback):
         save_path = self.save_path.format(epoch=epoch + self.initial_epoch)
         print()
         print(f"Saving model to {save_path}")
-        self.model.save(save_path)
+        save_model(save_path)
         epoch_duration = time.time() - self.t_start
         print(f'Epoch took {epoch_duration:0.4f} seconds')
         
@@ -228,12 +264,22 @@ print("Training started")
 t_start = time.time()
 
 # Training the model
-model.fit(train_dataset, epochs=epochs, steps_per_epoch=steps_per_epoch,
-          callbacks=[custom_checkpoint_callback, early_stopping_callback, monitor])
+training_callbacks = [custom_checkpoint_callback, early_stopping_callback, monitor]
+if gpu_inputs is not None:
+    # The targets are the same in every round of a hand; they go to the GPU once per hand when so
+    hcp_hand, shape_hand = gpu_epochs.compact_rounds(HCP_train), gpu_epochs.compact_rounds(SHAPE_train)
+    if hcp_hand is not None and shape_hand is not None:
+        gpu_epochs.fit(model, gpu_inputs, (hcp_hand, shape_hand), batch_size, epochs, steps_per_epoch,
+                       callbacks=training_callbacks, repeat_targets=True)
+    else:
+        gpu_epochs.fit(model, gpu_inputs, (HCP_train, SHAPE_train), batch_size, epochs, steps_per_epoch,
+                       callbacks=training_callbacks)
+else:
+    model.fit(train_dataset, epochs=epochs, steps_per_epoch=steps_per_epoch, callbacks=training_callbacks)
 
 # Save the final model with the last epoch number
 final_epoch = initial_epoch + epochs -1
 final_model_path = os.path.join(checkpoint_dir, f"{model_name}-E{(final_epoch ):02d}.keras")
 
-model.save(final_model_path)
+save_model(final_model_path)
 print("Saved model:", final_model_path)
