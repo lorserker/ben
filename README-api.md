@@ -34,6 +34,29 @@ rejected every request with 444; gameapi now strips stray quotes itself.
 > **Tip:** If you get HTTP 444 "No Response" on every request, this is almost certainly
 > the cause. Check the logs for a "Rejected request from host" warning.
 
+### Behind a Reverse Proxy
+
+The web pages can reach the API through a reverse proxy or tunnel on the same origin as
+the site, as `https://<host>/gameapi/8085/bid`; gameapi drops the `/gameapi/<port>` prefix
+itself. Route that path to the API port unchanged.
+
+Rate limits are kept per visitor address. Behind a proxy every request arrives from the
+proxy's address, so name the proxy with `--trusted-proxies`; gameapi then takes the visitor
+from `CF-Connecting-IP` (Cloudflare) or `X-Forwarded-For`:
+
+```bash
+# Proxy or tunnel on the same machine
+python gameapi.py --allowed-hosts "*" --trusted-proxies "127.0.0.1,::1"
+
+# Proxy in another container on a Docker network
+python gameapi.py --allowed-hosts "*" --trusted-proxies "172.16.0.0/12"
+```
+
+The headers are believed only from those addresses. Without `--trusted-proxies` (the
+default) they are ignored, because anyone reaching the port directly could send
+`X-Forwarded-For: 127.0.0.1` and skip the limits. Name only the proxy, not a network the
+visitors themselves can come from.
+
 ## Common Parameters
 
 These parameters are used across multiple endpoints:

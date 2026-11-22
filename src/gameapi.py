@@ -570,6 +570,7 @@ parser.add_argument("--seed", type=int, default=42, help="Seed for random")
 parser.add_argument("--matchpoint", type=str_to_bool, default=None, help="Playing match point")
 parser.add_argument("--nolimit", type=str_to_bool, default=False, help="Removed limit on number of requests to the API")
 parser.add_argument("--allowed-hosts", type=str, default=None, help="Comma-separated list of allowed Host header values (e.g. 'localhost,ben,myhost.example.com'). Default: localhost,127.0.0.1. Use \"*\" to allow all hosts.")
+parser.add_argument("--trusted-proxies", type=str, default="", help="Comma-separated addresses or networks of reverse proxies in front of this server (e.g. '127.0.0.1,::1' for a proxy or tunnel on the same machine). Only requests from these may name the visitor in CF-Connecting-IP or X-Forwarded-For, which the rate limits then use. Default: none, the headers are ignored.")
 parser.add_argument("--ddsrecord", default=None, help="Record every DDS call to this file for later benchmarking with ddsreplay.py (.gz compresses; a directory gets one file per process). Records are not tagged with a board here - requests are served concurrently.")
 
 args = parser.parse_args()
@@ -753,14 +754,54 @@ class StripProxyPrefix:
 
 app.wsgi_app = StripProxyPrefix(app.wsgi_app)
 
+def parse_trusted_proxies(text):
+    """The networks named by --trusted-proxies: addresses or CIDR blocks, comma separated."""
+    networks = []
+    for item in (text or "").strip().strip('\'"').split(","):
+        item = item.strip().strip('\'"')
+        if not item:
+            continue
+        try:
+            networks.append(ipaddress.ip_network(item, strict=False))
+        except ValueError:
+            sys.exit(f"--trusted-proxies: '{item}' is not an IP address or network")
+    return networks
+
+TRUSTED_PROXIES = parse_trusted_proxies(args.trusted_proxies)
+if TRUSTED_PROXIES:
+    print(f"Visitor address taken from CF-Connecting-IP / X-Forwarded-For when the request comes from: {', '.join(map(str, TRUSTED_PROXIES))}")
+
+def is_trusted_proxy(address):
+    try:
+        addr = ipaddress.ip_address(address)
+    except ValueError:
+        return False
+    return any(addr in network for network in TRUSTED_PROXIES)
+
 def client_address():
     """The visitor's address. Behind a reverse proxy the socket peer is the
     proxy, a loopback or private address, which would exempt every visitor
     from rate limiting and put them all in one bucket; the proxy names the
-    visitor in a header."""
-    forwarded = (request.headers.get("CF-Connecting-IP")
-                 or request.headers.get("X-Forwarded-For", "").split(",")[0].strip())
-    return forwarded or request.remote_addr or ""
+    visitor in a header.
+
+    The headers are believed only when the request comes from a proxy named
+    by --trusted-proxies: anyone who reaches the port directly could otherwise
+    send X-Forwarded-For: 127.0.0.1 and skip the limits. With no trusted proxy
+    set (the default) the headers are ignored."""
+    peer = request.remote_addr or ""
+    if not is_trusted_proxy(peer):
+        return peer
+    cf = request.headers.get("CF-Connecting-IP", "").strip()
+    if cf:
+        return cf
+    # Each proxy appends the address it received the request from, so the
+    # entries a client wrote itself come first. Walk back from the right past
+    # our own proxies; the first address that is not one is the visitor.
+    hops = [h.strip() for h in request.headers.get("X-Forwarded-For", "").split(",") if h.strip()]
+    for hop in reversed(hops):
+        if not is_trusted_proxy(hop):
+            return hop
+    return hops[0] if hops else peer
 
 # --- Configure Flask-Limiter ---
 def is_internal_request():
