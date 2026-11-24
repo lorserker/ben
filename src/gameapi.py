@@ -1939,8 +1939,8 @@ def autoplay():
 
         if vuln_param:
             vuln_str = vuln_param
-            vuln_ns = vuln_str.upper() in ['NS', 'N-S', 'BOTH', 'ALL']
-            vuln_ew = vuln_str.upper() in ['EW', 'E-W', 'BOTH', 'ALL']
+            # Same check as the other endpoints: an unknown value is refused, not played as "none"
+            vuln_ns, vuln_ew = parse_vuln(vuln_param)
         else:
             auction_str = deck52.board_dealer_vuln(board_number)
             parts = auction_str.split()

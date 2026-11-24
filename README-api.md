@@ -66,7 +66,7 @@ These parameters are used across multiple endpoints:
 | `hand` | Hand in PBN format (dots or underscores as separators) | `AK97543.K.T3.AK7` or `AK97543_K_T3_AK7` |
 | `seat` | Player position | `N`, `E`, `S`, `W` |
 | `dealer` | Dealer position | `N`, `E`, `S`, `W` |
-| `vul` | Vulnerability: `@V` = We vul, `@V` = They vul | `@v@V` (both vul), empty (none) |
+| `vul` | The table's vulnerability, the same whichever seat asks: `None` (or `-` or empty), `NS` (or `N-S`), `EW` (or `E-W`), `All` (or `Both`). Case does not matter. Any other value is answered 400 | `NS` |
 | `ctx` | Bidding context as concatenated 2-char bids | `1C--1S` = 1C-Pass-1S |
 | `dummy` | Dummy's hand in PBN format | `QJ87.A95.K63.T42` |
 | `played` | Cards played as concatenated 2-char cards | `SJSQSKSA` |
@@ -131,7 +131,7 @@ Returns the recommended bid for a given hand and auction state.
 | `hand` | Yes | Your hand in PBN format |
 | `seat` | Yes | Your position (N/E/S/W) |
 | `dealer` | Yes | Dealer position (N/E/S/W) |
-| `vul` | Yes | Vulnerability string |
+| `vul` | Yes | Table vulnerability: `None`, `NS`, `EW` or `All` |
 | `ctx` | Yes | Current auction (can be empty for opening) |
 | `details` | No | Include candidates/samples if `true` |
 | `matchtype` | No | `MP` for matchpoint scoring (`tournament` is accepted as an older name) |
@@ -197,13 +197,13 @@ Returns the recommended opening lead after the auction.
 | `hand` | Yes | Your hand in PBN format |
 | `seat` | Yes | Your position (N/E/S/W) |
 | `dealer` | Yes | Dealer position |
-| `vul` | Yes | Vulnerability string |
+| `vul` | Yes | Table vulnerability: `None`, `NS`, `EW` or `All` |
 | `ctx` | Yes | Complete auction |
 | `details` | No | Include candidates/samples if `true` |
 
 **Example Request:**
 ```
-GET /lead?hand=KJ53.KJ7.AT92.K5&seat=W&dealer=N&vul=@v&ctx=1N--3N------
+GET /lead?hand=KJ53.KJ7.AT92.K5&seat=W&dealer=N&vul=NS&ctx=1N--3N------
 ```
 
 **Response:**
@@ -236,7 +236,7 @@ Returns the recommended card to play during the card play phase.
 | `dummy` | Yes | Dummy's hand in PBN format |
 | `seat` | Yes | Your position (N/E/S/W) |
 | `dealer` | Yes | Dealer position |
-| `vul` | Yes | Vulnerability string |
+| `vul` | Yes | Table vulnerability: `None`, `NS`, `EW` or `All` |
 | `ctx` | Yes | Complete auction |
 | `played` | Yes | Cards played so far (concatenated) |
 | `details` | No | Include candidates/samples if `true` |
@@ -285,7 +285,7 @@ Verifies whether a claim of a certain number of tricks is valid.
 | `dummy` | Yes | Dummy's hand in PBN format |
 | `seat` | Yes | Your position (N/E/S/W) |
 | `dealer` | Yes | Dealer position |
-| `vul` | Yes | Vulnerability string |
+| `vul` | Yes | Table vulnerability: `None`, `NS`, `EW` or `All` |
 | `ctx` | Yes | Complete auction |
 | `played` | Yes | Cards played so far |
 
@@ -315,7 +315,7 @@ Plays a complete board with BEN handling all 4 positions for bidding and card pl
 | `deal` | Yes | PBN deal string (4 hands space-separated) |
 | `board` | No | Board number 1-16 for dealer/vul (default: 1) |
 | `dealer` | No | Override dealer (N/E/S/W) |
-| `vul` | No | Override vulnerability (None/NS/EW/Both) |
+| `vul` | No | Override vulnerability: `None`, `NS`, `EW` or `All` (`Both` also accepted) |
 
 **Example Request:**
 ```
@@ -352,7 +352,7 @@ Predicts the likely contract given two hands (for partnership simulation).
 | `hand` | Yes | First hand in PBN format |
 | `dummy` | Yes | Second hand in PBN format |
 | `seat` | Yes | Position of first hand |
-| `vul` | Yes | Vulnerability string |
+| `vul` | Yes | Table vulnerability: `None`, `NS`, `EW` or `All` |
 
 **Response:**
 ```json
@@ -479,7 +479,7 @@ r = requests.get(f"{BASE}/lead", params={
     "hand": "KJ53.KJ7.AT92.K5",
     "seat": "W",
     "dealer": "N",
-    "vul": "@v",
+    "vul": "NS",
     "ctx": "2C--2D--2N--3N------"
 })
 print(r.json()["card"])  # e.g., "DA"
