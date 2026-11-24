@@ -203,20 +203,25 @@ Returns the recommended opening lead after the auction.
 
 **Example Request:**
 ```
-GET /lead?hand=KJ53.KJ7.AT92.K5&seat=W&dealer=N&vul=NS&ctx=1N--3N------
+GET /lead?hand=KJ53.KJ7.AT92.K5&seat=E&dealer=N&vul=NS&ctx=1N--3N------&details=true
 ```
+
+North opened 1NT and declares 3NT, so East is on lead. Without `details=true` only
+`card`, `who` and `quality` are returned.
 
 **Response:**
 ```json
 {
-  "card": "CA",
-  "who": "Simulation (MP)",
-  "quality": "Good",
-  "hcp": [7.7, 2.5, 12.4],
-  "shape": [0.8, 4.3, 4.2, 3.7, ...],
+  "card": "S3",
+  "who": "Simulation (IMP)",
+  "quality": "0.8635",
+  "hcp": [8.8, 0.5, 15.4],
+  "shape": [2.6, 2.9, 3.3, 4.2, 3.2, 3.7, 2.9, 3.2, 3.2, 3.4, 3.0, 3.4],
   "candidates": [
-    {"card": "CA", "insta_score": 0.325, "expected_tricks_sd": 5.28, "p_make_contract": 1.0, "expected_score_sd": 236},
-    {"card": "CK", "insta_score": 0.276, "expected_tricks_sd": 5.28, "p_make_contract": 1.0, "expected_score_sd": 236}
+    {"card": "Sx", "insta_score": 0.415, "p_make_contract": 0.23, "expected_score_imp": 0.57, "msg": ""},
+    {"card": "DT", "insta_score": 0.372, "p_make_contract": 0.22, "expected_score_imp": 0.19, "msg": ""},
+    {"card": "Dx", "insta_score": 0.08, "p_make_contract": 0.2, "expected_score_imp": -0.13, "msg": ""},
+    {"card": "Hx", "insta_score": 0.054, "p_make_contract": 0.18, "expected_score_imp": -0.64, "msg": ""}
   ],
   "samples": [...]
 }
@@ -466,7 +471,7 @@ print(r.json()["bid"])  # "2C" (strong)
 
 # East passes
 r = requests.get(f"{BASE}/bid", params={
-    "hand": "432.432.432.4322",
+    "hand": "432.432.432.6543",
     "seat": "E", "dealer": "N", "vul": "", "ctx": "2C"
 })
 print(r.json()["bid"])  # "PASS"
@@ -477,12 +482,12 @@ print(r.json()["bid"])  # "PASS"
 ```python
 r = requests.get(f"{BASE}/lead", params={
     "hand": "KJ53.KJ7.AT92.K5",
-    "seat": "W",
+    "seat": "E",
     "dealer": "N",
     "vul": "NS",
     "ctx": "2C--2D--2N--3N------"
 })
-print(r.json()["card"])  # e.g., "DA"
+print(r.json()["card"])  # e.g., "S3"
 ```
 
 ---
