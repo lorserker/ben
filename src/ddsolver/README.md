@@ -39,15 +39,14 @@ on `dds3` otherwise. bridge-solver ships a single-file library with DDS 2.9's C 
 `ddsolver/bsolver.py` calls it through `ctypes` (`SolveAllBoards` for a batch, on
 the library's own threads; `CalcDDtablePBN` + `Par` for par).
 
-The Windows and Linux libraries are built from `dad3495` (2026-11-24): `faster-search`
+All the libraries are built from `dad3495` (2026-11-24): `faster-search`
 `89ba695` plus a fix for a native-memory leak
 ([BSalita/bridge-solver#1](https://github.com/BSalita/bridge-solver/pull/1), branch
 `free-thread-caches` on ThorvaldAagaard/bridge-solver). Earlier builds kept each
 thread's search caches for good: a thread that exited leaked them, and `FreeMemory()`
 reached only the calling thread and the library's own pool, so a long-running
 `gameapi` grew ~0.25 GB per deal until it was OOM-killed (lorserker/ben#206). Now a
-thread's caches are freed when it exits, and `FreeMemory()` frees every thread's. The
-macOS ARM64 library is still `61a6e59`.
+thread's caches are freed when it exits, and `FreeMemory()` frees every thread's.
 
 | Platform    | BEN's copy (`DDSolver`)                          |
 |-------------|--------------------------------------------------|
@@ -78,7 +77,8 @@ then `strip --strip-unneeded build/libdds-single.so` (needs glibc 2.25+).
 macOS: `SDKROOT=<SDK> MACOSX_DEPLOYMENT_TARGET=11.0 bash ./build.sh` (with
 Command Line Tools whose own `include/c++/v1` is empty, add
 `EXTRA_OPTS="-nostdinc++ -isystem <SDK>/usr/include/c++/v1"`; with macOS's bash
-3.2, write the empty `"${SHARE_CRT[@]}"` as `${SHARE_CRT[@]+"${SHARE_CRT[@]}"}`),
+3.2, write the empty `"${SHARE_CRT[@]}"` as `${SHARE_CRT[@]+"${SHARE_CRT[@]}"}`, in an
+untracked copy of `build.sh` so `GetDDSInfo` does not report `-dirty`),
 then `install_name_tool -id @rpath/<name>` and `codesign -f -s -` the copy.
 
 ## Installing the `dds3` extension
@@ -206,7 +206,7 @@ on bridge-solver against 27.9 s on bcalcdds, with the same cards played.
 | Windows ARM64  | `bin/BGA/windows/arm64/dds.dll`        | 3.1.0 (`671a4aa4`) |
 | Linux x64      | `bin/BGA/linux/x64/libdds.so` (+ identical `dds.dll`, `bin/libdds.so`) | bridge-solver `dad3495` |
 | Linux ARM64    | `bin/BGA/linux/arm64/libdds.so`        | bridge-solver `dad3495` |
-| macOS ARM64    | `bin/BGA/macos/arm64/libdds.2.9.0.dylib` (+ identical `bin/darwin/`) | bridge-solver `61a6e59` (the file keeps its old name: BEN links `libdds.dylib` and `dds.dylib` to it) |
+| macOS ARM64    | `bin/BGA/macos/arm64/libdds.2.9.0.dylib` (+ identical `bin/darwin/`) | bridge-solver `dad3495` (the file keeps its old name: BEN links `libdds.dylib` and `dds.dylib` to it) |
 
 > **The thread index must be accepted.** BGADLL spreads its solves over thread
 > indexes 0–7. DDS builds from before commit `15eb56fd` (2026-05-22) only accept

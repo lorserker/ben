@@ -16,14 +16,12 @@ to run behind a reverse proxy.
 - Measured with `gameapi` in Docker (Linux x64), playing deals card by card
   through `/lead` and `/play`: with 0.9.0.4's library memory went from
   2.4 GB to 13.3 GB in 24 deals. With the new one it levels off at about
-  3.3 GB and stays there (48 deals).
-- Replaced for Windows x64, Linux x64 and Linux arm64, both BEN's own copy
-  (`bin/bsolver`) and the `dds` library that PIMC uses (`bin/BGA`,
-  `bin/dds.dll`, `bin/libdds.so`).
-- **macOS arm64 still has the leak.** Its library has not been rebuilt yet
-  and is still the 0.9.0.4 build (`61a6e59`). On a Mac, restart `gameapi`
-  now and then, or set `BEN_DDS=dds3` so BEN's own solves use DDS 3.1.0
-  (PIMC still uses bridge-solver). A rebuilt library will follow.
+  3.3 GB and stays there (46 deals). On macOS (M1) the memory the library
+  holds stays at 1.6 MB however many threads come and go; before it grew
+  about 56 MB for every 8 threads.
+- Replaced for Windows x64, Linux x64, Linux arm64 and macOS arm64, both
+  BEN's own copy (`bin/bsolver`) and the `dds` library that PIMC uses
+  (`bin/BGA`, `bin/dds.dll`, `bin/libdds.so`, `bin/darwin`).
 
 ## gameapi
 
