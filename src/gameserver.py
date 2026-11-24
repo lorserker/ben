@@ -64,7 +64,7 @@ import gc
 import psutil
 from nn.timing import ModelTimer
 
-version = '0.9.0.4'
+version = '0.9.0.5'
 init()
 
 # Check websockets version - 15.0+ removed path as handler argument
